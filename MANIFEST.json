@@ -1,0 +1,32 @@
+[
+  {
+    "file": "00_README_EF.md",
+    "bytes": 12266,
+    "sha256": "1b81b32360e823a36bbcc8a17cd8d38e84d25c35c8e49f3ea353f10e4acaa362"
+  },
+  {
+    "file": "01_EF_RFC_001_ARCHITECTURE.md",
+    "bytes": 15715,
+    "sha256": "cabd636d6759875cf07d27fb5a05e40a7ec03e814f0954e71a63ba3236439aca"
+  },
+  {
+    "file": "02_EF_IMPLEMENTATION_PLAN_M0_M3.md",
+    "bytes": 15789,
+    "sha256": "f57e0d006f662f90a615bd3c942e4149e5a5774c8e9f521486c8ff1e6d4132b5"
+  },
+  {
+    "file": "03_EF_TEST_BENCHMARK_SPEC.md",
+    "bytes": 11658,
+    "sha256": "cc5ddfad6194cf5935dd2108fc56ff2f52913253dea2d2253d1fa5f05608f445"
+  },
+  {
+    "file": "04_EF_LOCAL_AGENT_WORK_ORDER.md",
+    "bytes": 7134,
+    "sha256": "447831713f6e61c5ca21aa69bea84c2085745cf8c607455d8aae8b67c70bcbb3"
+  },
+  {
+    "file": "05_EF_DECISIONS_AND_OPEN_QUESTIONS.md",
+    "bytes": 8179,
+    "sha256": "6d212838a9dce1162d4c57587864310717d5a650716a7965d790ead6d4821748"
+  }
+]
