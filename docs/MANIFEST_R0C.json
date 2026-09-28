@@ -1,0 +1,22 @@
+[
+  {
+    "file": "07_R0C_EVALUATION_CLOSURE.md",
+    "bytes": 16534,
+    "sha256": "3bd4d3297e386fc03a3ddf5641c1a7914e6b01a1ebf8ebd42d5b38449bbcd5c7"
+  },
+  {
+    "file": "08_BOUNDARY_CORPUS_PROTOCOL.md",
+    "bytes": 7899,
+    "sha256": "656c5db35f101c548b0a82d6db038ff4c963b8fe9a2d41d991518ac2f3b63f03"
+  },
+  {
+    "file": "09_EVALUATION_METRICS_SPEC.md",
+    "bytes": 5936,
+    "sha256": "90991ec3b0e18354fe234d5965787daa188eb6e10abad0d53cd5aaa32638a91e"
+  },
+  {
+    "file": "10_LOCAL_AGENT_WORK_ORDER_R0C.md",
+    "bytes": 9616,
+    "sha256": "b51c15f1b80f54e0d0f882158b16207bb6b1c7c3a7b3b4c93f86e0c5a9ef81aa"
+  }
+]
