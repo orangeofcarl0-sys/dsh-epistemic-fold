@@ -24,6 +24,7 @@ import { classifyIncident } from '../eval/src/incidents.ts'
 import { baselineToMarkdown, resultsToCsv } from '../eval/src/report.ts'
 import { boundaryCaseSchema, evalRunResultSchema } from '../eval/src/schema.ts'
 import { summarizeAttribution } from '../eval/src/token-attribution.ts'
+import { summarizePressureHistory } from '../src/pressure.ts'
 
 describe('metric formulas (spec 09)', () => {
   it('SPN: first divergence, or the shared length when one is a prefix', () => {
@@ -284,6 +285,8 @@ describe('schemas are closed and reports generated', () => {
       auxiliaryCompaction: { callCount: 0 },
       cacheEconomics: [{ rho: 0, hitTokens: 0, missTokens: 0, cost: 0 }],
       attribution: summarizeAttribution([]),
+      pressure: summarizePressureHistory([]),
+      thresholdTokens: 0,
     })).toContain('| absolutePrefixInvalidation | 0 |')
   })
 })

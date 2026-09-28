@@ -90,11 +90,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
-  /** Last bundle published by this engine (per transaction, for tests/telemetry). */
+  /** Last bundle this engine published (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
   private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
   /** Pressure folds since the last root rebase — the anti-oscillation cooldown. */
   private stepsSinceRootRebase = Number.POSITIVE_INFINITY
+  /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
+  private lastThresholdTokensValue = 0
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -124,6 +126,15 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Latest frozen-budget evaluation (pressure path); `undefined` before the first check. */
   get lastRootRebaseAdvice(): ReturnType<typeof evaluateRootRebase> | undefined {
     return this.lastRootRebaseAdviceValue
+  }
+
+  /**
+   * The pressure threshold the most recent `compactIfNeeded` resolved, or 0
+   * before any pressure check. Exposed so R2-A can decompose pressure against
+   * the SAME threshold the engine acted on, rather than re-deriving it.
+   */
+  get lastThresholdTokens(): number {
+    return this.lastThresholdTokensValue
   }
 
   /**
@@ -259,6 +270,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       info.context.contextWindow,
       reservedCompletionTokens(agent, info.defaultMaxTokens),
     )
+    this.lastThresholdTokensValue = spec.thresholdTokens
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
     if (prune !== undefined) {

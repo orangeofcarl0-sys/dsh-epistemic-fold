@@ -55,6 +55,20 @@ export type {
   ContextPolicyInput,
   PolicyAction,
 } from './policy-compiler.ts'
+export {
+  classifyPressureRegime,
+  frozenCheckpointCount,
+  leafMarginalReclaim,
+  pressureBreakdown,
+  summarizePressureHistory,
+} from './pressure.ts'
+export type {
+  LeafMarginalReclaim,
+  PressureBreakdown,
+  PressureHistory,
+  PressureRegime,
+  PressureSample,
+} from './pressure.ts'
 export { registerRecallTools } from './tools.ts'
 export {
   registerEpistemicFoldProjection,
