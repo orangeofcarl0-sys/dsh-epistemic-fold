@@ -1,0 +1,22 @@
+{
+  "id": "deepseek-flash-2026-09",
+  "provider": "deepseek",
+  "modelPattern": "deepseek-*flash*",
+  "asOf": "2026-09-28",
+  "source": "DeepSeek public pricing page (cache-hit input ≈ 2% of cache-miss input); captured for benchmark use only",
+  "pricing": {
+    "inputMissPerM": 0.28,
+    "inputHitPerM": 0.0056,
+    "outputPerM": 0.42
+  },
+  "cache": {
+    "mode": "automatic",
+    "bestEffort": true,
+    "minimumCacheableTokens": 64,
+    "ttlSeconds": 3600,
+    "supportsExplicitBreakpoints": false
+  },
+  "context": {
+    "windowTokens": 131072
+  }
+}

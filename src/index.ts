@@ -28,6 +28,27 @@ export type {
   EpistemicFoldConfig,
   ResolvedEpistemicFoldConfig,
 } from './policy.ts'
+export {
+  cacheRealizationRate,
+  classifyRegime,
+  costOf,
+  effectiveRho,
+  modeledCost,
+  overrideProfile,
+  parseEconomicsProfile,
+  profileMatchesModel,
+  rhoOf,
+  rootBreakEvenRequests,
+  selectProfile,
+  tierFor,
+} from './economics-profile.ts'
+export type {
+  ContextEconomicsProfile,
+  CostBreakdown,
+  ObservedUsage,
+  PolicyRegime,
+  PricingTier,
+} from './economics-profile.ts'
 export { registerRecallTools } from './tools.ts'
 export {
   registerEpistemicFoldProjection,

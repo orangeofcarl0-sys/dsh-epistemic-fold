@@ -31,6 +31,7 @@ import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
+import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 
 export async function tempRoot(): Promise<string> {
@@ -122,6 +123,12 @@ export async function createHarness(
     efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale' }
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
+    /**
+     * Mount the deterministic EF current-state projection. Off by default so
+     * the M0/M2 legacy rendering path stays exercised; the structured
+     * checkpoint path (M3a/R1) needs it mounted.
+     */
+    projection?: boolean
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -132,6 +139,7 @@ export async function createHarness(
   void new SessionStore(ctx)
   new SessionProjectionRegistry(ctx)
   void new TokenMeter(ctx)
+  if (options.projection === true) registerEpistemicFoldProjection(ctx)
   // Detached test sessions are not store-live; manual compaction's durability
   // checkpoint is observable through the flush record (mirrors the DSH
   // manual-compaction suite's flush spy).

@@ -1,0 +1,23 @@
+{
+  "id": "openai-gpt-5.6-2026-09",
+  "provider": "openai",
+  "modelPattern": "gpt-5.6*",
+  "asOf": "2026-09-28",
+  "source": "OpenAI pricing (cached input ≈ 0.1x uncached, cache write ≈ 1.25x uncached); captured for benchmark use only",
+  "pricing": {
+    "inputMissPerM": 1.25,
+    "inputHitPerM": 0.125,
+    "cacheWritePerM": 1.5625,
+    "outputPerM": 10.0
+  },
+  "cache": {
+    "mode": "explicit",
+    "bestEffort": false,
+    "minimumCacheableTokens": 1024,
+    "ttlSeconds": 300,
+    "supportsExplicitBreakpoints": true
+  },
+  "context": {
+    "windowTokens": 400000
+  }
+}
