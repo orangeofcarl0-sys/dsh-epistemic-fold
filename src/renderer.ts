@@ -85,6 +85,19 @@ export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresent
 
 /**
  * Render the machine-state handoff for one checkpoint.
+ *
+ * **Surface diet (R2-D).** A section that carries nothing is omitted entirely
+ * — header and placeholder both. The earlier format emitted all five sections
+ * unconditionally, so a checkpoint with no evidence, no open items and no
+ * rationale still spent tokens announcing that it had none. The measured
+ * framing cost is the single largest component of a leaf checkpoint, and most
+ * of it is this kind of fixed boilerplate repeated once per fold.
+ *
+ * Two things are never omitted: the marker line, which owns checkpoint
+ * identity, and the Recall pointer, which is what makes the archive reachable.
+ * Omitting either would trade correctness for tokens, which is exactly the
+ * trade R2 forbids.
+ *
  * @param state - the deterministic current state at fold time.
  * @param checkpointId - the fold's checkpoint identity.
  * @param rationale - semantic digest text; advisory only, never state.
@@ -96,38 +109,32 @@ export function renderStructuredCheckpoint(
   rationale?: string,
 ): string {
   const presentation = projectForCheckpoint(state)
-  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode: 'leaf' }), '', 'Current']
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode: 'leaf' })]
 
-  if (presentation.current.length === 0) lines.push('- (none)')
-  for (const anchor of presentation.current) {
-    if (anchor.kind === 'objective') {
-      lines.push(anchorLine(anchor))
-      continue
+  if (presentation.current.length > 0) {
+    lines.push('', 'Current')
+    for (const anchor of presentation.current) lines.push(anchorLine(anchor))
+  }
+
+  if (presentation.evidence.length > 0) {
+    lines.push('', 'Evidence')
+    for (const anchor of presentation.evidence) lines.push(anchorLine(anchor))
+  }
+
+  if (presentation.open.length > 0) {
+    lines.push('', 'Open')
+    for (const anchor of presentation.open) {
+      lines.push(anchor.kind === 'failure' ? failureLine(anchor) : anchorLine(anchor))
     }
-    lines.push(anchorLine(anchor))
   }
 
-  lines.push('', 'Evidence')
-  if (presentation.evidence.length === 0) lines.push('- (none)')
-  for (const anchor of presentation.evidence) lines.push(anchorLine(anchor))
-
-  lines.push('', 'Open')
-  if (presentation.open.length === 0) {
-    lines.push('- (none)')
-  }
-  for (const anchor of presentation.open) {
-    if (anchor.kind === 'failure') {
-      lines.push(failureLine(anchor))
-      continue
-    }
-    lines.push(anchorLine(anchor))
-  }
-
-  lines.push('', 'Rationale')
-  if (rationale === undefined || rationale.trim().length === 0) {
-    lines.push('- (none)')
-  } else {
-    for (const line of rationale.trim().split('\n')) lines.push(`- ${line}`)
+  // Rationale is advisory; when there is none, the section is not emitted and
+  // its absence is not announced. A reader that finds no Rationale heading
+  // learns exactly what `- (none)` would have told it, for zero tokens.
+  const rationaleText = rationale?.trim() ?? ''
+  if (rationaleText.length > 0) {
+    lines.push('', 'Rationale')
+    for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
   }
 
   lines.push('', 'Recall', `- cp:${checkpointId}`)

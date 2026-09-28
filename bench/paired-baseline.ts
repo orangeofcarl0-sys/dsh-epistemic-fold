@@ -50,6 +50,8 @@ import type { FrozenSummary, PromptExposure } from '../eval/src/metrics.ts'
 import { attributeTokens } from '../eval/src/token-attribution.ts'
 import type { RunAttribution, TokenAttribution } from '../eval/src/token-attribution.ts'
 import { summarizeAttribution } from '../eval/src/token-attribution.ts'
+import { classifyPressureRegime, pressureBreakdown, summarizePressureHistory } from '../src/pressure.ts'
+import type { PressureHistory, PressureSample } from '../src/pressure.ts'
 import type { Harness } from '../tests/harness.ts'
 
 const BENCH_SIGNAL = new AbortController().signal
@@ -128,6 +130,10 @@ export interface BaselineResult {
   readonly cacheEconomics: readonly CacheCostPoint[]
   /** R1-A token source attribution across the run (per step + bucket totals). */
   readonly attribution: RunAttribution
+  /** R2-A pressure regime history (frozen/open split, fold-every-step flag). */
+  readonly pressure: PressureHistory
+  /** The pressure threshold in force, or 0 when no routed spec was resolved. */
+  readonly thresholdTokens: number
 }
 
 interface BenchEngine {
@@ -177,6 +183,7 @@ export async function runPairedBaseline(options: {
   }
   const samples: StepSample[] = []
   const attributions: TokenAttribution[] = []
+  const pressureSamples: PressureSample[] = []
   let previous = historyDigests(session)
   let previousMeasurement = meter.measure(session)
   let invalidatedTotal = 0
@@ -230,10 +237,25 @@ export async function runPairedBaseline(options: {
     let checkpointLoad = 0
     const engineAny = harness.engine as unknown as {
       efConfig?: { frozenCheckpointTokenBudget?: number }
+      lastThresholdTokens?: number
     }
     if (engineAny.efConfig !== undefined) {
       const { frozenCheckpointLoad } = await import('../src/leaf-policy.ts')
       checkpointLoad = frozenCheckpointLoad(session, measurement).tokens
+    }
+
+    // R2-A: decompose this step's pressure against the threshold the engine
+    // actually used, so the frozen/open regime is measured rather than guessed.
+    const threshold = engineAny.lastThresholdTokens ?? 0
+    if (threshold > 0 && engineAny.efConfig !== undefined) {
+      const breakdown = pressureBreakdown(session, measurement, threshold)
+      pressureSamples.push({
+        step,
+        regime: classifyPressureRegime(breakdown),
+        frozenTokens: breakdown.frozenTokens,
+        openTokens: breakdown.openTokens,
+        totalTokens: breakdown.totalTokens,
+      })
     }
 
     samples.push({
@@ -296,6 +318,8 @@ export async function runPairedBaseline(options: {
     },
     cacheEconomics,
     attribution: summarizeAttribution(attributions),
+    pressure: summarizePressureHistory(pressureSamples),
+    thresholdTokens: (harness.engine as unknown as { lastThresholdTokens?: number }).lastThresholdTokens ?? 0,
   }
 }
 

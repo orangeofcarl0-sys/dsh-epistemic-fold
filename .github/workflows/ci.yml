@@ -60,6 +60,9 @@ jobs:
       - name: R1 model-aware context economics (attribution, workloads, ROI lab, policy, Pareto)
         run: npm run eval:r1
 
+      - name: R2 baseline-dominant compression (pressure, admission, rebase, diet, dominance)
+        run: npm run eval:r2
+
       - name: R1 report is reproducible and up to date
         run: |
           npm run eval:r1-report

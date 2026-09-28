@@ -8,7 +8,8 @@
  */
 
 export { EpistemicFoldEngine, default } from './engine.ts'
-export type { EpistemicFoldOptions } from './engine.ts'
+export type { EpistemicFoldOptions, LeafAdmissionVerdict } from './engine.ts'
+export { efOwnedConfigKeys } from './engine.ts'
 export { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 export { FileBundleStore } from './bundle-store.ts'
 export {
@@ -26,6 +27,7 @@ export { resolveEfConfig, resolveEfCompactSpec } from './policy.ts'
 export type {
   EfCompactSpec,
   EpistemicFoldConfig,
+  LeafAdmissionMode,
   ResolvedEpistemicFoldConfig,
 } from './policy.ts'
 export {
@@ -55,6 +57,20 @@ export type {
   ContextPolicyInput,
   PolicyAction,
 } from './policy-compiler.ts'
+export {
+  classifyPressureRegime,
+  frozenCheckpointCount,
+  leafMarginalReclaim,
+  pressureBreakdown,
+  summarizePressureHistory,
+} from './pressure.ts'
+export type {
+  LeafMarginalReclaim,
+  PressureBreakdown,
+  PressureHistory,
+  PressureRegime,
+  PressureSample,
+} from './pressure.ts'
 export { registerRecallTools } from './tools.ts'
 export {
   registerEpistemicFoldProjection,

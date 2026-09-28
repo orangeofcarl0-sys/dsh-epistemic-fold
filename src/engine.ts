@@ -33,6 +33,11 @@ import {
 import { FileBundleStore } from './bundle-store.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
+import { leafMarginalReclaim, pressureBreakdown } from './pressure.ts'
+import type { LeafMarginalReclaim } from './pressure.ts'
+import { resolveProfile } from './economics-profile.ts'
+import { compileContextPolicy } from './policy-compiler.ts'
+import type { ContextPolicyDecision } from './policy-compiler.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { renderStructuredCheckpoint } from './renderer.ts'
@@ -43,6 +48,7 @@ import {
   reservedCompletionTokens,
   resolveEfCompactSpec,
   routedTarget,
+  type EfCompactSpec,
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
 } from './policy.ts'
@@ -55,17 +61,60 @@ import type {
   SummaryResult,
 } from './types.ts'
 
+/**
+ * Every config key EF owns and resolves itself. Basic validates its config
+ * keys STRICTLY, so any EF key reaching the super constructor throws — this
+ * list is the single place that decides what "EF-owned" means, and
+ * `stripEfConfigKeys` is checked against it by a test so a newly added key
+ * cannot silently leak through (a real bug found in R0).
+ */
+const EF_OWNED_CONFIG_KEYS = [
+  'frozenCheckpointTokenBudget',
+  'semanticMode',
+  'bundleRoot',
+  'leafAdmission',
+  'minReclaimTokens',
+  'minReclaimRatio',
+  'rootPolicy',
+  'economicsProfiles',
+  'cacheRealizationRate',
+  'paybackHorizonRequests',
+] as const
+
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
 function stripEfConfigKeys(config: EpistemicFoldConfig): EpistemicFoldConfig {
-  const { frozenCheckpointTokenBudget, semanticMode, bundleRoot, ...basic } = config
-  void frozenCheckpointTokenBudget
-  void semanticMode
-  void bundleRoot
+  const basic: Record<string, unknown> = { ...config }
+  for (const key of EF_OWNED_CONFIG_KEYS) delete basic[key]
   return basic as EpistemicFoldConfig
+}
+
+/** The EF-owned keys, exposed so a test can prove none is forgotten. */
+export function efOwnedConfigKeys(): readonly string[] {
+  return EF_OWNED_CONFIG_KEYS
 }
 
 /** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
 const RATIONALE_MAX_TOKENS = 400
+
+/**
+ * Fallback estimate of a first checkpoint's size when none exists yet. A leaf
+ * checkpoint's cost is dominated by the fixed framing preamble, so this is a
+ * measured constant (~530 tokens observed) rather than a guess.
+ */
+const FRAMING_FALLBACK_TOKENS = 530
+
+/** Why an economic leaf fold was admitted or refused (R2-B telemetry). */
+export interface LeafAdmissionVerdict {
+  readonly admitted: boolean
+  readonly reason:
+    | 'admitted'
+    | 'frozen_prefix_over_threshold'
+    | 'reclaim_below_floor'
+    | 'ratio_below_floor'
+    | 'no_span'
+  readonly detail: string
+  readonly reclaim?: LeafMarginalReclaim
+}
 
 /** Pressure folds required between two root rebases (R0-C anti-oscillation). */
 const ROOT_REBASE_COOLDOWN = 5
@@ -90,11 +139,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
-  /** Last bundle published by this engine (per transaction, for tests/telemetry). */
+  /** Last bundle this engine published (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
   private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
   /** Pressure folds since the last root rebase — the anti-oscillation cooldown. */
   private stepsSinceRootRebase = Number.POSITIVE_INFINITY
+  /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
+  private lastThresholdTokensValue = 0
+  /** Most recent economic leaf-admission verdict (R2-B telemetry). */
+  private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
+  /** Most recent provider-aware rebase decision (R2-C telemetry). */
+  private lastRebaseDecisionValue: ContextPolicyDecision | undefined
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -124,6 +179,25 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Latest frozen-budget evaluation (pressure path); `undefined` before the first check. */
   get lastRootRebaseAdvice(): ReturnType<typeof evaluateRootRebase> | undefined {
     return this.lastRootRebaseAdviceValue
+  }
+
+  /**
+   * The pressure threshold the most recent `compactIfNeeded` resolved, or 0
+   * before any pressure check. Exposed so R2-A can decompose pressure against
+   * the SAME threshold the engine acted on, rather than re-deriving it.
+   */
+  get lastThresholdTokens(): number {
+    return this.lastThresholdTokensValue
+  }
+
+  /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
+  get lastLeafAdmission(): LeafAdmissionVerdict | undefined {
+    return this.lastLeafAdmissionValue
+  }
+
+  /** Most recent provider-aware rebase decision (R2-C); `undefined` under `legacy`. */
+  get lastRebaseDecision(): ContextPolicyDecision | undefined {
+    return this.lastRebaseDecisionValue
   }
 
   /**
@@ -259,6 +333,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       info.context.contextWindow,
       reservedCompletionTokens(agent, info.defaultMaxTokens),
     )
+    this.lastThresholdTokensValue = spec.thresholdTokens
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
     if (prune !== undefined) {
@@ -266,6 +341,27 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       measurement = meter.measure(agent.session)
     }
     if (measurement.totalTokens < spec.thresholdTokens) return null
+
+    // R2-B: the economic admission gate. Structurally legal is not the same as
+    // worth doing: a fold whose span barely exceeds the checkpoint it produces
+    // reclaims almost nothing while paying the full framing preamble, and once
+    // the frozen prefix alone exceeds the threshold a leaf CANNOT restore
+    // headroom at all — it only appends another checkpoint to a prefix that
+    // already exceeds the threshold, which is the self-sustaining loop R1
+    // measured (51 folds vs Basic's 21 on an identical workload and digest).
+    if (this.efConfig.leafAdmission === 'economic') {
+      const verdict = this.admitLeafEconomically(agent.session, measurement, spec.thresholdTokens)
+      this.lastLeafAdmissionValue = verdict
+      if (!verdict.admitted) {
+        // R2-B measured that refusing a leaf and STOPPING is a regression: the
+        // history that is no longer folded stays on the surface as raw tokens,
+        // which cost far more than the framing tax the refusal avoided
+        // (measured: framing -46%, raw +807%, total 1.8x worse). A refusal is
+        // therefore only correct as a HANDOFF to the one mechanism that can
+        // actually shrink the frozen prefix.
+        return this.rebaseAfterLeafRefusal(agent, measurement, spec)
+      }
+    }
 
     let result: CompactionResult | null = null
     for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
@@ -289,6 +385,91 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   }
 
   /**
+   * Decide whether a leaf fold is economically admissible (R2-B).
+   *
+   * Two independent refusals:
+   *
+   * 1. **The frozen prefix alone is over threshold.** A leaf fold replaces
+   *    part of the open tail with a checkpoint that JOINS the frozen prefix,
+   *    so the next request is still over threshold and folds again. No leaf
+   *    can end this; only a rebase can.
+   * 2. **The marginal reclaim is too small.** The fold must reclaim more than
+   *    the checkpoint overhead it creates (`minReclaimTokens`) and must
+   *    reclaim a meaningful fraction of its span (`minReclaimRatio`).
+   *
+   * @param session - session whose surface is measured.
+   * @param measurement - token-meter measurement matching the current surface.
+   * @param thresholdTokens - the pressure threshold in force.
+   * @returns the verdict, with the reason and the measured reclaim.
+   */
+  private admitLeafEconomically(
+    session: Session,
+    measurement: TokenMeasurement,
+    thresholdTokens: number,
+  ): LeafAdmissionVerdict {
+    const breakdown = pressureBreakdown(session, measurement, thresholdTokens)
+    if (breakdown.leafCannotSuffice) {
+      return {
+        admitted: false,
+        reason: 'frozen_prefix_over_threshold',
+        detail:
+          `frozen prefix ${breakdown.frozenTokens} >= threshold ${thresholdTokens}; `
+          + 'a leaf fold cannot restore headroom and only adds a checkpoint',
+        reclaim: leafMarginalReclaim({
+          spanTokens: breakdown.openTokens,
+          frozenTokens: breakdown.frozenTokens,
+          frozenCount: breakdown.frozenCount,
+          fallbackCheckpointTokens: FRAMING_FALLBACK_TOKENS,
+        }),
+      }
+    }
+
+    const span = selectLeafSpan(session, measurement, 0)
+    if (span === null) {
+      return {
+        admitted: false,
+        reason: 'no_span',
+        detail: 'no structurally legal span past the frontier',
+      }
+    }
+    const spanTokens = measurement.nodes
+      .slice(span.startIdx, span.endIdx + 1)
+      .reduce((total, node) => total + node.tokens, 0)
+    const reclaim = leafMarginalReclaim({
+      spanTokens,
+      frozenTokens: breakdown.frozenTokens,
+      frozenCount: breakdown.frozenCount,
+      fallbackCheckpointTokens: FRAMING_FALLBACK_TOKENS,
+    })
+    if (reclaim.reclaimTokens < this.efConfig.minReclaimTokens) {
+      return {
+        admitted: false,
+        reason: 'reclaim_below_floor',
+        detail:
+          `net reclaim ${reclaim.reclaimTokens.toFixed(0)} tokens < floor ${this.efConfig.minReclaimTokens}`,
+        reclaim,
+      }
+    }
+    if (reclaim.reclaimRatio < this.efConfig.minReclaimRatio) {
+      return {
+        admitted: false,
+        reason: 'ratio_below_floor',
+        detail:
+          `MRR ${(reclaim.reclaimRatio * 100).toFixed(1)}% < floor `
+          + `${(this.efConfig.minReclaimRatio * 100).toFixed(1)}%`,
+        reclaim,
+      }
+    }
+    return {
+      admitted: true,
+      reason: 'admitted',
+      detail:
+        `reclaim ${reclaim.reclaimTokens.toFixed(0)} tokens, MRR ${(reclaim.reclaimRatio * 100).toFixed(1)}%`,
+      reclaim,
+    }
+  }
+
+  /**
    * One leaf fold from the frontier with the given retention budget; the
    * overflow path's forceful reduction (retain 0) funnels through here.
    */
@@ -301,6 +482,104 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     const span = selectLeafSpan(agent.session, measurement, retainTokens)
     if (span === null) return null
     return this.compactRegion(span.start, span.end, agent, signal)
+  }
+
+  /**
+   * The rebase handoff after an economic leaf refusal (R2-C).
+   *
+   * R2-B measured that refusing a leaf and stopping is a 1.8x REGRESSION:
+   * the unfolded history stays on the surface as raw tokens, which cost far
+   * more than the framing tax the refusal avoided. A refusal is therefore only
+   * correct when it hands off to the mechanism that can actually shrink the
+   * frozen prefix.
+   *
+   * The handoff is expressed as a REBASE RECOMMENDATION rather than performed
+   * here, and that is deliberate. A rebase needs an idle agent and no open
+   * turn, but this path runs inside the caller's open turn and (in the real
+   * loop) inside the caller's own maintenance bracket; nesting a second
+   * bracket would either deadlock or corrupt the caller's transaction. The
+   * recommendation is consumed by the SAME rebase window that already serves
+   * manual `/compact` and R0-C's benchmark hook, so no new execution path is
+   * introduced and the proven one is reused.
+   *
+   * @returns always `null` — the caller's turn is left untouched.
+   */
+  private rebaseAfterLeafRefusal(
+    agent: Agent,
+    measurement: TokenMeasurement,
+    spec: EfCompactSpec,
+  ): CompactionResult | null {
+    this.recordRootRebaseAdvice(agent.session, measurement)
+
+    if (this.efConfig.rootPolicy.mode !== 'economics') return null
+
+    const decision = this.evaluateEconomicRebase(agent, measurement, spec)
+    this.lastRebaseDecisionValue = decision
+    if (decision.action !== 'root') return null
+
+    // Override the token-budget heuristic with the economic verdict: on THIS
+    // model, at THIS frozen size, the rebase's break-even horizon is short
+    // enough to be worth its cost. The cooldown still applies, so a rebase
+    // cannot thrash.
+    const prior = this.lastRootRebaseAdviceValue
+    if (this.stepsSinceRootRebase < ROOT_REBASE_COOLDOWN) return null
+    this.lastRootRebaseAdviceValue = {
+      recommended: true,
+      frozenTokens: prior?.frozenTokens ?? 0,
+      budget: prior?.budget ?? this.efConfig.frozenCheckpointTokenBudget,
+      frozenCount: prior?.frozenCount ?? 0,
+    }
+    this.ctx.logger.warn(
+      `[epistemic-fold] economic rebase recommended: ${decision.reason}`,
+    )
+    return null
+  }
+
+  /**
+   * Decide whether an amortized rebase is justified for this request (R2-C).
+   *
+   * Uses the routed model's own economics profile — never a provider branch —
+   * and the measured cache realization. The payback horizon answers the only
+   * question that matters: will the frozen prefix be carried for enough
+   * further requests to repay the rebase?
+   */
+  private evaluateEconomicRebase(
+    agent: Agent,
+    measurement: TokenMeasurement,
+    spec: EfCompactSpec,
+  ): ContextPolicyDecision {
+    const target = routedTarget(agent.session)
+    const profile = resolveProfile(
+      this.efConfig.rootPolicy.profiles,
+      target?.provider ?? '',
+      target?.model ?? '',
+    )
+    const breakdown = pressureBreakdown(agent.session, measurement, spec.thresholdTokens)
+    return compileContextPolicy({
+      economics: profile,
+      telemetry: {
+        frozenTokens: breakdown.frozenTokens,
+        frozenCheckpointCount: breakdown.frozenCount,
+        rawTailTokens: breakdown.openTokens,
+        promptTokens: breakdown.totalTokens,
+        recentFoldCadence: this.stepsSinceRootRebase,
+      },
+      pressure: {
+        contextWindow: spec.contextWindow,
+        currentTokens: breakdown.totalTokens,
+      },
+      policy: {
+        paybackHorizonRequests: this.efConfig.rootPolicy.paybackHorizonRequests,
+        realizationRate: this.efConfig.rootPolicy.realizationRate,
+        pressureRatio: this.efConfig.thresholdRatio,
+        compactionCost: this.efConfig.rootPolicy.compactionCost,
+        rebaseCooldownFolds: ROOT_REBASE_COOLDOWN,
+        // This path is reached only AFTER a leaf was refused, so a leaf is not
+        // an available action. Without this the pressure override would demand
+        // the very fold that was just rejected.
+        leafAvailable: false,
+      },
+    })
   }
 
   /** Record frozen-budget telemetry after pressure work settles. */

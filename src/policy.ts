@@ -11,6 +11,8 @@ import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
+import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
+import type { ContextEconomicsProfile } from './economics-profile.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -62,6 +64,54 @@ export interface ResolvedEpistemicFoldConfig {
   readonly semanticMode: 'none' | 'rationale'
   /** Resolved bundle directory. */
   readonly bundleRoot: string
+  /**
+   * Leaf admission policy (R2-B).
+   *
+   * `legacy` — admit every structurally legal, balanced, past-frontier span
+   * (the R0/R1 behavior).
+   * `economic` — additionally require that the fold actually reclaims enough
+   * to be worth its checkpoint, and FORBID a leaf entirely once the frozen
+   * prefix alone is over threshold (a leaf then cannot restore headroom; it
+   * only appends another checkpoint to a prefix that already exceeds it).
+   */
+  readonly leafAdmission: LeafAdmissionMode
+  /** Minimum net reclaim in tokens for an economic leaf fold. */
+  readonly minReclaimTokens: number
+  /** Minimum Marginal Reclaim Ratio (`reclaim / span`) for an economic fold. */
+  readonly minReclaimRatio: number
+  /** Provider-aware rebase policy (R2-C). */
+  readonly rootPolicy: ResolvedEconomicsPolicy
+}
+
+/** Leaf admission policy mode (R2-B). */
+export type LeafAdmissionMode = 'legacy' | 'economic'
+
+/**
+ * Root rebase decision mode (R2-C).
+ *
+ * `legacy` — recommend a rebase when the frozen prefix exceeds a fixed token
+ * budget. A heuristic that cannot express the thing that matters: a rebase is
+ * only worth its cost if the prefix it removes will be carried for enough
+ * FURTHER requests to pay it back, and warm tokens are far cheaper on some
+ * models than others.
+ *
+ * `economics` — decide with the amortized break-even horizon
+ * (`H* = C_root / (ΔF · C_warm)`) under the routed model's own economics
+ * profile. No provider branch: the decision reads the profile's numbers.
+ */
+export type RootPolicyMode = 'legacy' | 'economics'
+
+/** Resolved economics policy face for provider-aware rebasing (R2-C). */
+export interface ResolvedEconomicsPolicy {
+  readonly mode: RootPolicyMode
+  /** Candidate profiles, selected by routed provider/model. */
+  readonly profiles: readonly ContextEconomicsProfile[]
+  /** Measured cache realization `h`; defaults to 1 when unmeasured. */
+  readonly realizationRate: number
+  /** Rebase when the break-even horizon is at most this many requests. */
+  readonly paybackHorizonRequests: number
+  /** One-time cost charged to a rebase, in profile currency. */
+  readonly compactionCost: number
 }
 
 const DEFAULT_THRESHOLD_RATIO = 0.8
@@ -70,6 +120,25 @@ const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
 const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
+const DEFAULT_LEAF_ADMISSION: LeafAdmissionMode = 'legacy'
+/**
+ * Default reclaim floors. `minReclaimTokens` is set above the ~530-token
+ * framing preamble a checkpoint costs, so a fold must reclaim more than the
+ * overhead it creates. `minReclaimRatio` rejects folds whose span is nearly
+ * the size of the checkpoint it produces (docs/11 §7's 11.8% example).
+ */
+const DEFAULT_MIN_RECLAIM_TOKENS = 600
+const DEFAULT_MIN_RECLAIM_RATIO = 0.25
+const DEFAULT_ROOT_POLICY: RootPolicyMode = 'legacy'
+const DEFAULT_REALIZATION_RATE = 1
+/**
+ * Payback horizon for `economics` mode. 200 requests is deliberately generous
+ * in R2-C's first cut: it admits a rebase whose saving is small per request,
+ * which is the correct default while the policy is opt-in and being measured.
+ * A production default must be justified by the R2-E matrix, not assumed here.
+ */
+const DEFAULT_PAYBACK_HORIZON = 200
+const DEFAULT_COMPACTION_COST = 0
 
 /** Public plugin configuration: Basic's compaction policy plus EF's budget. */
 export interface EpistemicFoldConfig extends BasicCompactionConfig {
@@ -82,6 +151,20 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * profile's persistence root; the default keeps the standalone/dev layout.
    */
   bundleRoot?: string
+  /** Leaf admission policy (R2-B); default `legacy` until the R2 gates pass. */
+  leafAdmission?: LeafAdmissionMode
+  /** Minimum net reclaim in tokens for an economic leaf fold. */
+  minReclaimTokens?: number
+  /** Minimum Marginal Reclaim Ratio for an economic leaf fold. */
+  minReclaimRatio?: number
+  /** Provider-aware rebase policy (R2-C); default `legacy`. */
+  rootPolicy?: RootPolicyMode
+  /** Candidate economics profiles for `economics` mode; defaults to the shipped set. */
+  economicsProfiles?: readonly ContextEconomicsProfile[]
+  /** Measured cache realization for `economics` mode; default 1 (fully realized). */
+  cacheRealizationRate?: number
+  /** Payback horizon for `economics` mode, in requests. */
+  paybackHorizonRequests?: number
 }
 
 /** Resolve and validate the EF-specific policy face of the plugin config. */
@@ -113,6 +196,30 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
   }
   const bundleRoot = config.bundleRoot ?? DEFAULT_BUNDLE_ROOT
+  const leafAdmission = config.leafAdmission ?? DEFAULT_LEAF_ADMISSION
+  if (leafAdmission !== 'legacy' && leafAdmission !== 'economic') {
+    throw new Error('epistemic-fold: leafAdmission must be "legacy" or "economic"')
+  }
+  const minReclaimTokens = config.minReclaimTokens ?? DEFAULT_MIN_RECLAIM_TOKENS
+  if (!Number.isFinite(minReclaimTokens) || minReclaimTokens < 0) {
+    throw new Error('epistemic-fold: minReclaimTokens must be a non-negative number')
+  }
+  const minReclaimRatio = config.minReclaimRatio ?? DEFAULT_MIN_RECLAIM_RATIO
+  if (!Number.isFinite(minReclaimRatio) || minReclaimRatio < 0 || minReclaimRatio > 1) {
+    throw new Error('epistemic-fold: minReclaimRatio must be a number in [0, 1]')
+  }
+  const rootPolicy = config.rootPolicy ?? DEFAULT_ROOT_POLICY
+  if (rootPolicy !== 'legacy' && rootPolicy !== 'economics') {
+    throw new Error('epistemic-fold: rootPolicy must be "legacy" or "economics"')
+  }
+  const realizationRate = config.cacheRealizationRate ?? DEFAULT_REALIZATION_RATE
+  if (!Number.isFinite(realizationRate) || realizationRate < 0 || realizationRate > 1) {
+    throw new Error('epistemic-fold: cacheRealizationRate must be a number in [0, 1]')
+  }
+  const paybackHorizonRequests = config.paybackHorizonRequests ?? DEFAULT_PAYBACK_HORIZON
+  if (!Number.isFinite(paybackHorizonRequests) || paybackHorizonRequests < 0) {
+    throw new Error('epistemic-fold: paybackHorizonRequests must be a non-negative number')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -122,6 +229,16 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     frozenCheckpointTokenBudget,
     semanticMode,
     bundleRoot,
+    leafAdmission,
+    minReclaimTokens,
+    minReclaimRatio,
+    rootPolicy: {
+      mode: rootPolicy,
+      profiles: config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
+      realizationRate,
+      paybackHorizonRequests,
+      compactionCost: DEFAULT_COMPACTION_COST,
+    },
   }
 }
 

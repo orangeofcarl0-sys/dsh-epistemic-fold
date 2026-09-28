@@ -13,11 +13,11 @@ Baseline: R0-C at `12a5842`. This report covers R1-A (measurement), R1-B
 
 | Workload | EF folds | EF total | Basic folds | Basic total | Dominant source | Share |
 |---|---:|---:|---:|---:|---|---:|
-| W1-narrative-heavy | 50 | 236118 | 21 | 73689 | `checkpoint-framing` | 74.4% |
-| W2-state-rich | 8 | 107249 | 5 | 83396 | `raw-assistant` | 28.4% |
-| W3-tool-heavy | 63 | 385141 | 63 | 87340 | `checkpoint-framing` | 69.1% |
-| W4-recall-heavy | 17 | 111359 | 8 | 72696 | `checkpoint-framing` | 44.7% |
-| W5-multi-agent | 59 | 328071 | 32 | 89531 | `checkpoint-framing` | 71.6% |
+| W1-narrative-heavy | 50 | 218828 | 21 | 73689 | `checkpoint-framing` | 80.2% |
+| W2-state-rich | 8 | 105575 | 5 | 83396 | `raw-assistant` | 28.9% |
+| W3-tool-heavy | 63 | 358933 | 63 | 87340 | `checkpoint-framing` | 74.1% |
+| W4-recall-heavy | 15 | 106417 | 8 | 72696 | `checkpoint-framing` | 44.9% |
+| W5-multi-agent | 59 | 304931 | 32 | 89531 | `checkpoint-framing` | 77.1% |
 
 Attribution reconciles exactly with the metered prompt total on every arm
 (asserted before this file is written). Shares are of total prompt tokens.
@@ -30,12 +30,11 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| checkpoint-framing | 175560 | 74.4% |
-| raw-assistant | 28502 | 12.1% |
-| checkpoint-leaf-state | 17290 | 7.3% |
-| checkpoint-leaf-rationale | 7980 | 3.4% |
-| raw-user | 6786 | 2.9% |
-| **total** | **236118** | 100% |
+| checkpoint-framing | 175560 | 80.2% |
+| raw-assistant | 28502 | 13.0% |
+| checkpoint-leaf-rationale | 7980 | 3.6% |
+| raw-user | 6786 | 3.1% |
+| **total** | **218828** | 100% |
 
 #### W2-state-rich
 
@@ -43,12 +42,12 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| raw-assistant | 30490 | 28.4% |
-| checkpoint-leaf-state | 25611 | 23.9% |
-| raw-user | 25480 | 23.8% |
-| checkpoint-framing | 24552 | 22.9% |
-| checkpoint-leaf-rationale | 1116 | 1.0% |
-| **total** | **107249** | 100% |
+| raw-assistant | 30490 | 28.9% |
+| raw-user | 25480 | 24.1% |
+| checkpoint-framing | 24366 | 23.1% |
+| checkpoint-leaf-state | 24123 | 22.8% |
+| checkpoint-leaf-rationale | 1116 | 1.1% |
+| **total** | **105575** | 100% |
 
 #### W3-tool-heavy
 
@@ -56,13 +55,12 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| checkpoint-framing | 266112 | 69.1% |
-| raw-tool-result | 78249 | 20.3% |
-| checkpoint-leaf-state | 26208 | 6.8% |
-| checkpoint-leaf-rationale | 12096 | 3.1% |
-| raw-assistant | 1987 | 0.5% |
+| checkpoint-framing | 266112 | 74.1% |
+| raw-tool-result | 78249 | 21.8% |
+| checkpoint-leaf-rationale | 12096 | 3.4% |
+| raw-assistant | 1987 | 0.6% |
 | raw-user | 489 | 0.1% |
-| **total** | **385141** | 100% |
+| **total** | **358933** | 100% |
 
 #### W4-recall-heavy
 
@@ -70,13 +68,12 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| checkpoint-framing | 49764 | 44.7% |
-| recall | 27171 | 24.4% |
-| raw-assistant | 15617 | 14.0% |
-| raw-user | 11644 | 10.5% |
-| checkpoint-leaf-state | 4901 | 4.4% |
-| checkpoint-leaf-rationale | 2262 | 2.0% |
-| **total** | **111359** | 100% |
+| checkpoint-framing | 47784 | 44.9% |
+| recall | 28329 | 26.6% |
+| raw-assistant | 15937 | 15.0% |
+| raw-user | 12195 | 11.5% |
+| checkpoint-leaf-rationale | 2172 | 2.0% |
+| **total** | **106417** | 100% |
 
 #### W5-multi-agent
 
@@ -84,13 +81,12 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| checkpoint-framing | 234960 | 71.6% |
-| raw-tool-result | 56569 | 17.2% |
-| checkpoint-leaf-state | 23140 | 7.1% |
-| checkpoint-leaf-rationale | 10680 | 3.3% |
-| raw-assistant | 2101 | 0.6% |
+| checkpoint-framing | 234960 | 77.1% |
+| raw-tool-result | 56569 | 18.6% |
+| checkpoint-leaf-rationale | 10680 | 3.5% |
+| raw-assistant | 2101 | 0.7% |
 | raw-user | 621 | 0.2% |
-| **total** | **328071** | 100% |
+| **total** | **304931** | 100% |
 
 ## 2. Regime sensitivity: the dominant cost is not a constant
 
@@ -99,11 +95,11 @@ number quoted without its regime would be a threshold artifact.
 
 | Workload | Aggressive folds | framing | raw history | Realistic folds | framing | raw history |
 |---|---:|---:|---:|---:|---:|---:|
-| W1-narrative-heavy | 50 | 74.4% | 14.9% | 4 | 5.2% | 94.0% |
-| W2-state-rich | 8 | 22.9% | 52.2% | 1 | 0.6% | 98.8% |
-| W3-tool-heavy | 63 | 69.1% | 21.0% | 9 | 10.5% | 88.0% |
-| W4-recall-heavy | 17 | 44.7% | 24.5% | 2 | 1.4% | 54.5% |
-| W5-multi-agent | 59 | 71.6% | 18.1% | 6 | 7.2% | 91.7% |
+| W1-narrative-heavy | 50 | 80.2% | 16.1% | 4 | 5.2% | 94.5% |
+| W2-state-rich | 8 | 23.1% | 53.0% | 1 | 0.6% | 98.8% |
+| W3-tool-heavy | 63 | 74.1% | 22.5% | 9 | 10.6% | 88.9% |
+| W4-recall-heavy | 15 | 44.9% | 26.4% | 2 | 1.4% | 54.5% |
+| W5-multi-agent | 59 | 77.1% | 19.4% | 6 | 7.3% | 92.4% |
 
 **Structural finding.** The frozen prefix is monotonically non-decreasing
 (EF may never re-fold a frozen checkpoint, plan §13). Once it alone exceeds
@@ -123,11 +119,11 @@ idealization. These are UPPER BOUNDS, not achievements.
 
 | Candidate | W1 | W2 | W3 | W4 | W5 | Risk | Kind |
 |---|---:|---:|---:|---:|---:|---|---|
-| E-delta-oracle | 7.0% | 16.6% | 6.6% | 3.7% | 6.8% | medium | new-mechanism |
-| E-M1-oracle | 0.0% | 0.0% | 19.5% | 0.0% | 16.6% | high | new-mechanism |
-| E-M5-oracle | 63.6% | 33.4% | 59.3% | 37.5% | 61.4% | high | new-mechanism |
-| E-adaptive-root-oracle | 77.9% | 23.2% | 74.3% | 39.3% | 76.6% | low | policy-change |
-| E-framing-oracle | 70.8% | 15.9% | 66.9% | 37.6% | 69.1% | low | policy-change |
+| E-delta-oracle | 0.0% | 15.9% | 0.0% | 0.0% | 0.0% | medium | new-mechanism |
+| E-M1-oracle | 0.0% | 0.0% | 20.9% | 0.0% | 17.8% | high | new-mechanism |
+| E-M5-oracle | 62.8% | 32.8% | 58.1% | 34.4% | 60.3% | high | new-mechanism |
+| E-adaptive-root-oracle | 80.0% | 22.8% | 75.1% | 39.5% | 77.7% | low | policy-change |
+| E-framing-oracle | 76.4% | 16.0% | 71.8% | 37.5% | 74.3% | low | policy-change |
 
 ### Idealization assumptions
 
@@ -192,11 +188,11 @@ Dominated (some frontier policy is at least as good everywhere):
 
 | Policy | Effective cost | Peak context | Task success |
 |---|---:|---:|---:|
-| W1-narrative-heavy EF | 236118.0000 | 7896 | 100.0% |
-| W2-state-rich EF | 107249.0000 | 2398 | 100.0% |
-| W3-tool-heavy EF | 385141.0000 | 10757 | 100.0% |
-| W4-recall-heavy EF | 111359.0000 | 3285 | 100.0% |
-| W5-multi-agent EF | 328071.0000 | 9766 | 100.0% |
+| W1-narrative-heavy EF | 218828.0000 | 7246 | 100.0% |
+| W2-state-rich EF | 105575.0000 | 2368 | 100.0% |
+| W3-tool-heavy EF | 358933.0000 | 9938 | 100.0% |
+| W4-recall-heavy EF | 106417.0000 | 2680 | 100.0% |
+| W5-multi-agent EF | 304931.0000 | 8999 | 100.0% |
 | W2-state-rich Basic | 83396.0000 | 2333 | 100.0% |
 | W3-tool-heavy Basic | 87340.0000 | 2201 | 100.0% |
 
