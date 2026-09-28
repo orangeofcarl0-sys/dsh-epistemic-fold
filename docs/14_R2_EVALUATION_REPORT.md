@@ -126,12 +126,49 @@ Quality is **not measurable in the keyless tier**, so BQR is held at 1.0
 throughout this matrix. That is not a measurement of EF's quality; it is the
 statement that this tier cannot produce one.
 
-The only behavioral evidence in the project is R1's live tier: **EF 32/32 vs
-Basic 31/32** over 64 paired trials — a null result. So the honest reading of
-the quality half of R2's gate is: *no evidence of degradation*, not *evidence
-of parity*. R2 changed the fold policy substantially (admission, rebase
-cadence, surface format), and **none of those changes were re-validated
-behaviorally.** That is the largest open risk in this report.
+### The live re-validation that was run (added after §5 was first written)
+
+The gap flagged below was partially closed with a live suite
+(`tests/r2-live-behavior.spec.ts`, opt-in, `npm run eval:r2-live`). It compares
+three arms — Basic, EF legacy, and the full R2 policy — on identical scenarios
+with machine-scored probes, at a far deeper compression ratio than R1 tested:
+**~50K tokens of history folded into a single checkpoint of 220–666 tokens.**
+
+| Arm | Probes passed | Checkpoint tokens |
+|---|---:|---:|
+| B1 Basic | 15/15 (100%) | 572 |
+| E0 EF legacy | 15/15 (100%) | 574 |
+| **E2 EF R2 policy** | **15/15 (100%)** | **220** |
+
+**Result: no behavioral regression from the R2 policy.** It answered every
+probe correctly while producing a checkpoint 2.6× smaller than legacy EF's
+(220 vs 574 tokens) and 2.6× smaller than Basic's — the R2-D diet and the
+admission policy visible in real data.
+
+Two caveats, both material:
+
+1. **This is one deep fold, not a chain of folds and rebases.** The harness
+   builds a session and drives the pressure path over it, so the first call
+   folds everything foldable and later calls find nothing to do. A genuine
+   multi-fold/multi-rebase test needs incremental growth with a fold between
+   turns. **The rebase path specifically remains behaviorally unvalidated.**
+2. **The sample is small** (5 replicates × 3 facts × 3 arms). It rules out gross
+   regression; it cannot establish parity with a confidence interval.
+
+The suite carries a vacuity guard that FAILS when no checkpoint lands. That
+guard earned its place immediately: the first version of this suite reported
+100% for all three arms while folding nothing at all, because the adapter's own
+reported window (131K) overrode the harness setting and the pressure threshold
+was never reached.
+
+### The remaining honest reading
+
+The only other behavioral evidence in the project is R1's live tier: **EF 32/32
+vs Basic 31/32** over 64 paired trials — also a null result. So the quality half
+of R2's gate is: *no evidence of degradation, at two compression depths*, not
+*evidence of parity*. The largest open risk is now narrower than it was — the
+R2 surface format and admission policy have been exercised against a real model
+— but the rebase policy has not.
 
 ---
 
@@ -155,9 +192,10 @@ production default was flipped**, because the exit gate did not pass.
 |---|---|
 | Fold-every-step regime eliminated | ✅ folds 50 → 24, loop broken |
 | Peak context reduced | ✅ 7,896 → 2,489 (−68%) |
-| Checkpoint body dieted | ✅ −44% per checkpoint |
+| Checkpoint body dieted | ✅ −44% per checkpoint (220 vs 574 tokens live) |
+| R2 policy behaviorally re-validated | ✅ no regression at one deep fold (15/15 vs 15/15) |
 | **BCR < 1 (the R2 objective)** | ❌ **not achieved (1.149 on the best profile)** |
-| Quality re-validated after policy change | ❌ **not done — largest open risk** |
+| Rebase path behaviorally validated | ❌ **not done — needs incremental multi-fold harness** |
 | Production default flip | ❌ blocked on BCR < 1 |
 
 R2 is **not complete**. The fold loop is fixed and the cost is nearly halved
