@@ -22,15 +22,18 @@ export type AuthoritativeEventKind =
   | 'system/message'
   | 'tool/result'
   | 'assistant/message'
-  | 'ef/anchor'
 
-/** The domains one raw event kind can ground. */
+/**
+ * The domains one raw event kind can ground. `ef/anchor` events are
+ * deliberately ABSENT: they are derived records, never raw authority roots —
+ * otherwise a derived anchor could cite another derived anchor and launder
+ * authority (derived authority must terminate at raw roots, R0-A).
+ */
 const EVENT_DOMAINS: Record<AuthoritativeEventKind, readonly AuthorityDomain[]> = {
-  'user/message': ['normative'],
+  'user/message': ['normative', 'decision'],
   'system/message': ['normative'],
   'tool/result': ['empirical', 'procedural'],
   'assistant/message': ['hypothesis', 'decision'],
-  'ef/anchor': ['normative', 'empirical', 'procedural', 'decision', 'hypothesis'],
 }
 
 /**

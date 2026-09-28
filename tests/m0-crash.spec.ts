@@ -42,7 +42,7 @@ describe('E. failure tests', () => {
     const result = await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
     expect(result.shadowedSeqs).toHaveLength(4)
 
-    const bundle = await store.verify(checkpointIdOf(session))
+    const bundle = await store.verify(session.id, checkpointIdOf(session))
     expect(bundle.status).toBe('verified')
     if (bundle.status === 'verified') {
       expect(bundle.bundle.semantic).toBeUndefined()
@@ -52,7 +52,7 @@ describe('E. failure tests', () => {
     const end = lastCompactionEnd(session)
     expect(end?.error).toBeUndefined()
     // Recall serves the fallback summary.
-    const recalled = await recall({ store, checkpointId: checkpointIdOf(session), depth: 'summary' })
+    const recalled = await recall({ store, sessionId: session.id, checkpointId: checkpointIdOf(session), depth: 'summary' })
     expect(recalled?.text).toContain('Exact archived model history is recoverable')
   })
 
@@ -63,7 +63,7 @@ describe('E. failure tests', () => {
 
     const result = await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
     expect(result.shadowedSeqs).toHaveLength(4)
-    const bundle = await store.verify(checkpointIdOf(session))
+    const bundle = await store.verify(session.id, checkpointIdOf(session))
     if (bundle.status === 'verified') {
       expect(bundle.bundle.semantic).toBeUndefined()
     }
@@ -112,7 +112,7 @@ describe('E. failure tests', () => {
     // Exactly one committed checkpoint with an exactly verifying bundle.
     const summary = lastCompactionSummary(session)
     expect(summary).toBeDefined()
-    const verification = await store.verify(checkpointIdOf(session))
+    const verification = await store.verify(session.id, checkpointIdOf(session))
     expect(verification.status).toBe('verified')
   })
 })
@@ -147,7 +147,7 @@ describe('F. crash-point tests', () => {
 
     const bundles = await store.list(session.id)
     expect(bundles).toHaveLength(1)
-    expect((await store.verify(bundles[0]!.checkpointId)).status).toBe('verified')
+    expect((await store.verify(session.id, bundles[0]!.checkpointId)).status).toBe('verified')
     expect([...session.surface.nodes]).toEqual(nodes)
   })
 
@@ -166,7 +166,7 @@ describe('F. crash-point tests', () => {
     const nodesAfter = [...session.surface.nodes]
     const retry = await engine.compactRegion(nodesAfter[0]!, nodesAfter[3]!, foldAgent(session), SIGNAL)
     expect(retry.shadowedSeqs).toHaveLength(4)
-    expect((await real.verify(checkpointIdOf(session))).status).toBe('verified')
+    expect((await real.verify(session.id, checkpointIdOf(session))).status).toBe('verified')
   })
 
   it('T24: replacement committed — end event recorded, bundle verifies, recall exact', async () => {
@@ -178,9 +178,9 @@ describe('F. crash-point tests', () => {
     const end = lastCompactionEnd(session)
     expect(end).toBeDefined()
     expect(end?.error).toBeUndefined()
-    const verification = await store.verify(checkpointIdOf(session))
+    const verification = await store.verify(session.id, checkpointIdOf(session))
     expect(verification.status).toBe('verified')
-    const exact = await recall({ store, checkpointId: checkpointIdOf(session), depth: 'exact', limit: 100 })
+    const exact = await recall({ store, sessionId: session.id, checkpointId: checkpointIdOf(session), depth: 'exact', limit: 100 })
     const expected = surfaceMessages(session, nodes.slice(0, 4))
     expect(canonicalHash(exact?.page?.messages)).toBe(canonicalHash(expected))
   })

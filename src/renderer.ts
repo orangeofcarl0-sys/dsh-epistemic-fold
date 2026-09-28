@@ -8,6 +8,7 @@
  * @module dsh-epistemic-fold/renderer
  */
 
+import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { stateKeyText } from './state.ts'
 import type { Anchor, FoldCurrentState } from './state.ts'
 
@@ -15,6 +16,56 @@ function anchorLine(anchor: Anchor): string {
   const key = anchor.stateKey === undefined ? '' : ` ${stateKeyText(anchor.stateKey)}`
   const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
   return `- [${anchor.kind}${key}] ${value} (${anchor.authority})`
+}
+
+/**
+ * The disjoint checkpoint presentation (R0-A): every anchor appears in
+ * EXACTLY ONE section, deduplicated by id, so the model never sees the same
+ * fact listed twice under different headings.
+ */
+export interface CheckpointPresentation {
+  /** Objective + active constraints + active heads (excluding failures). */
+  readonly current: Anchor[]
+  /** Evidence anchors only. */
+  readonly evidence: Anchor[]
+  /** Open failures and obligations only. */
+  readonly open: Anchor[]
+}
+
+export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresentation {
+  const seen = new Set<string>()
+  const current: Anchor[] = []
+  const evidence: Anchor[] = []
+  const open: Anchor[] = []
+  const take = (anchor: Anchor | undefined): void => {
+    if (anchor === undefined || seen.has(anchor.id)) return
+    seen.add(anchor.id)
+    current.push(anchor)
+  }
+  take(state.objective)
+  for (const anchor of Object.values(state.stateHeads)) {
+    if (anchor.lifecycle !== 'active' || anchor.kind === 'failure') continue
+    take(anchor)
+  }
+  for (const anchor of Object.values(state.constraints)) {
+    if (anchor.lifecycle === 'active') take(anchor)
+  }
+  for (const anchor of Object.values(state.evidence)) {
+    if (seen.has(anchor.id)) continue
+    seen.add(anchor.id)
+    evidence.push(anchor)
+  }
+  for (const anchor of Object.values(state.openFailures)) {
+    if (seen.has(anchor.id)) continue
+    seen.add(anchor.id)
+    open.push(anchor)
+  }
+  for (const anchor of Object.values(state.openObligations)) {
+    if (seen.has(anchor.id)) continue
+    seen.add(anchor.id)
+    open.push(anchor)
+  }
+  return { current, evidence, open }
 }
 
 /**
@@ -29,31 +80,33 @@ export function renderStructuredCheckpoint(
   checkpointId: string,
   rationale?: string,
 ): string {
-  const lines: string[] = [`[EF leaf checkpoint ${checkpointId} · state]`, '', 'Current']
+  const presentation = projectForCheckpoint(state)
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode: 'leaf' }), '', 'Current']
 
-  if (state.objective !== undefined) lines.push(anchorLine(state.objective))
-  const heads = Object.values(state.stateHeads)
-  for (const anchor of heads) {
-    if (anchor.kind === 'failure') continue
+  if (presentation.current.length === 0) lines.push('- (none)')
+  for (const anchor of presentation.current) {
+    if (anchor.kind === 'objective') {
+      lines.push(anchorLine(anchor))
+      continue
+    }
     lines.push(anchorLine(anchor))
-  }
-  for (const anchor of Object.values(state.constraints)) {
-    if (anchor.lifecycle === 'active') lines.push(anchorLine(anchor))
   }
 
   lines.push('', 'Evidence')
-  const evidence = Object.values(state.evidence)
-  if (evidence.length === 0) lines.push('- (none)')
-  for (const anchor of evidence) lines.push(anchorLine(anchor))
+  if (presentation.evidence.length === 0) lines.push('- (none)')
+  for (const anchor of presentation.evidence) lines.push(anchorLine(anchor))
 
   lines.push('', 'Open')
-  const failures = Object.values(state.openFailures)
-  const obligations = Object.values(state.openObligations)
-  if (failures.length === 0 && obligations.length === 0) lines.push('- (none)')
-  for (const anchor of failures) {
-    lines.push(`- [failure] ${anchor.id} (${anchor.failureState ?? 'open'})`)
+  if (presentation.open.length === 0) {
+    lines.push('- (none)')
   }
-  for (const anchor of obligations) lines.push(anchorLine(anchor))
+  for (const anchor of presentation.open) {
+    if (anchor.kind === 'failure') {
+      lines.push(`- [failure] ${anchor.id} (${anchor.failureState ?? 'open'})`)
+      continue
+    }
+    lines.push(anchorLine(anchor))
+  }
 
   lines.push('', 'Rationale')
   if (rationale === undefined || rationale.trim().length === 0) {

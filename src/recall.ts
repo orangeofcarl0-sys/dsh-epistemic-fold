@@ -9,6 +9,7 @@
 
 import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionId } from '@deepseek-ai/dsh-session'
+import { normalizeCheckpointRef } from './checkpoint-marker.ts'
 import type { FoldBundleStore, RecallPage } from './types.ts'
 
 /** Maximum messages one exact page may return. */
@@ -35,14 +36,17 @@ export interface RecallResult {
  */
 export async function recall(options: {
   store: FoldBundleStore
+  /** The session requesting recall — bundles outside it read as absent. */
+  sessionId: SessionId
   checkpointId: string
   depth?: RecallDepth
   offset?: number
   limit?: number
 }): Promise<RecallResult | null> {
-  const { store, checkpointId } = options
+  const { store, sessionId } = options
+  const checkpointId = normalizeCheckpointRef(options.checkpointId)
   const depth = options.depth ?? 'summary'
-  const verification = await store.verify(checkpointId)
+  const verification = await store.verify(sessionId, checkpointId)
   if (verification.status === 'missing') {
     return {
       checkpointId,
@@ -111,7 +115,7 @@ export async function search(options: {
   const bundles = await options.store.list(options.sessionId)
   const hits: SearchHit[] = []
   for (const descriptor of bundles) {
-    const bundle = await options.store.read(descriptor.checkpointId)
+    const bundle = await options.store.read(options.sessionId, descriptor.checkpointId)
     if (bundle === null) continue
     if (await matches(bundle, query)) {
       hits.push({
@@ -128,7 +132,7 @@ export async function search(options: {
 
 /** M0 match rule: id equality or case-insensitive substring over text faces. */
 async function matches(bundle: { checkpointId: string; rendered: { text: string }; archive: { shadowedMessages: readonly Message[] } }, query: string): Promise<boolean> {
-  if (bundle.checkpointId === query || `cp:${bundle.checkpointId}` === query) return true
+  if (bundle.checkpointId === normalizeCheckpointRef(query)) return true
   const needle = query.toLowerCase()
   if (bundle.rendered.text.toLowerCase().includes(needle)) return true
   for (const message of bundle.archive.shadowedMessages) {

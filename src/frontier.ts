@@ -11,8 +11,9 @@
  */
 
 import { isCompactCheckpointSource } from '@deepseek-ai/dsh-compaction'
-import { SessionSeq, type Session, type SessionId } from '@deepseek-ai/dsh-session'
 import type { FoldMode } from './types.ts'
+import { SessionSeq, type Session, type SessionId } from '@deepseek-ai/dsh-session'
+import { parseCheckpointMarker } from './checkpoint-marker.ts'
 
 /** Persistent identity of the frontier (plan §10); re-locatable, not a position. */
 export interface FrontierRef {
@@ -41,16 +42,22 @@ export interface FoldFrontier {
    * but never the system-head node and never before position 0.
    */
   readonly firstOpenPosition: number
+  /**
+   * Hard-invariant input (R0-A): EF checkpoints must form a CONTIGUOUS
+   * frozen prefix — no raw node between two checkpoints, none before the
+   * first one (system head excepted). `false` means the surface shape is
+   * FRONTIER_INCONSISTENT and leaf folds must refuse to proceed.
+   */
+  readonly frozenPrefixContiguous: boolean
   /** Every EF checkpoint on the surface, in surface order. */
   readonly frozen: readonly FrozenCheckpoint[]
 }
 
-const EF_CHECKPOINT_MARKER = /\[EF (leaf|root|emergency) checkpoint ([0-9a-f-]{36})\]/u
-
 /**
  * Whether the message at one surface node is an EF-authored checkpoint, and
- * which fold produced it. Legacy Basic checkpoints (same message source kind,
- * different rendered text) are NOT EF checkpoints: they belong to history EF
+ * which fold produced it. Identity is parsed exclusively through the
+ * checkpoint marker protocol. Legacy Basic checkpoints (same message source
+ * kind, no EF marker) are NOT EF checkpoints: they belong to history EF
  * inherits and never to the frozen EF frontier.
  */
 export function readEfCheckpoint(session: Session, rawSeq: number): { checkpointId: string; mode: FoldMode } | undefined {
@@ -61,11 +68,7 @@ export function readEfCheckpoint(session: Session, rawSeq: number): { checkpoint
   const text = message.content
     .map(block => block.type === 'text' ? block.text : '')
     .join('\n')
-  const match = EF_CHECKPOINT_MARKER.exec(text)
-  if (match === null) return undefined
-  const mode = match[1] as FoldMode
-  const checkpointId = match[2]!
-  return { checkpointId, mode }
+  return parseCheckpointMarker(text)
 }
 
 /**
@@ -90,12 +93,20 @@ export function locateFoldFrontier(session: Session): FoldFrontier {
   const firstOpenPosition = last === undefined
     ? (systemHeadAtZero ? 1 : 0)
     : Math.max(last.position + 1, systemHeadAtZero ? 1 : 0)
+  let frozenPrefixContiguous = true
+  for (const [index, checkpoint] of frozen.entries()) {
+    if (checkpoint.position !== firstOpenPosition - frozen.length + index) {
+      frozenPrefixContiguous = false
+      break
+    }
+  }
   return {
     frozenCount: frozen.length,
     ref: last === undefined
       ? {}
       : { latestFrozenCheckpointId: last.checkpointId, latestFrozenSurfaceSeq: last.seq },
     firstOpenPosition,
+    frozenPrefixContiguous,
     frozen,
   }
 }

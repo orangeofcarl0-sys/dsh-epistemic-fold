@@ -72,15 +72,20 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
       schema: { type: 'json' },
       render: (_args, value) => [textBlock(JSON.stringify(value, null, 2))],
     },
-    async execute(args) {
+    async execute(args, exec) {
       const { ref, depth, offset, limit } = args as {
         ref: string
         depth?: RecallDepth
         offset?: number
         limit?: number
       }
+      const agent = exec.agent
+      if (agent === undefined) {
+        throw new Error('context_recall requires an executing agent session')
+      }
       const result = await recall({
         store,
+        sessionId: agent.session.id,
         checkpointId: ref,
         ...(depth === undefined ? {} : { depth }),
         ...(offset === undefined ? {} : { offset }),

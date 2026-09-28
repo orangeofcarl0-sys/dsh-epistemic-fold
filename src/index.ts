@@ -53,7 +53,17 @@ export type {
   StateKey,
 } from './state.ts'
 export { canVerify, groundableDomains, isAuthorityGrounded } from './authority.ts'
-export type { AuthorityDomain } from './authority.ts'
+export type { AuthorityDomain, AuthoritativeEventKind } from './authority.ts'
+export { createAnchorService } from './anchor-service.ts'
+export type { AnchorDraft, AnchorService } from './anchor-service.ts'
+export {
+  encodeCheckpointMarker,
+  parseCheckpointMarker,
+  normalizeCheckpointRef,
+  displayCheckpointRef,
+  hasCheckpointMarker,
+} from './checkpoint-marker.ts'
+export type { EfCheckpointMarker } from './checkpoint-marker.ts'
 export { renderStructuredCheckpoint } from './renderer.ts'
 export type {
   BundleDescriptor,

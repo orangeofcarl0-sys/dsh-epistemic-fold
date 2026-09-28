@@ -26,18 +26,19 @@ import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 import {
   buildBundle,
-  frameCheckpoint,
   renderFallbackCheckpoint,
   renderSemanticCheckpoint,
   splitSummarizationInput,
 } from './compiler.ts'
 import { FileBundleStore } from './bundle-store.ts'
-import { hasActiveCompaction } from './frontier.ts'
+import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { renderStructuredCheckpoint } from './renderer.ts'
+import { rationaleOnly } from './rationale.ts'
 import {
+  conversationTarget,
   resolveEfConfig,
   reservedCompletionTokens,
   resolveEfCompactSpec,
@@ -48,9 +49,13 @@ import {
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
+  FoldCommitRecordV1,
   SummarizationInput,
   SummaryResult,
 } from './types.ts'
+
+/** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
+const RATIONALE_MAX_TOKENS = 400
 
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
@@ -83,8 +88,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   ) {
     // Basic validates its config keys strictly; EF-owned fields must be
     // stripped before the super call (they are resolved by resolveEfConfig).
-    const { frozenCheckpointTokenBudget: _ef, ...basicConfig } = config
-    void _ef
+    const { frozenCheckpointTokenBudget: _budget, semanticMode: _mode, ...basicConfig } = config
+    void _budget
+    void _mode
     super(ctx, basicConfig)
     this.efConfig = resolveEfConfig(config)
     this.bundles = options.bundleStore ?? new FileBundleStore('.epistemic-fold/bundles')
@@ -116,6 +122,16 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     agent: Agent,
     signal?: AbortSignal,
   ): Promise<CompactionResult> {
+    // Leaf-fold hard invariant (R0-A): a leaf fold may only compact the open
+    // trajectory PAST the frontier, and the surface must carry a contiguous
+    // frozen prefix. Violations are refused before any candidate exists.
+    const frontier = locateFoldFrontier(agent.session)
+    if (!frontier.frozenPrefixContiguous) {
+      throw new Error('epistemic-fold: FRONTIER_INCONSISTENT — frozen checkpoints do not form a contiguous prefix')
+    }
+    if (agent.session.surface.nodes.indexOf(start) < frontier.firstOpenPosition) {
+      throw new Error('epistemic-fold: leaf_before_frontier — a leaf fold may not compact frozen history')
+    }
     const candidate = createFoldCandidate({
       mode: 'leaf',
       session: agent.session,
@@ -124,7 +140,55 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     })
     this.candidates.prepare(agent.session, candidate)
     try {
-      return await super.compactRegion(start, end, agent, signal)
+      const result = await super.compactRegion(start, end, agent, signal)
+      // The durable result must fold EXACTLY the span the candidate intended.
+      if (result.shadowedSeqs[0] !== start
+        || result.shadowedSeqs[result.shadowedSeqs.length - 1] !== end) {
+        throw new Error(
+          `epistemic-fold: committed shadowed span deviates from the candidate span `
+          + `(${JSON.stringify(result.shadowedSeqs)} vs [${String(start)}, ${String(end)}])`,
+        )
+      }
+      await this.recordCommit(candidate, result)
+      return result
+    } finally {
+      this.candidates.clear(agent.session)
+    }
+  }
+
+  /** Persist the post-commit provenance record for one completed fold. */
+  private async recordCommit(candidate: ReturnType<FoldCandidateRegistry['get']>, result: CompactionResult): Promise<void> {
+    if (candidate === undefined) return
+    const record: FoldCommitRecordV1 = {
+      checkpointId: candidate.checkpointId,
+      sessionId: candidate.sessionId,
+      mode: candidate.mode,
+      compactionId: result.compactionId,
+      shadowedSeqs: [...result.shadowedSeqs],
+      startSeq: result.startSeq,
+      summarySeq: result.summarySeq,
+      endSeq: result.endSeq,
+      committedAt: Date.now(),
+    }
+    await this.bundles.recordCommit(record)
+  }
+
+  /**
+   * Manual idle-session compaction is a ROOT fold by definition (D-004). The
+   * candidate is prepared EXPLICITLY before the inherited transaction runs —
+   * the summarize hook no longer infers the mode from candidate absence —
+   * and the durable result is recorded post-commit.
+   */
+  override async compactNow(
+    ...args: Parameters<BasicCompactionEngine['compactNow']>
+  ): Promise<CompactionResult | null> {
+    const [agent] = args
+    const candidate = createFoldCandidate({ mode: 'root', session: agent.session })
+    this.candidates.prepare(agent.session, candidate)
+    try {
+      const result = await super.compactNow(...args)
+      if (result !== null) await this.recordCommit(candidate, result)
+      return result
     } finally {
       this.candidates.clear(agent.session)
     }
@@ -248,24 +312,33 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   ): Promise<SummaryResult> {
     const session = agent.session
     const candidate = this.candidates.get(session)
-      ?? createFoldCandidate({ mode: 'root', session })
+    if (candidate === undefined) {
+      // Every engine entry point (leaf compactRegion, root compactNow)
+      // prepares its candidate explicitly; reaching the hook without one
+      // means an unsanctioned caller and fails loud.
+      throw new Error('epistemic-fold: summarize reached without a prepared fold candidate')
+    }
     const { contextPrefix, shadowedMessages } = splitSummarizationInput(input)
     const orderedSurfaceSeqs = this.currentSpanSeqs(agent, candidate, contextPrefix.length > 0)
 
     // The fallback SummaryResult that lands if the semantic call fails. The
     // transaction stays a success for Basic: the bundle is durable and the
     // checkpoint is deterministic — never a summary-error recovery.
-    const fallbackText = frameCheckpoint(
-      renderFallbackCheckpoint(candidate, shadowedMessages.length),
-    )
+    // NOTE: Basic's transaction wraps the returned summary blocks with its
+    // own durable checkpoint framing (frameSummary) — the compile hook must
+    // return the UNFRAMED body or the surface lands a double-wrapped text.
+    const fallbackText = renderFallbackCheckpoint(candidate, shadowedMessages.length)
 
-    const publish = async (semanticText: string | undefined): Promise<SummaryResult> => {
+    const publish = async (
+      semanticText: string | undefined,
+      semanticMeta?: SummaryResult,
+    ): Promise<SummaryResult> => {
       // M3a: when the deterministic projection is mounted, the checkpoint is
       // a structured handoff — machine state first, narrative in Rationale.
       const stateText = this.structuredStateText(session, candidate.checkpointId, semanticText)
       const renderedText = stateText ?? (semanticText === undefined
         ? fallbackText
-        : frameCheckpoint(renderSemanticCheckpoint(candidate, semanticText)))
+        : renderSemanticCheckpoint(candidate, semanticText))
       const bundle = buildBundle({
         candidate,
         orderedSurfaceSeqs,
@@ -275,28 +348,81 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       })
       await this.bundles.write(bundle)
       this.lastPublishedBundle = bundle
+      if (semanticMeta !== undefined) {
+        // Forward the REAL call envelope — provider, model, usage, rawOutput —
+        // into compaction/summary (durable auditability, R0-A §18).
+        return {
+          ...semanticMeta,
+          summary: [{ type: 'text', text: renderedText }],
+        }
+      }
       return {
         summary: [{ type: 'text', text: renderedText }],
-        provider: semanticText === undefined ? 'epistemic-fold' : 'epistemic-fold-semantic',
-        model: semanticText === undefined ? 'deterministic-fallback' : 'unspecified',
+        provider: 'epistemic-fold',
+        model: 'deterministic-fallback',
       }
     }
 
-    // Semantic call with deterministic fallback: cancellation propagates,
-    // every other failure lands the bounded fallback checkpoint (D-006).
+    // Semantic ACQUISITION only (may fall back); PUBLISH below runs outside
+    // every catch — a bundle write failure is an archive failure and must
+    // abort the transaction, never silently downgrade to a fallback (T06).
     let semanticText: string | undefined
-    try {
-      const semantic = await super.summarize(input, agent, signal)
-      const text = semantic.summary
-        .map(block => block.type === 'text' ? block.text : '')
-        .join('\n')
-        .trim()
-      if (text.length > 0) semanticText = text
-    } catch (error: unknown) {
-      if (signal?.aborted === true) throw error
-      return await publish(undefined)
+    let semanticMeta: SummaryResult | undefined
+
+    if (this.isProjectionMounted(session)) {
+      if (this.efConfig.semanticMode === 'rationale') {
+        try {
+          const rationale = await rationaleOnly({
+            ctx: this.ctx,
+            target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
+            maxTokens: RATIONALE_MAX_TOKENS,
+            input,
+            agent,
+            signal,
+          })
+          semanticText = rationale.text
+          semanticMeta = {
+            summary: [{ type: 'text', text: rationale.text }],
+            provider: rationale.provider,
+            model: rationale.model,
+            maxTokens: rationale.maxTokens,
+            ...(rationale.usage === undefined ? {} : { usage: rationale.usage }),
+            rawOutput: rationale.rawOutput,
+            llmStreamCall: true,
+          }
+        } catch (error: unknown) {
+          if (signal?.aborted === true) throw error
+          semanticText = undefined
+        }
+      }
+      // semanticMode 'none': no LLM call at all — zero-LLM profile.
+    } else {
+      // Legacy (no projection mounted): Basic's own full-checkpoint summary
+      // IS the checkpoint body — the correct prompt for that shape.
+      try {
+        const semantic = await super.summarize(input, agent, signal)
+        const text = semantic.summary
+          .map(block => block.type === 'text' ? block.text : '')
+          .join('\n')
+          .trim()
+        if (text.length > 0) {
+          semanticText = text
+          semanticMeta = semantic
+        }
+      } catch (error: unknown) {
+        if (signal?.aborted === true) throw error
+        semanticText = undefined
+      }
     }
-    return await publish(semanticText)
+
+    return await publish(semanticText, semanticMeta)
+  }
+
+  /** Whether the EF current-state projection is registered on the context. */
+  private isProjectionMounted(session: Session): boolean {
+    const registry = this.ctx.get('sessionProjections')
+    if (registry === undefined) return false
+    return registry.stateOf(session, EF_CURRENT_STATE_KEY) !== undefined
   }
 
   /**
@@ -308,7 +434,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     if (registry === undefined) return undefined
     if (registry.stateOf(session, EF_CURRENT_STATE_KEY) === undefined) return undefined
     const state = currentFoldState(this.ctx, session)
-    return frameCheckpoint(renderStructuredCheckpoint(state, checkpointId, semanticText))
+    return renderStructuredCheckpoint(state, checkpointId, semanticText)
   }
 
   /**

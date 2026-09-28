@@ -102,3 +102,22 @@ arm=E2-ef   | invalidatedSuffixTotal=1744 | reclaimed= 864 | folds=4
 | P1 | 删除死代码：`CheckpointId` 品牌、`FoldSession` 别名、`compactNow` 纯透传 override、手写 `dirname`、重复的 `readVerified`、`proof-of-life.spec.ts`（覆盖已被 M0 套件包含） | 净删 ~250 行 |
 
 有意保留：`frameCheckpoint`/`CHECKPOINT_PREAMBLE` 与 Basic 的逐字重复（RFC 红线：不依赖兄弟包 `/src` 运行时面）；`recall.search` O(n) 读（M0 规模 by design）。
+
+---
+
+## 9. R0-A — Runtime Integration Closure（外部审计后执行）
+
+外部审计（R0 proposal）核实五项论断全部成立后，R0-A 修复了所有跨 M0/M2/M3a 组合正确性问题：
+
+| 项 | 修复内容 | 证据 |
+|---|---|---|
+| R0-A1 | **checkpoint marker 协议**（`src/checkpoint-marker.ts`）：`[EF checkpoint v1 mode=<m> id=<uuid>]` 单一所有者 encode/parse/normalize；frontier/recall/renderer 全部改走协议。**顺带发现并修复双重 frame bug**（engine 返回已 frame 的 summary，Basic frameSummary 再包一次 → surface 双 `</compacted-summary>`，旧宽松正则掩盖） | r0a marker round-trip + structured-visible-to-frontier 测试 |
+| R0-A2 | **frontier 硬不变量**：leaf fold 必须 `start >= firstOpenPosition`（`leaf_before_frontier` 拒绝）+ frozen prefix 连续性校验（`FRONTIER_INCONSISTENT`）；P04 重写为合法 fixture，新增 P04b | P04/P04b |
+| R0-A3 | **recall 会话隔离**：`FoldBundleStore.read/verify/remove` 会话作用域化，跨 session 读 = fail-closed 缺失；corruption 分类（parse 失败 ≠ missing，wrong-session 显式）；O(#sessions) 的 locate() 扫描删除（O(1) 直达路径）；`cp:` 引用统一 normalize | r0a isolation 测试 |
+| R0-A4 | **FoldCommitRecordV1**：post-commit provenance（compactionId/shadowedSeqs/startSeq/summarySeq/endSeq）与 pre-commit Bundle 身份分离；`compactNow` 显式 root candidate（废除 candidate-absent 隐式约定）；leaf 验证 committed span == candidate span | r0a leaf/root record 测试 |
+| R0-A5 | **authority 运行时门**：`ef/anchor` 不再是自授权 root（derived authority must terminate at raw roots）；`createAnchorService()` 在事件 append 前校验 authority grounding 与 VERIFIED evidence kinds | r0a gate 测试（laundering 拒绝 / narrative verify 拒绝 / tool evidence 接受） |
+| R0-A6 | **disjoint checkpoint presentation**（每 anchor 恰好出现在一个 section，按 id 去重）；**rationale-only semantic compiler**（`semanticMode: 'none' | 'rationale'`，专用 prompt 禁止断言状态/完成/验证，≤400 tokens，zero-LLM profile 支持 benchmark 对照）；**真实 audit metadata**（provider/model/usage/rawOutput/llmStreamCall 转发进 compaction/summary，不再写 epistemic-fold-semantic/unspecified 假值） | r0a zero-LLM + envelope 测试 |
+
+**重构中额外发现并修复的第三个 bug**：bundle write 失败发生在 semantic try 块内会被误判为 semantic 失败 → 静默降级 fallback 并二次 write 成功（flaky-store probe 揪出，T06 全失败才侥幸通过）。修复后 semantic 获取与 publish 严格分离，publish 永不吞错。
+
+测试：**65 passed（7 套件）**，tsc 零错误。

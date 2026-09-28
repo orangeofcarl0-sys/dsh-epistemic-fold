@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { SessionId } from '@deepseek-ai/dsh-session'
 import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
 import { canonicalHash } from '../src/hash.ts'
 import { recall, search } from '../src/recall.ts'
@@ -43,7 +44,7 @@ describe('A. transaction tests', () => {
     const checkpointId = extractCheckpointId(text)
     expect(checkpointId).not.toBeNull()
     // C0.1: committed checkpoint ⇒ bundle exists and verifies.
-    const verification = await store.verify(checkpointId!)
+    const verification = await store.verify(session.id, checkpointId!)
     expect(verification.status).toBe('verified')
     // The bundle remembers the fold identity and the surface span.
     if (verification.status === 'verified') {
@@ -95,7 +96,7 @@ describe('A. transaction tests', () => {
     // no checkpoint landed, so the store may hold an orphan; verify recalls fail.
     const bundles = await store.list(session.id)
     for (const descriptor of bundles) {
-      const verification = await store.verify(descriptor.checkpointId)
+      const verification = await store.verify(session.id, descriptor.checkpointId)
       expect(verification.status).toBe('verified')
     }
   })
@@ -127,7 +128,7 @@ describe('B. bundle/archive tests', () => {
 
     const summary = lastCompactionSummary(session)
     const checkpointId = extractCheckpointId(summaryText((summary!.summary as ContentBlock[])))!
-    const verification = await store.verify(checkpointId)
+    const verification = await store.verify(session.id, checkpointId)
     expect(verification.status).toBe('verified')
     if (verification.status === 'verified') {
       expect(verification.bundle.archive.logicalHash).toBe(canonicalHash(expectedMessages))
@@ -162,7 +163,7 @@ describe('B. bundle/archive tests', () => {
     // ordering means publish precedes every Basic-side failure).
     const bundles = await store.list(session.id)
     expect(bundles.length).toBe(1)
-    const verification = await store.verify(bundles[0]!.checkpointId)
+    const verification = await store.verify(session.id, bundles[0]!.checkpointId)
     expect(verification.status).toBe('verified')
     // Surface unchanged.
     expect([...session.surface.nodes]).toEqual(nodes)
@@ -177,20 +178,20 @@ describe('B. bundle/archive tests', () => {
     const checkpointId = extractCheckpointId(summaryText((summary!.summary as ContentBlock[])))!
 
     // Tamper with the stored archive.
-    const stored = await store.read(checkpointId)
+    const stored = await store.read(session.id, checkpointId)
     expect(stored).not.toBeNull()
     const tampered = {
       ...stored!,
       archive: { ...stored!.archive, shadowedMessages: [{ role: 'user', content: [], source: { kind: 'user' } } as unknown as Message] },
     }
-    await store.remove(checkpointId)
+    await store.remove(session.id, checkpointId)
     const { FileBundleStore: Fresh } = await import('../src/bundle-store.ts')
     const rewritten = new Fresh(store === undefined ? '' : (store as unknown as { root: string }).root)
     await rewritten.write(tampered)
 
-    const verification = await store.verify(checkpointId)
+    const verification = await store.verify(session.id, checkpointId)
     expect(verification.status).toBe('corrupt')
-    const result = await recall({ store, checkpointId, depth: 'exact' })
+    const result = await recall({ store, sessionId: session.id, checkpointId, depth: 'exact' })
     expect(result?.unavailable).toBeDefined()
     expect(result?.page).toBeUndefined()
   })
@@ -204,7 +205,7 @@ describe('C. recall tests', () => {
     await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
     const checkpointId = extractCheckpointId(summaryText(lastCompactionSummary(session)!.summary as ContentBlock[]))!
 
-    const result = await recall({ store, checkpointId, depth: 'summary' })
+    const result = await recall({ store, sessionId: session.id, checkpointId, depth: 'summary' })
     expect(result?.text).toContain('the semantic digest')
     expect(result?.text).toContain(`cp:${checkpointId}`)
   })
@@ -217,7 +218,7 @@ describe('C. recall tests', () => {
     await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
     const checkpointId = extractCheckpointId(summaryText(lastCompactionSummary(session)!.summary as ContentBlock[]))!
 
-    const result = await recall({ store, checkpointId, depth: 'exact', limit: 100 })
+    const result = await recall({ store, sessionId: session.id, checkpointId, depth: 'exact', limit: 100 })
     expect(result?.page?.totalMessages).toBe(expected.length)
     expect(canonicalHash(result?.page?.messages)).toBe(canonicalHash(expected))
   })
@@ -229,11 +230,12 @@ describe('C. recall tests', () => {
     await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
     const checkpointId = extractCheckpointId(summaryText(lastCompactionSummary(session)!.summary as ContentBlock[]))!
 
-    const page1 = await recall({ store, checkpointId, depth: 'exact', limit: 2 })
+    const page1 = await recall({ store, sessionId: session.id, checkpointId, depth: 'exact', limit: 2 })
     expect(page1?.page?.messages.length).toBe(2)
     expect(page1?.page?.nextOffset).toBe(2)
     const page2 = await recall({
       store,
+      sessionId: session.id,
       checkpointId,
       depth: 'exact',
       offset: page1!.page!.nextOffset!,
@@ -247,7 +249,12 @@ describe('C. recall tests', () => {
 
   it('T12: missing bundle degrades explicitly instead of crashing', async () => {
     const harness = await createHarness({})
-    const result = await recall({ store: harness.store, checkpointId: 'no-such-id', depth: 'summary' })
+    const result = await recall({
+      store: harness.store,
+      sessionId: SessionId('no-such-session'),
+      checkpointId: 'no-such-id',
+      depth: 'summary',
+    })
     expect(result?.unavailable).toBe('bundle not found')
   })
 })
@@ -265,9 +272,9 @@ describe('D. lifecycle tests', () => {
     const reopened = new Reopened(root)
     const restoredSession = conversation(4) // shape-compatible surface for derive
     void restoredSession
-    const verification = await reopened.verify(checkpointId)
+    const verification = await reopened.verify(session.id, checkpointId)
     expect(verification.status).toBe('verified')
-    const result = await recall({ store: reopened, checkpointId, depth: 'exact' })
+    const result = await recall({ store: reopened, sessionId: session.id, checkpointId, depth: 'exact' })
     expect(result?.page?.totalMessages).toBe(4)
   })
 
@@ -279,7 +286,7 @@ describe('D. lifecycle tests', () => {
     const summary = lastCompactionSummary(session)
     const checkpointId = extractCheckpointId(summaryText(summary!.summary as ContentBlock[]))!
 
-    const verification = await store.verify(checkpointId)
+    const verification = await store.verify(session.id, checkpointId)
     expect(verification.status).toBe('verified')
     if (verification.status === 'verified') {
       expect(verification.bundle.sessionId).toBe(session.id)
@@ -287,6 +294,11 @@ describe('D. lifecycle tests', () => {
     // A different session's list must not see the other's bundle.
     const other = conversation(2)
     expect(await store.list(other.id)).toHaveLength(0)
+    // R0-A recall isolation: cross-session reads are fail-closed absences.
+    expect(await store.verify(other.id, checkpointId)).toEqual({ status: 'missing' })
+    expect(await store.read(other.id, checkpointId)).toBeNull()
+    const crossRecall = await recall({ store, sessionId: other.id, checkpointId, depth: 'summary' })
+    expect(crossRecall?.unavailable).toBe('bundle not found')
   })
 
   it('T15: EF missing — session still opens and Basic semantics survive', async () => {

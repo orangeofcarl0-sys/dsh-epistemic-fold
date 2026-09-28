@@ -17,6 +17,7 @@ import type {
   BundleWriteResult,
   CheckpointBundleV1,
   FoldBundleStore,
+  FoldCommitRecordV1,
 } from './types.ts'
 
 /** File permission bits for bundle files and their per-session directories. */
@@ -25,6 +26,10 @@ const BUNDLE_DIR_MODE = 0o700
 
 function bundlePath(root: string, sessionId: string, checkpointId: string): string {
   return join(root, sessionId, `bundle-${checkpointId}.json`)
+}
+
+function commitPath(root: string, sessionId: string, checkpointId: string): string {
+  return join(root, sessionId, `commit-${checkpointId}.json`)
 }
 
 /**
@@ -57,17 +62,31 @@ export class FileBundleStore implements FoldBundleStore {
     }
   }
 
-  async read(checkpointId: string): Promise<CheckpointBundleV1 | null> {
-    const descriptor = await this.locate(checkpointId)
-    if (descriptor === undefined) return null
-    return this.readBundle(descriptor.file)
+  async read(sessionId: SessionId, checkpointId: string): Promise<CheckpointBundleV1 | null> {
+    const verification = await this.verify(sessionId, checkpointId)
+    if (verification.status !== 'verified') return null
+    return verification.bundle
   }
 
-  async verify(checkpointId: string): Promise<BundleVerification> {
-    const descriptor = await this.locate(checkpointId)
-    if (descriptor === undefined) return { status: 'missing' }
-    const bundle = await this.readBundle(descriptor.file)
-    if (bundle === null) return { status: 'missing' }
+  async verify(sessionId: SessionId, checkpointId: string): Promise<BundleVerification> {
+    const file = bundlePath(this.root, sessionId, checkpointId)
+    let raw: string
+    try {
+      raw = await readFile(file, 'utf8')
+    } catch {
+      return { status: 'missing' }
+    }
+    let bundle: CheckpointBundleV1
+    try {
+      bundle = JSON.parse(raw) as CheckpointBundleV1
+    } catch {
+      // A present but unparseable file is CORRUPTION, not absence — the two
+      // mean different things in an audit (R0-A).
+      return { status: 'corrupt', reason: 'bundle file is not valid JSON' }
+    }
+    if (bundle.sessionId !== sessionId) {
+      return { status: 'corrupt', reason: 'wrong-session' }
+    }
     if (bundle.checkpointId !== checkpointId) {
       return { status: 'corrupt', reason: 'stored checkpointId does not match the requested id' }
     }
@@ -96,34 +115,37 @@ export class FileBundleStore implements FoldBundleStore {
       const file = join(dir, name)
       const bundle = await this.readBundle(file)
       if (bundle === null) continue
-      descriptors.push(await this.describe(bundle))
+      descriptors.push(await this.describe(bundle, (await stat(file)).size))
     }
     return descriptors.sort((left, right) => left.createdAt - right.createdAt)
   }
 
-  async remove(checkpointId: string): Promise<void> {
-    const descriptor = await this.locate(checkpointId)
-    if (descriptor === undefined) return
-    await rm(descriptor.file, { force: true })
+  async remove(sessionId: SessionId, checkpointId: string): Promise<void> {
+    await rm(bundlePath(this.root, sessionId, checkpointId), { force: true })
   }
 
-  private async locate(checkpointId: string): Promise<{ file: string; sessionId: string } | undefined> {
-    let sessions: string[]
+  /**
+   * Persist the post-commit provenance record next to its bundle. Failure is
+   * reported to the caller but the committed surface replacement stands.
+   */
+  async recordCommit(record: FoldCommitRecordV1): Promise<void> {
+    const target = commitPath(this.root, record.sessionId, record.checkpointId)
+    await mkdir(dirname(target), { recursive: true, mode: BUNDLE_DIR_MODE })
+    await writeFileAtomic(target, canonicalJson(record), { mode: BUNDLE_FILE_MODE, dirMode: BUNDLE_DIR_MODE })
+  }
+
+  async readCommitRecord(sessionId: SessionId, checkpointId: string): Promise<FoldCommitRecordV1 | null> {
+    let raw: string
     try {
-      sessions = await readdir(this.root)
+      raw = await readFile(commitPath(this.root, sessionId, checkpointId), 'utf8')
     } catch {
-      return undefined
+      return null
     }
-    for (const sessionId of sessions) {
-      const file = bundlePath(this.root, sessionId, checkpointId)
-      try {
-        await stat(file)
-        return { file, sessionId }
-      } catch {
-        // Keep scanning the remaining session directories.
-      }
+    try {
+      return JSON.parse(raw) as FoldCommitRecordV1
+    } catch {
+      return null
     }
-    return undefined
   }
 
   /** Read one bundle file; unreadable or unparseable files read as absent. */
@@ -141,9 +163,7 @@ export class FileBundleStore implements FoldBundleStore {
     }
   }
 
-  private async describe(bundle: CheckpointBundleV1): Promise<BundleDescriptor> {
-    const descriptor = await this.locate(bundle.checkpointId)
-    const bytes = descriptor === undefined ? 0 : (await stat(descriptor.file)).size
+  private async describe(bundle: CheckpointBundleV1, bytes: number): Promise<BundleDescriptor> {
     return {
       checkpointId: bundle.checkpointId,
       sessionId: bundle.sessionId,

@@ -119,7 +119,7 @@ export async function createHarness(
   options: {
     contextWindow?: number
     engine?: 'ef' | 'basic'
-    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number }
+    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale' }
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
   } = {},

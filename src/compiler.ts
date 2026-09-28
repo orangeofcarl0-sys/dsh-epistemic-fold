@@ -10,6 +10,7 @@
 import type { CompactionId } from '@deepseek-ai/dsh-compaction'
 import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionSeq } from '@deepseek-ai/dsh-session'
+import { displayCheckpointRef, encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
 import type { CheckpointBundleV1, FoldCandidate } from './types.ts'
 
@@ -38,24 +39,23 @@ export function splitSummarizationInput(input: { readonly messages: readonly Mes
 
 /** Deterministic checkpoint body for a fold whose identity is known. */
 export function renderFallbackCheckpoint(candidate: FoldCandidate, messageCount: number): string {
-  const header = candidate.mode === 'leaf' ? 'EF Leaf' : candidate.mode === 'root' ? 'EF Root' : 'EF Emergency'
   return [
-    `[${header} checkpoint ${candidate.checkpointId}]`,
+    encodeCheckpointMarker(candidate),
     '',
     `- Folded ${messageCount} message(s); semantic summary unavailable.`,
     '- Exact archived model history is recoverable via context_recall.',
-    `- Checkpoint id: cp:${candidate.checkpointId}`,
+    `- Checkpoint id: ${displayCheckpointRef(candidate.checkpointId)}`,
   ].join('\n')
 }
 
 /** Model-written digest text; state never derives from it (D-006). */
 export function renderSemanticCheckpoint(candidate: FoldCandidate, text: string): string {
   return [
-    `[EF ${candidate.mode} checkpoint ${candidate.checkpointId}]`,
+    encodeCheckpointMarker(candidate),
     '',
     text,
     '',
-    `- Checkpoint id: cp:${candidate.checkpointId}`,
+    `- Checkpoint id: ${displayCheckpointRef(candidate.checkpointId)}`,
   ].join('\n')
 }
 

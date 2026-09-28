@@ -97,10 +97,36 @@ export interface BundleDescriptor {
 /** Durable storage for immutable checkpoint bundles. */
 export interface FoldBundleStore {
   write(bundle: CheckpointBundleV1): Promise<BundleWriteResult>
-  read(checkpointId: string): Promise<CheckpointBundleV1 | null>
-  verify(checkpointId: string): Promise<BundleVerification>
+  /**
+   * Session-scoped read (R0-A): bundles are only ever served to the session
+   * that owns them — a cross-session lookup reads as absent, never as data.
+   */
+  read(sessionId: SessionId, checkpointId: string): Promise<CheckpointBundleV1 | null>
+  verify(sessionId: SessionId, checkpointId: string): Promise<BundleVerification>
   list(sessionId: SessionId): Promise<BundleDescriptor[]>
-  remove(checkpointId: string): Promise<void>
+  remove(sessionId: SessionId, checkpointId: string): Promise<void>
+  /** Persist the post-commit provenance record (R0-A). */
+  recordCommit(record: FoldCommitRecordV1): Promise<void>
+  readCommitRecord(sessionId: SessionId, checkpointId: string): Promise<FoldCommitRecordV1 | null>
+}
+
+/**
+ * Post-commit provenance record (R0-A): the DSH mutation facts a compile hook
+ * cannot know before the transaction commits. The Bundle (pre-commit) is the
+ * knowledge/archive object; the CommitRecord (post-commit) is the mutation
+ * provenance object — the two identities never mix.
+ */
+export interface FoldCommitRecordV1 {
+  readonly checkpointId: string
+  readonly sessionId: SessionId
+  readonly mode: FoldMode
+  readonly compactionId: string
+  /** Exact shadowed surface nodes, straight from the durable CompactionResult. */
+  readonly shadowedSeqs: readonly SessionSeq[]
+  readonly startSeq: SessionSeq
+  readonly summarySeq: SessionSeq
+  readonly endSeq: SessionSeq
+  readonly committedAt: number
 }
 
 /** Reconstructs the exact model-visible history a checkpoint replaced. */

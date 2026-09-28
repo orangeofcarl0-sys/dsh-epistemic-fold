@@ -300,7 +300,7 @@ describe('M3a rendering and gates', () => {
     const summaryEvent = session.eventAt((session.seq - 2) as never)
     const state = currentFoldState(ctx, session)
     const rendered = renderStructuredCheckpoint(state, 'test-cp', 'why we folded')
-    expect(rendered).toContain('[EF leaf checkpoint test-cp · state]')
+    expect(rendered).toContain('[EF checkpoint v1 mode=leaf id=test-cp]')
     expect(rendered).toContain('Current')
     expect(rendered).toContain('Evidence')
     expect(rendered).toContain('Open')

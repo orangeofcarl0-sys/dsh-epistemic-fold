@@ -120,7 +120,7 @@ describe('P0x: stable prefix (C2.2, C2.3)', () => {
 
     // The first checkpoint node survived byte-for-byte at position 0.
     expect([...session.surface.nodes][0]).toBe(firstCheckpointNodeSeq)
-    const verification = await store.verify(firstCheckpointId)
+    const verification = await store.verify(session.id, firstCheckpointId)
     expect(verification.status).toBe('verified')
     // Its rendered text is still exactly the original (immutability, C2.3).
     if (verification.status === 'verified') {
@@ -155,30 +155,49 @@ describe('P0x: stable prefix (C2.2, C2.3)', () => {
 
   it('P04: non-monotonic seqs are handled by surface POSITION, not seq magnitude', async () => {
     const { engine } = await createHarness({ text: 'digest' })
-    const session = conversation(8)
+    const session = conversation(6)
     const nodes = [...session.surface.nodes]
 
-    // Fold the LATER span first (positions 4..7), then the EARLIER one
-    // (positions 0..3): the second replacement carries a HIGHER seq but lands
-    // at an EARLIER surface position — and compresses the surface before the
-    // first checkpoint, shifting it from position 4 to position 1.
-    await engine.compactRegion(nodes[4]!, nodes[7]!, foldAgent(session), SIGNAL)
-    const firstCheckpointSeq = [...session.surface.nodes][4]!
-    await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
-    const secondCheckpointSeq = [...session.surface.nodes][0]!
-    expect(secondCheckpointSeq).toBeGreaterThan(firstCheckpointSeq)
+    // One legal leaf fold over the leading span: the replacement checkpoint
+    // carries the HIGHEST seq in the log yet sits at the FIRST surface
+    // position — seq magnitude and surface order diverge by construction.
+    await engine.compactRegion(nodes[0]!, nodes[7]!, foldAgent(session), SIGNAL)
+    const checkpointSeq = [...session.surface.nodes][0]!
+    const remainingSeq = [...session.surface.nodes][1]!
+    expect(checkpointSeq).toBeGreaterThan(remainingSeq)
 
-    // The frontier is the LAST checkpoint by POSITION (1), not by seq —
-    // the newest-folded checkpoint (higher seq) sits at position 0 but the
-    // frozen boundary is where the surface runs out of frozen nodes.
+    // The frontier reads the surface by POSITION: the checkpoint is frozen
+    // at position 0 and the open trajectory starts right after it.
     const frontier = locateFoldFrontier(session)
-    expect(frontier.frozen).toHaveLength(2)
+    expect(frontier.frozen).toHaveLength(1)
     expect(frontier.frozen[0]!.position).toBe(0)
-    expect(frontier.frozen[0]!.seq).toBe(secondCheckpointSeq)
-    expect(frontier.frozen[1]!.position).toBe(1)
-    expect(frontier.frozen[1]!.seq).toBe(firstCheckpointSeq)
-    expect(frontier.ref.latestFrozenSurfaceSeq).toBe(firstCheckpointSeq)
-    expect(frontier.firstOpenPosition).toBe(2)
+    expect(frontier.frozen[0]!.seq).toBe(checkpointSeq)
+    expect(frontier.ref.latestFrozenSurfaceSeq).toBe(checkpointSeq)
+    expect(frontier.firstOpenPosition).toBe(1)
+    expect(frontier.frozenPrefixContiguous).toBe(true)
+
+    // The selector starts at position 1, not at the numerically smaller seq.
+    const { engine: probeEngine, ctx: probeCtx } = await createHarness({ text: 'digest' })
+    void probeEngine
+    const span = selectLeafSpan(session, probeCtx.tokenMeter.measure(session) as never, 0)
+    expect(span!.startIdx).toBe(1)
+  })
+
+  it('P04b: leaf folds that would cross the frontier are REFUSED (hard invariant)', async () => {
+    const { engine } = await createHarness({ text: 'digest' })
+    const session = conversation(6)
+    const nodes = [...session.surface.nodes]
+    await engine.compactRegion(nodes[0]!, nodes[7]!, foldAgent(session), SIGNAL)
+
+    // Frozen history may never be compacted again by a leaf fold.
+    const secondNodes = [...session.surface.nodes]
+    await expect(
+      engine.compactRegion(secondNodes[0]!, secondNodes[1]!, foldAgent(session), SIGNAL),
+    ).rejects.toThrow(/leaf_before_frontier/u)
+
+    // The legal span (past the frontier) still works.
+    const third = await engine.compactRegion(secondNodes[1]!, secondNodes[4]!, foldAgent(session), SIGNAL)
+    expect(third.shadowedSeqs).toHaveLength(4)
   })
 })
 
@@ -194,10 +213,10 @@ describe('P05: manual compaction is a root fold', () => {
     const bundles = await store.list(session.id)
     expect(bundles).toHaveLength(1)
     expect(bundles[0]!.mode).toBe('root')
-    const verification = await store.verify(bundles[0]!.checkpointId)
+    const verification = await store.verify(session.id, bundles[0]!.checkpointId)
     expect(verification.status).toBe('verified')
     if (verification.status === 'verified') {
-      expect(verification.bundle.rendered.text).toContain('[EF root checkpoint')
+      expect(verification.bundle.rendered.text).toContain('[EF checkpoint v1 mode=root id=')
     }
   })
 })
@@ -236,7 +255,7 @@ describe('P06: frozen budget and root rebase', () => {
     expect(second!.shadowedSeqs).not.toContain(first!.summarySeq)
 
     // Both checkpoints verify; the first is byte-stable on the surface.
-    expect((await store.verify(firstCheckpointId)).status).toBe('verified')
+    expect((await store.verify(session.id, firstCheckpointId)).status).toBe('verified')
     const frontier = locateFoldFrontier(session)
     expect(frontier.frozenCount).toBe(2)
     expect(frontier.frozen[0]!.checkpointId).toBe(firstCheckpointId)
@@ -282,7 +301,7 @@ describe('P06: frozen budget and root rebase', () => {
 
     // Old leaf bundles remain recallable after the rebase.
     for (const id of leafIds) {
-      const verification = await store.verify(id)
+      const verification = await store.verify(session.id, id)
       expect(verification.status).toBe('verified')
     }
     // The root bundle exists and is distinct from the leaves.

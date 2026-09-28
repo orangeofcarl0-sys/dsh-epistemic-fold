@@ -21,6 +21,8 @@ export function failingStore(message = 'disk full'): FoldBundleStore {
     verify: real.verify.bind(real),
     list: real.list.bind(real),
     remove: real.remove.bind(real),
+    recordCommit: real.recordCommit.bind(real),
+    readCommitRecord: real.readCommitRecord.bind(real),
   }
 }
 
@@ -41,6 +43,8 @@ export async function flakyStore(firstFailing: number, message = 'disk full'): P
     verify: real.verify.bind(real),
     list: real.list.bind(real),
     remove: real.remove.bind(real),
+    recordCommit: real.recordCommit.bind(real),
+    readCommitRecord: real.readCommitRecord.bind(real),
   }
   return { store, real }
 }

@@ -22,6 +22,20 @@ export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' |
 }
 
 /**
+ * Resolve the auxiliary-call target: the durably routed provider/model when
+ * one exists, otherwise the agent's own routing options.
+ */
+export function conversationTarget(
+  agent: Agent,
+): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
+  const routed = routedTarget(agent.session)
+  if (routed !== undefined) return routed
+  if (agent.options.provider === undefined || agent.options.provider.length === 0
+    || agent.options.model === undefined || agent.options.model.length === 0) return undefined
+  return { provider: agent.options.provider, model: agent.options.model }
+}
+
+/**
  * Output tokens the routed request reserves, charged to the same window as
  * the prompt (mirror of Basic's reservation rule).
  */
@@ -39,17 +53,27 @@ export interface ResolvedEpistemicFoldConfig {
   readonly compactionRetries: number
   /** Frozen-checkpoint budget; 0 disables the rebase advice (plan §15). */
   readonly frozenCheckpointTokenBudget: number
+  /**
+   * Structured-checkpoint semantic face (R0-A): `none` renders purely
+   * deterministically (zero LLM calls); `rationale` makes ONE small
+   * rationale-only auxiliary call. The default full-checkpoint prompt of
+   * Basic is never used for the Rationale slot.
+   */
+  readonly semanticMode: 'none' | 'rationale'
 }
 
 const DEFAULT_THRESHOLD_RATIO = 0.8
 const DEFAULT_RETAIN_RATIO = 0.16
 const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
+const DEFAULT_SEMANTIC_MODE = 'rationale'
 
 /** Public plugin configuration: Basic's compaction policy plus EF's budget. */
 export interface EpistemicFoldConfig extends BasicCompactionConfig {
   /** Advisory budget for the frozen checkpoint prefix (plan §15). */
   frozenCheckpointTokenBudget?: number
+  /** Structured-checkpoint semantic face; default `rationale`. */
+  semanticMode?: 'none' | 'rationale'
 }
 
 /** Resolve and validate the EF-specific policy face of the plugin config. */
@@ -76,6 +100,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (!Number.isInteger(frozenCheckpointTokenBudget) || frozenCheckpointTokenBudget < 0) {
     throw new Error('epistemic-fold: frozenCheckpointTokenBudget must be a non-negative integer')
   }
+  const semanticMode = config.semanticMode ?? DEFAULT_SEMANTIC_MODE
+  if (semanticMode !== 'none' && semanticMode !== 'rationale') {
+    throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -83,6 +111,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     ...(retainTokens === undefined ? {} : { retainTokens }),
     compactionRetries,
     frozenCheckpointTokenBudget,
+    semanticMode,
   }
 }
 

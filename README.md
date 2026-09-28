@@ -71,6 +71,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **M0** | Exact archive / recall closure, atomic bundle store, deterministic fallback · 精确归档/召回闭环、原子 bundle store、确定性 fallback | ✅ C0.1–C0.5 |
 | **M2** | Fold Frontier, leaf/root folds, prefix fingerprint proofs · Fold Frontier、leaf/root 折叠、prefix 指纹证明 | ✅ C2.1–C2.4 |
 | **M3a** | Deterministic current state (anchors, authority, projection) · 确定性当前状态 | ✅ ALR=0 · SSR=0 · provenance=100% · bounded |
+| **R0-A** | Cross-layer integration closure: marker protocol, frontier hard invariant, recall isolation, commit records, authority gate, disjoint rendering · 跨层组合正确性闭合 | ✅ 65 tests |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
