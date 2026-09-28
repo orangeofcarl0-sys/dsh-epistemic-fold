@@ -108,7 +108,10 @@ class ControlledAdapter extends LlmAdapter {
 }
 
 /** Assemble one engine over a fresh temp bundle directory. */
-export async function createHarness(semantic: SemanticFace = {}): Promise<Harness> {
+export async function createHarness(
+  semantic: SemanticFace = {},
+  options: { contextWindow?: number; efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number } } = {},
+): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
   const store = new FileBundleStore(root)
   const control: HarnessControl = { semantic, calls: [] }
@@ -125,8 +128,8 @@ export async function createHarness(semantic: SemanticFace = {}): Promise<Harnes
     flushes.push(session.id)
     return true
   }
-  ctx.llm.registerAdapter([MODEL], new ControlledAdapter(1_000_000, control))
-  const engine = new EpistemicFoldEngine(ctx, { bundleStore: store })
+  ctx.llm.registerAdapter([MODEL], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  const engine = new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })
   return { ctx, engine, store, root, control }
 }
 

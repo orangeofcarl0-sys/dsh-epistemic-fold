@@ -1,23 +1,25 @@
 /**
  * The Epistemic Fold compaction engine: Basic's transaction with EF's
- * archive-before-loss compile hook.
+ * archive-before-loss compile hook, EF's frontier-scoped leaf policy, and
+ * Basic-compatible pressure accounting.
  *
  * Transaction shape (RFC-001 §6, plan §7.1 correction):
  *   candidate prepared → Basic opens its transaction → summarize() archives
  *   the shadowed span, runs the semantic call, publishes the FINAL immutable
  *   bundle atomically, then returns the checkpoint text. Basic commits the
  *   surface replacement only after summarize() returns, so a durable bundle
- *   always precedes surface loss (BundleDurable ≺ SurfaceLoss). A bundle
- *   publish failure throws out of summarize(), which aborts the transaction
- *   with the surface unchanged; a bundle published but a later Basic failure
- *   leaves a detectable orphan that GC may collect.
+ *   always precedes surface loss (BundleDurable ≺ SurfaceLoss).
  *
  * @module dsh-epistemic-fold/engine
  */
 
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
+import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
+import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { SessionSeq } from '@deepseek-ai/dsh-session'
+import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
+import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
+import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 import {
   buildBundle,
@@ -27,7 +29,139 @@ import {
   splitSummarizationInput,
 } from './compiler.ts'
 import { FileBundleStore } from './bundle-store.ts'
-import type { CheckpointBundleV1, FoldBundleStore, SummarizationInput, SummaryResult } from './types.ts'
+import { hasActiveCompaction } from './frontier.ts'
+import { selectLeafSpan } from './leaf-policy.ts'
+import { evaluateRootRebase } from './root-policy.ts'
+import type {
+  CheckpointBundleV1,
+  FoldBundleStore,
+  SummarizationInput,
+  SummaryResult,
+} from './types.ts'
+
+/** Resolve the exact provider/model durably routed for the latest request. */
+function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
+  const config = session.requestHeader()?.config
+  if (config === undefined || config.provider.length === 0 || config.model.length === 0) {
+    return undefined
+  }
+  return { provider: config.provider, model: config.model }
+}
+
+/**
+ * Output tokens the routed request reserves, charged to the same window as
+ * the prompt (mirror of Basic's reservation rule).
+ */
+function reservedCompletionTokens(agent: Agent, defaultMaxTokens: number | undefined): number {
+  const configured = agent.session.requestHeader()?.config.maxTokens
+  return configured ?? defaultMaxTokens ?? 0
+}
+
+/** Concrete pressure and retention budgets for one routed model capacity. */
+export interface EfCompactSpec {
+  readonly contextWindow: number
+  readonly thresholdTokens: number
+  readonly retainTokens: number
+  readonly compactionRetries: number
+}
+
+/**
+ * Scale one EF policy into budgets (mirror of Basic's `resolveCompactSpec`
+ * math: pressure capped by both the window fraction and the capacity left
+ * after the completion reservation plus headroom; retention scales the
+ * message budget before headroom is deducted).
+ */
+export function resolveEfCompactSpec(
+  config: ResolvedEpistemicFoldConfig,
+  contextWindow: number,
+  reservedCompletionTokens: number,
+): EfCompactSpec {
+  if (!Number.isInteger(contextWindow) || contextWindow <= 0) {
+    throw new Error(`epistemic-fold: contextWindow (${contextWindow}) must be a positive integer`)
+  }
+  const messageBudgetTokens = contextWindow - reservedCompletionTokens
+  if (messageBudgetTokens <= 0) {
+    throw new Error(
+      `epistemic-fold: routed model reserves ${reservedCompletionTokens} completion tokens of its `
+      + `${contextWindow}-token window, leaving no message budget`,
+    )
+  }
+  const pressureBudgetTokens = messageBudgetTokens - config.headroomTokens
+  if (pressureBudgetTokens <= 0) {
+    throw new Error(
+      `epistemic-fold: routed model reserves ${reservedCompletionTokens} completion tokens and `
+      + `${config.headroomTokens} headroom tokens of its ${contextWindow}-token window, `
+      + 'leaving no pressure budget',
+    )
+  }
+  const thresholdTokens = Math.floor(Math.min(
+    contextWindow * config.thresholdRatio,
+    pressureBudgetTokens,
+  ))
+  const retainTokens = config.retainTokens
+    ?? Math.floor(messageBudgetTokens * config.retainRatio)
+  if (retainTokens >= thresholdTokens) {
+    throw new Error(
+      `epistemic-fold: retainTokens (${retainTokens}) must be less than threshold tokens ${thresholdTokens}`,
+    )
+  }
+  return {
+    contextWindow,
+    thresholdTokens,
+    retainTokens,
+    compactionRetries: config.compactionRetries,
+  }
+}
+
+/** Resolved EF policy (flat fields; exact-target overrides are a Basic feature EF does not narrow further). */
+export interface ResolvedEpistemicFoldConfig {
+  readonly thresholdRatio: number
+  readonly headroomTokens: number
+  readonly retainRatio: number
+  readonly retainTokens?: number
+  readonly compactionRetries: number
+  /** Frozen-checkpoint budget; 0 disables the rebase advice (plan §15). */
+  readonly frozenCheckpointTokenBudget: number
+}
+
+const DEFAULT_THRESHOLD_RATIO = 0.8
+const DEFAULT_RETAIN_RATIO = 0.16
+const DEFAULT_HEADROOM_TOKENS = 65_536
+const DEFAULT_FROZEN_BUDGET = 24_000
+
+/** Resolve and validate the EF-specific policy face of the plugin config. */
+export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpistemicFoldConfig {
+  const headroomTokens = config.headroomTokens ?? DEFAULT_HEADROOM_TOKENS
+  const thresholdRatio = config.thresholdRatio ?? DEFAULT_THRESHOLD_RATIO
+  const retainRatio = config.retainRatio ?? DEFAULT_RETAIN_RATIO
+  const retainTokens = config.retainTokens
+  if (!Number.isFinite(thresholdRatio) || thresholdRatio <= 0 || thresholdRatio > 1) {
+    throw new Error('epistemic-fold: thresholdRatio must be a number in (0, 1]')
+  }
+  if (!Number.isInteger(headroomTokens) || headroomTokens < 0) {
+    throw new Error('epistemic-fold: headroomTokens must be a non-negative integer')
+  }
+  if (retainTokens !== undefined
+    && (!Number.isInteger(retainTokens) || retainTokens < 0)) {
+    throw new Error('epistemic-fold: retainTokens must be a non-negative integer')
+  }
+  const compactionRetries = config.compactionRetries ?? 1
+  if (!Number.isInteger(compactionRetries) || compactionRetries < 0) {
+    throw new Error('epistemic-fold: compactionRetries must be a non-negative integer')
+  }
+  const frozenCheckpointTokenBudget = config.frozenCheckpointTokenBudget ?? DEFAULT_FROZEN_BUDGET
+  if (!Number.isInteger(frozenCheckpointTokenBudget) || frozenCheckpointTokenBudget < 0) {
+    throw new Error('epistemic-fold: frozenCheckpointTokenBudget must be a non-negative integer')
+  }
+  return {
+    thresholdRatio,
+    headroomTokens,
+    retainRatio,
+    ...(retainTokens === undefined ? {} : { retainTokens }),
+    compactionRetries,
+    frozenCheckpointTokenBudget,
+  }
+}
 
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
@@ -38,17 +172,28 @@ export interface EpistemicFoldOptions {
  * Compaction backend implementing the Epistemic Fold runtime. `summarize()`
  * is EF's compile hook: the sole place where the archive is built and the
  * bundle is published, always before Basic can commit any lossy replacement.
+ * Automatic pressure compaction folds ONLY the open trajectory past the fold
+ * frontier — frozen checkpoints are never re-folded (plan §13).
  */
 export class EpistemicFoldEngine extends BasicCompactionEngine {
   static override inject = BasicCompactionEngine.inject
+
+  /** EF-resolved policy face; Basic keeps its own resolved config for summarization. */
+  readonly efConfig: ResolvedEpistemicFoldConfig
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
   /** Last bundle published by this engine (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
+  private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
 
-  constructor(ctx: ConstructorParameters<typeof BasicCompactionEngine>[0], options: EpistemicFoldOptions = {}) {
-    super(ctx)
+  constructor(
+    ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
+    config: EpistemicFoldConfig = {},
+    options: EpistemicFoldOptions = {},
+  ) {
+    super(ctx, config)
+    this.efConfig = resolveEfConfig(config)
     this.bundles = options.bundleStore ?? new FileBundleStore('.epistemic-fold/bundles')
   }
 
@@ -62,6 +207,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     return this.lastPublishedBundle
   }
 
+  /** Latest frozen-budget evaluation (pressure path); `undefined` before the first check. */
+  get lastRootRebaseAdvice(): ReturnType<typeof evaluateRootRebase> | undefined {
+    return this.lastRootRebaseAdviceValue
+  }
+
   /**
    * Fold one explicitly selected surface span as a LEAF fold: the candidate
    * is prepared first so the summarize hook knows the fold identity, and
@@ -72,7 +222,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     end: SessionSeq,
     agent: Agent,
     signal?: AbortSignal,
-  ) {
+  ): Promise<CompactionResult> {
     const candidate = createFoldCandidate({
       mode: 'leaf',
       session: agent.session,
@@ -94,8 +244,112 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   override async compactNow(
     ...args: Parameters<BasicCompactionEngine['compactNow']>
-  ) {
+  ): Promise<CompactionResult | null> {
     return super.compactNow(...args)
+  }
+
+  /**
+   * Automatic pressure and overflow policy with EF's own span selection:
+   * pressure/overflow thresholds mirror Basic, but the folded span always
+   * starts at the fold frontier, so frozen checkpoints stay byte-stable.
+   * @param agent - agent whose latest durable routed request is measured.
+   * @param trigger - normal step-boundary pressure or context-overflow recovery.
+   * @param signal - cancellation forwarded to summarization.
+   * @returns the latest summary compaction result, or `null` when none ran.
+   */
+  override async compactIfNeeded(
+    agent: Agent,
+    trigger: CompactionTrigger,
+    signal: AbortSignal,
+  ): Promise<CompactionResult | null> {
+    const target = routedTarget(agent.session)
+    if (target === undefined) return null
+    const meter = this.ctx.tokenMeter
+    let measurement: TokenMeasurement = meter.measure(agent.session)
+    const prune = this.ctx.get('toolResultPruner')
+
+    if (trigger === 'context-overflow') {
+      if (prune !== undefined) {
+        prune.pruneSession(agent.session)
+        measurement = meter.measure(agent.session)
+      }
+      return this.compactLeafFromFrontier(agent, measurement, 0, signal)
+    }
+
+    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, signal)
+    if (hasActiveCompaction(agent.session)) {
+      throw new Error('epistemic-fold: compaction already in progress; the session compaction lock is already active')
+    }
+    if (info.context === undefined) {
+      throw new Error(
+        `epistemic-fold: no context capacity for ${target.provider}/${target.model}; `
+        + 'configure contextWindow on that adapter model',
+      )
+    }
+    const spec = resolveEfCompactSpec(
+      this.efConfig,
+      info.context.contextWindow,
+      reservedCompletionTokens(agent, info.defaultMaxTokens),
+    )
+    if (measurement.totalTokens < spec.thresholdTokens) return null
+
+    if (prune !== undefined) {
+      prune.pruneSession(agent.session)
+      measurement = meter.measure(agent.session)
+    }
+    if (measurement.totalTokens < spec.thresholdTokens) return null
+
+    let result: CompactionResult | null = null
+    for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
+      const span = selectLeafSpan(agent.session, measurement, spec.retainTokens)
+      if (span === null) {
+        if (result === null) return null
+        break
+      }
+      result = await this.compactRegion(span.start, span.end, agent, signal)
+      measurement = meter.measure(agent.session)
+      if (measurement.totalTokens < spec.thresholdTokens) {
+        this.recordRootRebaseAdvice(agent.session, measurement)
+        return result
+      }
+    }
+
+    throw new Error(
+      `epistemic-fold: still above threshold after ${spec.compactionRetries + 1} leaf fold attempts `
+      + `(${measurement.totalTokens} estimated tokens >= threshold ${spec.thresholdTokens})`,
+    )
+  }
+
+  /**
+   * One leaf fold from the frontier with the given retention budget; the
+   * overflow path's forceful reduction (retain 0) funnels through here.
+   */
+  private async compactLeafFromFrontier(
+    agent: Agent,
+    measurement: TokenMeasurement,
+    retainTokens: number,
+    signal: AbortSignal,
+  ): Promise<CompactionResult | null> {
+    const span = selectLeafSpan(agent.session, measurement, retainTokens)
+    if (span === null) return null
+    return this.compactRegion(span.start, span.end, agent, signal)
+  }
+
+  /** Record frozen-budget telemetry after pressure work settles. */
+  private recordRootRebaseAdvice(session: Session, measurement: TokenMeasurement): void {
+    const advice = evaluateRootRebase(
+      session,
+      measurement,
+      this.efConfig.frozenCheckpointTokenBudget,
+    )
+    this.lastRootRebaseAdviceValue = advice
+    if (advice.recommended) {
+      this.ctx.logger.warn(
+        `[epistemic-fold] frozen checkpoint budget exceeded: ${advice.frozenTokens} tokens across `
+        + `${advice.frozenCount} checkpoints (budget ${advice.budget}); a manual root rebase `
+        + '(/compact) is recommended',
+      )
+    }
   }
 
   /**
@@ -144,8 +398,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
 
     // Semantic call with deterministic fallback: cancellation propagates,
-    // every other failure lands the bounded fallback checkpoint (D-006:
-    // narrative is advisory; the archive is the authority).
+    // every other failure lands the bounded fallback checkpoint (D-006).
     let semanticText: string | undefined
     try {
       const semantic = await super.summarize(input, agent, signal)
@@ -185,6 +438,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     if (hasSystemHead && nodes.length > 0) return nodes.slice(1)
     return [...nodes]
   }
+}
+
+/** Public plugin configuration: Basic's compaction policy plus EF's budget. */
+export interface EpistemicFoldConfig extends BasicCompactionConfig {
+  /** Advisory budget for the frozen checkpoint prefix (plan §15). */
+  frozenCheckpointTokenBudget?: number
 }
 
 export default EpistemicFoldEngine
