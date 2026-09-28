@@ -112,8 +112,6 @@ describe('R2: framing-free ceiling', () => {
   }, 900_000)
 
   it('framing is composed mostly of text EF owns, but the largest single part is inherited', async () => {
-    // This determines WHO can fix the gap: the DSH `frameSummary` preamble is
-    // added after EF returns, so EF cannot deduplicate it alone.
     const workload = allWorkloads()[0]!
     const harness = await createHarness({ text: 'd' }, {
       contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
@@ -188,4 +186,100 @@ describe('R2: framing-free ceiling', () => {
     expect(preambleShare).toBeGreaterThan(0)
     expect(preambleShare).toBeLessThan(0.5)
   }, 600_000)
+
+  it('the framing removal each workload NEEDS is larger than EF can achieve alone', async () => {
+    // The ceiling in the first test is a theoretical maximum, not a plan. This
+    // test computes the removal each workload actually requires and compares
+    // it against what is reachable, which is the difference between "framing
+    // is the gap" and "framing is a fixable gap".
+    const profile = flashProfile()
+
+    /** Solve for the framing-removal fraction that brings BCR to exactly 1. */
+    const requiredRemoval = (
+      ef: { total: number; framing: number; warm: number },
+      basicCost: number,
+    ): number | null => {
+      const warmShare = ef.total === 0 ? 0 : ef.warm / ef.total
+      for (let step = 0; step <= 1000; step += 1) {
+        const removed = step / 1000
+        const framing = ef.framing * removed
+        const total = ef.total - framing
+        const warm = Math.max(0, ef.warm - framing * warmShare)
+        if (priced(profile, total, warm) / basicCost < 1) return removed
+      }
+      return null
+    }
+
+    const rows: Array<{ id: string; required: number | null }> = []
+    for (const workload of allWorkloads()) {
+      const basicHarness = await createHarness({ text: 'd' }, {
+        contextWindow: WINDOW, engine: 'basic', workloadModel: WORKLOAD_MODEL,
+        efConfig: { thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000 },
+      })
+      const basic = await runPairedBaseline({
+        arm: 'B1', harness: basicHarness, createSession: workload.createSession, steps: STEPS,
+        grow: (session: Session, step: number) => {
+          workload.grow(session, step)
+          workload.declareState?.(session, step)
+        },
+        signal: SIGNAL,
+      })
+      const basicCost = priced(profile, basic.promptSummary.totalPromptTokens, basic.stablePrefixTokensTotal)
+
+      const harness = await createHarness({ text: 'd' }, {
+        contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+        efConfig: {
+          thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
+          leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
+        },
+      })
+      const run = await runPairedBaseline({
+        arm: 'E3', harness, createSession: workload.createSession, steps: STEPS,
+        grow: (session: Session, step: number) => {
+          workload.grow(session, step)
+          workload.declareState?.(session, step)
+        },
+        rebase: createRootRebaseHook(harness),
+        signal: SIGNAL,
+      })
+      rows.push({
+        id: workload.id,
+        required: requiredRemoval(
+          {
+            total: run.attribution.grandTotal,
+            framing: run.attribution.totals['checkpoint-framing'],
+            warm: run.stablePrefixTokensTotal,
+          },
+          basicCost,
+        ),
+      })
+    }
+
+    for (const row of rows) {
+      console.log(
+        `${row.id.padEnd(20)} required framing removal = `
+        + (row.required === null ? 'NEVER (unreachable even at 100%)' : `${(row.required * 100).toFixed(1)}%`),
+      )
+    }
+
+    // EF-side reachable ceiling: halving the marker + recall lines, which are
+    // ~30% of checkpoint text. Anything more means weakening identity or
+    // dropping the recall pointer.
+    const EF_ONLY_REACHABLE = 0.15
+    const everyRowNeedsMore = rows.every(
+      row => row.required === null || row.required > EF_ONLY_REACHABLE,
+    )
+    expect(everyRowNeedsMore).toBe(true)
+
+    // And at least one workload is out of reach even WITH the DSH seam, which
+    // is why framing reduction is necessary but not sufficient.
+    const SEAM_REACHABLE = 0.39
+    const unreachableEvenWithSeam = rows.filter(
+      row => row.required === null || row.required > SEAM_REACHABLE,
+    )
+    console.log(
+      `unreachable even with the seam: ${unreachableEvenWithSeam.map(row => row.id).join(', ') || '(none)'}`,
+    )
+    expect(unreachableEvenWithSeam.length).toBeGreaterThan(0)
+  }, 900_000)
 })
