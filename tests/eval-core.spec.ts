@@ -278,7 +278,7 @@ describe('schemas are closed and reports generated', () => {
       leafFoldCount: 0,
       rootFoldCount: 0,
       finalCheckpointLoad: 0,
-      promptSummary: { total: 0, mean: 0, median: 0, peak: 0, p95: 0 },
+      promptSummary: { totalPromptTokens: 0, meanPromptTokens: 0, medianPromptTokens: 0, peakPromptTokens: 0, p95PromptTokens: 0 },
       frozenSummary: { meanFrozenTokens: 0, peakFrozenTokens: 0, frozenShareOfPrompt: 0 },
       auxiliaryCompaction: { callCount: 0 },
       cacheEconomics: [{ rho: 0, hitTokens: 0, missTokens: 0, cost: 0 }],

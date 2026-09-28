@@ -22,7 +22,7 @@ export function baselineToMarkdown(result: BaselineResult): string {
     `| leafFoldCount | ${result.leafFoldCount} |`,
     `| rootFoldCount | ${result.rootFoldCount} |`,
     `| finalCheckpointLoad | ${result.finalCheckpointLoad} |`,
-    `| promptTokens (total/mean/median/peak/p95) | ${result.promptSummary.total} / ${result.promptSummary.mean.toFixed(1)} / ${result.promptSummary.median} / ${result.promptSummary.peak} / ${result.promptSummary.p95} |`,
+    `| promptTokens (total/mean/median/peak/p95) | ${result.promptSummary.totalPromptTokens} / ${result.promptSummary.meanPromptTokens.toFixed(1)} / ${result.promptSummary.medianPromptTokens} / ${result.promptSummary.peakPromptTokens} / ${result.promptSummary.p95PromptTokens} |`,
     `| frozenTokens (mean/peak/share) | ${result.frozenSummary.meanFrozenTokens.toFixed(1)} / ${result.frozenSummary.peakFrozenTokens} / ${(result.frozenSummary.frozenShareOfPrompt * 100).toFixed(1)}% |`,
     `| auxiliaryCompaction calls | ${result.auxiliaryCompaction.callCount} |`,
     '',

@@ -26,9 +26,8 @@ import type {
   StreamChunk,
 } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import { toolPairingBalancedAfter, toolPairingBalancedBefore } from '@deepseek-ai/dsh-compaction'
 import type { CompactionResult } from '@deepseek-ai/dsh-compaction'
-import SessionStore, { type Session, type SessionSeq } from '@deepseek-ai/dsh-session'
+import SessionStore, { type Session } from '@deepseek-ai/dsh-session'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
@@ -41,6 +40,17 @@ import type { FoldCurrentState } from '../src/state.ts'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { evaluateOracles, type VerifierWorld } from './src/verifier.ts'
 import { markDuplicates, normalizeAction } from './src/actions.ts'
+import { isEfOnlyOracle } from './src/arm-scope.ts'
+import {
+  balancedLeafEnd,
+  checkpointIdsOf,
+  closeOpenTurn,
+  isUserMessageSeq,
+  lastAssistantMessageSeq,
+  lastSuccessfulToolResultSeq,
+  lastUserMessageSeq,
+  verifiedFailureIds,
+} from './src/session-queries.ts'
 import type { EvalRunResult } from './src/schema.ts'
 import type { ScenarioDefinition } from './scenarios/index.ts'
 
@@ -106,64 +116,6 @@ async function mountArm(arm: ArmId, bundleRoot: string): Promise<MountedArm> {
   // the DSH manual-compaction suite's flush spy.
   ctx.sessions.flush = async () => true
   return { arm, ctx, engine, anchors }
-}
-
-/** Seq of the LAST user message — the citable raw source for anchors. */
-function lastUserMessageSeq(session: Session): number {
-  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
-    if (session.eventAt(seq as never)!.type === 'user/message') return seq
-  }
-  return 0
-}
-
-/** Whether a seq is a user message (the gate needs a RAW authoritative kind). */
-function isUserMessageSeq(session: Session, seq: number): boolean {
-  return session.eventAt(seq as never)?.type === 'user/message'
-}
-
-/** Seq of the LAST assistant message — the citable hypothesis/decision source. */
-function lastAssistantMessageSeq(session: Session): number {
-  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
-    if (session.eventAt(seq as never)!.type === 'assistant/message') return seq
-  }
-  return 0
-}
-
-/** Seq of the LAST non-error tool result — the empirical evidence source. */
-function lastSuccessfulToolResultSeq(session: Session): number {
-  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
-    const event = session.eventAt(seq as never)!
-    if (event.type !== 'tool/result') continue
-    const message = (event.data as { message?: { isError?: boolean } }).message
-    if (message?.isError !== true) return seq
-  }
-  return 0
-}
-
-/** Surface checkpoint ids, parsed exclusively through the marker protocol. */
-function checkpointIdsOf(session: Session): string[] {
-  const ids: string[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null || message.role !== 'user') continue
-    const source = (message as unknown as { source?: { kind?: string } }).source
-    if (source?.kind !== 'compact-checkpoint') continue
-    const text = message.content.map(block => block.type === 'text' ? block.text : '').join('\n')
-    const match = /id=([0-9a-f-]{36})/u.exec(text)
-    if (match !== null) ids.push(match[1]!)
-  }
-  return ids
-}
-
-function verifiedFailureIds(session: Session): Set<string> {
-  const ids = new Set<string>()
-  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
-    const event = session.eventAt(seq as never)!
-    if (event.type === 'ef/anchor' && (event.data as { failureState?: string }).failureState === 'verified') {
-      ids.add((event.data as { anchorId: string }).anchorId)
-    }
-  }
-  return ids
 }
 
 export interface PairedCaseOutcome {
@@ -332,7 +284,7 @@ export async function runPairedCase(scenario: ScenarioDefinition, replicate = 0)
         : oracle)
     const evaluation = evaluateOracles(resolved, world)
     const duplicateActions = markedActions.filter(action => action.duplicate === true).length
-    const promptTokens = harnessTokens(mounted.ctx, session)
+    const promptTokens = mounted.ctx.tokenMeter.measure(session).totalTokens
 
     const raw: EvalRunResult = {
       runVersion: 1,
@@ -371,66 +323,7 @@ export async function runPairedCase(scenario: ScenarioDefinition, replicate = 0)
   }
 }
 
-/**
- * Largest balanced leaf-fold end for the fixture shape (each closed turn
- * contributes 3 surface nodes: user, assistant, and — when the turn has a
- * tool call — the result). Keeps the span inside the closed history.
- */
-/**
- * The last surface node that is a BALANCED fold boundary: walk left from the
- * tail until the tool-pairing check passes (a step must not be split and the
- * trailing open turn must stay outside the span).
- */
-function balancedLeafEnd(session: Session, nodes: readonly SessionSeq[]): SessionSeq {
-  // The transaction's own balance rule decides the end boundary: walk left
-  // from the tail (excluding the fixture's open turn) until it accepts.
-  for (let index = nodes.length - 2; index >= 1; index -= 1) {
-    const seq = nodes[index]!
-    if (toolPairingBalancedBefore(session, seq) && toolPairingBalancedAfter(session, seq)) {
-      return seq
-    }
-  }
-  return nodes[0]!
-}
-
-/** Oracles that only an EF-state arm can satisfy. */
-function isStateOracle(type: string): boolean {
-  return type === 'anchor-active'
-    || type === 'state-key-equals'
-    || type === 'failure-open'
-    || type === 'failure-retired'
-    || type === 'obligation-open'
-    // EF checkpoint recovery: Basic checkpoints carry no EF bundle, so
-    // exact/structured recall of EF checkpoint ids is EF-arm-only.
-    || type === 'recall-contains'
-}
-
-/** Oracle types that only an EF arm can satisfy (recall tooling). */
-function isEfOnlyOracle(oracle: { type: string; family?: string }): boolean {
-  return isStateOracle(oracle.type)
-    || (oracle.type === 'tool-action-present' && oracle.family === 'recall')
-}
-
-/** Close the fixture's trailing open turn so idle folds are admissible. */
-function closeOpenTurn(session: Session): void {
-  let openTurn: number | null = null
-  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
-    const event = session.eventAt(seq as never)!
-    if (event.type === 'turn/end') return
-    if (event.type === 'turn/start') {
-      openTurn = event.data.turn
-      break
-    }
-  }
-  if (openTurn !== null) {
-    session.append('turn/end', { turn: openTurn, reason: { kind: 'completed' } })
-  }
-}
-
-function harnessTokens(ctx: Context, session: Session): number {
-  return ctx.tokenMeter.measure(session).totalTokens
-}
-
+/** An idle-agent stub satisfying the manual-compaction maintenance contract. */
 function idleAgent(session: Session): Agent {
   return {
     session,

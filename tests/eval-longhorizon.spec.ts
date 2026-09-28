@@ -54,7 +54,7 @@ function basicHarness(contextWindow: number): Promise<Harness> {
 function report(label: string, result: BaselineResult): void {
   const row = [
     label,
-    `prompt=${result.promptSummary.total}/${result.promptSummary.peak}/${result.promptSummary.p95}`,
+    `prompt=${result.promptSummary.totalPromptTokens}/${result.promptSummary.peakPromptTokens}/${result.promptSummary.p95PromptTokens}`,
     `SPT=${result.stablePrefixTokensTotal}`,
     `IST=${result.absolutePrefixInvalidation}`,
     `reclaimed=${result.reclaimedTokensTotal}`,
@@ -101,9 +101,9 @@ describe('R0-C3: long-horizon deterministic economics', () => {
 
       // Structural invariants that must hold at every horizon.
       for (const result of Object.values(results)) {
-        expect(result.promptSummary.total).toBeGreaterThan(0)
-        expect(result.promptSummary.peak).toBeLessThanOrEqual(result.promptSummary.total)
-        expect(result.promptSummary.p95).toBeLessThanOrEqual(result.promptSummary.peak)
+        expect(result.promptSummary.totalPromptTokens).toBeGreaterThan(0)
+        expect(result.promptSummary.peakPromptTokens).toBeLessThanOrEqual(result.promptSummary.totalPromptTokens)
+        expect(result.promptSummary.p95PromptTokens).toBeLessThanOrEqual(result.promptSummary.peakPromptTokens)
       }
       // The root-maintained arm rebased at least once over the horizon: at
       // short horizons the frozen load may stay under budget (no rebase is
@@ -133,10 +133,10 @@ describe('R0-C3: long-horizon deterministic economics', () => {
         grow: growTurn(GROW_TEXT),
         signal: SIGNAL,
       })
-      rows.push(`window=${window} leaf=${result.leafFoldCount} peak=${result.promptSummary.peak} frozen=${result.frozenSummary.peakFrozenTokens}`)
+      rows.push(`window=${window} leaf=${result.leafFoldCount} peak=${result.promptSummary.peakPromptTokens} frozen=${result.frozenSummary.peakFrozenTokens}`)
       // Every window keeps the run structurally valid; pressure at the
       // largest window may legitimately stay under threshold for 32 steps.
-      expect(result.promptSummary.total).toBeGreaterThan(0)
+      expect(result.promptSummary.totalPromptTokens).toBeGreaterThan(0)
       expect(result.leafFoldCount + result.rootFoldCount).toBeGreaterThanOrEqual(0)
     }
     for (const row of rows) console.log(row)

@@ -46,6 +46,7 @@ import {
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
 } from './policy.ts'
+import type { FoldCurrentState } from './state.ts'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
@@ -53,6 +54,15 @@ import type {
   SummarizationInput,
   SummaryResult,
 } from './types.ts'
+
+/** Drop the EF-owned config keys so Basic's strict key validation passes. */
+function stripEfConfigKeys(config: EpistemicFoldConfig): EpistemicFoldConfig {
+  const { frozenCheckpointTokenBudget, semanticMode, bundleRoot, ...basic } = config
+  void frozenCheckpointTokenBudget
+  void semanticMode
+  void bundleRoot
+  return basic as EpistemicFoldConfig
+}
 
 /** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
 const RATIONALE_MAX_TOKENS = 400
@@ -93,11 +103,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   ) {
     // Basic validates its config keys strictly; EF-owned fields must be
     // stripped before the super call (they are resolved by resolveEfConfig).
-    const { frozenCheckpointTokenBudget: _budget, semanticMode: _mode, bundleRoot: _root, ...basicConfig } = config
-    void _budget
-    void _mode
-    void _root
-    super(ctx, basicConfig)
+    super(ctx, stripEfConfigKeys(config))
     this.efConfig = resolveEfConfig(config)
     // Loader deployments pass exactly (ctx, config): the store then comes
     // from `bundleRoot` in the config face, honoring the DSH persistence
@@ -350,6 +356,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // own durable checkpoint framing (frameSummary) — the compile hook must
     // return the UNFRAMED body or the surface lands a double-wrapped text.
     const fallbackText = renderFallbackCheckpoint(candidate, shadowedMessages.length)
+    // One registry probe per fold: the structured rendering path and the
+    // semantic-mode choice read the same mounted state.
+    const mountedState = this.mountedState(session)
 
     const publish = async (
       semanticText: string | undefined,
@@ -357,7 +366,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     ): Promise<SummaryResult> => {
       // M3a: when the deterministic projection is mounted, the checkpoint is
       // a structured handoff — machine state first, narrative in Rationale.
-      const stateText = this.structuredStateText(session, candidate.checkpointId, semanticText)
+      const stateText = this.structuredStateText(mountedState, candidate.checkpointId, semanticText)
       const renderedText = stateText ?? (semanticText === undefined
         ? fallbackText
         : renderSemanticCheckpoint(candidate, semanticText))
@@ -391,7 +400,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     let semanticText: string | undefined
     let semanticMeta: SummaryResult | undefined
 
-    if (this.isProjectionMounted(session)) {
+    if (mountedState !== undefined) {
       if (this.efConfig.semanticMode === 'rationale') {
         try {
           const rationale = await rationaleOnly({
@@ -440,22 +449,28 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     return await publish(semanticText, semanticMeta)
   }
 
-  /** Whether the EF current-state projection is registered on the context. */
-  private isProjectionMounted(session: Session): boolean {
+  /**
+   * The mounted EF current state for one session, or `undefined` when the
+   * projection is not registered — the single probe both the rendering path
+   * and the semantic-mode choice read.
+   */
+  private mountedState(session: Session): FoldCurrentState | undefined {
     const registry = this.ctx.get('sessionProjections')
-    if (registry === undefined) return false
-    return registry.stateOf(session, EF_CURRENT_STATE_KEY) !== undefined
+    if (registry === undefined) return undefined
+    if (registry.stateOf(session, EF_CURRENT_STATE_KEY) === undefined) return undefined
+    return currentFoldState(this.ctx, session)
   }
 
   /**
    * The structured machine-state handoff when the EF projection is mounted;
    * `undefined` keeps the M0/M2 rendering path untouched.
    */
-  private structuredStateText(session: Session, checkpointId: string, semanticText: string | undefined): string | undefined {
-    const registry = this.ctx.get('sessionProjections')
-    if (registry === undefined) return undefined
-    if (registry.stateOf(session, EF_CURRENT_STATE_KEY) === undefined) return undefined
-    const state = currentFoldState(this.ctx, session)
+  private structuredStateText(
+    state: FoldCurrentState | undefined,
+    checkpointId: string,
+    semanticText: string | undefined,
+  ): string | undefined {
+    if (state === undefined) return undefined
     return renderStructuredCheckpoint(state, checkpointId, semanticText)
   }
 

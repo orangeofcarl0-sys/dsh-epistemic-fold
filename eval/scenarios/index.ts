@@ -114,29 +114,66 @@ export interface ScenarioDefinition {
   readonly declareAnchors?: (session: Session, service: AnchorService, seqs: ScenarioSequences) => void
 }
 
+/** Scenario inputs, with the boilerplate defaults applied by {@link scenario}. */
+interface ScenarioInput {
+  readonly id: string
+  readonly workload: BoundaryCase['workload']
+  readonly tier: BoundaryCase['tier']
+  readonly boundaryLabel: string
+  readonly foldMode: BoundaryCase['fold']['mode']
+  readonly continuation: readonly string[]
+  readonly oracles: BoundaryCase['oracle']['success']
+  readonly buildSession: () => Session
+  readonly maxActions?: number
+  readonly duplicateRules?: BoundaryCase['behavior']['duplicateRules']
+  readonly recallRequired?: boolean
+  readonly capabilities: readonly string[]
+  readonly declareAnchors?: ScenarioDefinition['declareAnchors']
+}
+
+/**
+ * Build one boundary scenario, applying the corpus-wide defaults (version,
+ * session role, fold target, behavior rules, recall flag) so each definition
+ * states only what is specific to it.
+ */
+function scenario(input: ScenarioInput): ScenarioDefinition {
+  return {
+    id: input.id,
+    sidecar: {
+      version: 1,
+      id: input.id,
+      workload: input.workload,
+      tier: input.tier,
+      source: { sessionRole: 'parent', boundaryLabel: input.boundaryLabel },
+      fold: { mode: input.foldMode, target: input.foldMode === 'root' ? 'full-history' : 'oldest-safe-span' },
+      continuation: { input: [...input.continuation], maxActions: input.maxActions ?? 4 },
+      oracle: { success: [...input.oracles] },
+      behavior: { duplicateRules: input.duplicateRules ?? [] },
+      recall: { required: input.recallRequired ?? false },
+      classification: { expectedCapability: [...input.capabilities] },
+    },
+    buildSession: input.buildSession,
+    ...(input.declareAnchors === undefined ? {} : { declareAnchors: input.declareAnchors }),
+  }
+}
+
 // ---------------------------------------------------------------------------
 // B01-B12
 // ---------------------------------------------------------------------------
 
-const b01: ScenarioDefinition = {
+const b01 = scenario({
   id: 'B01-explicit-api-constraint',
-  sidecar: {
-    version: 1,
-    id: 'B01-explicit-api-constraint',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'before-shortcut-task' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Implement the faster shortcut.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'anchor-active', anchorId: 'B01-constraint' },
-      { type: 'state-key-equals', stateKey: 'scope/work/public-api', value: 'do not change the public API' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'read' }, { family: 'test' }] },
-    recall: { required: false },
-    classification: { expectedCapability: ['constraint-retention'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'before-shortcut-task',
+  foldMode: 'leaf',
+  continuation: ['Implement the faster shortcut.'],
+  oracles: [{ type: 'anchor-active', anchorId: 'B01-constraint' },
+      { type: 'state-key-equals', stateKey: 'scope/work/public-api', value: 'do not change the public API' }],
   buildSession: () => baseConversation('b01'),
+  maxActions: 6,
+  duplicateRules: [{ family: 'read' }, { family: 'test' }],
+  capabilities: ['constraint-retention'],
   declareAnchors: (session, service, seqs) => {
     service.declare(session, {
       id: 'B01-constraint',
@@ -147,26 +184,19 @@ const b01: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastUser() as never }],
     })
   },
-}
+})
 
-const b02: ScenarioDefinition = {
+const b02 = scenario({
   id: 'B02-superseded-timeout',
-  sidecar: {
-    version: 1,
-    id: 'B02-superseded-timeout',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-second-value' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Apply the current timeout.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'state-key-equals', stateKey: 'config/server/timeout', value: 60 },
-    ] },
-    behavior: { duplicateRules: [{ family: 'read' }] },
-    recall: { required: false },
-    classification: { expectedCapability: ['current-state-singularity'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-second-value',
+  foldMode: 'leaf',
+  continuation: ['Apply the current timeout.'],
+  oracles: [{ type: 'state-key-equals', stateKey: 'config/server/timeout', value: 60 }],
   buildSession: () => baseConversation('b02', 3),
+  duplicateRules: [{ family: 'read' }],
+  capabilities: ['current-state-singularity'],
   declareAnchors: (session, service, seqs) => {
     const timeout = { namespace: 'config', entity: 'server', property: 'timeout' }
     service.declare(session, {
@@ -180,25 +210,16 @@ const b02: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastUser() as never }],
     })
   },
-}
+})
 
-const b03: ScenarioDefinition = {
+const b03 = scenario({
   id: 'B03-evidence-vs-narrative',
-  sidecar: {
-    version: 1,
-    id: 'B03-evidence-vs-narrative',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-failed-tests' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue and report test status.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'failure-open', failureId: 'failure:call-2' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'test' }] },
-    recall: { required: false },
-    classification: { expectedCapability: ['empirical-authority'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-failed-tests',
+  foldMode: 'leaf',
+  continuation: ['Continue and report test status.'],
+  oracles: [{ type: 'failure-open', failureId: 'failure:call-2' }],
   buildSession: () => {
     const session = Session.create(SessionId('ef-eval-b03'))
     closedTurn(session, 1, 'run the suite', true)
@@ -207,25 +228,18 @@ const b03: ScenarioDefinition = {
     session.append('turn/start', { turn: 4 })
     return session
   },
-}
+  duplicateRules: [{ family: 'test' }],
+  capabilities: ['empirical-authority'],
+})
 
-const b04: ScenarioDefinition = {
+const b04 = scenario({
   id: 'B04-failure-resolution',
-  sidecar: {
-    version: 1,
-    id: 'B04-failure-resolution',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-verification' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue with the next task.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'failure-retired', failureId: 'failure:call-1' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'test' }] },
-    recall: { required: false },
-    classification: { expectedCapability: ['failure-lifecycle'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-verification',
+  foldMode: 'leaf',
+  continuation: ['Continue with the next task.'],
+  oracles: [{ type: 'failure-retired', failureId: 'failure:call-1' }],
   buildSession: () => {
     const session = Session.create(SessionId('ef-eval-b04'))
     closedTurn(session, 1, 'run the suite', true, { callId: ToolCallId('call-1'), failed: true })
@@ -233,30 +247,25 @@ const b04: ScenarioDefinition = {
     session.append('turn/start', { turn: 3 })
     return session
   },
+  duplicateRules: [{ family: 'test' }],
+  capabilities: ['failure-lifecycle'],
   declareAnchors: (session, service, seqs) => {
     // VERIFIED with empirical evidence (the successful retest tool result).
     service.verifyFailure(session, 'failure:call-1', [{ seq: seqs.lastSuccessfulToolResult() as never }])
   },
-}
+})
 
-const b05: ScenarioDefinition = {
+const b05 = scenario({
   id: 'B05-pending-obligation',
-  sidecar: {
-    version: 1,
-    id: 'B05-pending-obligation',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'before-integration-test' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'obligation-open', obligationId: 'B05-obligation' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'test' }] },
-    recall: { required: false },
-    classification: { expectedCapability: ['obligation-continuity'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'before-integration-test',
+  foldMode: 'leaf',
+  continuation: ['Continue.'],
+  oracles: [{ type: 'obligation-open', obligationId: 'B05-obligation' }],
   buildSession: () => baseConversation('b05', 3),
+  duplicateRules: [{ family: 'test' }],
+  capabilities: ['obligation-continuity'],
   declareAnchors: (session, service, seqs) => {
     service.declare(session, {
       id: 'B05-obligation',
@@ -267,45 +276,31 @@ const b05: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastUser() as never }],
     })
   },
-}
+})
 
-const b06: ScenarioDefinition = {
+const b06 = scenario({
   id: 'B06-exact-identifier',
-  sidecar: {
-    version: 1,
-    id: 'B06-exact-identifier',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-artifact-creation' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Reference the artifact hash exactly.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'sha256:9f2c1e' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'read' }] },
-    recall: { required: true },
-    classification: { expectedCapability: ['exact-recoverability'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-artifact-creation',
+  foldMode: 'leaf',
+  continuation: ['Reference the artifact hash exactly.'],
+  oracles: [{ type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'sha256:9f2c1e' }],
   buildSession: () => baseConversation('b06 artifact sha256:9f2c1e committed', 4),
-}
+  maxActions: 6,
+  duplicateRules: [{ family: 'read' }],
+  recallRequired: true,
+  capabilities: ['exact-recoverability'],
+})
 
-const b07: ScenarioDefinition = {
+const b07 = scenario({
   id: 'B07-tool-pairing-boundary',
-  sidecar: {
-    version: 1,
-    id: 'B07-tool-pairing-boundary',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'near-tool-pair' },
-    fold: { mode: 'leaf', target: 'balanced-span' },
-    continuation: { input: ['Continue.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'tool-action-present', family: 'read' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['structural-legality'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'near-tool-pair',
+  foldMode: 'leaf',
+  continuation: ['Continue.'],
+  oracles: [{ type: 'tool-action-present', family: 'read' }],
   buildSession: () => {
     const session = Session.create(SessionId('ef-eval-b07'))
     closedTurn(session, 1, 'read the file', true, { callId: ToolCallId('call-1'), failed: false })
@@ -313,107 +308,69 @@ const b07: ScenarioDefinition = {
     session.append('turn/start', { turn: 3 })
     return session
   },
-}
+  capabilities: ['structural-legality'],
+})
 
-const b08: ScenarioDefinition = {
+const b08 = scenario({
   id: 'B08-repeated-leaf-folds',
-  sidecar: {
-    version: 1,
-    id: 'B08-repeated-leaf-folds',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-leaf-accumulation' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'tool-action-present', family: 'read' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['monotonic-fold-frontier'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-leaf-accumulation',
+  foldMode: 'leaf',
+  continuation: ['Continue.'],
+  oracles: [{ type: 'tool-action-present', family: 'read' }],
   buildSession: () => baseConversation('b08', 8),
-}
+  capabilities: ['monotonic-fold-frontier'],
+})
 
-const b09: ScenarioDefinition = {
+const b09 = scenario({
   id: 'B09-root-rebase',
-  sidecar: {
-    version: 1,
-    id: 'B09-root-rebase',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-leaf-accumulation' },
-    fold: { mode: 'root', target: 'full-history' },
-    continuation: { input: ['Continue.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'tool-action-present', family: 'read' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['leaf-root-lifecycle', 'provenance-exactness'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'after-leaf-accumulation',
+  foldMode: 'root',
+  continuation: ['Continue.'],
+  oracles: [{ type: 'tool-action-present', family: 'read' }],
   buildSession: () => baseConversation('b09', 6),
-}
+  capabilities: ['leaf-root-lifecycle', 'provenance-exactness'],
+})
 
-const b10: ScenarioDefinition = {
+const b10 = scenario({
   id: 'B10-session-isolation',
-  sidecar: {
-    version: 1,
-    id: 'B10-session-isolation',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'two-sessions' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Recall the other session checkpoint.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'no-cross-session-recall' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['tenant-session-separation'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'two-sessions',
+  foldMode: 'leaf',
+  continuation: ['Recall the other session checkpoint.'],
+  oracles: [{ type: 'no-cross-session-recall' }],
   buildSession: () => baseConversation('b10', 4),
-}
+  capabilities: ['tenant-session-separation'],
+})
 
-const b11: ScenarioDefinition = {
+const b11 = scenario({
   id: 'B11-restart',
-  sidecar: {
-    version: 1,
-    id: 'B11-restart',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'before-restart' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue after restart.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'tool-action-present', family: 'recall' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: true },
-    classification: { expectedCapability: ['durable-recall'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'before-restart',
+  foldMode: 'leaf',
+  continuation: ['Continue after restart.'],
+  oracles: [{ type: 'tool-action-present', family: 'recall' }],
   buildSession: () => baseConversation('b11', 4),
-}
+  recallRequired: true,
+  capabilities: ['durable-recall'],
+})
 
-const b12: ScenarioDefinition = {
+const b12 = scenario({
   id: 'B12-state-only-checkpoint',
-  sidecar: {
-    version: 1,
-    id: 'B12-state-only-checkpoint',
-    workload: 'coding',
-    tier: 'hard',
-    source: { sessionRole: 'parent', boundaryLabel: 'zero-llm-fold' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Continue.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'state-key-equals', stateKey: 'scope/work/public-api', value: 'do not change the public API' },
-      { type: 'anchor-active', anchorId: 'B12-constraint' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['deterministic-machine-handoff'] },
-  },
+  workload: 'coding',
+  tier: 'hard',
+  boundaryLabel: 'zero-llm-fold',
+  foldMode: 'leaf',
+  continuation: ['Continue.'],
+  oracles: [{ type: 'state-key-equals', stateKey: 'scope/work/public-api', value: 'do not change the public API' },
+      { type: 'anchor-active', anchorId: 'B12-constraint' }],
   buildSession: () => baseConversation('b12', 4),
+  capabilities: ['deterministic-machine-handoff'],
   declareAnchors: (session, service, seqs) => {
     service.declare(session, {
       id: 'B12-constraint',
@@ -424,27 +381,20 @@ const b12: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastUser() as never }],
     })
   },
-}
+})
 
 /** X-class exploratory scenarios (diagnostic; failures produce incidents). */
-const x01: ScenarioDefinition = {
+const x01 = scenario({
   id: 'X01-rejected-approach-resurfaces',
-  sidecar: {
-    version: 1,
-    id: 'X01-rejected-approach-resurfaces',
-    workload: 'research',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-rejection' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Consider all approaches again.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'anchor-active', anchorId: 'X01-rejection' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['rejected-branch-retention'] },
-  },
+  workload: 'research',
+  tier: 'exploratory',
+  boundaryLabel: 'after-rejection',
+  foldMode: 'leaf',
+  continuation: ['Consider all approaches again.'],
+  oracles: [{ type: 'anchor-active', anchorId: 'X01-rejection' }],
   buildSession: () => baseConversation('x01 approach B rejected for speed', 4),
+  maxActions: 6,
+  capabilities: ['rejected-branch-retention'],
   declareAnchors: (session, service, seqs) => {
     service.declare(session, {
       id: 'X01-rejection',
@@ -455,26 +405,18 @@ const x01: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastUser() as never }],
     })
   },
-}
+})
 
-const x02: ScenarioDefinition = {
+const x02 = scenario({
   id: 'X02-uncertainty-across-folds',
-  sidecar: {
-    version: 1,
-    id: 'X02-uncertainty-across-folds',
-    workload: 'research',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'open-hypothesis' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['What is the root cause?'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'state-key-equals', stateKey: 'hypothesis/x01/root-cause', value: 'race condition (unconfirmed)' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: false },
-    classification: { expectedCapability: ['uncertainty-retention'] },
-  },
+  workload: 'research',
+  tier: 'exploratory',
+  boundaryLabel: 'open-hypothesis',
+  foldMode: 'leaf',
+  continuation: ['What is the root cause?'],
+  oracles: [{ type: 'state-key-equals', stateKey: 'hypothesis/x01/root-cause', value: 'race condition (unconfirmed)' }],
   buildSession: () => baseConversation('x01 race condition suspected but unconfirmed', 4),
+  capabilities: ['uncertainty-retention'],
   declareAnchors: (session, service, seqs) => {
     service.declare(session, {
       id: 'X02-hypothesis',
@@ -485,91 +427,67 @@ const x02: ScenarioDefinition = {
       sourceRefs: [{ seq: seqs.lastAssistant() as never }],
     })
   },
-}
+})
 
-const x06: ScenarioDefinition = {
+const x06 = scenario({
   id: 'X06-child-agent-handoff',
-  sidecar: {
-    version: 1,
-    id: 'X06-child-agent-handoff',
-    workload: 'multi-agent',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'after-child-result' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Use the child result.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'child-agent result' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: true },
-    classification: { expectedCapability: ['child-agent-handoff'] },
-  },
+  workload: 'multi-agent',
+  tier: 'exploratory',
+  boundaryLabel: 'after-child-result',
+  foldMode: 'leaf',
+  continuation: ['Use the child result.'],
+  oracles: [{ type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'child-agent result' }],
   buildSession: () => baseConversation('x01 child-agent result: benchmark complete, 12 scenarios pass', 4),
-}
+  maxActions: 6,
+  recallRequired: true,
+  capabilities: ['child-agent-handoff'],
+})
 
 export const HARD_SCENARIOS: readonly ScenarioDefinition[] = [
   b01, b02, b03, b04, b05, b06, b07, b08, b09, b10, b11, b12,
 ]
 
-const x03: ScenarioDefinition = {
+const x03 = scenario({
   id: 'X03-cross-checkpoint-dependency',
-  sidecar: {
-    version: 1,
-    id: 'X03-cross-checkpoint-dependency',
-    workload: 'coding',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'dependency-across-folds' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Apply the change discussed before the first fold.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'dependency fact' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: true },
-    classification: { expectedCapability: ['cross-checkpoint-dependency'] },
-  },
+  workload: 'coding',
+  tier: 'exploratory',
+  boundaryLabel: 'dependency-across-folds',
+  foldMode: 'leaf',
+  continuation: ['Apply the change discussed before the first fold.'],
+  oracles: [{ type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'dependency fact' }],
   buildSession: () => baseConversation('x03 dependency fact recorded before any fold', 4),
-}
+  maxActions: 6,
+  recallRequired: true,
+  capabilities: ['cross-checkpoint-dependency'],
+})
 
-const x04: ScenarioDefinition = {
+const x04 = scenario({
   id: 'X04-long-distance-rationale',
-  sidecar: {
-    version: 1,
-    id: 'X04-long-distance-rationale',
-    workload: 'research',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'rationale-needed-later' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Explain why the current design was chosen.'], maxActions: 4 },
-    oracle: { success: [
-      { type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'rationale' },
-    ] },
-    behavior: { duplicateRules: [] },
-    recall: { required: true },
-    classification: { expectedCapability: ['rationale-durability'] },
-  },
+  workload: 'research',
+  tier: 'exploratory',
+  boundaryLabel: 'rationale-needed-later',
+  foldMode: 'leaf',
+  continuation: ['Explain why the current design was chosen.'],
+  oracles: [{ type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'rationale' }],
   buildSession: () => baseConversation('x04 rationale: the design was chosen for determinism', 4),
-}
+  recallRequired: true,
+  capabilities: ['rationale-durability'],
+})
 
-const x05: ScenarioDefinition = {
+const x05 = scenario({
   id: 'X05-old-search-evidence-resurfaces',
-  sidecar: {
-    version: 1,
-    id: 'X05-old-search-evidence-resurfaces',
-    workload: 'search',
-    tier: 'exploratory',
-    source: { sessionRole: 'parent', boundaryLabel: 'evidence-resurfaces' },
-    fold: { mode: 'leaf', target: 'oldest-safe-span' },
-    continuation: { input: ['Reuse the earlier search evidence.'], maxActions: 6 },
-    oracle: { success: [
-      { type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'search evidence' },
-    ] },
-    behavior: { duplicateRules: [{ family: 'search' }] },
-    recall: { required: true },
-    classification: { expectedCapability: ['search-evidence-continuity'] },
-  },
+  workload: 'search',
+  tier: 'exploratory',
+  boundaryLabel: 'evidence-resurfaces',
+  foldMode: 'leaf',
+  continuation: ['Reuse the earlier search evidence.'],
+  oracles: [{ type: 'recall-contains', checkpointId: 'RECALL_TARGET', substring: 'search evidence' }],
   buildSession: () => baseConversation('x05 search evidence: the upstream issue was fixed in 0.1.7', 4),
-}
+  maxActions: 6,
+  duplicateRules: [{ family: 'search' }],
+  recallRequired: true,
+  capabilities: ['search-evidence-continuity'],
+})
 
 export const EXPLORATORY_SCENARIOS: readonly ScenarioDefinition[] = [x01, x02, x03, x04, x05, x06]
 
