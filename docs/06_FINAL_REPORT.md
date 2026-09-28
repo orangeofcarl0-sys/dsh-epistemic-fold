@@ -58,14 +58,43 @@ Session (immutable log)
 | ProjectionBounded | S07（1000 epochs heads=1, <4KB）, S08（history 10x 状态大小平坦） |
 | **PMA(EF) < PMA(Basic)** | bench-baseline（同历史 8 步：EF 1744 < Basic 2059 invalidated tokens；每次 fold EF 少作废一个 frozen checkpoint 的量） |
 
-## 4. 关键数字（配对基线，fixture 见 tests/bench-baseline.spec.ts）
+## 4. 关键数字（R0-C 修正后的配对基线，fixture 见 tests/bench-baseline.spec.ts）
+
+> **指标修正（R0-C）**：早期报告把跨 arm 门指标误标为 "PMA(EF) < PMA(Basic)"。
+> 按 PMA = absolutePrefixInvalidation / reclaimed 的定义，两条 arm 的比率分别是
+> Basic ≈1.10、EF ≈1.15 —— **EF 的比率更高**。真正成立并已由测试钉死的是
+> **绝对 prefix 失效量（AbsolutePrefixInvalidation）EF < Basic**。两者是不同的
+> 论断，不得混用。
+
+12 步同历史配对（threshold 1200，每步 ~130 tokens）：
 
 ```text
-arm=B1-basic | invalidatedSuffixTotal=2059 | reclaimed=1639 | folds=4
-arm=E2-ef   | invalidatedSuffixTotal=1744 | reclaimed= 864 | folds=4
+arm=B1-basic | absInvalidation=2259 | stableReuse=6937 | PMA=1.10 | reclaimed=2049 | leaf=2
+arm=E2-ef   | absInvalidation=2154 | stableReuse=7298 | PMA=1.15 | reclaimed=1880 | leaf=2
 ```
 
-结论：同历史、同压力阈值下，EF 的累计 prefix 失效量低 15%，且随 fold 次数线性扩大优势（每次 fold EF 免作废全部 frozen prefix，Basic 每次全量重写）。EF reclaimed 较低是因为 frozen checkpoint 计入压力总量（这正是 M2 计划 §15 root rebase 预算存在的理由）。
+- 绝对 prefix 失效：EF 低 ~4.6%；prefix 复用（stable prefix tokens）EF 高 ~5.2%。
+- 机制可见：Basic 每次 fold 步都在 position 0 全量重写；EF 的 fold 步变异点在
+  frozen frontier 之后（mut>0）。
+
+**Root rebase 的真实权衡（20 步带 rebase 的 arm）**：root rebase 一次全量重写
+（inv≈404）买来 frozen load 塌缩（274→137），但短窗口内 EF 的绝对失效
+（3598）高于 Basic（3404）——RootResetCost vs StableLeafBenefit 的量化呈现。
+同时发现并修复了 **leaf/root 震荡**：root 后的陈旧 advice 会让之后每步都
+触发 rebase（root=8 的病态），现已加入 cooldown（压力 fold ≥5 次后才能再次
+建议 rebase）+ compactNow 后使陈旧 advice 失效。
+
+**ρ break-even 曲线**（C_ρ = miss + ρ·hit）：
+
+```text
+ρ=0    basic=3819  ef=3714   delta=105    （无 cache 折扣：EF 绝对成本低）
+ρ=0.29 （break-even：Δhit·ρ = Δmiss）
+ρ=1    basic=10756 ef=11012  delta=-256   （cache 免费：EF 的 checkpoint recurring 成本主导）
+```
+
+结论：EF 的 cache 局部性收益只有在 provider 缓存折扣足够大（本 fixture
+ρ ≲ 0.29）时才能兑现为成本优势；折扣小时 frozen checkpoint 的重复计费
+反而占优。这正是 R0-C 要求把 economics 从单一指标升级为曲线的原因。
 
 ## 5. 与 RFC 的偏差（已声明）
 

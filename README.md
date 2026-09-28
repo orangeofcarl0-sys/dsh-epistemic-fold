@@ -72,6 +72,8 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **M2** | Fold Frontier, leaf/root folds, prefix fingerprint proofs · Fold Frontier、leaf/root 折叠、prefix 指纹证明 | ✅ C2.1–C2.4 |
 | **M3a** | Deterministic current state (anchors, authority, projection) · 确定性当前状态 | ✅ ALR=0 · SSR=0 · provenance=100% · bounded |
 | **R0-A** | Cross-layer integration closure: marker protocol, frontier hard invariant, recall isolation, commit records, authority gate, disjoint rendering · 跨层组合正确性闭合 | ✅ 65 tests |
+| **R0-B** | Native plugin entry, package manifest, composition smoke (mount/fold/restart), CI lanes · 原生插件入口 + 组装冒烟 + CI | ✅ |
+| **R0-C** | Corrected metrics (absolute invalidation vs PMA), three-layer economics, root rebase + anti-oscillation, ρ break-even curve · 指标修正 + 三层经济学 | ✅ 71 tests |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -81,14 +83,18 @@ section F) · M1/M3b/M4 及之后**刻意未实现**——每项都需要 benchm
 对应的失败证据（见 [05 文档](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)第 F 节）。
 
 Paired-baseline evidence (identical history through DSH Basic vs EF): EF
-invalidates **15% fewer prefix tokens** over the measured run, with the gap
-growing per fold — every Basic fold rewrites the whole prefix, EF only ever
-compacts past the frontier (see
+invalidates **fewer absolute prefix tokens** and keeps **more of the history
+cache-warm**, with every Basic fold rewriting the whole prefix while EF only
+compacts past the frontier. The honest trade-off is quantified too: frozen
+checkpoints charge a recurring prompt cost, so EF's cache locality only
+converts into cost advantage when the provider's cache discount is
+sufficiently deep (ρ break-even curve in
 [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md)) ·
-配对基线证据（相同历史分别跑 DSH Basic 与 EF）：测量区间内 EF 的 prefix
-失效 token 量**低 15%**，且差距随折叠次数扩大 —— Basic 每次折叠全量重写
-prefix，EF 只折叠 frontier 之后（见
-[最终报告](docs/06_FINAL_REPORT.md)）。
+配对基线证据（相同历史分别跑 DSH Basic 与 EF）：EF 的**绝对 prefix 失效量
+更低**、**cache-warm 复用更多**——Basic 每次折叠全量重写 prefix，EF 只折叠
+frontier 之后。代价也如实量化：frozen checkpoint 有重复计费成本，EF 的
+cache 局部性只有在 provider 缓存折扣足够深时才兑现为成本优势（ρ break-even
+曲线见 [最终报告](docs/06_FINAL_REPORT.md)）。
 
 ## Development · 开发方式
 

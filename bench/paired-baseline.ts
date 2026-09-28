@@ -1,18 +1,34 @@
 /**
- * Paired-baseline benchmark harness (test spec §8/§12, local architecture
- * metrics): drives identical conversation history through two compaction
- * arms — DSH Basic and Epistemic Fold — and records the prefix-stability
- * economics of every step.
+ * Paired-baseline benchmark harness (R0-C, test spec §8/§12/§28): identical
+ * conversation history driven through two compaction arms — DSH Basic and
+ * Epistemic Fold — recording three layers of economics.
  *
- * Metrics per arm:
- *   stablePrefixBytes / stablePrefixTokens — the unchanged leading history
- *     between consecutive model requests.
- *   firstMutationPosition — first model-history node that differs from the
- *     previous step (PMA's numerator source when no provider cache telemetry
- *     exists).
- *   invalidatedSuffixTokens — priced tokens from the first mutation to the
- *     history end; summed over steps this is the cache-equivalent cost.
- *   reclaimedTokens / leafFoldCount / rootFoldCount — compaction accounting.
+ * Layer 1 — Architecture locality (per step):
+ *   firstMutationPosition    first model-history node differing from the
+ *                            previous step
+ *   invalidatedSuffixTokens  tokens the PREVIOUS request had already priced
+ *                            (cache-warm) that this request can no longer reuse
+ *   stablePrefixTokens       tokens that DID survive from the previous request
+ *
+ * Layer 2 — Context efficiency:
+ *   promptTokens per step; reclaimed tokens per fold; frozen-checkpoint load
+ *   (the recurring price frozen prefixes charge every later request).
+ *
+ * Layer 3 — Cache-adjusted cost:
+ *   C_ρ = Σ missTokens + ρ · Σ hitTokens across the run, reported for
+ *   ρ ∈ {0, 0.1, 0.2, 0.5, 1} — the break-even curve answering "at what cache
+ *   discount does EF beat Basic?" without hardcoding any provider pricing.
+ *
+ * The prefix-mutation RATIO (PMA = absolutePrefixInvalidation / reclaimed) is
+ * reported per arm as a SEPARATE field; the cross-arm gate is on ABSOLUTE
+ * prefix invalidation — the two claims differ and must not be conflated
+ * (R0-C metric correction).
+ *
+ * Step shape: [rebase window — turns CLOSED] → [grow: open turn, append] →
+ * [automatic pressure fold — needs the open turn] → close turn happens in the
+ * NEXT step's rebase window. growTurn opens one turn per step and leaves it
+ * open; the rebase hook closes it before any root fold and reopens a fresh
+ * turn afterwards.
  *
  * No live model is needed: the semantic face is deterministic (harness
  * adapter), so the measurement isolates the prefix architecture.
@@ -21,12 +37,13 @@
  */
 
 import type { Session } from '@deepseek-ai/dsh-session'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import { sha256Hex } from '../src/hash.ts'
-import { foldAgent } from '../tests/harness.ts'
-import type { Harness } from '../tests/harness.ts'
 import type { Agent } from '@deepseek-ai/dsh-agent'
+import { sha256Hex } from '../src/hash.ts'
+import type { Harness } from '../tests/harness.ts'
+
+const BENCH_SIGNAL = new AbortController().signal
+const BENCH_AGENT_OPTIONS = { provider: 'test-model', model: 'test-model' }
 
 /** Model-history fingerprint of one surface snapshot: per-node digests. */
 function historyDigests(session: Session): string[] {
@@ -44,30 +61,7 @@ export function firstMutationPosition(previous: readonly string[], current: read
   return Math.min(previous.length, current.length)
 }
 
-export interface StepSample {
-  readonly step: number
-  readonly totalTokens: number
-  readonly firstMutationPosition: number
-  readonly invalidatedSuffixTokens: number
-  readonly stablePrefixBytes: number
-}
-
-export interface BaselineResult {
-  readonly arm: string
-  readonly samples: readonly StepSample[]
-  /** Sum of per-step invalidated suffix tokens (lower is better). */
-  readonly invalidatedSuffixTokensTotal: number
-  /** Tokens reclaimed by compaction across the run. */
-  readonly reclaimedTokensTotal: number
-  readonly leafFoldCount: number
-  readonly rootFoldCount: number
-}
-
-interface BenchEngine {
-  compactIfNeeded(agent: Agent, trigger: 'pressure', signal: AbortSignal): Promise<unknown>
-}
-
-/** Priced tokens from `position` to the end of ONE measurement (old view). */
+/** Priced tokens from `position` to the end of one measurement (old view). */
 function suffixTokens(measurement: { nodes: readonly { tokens: number }[] }, position: number): number {
   let total = 0
   for (let index = position; index < measurement.nodes.length; index += 1) {
@@ -76,10 +70,64 @@ function suffixTokens(measurement: { nodes: readonly { tokens: number }[] }, pos
   return total
 }
 
+/** Priced tokens BEFORE `position` — the part that stayed warm. */
+function prefixTokens(measurement: { nodes: readonly { tokens: number }[] }, position: number): number {
+  let total = 0
+  for (let index = 0; index < position && index < measurement.nodes.length; index += 1) {
+    total += measurement.nodes[index]?.tokens ?? 0
+  }
+  return total
+}
+
+export interface StepSample {
+  readonly step: number
+  readonly promptTokens: number
+  readonly firstMutationPosition: number
+  /** Cache-warm tokens from the previous request that this request lost. */
+  readonly invalidatedSuffixTokens: number
+  /** Tokens that survived from the previous request (cache hits). */
+  readonly stablePrefixTokens: number
+  /** Tokens of history appended this step (fresh cache misses by definition). */
+  readonly appendedTokens: number
+  /** Frozen-checkpoint token load after the step (EF arm only; Basic: 0). */
+  readonly checkpointLoad: number
+}
+
+/** Cache-adjusted cost for one discount factor: C_ρ = miss + ρ · hit. */
+export interface CacheCostPoint {
+  readonly rho: number
+  readonly hitTokens: number
+  readonly missTokens: number
+  readonly cost: number
+}
+
+export interface BaselineResult {
+  readonly arm: string
+  readonly samples: readonly StepSample[]
+  /** Layer-1 gate metric: Σ invalidatedSuffixTokens (lower is better). */
+  readonly absolutePrefixInvalidation: number
+  /** Σ stablePrefixTokens — total prefix reuse across the run. */
+  readonly stablePrefixTokensTotal: number
+  /** The prefix-mutation RATIO: absolutePrefixInvalidation / reclaimed. */
+  readonly prefixMutationRatio: number
+  readonly reclaimedTokensTotal: number
+  readonly leafFoldCount: number
+  readonly rootFoldCount: number
+  /** Frozen-checkpoint token load at the END of the run (recurring cost). */
+  readonly finalCheckpointLoad: number
+  /** Layer-3 break-even curve. */
+  readonly cacheEconomics: readonly CacheCostPoint[]
+}
+
+interface BenchEngine {
+  compactIfNeeded(agent: Agent, trigger: 'pressure', signal: AbortSignal): Promise<unknown>
+}
+
 /**
  * Run one arm over a growing conversation. `grow` appends one unit of new
- * history per step; after each append the arm's automatic pressure policy
- * runs exactly once, then the model history is re-fingerprinted.
+ * history per step (inside a turn it opens and leaves open for the pressure
+ * fold). Each step: close the previous turn → optional rebase window (root
+ * folds need no open turn) → grow → automatic pressure fold.
  */
 export async function runPairedBaseline(options: {
   arm: string
@@ -88,24 +136,60 @@ export async function runPairedBaseline(options: {
   createSession: () => Session
   steps: number
   grow: (session: Session, step: number) => void
-  signal?: AbortSignal
+  /**
+   * Optional idle rebase hook, invoked each step with the turn CLOSED
+   * (manual root folds are only admissible with no open turn). Returns the
+   * number of root folds executed.
+   */
+  rebase?: (session: Session) => Promise<number>
+  signal?: AbortSignal | undefined
 }): Promise<BaselineResult> {
   const { harness, steps, grow } = options
-  const signal = options.signal ?? new AbortController().signal
+  const signal = options.signal ?? BENCH_SIGNAL
   const session = options.createSession()
-  const agent: Agent = foldAgent(session)
+  const agent: Agent = { session, options: BENCH_AGENT_OPTIONS } as unknown as Agent
   const meter = harness.ctx.tokenMeter
+  let virtualTurn = 1_000_000
+  let turnOpen = false
+  const closeTurn = (): void => {
+    if (turnOpen) {
+      session.append('turn/end', { turn: virtualTurn, reason: { kind: 'completed' } })
+      turnOpen = false
+    }
+  }
+  const openTurn = (): void => {
+    if (!turnOpen) {
+      virtualTurn += 1
+      session.append('turn/start', { turn: virtualTurn })
+      turnOpen = true
+    }
+  }
   const samples: StepSample[] = []
   let previous = historyDigests(session)
   let previousMeasurement = meter.measure(session)
   let invalidatedTotal = 0
+  let stableTotal = 0
   let reclaimedTotal = 0
   let leafFoldCount = 0
   let rootFoldCount = 0
-  let previousTotal = meter.measure(session).totalTokens
 
   for (let step = 1; step <= steps; step += 1) {
+    // Rebase window: close the previous step's turn first — root folds are
+    // only admissible with no open turn.
+    closeTurn()
+    if (options.rebase !== undefined) {
+      rootFoldCount += await options.rebase(session)
+    }
+    // Reopen a turn: the grow append and the pressure leaf fold need one.
+    openTurn()
     grow(session, step)
+    const appendedStart = previousMeasurement.nodes.length
+    let appendedTokens = 0
+    const appendedMeasurement = meter.measure(session)
+    for (let index = appendedStart; index < appendedMeasurement.nodes.length; index += 1) {
+      appendedTokens += appendedMeasurement.nodes[index]?.tokens ?? 0
+    }
+
     const beforeFolds = meter.measure(session).totalTokens
     const engine = harness.engine as unknown as BenchEngine
     try {
@@ -119,42 +203,67 @@ export async function runPairedBaseline(options: {
       reclaimedTotal += beforeFolds - afterTotal
       leafFoldCount += 1
     }
+    // Close the turn so the next rebase window starts from a clean state.
+    closeTurn()
 
     const current = historyDigests(session)
     const measurement = meter.measure(session)
     const position = firstMutationPosition(previous, current)
-    // Cache economics: the INVALIDATED tokens are the ones the previous
-    // request had already priced (cache-warm) and this request can no longer
-    // reuse — the OLD measurement's suffix from the first mutation onward.
     const invalidated = suffixTokens(previousMeasurement, position)
+    const stable = prefixTokens(measurement, position)
     invalidatedTotal += invalidated
-    const stablePrefixBytes = previous.length === 0
-      ? 0
-      : position * 64 // sha256 hex digests, 64 bytes per node
+    stableTotal += stable
+
+    let checkpointLoad = 0
+    const engineAny = harness.engine as unknown as {
+      efConfig?: { frozenCheckpointTokenBudget?: number }
+    }
+    if (engineAny.efConfig !== undefined) {
+      const { frozenCheckpointLoad } = await import('../src/leaf-policy.ts')
+      checkpointLoad = frozenCheckpointLoad(session, measurement).tokens
+    }
+
     samples.push({
       step,
-      totalTokens: measurement.totalTokens,
+      promptTokens: measurement.totalTokens,
       firstMutationPosition: position,
       invalidatedSuffixTokens: invalidated,
-      stablePrefixBytes,
+      stablePrefixTokens: stable,
+      appendedTokens,
+      checkpointLoad,
     })
     previous = current
     previousMeasurement = measurement
-    previousTotal = afterTotal
-    void previousTotal
   }
+
+  const hitTokens = stableTotal
+  const missTokens = invalidatedTotal + samples.reduce((total, sample) => total + sample.appendedTokens, 0)
+  const cacheEconomics = [0, 0.1, 0.2, 0.5, 1].map(rho => ({
+    rho,
+    hitTokens,
+    missTokens,
+    cost: missTokens + rho * hitTokens,
+  }))
 
   return {
     arm: options.arm,
     samples,
-    invalidatedSuffixTokensTotal: invalidatedTotal,
+    absolutePrefixInvalidation: invalidatedTotal,
+    stablePrefixTokensTotal: stableTotal,
+    prefixMutationRatio: reclaimedTotal === 0 ? 0 : invalidatedTotal / reclaimedTotal,
     reclaimedTokensTotal: reclaimedTotal,
     leafFoldCount,
     rootFoldCount,
+    finalCheckpointLoad: samples[samples.length - 1]?.checkpointLoad ?? 0,
+    cacheEconomics,
   }
 }
 
-/** Standard grow step: one closed user/assistant turn of fixture text. */
+/**
+ * Standard grow step: appends one user message INSIDE the turn the runner
+ * opened. Turn lifecycle (open for the pressure fold, close for the rebase
+ * window) is owned by the runner.
+ */
 export function growTurn(text: string): (session: Session, step: number) => void {
   return (session, step) => {
     session.append('user/message', createUserMessage({
@@ -164,7 +273,28 @@ export function growTurn(text: string): (session: Session, step: number) => void
   }
 }
 
-/** Force a `ContentBlock[]` summary comparison helper for diagnostics. */
-export function summaryBytes(blocks: readonly ContentBlock[]): number {
-  return blocks.reduce((total, block) => total + (block.type === 'text' ? block.text.length : 0), 0)
+/**
+ * The EF arm's rebase window: reopen a turn (pressure folds need one),
+ * consult the last frozen-budget advice, and when a rebase is recommended
+ * close the turn, run the manual root fold, and leave a fresh open turn for
+ * this step's pressure fold. Returns the number of root folds executed.
+ */
+export function createRootRebaseHook(harness: Harness): (session: Session) => Promise<number> {
+  return async session => {
+    const engine = harness.engine as unknown as {
+      lastRootRebaseAdvice?: { recommended: boolean } | undefined
+      compactNow(agent: Agent, signal: AbortSignal): Promise<unknown>
+    }
+    // The advice was recorded during the PREVIOUS step's pressure fold; the
+    // runner has already closed the turn, so the idle fold is admissible.
+    if (engine.lastRootRebaseAdvice?.recommended !== true) return 0
+    // The manual path runs inside the agent's maintenance bracket.
+    const idleAgent = {
+      session,
+      options: BENCH_AGENT_OPTIONS,
+      runMaintenance: async (task: (signal: AbortSignal) => Promise<unknown>) => task(BENCH_SIGNAL),
+    } as unknown as Agent
+    await engine.compactNow(idleAgent, BENCH_SIGNAL)
+    return 1
+  }
 }

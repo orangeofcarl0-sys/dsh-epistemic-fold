@@ -57,6 +57,9 @@ import type {
 /** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
 const RATIONALE_MAX_TOKENS = 400
 
+/** Pressure folds required between two root rebases (R0-C anti-oscillation). */
+const ROOT_REBASE_COOLDOWN = 5
+
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
   readonly bundleStore?: FoldBundleStore
@@ -80,6 +83,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Last bundle published by this engine (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
   private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
+  /** Pressure folds since the last root rebase — the anti-oscillation cooldown. */
+  private stepsSinceRootRebase = Number.POSITIVE_INFINITY
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -191,7 +196,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     this.candidates.prepare(agent.session, candidate)
     try {
       const result = await super.compactNow(...args)
-      if (result !== null) await this.recordCommit(candidate, result)
+      if (result !== null) {
+        await this.recordCommit(candidate, result)
+        this.stepsSinceRootRebase = 0
+        // Invalidate the stale advice: without this, the rebase consumer
+        // re-reads the pre-root recommendation every step and the arm
+        // degenerates into leaf/root thrashing (R0-C anti-oscillation).
+        this.lastRootRebaseAdviceValue = undefined
+      }
       return result
     } finally {
       this.candidates.clear(agent.session)
@@ -292,8 +304,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       measurement,
       this.efConfig.frozenCheckpointTokenBudget,
     )
-    this.lastRootRebaseAdviceValue = advice
-    if (advice.recommended) {
+    // Anti-oscillation (R0-C): a root fold resets the frozen prefix, and the
+    // very next leaf fold would immediately re-exceed a tight budget —
+    // without a cooldown the arm degenerates into leaf/root thrashing.
+    const recommended = advice.recommended
+      && this.stepsSinceRootRebase >= ROOT_REBASE_COOLDOWN
+    this.lastRootRebaseAdviceValue = { ...advice, recommended }
+    this.stepsSinceRootRebase += 1
+    if (recommended) {
       this.ctx.logger.warn(
         `[epistemic-fold] frozen checkpoint budget exceeded: ${advice.frozenTokens} tokens across `
         + `${advice.frozenCount} checkpoints (budget ${advice.budget}); a manual root rebase `
