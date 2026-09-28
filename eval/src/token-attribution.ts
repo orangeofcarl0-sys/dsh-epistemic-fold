@@ -55,6 +55,13 @@ export const TOKEN_BUCKETS: readonly TokenBucket[] = [
   'unattributed-envelope',
 ]
 
+/** Checkpoint populations on the surface, needed by the oracle arms. */
+export interface CheckpointCounts {
+  readonly leaf: number
+  readonly root: number
+  readonly basic: number
+}
+
 /** One request's attributed prompt, in tokens, with shares of the total. */
 export interface TokenAttribution {
   readonly buckets: Readonly<Record<TokenBucket, number>>
@@ -66,6 +73,8 @@ export interface TokenAttribution {
   readonly surfaceTokens: number
   /** Tool-schema envelope price, priced from the last logged request header. */
   readonly toolSchemaTokens: number
+  /** How many checkpoints of each kind are on the surface. */
+  readonly checkpoints: CheckpointCounts
 }
 
 /** Fixed density heuristic, mirrored from the meter's own estimator. */
@@ -152,6 +161,7 @@ export function attributeTokens(session: Session, measurement: TokenMeasurement)
   const buckets: Record<TokenBucket, number> = Object.fromEntries(
     TOKEN_BUCKETS.map(bucket => [bucket, 0]),
   ) as Record<TokenBucket, number>
+  const checkpoints: { leaf: number; root: number; basic: number } = { leaf: 0, root: 0, basic: 0 }
   const names = toolNamesByCallId(session)
 
   for (let index = 0; index < nodes.length; index += 1) {
@@ -174,18 +184,22 @@ export function attributeTokens(session: Session, measurement: TokenMeasurement)
       const marker = parseCheckpointMarker(text)
       if (marker === undefined) {
         // A Basic checkpoint: one opaque narrative node, no EF structure.
+        checkpoints.basic += 1
         buckets['checkpoint-basic'] += node.tokens
         continue
       }
       if (marker.mode !== 'leaf') {
+        checkpoints.root += 1
         buckets['checkpoint-root'] += node.tokens
         continue
       }
       const split = splitLeafCheckpointText(text)
       if (split === null) {
+        checkpoints.root += 1
         buckets['checkpoint-root'] += node.tokens
         continue
       }
+      checkpoints.leaf += 1
       const stateTokens = densityPrice(split.state)
       const rationaleTokens = densityPrice(split.rationale)
       buckets['checkpoint-leaf-state'] += stateTokens
@@ -228,7 +242,7 @@ export function attributeTokens(session: Session, measurement: TokenMeasurement)
     TOKEN_BUCKETS.map(bucket => [bucket, total === 0 ? 0 : buckets[bucket] / total]),
   ) as Record<TokenBucket, number>
 
-  return { buckets, total, shares, surfaceTokens, toolSchemaTokens }
+  return { buckets, total, shares, surfaceTokens, toolSchemaTokens, checkpoints }
 }
 
 /** Attribution of one full run: per-step attributions plus bucket totals. */

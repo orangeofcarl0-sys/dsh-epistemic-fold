@@ -7,6 +7,7 @@
 
 import type { BaselineResult } from '../../bench/paired-baseline.ts'
 import type { CompressionIncident, EvalRunResult } from './schema.ts'
+import { TOKEN_BUCKETS } from './token-attribution.ts'
 
 /** Render one arm's BaselineResult as a Markdown table fragment. */
 export function baselineToMarkdown(result: BaselineResult): string {
@@ -25,6 +26,14 @@ export function baselineToMarkdown(result: BaselineResult): string {
     `| promptTokens (total/mean/median/peak/p95) | ${result.promptSummary.totalPromptTokens} / ${result.promptSummary.meanPromptTokens.toFixed(1)} / ${result.promptSummary.medianPromptTokens} / ${result.promptSummary.peakPromptTokens} / ${result.promptSummary.p95PromptTokens} |`,
     `| frozenTokens (mean/peak/share) | ${result.frozenSummary.meanFrozenTokens.toFixed(1)} / ${result.frozenSummary.peakFrozenTokens} / ${(result.frozenSummary.frozenShareOfPrompt * 100).toFixed(1)}% |`,
     `| auxiliaryCompaction calls | ${result.auxiliaryCompaction.callCount} |`,
+    '',
+    '| Token source | Tokens | Share |',
+    '|---|---:|---:|',
+    ...TOKEN_BUCKETS
+      .filter(bucket => result.attribution.totals[bucket] > 0)
+      .map(bucket =>
+        `| ${bucket} | ${result.attribution.totals[bucket]} | ${(result.attribution.shares[bucket] * 100).toFixed(1)}% |`),
+    `| **total** | **${result.attribution.grandTotal}** | 100% |`,
     '',
     '| ρ | Cost |',
     '|---|---|',

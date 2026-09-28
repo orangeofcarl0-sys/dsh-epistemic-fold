@@ -23,6 +23,7 @@ import { evaluateOracles, type VerifierWorld } from '../eval/src/verifier.ts'
 import { classifyIncident } from '../eval/src/incidents.ts'
 import { baselineToMarkdown, resultsToCsv } from '../eval/src/report.ts'
 import { boundaryCaseSchema, evalRunResultSchema } from '../eval/src/schema.ts'
+import { summarizeAttribution } from '../eval/src/token-attribution.ts'
 
 describe('metric formulas (spec 09)', () => {
   it('SPN: first divergence, or the shared length when one is a prefix', () => {
@@ -282,6 +283,7 @@ describe('schemas are closed and reports generated', () => {
       frozenSummary: { meanFrozenTokens: 0, peakFrozenTokens: 0, frozenShareOfPrompt: 0 },
       auxiliaryCompaction: { callCount: 0 },
       cacheEconomics: [{ rho: 0, hitTokens: 0, missTokens: 0, cost: 0 }],
+      attribution: summarizeAttribution([]),
     })).toContain('| absolutePrefixInvalidation | 0 |')
   })
 })

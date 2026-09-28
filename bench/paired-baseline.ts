@@ -47,6 +47,9 @@ import {
   sharedPrefixTokens as sptMetric,
 } from '../eval/src/metrics.ts'
 import type { FrozenSummary, PromptExposure } from '../eval/src/metrics.ts'
+import { attributeTokens } from '../eval/src/token-attribution.ts'
+import type { RunAttribution, TokenAttribution } from '../eval/src/token-attribution.ts'
+import { summarizeAttribution } from '../eval/src/token-attribution.ts'
 import type { Harness } from '../tests/harness.ts'
 
 const BENCH_SIGNAL = new AbortController().signal
@@ -123,6 +126,8 @@ export interface BaselineResult {
   readonly auxiliaryCompaction: AuxiliaryCompactionSummary
   /** Layer-3 break-even curve. */
   readonly cacheEconomics: readonly CacheCostPoint[]
+  /** R1-A token source attribution across the run (per step + bucket totals). */
+  readonly attribution: RunAttribution
 }
 
 interface BenchEngine {
@@ -171,6 +176,7 @@ export async function runPairedBaseline(options: {
     }
   }
   const samples: StepSample[] = []
+  const attributions: TokenAttribution[] = []
   let previous = historyDigests(session)
   let previousMeasurement = meter.measure(session)
   let invalidatedTotal = 0
@@ -239,6 +245,9 @@ export async function runPairedBaseline(options: {
       appendedTokens,
       checkpointLoad,
     })
+    // R1-A: attribute this request's tokens by source. The measurement was
+    // just taken against the current surface, so it cannot be stale.
+    attributions.push(attributeTokens(session, measurement))
     previous = current
     previousMeasurement = measurement
   }
@@ -286,6 +295,7 @@ export async function runPairedBaseline(options: {
       ...(auxOut === undefined ? {} : { outputTokens: auxOut }),
     },
     cacheEconomics,
+    attribution: summarizeAttribution(attributions),
   }
 }
 

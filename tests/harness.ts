@@ -129,6 +129,8 @@ export async function createHarness(
      * checkpoint path (M3a/R1) needs it mounted.
      */
     projection?: boolean
+    /** Extra provider id to register the controlled adapter for (R1 workloads). */
+    workloadModel?: string
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -149,6 +151,12 @@ export async function createHarness(
     return true
   }
   ctx.llm.registerAdapter([MODEL], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  // R1-B workloads route to their own provider id; register the same
+  // controlled adapter so their folds reach the semantic face instead of
+  // failing with "no adapter registered" (which would read as zero cost).
+  if (options.workloadModel !== undefined) {
+    ctx.llm.registerAdapter([options.workloadModel], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })
     : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })) as EpistemicFoldEngine
