@@ -19,6 +19,21 @@ function anchorLine(anchor: Anchor): string {
 }
 
 /**
+ * One open-failure line. The failure's DESCRIPTION matters as much as its
+ * lifecycle: rendering only `[failure] <id> (open)` tells the model that
+ * something is unresolved but not WHAT, which is useless for continuation and
+ * was observed to produce a wrong answer on the live behavioral subset. The
+ * id stays (recall and oracles key on it) alongside the value.
+ */
+function failureLine(anchor: Anchor): string {
+  const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
+  const state = anchor.failureState ?? 'open'
+  return value === undefined || value === '{}'
+    ? `- [failure] ${anchor.id} (${state})`
+    : `- [failure] ${anchor.id} (${state}): ${value}`
+}
+
+/**
  * The disjoint checkpoint presentation (R0-A): every anchor appears in
  * EXACTLY ONE section, deduplicated by id, so the model never sees the same
  * fact listed twice under different headings.
@@ -102,7 +117,7 @@ export function renderStructuredCheckpoint(
   }
   for (const anchor of presentation.open) {
     if (anchor.kind === 'failure') {
-      lines.push(`- [failure] ${anchor.id} (${anchor.failureState ?? 'open'})`)
+      lines.push(failureLine(anchor))
       continue
     }
     lines.push(anchorLine(anchor))

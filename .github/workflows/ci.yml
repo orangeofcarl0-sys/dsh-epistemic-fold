@@ -65,6 +65,12 @@ jobs:
           npm run eval:r1-report
           git diff --exit-code -- docs/12_R1_EVALUATION_REPORT.md docs/MANIFEST.json
 
+      # The live tier is opt-in and credential-gated. In CI it runs only when a
+      # route is provided; without one every live test SKIPS (it never silently
+      # passes), so the lane is safe to keep enabled.
+      - name: R1 live tier (skips unless a route is configured)
+        run: npm run eval:r1-live
+
   dsh-master:
     name: DSH master (compatibility probe)
     runs-on: ubuntu-latest

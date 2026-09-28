@@ -223,10 +223,34 @@ error docs/11 §21 warns about.
 
 | Item | Status |
 |---|---|
-| Live behavioral validation (task success) | ⏸ OPEN — requires provider credentials |
-| Provider cache realization (`h`) measured, not assumed | ⏸ OPEN — keyless tier has no provider usage |
+| Live behavioral validation (task success) | ⚠️ EXECUTED, NULL RESULT — see [docs/13](13_R1_LIVE_BEHAVIORAL_RESULTS.md) |
+| Provider cache realization (`h`) measured, not assumed | ✅ measured h = 0.910 on the configured route |
 | Latency (TTFT, request/compaction/recall) | ⏸ OPEN — requires a live provider |
-| Production default flip to a provider-aware policy | ⏸ BLOCKED on live behavioral validation |
+| Production default flip to a provider-aware policy | ⏸ BLOCKED on a POSITIVE behavioral result |
+
+### The live tier ran, and it did not find a behavioral advantage
+
+The opt-in live subset (`npm run eval:r1-live`, route taken from this
+workspace's ZCode configuration) executed 64 paired trials: **EF 32/32
+(100%) vs Basic 31/32 (97%)**. One trial is not evidence. The honest
+conclusion is the null one — at this scale, on this model, Basic's lossy
+summary retained every task-critical fact the cases probed.
+
+This does not refute the premise that lossy summarization eventually drops
+what matters; it shows these four cases at this compression ratio do not
+reach that regime. Finding the regime where it DOES fail is now the most
+valuable next experiment, ahead of any further folding mechanism.
+
+The live tier did produce two decisive results:
+
+1. **Measured cache realization h = 0.910** (2176 hit / 253 miss on an
+   identical stable prefix), giving ρ_eff = 0.118 against a headline
+   ρ = 0.020 — **5.9× worse than the profile claims**. R1-A's correction
+   is confirmed against a real provider, not just argued.
+2. **A production bug no keyless test could see**: failure anchors rendered
+   without their description, so the model saw that something was
+   unresolved but not what. Fixed in `src/renderer.ts` with a regression
+   assertion.
 
 Per docs/11 §21, no production default may change on token economics alone:
 a 10% cheaper policy that loses 5% of task success may be worthless. R1

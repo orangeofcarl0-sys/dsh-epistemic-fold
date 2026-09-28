@@ -30,7 +30,8 @@
     "eval:keyless": "vitest run tests/eval-core.spec.ts tests/eval-corpus.spec.ts tests/eval-longhorizon.spec.ts",
     "eval:longhorizon": "vitest run tests/eval-longhorizon.spec.ts",
     "eval:r1": "vitest run tests/r1a-economics.spec.ts tests/r1b-roi.spec.ts tests/r1d-policy.spec.ts tests/r1e-pareto.spec.ts",
-    "eval:r1-report": "vitest run tests/r1-report.spec.ts"
+    "eval:r1-report": "vitest run tests/r1-report.spec.ts",
+    "eval:r1-live": "vitest run tests/r1-live.spec.ts tests/r1-live-behavior.spec.ts"
   },
   "repository": {
     "type": "git",

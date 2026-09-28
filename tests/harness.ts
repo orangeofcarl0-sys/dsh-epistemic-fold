@@ -131,6 +131,13 @@ export async function createHarness(
     projection?: boolean
     /** Extra provider id to register the controlled adapter for (R1 workloads). */
     workloadModel?: string
+    /**
+     * Replace the controlled adapter with a real one (live tier). The adapter
+     * is registered for both `MODEL` and `workloadModel`, so the live
+     * behavioral subset can drive the actual provider through the same
+     * engine/transaction path the keyless tier exercises.
+     */
+    adapter?: { readonly provider: string; readonly instance: LlmAdapter }
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -156,6 +163,10 @@ export async function createHarness(
   // failing with "no adapter registered" (which would read as zero cost).
   if (options.workloadModel !== undefined) {
     ctx.llm.registerAdapter([options.workloadModel], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  }
+  // Live tier: a real adapter replaces the scripted face for its own route.
+  if (options.adapter !== undefined) {
+    ctx.llm.registerAdapter([options.adapter.provider], options.adapter.instance)
   }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })
