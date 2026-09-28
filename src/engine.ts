@@ -32,6 +32,8 @@ import { FileBundleStore } from './bundle-store.ts'
 import { hasActiveCompaction } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { evaluateRootRebase } from './root-policy.ts'
+import { currentFoldState } from './projection.ts'
+import { renderStructuredCheckpoint } from './renderer.ts'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
@@ -378,9 +380,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     )
 
     const publish = async (semanticText: string | undefined): Promise<SummaryResult> => {
-      const renderedText = semanticText === undefined
+      // M3a: when the deterministic projection is mounted, the checkpoint is
+      // a structured handoff — machine state first, narrative in Rationale.
+      const stateText = this.structuredStateText(session, candidate.checkpointId, semanticText)
+      const renderedText = stateText ?? (semanticText === undefined
         ? fallbackText
-        : frameCheckpoint(renderSemanticCheckpoint(candidate, semanticText))
+        : frameCheckpoint(renderSemanticCheckpoint(candidate, semanticText)))
       const bundle = buildBundle({
         candidate,
         orderedSurfaceSeqs,
@@ -412,6 +417,18 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       return await publish(undefined)
     }
     return await publish(semanticText)
+  }
+
+  /**
+   * The structured machine-state handoff when the EF projection is mounted;
+   * `undefined` keeps the M0/M2 rendering path untouched.
+   */
+  private structuredStateText(session: Session, checkpointId: string, semanticText: string | undefined): string | undefined {
+    const registry = this.ctx.get('sessionProjections')
+    if (registry === undefined) return undefined
+    if (registry.stateOf(session, 'epistemicFold.current' as never) === undefined) return undefined
+    const state = currentFoldState(this.ctx, session)
+    return frameCheckpoint(renderStructuredCheckpoint(state, checkpointId, semanticText))
   }
 
   /**

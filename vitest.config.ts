@@ -63,10 +63,14 @@ const standardDecoratorPlugin = () => ({
   },
 })
 
+// zod must be a SINGLE physical copy: the EF projection's schema types unify
+// with the vendored session-projection's zod@4.4.3.
+const vendorZod = posix(resolve(root, 'vendor/deepseek-harness/node_modules/.pnpm/zod@4.4.3/node_modules/zod'))
+
 export default defineConfig({
   plugins: [standardDecoratorPlugin()],
   resolve: {
-    alias: [...fileAliases, ...dirExactAliases, ...dirPrefixAliases],
+    alias: [{ find: /^zod$/, replacement: vendorZod }, ...fileAliases, ...dirExactAliases, ...dirPrefixAliases],
   },
   test: {
     pool: 'forks',

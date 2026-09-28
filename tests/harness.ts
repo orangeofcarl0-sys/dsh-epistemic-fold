@@ -21,6 +21,7 @@ import type {
   StreamChunk,
 } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId, SessionStore } from '@deepseek-ai/dsh-session'
+export type { Session }
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import type { Agent } from '@deepseek-ai/dsh-agent'
@@ -176,10 +177,11 @@ export function conversation(turns = 4): Session {
 }
 
 /** Three closed tool-using turns, then one open turn — the pairing fixture. */
-export function toolConversation(turns = 3): Session {
+export function toolConversation(turns = 3, options: { failTurns?: readonly number[] } = {}): Session {
   const session = Session.create(SessionId(`ef-m0-tools-${++sessionCounter}`))
   for (let turn = 1; turn <= turns; turn += 1) {
     const callId = ToolCallId(`call-${turn}`)
+    const failed = options.failTurns?.includes(turn) === true
     session.append('turn/start', { turn })
     session.append('user/message', createUserMessage({
       content: [{ type: 'text', text: `request ${turn} ${TEXT}` }],
@@ -211,8 +213,8 @@ export function toolConversation(turns = 3): Session {
       step: 1,
       message: createToolResultMessage({
         callId,
-        content: [{ type: 'text', text: `result ${turn} ${TEXT}` }],
-        isError: false,
+        content: [{ type: 'text', text: failed ? `Error: test run failed in turn ${turn}` : `result ${turn} ${TEXT}` }],
+        isError: failed,
       }),
     }, { surfaceOp: 'append' })
     session.append('step/end', { turn, step: 1 })

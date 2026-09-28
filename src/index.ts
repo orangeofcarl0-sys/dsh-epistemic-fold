@@ -21,6 +21,32 @@ export { canonicalHash, canonicalJson, sha256Hex } from './hash.ts'
 export { recall, search, EXACT_PAGE_LIMIT } from './recall.ts'
 export type { RecallDepth, RecallResult, SearchHit } from './recall.ts'
 export { registerRecallTools } from './tools.ts'
+export {
+  registerEpistemicFoldProjection,
+  currentFoldState,
+  epistemicFoldProjection,
+  EF_CURRENT_STATE_KEY,
+} from './projection.ts'
+export {
+  authorityLossRate,
+  emptyCurrentState,
+  reduceEvent,
+  stateKeyText,
+  stateStalenessRate,
+} from './state.ts'
+export type {
+  Anchor,
+  AnchorKind,
+  AnchorLifecycle,
+  EfAnchorEventData,
+  EventRef,
+  FailureState,
+  FoldCurrentState,
+  StateKey,
+} from './state.ts'
+export { canVerify, groundableDomains, isAuthorityGrounded } from './authority.ts'
+export type { AuthorityDomain } from './authority.ts'
+export { renderStructuredCheckpoint } from './renderer.ts'
 export type {
   BundleDescriptor,
   BundleVerification,

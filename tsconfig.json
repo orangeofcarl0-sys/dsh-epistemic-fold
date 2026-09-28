@@ -227,6 +227,9 @@
       ],
       "@deepseek-ai/dsh-user-approval/invariant": [
         "./vendor/deepseek-harness/packages/interaction/user-approval/lib/types/invariant.d.ts"
+      ],
+      "zod": [
+        "./vendor/deepseek-harness/node_modules/.pnpm/zod@4.4.3/node_modules/zod"
       ]
     }
   },
