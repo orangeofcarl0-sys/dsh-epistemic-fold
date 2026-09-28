@@ -62,7 +62,25 @@ export interface ResolvedEpistemicFoldConfig {
   readonly semanticMode: 'none' | 'rationale'
   /** Resolved bundle directory. */
   readonly bundleRoot: string
+  /**
+   * Leaf admission policy (R2-B).
+   *
+   * `legacy` — admit every structurally legal, balanced, past-frontier span
+   * (the R0/R1 behavior).
+   * `economic` — additionally require that the fold actually reclaims enough
+   * to be worth its checkpoint, and FORBID a leaf entirely once the frozen
+   * prefix alone is over threshold (a leaf then cannot restore headroom; it
+   * only appends another checkpoint to a prefix that already exceeds it).
+   */
+  readonly leafAdmission: LeafAdmissionMode
+  /** Minimum net reclaim in tokens for an economic leaf fold. */
+  readonly minReclaimTokens: number
+  /** Minimum Marginal Reclaim Ratio (`reclaim / span`) for an economic fold. */
+  readonly minReclaimRatio: number
 }
+
+/** Leaf admission policy mode (R2-B). */
+export type LeafAdmissionMode = 'legacy' | 'economic'
 
 const DEFAULT_THRESHOLD_RATIO = 0.8
 const DEFAULT_RETAIN_RATIO = 0.16
@@ -70,6 +88,15 @@ const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
 const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
+const DEFAULT_LEAF_ADMISSION: LeafAdmissionMode = 'legacy'
+/**
+ * Default reclaim floors. `minReclaimTokens` is set above the ~530-token
+ * framing preamble a checkpoint costs, so a fold must reclaim more than the
+ * overhead it creates. `minReclaimRatio` rejects folds whose span is nearly
+ * the size of the checkpoint it produces (docs/11 §7's 11.8% example).
+ */
+const DEFAULT_MIN_RECLAIM_TOKENS = 600
+const DEFAULT_MIN_RECLAIM_RATIO = 0.25
 
 /** Public plugin configuration: Basic's compaction policy plus EF's budget. */
 export interface EpistemicFoldConfig extends BasicCompactionConfig {
@@ -82,6 +109,12 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * profile's persistence root; the default keeps the standalone/dev layout.
    */
   bundleRoot?: string
+  /** Leaf admission policy (R2-B); default `legacy` until the R2 gates pass. */
+  leafAdmission?: LeafAdmissionMode
+  /** Minimum net reclaim in tokens for an economic leaf fold. */
+  minReclaimTokens?: number
+  /** Minimum Marginal Reclaim Ratio for an economic leaf fold. */
+  minReclaimRatio?: number
 }
 
 /** Resolve and validate the EF-specific policy face of the plugin config. */
@@ -113,6 +146,18 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
   }
   const bundleRoot = config.bundleRoot ?? DEFAULT_BUNDLE_ROOT
+  const leafAdmission = config.leafAdmission ?? DEFAULT_LEAF_ADMISSION
+  if (leafAdmission !== 'legacy' && leafAdmission !== 'economic') {
+    throw new Error('epistemic-fold: leafAdmission must be "legacy" or "economic"')
+  }
+  const minReclaimTokens = config.minReclaimTokens ?? DEFAULT_MIN_RECLAIM_TOKENS
+  if (!Number.isFinite(minReclaimTokens) || minReclaimTokens < 0) {
+    throw new Error('epistemic-fold: minReclaimTokens must be a non-negative number')
+  }
+  const minReclaimRatio = config.minReclaimRatio ?? DEFAULT_MIN_RECLAIM_RATIO
+  if (!Number.isFinite(minReclaimRatio) || minReclaimRatio < 0 || minReclaimRatio > 1) {
+    throw new Error('epistemic-fold: minReclaimRatio must be a number in [0, 1]')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -122,6 +167,9 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     frozenCheckpointTokenBudget,
     semanticMode,
     bundleRoot,
+    leafAdmission,
+    minReclaimTokens,
+    minReclaimRatio,
   }
 }
 

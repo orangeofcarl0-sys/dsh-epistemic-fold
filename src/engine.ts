@@ -33,6 +33,8 @@ import {
 import { FileBundleStore } from './bundle-store.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
+import { leafMarginalReclaim, pressureBreakdown } from './pressure.ts'
+import type { LeafMarginalReclaim } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { renderStructuredCheckpoint } from './renderer.ts'
@@ -55,17 +57,56 @@ import type {
   SummaryResult,
 } from './types.ts'
 
+/**
+ * Every config key EF owns and resolves itself. Basic validates its config
+ * keys STRICTLY, so any EF key reaching the super constructor throws — this
+ * list is the single place that decides what "EF-owned" means, and
+ * `stripEfConfigKeys` is checked against it by a test so a newly added key
+ * cannot silently leak through (a real bug found in R0).
+ */
+const EF_OWNED_CONFIG_KEYS = [
+  'frozenCheckpointTokenBudget',
+  'semanticMode',
+  'bundleRoot',
+  'leafAdmission',
+  'minReclaimTokens',
+  'minReclaimRatio',
+] as const
+
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
 function stripEfConfigKeys(config: EpistemicFoldConfig): EpistemicFoldConfig {
-  const { frozenCheckpointTokenBudget, semanticMode, bundleRoot, ...basic } = config
-  void frozenCheckpointTokenBudget
-  void semanticMode
-  void bundleRoot
+  const basic: Record<string, unknown> = { ...config }
+  for (const key of EF_OWNED_CONFIG_KEYS) delete basic[key]
   return basic as EpistemicFoldConfig
+}
+
+/** The EF-owned keys, exposed so a test can prove none is forgotten. */
+export function efOwnedConfigKeys(): readonly string[] {
+  return EF_OWNED_CONFIG_KEYS
 }
 
 /** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
 const RATIONALE_MAX_TOKENS = 400
+
+/**
+ * Fallback estimate of a first checkpoint's size when none exists yet. A leaf
+ * checkpoint's cost is dominated by the fixed framing preamble, so this is a
+ * measured constant (~530 tokens observed) rather than a guess.
+ */
+const FRAMING_FALLBACK_TOKENS = 530
+
+/** Why an economic leaf fold was admitted or refused (R2-B telemetry). */
+export interface LeafAdmissionVerdict {
+  readonly admitted: boolean
+  readonly reason:
+    | 'admitted'
+    | 'frozen_prefix_over_threshold'
+    | 'reclaim_below_floor'
+    | 'ratio_below_floor'
+    | 'no_span'
+  readonly detail: string
+  readonly reclaim?: LeafMarginalReclaim
+}
 
 /** Pressure folds required between two root rebases (R0-C anti-oscillation). */
 const ROOT_REBASE_COOLDOWN = 5
@@ -97,6 +138,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private stepsSinceRootRebase = Number.POSITIVE_INFINITY
   /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
   private lastThresholdTokensValue = 0
+  /** Most recent economic leaf-admission verdict (R2-B telemetry). */
+  private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -135,6 +178,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   get lastThresholdTokens(): number {
     return this.lastThresholdTokensValue
+  }
+
+  /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
+  get lastLeafAdmission(): LeafAdmissionVerdict | undefined {
+    return this.lastLeafAdmissionValue
   }
 
   /**
@@ -279,6 +327,26 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
+    // R2-B: the economic admission gate. Structurally legal is not the same as
+    // worth doing: a fold whose span barely exceeds the checkpoint it produces
+    // reclaims almost nothing while paying the full framing preamble, and once
+    // the frozen prefix alone exceeds the threshold a leaf CANNOT restore
+    // headroom at all — it only appends another checkpoint to a prefix that
+    // already exceeds the threshold, which is the self-sustaining loop R1
+    // measured (51 folds vs Basic's 21 on an identical workload and digest).
+    if (this.efConfig.leafAdmission === 'economic') {
+      const verdict = this.admitLeafEconomically(agent.session, measurement, spec.thresholdTokens)
+      if (!verdict.admitted) {
+        this.lastLeafAdmissionValue = verdict
+        // No leaf is admissible. A rebase is the only mechanism that can
+        // reduce the frozen prefix, so surface the advice and stop rather than
+        // emitting a checkpoint that cannot help.
+        this.recordRootRebaseAdvice(agent.session, measurement)
+        return null
+      }
+      this.lastLeafAdmissionValue = verdict
+    }
+
     let result: CompactionResult | null = null
     for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
       const span = selectLeafSpan(agent.session, measurement, spec.retainTokens)
@@ -298,6 +366,91 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       `epistemic-fold: still above threshold after ${spec.compactionRetries + 1} leaf fold attempts `
       + `(${measurement.totalTokens} estimated tokens >= threshold ${spec.thresholdTokens})`,
     )
+  }
+
+  /**
+   * Decide whether a leaf fold is economically admissible (R2-B).
+   *
+   * Two independent refusals:
+   *
+   * 1. **The frozen prefix alone is over threshold.** A leaf fold replaces
+   *    part of the open tail with a checkpoint that JOINS the frozen prefix,
+   *    so the next request is still over threshold and folds again. No leaf
+   *    can end this; only a rebase can.
+   * 2. **The marginal reclaim is too small.** The fold must reclaim more than
+   *    the checkpoint overhead it creates (`minReclaimTokens`) and must
+   *    reclaim a meaningful fraction of its span (`minReclaimRatio`).
+   *
+   * @param session - session whose surface is measured.
+   * @param measurement - token-meter measurement matching the current surface.
+   * @param thresholdTokens - the pressure threshold in force.
+   * @returns the verdict, with the reason and the measured reclaim.
+   */
+  private admitLeafEconomically(
+    session: Session,
+    measurement: TokenMeasurement,
+    thresholdTokens: number,
+  ): LeafAdmissionVerdict {
+    const breakdown = pressureBreakdown(session, measurement, thresholdTokens)
+    if (breakdown.leafCannotSuffice) {
+      return {
+        admitted: false,
+        reason: 'frozen_prefix_over_threshold',
+        detail:
+          `frozen prefix ${breakdown.frozenTokens} >= threshold ${thresholdTokens}; `
+          + 'a leaf fold cannot restore headroom and only adds a checkpoint',
+        reclaim: leafMarginalReclaim({
+          spanTokens: breakdown.openTokens,
+          frozenTokens: breakdown.frozenTokens,
+          frozenCount: breakdown.frozenCount,
+          fallbackCheckpointTokens: FRAMING_FALLBACK_TOKENS,
+        }),
+      }
+    }
+
+    const span = selectLeafSpan(session, measurement, 0)
+    if (span === null) {
+      return {
+        admitted: false,
+        reason: 'no_span',
+        detail: 'no structurally legal span past the frontier',
+      }
+    }
+    const spanTokens = measurement.nodes
+      .slice(span.startIdx, span.endIdx + 1)
+      .reduce((total, node) => total + node.tokens, 0)
+    const reclaim = leafMarginalReclaim({
+      spanTokens,
+      frozenTokens: breakdown.frozenTokens,
+      frozenCount: breakdown.frozenCount,
+      fallbackCheckpointTokens: FRAMING_FALLBACK_TOKENS,
+    })
+    if (reclaim.reclaimTokens < this.efConfig.minReclaimTokens) {
+      return {
+        admitted: false,
+        reason: 'reclaim_below_floor',
+        detail:
+          `net reclaim ${reclaim.reclaimTokens.toFixed(0)} tokens < floor ${this.efConfig.minReclaimTokens}`,
+        reclaim,
+      }
+    }
+    if (reclaim.reclaimRatio < this.efConfig.minReclaimRatio) {
+      return {
+        admitted: false,
+        reason: 'ratio_below_floor',
+        detail:
+          `MRR ${(reclaim.reclaimRatio * 100).toFixed(1)}% < floor `
+          + `${(this.efConfig.minReclaimRatio * 100).toFixed(1)}%`,
+        reclaim,
+      }
+    }
+    return {
+      admitted: true,
+      reason: 'admitted',
+      detail:
+        `reclaim ${reclaim.reclaimTokens.toFixed(0)} tokens, MRR ${(reclaim.reclaimRatio * 100).toFixed(1)}%`,
+      reclaim,
+    }
   }
 
   /**

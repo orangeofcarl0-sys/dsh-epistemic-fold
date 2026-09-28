@@ -8,7 +8,8 @@
  */
 
 export { EpistemicFoldEngine, default } from './engine.ts'
-export type { EpistemicFoldOptions } from './engine.ts'
+export type { EpistemicFoldOptions, LeafAdmissionVerdict } from './engine.ts'
+export { efOwnedConfigKeys } from './engine.ts'
 export { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 export { FileBundleStore } from './bundle-store.ts'
 export {
@@ -26,6 +27,7 @@ export { resolveEfConfig, resolveEfCompactSpec } from './policy.ts'
 export type {
   EfCompactSpec,
   EpistemicFoldConfig,
+  LeafAdmissionMode,
   ResolvedEpistemicFoldConfig,
 } from './policy.ts'
 export {
