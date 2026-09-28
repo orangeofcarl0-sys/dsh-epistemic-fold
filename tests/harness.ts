@@ -28,6 +28,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import { mkdtemp } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import type { FoldBundleStore } from '../src/types.ts'
@@ -111,7 +112,11 @@ class ControlledAdapter extends LlmAdapter {
 /** Assemble one engine over a fresh temp bundle directory. */
 export async function createHarness(
   semantic: SemanticFace = {},
-  options: { contextWindow?: number; efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number } } = {},
+  options: {
+    contextWindow?: number
+    engine?: 'ef' | 'basic'
+    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number }
+  } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
   const store = new FileBundleStore(root)
@@ -130,7 +135,9 @@ export async function createHarness(
     return true
   }
   ctx.llm.registerAdapter([MODEL], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
-  const engine = new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })
+  const engine = (options.engine === 'basic'
+    ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })
+    : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })) as EpistemicFoldEngine
   return { ctx, engine, store, root, control }
 }
 
