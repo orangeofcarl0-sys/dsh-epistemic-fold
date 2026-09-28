@@ -319,6 +319,106 @@ export function rootBreakEvenRequests(options: {
 export type PolicyRegime = 'cache-dominant' | 'hybrid' | 'token-dominant'
 
 /**
+ * Built-in profiles so a deployment works without reading files. These mirror
+ * `profiles/economics/*.json` (the auditable, user-overridable copies) and
+ * carry the same `asOf` provenance, so nothing here pretends to be timeless.
+ * Callers may replace them entirely via configuration.
+ */
+export const BUILTIN_ECONOMICS_PROFILES: readonly ContextEconomicsProfile[] = [
+  parseEconomicsProfile({
+    id: 'deepseek-flash-2026-09',
+    provider: 'deepseek',
+    modelPattern: 'deepseek-*flash*',
+    asOf: '2026-09-28',
+    source: 'built-in mirror of profiles/economics/deepseek-flash-2026-09.json',
+    pricing: { inputMissPerM: 0.28, inputHitPerM: 0.0056, outputPerM: 0.42 },
+    cache: {
+      mode: 'automatic',
+      bestEffort: true,
+      minimumCacheableTokens: 64,
+      ttlSeconds: 3600,
+      supportsExplicitBreakpoints: false,
+    },
+    context: { windowTokens: 131_072 },
+  }),
+  parseEconomicsProfile({
+    id: 'deepseek-pro-2026-09',
+    provider: 'deepseek',
+    modelPattern: 'deepseek-*pro*',
+    asOf: '2026-09-28',
+    source: 'built-in mirror of profiles/economics/deepseek-pro-2026-09.json',
+    pricing: { inputMissPerM: 0.56, inputHitPerM: 0.0185, outputPerM: 1.68 },
+    cache: {
+      mode: 'automatic',
+      bestEffort: true,
+      minimumCacheableTokens: 64,
+      ttlSeconds: 3600,
+      supportsExplicitBreakpoints: false,
+    },
+    context: { windowTokens: 131_072 },
+  }),
+  parseEconomicsProfile({
+    id: 'openai-gpt-5.6-2026-09',
+    provider: 'openai',
+    modelPattern: 'gpt-5.6*',
+    asOf: '2026-09-28',
+    source: 'built-in mirror of profiles/economics/openai-gpt-5.6-2026-09.json',
+    pricing: {
+      inputMissPerM: 1.25,
+      inputHitPerM: 0.125,
+      cacheWritePerM: 1.5625,
+      outputPerM: 10.0,
+    },
+    cache: {
+      mode: 'explicit',
+      bestEffort: false,
+      minimumCacheableTokens: 1024,
+      ttlSeconds: 300,
+      supportsExplicitBreakpoints: true,
+    },
+    context: { windowTokens: 400_000 },
+  }),
+  parseEconomicsProfile({
+    id: 'synthetic-no-cache',
+    provider: 'synthetic',
+    modelPattern: '*',
+    asOf: '2026-09-28',
+    source: 'built-in mirror of profiles/economics/synthetic-no-cache.json',
+    pricing: { inputMissPerM: 1.0, inputHitPerM: 1.0, outputPerM: 1.0 },
+    cache: { mode: 'none', bestEffort: false },
+    context: { windowTokens: 128_000 },
+  }),
+]
+
+/**
+ * The profile governing a routed model, falling back to a conservative
+ * no-cache profile when nothing matches. The fallback matters: assuming a
+ * cache exists where none is configured would over-credit every saving, so
+ * an unknown route is priced as if every token were a miss.
+ */
+export function resolveProfile(
+  profiles: readonly ContextEconomicsProfile[],
+  provider: string,
+  model: string,
+): ContextEconomicsProfile {
+  return selectProfile(profiles, provider, model)
+    ?? profiles.find(candidate => candidate.cache.mode === 'none')
+    ?? NO_CACHE_FALLBACK
+}
+
+/** Last-resort profile for an unroutable model: no cache, unit prices. */
+const NO_CACHE_FALLBACK: ContextEconomicsProfile = parseEconomicsProfile({
+  id: 'fallback-no-cache',
+  provider: '*',
+  modelPattern: '*',
+  asOf: '2026-09-28',
+  source: 'conservative fallback: unknown route priced with no cache',
+  pricing: { inputMissPerM: 1.0, inputHitPerM: 1.0, outputPerM: 1.0 },
+  cache: { mode: 'none', bestEffort: false },
+  context: { windowTokens: 128_000 },
+})
+
+/**
  * Classify a profile's regime from measured economics. The thresholds are
  * arguments rather than constants precisely because docs/11 §18 forbids
  * freezing them before the W1–W5 × profile benchmark has run.

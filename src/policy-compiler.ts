@@ -90,6 +90,17 @@ export interface ContextPolicyInput {
     readonly compactionCost?: number
     /** Consecutive folds required before a rebase may fire again. */
     readonly rebaseCooldownFolds?: number
+    /**
+     * Whether a leaf fold is available as an option. Defaults to true.
+     *
+     * When false — the caller has already established that no leaf can
+     * restore headroom, e.g. because the frozen prefix alone exceeds the
+     * threshold — a hard override must NOT demand a leaf. Demanding an
+     * impossible action is worse than useless: it is exactly the
+     * fold-every-step loop, restated as policy. In that state the only
+     * reduction that can work is a rebase, so the overrides return `root`.
+     */
+    readonly leafAvailable?: boolean
   }
 }
 
@@ -139,27 +150,37 @@ export function compileContextPolicy(input: ContextPolicyInput): ContextPolicyDe
   const compactionCost = policy.compactionCost ?? DEFAULT_COMPACTION_COST
 
   // --- Hard overrides: economics never buys correctness or ignores overflow.
+  // When no leaf is available (the caller established that a leaf cannot
+  // restore headroom), the only reduction that can work is a rebase, so the
+  // override demands `root`. Demanding an impossible leaf here would restate
+  // the fold-every-step loop as policy.
+  const leafAvailable = policy.leafAvailable ?? true
+  const forcedAction: PolicyAction = leafAvailable ? 'leaf' : 'root'
   const pressureRatio = pressure.currentTokens / pressure.contextWindow
   if (pressureRatio >= 1) {
     return {
       regime,
-      action: 'leaf',
+      action: forcedAction,
       leafRepresentation: 'snapshot',
       semanticMode: 'none',
       estimatedCost: 0,
       overridden: true,
-      reason: `context overflow (${pressure.currentTokens}/${pressure.contextWindow}); emergency reduction overrides economics`,
+      reason: leafAvailable
+        ? `context overflow (${pressure.currentTokens}/${pressure.contextWindow}); emergency reduction overrides economics`
+        : `context overflow (${pressure.currentTokens}/${pressure.contextWindow}); no leaf can restore headroom, so a rebase is required`,
     }
   }
   if (pressureRatio >= policy.pressureRatio) {
     return {
       regime,
-      action: 'leaf',
+      action: forcedAction,
       leafRepresentation: 'snapshot',
       semanticMode: 'none',
       estimatedCost: 0,
       overridden: true,
-      reason: `context pressure ${(pressureRatio * 100).toFixed(1)}% >= ${(policy.pressureRatio * 100).toFixed(1)}%; pressure overrides economics`,
+      reason: leafAvailable
+        ? `context pressure ${(pressureRatio * 100).toFixed(1)}% >= ${(policy.pressureRatio * 100).toFixed(1)}%; pressure overrides economics`
+        : `context pressure ${(pressureRatio * 100).toFixed(1)}% >= ${(policy.pressureRatio * 100).toFixed(1)}% and no leaf can restore headroom; a rebase is required`,
     }
   }
 
