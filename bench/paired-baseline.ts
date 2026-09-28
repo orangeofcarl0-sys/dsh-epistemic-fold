@@ -40,6 +40,8 @@ import type { Session } from '@deepseek-ai/dsh-session'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { sha256Hex } from '../src/hash.ts'
+import { frozenSummary as summarizeFrozen } from '../eval/src/metrics.ts'
+import type { FrozenSummary } from '../eval/src/metrics.ts'
 import type { Harness } from '../tests/harness.ts'
 
 const BENCH_SIGNAL = new AbortController().signal
@@ -101,6 +103,22 @@ export interface CacheCostPoint {
   readonly cost: number
 }
 
+export interface PromptSummary {
+  readonly total: number
+  readonly mean: number
+  readonly median: number
+  readonly peak: number
+  readonly p95: number
+}
+
+/** Auxiliary compaction accounting from durable `compaction/summary` events. */
+export interface AuxiliaryCompactionSummary {
+  readonly callCount: number
+  /** Provider-reported usage when the semantic call emitted one. */
+  readonly inputTokens?: number
+  readonly outputTokens?: number
+}
+
 export interface BaselineResult {
   readonly arm: string
   readonly samples: readonly StepSample[]
@@ -115,8 +133,31 @@ export interface BaselineResult {
   readonly rootFoldCount: number
   /** Frozen-checkpoint token load at the END of the run (recurring cost). */
   readonly finalCheckpointLoad: number
+  readonly promptSummary: PromptSummary
+  readonly frozenSummary: FrozenSummary
+  /** Auxiliary compaction accounting (R0-C0 §5.4). */
+  readonly auxiliaryCompaction: AuxiliaryCompactionSummary
   /** Layer-3 break-even curve. */
   readonly cacheEconomics: readonly CacheCostPoint[]
+}
+
+/** Percentile by nearest-rank on an ascending-sorted copy. */
+function percentile(values: readonly number[], p: number): number {
+  if (values.length === 0) return 0
+  const sorted = [...values].sort((a, b) => a - b)
+  const rank = Math.ceil((p / 100) * sorted.length)
+  return sorted[Math.min(sorted.length, Math.max(1, rank)) - 1]!
+}
+
+function summarizeTokens(values: readonly number[]): PromptSummary {
+  const total = values.reduce((sum, value) => sum + value, 0)
+  return {
+    total,
+    mean: values.length === 0 ? 0 : total / values.length,
+    median: percentile(values, 50),
+    peak: values.length === 0 ? 0 : Math.max(...values),
+    p95: percentile(values, 95),
+  }
 }
 
 interface BenchEngine {
@@ -209,8 +250,9 @@ export async function runPairedBaseline(options: {
     const current = historyDigests(session)
     const measurement = meter.measure(session)
     const position = firstMutationPosition(previous, current)
+    // Spec 09 §3: both IST and SPT are priced by the PREVIOUS request.
     const invalidated = suffixTokens(previousMeasurement, position)
-    const stable = prefixTokens(measurement, position)
+    const stable = prefixTokens(previousMeasurement, position)
     invalidatedTotal += invalidated
     stableTotal += stable
 
@@ -245,6 +287,22 @@ export async function runPairedBaseline(options: {
     cost: missTokens + rho * hitTokens,
   }))
 
+  // Auxiliary compaction accounting: count durable compaction/summary events
+  // and forward their provider-reported usage when present (R0-C0 §5.4).
+  let auxCalls = 0
+  let auxIn: number | undefined
+  let auxOut: number | undefined
+  for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
+    const event = session.eventAt(seq as never)!
+    if (event.type !== 'compaction/summary') continue
+    auxCalls += 1
+    const usage = (event.data as { usage?: { input_tokens?: number; output_tokens?: number } }).usage
+    if (usage !== undefined) {
+      auxIn = (auxIn ?? 0) + (usage.input_tokens ?? 0)
+      auxOut = (auxOut ?? 0) + (usage.output_tokens ?? 0)
+    }
+  }
+
   return {
     arm: options.arm,
     samples,
@@ -255,6 +313,13 @@ export async function runPairedBaseline(options: {
     leafFoldCount,
     rootFoldCount,
     finalCheckpointLoad: samples[samples.length - 1]?.checkpointLoad ?? 0,
+    promptSummary: summarizeTokens(samples.map(sample => sample.promptTokens)),
+    frozenSummary: summarizeFrozen(samples.map(sample => sample.checkpointLoad), samples.map(sample => sample.promptTokens)),
+    auxiliaryCompaction: {
+      callCount: auxCalls,
+      ...(auxIn === undefined ? {} : { inputTokens: auxIn }),
+      ...(auxOut === undefined ? {} : { outputTokens: auxOut }),
+    },
     cacheEconomics,
   }
 }
