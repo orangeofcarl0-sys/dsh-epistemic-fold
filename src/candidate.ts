@@ -37,14 +37,6 @@ export class FoldCandidateRegistry {
   }
 }
 
-/** One opaque checkpoint identity; uniqueness comes from the UUID. */
-export type CheckpointId = string & { readonly __checkpointId: unique symbol }
-
-/** Brand a UUID as a checkpoint identity. */
-export function CheckpointId(id: string): CheckpointId {
-  return id as CheckpointId
-}
-
 /**
  * Create the immutable candidate for one upcoming fold.
  * @param options - mode, owning session, and the explicitly selected
@@ -58,7 +50,7 @@ export function createFoldCandidate(options: {
   start?: SessionSeq
   end?: SessionSeq
 }): FoldCandidate {
-  const checkpointId = CheckpointId(randomUUID())
+  const checkpointId = randomUUID()
   const seed = `${options.session.id}:${options.mode}:${checkpointId}`
   const candidate: FoldCandidate = {
     checkpointId,

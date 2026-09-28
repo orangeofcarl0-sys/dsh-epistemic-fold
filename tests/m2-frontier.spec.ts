@@ -244,10 +244,11 @@ describe('P06: frozen budget and root rebase', () => {
   })
 
   it('accumulated leaf checkpoints exceed the budget and recommend a rebase; the rebase reclaims it', async () => {
-    // Budget small enough that two leaf checkpoints exceed it.
-    const { engine, store, ctx } = await createHarness({ text: 'digest' })
-    ;(engine as unknown as { efConfig: { frozenCheckpointTokenBudget: number } }).efConfig
-      = { ...(engine as unknown as { efConfig: { frozenCheckpointTokenBudget: number } }).efConfig, frozenCheckpointTokenBudget: 1 }
+    // Budget small enough that two leaf checkpoints exceed it (front door).
+    const { engine, store, ctx } = await createHarness(
+      { text: 'digest' },
+      { efConfig: { frozenCheckpointTokenBudget: 1 } },
+    )
 
     const session = conversation(8)
     const nodes = [...session.surface.nodes]

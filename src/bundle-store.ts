@@ -7,7 +7,7 @@
  */
 
 import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import type { SessionId } from '@deepseek-ai/dsh-session'
 import { canonicalHash, canonicalJson, sha256Hex } from './hash.ts'
@@ -60,7 +60,7 @@ export class FileBundleStore implements FoldBundleStore {
   async read(checkpointId: string): Promise<CheckpointBundleV1 | null> {
     const descriptor = await this.locate(checkpointId)
     if (descriptor === undefined) return null
-    return this.readVerified(descriptor.file)
+    return this.readBundle(descriptor.file)
   }
 
   async verify(checkpointId: string): Promise<BundleVerification> {
@@ -126,15 +126,8 @@ export class FileBundleStore implements FoldBundleStore {
     return undefined
   }
 
+  /** Read one bundle file; unreadable or unparseable files read as absent. */
   private async readBundle(file: string): Promise<CheckpointBundleV1 | null> {
-    try {
-      return JSON.parse(await readFile(file, 'utf8')) as CheckpointBundleV1
-    } catch {
-      return null
-    }
-  }
-
-  private async readVerified(file: string): Promise<CheckpointBundleV1 | null> {
     let raw: string
     try {
       raw = await readFile(file, 'utf8')
@@ -159,11 +152,4 @@ export class FileBundleStore implements FoldBundleStore {
       bytes,
     }
   }
-}
-
-function dirname(path: string): string {
-  const index = path.lastIndexOf('/')
-  const backslash = path.lastIndexOf('\\')
-  const cut = Math.max(index, backslash)
-  return cut === -1 ? '.' : path.slice(0, cut)
 }

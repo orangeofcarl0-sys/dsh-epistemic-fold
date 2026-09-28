@@ -18,6 +18,7 @@ import {
 } from './harness.ts'
 import { recall } from '../src/recall.ts'
 import { canonicalHash } from '../src/hash.ts'
+import { failingStore, flakyStore } from './stores.ts'
 
 function summaryText(blocks: readonly ContentBlock[]): string {
   return blocks.map(block => block.type === 'text' ? block.text : '').join('\n')
@@ -118,18 +119,12 @@ describe('E. failure tests', () => {
 
 describe('F. crash-point tests', () => {
   it('T21: crash after archive temp write — transaction aborts, surface intact, lock released', async () => {
-    const { engine, store } = await createHarness({ text: 'digest' })
+    const { engine } = await createHarness(
+      { text: 'digest' },
+      { bundleStore: failingStore('crash during tmp write') },
+    )
     const session = conversation(4)
     const nodes = [...session.surface.nodes]
-    ;(engine as unknown as { bundles: unknown }).bundles = {
-      write: async () => {
-        throw new Error('crash during tmp write')
-      },
-      read: store.read.bind(store),
-      verify: store.verify.bind(store),
-      list: store.list.bind(store),
-      remove: store.remove.bind(store),
-    }
 
     await expect(engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL))
       .rejects.toThrow(/crash during tmp write/u)
@@ -157,29 +152,21 @@ describe('F. crash-point tests', () => {
   })
 
   it('T23: failed summary leaves the lock released — the next compaction succeeds', async () => {
-    const { engine, store } = await createHarness({ text: 'digest' })
+    const { store, real } = await flakyStore(1)
+    const { engine } = await createHarness({ text: 'digest' }, { bundleStore: store })
     const session = conversation(4)
     const nodes = [...session.surface.nodes]
-    ;(engine as unknown as { bundles: unknown }).bundles = {
-      write: async () => {
-        throw new Error('disk full')
-      },
-      read: store.read.bind(store),
-      verify: store.verify.bind(store),
-      list: store.list.bind(store),
-      remove: store.remove.bind(store),
-    }
 
     await expect(engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL))
       .rejects.toThrow(/disk full/u)
 
-    // Restore the store: the durable lock must have been released by the
-    // recorded compaction/end, so a fresh compaction commits cleanly.
-    ;(engine as unknown as { bundles: unknown }).bundles = store
+    // The flaky store heals after its first failure: the durable lock must
+    // have been released by the recorded compaction/end, so a fresh
+    // compaction commits cleanly.
     const nodesAfter = [...session.surface.nodes]
     const retry = await engine.compactRegion(nodesAfter[0]!, nodesAfter[3]!, foldAgent(session), SIGNAL)
     expect(retry.shadowedSeqs).toHaveLength(4)
-    expect((await store.verify(checkpointIdOf(session))).status).toBe('verified')
+    expect((await real.verify(checkpointIdOf(session))).status).toBe('verified')
   })
 
   it('T24: replacement committed — end event recorded, bundle verifies, recall exact', async () => {

@@ -7,7 +7,7 @@
 
 import type { CompactionId } from '@deepseek-ai/dsh-compaction'
 import type { ContentBlock, Message, TokenUsage, ToolSchema } from '@deepseek-ai/dsh-llm'
-import type { Session, SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
+import type { SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 
 /** Why this fold exists: automatic pressure, manual rebase, or overflow recovery. */
 export type FoldMode = 'leaf' | 'root' | 'emergency'
@@ -143,6 +143,3 @@ export type SummaryResult = {
     llmStreamCall?: never
   }
 )
-
-/** The session a pending candidate belongs to; typing helper for tests. */
-export type FoldSession = Session

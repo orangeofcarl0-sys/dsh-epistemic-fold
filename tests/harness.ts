@@ -33,6 +33,10 @@ import { FileBundleStore } from '../src/bundle-store.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 
+export async function tempRoot(): Promise<string> {
+  return mkdtemp(join(tmpdir(), 'ef-m0-'))
+}
+
 export const MODEL = 'test-model'
 export const SIGNAL = new AbortController().signal
 
@@ -116,10 +120,12 @@ export async function createHarness(
     contextWindow?: number
     engine?: 'ef' | 'basic'
     efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number }
+    /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
+    bundleStore?: FoldBundleStore
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
-  const store = new FileBundleStore(root)
+  const store = options.bundleStore ?? new FileBundleStore(root)
   const control: HarnessControl = { semantic, calls: [] }
   const ctx = new Context()
   void new LlmRuntime(ctx)

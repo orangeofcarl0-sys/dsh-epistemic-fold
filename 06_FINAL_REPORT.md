@@ -88,3 +88,17 @@ arm=E2-ef   | invalidatedSuffixTotal=1744 | reclaimed= 864 | folds=4
 - M1 ingress reduction、M3b negative knowledge/uncertainty、M4 graph、M5 generations、Hard Handoff、Session GC、embedding/vector DB。
 - 触发条件见 05 文档 §F（"Do not build the next layer without observed failure that needs it"）。
 - Behavioral paired-continuation benchmark（doc 03 §8 的 task-success/DWR/CR 指标）需要真实模型环境与任务语料，本阶段交付其 harness 基础（bench/paired-baseline.ts 可直接扩展 arms）。
+
+---
+
+## 8. 结构重构记录（屎山检查后执行，行为保持）
+
+| 项 | 变更 | 收益 |
+|---|---|---|
+| P0-1 | 策略面拆出 `src/policy.ts`（routedTarget/reservedCompletionTokens/resolveEfConfig/resolveEfCompactSpec），engine 回到事务编排单一职责（466→323 行） | 策略可独立单测 |
+| P0-2 | `state.ts` face 管理表驱动化：`ANCHOR_FACE` 映射 + `putFace`/`removeFace` 泛型 helper，7 处同构解构收敛；**修复 supersession 时 decisions/constraints face 残留旧 anchor 的有界性缺陷**；`retiredCount` 语义单一化（hot state 移除总数，去重计数） | reducer 审计成本大幅下降 |
+| P0-3 | 测试去私有侵入：harness 增加 `bundleStore` 注入，T06/T21/T23 用 `tests/stores.ts` 的 failing/flaky store 替身，P06 走 `efConfig` 正门；**暴露并修复真实 bug：`frozenCheckpointTokenBudget` 未剥离即传 Basic 的严格 key 校验，传参即抛异常** | 测试覆盖生产构造路径 |
+| P0-4 | `scripts/generate-maps.cjs` 统一再生两张 paths 表（src→vitest alias，lib/types→tsconfig）并幂等更新 tsconfig；删除已腐烂的 `extract-paths.cjs`（其输出路径指向已删除目录） | 工具链可再现 |
+| P1 | 删除死代码：`CheckpointId` 品牌、`FoldSession` 别名、`compactNow` 纯透传 override、手写 `dirname`、重复的 `readVerified`、`proof-of-life.spec.ts`（覆盖已被 M0 套件包含） | 净删 ~250 行 |
+
+有意保留：`frameCheckpoint`/`CHECKPOINT_PREAMBLE` 与 Basic 的逐字重复（RFC 红线：不依赖兄弟包 `/src` 运行时面）；`recall.search` O(n) 读（M0 规模 by design）。

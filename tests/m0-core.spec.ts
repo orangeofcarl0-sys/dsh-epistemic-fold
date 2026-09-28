@@ -8,6 +8,7 @@ import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
 import { canonicalHash } from '../src/hash.ts'
 import { recall, search } from '../src/recall.ts'
+import { failingStore } from './stores.ts'
 import {
   closedConversation,
   conversation,
@@ -134,20 +135,9 @@ describe('B. bundle/archive tests', () => {
   })
 
   it('T06: archive write failure → no successful summary, no surface replacement', async () => {
-    const { engine, store } = await createHarness({ text: 'digest' })
+    const { engine, store } = await createHarness({ text: 'digest' }, { bundleStore: failingStore() })
     const session = conversation(4)
     const nodes = [...session.surface.nodes]
-    // Break the store: a verify-failing write throws out of the compile hook.
-    const failingStore: typeof store = {
-      write: async () => {
-        throw new Error('disk full')
-      },
-      read: store.read.bind(store),
-      verify: store.verify.bind(store),
-      list: store.list.bind(store),
-      remove: store.remove.bind(store),
-    }
-    ;(engine as unknown as { bundles: unknown }).bundles = failingStore
 
     await expect(engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL))
       .rejects.toThrow(/disk full/u)

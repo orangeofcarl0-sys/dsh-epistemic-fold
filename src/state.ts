@@ -4,6 +4,12 @@
  * summaries are structurally invisible to it (D-006: state never derives
  * from narrative).
  *
+ * Boundedness model: the state faces hold ONLY current entries. A superseded
+ * head is replaced in place and its old anchor leaves every face it occupied;
+ * `retiredCount` is the single counter for every anchor that left hot state
+ * (by supersession, verification, or explicit retirement). History remains
+ * recoverable from the session log and bundles, never from hot state.
+ *
  * @module dsh-epistemic-fold/state
  */
 
@@ -79,7 +85,7 @@ export interface FoldCurrentState {
   readonly openObligations: Record<string, Anchor>
   readonly decisions: Record<string, Anchor>
   readonly evidence: Record<string, Anchor>
-  /** Small telemetry: how many anchors were retired in total. */
+  /** Every anchor that has left hot state (superseded, verified, retired). */
   readonly retiredCount: number
 }
 
@@ -108,6 +114,49 @@ export interface EfAnchorEventData {
   readonly evidenceRefs?: readonly EventRef[]
 }
 
+/**
+ * Anchor kind → the face record it occupies. `value` and `artifact` anchors
+ * live only in `stateHeads`.
+ */
+const ANCHOR_FACE: Partial<Record<AnchorKind, 'constraints' | 'openFailures' | 'openObligations' | 'decisions' | 'evidence'>> = {
+  constraint: 'constraints',
+  failure: 'openFailures',
+  obligation: 'openObligations',
+  decision: 'decisions',
+  evidence: 'evidence',
+}
+
+type AnchorFace = 'constraints' | 'openFailures' | 'openObligations' | 'decisions' | 'evidence'
+
+const ALL_FACES: readonly AnchorFace[] = ['constraints', 'openFailures', 'openObligations', 'decisions', 'evidence']
+
+/** Insert one anchor into its face; returns the state unchanged if faceless. */
+function putFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
+  const face = ANCHOR_FACE[anchor.kind]
+  if (face === undefined) return state
+  return { ...state, [face]: { ...state[face], [anchor.id]: anchor } }
+}
+
+/** Remove one anchor by id from its kind's face; also drops its head. */
+function removeFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
+  let next = state
+  const face = ANCHOR_FACE[anchor.kind]
+  if (face !== undefined && state[face][anchor.id] !== undefined) {
+    const { [anchor.id]: _removed, ...rest } = state[face]
+    void _removed
+    next = { ...next, [face]: rest }
+  }
+  if (anchor.stateKey !== undefined) {
+    const key = stateKeyText(anchor.stateKey)
+    if (next.stateHeads[key]?.id === anchor.id) {
+      const { [key]: _head, ...heads } = next.stateHeads
+      void _head
+      next = { ...next, stateHeads: heads }
+    }
+  }
+  return next
+}
+
 /** How the reducer files one anchor into the bounded state faces. */
 function indexAnchor(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
   if (anchor.kind === 'objective') {
@@ -117,57 +166,7 @@ function indexAnchor(state: FoldCurrentState, anchor: Anchor): FoldCurrentState 
   if (anchor.stateKey !== undefined) {
     next = { ...next, stateHeads: { ...next.stateHeads, [stateKeyText(anchor.stateKey)]: anchor } }
   }
-  switch (anchor.kind) {
-    case 'constraint':
-      return { ...next, constraints: { ...next.constraints, [anchor.id]: anchor } }
-    case 'failure':
-      if (anchor.failureState === 'verified' || anchor.lifecycle === 'retired') {
-        const { [anchor.id]: _removed, ...rest } = next.openFailures
-        void _removed
-        return { ...next, openFailures: rest }
-      }
-      return { ...next, openFailures: { ...next.openFailures, [anchor.id]: anchor } }
-    case 'obligation':
-      return { ...next, openObligations: { ...next.openObligations, [anchor.id]: anchor } }
-    case 'decision':
-      return { ...next, decisions: { ...next.decisions, [anchor.id]: anchor } }
-    case 'evidence':
-      return { ...next, evidence: { ...next.evidence, [anchor.id]: anchor } }
-    default:
-      return next
-  }
-}
-
-/** Supersede: the old head at the same key keeps history, loses currency. */
-function supersedeHead(state: FoldCurrentState, incoming: Anchor): FoldCurrentState {
-  if (incoming.stateKey === undefined) return state
-  const key = stateKeyText(incoming.stateKey)
-  const previous = state.stateHeads[key]
-  let next = state
-  if (previous !== undefined && previous.id !== incoming.id) {
-    const superseded: Anchor = {
-      ...previous,
-      lifecycle: 'superseded',
-      supersededBy: incoming.id,
-    }
-    next = {
-      ...next,
-      stateHeads: { ...next.stateHeads, [key]: superseded },
-    }
-  }
-  return next
-}
-
-/** Drop superseded heads whose replacement has landed (boundedness). */
-function dropSuperseded(state: FoldCurrentState, key: string): FoldCurrentState {
-  const head = state.stateHeads[key]
-  if (head === undefined) return state
-  if (head.lifecycle !== 'active') {
-    const { [key]: _removed, ...rest } = state.stateHeads
-    void _removed
-    return { ...state, stateHeads: rest, retiredCount: state.retiredCount + 1 }
-  }
-  return state
+  return putFace(next, anchor)
 }
 
 /**
@@ -193,14 +192,17 @@ function applyAnchorOp(state: FoldCurrentState, data: EfAnchorEventData): FoldCu
   if (data.op === 'declare' && data.anchor !== undefined) {
     const anchor = data.anchor
     if (anchor.lifecycle !== 'active') return state
-    const previous = anchor.stateKey === undefined
-      ? undefined
-      : state.stateHeads[stateKeyText(anchor.stateKey)]
-    let next = supersedeHead(state, anchor)
-    next = indexAnchor(next, anchor)
-    if (anchor.stateKey !== undefined) next = dropSuperseded(next, stateKeyText(anchor.stateKey))
-    // Replacing a head removes lineage from hot state; count it.
-    if (previous !== undefined && previous.id !== anchor.id) {
+    if (anchor.stateKey === undefined) {
+      return indexAnchor(state, anchor)
+    }
+    const key = stateKeyText(anchor.stateKey)
+    const previous = state.stateHeads[key]
+    // The new head replaces the old in place; the old anchor leaves hot
+    // state entirely (faces included) — history stays in the session log.
+    const replaced = previous !== undefined && previous.id !== anchor.id
+    let next = indexAnchor(state, anchor)
+    if (replaced) {
+      next = removeFace(next, previous)
       next = { ...next, retiredCount: next.retiredCount + 1 }
     }
     return next
@@ -249,45 +251,40 @@ function transitionFailure(
   if (failureState === 'verified') {
     // Fail closed: verification without evidence refs is refused outright.
     if (evidenceRefs === undefined || evidenceRefs.length === 0) return state
-    const { [anchorId]: _removed, ...rest } = state.openFailures
-    void _removed
-    return { ...state, openFailures: rest, retiredCount: state.retiredCount + 1, stateHeads: removeHead(state.stateHeads, head) }
+    return { ...removeFace(state, head), retiredCount: state.retiredCount + 1 }
   }
   const advanced: Anchor = { ...head, failureState }
   return { ...state, openFailures: { ...state.openFailures, [anchorId]: advanced } }
 }
 
-function removeHead(heads: Record<string, Anchor>, anchor: Anchor): Record<string, Anchor> {
-  if (anchor.stateKey === undefined) return heads
-  const key = stateKeyText(anchor.stateKey)
-  if (heads[key]?.id !== anchor.id) return heads
-  const { [key]: _removed, ...rest } = heads
-  void _removed
-  return rest
-}
-
 /** Retire one anchor by id (verified failures, revoked constraints). */
 function retireAnchor(state: FoldCurrentState, anchorId: string): FoldCurrentState {
   let next = state
-  for (const [key, anchor] of Object.entries(state.stateHeads)) {
-    if (anchor.id === anchorId) {
-      const { [key]: _removed, ...rest } = next.stateHeads
-      void _removed
-      next = { ...next, stateHeads: rest, retiredCount: next.retiredCount + 1 }
-    }
-  }
-  for (const face of ['openFailures', 'openObligations', 'decisions', 'evidence', 'constraints'] as const) {
-    const faceState = next[face] as Record<string, Anchor>
-    if (faceState[anchorId] !== undefined) {
-      const { [anchorId]: _removed, ...rest } = faceState
-      void _removed
-      next = { ...next, [face]: rest, retiredCount: next.retiredCount + 1 }
-    }
-  }
+  let removed = 0
+  // The objective is a single slot, not a face.
   if (next.objective?.id === anchorId) {
-    next = { ...next, retiredCount: next.retiredCount + 1 }
+    const { objective: _dropped, ...rest } = next
+    void _dropped
+    next = rest
+    removed += 1
   }
-  return next
+  for (const face of ALL_FACES) {
+    const anchor = next[face][anchorId]
+    if (anchor !== undefined) {
+      // removeFace clears both the face entry and the matching head, so the
+      // same anchor can never be counted twice.
+      next = removeFace(next, anchor)
+      removed += 1
+    }
+  }
+  for (const head of Object.values(next.stateHeads)) {
+    if (head.id === anchorId) {
+      next = removeFace(next, head)
+      removed += 1
+      break
+    }
+  }
+  return removed === 0 ? state : { ...next, retiredCount: next.retiredCount + removed }
 }
 
 /**
@@ -315,8 +312,9 @@ export function authorityLossRate(expectedIds: readonly string[], state: FoldCur
 
 /**
  * State Staleness Rate (test spec §2.2): the fraction of displayed current
- * values that are actually superseded. Heads only ever hold one anchor per
- * key and superseded heads are dropped, so the gate is SSR=0 by construction.
+ * values that are actually superseded. Heads hold exactly one anchor per key
+ * and replaced heads leave hot state immediately, so the gate is SSR=0 by
+ * construction.
  */
 export function stateStalenessRate(state: FoldCurrentState): number {
   const heads = Object.values(state.stateHeads)

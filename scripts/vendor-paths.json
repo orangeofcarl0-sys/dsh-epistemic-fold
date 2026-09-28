@@ -431,17 +431,32 @@
   "@deepseek-ai/dsh-web-app/startup": [
     "./vendor/deepseek-harness/packages/bundle/web-app/src/startup.ts"
   ],
+  "@deepseek-ai/dsh-client-*/client": [
+    "./vendor/deepseek-harness/packages/client/*/src/client"
+  ],
   "@deepseek-ai/dsh-host-directory-picker": [
     "./vendor/deepseek-harness/packages/host/directory-picker/src"
+  ],
+  "@deepseek-ai/dsh-host-directory-picker/*": [
+    "./vendor/deepseek-harness/packages/host/directory-picker/src/*"
   ],
   "@deepseek-ai/dsh-host-directory-picker-browse": [
     "./vendor/deepseek-harness/packages/host/directory-picker-browse/src"
   ],
+  "@deepseek-ai/dsh-host-directory-picker-browse/*": [
+    "./vendor/deepseek-harness/packages/host/directory-picker-browse/src/*"
+  ],
   "@deepseek-ai/dsh-host-directory-picker-native": [
     "./vendor/deepseek-harness/packages/host/directory-picker-native/src"
   ],
+  "@deepseek-ai/dsh-host-directory-picker-native/*": [
+    "./vendor/deepseek-harness/packages/host/directory-picker-native/src/*"
+  ],
   "@deepseek-ai/dsh-host-directory-picker-auto": [
     "./vendor/deepseek-harness/packages/host/directory-picker-auto/src"
+  ],
+  "@deepseek-ai/dsh-host-directory-picker-auto/*": [
+    "./vendor/deepseek-harness/packages/host/directory-picker-auto/src/*"
   ],
   "@deepseek-ai/dsh-host-product-telemetry-otel": [
     "./vendor/deepseek-harness/packages/host/product-telemetry-otel/src"
@@ -715,9 +730,6 @@
   ],
   "@deepseek-ai/dsh-client-ui-theme": [
     "./vendor/deepseek-harness/packages/client/ui-theme/src"
-  ],
-  "@deepseek-ai/dsh-client-ui-theme/brand-font.css": [
-    "./vendor/deepseek-harness/packages/client/ui-theme/src/styles/brand-font.css"
   ],
   "@deepseek-ai/dsh-client-ui-settings": [
     "./vendor/deepseek-harness/packages/client/ui-settings/src"
