@@ -54,6 +54,9 @@ jobs:
       - name: Tests
         run: npx vitest run
 
+      - name: Keyless evaluation (metrics + boundary corpus + long-horizon economics)
+        run: npm run eval:keyless
+
   dsh-master:
     name: DSH master (compatibility probe)
     runs-on: ubuntu-latest

@@ -73,7 +73,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **M3a** | Deterministic current state (anchors, authority, projection) · 确定性当前状态 | ✅ ALR=0 · SSR=0 · provenance=100% · bounded |
 | **R0-A** | Cross-layer integration closure: marker protocol, frontier hard invariant, recall isolation, commit records, authority gate, disjoint rendering · 跨层组合正确性闭合 | ✅ 65 tests |
 | **R0-B** | Native plugin entry, package manifest, composition smoke (mount/fold/restart), CI lanes · 原生插件入口 + 组装冒烟 + CI | ✅ |
-| **R0-C** | Corrected metrics (absolute invalidation vs PMA), three-layer economics, root rebase + anti-oscillation, ρ break-even curve · 指标修正 + 三层经济学 | ✅ 71 tests |
+| **R0-C** | Corrected metrics, keyless boundary corpus (12 hard + 6 exploratory), paired runner (B1/E3a0/E3aR), long-horizon economics 32/64/128 · 指标修正 + 边界语料 + 配对续跑 + 长程经济学 | ✅ 115 tests · [report](docs/07_R0C_EVALUATION_REPORT.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -82,19 +82,21 @@ requires observed failure evidence from benchmarks first (see
 section F) · M1/M3b/M4 及之后**刻意未实现**——每项都需要 benchmark 先观察到
 对应的失败证据（见 [05 文档](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)第 F 节）。
 
-Paired-baseline evidence (identical history through DSH Basic vs EF): EF
-invalidates **fewer absolute prefix tokens** and keeps **more of the history
-cache-warm**, with every Basic fold rewriting the whole prefix while EF only
-compacts past the frontier. The honest trade-off is quantified too: frozen
-checkpoints charge a recurring prompt cost, so EF's cache locality only
-converts into cost advantage when the provider's cache discount is
-sufficiently deep (ρ break-even curve in
-[06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md)) ·
-配对基线证据（相同历史分别跑 DSH Basic 与 EF）：EF 的**绝对 prefix 失效量
-更低**、**cache-warm 复用更多**——Basic 每次折叠全量重写 prefix，EF 只折叠
-frontier 之后。代价也如实量化：frozen checkpoint 有重复计费成本，EF 的
-cache 局部性只有在 provider 缓存折扣足够深时才兑现为成本优势（ρ break-even
-曲线见 [最终报告](docs/06_FINAL_REPORT.md)）。
+Evaluation evidence (R0-C, keyless + deterministic): EF keeps **more history
+cache-warm** at every horizon, and the leaf/root maintenance loop works. The
+honest long-horizon finding is that **frozen checkpoints charge a recurring
+prompt cost that can exceed Basic's rewrite cost** as folds accumulate —
+root rebase cuts that load ~45% and is the effective lever. EF's cache
+locality converts into cost advantage only while the provider's cache
+discount is deep (ρ break-even curve). Full numbers, including the cases where
+EF does *not* win, are in
+[the R0-C evaluation report](docs/07_R0C_EVALUATION_REPORT.md) ·
+评估证据（R0-C，keyless + 确定性）：EF 在每个时间尺度上都保留**更多
+cache-warm 历史**，leaf/root 维护回路工作正常。诚实的长期发现是：
+**frozen checkpoint 的重复 prompt 成本会随折叠累积，可能超过 Basic 的重写
+成本**——root rebase 能把该负载降低约 45%，是有效的杠杆。EF 的 cache 局部性
+只有在 provider 缓存折扣足够深时才转化为成本优势（ρ break-even 曲线）。
+包含 EF 并不占优情形的完整数据见 [R0-C 评估报告](docs/07_R0C_EVALUATION_REPORT.md)。
 
 ## Development · 开发方式
 
@@ -211,6 +213,10 @@ All design documents live in [`docs/`](docs/) ·
 | [04_EF_LOCAL_AGENT_WORK_ORDER.md](docs/04_EF_LOCAL_AGENT_WORK_ORDER.md) | Execution order and prohibitions for an implementation agent · 实现 Agent 的执行顺序与禁令 |
 | [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | Frozen decisions, hypotheses, open questions · 冻结决定、假设、开放问题 |
 | [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md) | Final implementation report: gates, evidence, deviations, refactor record · 最终实现报告 |
+| [07_R0C_EVALUATION_REPORT.md](docs/07_R0C_EVALUATION_REPORT.md) | R0-C evaluation: measurement integrity, corpus, paired continuation, long-horizon economics, next-stage decision · R0-C 评估报告 |
+| [08_BOUNDARY_CORPUS_PROTOCOL.md](docs/08_BOUNDARY_CORPUS_PROTOCOL.md) | Boundary corpus protocol: sidecar format, oracle union, action signatures · 边界语料协议 |
+| [09_EVALUATION_METRICS_SPEC.md](docs/09_EVALUATION_METRICS_SPEC.md) | Exact metric definitions (SPN/SPT/IST/PMA/DWR/CR/ρ) · 评估指标规范 |
+| [10_LOCAL_AGENT_WORK_ORDER_R0C.md](docs/10_LOCAL_AGENT_WORK_ORDER_R0C.md) | R0-C execution work order · R0-C 执行工单 |
 
 ## License · 许可证
 
