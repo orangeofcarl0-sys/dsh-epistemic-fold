@@ -300,20 +300,35 @@ describe('M3a rendering and gates', () => {
     const summaryEvent = session.eventAt((session.seq - 2) as never)
     const state = currentFoldState(ctx, session)
     const rendered = renderStructuredCheckpoint(state, 'test-cp', 'why we folded')
+    // Identity and reachability are never omitted (R2-D keeps both).
     expect(rendered).toContain('[EF checkpoint v1 mode=leaf id=test-cp]')
-    expect(rendered).toContain('Current')
-    expect(rendered).toContain('Evidence')
-    expect(rendered).toContain('Open')
+    expect(rendered).toContain('Recall')
+    expect(rendered).toContain('- cp:test-cp')
     // The failure's DESCRIPTION must reach the surface, not just its id: an
     // id-only line tells the model something is unresolved but not what, which
     // was observed to produce a wrong answer on the live behavioral subset.
+    expect(rendered).toContain('Open')
     expect(rendered).toContain('[failure] failure:call-2 (open)')
     expect(rendered).toMatch(/\[failure\] failure:call-2 \(open\): .+/u)
     expect(rendered).toContain('Rationale')
     expect(rendered).toContain('- why we folded')
-    expect(rendered).toContain('Recall')
-    expect(rendered).toContain('- cp:test-cp')
     void summaryEvent
+  })
+
+  it('omits empty sections entirely rather than announcing them (R2-D)', async () => {
+    // A checkpoint with no state, no evidence, no open items and no rationale
+    // must not spend tokens on four `- (none)` placeholders. Identity and the
+    // recall pointer survive because they carry correctness, not decoration.
+    const empty = renderStructuredCheckpoint(emptyCurrentState(), 'bare-cp')
+    expect(empty).toContain('[EF checkpoint v1 mode=leaf id=bare-cp]')
+    expect(empty).toContain('- cp:bare-cp')
+    expect(empty).not.toContain('- (none)')
+    expect(empty).not.toContain('Current')
+    expect(empty).not.toContain('Evidence')
+    expect(empty).not.toContain('Open')
+    expect(empty).not.toContain('Rationale')
+    // The diet is a real token saving on the empty case.
+    expect(empty.split('\n').length).toBeLessThan(8)
   })
 
   it('gate: ALR=0 and SSR=0 hold across folds and epochs', async () => {

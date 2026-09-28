@@ -285,8 +285,13 @@ describe('semantic profiles and audit metadata (R0-A6)', () => {
     expect(envelope.model).toBe('deterministic-fallback')
     expect(envelope.llmStreamCall).toBeUndefined()
     const text = summaryText(envelope.summary as ContentBlock[])
-    expect(text).toContain('Rationale')
-    expect(text).toContain('- (none)')
+    // semanticMode=none produces no rationale, and R2-D omits an empty section
+    // rather than emitting a `- (none)` placeholder for it. What must survive
+    // is checkpoint identity and the recall pointer.
+    expect(text).toContain('[EF checkpoint v1 mode=leaf id=')
+    expect(text).toContain('Recall')
+    expect(text).toContain('- cp:')
+    expect(text).not.toContain('Rationale')
     void store
   })
 

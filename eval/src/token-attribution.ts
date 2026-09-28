@@ -86,24 +86,43 @@ function densityPrice(text: string): number {
 
 /**
  * The three payloads of one rendered leaf checkpoint, split by section header.
- * @returns character slices, or `null` when the text is not the expected
- *   structured leaf layout (an unrecognized checkpoint is left whole).
+ *
+ * R2-D made sections OPTIONAL: a section carrying nothing is omitted entirely
+ * rather than emitted as a header plus `- (none)`. The splitter therefore
+ * locates whichever headers are present instead of requiring all of them.
+ *
+ * A checkpoint with NO state sections at all is still a perfectly valid leaf —
+ * a fold with no declared anchors has no machine state to hand off — so it
+ * splits with an empty state rather than being rejected. Rejecting it would
+ * misclassify a legitimate leaf as a root and silently misattribute its cost.
+ *
+ * @returns character slices, or `null` when the text carries no Recall anchor,
+ *   which means it is not a structured leaf layout at all.
  */
 export function splitLeafCheckpointText(
   text: string,
 ): { state: string; rationale: string; framing: string } | null {
-  const currentIdx = text.indexOf('\nCurrent\n')
-  const rationaleIdx = text.indexOf('\nRationale\n')
   const recallIdx = text.indexOf('\nRecall\n')
-  if (currentIdx < 0 || rationaleIdx < 0 || recallIdx < 0) return null
-  if (!(currentIdx < rationaleIdx && rationaleIdx < recallIdx)) return null
+  if (recallIdx < 0) return null
+  const rationaleIdx = text.indexOf('\nRationale\n')
+
+  // The state region runs from the first state header (if any) to Rationale,
+  // or to Recall when there is no Rationale.
+  const stateStart = ['\nCurrent\n', '\nEvidence\n', '\nOpen\n']
+    .map(header => text.indexOf(header))
+    .filter(index => index >= 0)
+    .sort((left, right) => left - right)[0]
+  const stateEnd = rationaleIdx >= 0 ? rationaleIdx : recallIdx
+
+  const hasState = stateStart !== undefined && stateStart < stateEnd
+  // Framing is everything before the state/rationale/recall body: the marker
+  // line, the preamble, and the wrapper tags.
+  const framingEnd = hasState ? stateStart + 1 : stateEnd
+
   return {
-    // Preamble, `<compacted-summary>` framing, marker line, and the Recall
-    // pointer are all fixed overhead — they exist to frame the handoff, not
-    // to carry state or reasoning.
-    framing: text.slice(0, currentIdx + 1) + text.slice(recallIdx),
-    state: text.slice(currentIdx + 1, rationaleIdx),
-    rationale: text.slice(rationaleIdx + 1, recallIdx),
+    framing: text.slice(0, framingEnd) + text.slice(recallIdx),
+    state: hasState ? text.slice(stateStart + 1, stateEnd) : '',
+    rationale: rationaleIdx >= 0 ? text.slice(rationaleIdx + 1, recallIdx) : '',
   }
 }
 
