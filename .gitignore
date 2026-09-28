@@ -8,3 +8,6 @@ lib/
 coverage/
 .vite/
 tsconfig.tsbuildinfo
+
+# vendored DSH source (separate upstream repo, not part of this repo)
+vendor/
