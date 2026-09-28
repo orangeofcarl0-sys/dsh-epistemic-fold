@@ -133,6 +133,41 @@ vendor clone onto a new DSH version ·
 `scripts/vendor-types-paths.json`（构建产物声明，供 tsconfig 使用）。vendor
 clone 升级到新 DSH 版本后重新运行即可。
 
+## Plugin usage · 插件用法
+
+Mount the composite plugin into a cordis context — it owns `ctx.compaction`,
+registers the deterministic state projection, provides the authority-gated
+anchor service as `ctx.epistemicFold`, and registers the `context_search` /
+`context_recall` tools when a ToolRuntime is present ·
+将复合插件挂载到 cordis context——它持有 `ctx.compaction`、注册确定性状态
+projection、提供 `ctx.epistemicFold`（authority 门控的 anchor 写入通道），
+并在存在 ToolRuntime 时注册 `context_search` / `context_recall`：
+
+```ts
+import { EpistemicFoldPlugin } from 'dsh-epistemic-fold/plugin'
+
+await ctx.plugin(EpistemicFoldPlugin, {
+  auto: true,
+  // Point bundles at the profile's persistence root (cleaned with the profile).
+  bundleRoot: `${profileRoot}/epistemic-fold`,
+  semanticMode: 'rationale', // or 'none' for a zero-LLM deterministic runtime
+})
+```
+
+DSH profile YAML（等价形态 · equivalent form）:
+
+```yaml
+- name: dsh-epistemic-fold
+  config:
+    bundleRoot: <profile persistence root>/epistemic-fold
+    semanticMode: rationale
+```
+
+Continuous Integration runs two lanes on every push: the **pinned DSH
+baseline** (mandatory) and **DSH master** (allowed-to-fail compatibility
+probe) · CI 每次推送跑两条 lane：pinned 基线（必过）与 DSH master
+（allowed-to-fail 兼容性探测）。
+
 ## Repository layout · 仓库结构
 
 ```

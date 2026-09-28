@@ -1,13 +1,66 @@
 {
-  "name": "epistemic-fold",
-  "version": "0.0.1",
+  "name": "dsh-epistemic-fold",
+  "version": "0.1.0",
+  "description": "A contract-preserving context runtime for long-horizon agents on the DeepSeek Harness: exact archive/recall, a monotonic fold frontier, and deterministic current state.",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./plugin": {
+      "types": "./src/plugin.ts",
+      "default": "./src/plugin.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -b --force"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "generate-maps": "node scripts/generate-maps.cjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/orangeofcarl0-sys/dsh-epistemic-fold.git"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "context-compaction",
+    "llm-agents",
+    "agent-memory",
+    "context-runtime"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.0",
+    "@deepseek-ai/dsh-agent": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-atomic-write": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-compaction": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-compaction-basic": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-llm": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-session": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-session-projection": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-system-prompt": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-tools": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-token-meter": ">=0.1.7-rc.2",
+    "@deepseek-ai/dsh-util-values": ">=0.1.7-rc.2",
+    "zod": ">=4.4.3"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-system-prompt": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

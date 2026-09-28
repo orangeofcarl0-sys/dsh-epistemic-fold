@@ -60,6 +60,8 @@ export interface ResolvedEpistemicFoldConfig {
    * Basic is never used for the Rationale slot.
    */
   readonly semanticMode: 'none' | 'rationale'
+  /** Resolved bundle directory. */
+  readonly bundleRoot: string
 }
 
 const DEFAULT_THRESHOLD_RATIO = 0.8
@@ -67,6 +69,7 @@ const DEFAULT_RETAIN_RATIO = 0.16
 const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
+const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
 
 /** Public plugin configuration: Basic's compaction policy plus EF's budget. */
 export interface EpistemicFoldConfig extends BasicCompactionConfig {
@@ -74,6 +77,11 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   frozenCheckpointTokenBudget?: number
   /** Structured-checkpoint semantic face; default `rationale`. */
   semanticMode?: 'none' | 'rationale'
+  /**
+   * Durable bundle directory (R0-B). Loader deployments set this to the
+   * profile's persistence root; the default keeps the standalone/dev layout.
+   */
+  bundleRoot?: string
 }
 
 /** Resolve and validate the EF-specific policy face of the plugin config. */
@@ -104,6 +112,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (semanticMode !== 'none' && semanticMode !== 'rationale') {
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
   }
+  const bundleRoot = config.bundleRoot ?? DEFAULT_BUNDLE_ROOT
   return {
     thresholdRatio,
     headroomTokens,
@@ -112,6 +121,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     compactionRetries,
     frozenCheckpointTokenBudget,
     semanticMode,
+    bundleRoot,
   }
 }
 

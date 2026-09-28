@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  pinned-dsh:
+    name: DSH 0.1.7-rc.2 (pinned)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Checkout vendored DSH at the verified baseline
+        uses: actions/checkout@v4
+        with:
+          repository: deepseek-ai/deepseek-harness
+          ref: 477b4f420553e8a52c2fbccc464d7561b239c443
+          path: vendor/deepseek-harness
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: Install DSH workspace dependencies
+        working-directory: vendor/deepseek-harness
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build DSH declaration output
+        working-directory: vendor/deepseek-harness
+        run: node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b packages/compaction/compaction-basic packages/core/tools packages/util/atomic-write
+
+      - name: Install plugin tooling
+        run: npm ci
+
+      - name: Regenerate resolution maps and verify they are current
+        run: |
+          node scripts/generate-maps.cjs
+          git diff --exit-code -- scripts/vendor-paths.json scripts/vendor-types-paths.json
+
+      - name: Type check
+        run: npx tsc --noEmit -p tsconfig.json
+
+      - name: Tests
+        run: npx vitest run
+
+  dsh-master:
+    name: DSH master (compatibility probe)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Checkout vendored DSH at master
+        uses: actions/checkout@v4
+        with:
+          repository: deepseek-ai/deepseek-harness
+          ref: master
+          path: vendor/deepseek-harness
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+
+      - name: Install DSH workspace dependencies
+        working-directory: vendor/deepseek-harness
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build DSH declaration output
+        working-directory: vendor/deepseek-harness
+        run: node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b packages/compaction/compaction-basic packages/core/tools packages/util/atomic-write
+
+      - name: Install plugin tooling
+        run: npm ci
+
+      - name: Regenerate resolution maps (master may add or move packages)
+        run: node scripts/generate-maps.cjs
+
+      - name: Type check
+        run: npx tsc --noEmit -p tsconfig.json
+
+      - name: Tests
+        run: npx vitest run

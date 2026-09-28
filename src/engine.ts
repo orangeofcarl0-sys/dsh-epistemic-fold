@@ -88,12 +88,16 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   ) {
     // Basic validates its config keys strictly; EF-owned fields must be
     // stripped before the super call (they are resolved by resolveEfConfig).
-    const { frozenCheckpointTokenBudget: _budget, semanticMode: _mode, ...basicConfig } = config
+    const { frozenCheckpointTokenBudget: _budget, semanticMode: _mode, bundleRoot: _root, ...basicConfig } = config
     void _budget
     void _mode
+    void _root
     super(ctx, basicConfig)
     this.efConfig = resolveEfConfig(config)
-    this.bundles = options.bundleStore ?? new FileBundleStore('.epistemic-fold/bundles')
+    // Loader deployments pass exactly (ctx, config): the store then comes
+    // from `bundleRoot` in the config face, honoring the DSH persistence
+    // lifecycle (R0-B). Programmatic callers may inject a store directly.
+    this.bundles = options.bundleStore ?? new FileBundleStore(this.efConfig.bundleRoot)
   }
 
   /** The bundle store this engine publishes checkpoints into. */
