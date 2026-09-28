@@ -31,7 +31,8 @@
     "eval:longhorizon": "vitest run tests/eval-longhorizon.spec.ts",
     "eval:r1": "vitest run tests/r1a-economics.spec.ts tests/r1b-roi.spec.ts tests/r1d-policy.spec.ts tests/r1e-pareto.spec.ts",
     "eval:r1-report": "vitest run tests/r1-report.spec.ts",
-    "eval:r1-live": "vitest run tests/r1-live.spec.ts tests/r1-live-behavior.spec.ts"
+    "eval:r1-live": "vitest run tests/r1-live.spec.ts tests/r1-live-behavior.spec.ts",
+    "eval:r2": "vitest run tests/r2a-pressure.spec.ts tests/r2b-admission.spec.ts tests/r2c-root.spec.ts tests/r2d-diet.spec.ts tests/r2e-dominance.spec.ts"
   },
   "repository": {
     "type": "git",
