@@ -74,6 +74,11 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **R0-A** | Cross-layer integration closure: marker protocol, frontier hard invariant, recall isolation, commit records, authority gate, disjoint rendering · 跨层组合正确性闭合 | ✅ 65 tests |
 | **R0-B** | Native plugin entry, package manifest, composition smoke (mount/fold/restart), CI lanes · 原生插件入口 + 组装冒烟 + CI | ✅ |
 | **R0-C** | Corrected metrics, keyless boundary corpus (12 hard + 6 exploratory), paired runner (B1/E3a0/E3aR), long-horizon economics 32/64/128 · 指标修正 + 边界语料 + 配对续跑 + 长程经济学 | ✅ 115 tests · [report](docs/07_R0C_EVALUATION_REPORT.md) |
+| **R1-A** | Token source attribution, versioned economics profiles (asOf + source, user-overridable), provider cache telemetry · 词元来源归因 + 版本化经济模型 + 缓存实况遥测 | ✅ 24 tests |
+| **R1-B** | W1–W5 workloads × 32/64/128, counterfactual ROI lab (Delta / M1 / M5 / Adaptive Root) · 五类负载矩阵 + 反事实 ROI 实验台 | ✅ 14 tests · [gate](docs/11_R1B_ROUTE_SELECTION_GATE.md) |
+| **R1-D** | Provider-aware amortized rebase policy compiler (break-even horizon, hard overrides win) · 模型感知摊销式 rebase 策略编译器 | ✅ 12 tests |
+| **R1-E** | Pareto frontier over cost / footprint / success, correctness as a filter · 帕累托前沿 + 正确性作为过滤器 | ✅ 9 tests · [report](docs/12_R1_EVALUATION_REPORT.md) |
+| **R1 live** | Opt-in live behavioral subset against the configured model + measured cache realization · 可选实模型行为子集 + 实测缓存命中率 | ⚠️ **NULL RESULT** · [results](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -81,6 +86,10 @@ requires observed failure evidence from benchmarks first (see
 [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md),
 section F) · M1/M3b/M4 及之后**刻意未实现**——每项都需要 benchmark 先观察到
 对应的失败证据（见 [05 文档](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)第 F 节）。
+R1 followed the same rule and **rejected production Delta Leaf** on measured
+ROI (3.7–16.6% upper bound) in favour of an amortized root policy ·
+R1 遵循同一规则：依据实测 ROI（上限 3.7–16.6%）**否决了生产化 Delta Leaf**，
+改走摊销式 root 策略。
 
 Evaluation evidence (R0-C, keyless + deterministic): EF keeps **more history
 cache-warm** at every horizon, and the leaf/root maintenance loop works. The
@@ -97,6 +106,44 @@ cache-warm 历史**，leaf/root 维护回路工作正常。诚实的长期发现
 成本**——root rebase 能把该负载降低约 45%，是有效的杠杆。EF 的 cache 局部性
 只有在 provider 缓存折扣足够深时才转化为成本优势（ρ break-even 曲线）。
 包含 EF 并不占优情形的完整数据见 [R0-C 评估报告](docs/07_R0C_EVALUATION_REPORT.md)。
+
+R1 evidence (keyless, deterministic) locates the real cost precisely, and it
+is not where the architecture expected: **~87% of a leaf checkpoint node is
+repeated framing preamble**, and because the frozen prefix is monotonically
+non-decreasing, once it alone exceeds the pressure threshold *every* step
+folds — EF folds 51× against Basic's 21× on an identical workload and digest,
+a 3.3× total-token gap. With task success held constant, Basic dominates EF on
+cost and footprint on every workload; the
+[R1 report](docs/12_R1_EVALUATION_REPORT.md) states that plainly and states
+equally plainly that it is not a verdict — equal success is the one premise
+the keyless tier cannot test, and EF's entire justification is that success is
+*not* equal. No production default is flipped on economics alone ·
+R1 证据（keyless、确定性）精确定位了真实成本，而它并不在架构预期之处：
+**leaf checkpoint 节点约 87% 是重复的 framing 前导文本**；且由于 frozen
+prefix 单调不减，一旦其自身超过压力阈值，**每一步**都会折叠——相同负载与
+相同摘要文本下 EF 折叠 51 次而 Basic 仅 21 次，总词元相差 3.3 倍。在任务
+成功率相同的前提下，Basic 在每个负载上都优于 EF；[R1 报告](docs/12_R1_EVALUATION_REPORT.md)
+如实陈述这一点，并同样明确说明这**不是最终结论**——"成功率相同"正是 keyless
+层唯一无法验证的前提，而 EF 的全部理由就是成功率**并不相同**。任何生产默认值
+都不会仅凭经济性而改变。
+
+**The live tier then ran, and it did not find a behavioral advantage.** 64
+paired trials against the configured model scored **EF 32/32 vs Basic 31/32** —
+one trial, which is not evidence. The null result is reported as null:
+at this scale Basic's lossy summary retained every fact the cases probed. Two
+things were decisive, though: **measured cache realization h = 0.910** (not the
+assumed 1.000), making the effective ratio **5.9× worse than the headline ρ**;
+and a **production bug no keyless test could see** — failure anchors rendered
+without their description, so the model saw that something was unresolved but
+not what. Full detail in
+[the live results](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md) ·
+**实模型层随后运行，并未发现行为优势。** 对当前配置模型完成 64 组配对试验，
+结果为 **EF 32/32 对 Basic 31/32**——仅差一次，不构成证据。零结果即如实报告
+为零结果：在该规模下，Basic 的有损摘要保留了全部被测事实。但有两项结论是明确
+的：**实测缓存命中率 h = 0.910**（而非假定的 1.000），使有效价格比**比标称 ρ
+差 5.9 倍**；以及一个**keyless 测试完全无法发现的真实缺陷**——failure anchor
+渲染时丢失了描述，模型只能看到"有未解决项"却看不到"是什么"。详见
+[实模型结果](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md)。
 
 ## Development · 开发方式
 
@@ -195,7 +242,16 @@ src/
   recall.ts        context_search + context_recall (bounded, paginated, exact) · 有界精确召回
   tools.ts         registers the recall tools against ctx.tools · 注册召回工具
   hash.ts          canonical JSON + SHA-256 digests · canonical JSON + 摘要
-tests/             M0/M2/M3a suites + shared harness (controlled LLM adapter) · 测试套件 + 共享 harness
+  economics-profile.ts  versioned cost model: ρ, ρ_eff, cache realization, break-even · 版本化成本模型
+  policy-compiler.ts    amortized rebase policy: break-even horizon, hard overrides · 摊销式 rebase 策略
+eval/src/
+  token-attribution.ts  per-request token buckets that reconcile exactly · 词元来源归因
+  provider-telemetry.ts realized cache rate from provider usage · 缓存实况遥测
+  counterfactual.ts     oracle arms measuring ROI upper bounds · 反事实 ROI 上界
+  pareto.ts             frontier over cost/footprint/success; correctness is a filter · 帕累托前沿
+eval/workloads/   W1–W5 workload matrix · 五类负载
+profiles/economics/  versioned provider pricing (asOf + source) · 版本化价格数据
+tests/             M0/M2/M3a/R0/R1 suites + shared harness (controlled LLM adapter) · 测试套件 + 共享 harness
 bench/             paired-baseline harness (Basic vs EF prefix economics) · 配对基线 harness
 ```
 
@@ -217,6 +273,15 @@ All design documents live in [`docs/`](docs/) ·
 | [08_BOUNDARY_CORPUS_PROTOCOL.md](docs/08_BOUNDARY_CORPUS_PROTOCOL.md) | Boundary corpus protocol: sidecar format, oracle union, action signatures · 边界语料协议 |
 | [09_EVALUATION_METRICS_SPEC.md](docs/09_EVALUATION_METRICS_SPEC.md) | Exact metric definitions (SPN/SPT/IST/PMA/DWR/CR/ρ) · 评估指标规范 |
 | [10_LOCAL_AGENT_WORK_ORDER_R0C.md](docs/10_LOCAL_AGENT_WORK_ORDER_R0C.md) | R0-C execution work order · R0-C 执行工单 |
+| [11_R1B_ROUTE_SELECTION_GATE.md](docs/11_R1B_ROUTE_SELECTION_GATE.md) | R1-B route-selection gate: measured ROI per candidate, and the decision to reject production Delta Leaf · R1-B 路线选择 Gate：各候选实测 ROI 与否决 Delta Leaf 的决策 |
+| [12_R1_EVALUATION_REPORT.md](docs/12_R1_EVALUATION_REPORT.md) | R1 evaluation report (GENERATED by `npm run eval:r1-report`): attribution, regime sensitivity, counterfactual bounds, per-profile policy, Pareto · R1 评估报告（由脚本生成） |
+| [13_R1_LIVE_BEHAVIORAL_RESULTS.md](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md) | Live behavioral subset results: the null result, measured cache realization h = 0.910, and the production bug it found · 实模型行为子集结果：零结果、实测缓存命中率、以及发现的真实缺陷 |
+
+`profiles/economics/` holds versioned provider pricing data (asOf + source,
+caller-overridable) used by the R1 cost model — benchmark input, never
+algorithm constants · `profiles/economics/` 存放版本化的 provider 价格数据
+（带 asOf 与来源、可被调用方覆盖），供 R1 成本模型使用——属于 benchmark
+输入，而非算法常量。
 
 ## License · 许可证
 

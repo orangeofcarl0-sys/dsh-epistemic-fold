@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-no-cache",
+  "provider": "synthetic",
+  "modelPattern": "*",
+  "asOf": "2026-09-28",
+  "source": "Synthetic control profile: no cache exists, so every token is a miss. Used to show which conclusions are cache artifacts and which are structural.",
+  "pricing": {
+    "inputMissPerM": 1.0,
+    "inputHitPerM": 1.0,
+    "outputPerM": 1.0
+  },
+  "cache": {
+    "mode": "none",
+    "bestEffort": false
+  },
+  "context": {
+    "windowTokens": 128000
+  }
+}

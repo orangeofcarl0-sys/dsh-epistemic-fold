@@ -31,6 +31,7 @@ import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
+import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 
 export async function tempRoot(): Promise<string> {
@@ -122,6 +123,21 @@ export async function createHarness(
     efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale' }
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
+    /**
+     * Mount the deterministic EF current-state projection. Off by default so
+     * the M0/M2 legacy rendering path stays exercised; the structured
+     * checkpoint path (M3a/R1) needs it mounted.
+     */
+    projection?: boolean
+    /** Extra provider id to register the controlled adapter for (R1 workloads). */
+    workloadModel?: string
+    /**
+     * Replace the controlled adapter with a real one (live tier). The adapter
+     * is registered for both `MODEL` and `workloadModel`, so the live
+     * behavioral subset can drive the actual provider through the same
+     * engine/transaction path the keyless tier exercises.
+     */
+    adapter?: { readonly provider: string; readonly instance: LlmAdapter }
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -132,6 +148,7 @@ export async function createHarness(
   void new SessionStore(ctx)
   new SessionProjectionRegistry(ctx)
   void new TokenMeter(ctx)
+  if (options.projection === true) registerEpistemicFoldProjection(ctx)
   // Detached test sessions are not store-live; manual compaction's durability
   // checkpoint is observable through the flush record (mirrors the DSH
   // manual-compaction suite's flush spy).
@@ -141,6 +158,16 @@ export async function createHarness(
     return true
   }
   ctx.llm.registerAdapter([MODEL], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  // R1-B workloads route to their own provider id; register the same
+  // controlled adapter so their folds reach the semantic face instead of
+  // failing with "no adapter registered" (which would read as zero cost).
+  if (options.workloadModel !== undefined) {
+    ctx.llm.registerAdapter([options.workloadModel], new ControlledAdapter(options.contextWindow ?? 1_000_000, control))
+  }
+  // Live tier: a real adapter replaces the scripted face for its own route.
+  if (options.adapter !== undefined) {
+    ctx.llm.registerAdapter([options.adapter.provider], options.adapter.instance)
+  }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })
     : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })) as EpistemicFoldEngine

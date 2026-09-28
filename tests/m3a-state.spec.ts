@@ -304,7 +304,11 @@ describe('M3a rendering and gates', () => {
     expect(rendered).toContain('Current')
     expect(rendered).toContain('Evidence')
     expect(rendered).toContain('Open')
+    // The failure's DESCRIPTION must reach the surface, not just its id: an
+    // id-only line tells the model something is unresolved but not what, which
+    // was observed to produce a wrong answer on the live behavioral subset.
     expect(rendered).toContain('[failure] failure:call-2 (open)')
+    expect(rendered).toMatch(/\[failure\] failure:call-2 \(open\): .+/u)
     expect(rendered).toContain('Rationale')
     expect(rendered).toContain('- why we folded')
     expect(rendered).toContain('Recall')
