@@ -11,24 +11,20 @@ import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
 import type { CompactionResult } from '@deepseek-ai/dsh-compaction'
 import {
   createMessage,
-  createSystemMessage,
   createUserMessage,
   LlmAdapter,
   LlmRuntime,
-  ToolCallId,
-  createToolResultMessage,
 } from '@deepseek-ai/dsh-llm'
 import type {
   ContentBlock,
   LlmResolvedModelInfo,
-  Message,
   StreamChunk,
 } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { SummarizationInput, SummaryResult } from '@deepseek-ai/dsh-compaction-basic/src/summarizer.ts'
+import type { SummarizationInput, SummaryResult } from '../src/types.ts'
 
 const MODEL = 'test-model'
 const SIGNAL = new AbortController().signal

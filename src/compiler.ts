@@ -1,0 +1,108 @@
+/**
+ * The EF compile hook: splits Basic's summarization input into the retained
+ * system head and the shadowed span, archives the span exactly, and renders
+ * the checkpoint — semantic when the model call succeeds, deterministic
+ * fallback when it does not.
+ *
+ * @module dsh-epistemic-fold/compiler
+ */
+
+import type { CompactionId } from '@deepseek-ai/dsh-compaction'
+import type { Message } from '@deepseek-ai/dsh-llm'
+import type { SessionSeq } from '@deepseek-ai/dsh-session'
+import { canonicalHash } from './hash.ts'
+import type { CheckpointBundleV1, FoldCandidate } from './types.ts'
+
+export interface SplitSummarizationInput {
+  /** Leading `system` message retained ahead of the checkpoint, if present. */
+  readonly contextPrefix: readonly Message[]
+  /** The exact model-visible messages being folded. */
+  readonly shadowedMessages: readonly Message[]
+}
+
+/**
+ * Basic's replay input is the system head (when one projects) followed by the
+ * shadowed region in surface order. The archive covers ONLY the shadowed
+ * region; the system head is not part of the fold.
+ */
+export function splitSummarizationInput(input: { readonly messages: readonly Message[] }): SplitSummarizationInput {
+  const first = input.messages[0]
+  if (first?.role === 'system') {
+    return {
+      contextPrefix: [first],
+      shadowedMessages: input.messages.slice(1),
+    }
+  }
+  return { contextPrefix: [], shadowedMessages: input.messages }
+}
+
+/** Deterministic checkpoint body for a fold whose identity is known. */
+export function renderFallbackCheckpoint(candidate: FoldCandidate, messageCount: number): string {
+  const header = candidate.mode === 'leaf' ? 'EF Leaf' : candidate.mode === 'root' ? 'EF Root' : 'EF Emergency'
+  return [
+    `[${header} checkpoint ${candidate.checkpointId}]`,
+    '',
+    `- Folded ${messageCount} message(s); semantic summary unavailable.`,
+    '- Exact archived model history is recoverable via context_recall.',
+    `- Checkpoint id: cp:${candidate.checkpointId}`,
+  ].join('\n')
+}
+
+/** Model-written digest text; state never derives from it (D-006). */
+export function renderSemanticCheckpoint(candidate: FoldCandidate, text: string): string {
+  return [
+    `[EF ${candidate.mode} checkpoint ${candidate.checkpointId}]`,
+    '',
+    text,
+    '',
+    `- Checkpoint id: cp:${candidate.checkpointId}`,
+  ].join('\n')
+}
+
+const CHECKPOINT_PREAMBLE =
+  'This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.'
+
+/** Surface framing identical in shape to Basic's framed checkpoints. */
+export function frameCheckpoint(text: string): string {
+  return `${CHECKPOINT_PREAMBLE}\n\n<compacted-summary>\n${text}\n</compacted-summary>`
+}
+
+/** Build the immutable bundle for one fold; the caller publishes it durably. */
+export function buildBundle(options: {
+  candidate: FoldCandidate
+  orderedSurfaceSeqs: readonly SessionSeq[]
+  shadowedMessages: readonly Message[]
+  renderedText: string
+  semanticText?: string
+  compactionId?: CompactionId
+}): CheckpointBundleV1 {
+  const { candidate } = options
+  const logicalHash = canonicalHash(options.shadowedMessages)
+  return Object.freeze({
+    format: 'ef-checkpoint',
+    formatVersion: 1,
+    checkpointId: candidate.checkpointId,
+    sessionId: candidate.sessionId,
+    createdAt: Date.now(),
+    mode: candidate.mode,
+    ...(options.compactionId === undefined ? {} : { compactionId: options.compactionId }),
+    source: {
+      orderedSurfaceSeqs: [...options.orderedSurfaceSeqs],
+      sourceDigest: canonicalHash({
+        seed: candidate.sourceDigestSeed,
+        seqs: options.orderedSurfaceSeqs,
+      }),
+    },
+    archive: {
+      shadowedMessages: Object.freeze([...options.shadowedMessages]),
+      logicalHash,
+    },
+    ...(options.semanticText === undefined
+      ? {}
+      : { semantic: { text: options.semanticText } }),
+    rendered: {
+      text: options.renderedText,
+      digest: canonicalHash(options.renderedText),
+    },
+  })
+}
