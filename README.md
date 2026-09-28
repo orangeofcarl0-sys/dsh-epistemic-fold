@@ -55,13 +55,13 @@ Research implementation against **DeepSeek Harness `0.1.7-rc.2`**
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty),
 M4 (dependency graph) and beyond are **deliberately not implemented** — each
 requires observed failure evidence from benchmarks first (see
-[05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](05_EF_DECISIONS_AND_OPEN_QUESTIONS.md),
+[05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md),
 section F).
 
 Paired-baseline evidence (identical history through DSH Basic vs EF): EF
 invalidates **15% fewer prefix tokens** over the measured run, with the gap
 growing per fold — every Basic fold rewrites the whole prefix, EF only ever
-compacts past the frontier (see [06_FINAL_REPORT.md](06_FINAL_REPORT.md)).
+compacts past the frontier (see [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md)).
 
 ## Development
 
@@ -122,17 +122,17 @@ tests/             M0/M2/M3a suites + shared harness (controlled LLM adapter)
 bench/             paired-baseline harness (Basic vs EF prefix economics)
 ```
 
-## Design docs
+## Design docs (in `docs/`)
 
 | Document | Contents |
 |---|---|
-| [00_README_EF.md](00_README_EF.md) | Project entry: naming, goals, nine core invariants |
-| [01_EF_RFC_001_ARCHITECTURE.md](01_EF_RFC_001_ARCHITECTURE.md) | Architecture spec: truth model, data structures, fold transactions |
-| [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](02_EF_IMPLEMENTATION_PLAN_M0_M3.md) | Engineering DAG, gates, stop conditions |
-| [03_EF_TEST_BENCHMARK_SPEC.md](03_EF_TEST_BENCHMARK_SPEC.md) | Metrics (ALR/SSR/DWR/CR/PMA), test suites, benchmark arms |
-| [04_EF_LOCAL_AGENT_WORK_ORDER.md](04_EF_LOCAL_AGENT_WORK_ORDER.md) | Execution order and prohibitions for an implementation agent |
-| [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | Frozen decisions, hypotheses, open questions |
-| [06_FINAL_REPORT.md](06_FINAL_REPORT.md) | Final implementation report: gates, evidence, deviations, refactor record |
+| [00_README_EF.md](docs/00_README_EF.md) | Project entry: naming, goals, nine core invariants |
+| [01_EF_RFC_001_ARCHITECTURE.md](docs/01_EF_RFC_001_ARCHITECTURE.md) | Architecture spec: truth model, data structures, fold transactions |
+| [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](docs/02_EF_IMPLEMENTATION_PLAN_M0_M3.md) | Engineering DAG, gates, stop conditions |
+| [03_EF_TEST_BENCHMARK_SPEC.md](docs/03_EF_TEST_BENCHMARK_SPEC.md) | Metrics (ALR/SSR/DWR/CR/PMA), test suites, benchmark arms |
+| [04_EF_LOCAL_AGENT_WORK_ORDER.md](docs/04_EF_LOCAL_AGENT_WORK_ORDER.md) | Execution order and prohibitions for an implementation agent |
+| [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | Frozen decisions, hypotheses, open questions |
+| [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md) | Final implementation report: gates, evidence, deviations, refactor record |
 
 ## License
 

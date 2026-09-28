@@ -48,13 +48,13 @@ History ≠ Memory ≠ Context
 
 M1（verified ingress reduction）、M3b（negative knowledge / uncertainty）、
 M4（依赖图）及之后 **刻意未实现** —— 每一项都需要 benchmark 先观察到对应的
-失败证据（见 [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)
+失败证据（见 [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)
 第 F 节）。
 
 配对基线证据（相同历史分别跑 DSH Basic 与 EF）：在测量区间内 EF 的
 **prefix 失效 token 量低 15%**，且差距随折叠次数扩大 —— Basic 每次折叠
 全量重写 prefix，EF 只折叠 frontier 之后（见
-[06_FINAL_REPORT.md](06_FINAL_REPORT.md)）。
+[06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md)）。
 
 ## 开发方式
 
@@ -113,17 +113,17 @@ tests/             M0/M2/M3a 套件 + 共享 harness（受控 LLM adapter）
 bench/             配对基线 harness（Basic vs EF 的 prefix 经济学）
 ```
 
-## 设计文档
+## 设计文档（位于 `docs/`）
 
 | 文档 | 内容 |
 |---|---|
-| [00_README_EF.md](00_README_EF.md) | 项目入口：命名、目标、九条核心不变量 |
-| [01_EF_RFC_001_ARCHITECTURE.md](01_EF_RFC_001_ARCHITECTURE.md) | 架构规范：真相模型、数据结构、折叠事务 |
-| [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](02_EF_IMPLEMENTATION_PLAN_M0_M3.md) | 工程 DAG、阶段 Gate、停止条件 |
-| [03_EF_TEST_BENCHMARK_SPEC.md](03_EF_TEST_BENCHMARK_SPEC.md) | 指标（ALR/SSR/DWR/CR/PMA）、测试套件、benchmark 分组 |
-| [04_EF_LOCAL_AGENT_WORK_ORDER.md](04_EF_LOCAL_AGENT_WORK_ORDER.md) | 实现 Agent 的执行顺序与禁令 |
-| [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | 冻结决定、假设、开放问题 |
-| [06_FINAL_REPORT.md](06_FINAL_REPORT.md) | 最终实现报告：Gate、证据、偏差、重构记录 |
+| [00_README_EF.md](docs/00_README_EF.md) | 项目入口：命名、目标、九条核心不变量 |
+| [01_EF_RFC_001_ARCHITECTURE.md](docs/01_EF_RFC_001_ARCHITECTURE.md) | 架构规范：真相模型、数据结构、折叠事务 |
+| [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](docs/02_EF_IMPLEMENTATION_PLAN_M0_M3.md) | 工程 DAG、阶段 Gate、停止条件 |
+| [03_EF_TEST_BENCHMARK_SPEC.md](docs/03_EF_TEST_BENCHMARK_SPEC.md) | 指标（ALR/SSR/DWR/CR/PMA）、测试套件、benchmark 分组 |
+| [04_EF_LOCAL_AGENT_WORK_ORDER.md](docs/04_EF_LOCAL_AGENT_WORK_ORDER.md) | 实现 Agent 的执行顺序与禁令 |
+| [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | 冻结决定、假设、开放问题 |
+| [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md) | 最终实现报告：Gate、证据、偏差、重构记录 |
 
 ## 许可证
 
