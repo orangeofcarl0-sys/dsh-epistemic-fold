@@ -57,6 +57,14 @@ jobs:
       - name: Keyless evaluation (metrics + boundary corpus + long-horizon economics)
         run: npm run eval:keyless
 
+      - name: R1 model-aware context economics (attribution, workloads, ROI lab, policy, Pareto)
+        run: npm run eval:r1
+
+      - name: R1 report is reproducible and up to date
+        run: |
+          npm run eval:r1-report
+          git diff --exit-code -- docs/12_R1_EVALUATION_REPORT.md docs/MANIFEST.json
+
   dsh-master:
     name: DSH master (compatibility probe)
     runs-on: ubuntu-latest

@@ -49,6 +49,12 @@ export type {
   PolicyRegime,
   PricingTier,
 } from './economics-profile.ts'
+export { compileContextPolicy } from './policy-compiler.ts'
+export type {
+  ContextPolicyDecision,
+  ContextPolicyInput,
+  PolicyAction,
+} from './policy-compiler.ts'
 export { registerRecallTools } from './tools.ts'
 export {
   registerEpistemicFoldProjection,
