@@ -81,12 +81,12 @@
   },
   {
     "file": "15_R2_FRAMING_CEILING.md",
-    "bytes": 9856,
-    "sha256": "6b1354ca1e6e2f358964c38755299cec6530af8b627e0056a13fb8717d48e3ca"
+    "bytes": 10080,
+    "sha256": "aa87078ed38ce86479b2e2d50c0fc7ecf5f10f1a4b6bd74753b6e04a29807f6e"
   },
   {
     "file": "16_R3_EVALUATION_REPORT.md",
-    "bytes": 11955,
-    "sha256": "0e56bc54f0cd47b258090f64af01f141cc0788c8124fc5d52bf5230ecac8f86b"
+    "bytes": 12219,
+    "sha256": "482d204cdaefb493ceae55dc8b427679020e77ffaec020b4b56042b626f9ce09"
   }
 ]
