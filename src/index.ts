@@ -71,6 +71,8 @@ export type {
   PressureRegime,
   PressureSample,
 } from './pressure.ts'
+export { headroomDominates, triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
+export type { BindingConstraint, TriggerBreakdown } from './trigger.ts'
 export { registerRecallTools } from './tools.ts'
 export {
   registerEpistemicFoldProjection,
