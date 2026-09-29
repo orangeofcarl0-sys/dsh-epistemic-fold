@@ -43,7 +43,9 @@ export type {
   ResolvedEpistemicFoldConfig,
 } from './policy.ts'
 export {
+  BALANCED_RETAIN_RATIO,
   FOLD_MODE_NAMES,
+  QUALITY_RETAIN_RATIO,
   TIERS,
   TIER_MODE_NAMES,
   economyPresetValues,

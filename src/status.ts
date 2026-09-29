@@ -12,28 +12,41 @@
  * the numbers a user sees cannot diverge from the numbers a report cites — and
  * the whole surface is testable without a live agent.
  *
- * ## The rule that shapes every field
+ * ## The two rules that shape every field
  *
- * **A figure is reported as MEASURED or as ESTIMATED, never as a bare number.**
- * The project learned this the hard way in RC1.1, where a cache-contract
- * measurement was presented as a price result. So:
+ * **1. A figure is MEASURED or ESTIMATED, never a bare number.** The project
+ * learned this the hard way in RC1.1, where a cache-contract measurement was
+ * presented as a price result. So provider-reported token usage is `measured`
+ * because DSH's own `tokenUsage` projection accumulated it; MONEY is `estimated`
+ * because the provider's bill is authoritative; and a figure derived from a
+ * heuristic is `estimated` even when the underlying text is real — see
+ * {@link archivedTokens}.
  *
- *  - token counts come from the real meter and are `measured`;
- *  - checkpoint and recall counts come from the real session log and are
- *    `measured`;
- *  - MONEY is `estimated`, because the true bill is the provider's, and the
- *    projection uses the routed model's published prices against the observed
- *    token split. It is labelled as an estimate in the rendered output.
+ * **2. An unestablished figure is `undefined`, and renders `unknown` — never 0.**
+ * "No data" and "zero" mean opposite things to someone deciding whether a mode
+ * is working, so the renderer distinguishes them and this module never
+ * substitutes one for the other.
  *
- * When a figure cannot be established at all, it is `undefined` and the renderer
- * prints `unknown` — it is never silently zero, because "no data" and "zero"
- * mean opposite things to someone deciding whether a mode is working.
+ * ## Current vs lifetime (RC2.1)
+ *
+ * Two pairs of numbers look alike and mean different things, so they are
+ * reported separately and named for which one they are:
+ *
+ *  - {@link checkpoints} is the count of EF checkpoints **currently frozen on the
+ *    surface** — what the model can see right now.
+ *  - {@link folds} is the **lifetime** count of folds that have ever been
+ *    committed, read from the bundles the store holds.
+ *
+ * A session that folded 40 times and then rebased down to one checkpoint has
+ * `checkpoints = 1` and `folds.leaves = 40`. Reporting either number under the
+ * other's name would be wrong in a way a user could not detect.
  *
  * @module dsh-epistemic-fold/status
  */
 
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
+import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { locateFoldFrontier } from './frontier.ts'
 import { costOf } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
@@ -66,14 +79,31 @@ export interface ContextLifecycle {
   readonly modelChanges: number
   /** How many compaction transactions the log records, in total. */
   readonly compactions: number
-  /** How many of those were ROOT rebases (as opposed to leaf folds). */
-  readonly roots: number
-  /** How many were leaf folds. */
-  readonly leaves: number
   /** Compaction transactions that ended with an error recorded. */
   readonly failedCompactions: number
   /** Whether the session shows a resume/restart boundary. */
   readonly resumed: boolean
+}
+
+/**
+ * LIFETIME fold counts: how many folds this session has ever committed.
+ *
+ * Distinct from {@link ContextStatus.checkpoints}, which counts what is frozen
+ * on the surface NOW. Read from the bundles the store holds, which are written
+ * once and never removed in production — so this is a lifetime record, and it
+ * survives a rebase that collapses the surface back to a single checkpoint.
+ */
+export interface FoldLifetimeCounts {
+  readonly leaves: Figure
+  readonly roots: Figure
+  /**
+   * Whether the counts are complete.
+   *
+   * `false` when the store could not be read, in which case the counts are
+   * LIFETIME-MINIMUM values rather than totals. Reported so a reader is not told
+   * a lower bound is a total.
+   */
+  readonly complete: boolean
 }
 
 /** Everything `/context status` reports. */
@@ -89,32 +119,48 @@ export interface ContextStatus {
   /**
    * `current context`: the prompt pressure the next request would carry.
    *
-   * `measured` — it is the token meter's own reading of the live surface.
+   * ABSENT when no reading exists — a session before its first provider report
+   * has an UNKNOWN pressure, and `0` would say the context is empty, which is the
+   * opposite of the truth for a session that has not been measured yet.
    */
-  readonly currentContext: Figure
+  readonly currentContext?: Figure
   /** The routed model's window, when known. */
   readonly contextWindow?: number
-  /** Occupancy as a fraction of the window, when the window is known. */
+  /**
+   * Occupancy as a fraction of the window.
+   *
+   * ABSENT unless BOTH the pressure and the window are known. A ratio with a
+   * missing numerator is not a ratio.
+   */
   readonly occupancy?: number
   /** The fold threshold this configuration resolves to, when resolvable. */
   readonly foldThreshold?: number
   /**
    * `archived history`: tokens held in published checkpoints' archives.
    *
-   * `measured` — summed from the bundles the store actually holds. This is
-   * history that has LEFT the surface but is still recoverable, so it is the
-   * number that tells a user how much the mode has folded away.
+   * **`estimated`, not `measured`.** The message COUNT is measured — it is a
+   * count of real archived messages. The TOKEN figure is derived from a fixed
+   * `chars / 4` density heuristic, which systematically misprices CJK text and
+   * JSON, so it is an estimate and is labelled as one. RC2 shipped this as
+   * `measured`, which was wrong: the input was real but the conversion to tokens
+   * was a heuristic, and calling that measured is the RC1.1 error repeating.
    */
   readonly archivedTokens?: Figure
-  /** How many archived messages that represents. */
+  /** How many archived messages that represents. `measured` — it is a count. */
   readonly archivedMessages?: number
-  /** `checkpoint count`: EF checkpoints currently frozen on the surface. */
+  /**
+   * EF checkpoints CURRENTLY frozen on the surface.
+   *
+   * What the model can see now. Not a lifetime total — see {@link folds}.
+   */
   readonly checkpoints: Figure
   /** `recalls`: how many times the model read folded history back. */
   readonly recalls: Figure
   /** How many `context_search` calls were made. */
   readonly searches: Figure
-  /** `folds / roots`, and the other lifecycle counters. */
+  /** `folds`: LIFETIME counts, distinct from the current checkpoint count. */
+  readonly folds: FoldLifetimeCounts
+  /** The lifecycle facts a long session passes through. */
   readonly lifecycle: ContextLifecycle
   /**
    * `estimated/realized cost`.
@@ -132,6 +178,14 @@ export interface ContextStatus {
    * does not say. The reader gets the exact rates' provenance instead.
    */
   readonly costProfileId?: string
+  /**
+   * Provider-reported cumulative usage for this session, straight from DSH.
+   *
+   * Taken from the token meter's own `tokenUsage` projection rather than
+   * recomputed from the log, so the figure a user sees here is the same one the
+   * rest of the harness reports. ABSENT before any provider reports usage.
+   */
+  readonly usage?: TokenUsageProjection
 }
 
 /** The inputs the status model needs; all optional so it degrades honestly. */
@@ -144,19 +198,33 @@ export interface ContextStatusInput {
   readonly contextWindow?: number
   /** The fold threshold this configuration resolves to, when known. */
   readonly foldThreshold?: number
-  /** Bundles the store holds for this session, for the archive figures. */
+  /**
+   * The bundles the store holds for this session.
+   *
+   * Used for TWO distinct figures: the archive size (how much history is folded
+   * away and recoverable) and the LIFETIME fold counts. `undefined` means the
+   * store was not consulted, which is not the same as "nothing is archived".
+   */
   readonly bundles?: readonly {
+    readonly mode?: string
     readonly archive: { readonly shadowedMessages: readonly { readonly content: readonly unknown[] }[] }
   }[]
+  /**
+   * The fold counts as the ENGINE reports them, when the caller has them.
+   *
+   * Preferred over deriving them from bundles, because the engine knows what it
+   * actually committed rather than what is still on disk.
+   */
+  readonly foldCounts?: { readonly leaves: number; readonly roots: number }
   /** The priced profile for the routed model, for the cost estimate. */
   readonly profile?: ContextEconomicsProfile
-  /** Observed usage for the cost estimate. */
-  readonly usage?: {
-    readonly uncachedInputTokens: number
-    readonly cacheReadTokens: number
-    readonly cacheWriteTokens?: number
-    readonly outputTokens: number
-  }
+  /**
+   * Provider-reported cumulative usage.
+   *
+   * Supplied from DSH's own `tokenUsage` projection. Absent before any provider
+   * reports usage, in which case the cost cannot be priced and is omitted.
+   */
+  readonly usage?: TokenUsageProjection
   /** The tier's summary/evidence, when the mode names one. */
   readonly tier?: { readonly summary: string; readonly evidence: string }
 }
@@ -167,6 +235,11 @@ export interface ContextStatusInput {
  * Reads the durable log rather than any in-memory counter, so the answer is the
  * same after a restart as it was before one — which is the point of reporting
  * it: a resumed session's numbers must not reset.
+ *
+ * This deliberately does NOT report leaf/root counts. Those are LIFETIME figures
+ * derived from bundles, and the version of this function that read them off the
+ * SURFACE frontier reported a current count under a lifetime name — a session
+ * that folded 40 times and rebased to one checkpoint would have shown `leaves=1`.
  */
 function readLifecycle(session: Session): ContextLifecycle {
   let modelChanges = 0
@@ -209,16 +282,13 @@ function readLifecycle(session: Session): ContextLifecycle {
     }
   }
 
-  // Leaf vs root is read from the surface's own checkpoints, which is the same
-  // identity the frontier uses: a checkpoint's mode letter is authoritative.
-  const frontier = locateFoldFrontier(session)
-  let roots = 0
-  let leaves = 0
-  for (const checkpoint of frontier.frozen) {
-    if (checkpoint.mode === 'root') roots += 1
-    else leaves += 1
+  return {
+    ...(route === undefined ? {} : { route }),
+    modelChanges,
+    compactions,
+    failedCompactions,
+    resumed,
   }
-  return { ...(route === undefined ? {} : { route }), modelChanges, compactions, roots, leaves, failedCompactions, resumed }
 }
 
 /** Count `context_search` / `context_recall` calls in the durable log. */
@@ -238,9 +308,9 @@ function countRecallCalls(session: Session): { readonly searches: number; readon
 /**
  * Sum the archived messages the store holds for one session.
  *
- * @returns message count and a rough token figure, or `undefined` when the
- *   caller supplied no bundles (in which case the archive size is UNKNOWN, not
- *   zero — the two mean opposite things).
+ * @returns the message count (measured) and a token estimate, or `undefined`
+ *   when the caller supplied no bundles — in which case the archive size is
+ *   UNKNOWN, not zero, and the two mean opposite things.
  */
 function archiveFigures(bundles: ContextStatusInput['bundles']): {
   readonly messages: number
@@ -259,7 +329,50 @@ function archiveFigures(bundles: ContextStatusInput['bundles']): {
     }
   }
   // The same fixed density heuristic the token meter uses for un-priced text.
+  // It is a HEURISTIC: it systematically underprices CJK text and JSON schemas,
+  // so the caller must report this figure as `estimated`. The message COUNT
+  // above is a real count and stays `measured`.
   return { messages, tokens: Math.ceil(characters / 4) }
+}
+
+/**
+ * LIFETIME fold counts, from the bundles the store holds.
+ *
+ * Bundles are written once and never removed in production, so this is a record
+ * of every fold the session has committed — including folds whose checkpoints a
+ * later root rebase has since collapsed off the surface.
+ *
+ * @returns the counts and whether they are complete.
+ */
+function foldCountsFrom(bundles: ContextStatusInput['bundles']): FoldLifetimeCounts {
+  if (bundles === undefined) {
+    // The store was not consulted. A zero here would claim the session never
+    // folded, which is exactly the confusion this split exists to prevent.
+    return {
+      leaves: { value: 0, basis: 'measured', note: 'store not consulted — count unavailable' },
+      roots: { value: 0, basis: 'measured', note: 'store not consulted — count unavailable' },
+      complete: false,
+    }
+  }
+  let leaves = 0
+  let roots = 0
+  for (const bundle of bundles) {
+    if (bundle.mode === 'root') roots += 1
+    else leaves += 1
+  }
+  return {
+    leaves: {
+      value: leaves,
+      basis: 'measured',
+      note: 'leaf folds this session has ever committed (lifetime, not the current surface)',
+    },
+    roots: {
+      value: roots,
+      basis: 'measured',
+      note: 'root rebases this session has ever committed (lifetime)',
+    },
+    complete: true,
+  }
 }
 
 /**
@@ -275,63 +388,92 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
   const calls = countRecallCalls(session)
   const frontier = locateFoldFrontier(session)
   const archive = archiveFigures(input.bundles)
+  const folds = input.foldCounts !== undefined
+    ? {
+      leaves: {
+        value: input.foldCounts.leaves,
+        basis: 'measured' as const,
+        note: 'leaf folds this session has ever committed (lifetime)',
+      },
+      roots: {
+        value: input.foldCounts.roots,
+        basis: 'measured' as const,
+        note: 'root rebases this session has ever committed (lifetime)',
+      },
+      complete: true,
+    }
+    : foldCountsFrom(input.bundles)
 
-  const currentContext: Figure = measurement === undefined
-    ? { value: 0, basis: 'measured', note: 'no token meter reading was supplied' }
+  // NO measurement means UNKNOWN, not zero. A session before its first provider
+  // report has an unestablished pressure, and reporting `0 measured` would say
+  // the context is empty — the opposite of the truth.
+  const currentContext: Figure | undefined = measurement === undefined
+    ? undefined
     : {
       value: measurement.totalTokens,
       basis: 'measured',
       note: 'the prompt pressure the next request would carry',
     }
 
+  // Cost is priced from DSH's own provider-reported usage, so both halves must
+  // exist: no profile means no prices, no usage means no split to price.
   const cost = input.profile !== undefined && input.usage !== undefined
     ? (() => {
       const breakdown = costOf(input.profile, {
         uncachedInputTokens: input.usage.uncachedInputTokens,
         cacheReadTokens: input.usage.cacheReadTokens,
+        cacheWriteTokens: input.usage.cacheWriteTokens,
         outputTokens: input.usage.outputTokens,
-        ...(input.usage.cacheWriteTokens === undefined ? {} : { cacheWriteTokens: input.usage.cacheWriteTokens }),
       })
       return {
         value: breakdown.totalCost,
         basis: 'estimated' as const,
-        note: 'published prices applied to the observed token split; the provider bill is authoritative',
+        note: 'published prices applied to the provider-reported split; the provider bill is authoritative',
       }
     })()
+    : undefined
+
+  // Occupancy needs BOTH halves. A ratio with a missing numerator is not a ratio.
+  const occupancy = currentContext !== undefined
+    && input.contextWindow !== undefined
+    && input.contextWindow > 0
+    ? currentContext.value / input.contextWindow
     : undefined
 
   return {
     mode: input.mode,
     ...(isTierModeName(input.mode) ? { tier: input.mode } : {}),
     ...(input.tier === undefined ? {} : { tierSummary: input.tier.summary, tierEvidence: input.tier.evidence }),
-    currentContext,
+    ...(currentContext === undefined ? {} : { currentContext }),
     ...(input.contextWindow === undefined ? {} : { contextWindow: input.contextWindow }),
-    ...(input.contextWindow === undefined || input.contextWindow <= 0
-      ? {}
-      : { occupancy: currentContext.value / input.contextWindow }),
+    ...(occupancy === undefined ? {} : { occupancy }),
     ...(input.foldThreshold === undefined ? {} : { foldThreshold: input.foldThreshold }),
     ...(archive === undefined
       ? {}
       : {
         archivedTokens: {
           value: archive.tokens,
-          basis: 'measured' as const,
-          note: 'tokens held in published checkpoint archives — folded off the surface, still recoverable',
+          // ESTIMATED: a `chars / 4` heuristic, not a provider count. The input
+          // is real; the conversion to tokens is not a measurement.
+          basis: 'estimated' as const,
+          note: 'archived text priced by a fixed chars/4 heuristic — folded off the surface, still recoverable',
         },
         archivedMessages: archive.messages,
       }),
     checkpoints: {
       value: frontier.frozenCount,
       basis: 'measured',
-      note: 'EF checkpoints currently frozen on the surface',
+      note: 'EF checkpoints CURRENTLY frozen on the surface (not a lifetime total)',
     },
     recalls: { value: calls.recalls, basis: 'measured', note: 'context_recall calls in the durable log' },
     searches: { value: calls.searches, basis: 'measured', note: 'context_search calls in the durable log' },
+    folds,
     lifecycle,
     ...(cost === undefined ? {} : { cost }),
     ...(cost === undefined || input.profile === undefined
       ? {}
       : { costProfileId: input.profile.id }),
+    ...(input.usage === undefined ? {} : { usage: input.usage }),
   }
 }
 
@@ -364,7 +506,9 @@ export function contextStatusToText(status: ContextStatus): string {
 
   lines.push('')
   lines.push('current context:')
-  lines.push(`  pressure        ${figure(status.currentContext.value)} tokens`)
+  // `unknown`, not `0`: a session before its first provider report has an
+  // unestablished pressure, and printing zero would say the context is empty.
+  lines.push(`  pressure        ${figure(status.currentContext?.value, status.currentContext?.basis)} tokens`)
   if (status.contextWindow !== undefined) {
     lines.push(`  window          ${figure(status.contextWindow)} tokens`)
   }
@@ -377,9 +521,10 @@ export function contextStatusToText(status: ContextStatus): string {
 
   lines.push('')
   lines.push('archived history:')
-  lines.push(`  archived tokens ${figure(status.archivedTokens?.value)}`)
+  lines.push(`  archived tokens ${figure(status.archivedTokens?.value, status.archivedTokens?.basis)}`)
   lines.push(`  archived msgs   ${figure(status.archivedMessages)}`)
-  lines.push(`  checkpoints     ${figure(status.checkpoints.value)}`)
+  // Named for what it is: the CURRENT surface, not a lifetime total.
+  lines.push(`  checkpoints now ${figure(status.checkpoints.value)}`)
 
   lines.push('')
   lines.push('retrieval:')
@@ -387,9 +532,15 @@ export function contextStatusToText(status: ContextStatus): string {
   lines.push(`  searches        ${figure(status.searches.value)}`)
 
   lines.push('')
-  lines.push('folds:')
-  lines.push(`  leaf folds      ${figure(status.lifecycle.leaves)}`)
-  lines.push(`  root rebases    ${figure(status.lifecycle.roots)}`)
+  // The lifetime counts, labelled as lifetime so they cannot be read as the
+  // current surface. A session that folded 40 times and rebased to one
+  // checkpoint reads `checkpoints now 1` above and `leaf folds 40` here.
+  lines.push('folds (lifetime):')
+  lines.push(`  leaf folds      ${figure(status.folds.leaves.value)}`)
+  lines.push(`  root rebases    ${figure(status.folds.roots.value)}`)
+  if (!status.folds.complete) {
+    lines.push('  NOTE            the store was not consulted; these are minimums, not totals')
+  }
   lines.push(`  compactions     ${figure(status.lifecycle.compactions)}`)
   if (status.lifecycle.failedCompactions > 0) {
     lines.push(`  FAILED          ${figure(status.lifecycle.failedCompactions)}`)
@@ -412,19 +563,35 @@ export function contextStatusToText(status: ContextStatus): string {
     lines.push(`  ${figure(status.cost.value, status.cost.basis)}`)
     if (status.costProfileId !== undefined) lines.push(`  priced with     ${status.costProfileId}`)
   }
+  if (status.usage !== undefined) {
+    // The provider's own cumulative split, so a reader can see the basis of the
+    // estimate rather than only its total.
+    lines.push('')
+    lines.push('provider usage (cumulative, measured):')
+    lines.push(`  uncached in     ${figure(status.usage.uncachedInputTokens)}`)
+    lines.push(`  cache reads     ${figure(status.usage.cacheReadTokens)}`)
+    lines.push(`  cache writes    ${figure(status.usage.cacheWriteTokens)}`)
+    lines.push(`  output          ${figure(status.usage.outputTokens)}`)
+  }
   return lines.join(String.fromCharCode(10))
 }
 
-/** A one-line summary, for a status bar or a log line. */
+/**
+ * A one-line summary, for a status bar or a log line.
+ *
+ * `ctx` prints `unknown` when no reading exists, and the fold figures are the
+ * LIFETIME counts — the same distinction the full report makes, kept here so the
+ * compact form cannot drift from it.
+ */
 export function contextStatusToLine(status: ContextStatus): string {
   const parts = [
     `mode=${status.mode}`,
-    `ctx=${status.currentContext.value}`,
+    `ctx=${status.currentContext === undefined ? 'unknown' : status.currentContext.value}`,
     status.contextWindow === undefined ? undefined : `window=${status.contextWindow}`,
     `checkpoints=${status.checkpoints.value}`,
     `recalls=${status.recalls.value}`,
-    `folds=${status.lifecycle.leaves}`,
-    `roots=${status.lifecycle.roots}`,
+    `folds=${status.folds.leaves.value}`,
+    `roots=${status.folds.roots.value}`,
     status.cost === undefined ? 'cost=unknown' : `cost~${status.cost.value.toFixed(4)}`,
   ].filter((part): part is string => part !== undefined)
   return parts.join(' ')
