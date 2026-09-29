@@ -132,23 +132,47 @@ arms differ structurally: Basic pays for a summary per fold while economy EF run
 ### 4.2 The finding
 
 At the **shipped defaults** (131072 window, 65536 headroom → threshold 65024),
-across three workload families:
+three workload families × 5 replicates:
 
-| Workload | RBCR | Engagement |
-|---|---:|---|
-| FW-long-trajectory | 0.958 | 2 folds |
-| FW-tool-heavy | 1.006 | **NULL — never folded** |
-| FW-recall | 0.952 | 1 fold |
-| **FullTaskRBCR** | **mean 0.972** | CI upper **1.006** |
+| Workload | RBCR | Calls (E4 → B1) | Engagement |
+|---|---:|---|---|
+| FW-long-trajectory | 0.959 | 120 → 130 | 20 folds |
+| FW-tool-heavy | 0.999 | 120 → 120 | **NULL — never folded** |
+| FW-recall | 1.027 | 120 → 138 | 10 folds |
 
-Noise floor (two identical Basic runs): **1.005×**.
+```
+noise floor (two identical Basic runs): 1.007x
+paired ratios (n=10): 0.960, 0.776, 0.959, 0.954, 0.956,
+                      0.984, 0.962, 2.265, 0.959, 0.966
+FullTaskRBCR mean 1.074, CI upper 1.353   →  GATE OPEN
+```
 
-So EF is still cheaper, but the effect is **far smaller than R4's 0.826**, and
-the upper bound sits just **above 1** — RC0 §18's gate is **NOT met**.
+**The mean is not the story.** Nine of the ten ratios sit in 0.776–0.984; one is
+**2.265**. That is bimodal, not a spread, and the single point drags the mean
+from ~0.95 to 1.074 and the CI upper bound to 1.353. The suite now reports the
+distribution (median, p10/p90, min/max), counts ratios below 1, and **flags**
+outliers rather than dropping them — deciding whether such a point is a real
+mechanism difference or a measurement artifact requires looking at it.
 
-R4's headline number was measured in a 6000-token window that forced frequent
-folding. At the defaults, only 3 folds and **zero rebases** occurred across three
-24-turn runs.
+The gate's own diagnosis is printed with the verdict: **the median is below 1
+while the upper bound is not**, so it is OPEN because of *dispersion*, not
+because the typical run is more expensive. More samples would only widen the
+interval; the next step is diagnosing the outlier.
+
+Two further findings from the same run:
+
+- **The economy arm made FEWER calls than Basic** on both engaged families
+  (120 vs 130 and 120 vs 138), because Basic pays for a compaction summary per
+  fold while economy EF runs `semanticMode: none`. That is the RC0-B correction
+  working — those calls were previously unrecorded.
+- **15 folds and ZERO rebases across 15 runs.** The rebase path, which R3 and
+  R4 both validated, does not engage at the shipped defaults at all — exactly
+  what RC0-E predicts analytically.
+
+So the effect is **far smaller than R4's 0.826**, and the upper bound is **above
+1** — RC0 §18's gate is **NOT met**. R4's headline number was measured in a
+6000-token window that forced frequent folding; at the defaults the mechanism
+barely engages.
 
 ### 4.3 Two methodology errors caught while measuring, both mine
 
@@ -205,7 +229,7 @@ preset rather than of the engine.
 | Component | Status |
 |---|---|
 | **R** Runtime | ✅ satisfied — seam is a compile-time contract; idle rebase on the production path |
-| **C** Cost | ❌ **OPEN** — FullTaskRBCR mean 0.972, CI upper **1.006 > 1** |
+| **C** Cost | ❌ **OPEN** — FullTaskRBCR mean 1.074, CI upper **1.353 > 1** (median 0.96; open due to dispersion) |
 | **Q** Quality | ✅ satisfied — 20/20 vs 20/20 (R4-E, pairwise-verified) |
 | **W** Window | ✅ satisfied — 46–47% of window, 0 overflows |
 | **I** Invariants | ✅ satisfied — all zero-regression |
