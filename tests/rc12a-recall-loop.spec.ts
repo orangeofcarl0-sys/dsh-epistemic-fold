@@ -118,19 +118,19 @@ export interface LoopOutcome {
   /** Characters of tool output the loop fed back to the model. */
   readonly recalledChars: number
   /**
-   * Whether the RECALLED CONTENT itself carried each fact.
+   * Whether the tool output the loop received carried each fact.
    *
-   * This is the measurement that separates the two questions the smoke could
-   * otherwise conflate:
+   * This separates two questions the smoke could otherwise conflate:
    *
-   *   does the recall mechanism RETURN the folded facts?   (a property of EF)
-   *   does the model then USE them in its answer?          (a property of the model)
+   *   did a tool RETURN the folded facts?   (a property of the mechanism)
+   *   did the model then USE them?          (a property of the model)
    *
-   * Without it, a run where the model searched, got the facts, and answered
-   * badly is indistinguishable from one where recall returned nothing — and the
-   * first reading would blame EF for a tool-use failure.
+   * **It is only defined for arms that HAVE EF recall tools.** Real Basic has no
+   * Bundle and no `context_search` / `context_recall`, so scoring Basic on this
+   * is meaningless — and reporting it as `Basic 2/5` is precisely the error
+   * RC1.2.1 corrected. Callers must read it only for EF arms.
    */
-  readonly recalledFacts: ReturnType<typeof scoreAnswer>
+  readonly toolOutputFacts: ReturnType<typeof scoreAnswer>
   /** Model calls the loop made. */
   readonly providerCalls: number
   /**
@@ -151,19 +151,25 @@ async function assemble(harness: Harness): Promise<{
   const service = harness.ctx.get('systemPrompt') as unknown as
     | { assemble?: (context: unknown) => Promise<{ sections?: readonly { text?: string }[]; tools?: readonly { name: string; description: string; parameters: Record<string, unknown> }[] }> }
     | undefined
-  if (service?.assemble === undefined) return {}
-  try {
-    const assembly = await service.assemble({})
-    const text = (assembly.sections ?? [])
-      .map(section => section.text ?? '')
-      .filter(part => part.length > 0)
-      .join(String.fromCharCode(10, 10))
-    return {
-      ...(text.length === 0 ? {} : { system: text }),
-      ...(assembly.tools === undefined || assembly.tools.length === 0 ? {} : { tools: assembly.tools }),
-    }
-  } catch {
-    return {}
+  if (service?.assemble === undefined) {
+    throw new Error(
+      'recall smoke: no SystemPrompt service is mounted, so the request shape would differ from '
+      + 'production. A live measurement must fail loud rather than measure a request that carries '
+      + 'no system prompt (RC0/RC1 both proved this with real incidents).',
+    )
+  }
+  // NO silent catch. An assembly failure changes the WIRE SHAPE, and a live
+  // measurement taken over a corrupted shape is worse than no measurement —
+  // that is exactly how the R3 framing change was once measured against a
+  // request that never carried a system prompt at all.
+  const assembly = await service.assemble({})
+  const text = (assembly.sections ?? [])
+    .map(section => section.text ?? '')
+    .filter(part => part.length > 0)
+    .join(String.fromCharCode(10, 10))
+  return {
+    ...(text.length === 0 ? {} : { system: text }),
+    ...(assembly.tools === undefined || assembly.tools.length === 0 ? {} : { tools: assembly.tools }),
   }
 }
 
@@ -209,6 +215,9 @@ export async function runRecallLoop(
   let recallCalls = 0
   let otherCalls = 0
   let recalledChars = 0
+  // Counts CALLS, not chunks. The previous version incremented inside the
+  // `for await` over the stream, so it counted stream chunks and the name lied.
+  // `BillingRecorder.bill.length` is the real provider-call count.
   let providerCalls = 0
   let truncated = false
   let recalledText = ''
@@ -224,6 +233,7 @@ export async function runRecallLoop(
     let text = ''
     const toolCalls: Array<{ id: string; name: string; args: string }> = []
 
+    providerCalls += 1
     for await (const chunk of harness.ctx.llm.stream({
       provider: LIVE_PROVIDER,
       model: 'live',
@@ -232,7 +242,6 @@ export async function runRecallLoop(
       ...(tools === undefined ? {} : { tools }),
       maxTokens: 300,
     } as never)) {
-      providerCalls += 1
       if (chunk.type === 'text-delta') text += chunk.text
       if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
         toolCalls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
@@ -275,6 +284,12 @@ export async function runRecallLoop(
       // here would make the loop report "the model did not recall" when the
       // truth is "the model was not allowed to".
       let content: ContentBlock[]
+      // A thrown execution is an ERROR result, and the model must be told so.
+      // The previous version wrote failure text but passed `isError: false`,
+      // which tells the model the tool SUCCEEDED while its content says it did
+      // not — the worst of both, because the model may then treat the failure
+      // message as data.
+      let isError = false
       try {
         const result = await harness.ctx.tools.execute({
           callId,
@@ -284,7 +299,9 @@ export async function runRecallLoop(
           signal: SIGNAL,
         })
         content = result.content as ContentBlock[]
+        isError = result.isError
       } catch (error: unknown) {
+        isError = true
         content = [{
           type: 'text',
           text: `tool execution failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -297,7 +314,7 @@ export async function runRecallLoop(
       recalledText += rendered
       session.append('tool/result', {
         turn: 900, step: round + 1,
-        message: createToolResultMessage({ callId, content, isError: false }),
+        message: createToolResultMessage({ callId, content, isError }),
       }, { surfaceOp: 'append' })
     }
     session.append('step/end', { turn: 900, step: round + 1 })
@@ -306,9 +323,9 @@ export async function runRecallLoop(
   session.append('turn/end', { turn: 900, reason: { kind: 'completed' } })
   return {
     answer, rounds, searchCalls, recallCalls, otherCalls, recalledChars, providerCalls, truncated,
-    // Scored with the SAME function as the answer, so "the fact was retrievable"
-    // and "the model said it" are measured identically and can be compared.
-    recalledFacts: scoreAnswer(recalledText),
+    // Scored with the SAME function as the answer, so "a tool returned the
+    // fact" and "the model said it" are measured identically and comparable.
+    toolOutputFacts: scoreAnswer(recalledText),
   }
 }
 
@@ -475,21 +492,42 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
         baseUrl: route!.baseUrl, apiKey: route!.apiKey, model: route!.model, contextWindow: SMOKE_WINDOW,
       })
       const recorder = new BillingRecorder(adapter, `${arm}-${replicate}`)
-      const harness = await createHarness({ text: 'digest' }, {
-        contextWindow: SMOKE_WINDOW,
-        plugin: true,
-        systemPrompt: true,
-        // The ToolRuntime is what makes `context_search` / `context_recall`
-        // executable. RC1.1's smoke omitted it, so the loop could not exist.
-        tools: true,
-        efConfig: arm === 'basic'
-          ? shared
-          : arm === 'rationale'
+      // THE ARMS ARE MOUNTED MUTUALLY EXCLUSIVELY (RC1.2.1).
+      //
+      // The previous version passed `plugin: true` unconditionally and then
+      // spread `{ engine: 'basic' }` for the Basic arm. `createHarness` returns
+      // early on `plugin: true`, so that spread was DEAD CODE and the "Basic"
+      // arm was really EF with the default policy plus the EF recall tools —
+      // which is why it reported `facts retrievable 2/5`, a metric that is
+      // undefined for real Basic. The harness now throws on that combination,
+      // and this builds each arm explicitly.
+      //
+      // Basic is a different COMPACTION ENGINE, not a plugin configuration: it
+      // has no Bundle, and `context_search` / `context_recall` do not exist for
+      // it. Mounting the ToolRuntime is still correct — it is what lets a model
+      // call whatever tools ARE declared — but the EF tools simply are not
+      // among them.
+      const harness = await createHarness({ text: 'digest' }, arm === 'basic'
+        ? {
+          contextWindow: SMOKE_WINDOW,
+          engine: 'basic' as const,
+          systemPrompt: true,
+          tools: true,
+          efConfig: shared,
+          adapter: { provider: LIVE_PROVIDER, instance: recorder },
+        }
+        : {
+          contextWindow: SMOKE_WINDOW,
+          plugin: true,
+          systemPrompt: true,
+          // The ToolRuntime is what makes `context_search` / `context_recall`
+          // executable. RC1.1's smoke omitted it, so the loop could not exist.
+          tools: true,
+          efConfig: arm === 'rationale'
             ? { ...resolvePreset('economy'), ...shared, semanticMode: 'rationale' as const }
             : { ...resolvePreset('economy'), ...shared },
-        ...(arm === 'basic' ? { engine: 'basic' as const } : {}),
-        adapter: { provider: LIVE_PROVIDER, instance: recorder },
-      })
+          adapter: { provider: LIVE_PROVIDER, instance: recorder },
+        })
       const session = seedNarrative()
       const folds = await growAndFold(harness, session, 14, 3_000)
       const outcome = await runRecallLoop(harness, session, PROBE)
@@ -519,8 +557,10 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
           + `recalledChars=${result.outcome.recalledChars} calls=${result.calls} `
           + `failed=${result.failed} cost=${result.cost.toFixed(5)} `
           + `truncated=${result.outcome.truncated} `
-          + `recalledFacts=${JSON.stringify(result.outcome.recalledFacts.total)}/3 `
-          + `answerScore=${JSON.stringify(scored)}`,
+          + `answerScore=${JSON.stringify(scored)}`
+          + (arm === 'basic'
+            ? ''
+            : ` toolOutputFacts=${result.outcome.toolOutputFacts.total}/3`),
         )
         console.log(`  answer: ${result.outcome.answer.replace(/\s+/gu, ' ').slice(0, 260)}`)
       }
@@ -558,12 +598,22 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
     // --- THE SEPARATION. `recalledFacts` measures EF's recall mechanism;
     // `answerScore` measures the model's use of it. Reporting only the second
     // would attribute a tool-use failure to the policy.
-    console.log('RECALL MECHANISM vs ANSWER (out of 3 facts, completed loops only):')
+    // --- The mechanism metric is EF-ONLY. Basic has no Bundle and no EF recall
+    // tools, so "facts retrievable through EF recall" is undefined for it, and
+    // reporting a number there was the error RC1.2.1 corrected.
+    console.log('RETRIEVAL (EF arms only) vs ANSWER (all arms, out of 3 facts):')
     for (const arm of arms) {
-      const retrieved = completed[arm].map(result => result.outcome.recalledFacts.total)
       const answered = completed[arm].map(result => scoreAnswer(result.outcome.answer).total)
+      if (arm === 'basic') {
+        console.log(
+          `  ${arm.padEnd(9)} answer [${answered.join(', ')}] | no EF recall tools: `
+          + 'retrievability is undefined for Basic',
+        )
+        continue
+      }
+      const retrieved = completed[arm].map(result => result.outcome.toolOutputFacts.total)
       console.log(
-        `  ${arm.padEnd(9)} facts RETRIEVABLE [${retrieved.join(', ')}] | facts STATED [${answered.join(', ')}]`,
+        `  ${arm.padEnd(9)} tool-returned facts [${retrieved.join(', ')}] | answer [${answered.join(', ')}]`,
       )
     }
 
@@ -611,9 +661,10 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
     // not the same finding as a run where recall returned nothing. The first is a
     // model tool-use outcome; the second would be an EF mechanism failure. Only
     // the second would justify changing the preset.
+    const efArms = arms.filter(arm => arm !== 'basic')
     const retrieved = (arm: Arm): number[] =>
-      completed[arm].map(result => result.outcome.recalledFacts.total)
-    const mechanismRecovered = arms.map(arm => ({
+      completed[arm].map(result => result.outcome.toolOutputFacts.total)
+    const mechanismRecovered = efArms.map(arm => ({
       arm,
       runs: retrieved(arm).length,
       recovered: retrieved(arm).filter(score => score > 0).length,
@@ -621,8 +672,8 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
     }))
     for (const entry of mechanismRecovered) {
       console.log(
-        `RECALL MECHANISM ${entry.arm.padEnd(9)}: recovered facts in ${entry.recovered}/${entry.runs} `
-        + `completed run(s); best ${entry.best}/3`,
+        `RECALL MECHANISM ${entry.arm.padEnd(9)}: a tool returned facts in `
+        + `${entry.recovered}/${entry.runs} completed run(s); best ${entry.best}/3`,
       )
     }
 

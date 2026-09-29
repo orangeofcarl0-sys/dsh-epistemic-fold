@@ -4,6 +4,8 @@
 **Baseline:** `main@1da632c`
 **Status:** the recall path is **proven** end-to-end, and the RC1.1 product
 boundary is **corrected**. No preset change is required by this evidence.
+**The three-arm live comparison in §3 was retracted in RC1.2.1** — its "Basic" arm
+was not Basic. See §11.
 
 ---
 
@@ -80,33 +82,28 @@ tools only register when a `ToolRuntime` is present — without it a model that
 wants to recall simply cannot, and the resulting zero looks like a policy
 failure.
 
-Live results, three arms, identical window/threshold/retention. **n=5** is the
-definitive sample (an n=3 run agreed in direction and is omitted for brevity):
+**The numbers first published here were invalid and are retracted.** The "Basic"
+arm was not Basic: the smoke passed `plugin: true` unconditionally and spread
+`{ engine: 'basic' }` for that arm, but `createHarness` returns early on
+`plugin: true`, so the spread was **dead code**. The arm was really EF with the
+default policy *plus the EF recall tools*, which is why it reported
+`facts retrievable 2/5` — a metric that is undefined for real Basic, which has no
+Bundle and no `context_search` / `context_recall`.
 
-```
-answer score (out of 3 facts):  none 3.00/3   basic 2.40/3   rationale 2.20/3
-facts RETRIEVABLE (out of 5):   none 5/5      basic 2/5      rationale 5/5
-```
-
-The second line is the one that matters. **Both EF arms recovered the folded
-facts in every single run; Basic recovered them in two of five.** The residual
-answer-score variance tracks one thing: whether a `context_recall` call actually
-returned content.
+The corrected comparison is in §11. What survives from this section is the
+mechanism finding, which never depended on the Basic arm, and the observation
+that the answer score tracks whether a `context_recall` call returned content:
 
 | Run | chars returned | answer score |
 |---|---:|---:|
-| none | 6,424 | 3/3 |
-| none | 35,095 | 2/3 |
-| none | 35,005 | 3/3 |
+| none | 6,051 | 3/3 |
+| none | 6,050 | 3/3 |
+| none | 6,050 | 3/3 |
 | none (earlier) | 48 | 0/3 |
 | none (earlier) | 245 | 0/3 |
 
 A 48-character return is a search that found nothing; 6,000+ characters is a
 successful recall. **The mechanism works; the model's tool use varies.**
-
-That economy-*none* leads on the answer score is a single n=5 reading and should
-not be over-read — the claim this stage supports is that it is **not worse**, and
-that the mechanism is what carries the information.
 
 | Run | chars returned | answer score |
 |---|---:|---:|
@@ -173,8 +170,10 @@ and rationale still clears parity across most of the robust region:
 *(nominal realization; pessimistic stays below 1 except at the most aggressive
 corners.)*
 
-**So price does not rule `rationale` out.** That is worth stating plainly — and
-it is also not the deciding evidence, because §2 showed nothing *requires* it.
+**So price does not rule `rationale` out — at the scalar.** That conclusion is
+corrected in §11.5: priced from the span it actually summarizes, `rationale` is
+above parity across the whole region. The mechanism argument in §2 already
+settled the decision; §11.5 shows the price argument agrees.
 
 ---
 
@@ -202,10 +201,11 @@ The corrected quality contract:
 
 **One caveat is recorded rather than hidden.** Recall is *available*, not
 *automatic*: a model that does not call the tools gets nothing, and the live runs
-show that happening. So the honest claim is that economy does not *lose* the
-information — it makes the model responsible for retrieving it. Whether that
-trade is acceptable for a given workload is a product judgement, and the
-certification scopes it instead of asserting it away.
+show that happening (a `48`-character search return with no `context_recall`).
+So the honest claim is that economy does not *lose* the information — it makes
+the model responsible for retrieving it. Whether that trade is acceptable for a
+given workload is a product judgement, and the certification scopes it instead of
+asserting it away. §11 measures how often the model actually takes that path.
 
 ---
 
@@ -258,21 +258,163 @@ Behavior was already correct in both cases; only the comments were wrong.
 ## 10. Project state
 
 ```text
-Economy mechanics are sound; generic narrative-quality behavior is now
-characterized end-to-end and does not require a preset change.
+EF exact-recall mechanism is closed;
+comparative end-to-end quality still needs the corrected sanity run.
 ```
 
 | Question | Answer |
 |---|---|
 | Does a marker-only surface carry undeclared prose? | **No** (RC1.1, confirmed) |
-| Can the product recover it? | **Yes**, deterministically, both semantic modes |
-| Does the live agent loop recover it? | **Yes** — facts retrievable in every arm and replicate |
-| Is `rationale` required? | **No** — it costs +6.4% and buys nothing for recall |
+| Can the product recover it deterministically? | **Yes** — keyless proof, both semantic modes |
+| Does a tool return the facts in the live loop? | **Yes** — 5/5 economy runs (§11) |
+| Does the MODEL then use them as reliably as Basic? | **No** — Basic 3.00/3 with zero tool calls vs economy 2.40/3 |
+| Is `rationale` required? | **No** — it costs +6.4% and recovers no better than `none` |
 | Is the cost gate settled? | **No** — still OPEN on dispersion |
+
+So the mechanism question is **closed** and the comparative-quality question is
+**open but characterized**: this is a retrieval-policy / model tool-use gap, not
+a storage or mechanism defect (§11.3).
 
 ---
 
-## 11. Test inventory
+## 11. RC1.2.1 — harness correction, and the corrected comparison
+
+### 11.1 The bug
+
+`createHarness` returns early on `plugin: true`. The recall smoke passed
+`plugin: true` **unconditionally** and then spread `{ engine: 'basic' }` for the
+Basic arm, so that spread was **dead code** and all three arms were EF:
+
+```text
+"basic"     = EF plugin + default (legacy) policy + EF recall tools
+none        = EF plugin + economy + semanticMode:none
+rationale   = EF plugin + economy + semanticMode:rationale
+```
+
+That is why the retracted table reported `Basic facts retrievable 2/5` — a metric
+that is **undefined** for real Basic, which has no Bundle and no
+`context_search` / `context_recall`. A scan of every `createHarness` call site
+confirmed this was the **only** affected suite; every other site uses a
+mutually-exclusive ternary.
+
+**The harness now refuses the combination outright.** `plugin: true` and
+`engine: 'basic'` are contradictory by construction — Basic is a different
+compaction engine, not a plugin configuration — so `createHarness` throws with a
+message naming both options and the remedy, and four keyless tests pin it
+(`rc121-harness-guard.spec.ts`). A runtime guard is deliberate in addition to the
+type: the failure was invisible from the return value.
+
+### 11.2 The corrected comparison
+
+Three arms, mutually exclusive mounts, identical window/threshold/retention,
+**3 replicates** (a 5-replicate confirmation follows below):
+
+| Arm | Answer score | Tool-returned facts | Provider calls | Cost |
+|---|---:|---:|---:|---:|
+| **Basic** | **3.00/3** | n/a (no EF tools) | 29 | 0.0283 |
+| economy-none | 3.00/3 | 2/3 | 3 | **0.0021** |
+| economy-rationale | 2.33/3 | 2/3 | 6 | 0.0181 |
+
+and the **5-replicate confirmation**, which is the number to quote:
+
+| Arm | Answer score | Tool-returned facts | Notes |
+|---|---:|---:|---|
+| **Basic** | **3.00/3** | n/a | **zero tool calls** in every run |
+| economy-none | 2.40/3 | **5/5 runs** | recovery is reliable |
+| economy-rationale | 2.20/3 | 4/5 runs | no better than `none` |
+
+Two things are now measurable that were not before:
+
+1. **True Basic needs no tools at all.** It scores 3.00/3 with `search=0,
+   recall=0` in every replicate, because its summary keeps the prose on the
+   surface. That is what Basic is for, and the earlier harness could not see it.
+2. **EF's retrieval is reliable; its USE is variable.** A tool returned the facts
+   in **5/5** economy runs — the mechanism is not the problem. The answer score
+   still lands below Basic, which is the user's **Outcome B**.
+
+### 11.3 What the result means
+
+This is **Outcome B**, and it is a narrower finding than "EF is worse":
+
+```text
+not a storage-correctness problem  (recall returns the facts 5/5)
+not a mechanism problem            (keyless proof, both semantic modes)
+but a retrieval-policy / model tool-use problem
+```
+
+A model that does not call the tools gets nothing, and the runs show that
+happening. So the product contract is:
+
+> **Declared state stays hot; undeclared history remains exactly recoverable by
+> recall — but recovery is the model's responsibility, not the product's.**
+
+Economy is therefore a **retrieval-dependent low-cost mode**, not a drop-in
+replacement for Basic on undeclared narrative. The cost difference is real and
+large in the other direction: **0.0021 vs 0.0283, about 13×** in the n=3 sample.
+
+**No new mechanism is warranted by this**, and none is added. Retrieval-policy
+ergonomics is a model/runtime question, not an M3/M5 question, and the evidence
+does not support re-opening either.
+
+### 11.4 Three further code defects, corrected together
+
+1. **`providerCalls` counted stream chunks, not calls.** The counter incremented
+   inside the `for await` over the stream, so the name lied. It now increments
+   once per `ctx.llm.stream()`; `BillingRecorder.bill.length` remains the
+   authoritative provider-call count.
+2. **SystemPrompt assembly swallowed failures.** The smoke caught an assembly
+   error and returned `{}`, which changes the **wire shape** of a live
+   measurement. RC0 and RC1 each proved with a real incident that this must fail
+   loud — the R3 framing change was once measured against a request that carried
+   no system prompt at all. It now throws.
+3. **A failed tool execution was reported as `isError: false`.** The model
+   received failure *text* while the metadata said the tool succeeded — the worst
+   of both, because the model may then treat the failure message as data. The
+   real `result.isError` is propagated and a thrown execution sets it.
+
+### 11.5 Rationale cost: derived from the span, not a constant
+
+`7,383 input / 400 output` is a real measurement, but it is **an observation at
+one scale, not a constant**: `rationaleOnly()` receives the folded span plus
+`RATIONALE_INSTRUCTION`, so the input grows with the span. The simulator now
+derives it:
+
+```text
+T_rationale ≈ FoldSpanTokens + InstructionOverhead
+```
+
+via `rationaleInputFor(foldSpanTokens)`, falling back to the scalar only when no
+span is known.
+
+**And deriving it changed the conclusion, which is the point.** At the production
+window the foldable span is ~44,135 tokens, not the 6,000 the scalar was measured
+at, so the rationale input is ~**45,518** — over six times the 7,383 constant:
+
+```
+RATIONALE INPUT at production: foldable 44135 -> input 45518
+```
+
+With the corrected input, `rationale` is **above parity across the entire robust
+region**:
+
+| Threshold | R=0.08 | R=0.16 | R=0.24 |
+|---:|---:|---:|---:|
+| 104,857 | 1.028 | 1.046 | 1.063 |
+| 65,536 | 1.070 | 1.135 | 1.167 |
+| 49,152 | 1.116 | 1.230 | 1.425 |
+
+*(nominal realization; optimistic and pessimistic both above 1 as well.)*
+
+So §5's earlier reading — "price does not rule `rationale` out" — **was an
+artifact of the constant**. Priced from the span it actually summarizes,
+`rationale` costs **more than Basic everywhere in the region**. That is a second,
+independent reason the preset keeps `semanticMode: 'none'`, and it is a stronger
+one than the mechanism argument alone: the option is not merely unnecessary, it
+is **more expensive than the baseline it would be trying to beat**.
+
+---
+
+## 12. Test inventory
 
 | Suite | Tests | Live |
 |---|---:|---|

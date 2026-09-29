@@ -240,24 +240,42 @@ recommendation still open**, with no new architecture added to flip a default.
 never executed a tool call, so it could only show that the *surface* lacks
 undeclared prose — not that EF cannot recover it. With a real agent loop
 (`model → tool-call → ToolRuntime → tool/result → next model step`) and a
-deterministic keyless proof, the facts are recovered in **every** arm and every
-replicate: `PARSE-7741` is absent from the surface and present in what
-`context_search → context_recall` returns, under **both** semantic modes. So
-`semanticMode` does not gate recall, and the correct contract is **declared state
-is hot; undeclared history is recoverable through bounded recall**. The preset
-keeps `semanticMode: 'none'` — not because rationale is unaffordable (it costs
-+6.4%, measured against its real ~7.4K-token call rather than the 512 the
-simulator had assumed) but because nothing requires it. Full detail in
+deterministic keyless proof, `PARSE-7741` is absent from the surface and present
+in what `context_search → context_recall` returns, under **both** semantic modes.
+So `semanticMode` does not gate recall, and the correct contract is **declared
+state is hot; undeclared history is recoverable through bounded recall**. The
+preset keeps `semanticMode: 'none'` — not because rationale is unaffordable (it
+costs +6.4%, measured against its real ~7.4K-token call rather than the 512 the
+simulator had assumed) but because nothing requires it.
+
+**RC1.2.1 then corrected the comparison itself.** The three-arm live smoke had
+passed `plugin: true` unconditionally, and since the harness returns early on
+that, its `engine: 'basic'` spread was dead code — **the "Basic" arm was really
+EF**, which is why it reported `facts retrievable 2/5` on a metric undefined for
+real Basic. The harness now **refuses** that combination outright, and the
+corrected comparison is: true Basic scores **3.00/3 with zero tool calls**, while
+economy-none scores 2.40/3 with a tool returning the facts in **5/5** runs. So the
+gap is **retrieval policy and model tool use**, not storage or mechanism — economy
+is a retrieval-dependent low-cost mode, roughly **13×** cheaper on the n=3 sample,
+not a drop-in replacement for Basic on undeclared narrative. Full detail in
 [the RC1.2 report](docs/21_RC1_2_RECALL_CLOSURE.md) ·
 **RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
 只能说明**表面**不携带未声明叙述，而非 EF 无法恢复它。通过真实 agent loop
 （`model → tool-call → ToolRuntime → tool/result → 下一模型步`）与确定性的 keyless
-证明，所有 arm、所有重复中事实均被恢复：`PARSE-7741` 不在表面上，却存在于
-`context_search → context_recall` 的返回中，且在**两种** semantic mode 下均如此。
-因此 semanticMode 并不限制召回，正确的契约是**已声明状态热保存；未声明历史可通过有界
-召回恢复**。preset 保持 `semanticMode: 'none'`——并非因为 rationale 负担不起（实测
-其真实约 7.4K token 的调用后仅增加 6.4%，而非模拟器假设的 512），而是因为没有证据
-表明需要它。详见 [RC1.2 报告](docs/21_RC1_2_RECALL_CLOSURE.md)。
+证明，`PARSE-7741` 不在表面上，却存在于 `context_search → context_recall` 的返回中，
+且在**两种** semantic mode 下均如此。因此 semanticMode 并不限制召回，正确的契约是
+**已声明状态热保存；未声明历史可通过有界召回恢复**。preset 保持 `semanticMode: 'none'`
+——并非因为 rationale 负担不起（实测其真实约 7.4K token 的调用后仅增加 6.4%，而非
+模拟器假设的 512），而是因为没有证据表明需要它。
+
+**RC1.2.1 随后修正了比较本身。** 三臂实机 smoke 无条件传入了 `plugin: true`，而 harness
+在该选项上提前返回，因此其 `engine: 'basic'` 展开是死代码——**所谓 "Basic" arm 实为
+EF**，这正是它报出 `facts retrievable 2/5` 的原因（该指标对真正的 Basic 并无定义）。
+harness 现在**直接拒绝**该组合。修正后的比较为：真正的 Basic 以**零工具调用**取得
+**3.00/3**，而 economy-none 取得 2.40/3，且工具有 **5/5** 的运行返回了事实。因此差距在于
+**检索策略与模型工具使用**，而非存储或机制——economy 是**依赖检索的低成本模式**（n=3
+样本上约便宜 **13 倍**），而非针对未声明叙述的 Basic 直接替代品。详见
+[RC1.2 报告](docs/21_RC1_2_RECALL_CLOSURE.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；

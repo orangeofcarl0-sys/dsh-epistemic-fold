@@ -128,10 +128,18 @@ export interface ReplayPolicy {
   /**
    * Input tokens one rationale auxiliary call carries.
    *
-   * MEASURED, not assumed: the call summarizes the folded span, so its input
-   * tracks the span size rather than being a small fixed prompt. RC1.2 measured
-   * ~7,383 tokens at a 6000-token window. The default is deliberately the
-   * measured value rather than a convenient small number.
+   * MEASURED, not assumed: RC1.2 observed ~7,383 tokens at a 6000-token window
+   * across 14 folds, against the 512 the earlier model assumed.
+   *
+   * **This is an OBSERVATION AT ONE SCALE, not a constant.** `rationaleOnly()`
+   * receives the folded span plus `RATIONALE_INSTRUCTION`, so the input grows
+   * with the span:
+   *
+   *   T_rationale ≈ FoldSpanTokens + InstructionOverhead
+   *
+   * Use {@link rationaleInputFor} to derive it from a span rather than carrying
+   * 7,383 forward as if it were fixed. It is adequate as a scalar only while
+   * `rationale` is a candidate rather than a default.
    */
   readonly rationaleInputTokens: number
   /** Output tokens a rationale call may produce; production uses 400. */
@@ -144,6 +152,27 @@ export interface ReplayPolicy {
 export function realizationSet(value: CacheRealization | number): CacheRealization {
   if (typeof value !== 'number') return value
   return { 'normal': value, 'after-leaf': value, 'after-root': value, 'compaction': value }
+}
+
+/**
+ * The rationale call's input size for a given folded span (RC1.2.1 §7).
+ *
+ * `rationaleOnly()` is handed the span being folded plus the instruction block,
+ * so its input tracks the span rather than being fixed. This derives it instead
+ * of reusing a scalar measured at one window size, so a replay at a different
+ * scale does not silently carry the wrong cost.
+ *
+ * @param foldSpanTokens - tokens of the span this fold replaces.
+ * @param instructionOverhead - tokens of `RATIONALE_INSTRUCTION`; the measured
+ *   6,000-token-window run implies ~1,383 at a 6,000-token span, which is the
+ *   default.
+ * @returns the estimated input tokens for the auxiliary call.
+ */
+export function rationaleInputFor(
+  foldSpanTokens: number,
+  instructionOverhead = 1_383,
+): number {
+  return Math.max(0, Math.round(foldSpanTokens + instructionOverhead))
 }
 
 /** One step's simulated state, kept for diagnosis rather than only totals. */
@@ -368,8 +397,13 @@ export function simulate(
       // 512/128 the earlier model assumed. Pricing it at 512 made `rationale`
       // look nearly free, which is exactly the error that would have made
       // "rationale is an affordable upgrade" look true.
+      // Derived from THIS fold's span when one is known, so a replay at a
+      // different scale does not carry a constant measured elsewhere.
+      const rationaleInput = foldable > 0
+        ? rationaleInputFor(foldable)
+        : policy.rationaleInputTokens
       stepCost += requestCost(
-        profile, policy.rationaleInputTokens, policy.rationaleOutputTokens, realizations.compaction,
+        profile, rationaleInput, policy.rationaleOutputTokens, realizations.compaction,
       )
     }
     if (folded && arm === 'basic') {

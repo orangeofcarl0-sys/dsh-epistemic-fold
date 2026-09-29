@@ -31,7 +31,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/economics-profile.ts'
-import { CACHE_SCENARIOS, replayPaired, realizationSet } from '../eval/policy-replay/simulator.ts'
+import { CACHE_SCENARIOS, rationaleInputFor, replayPaired, realizationSet } from '../eval/policy-replay/simulator.ts'
 import type { ReplayPolicy } from '../eval/policy-replay/simulator.ts'
 import { syntheticTrace, traceFromBaseline } from '../eval/policy-replay/trace.ts'
 import type { PolicyTrace } from '../eval/policy-replay/trace.ts'
@@ -281,52 +281,46 @@ describe('RC1.2-C: the rationale tax, priced from its MEASURED call size', () =>
     // Pricing it at 512 made `rationale` look nearly free — which is exactly the
     // error that would have made "rationale is an affordable upgrade" look true
     // and produced a preset change on a wrong number.
-    const trace = productionTrace()
-    const retain = Math.floor((WINDOW - RESERVED) * PRODUCTION_RETAIN_RATIO)
-    const base = {
-      contextWindow: WINDOW,
-      reservedCompletionTokens: RESERVED,
-      realization: CACHE_SCENARIOS.nominal,
-      fallbackCheckpointTokens: 20,
-      basicCheckpointTokens: 400,
-      outputTokensPerRequest: 200,
-      idleMaintenance: true,
-    }
-    const withRationale = (inputTokens: number): number => {
-      const paired = replayPaired(trace, {
-        ...base,
-        config: {
-          leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'rationale',
-          thresholdRatio: 65_024 / WINDOW, headroomTokens: 0, retainTokens: retain,
-        },
-        rationaleInputTokens: inputTokens,
-        rationaleOutputTokens: 400,
-      }, PROFILE)
-      return paired.costRatio
-    }
-    const none = replayPaired(trace, {
-      ...base,
-      config: {
-        leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
-        thresholdRatio: 65_024 / WINDOW, headroomTokens: 0, retainTokens: retain,
-      },
-      rationaleInputTokens: 7_383,
-      rationaleOutputTokens: 400,
-    }, PROFILE).costRatio
+    //
+    // RC1.2.1 then went further: the input is now DERIVED from the span rather
+    // than carried as a scalar, so this test checks the derivation against the
+    // measurement instead of checking a constant.
+    const measuredAtSixKWindow = 7_383
+    const spanAtSixKWindow = measuredAtSixKWindow - 1_383
+    const derived = rationaleInputFor(spanAtSixKWindow)
+    console.log(
+      `RATIONALE INPUT: old constant 512 | measured ${measuredAtSixKWindow} | `
+      + `derived from a ${spanAtSixKWindow}-token span ${derived}`,
+    )
+    // The derivation reproduces the measurement it was calibrated from.
+    expect(derived).toBe(measuredAtSixKWindow)
+    // And the old constant was far below both.
+    expect(derived / 512).toBeGreaterThan(10)
 
-    const underestimated = withRationale(512)
-    const measured = withRationale(7_383)
+    // The derivation TRACKS the span, which the scalar could not: a bigger fold
+    // costs a proportionally bigger rationale call.
+    expect(rationaleInputFor(spanAtSixKWindow * 2)).toBeGreaterThan(derived)
+    expect(rationaleInputFor(spanAtSixKWindow / 2)).toBeLessThan(derived)
+
+    // --- The cost consequence, and it is LARGE.
+    //
+    // The scalar only applies when a span is unknown; a real fold always knows
+    // its span, so the derivation wins. At the production window the foldable
+    // span is much bigger than the 6,000-token one the scalar was measured at,
+    // so the rationale call is correspondingly bigger:
+    //
+    //   T=65024, retain=20889  ->  foldable ~44,135  ->  rationale input ~45,518
+    //
+    // That is ~6x the measured 7,383, and it is why the region below no longer
+    // clears parity. Carrying 7,383 as a constant would have understated the
+    // rationale tax at production scale by the same order.
+    const productionSpan = 65_024 - Math.floor((WINDOW - RESERVED) * PRODUCTION_RETAIN_RATIO)
+    const productionRationaleInput = rationaleInputFor(productionSpan)
     console.log(
-      `RATIONALE TAX: none ${none.toFixed(4)} | rationale@512 ${underestimated.toFixed(4)} | `
-      + `rationale@7383 ${measured.toFixed(4)}`,
+      `RATIONALE INPUT at production: foldable ${productionSpan} -> input `
+      + `${productionRationaleInput} (vs the 7,383 scalar measured at a 6000-token window)`,
     )
-    // The measured cost is materially higher than the understated one.
-    expect(measured).toBeGreaterThan(underestimated)
-    // And the tax over `none` is what a preset change would actually pay.
-    console.log(
-      `RATIONALE TAX over none: at the measured size ${(measured - none).toFixed(4)} `
-      + `(${(((measured / none) - 1) * 100).toFixed(1)}%)`,
-    )
+    expect(productionRationaleInput).toBeGreaterThan(measuredAtSixKWindow * 4)
   })
 
   it('reports whether rationale still clears parity in the robust region', () => {

@@ -175,6 +175,27 @@ export async function createHarness(
     tools?: boolean
   } = {},
 ): Promise<Harness> {
+  // FAIL LOUD on a mutually exclusive mount (RC1.2.1).
+  //
+  // `plugin: true` returns early, so `engine: 'basic'` would be SILENTLY
+  // IGNORED — the harness would hand back an EpistemicFoldPlugin while the
+  // caller believed it had Basic. That is exactly what happened in
+  // rc12a-recall-loop.spec.ts, where the "Basic" arm was actually EF with the
+  // default policy AND the EF recall tools registered, which made it score
+  // `facts retrievable 2/5` on a metric that is undefined for real Basic.
+  //
+  // The two options are contradictory by construction: Basic is a different
+  // compaction engine, not a plugin configuration. Refusing here means the
+  // mistake cannot recur silently in any future suite.
+  if (options.plugin === true && options.engine === 'basic') {
+    throw new Error(
+      "test harness: plugin:true and engine:'basic' are mutually exclusive — "
+      + "plugin:true returns early, so engine:'basic' would be silently ignored and the "
+      + "caller would get an EF plugin while believing it had Basic. Mount exactly one: use "
+      + "plugin:true for EF, or engine:'basic' (without plugin) for Basic.",
+    )
+  }
+
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
   const store = options.bundleStore ?? new FileBundleStore(root)
   const control: HarnessControl = { semantic, calls: [] }
