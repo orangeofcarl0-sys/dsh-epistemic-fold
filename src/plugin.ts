@@ -24,6 +24,8 @@ import z from '@deepseek-ai/schemastery'
 import type { AnchorService } from './anchor-service.ts'
 import { createAnchorService } from './anchor-service.ts'
 import { EpistemicFoldEngine } from './engine.ts'
+import { registerIdleRebaseConsumer } from './idle-rebase.ts'
+import type { IdleRebaseAttempt, IdleRebaseRegistration } from './idle-rebase.ts'
 import { registerEpistemicFoldProjection } from './projection.ts'
 import { registerRecallTools } from './tools.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
@@ -90,6 +92,39 @@ export class EpistemicFoldPlugin {
         for (const dispose of disposers) dispose()
       }
     }, 'epistemic-fold composition')
+
+    // The idle rebase consumer (R3-0b): the production half of R2-C's handoff.
+    // Registered unconditionally — whether a rebase is ever justified is the
+    // policy's decision, not the wiring's — and torn down with the plugin so
+    // unloading cannot leave maintenance firing on a disposed engine.
+    ctx.effect(() => {
+      const registration = registerIdleRebaseConsumer({
+        ctx,
+        engine: this.engine,
+        intents: this.engine.rebaseIntentRegistry,
+        onAttempt: attempt => {
+          this.lastIdleRebaseAttempt = attempt
+          if (attempt.outcome === 'rebased') {
+            ctx.logger.info(`[epistemic-fold] idle rebase ran: ${attempt.reason ?? ''}`)
+          }
+        },
+      })
+      this.idleRebase = registration
+      return () => {
+        registration.dispose()
+        this.idleRebase = undefined
+      }
+    }, 'epistemic-fold idle rebase consumer')
   }
+
+  /** Most recent idle rebase attempt; `undefined` before any idle event. */
+  lastIdleRebaseAttempt: IdleRebaseAttempt | undefined
+
+  /**
+   * The registered idle consumer, once mounted. Exposed so a benchmark can
+   * await the maintenance it triggered through the REAL path rather than
+   * reimplementing the policy (R3-0c: `BenchPath == ProductionPath`).
+   */
+  idleRebase: IdleRebaseRegistration | undefined
 }
 export default EpistemicFoldPlugin

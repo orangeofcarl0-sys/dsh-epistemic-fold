@@ -7,14 +7,19 @@
  * supplies the missing half — the refusal hands off to a rebase, the only
  * mechanism that can actually shrink the frozen prefix.
  *
- * The tests below assert the handoff is what produces the gain, by comparing
- * against the arm that has admission WITHOUT the handoff.
+ * **R3-0c re-baselined these tests onto the production path.** R2-C originally
+ * drove the handoff through `createRootRebaseHook()`, a benchmark-local copy of
+ * the rebase policy. That made the finding real but made its *measurement*
+ * describe "EF engine + benchmark policy". The arms below now mount the real
+ * plugin and let ITS idle consumer do the rebase, so the numbers describe the
+ * shipped runtime. The finding itself is unchanged: admission + handoff is a
+ * large win over legacy.
  */
 
 import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
-import { createRootRebaseHook, runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
@@ -32,7 +37,7 @@ async function runArm(arm: Arm, steps: number, workloadIndex = 0): Promise<Basel
   const workload = allWorkloads()[workloadIndex]!
   const harness: Harness = await createHarness({ text: 'ef digest' }, {
     contextWindow: 16_000,
-    projection: true,
+    plugin: true,
     workloadModel: WORKLOAD_MODEL,
     efConfig: {
       thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
@@ -45,7 +50,7 @@ async function runArm(arm: Arm, steps: number, workloadIndex = 0): Promise<Basel
     createSession: workload.createSession,
     steps,
     grow: (session: Session, step: number) => workload.grow(session, step),
-    ...(arm.rebase ? { rebase: createRootRebaseHook(harness) } : {}),
+    ...(arm.rebase ? { rebase: createIdleMaintenanceHook(harness) } : {}),
     signal: SIGNAL,
   })
 }

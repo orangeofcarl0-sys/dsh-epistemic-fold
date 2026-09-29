@@ -18,7 +18,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
-import { createRootRebaseHook, runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
@@ -69,7 +69,7 @@ describe('R2: framing-free ceiling', () => {
       const basicCost = priced(profile, basic.promptSummary.totalPromptTokens, basic.stablePrefixTokensTotal)
 
       const harness = await createHarness({ text: 'd' }, {
-        contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+        contextWindow: WINDOW, plugin: true, workloadModel: WORKLOAD_MODEL,
         efConfig: {
           thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
           leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
@@ -81,7 +81,7 @@ describe('R2: framing-free ceiling', () => {
           workload.grow(session, step)
           workload.declareState?.(session, step)
         },
-        rebase: createRootRebaseHook(harness),
+        rebase: createIdleMaintenanceHook(harness),
         signal: SIGNAL,
       })
 
@@ -114,7 +114,7 @@ describe('R2: framing-free ceiling', () => {
   it('framing is composed mostly of text EF owns, but the largest single part is inherited', async () => {
     const workload = allWorkloads()[0]!
     const harness = await createHarness({ text: 'd' }, {
-      contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+      contextWindow: WINDOW, plugin: true, workloadModel: WORKLOAD_MODEL,
       efConfig: {
         thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
         leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
@@ -126,14 +126,14 @@ describe('R2: framing-free ceiling', () => {
         workload.grow(session, step)
         workload.declareState?.(session, step)
       },
-      rebase: createRootRebaseHook(harness),
+      rebase: createIdleMaintenanceHook(harness),
       signal: SIGNAL,
     })
     expect(run.attribution.totals['checkpoint-framing']).toBeGreaterThan(0)
 
     // Rebuild the surface to inspect the checkpoint text itself.
     const probe = await createHarness({ text: 'd' }, {
-      contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+      contextWindow: WINDOW, plugin: true, workloadModel: WORKLOAD_MODEL,
       efConfig: {
         thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
         leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
@@ -227,7 +227,7 @@ describe('R2: framing-free ceiling', () => {
       const basicCost = priced(profile, basic.promptSummary.totalPromptTokens, basic.stablePrefixTokensTotal)
 
       const harness = await createHarness({ text: 'd' }, {
-        contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+        contextWindow: WINDOW, plugin: true, workloadModel: WORKLOAD_MODEL,
         efConfig: {
           thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000,
           leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
@@ -239,7 +239,7 @@ describe('R2: framing-free ceiling', () => {
           workload.grow(session, step)
           workload.declareState?.(session, step)
         },
-        rebase: createRootRebaseHook(harness),
+        rebase: createIdleMaintenanceHook(harness),
         signal: SIGNAL,
       })
       rows.push({

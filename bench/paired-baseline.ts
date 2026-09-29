@@ -342,6 +342,12 @@ export function growTurn(text: string): (session: Session, step: number) => void
  * consult the last frozen-budget advice, and when a rebase is recommended
  * close the turn, run the manual root fold, and leave a fresh open turn for
  * this step's pressure fold. Returns the number of root folds executed.
+ *
+ * **Superseded by {@link createIdleMaintenanceHook} (R3-0c).** This hook
+ * carries its own copy of the production policy, so anything measured through
+ * it describes "EF engine + a benchmark maintenance policy" rather than the
+ * shipped plugin. It is kept only so earlier stages' numbers stay
+ * reproducible; new measurements must use the idle hook.
  */
 export function createRootRebaseHook(harness: Harness): (session: Session) => Promise<number> {
   return async session => {
@@ -361,4 +367,87 @@ export function createRootRebaseHook(harness: Harness): (session: Session) => Pr
     await engine.compactNow(idleAgent, BENCH_SIGNAL)
     return 1
   }
+}
+
+/**
+ * Drive the PRODUCTION idle maintenance path (R3-0c).
+ *
+ * The benchmark's job is now to arrange the world — turn closed, agent idle —
+ * and then step back. It emits the real `agent/status` transition and lets the
+ * plugin's own consumer decide and perform the rebase. No policy is copied
+ * here: if the production consumer is wrong, this hook is wrong in exactly the
+ * same way, which is what `BenchPath == ProductionPath` means.
+ *
+ * @param harness - a harness mounted with `plugin: true`.
+ * @returns the number of root folds that actually landed.
+ */
+export function createIdleMaintenanceHook(harness: Harness): (session: Session) => Promise<number> {
+  return async session => {
+    const before = rootFoldCountOf(harness.engine)
+    await driveIdleMaintenance(harness, session)
+    return rootFoldCountOf(harness.engine) - before
+  }
+}
+
+/**
+ * Emit one idle transition for an agent and wait for any maintenance it
+ * triggers to settle.
+ *
+ * The agent stub models the parts of the real loop the consumer depends on:
+ * `status`, `runMaintenance` claiming and releasing the idle phase (throwing
+ * when the agent is not idle, exactly as `agent-loop` does), and the
+ * `agent/status` emission itself. It is a DRIVER, not a policy — the decision
+ * and the fold belong to the production consumer.
+ *
+ * Settling is observed through the plugin's own registration rather than by
+ * polling the agent: the consumer deliberately does not block the emitting
+ * turn (in production the user's next message queues behind maintenance), so
+ * the only race-free way to await it is the handle the plugin exposes.
+ */
+export async function driveIdleMaintenance(harness: Harness, session: Session): Promise<void> {
+  let busy = false
+  const agent = {
+    session,
+    options: BENCH_AGENT_OPTIONS,
+    get status(): string {
+      return busy ? 'running' : 'idle'
+    },
+    runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T> {
+      if (busy) throw new Error(`agent "${String(session.id)}" already has active work`)
+      busy = true
+      return (async () => {
+        try {
+          return await task(BENCH_SIGNAL)
+        } finally {
+          busy = false
+        }
+      })()
+    },
+  } as unknown as Agent
+  emitAgentStatus(harness, agent, 'idle')
+  const registration = harness.plugin?.idleRebase
+  if (registration === undefined) {
+    throw new Error(
+      'driveIdleMaintenance requires a harness mounted with `plugin: true`: the production '
+      + 'idle consumer is the thing under test, and there is no fallback policy here by design',
+    )
+  }
+  await registration.settled()
+}
+
+/** Root folds an engine has run, read from its own telemetry counter. */
+function rootFoldCountOf(engine: unknown): number {
+  return (engine as { rootFoldCount?: number }).rootFoldCount ?? 0
+}
+
+/**
+ * Emit one `agent/status` transition through the context's event bus.
+ *
+ * The event is agent-scoped in DSH. Scope filtering only excludes a listener
+ * whose OWN context carries a different tag; the benchmark context is
+ * untagged, so a plain emit reaches the plugin's listener exactly as the real
+ * loop's dispatch does for an untagged composition root.
+ */
+function emitAgentStatus(harness: Harness, agent: Agent, status: 'idle' | 'running'): void {
+  harness.ctx.emit('agent/status', { agent, status })
 }

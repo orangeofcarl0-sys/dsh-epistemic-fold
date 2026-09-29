@@ -31,6 +31,7 @@ import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
+import EpistemicFoldPlugin from '../src/plugin.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 
@@ -65,6 +66,8 @@ export interface Harness {
   readonly store: FoldBundleStore
   readonly root: string
   readonly control: HarnessControl
+  /** Present only when the harness mounted the real plugin (R3-0c). */
+  readonly plugin?: EpistemicFoldPlugin
 }
 
 class ControlledAdapter extends LlmAdapter {
@@ -138,6 +141,14 @@ export async function createHarness(
      * engine/transaction path the keyless tier exercises.
      */
     adapter?: { readonly provider: string; readonly instance: LlmAdapter }
+    /**
+     * Mount the whole runtime through the REAL `EpistemicFoldPlugin` instead
+     * of hand-wiring engine + projection (R3-0c). This is what makes the
+     * benchmark path and the production path the same path: the plugin's own
+     * idle-rebase consumer is what performs maintenance, and the test cannot
+     * substitute its own policy.
+     */
+    plugin?: boolean
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -167,6 +178,14 @@ export async function createHarness(
   // Live tier: a real adapter replaces the scripted face for its own route.
   if (options.adapter !== undefined) {
     ctx.llm.registerAdapter([options.adapter.provider], options.adapter.instance)
+  }
+  if (options.plugin === true) {
+    const plugin = new EpistemicFoldPlugin(ctx, {
+      auto: false,
+      bundleRoot: root,
+      ...(options.efConfig ?? {}),
+    })
+    return { ctx, engine: plugin.engine, store: plugin.engine.bundleStore, root, control, plugin }
   }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })

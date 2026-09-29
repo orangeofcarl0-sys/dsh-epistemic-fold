@@ -133,11 +133,13 @@ describe('R2-E: price-dominance matrix', () => {
 
       for (const id of PROFILE_IDS) {
         const economics = profile(id)
-        const basicCost = priceArm(costInputs(basic), economics, REALIZATION_RATE).totalCost
+        const basicPriced = priceArm(costInputs(basic), economics, REALIZATION_RATE)
+        const basicCost = basicPriced.totalCost
         for (const policy of POLICIES) {
           if (policy.label === 'B1-basic') continue
           const result = results.get(policy.label)!
-          const policyCost = priceArm(costInputs(result), economics, REALIZATION_RATE).totalCost
+          const priced = priceArm(costInputs(result), economics, REALIZATION_RATE)
+          const policyCost = priced.totalCost
           rows.push({
             workload: workload.id,
             policy: policy.label,
@@ -145,14 +147,19 @@ describe('R2-E: price-dominance matrix', () => {
             basicCost,
             policyCost,
             bcr: basicCost === 0 ? Number.NaN : policyCost / basicCost,
-            // Quality is not measurable in the keyless tier. R1's live tier
-            // found EF 32/32 vs Basic 31/32 (a null result), so BQR is held at
-            // 1.0 here and the report says so explicitly rather than implying
-            // a measured quality advantage.
-            bqr: 1,
+            // R3-0a: a bill missing the cache-write term is flagged, not
+            // silently totalled (the OpenAI profile bills writes; the keyless
+            // tier observes none).
+            billIncomplete: priced.incomplete || basicPriced.incomplete,
+            // R3-0a: quality is NOT measured in the keyless tier, and UNKNOWN
+            // is no longer rendered as `BQR = 1`. The earlier `bqr: 1` made
+            // "40/40 no worse in quality" a claim the tier could not support.
+            quality: { status: 'unknown' },
             basicPeakTokens: basic.promptSummary.peakPromptTokens,
             policyPeakTokens: result.promptSummary.peakPromptTokens,
-            dominates: policyCost < basicCost,
+            cheaper: policyCost < basicCost,
+            // Dominance needs quality evidence, so it is unavailable here.
+            dominates: false,
           })
         }
       }
