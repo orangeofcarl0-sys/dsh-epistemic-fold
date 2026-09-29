@@ -76,7 +76,18 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
     for (let replicate = 0; replicate < PAIRS; replicate += 1) {
       for (const workload of fullWireWorkloads()) {
         // Same workload, same replicate, both arms — a genuine pair.
-        const economy = await runFullWire({
+        //
+        // ARM ORDER IS COUNTERBALANCED (RC1 §22). The first version always ran
+        // economy first, and because the workloads are deterministic, the arm
+        // that ran second inherited a warm provider prefix from the arm before
+        // it. The re-run showed the consequence with unmistakable clarity:
+        // identical prompts and identical call counts, yet one arm reported
+        // ~200 uncached input per request and the other ~3,600. No policy can
+        // cause that, so the earlier ratios described cache luck rather than
+        // cost. Alternating the order makes that effect cancel across
+        // replicates instead of accumulating into one arm.
+        const economyFirst = replicate % 2 === 0
+        const runEconomy = async (): Promise<FullWireRun> => runFullWire({
           arm: `E4-${workload.id}-${replicate}`,
           basic: false,
           workload,
@@ -86,7 +97,7 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
           idleMaintenance: true,
           systemPrompt: true,
         })
-        const basic = await runFullWire({
+        const runBasic = async (): Promise<FullWireRun> => runFullWire({
           arm: `B1-${workload.id}-${replicate}`,
           basic: true,
           workload,
@@ -99,13 +110,19 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
           // carried a system prompt and Basic's did not.
           systemPrompt: true,
         })
-        pairs.push({ workload: workload.id, replicate, economy, basic })
-        runs.push(economy, basic)
+        const economy = economyFirst ? await runEconomy() : undefined
+        const basic = economyFirst ? await runBasic() : undefined
+        const basicSecond = economyFirst ? basic! : await runBasic()
+        const economySecond = economyFirst ? economy! : await runEconomy()
+        pairs.push({ workload: workload.id, replicate, economy: economySecond, basic: basicSecond })
+        runs.push(economySecond, basicSecond)
         console.log(
-          `${workload.id} rep${replicate}: economy calls=${economy.bills.length} `
-          + `prompts=[${economy.callPromptTokens.join(',')}] folds=${economy.folds} roots=${economy.roots}`
-          + ` | basic calls=${basic.bills.length} prompts=[${basic.callPromptTokens.join(',')}] `
-          + `folds=${basic.folds} compactionCall=${basic.sawCompactionCall}`,
+          `${workload.id} rep${replicate} (${economyFirst ? 'E-first' : 'B-first'}): `
+          + `economy calls=${economySecond.bills.length} `
+          + `prompts=[${economySecond.callPromptTokens.join(',')}] folds=${economySecond.folds} `
+          + `roots=${economySecond.roots}`
+          + ` | basic calls=${basicSecond.bills.length} prompts=[${basicSecond.callPromptTokens.join(',')}] `
+          + `folds=${basicSecond.folds} compactionCall=${basicSecond.sawCompactionCall}`,
         )
       }
     }
@@ -177,6 +194,42 @@ NOISE FLOOR: two identical Basic runs cost ${noiseRuns.map(c => c.toFixed(5)).jo
         + `${basicCost.toFixed(5)} | ${ratio.toFixed(3)} | ${engaged ? `${folds} folds` : 'NULL (no folds)'} |`,
       )
     }
+    // --- THE INTERNAL CONTROL, and the guard that would have caught the
+    // measurement defect on the first run.
+    //
+    // A workload where NEITHER arm folded issued byte-identical requests in
+    // both arms: same prompts, same call counts, same everything. Its ratio is
+    // therefore 1.000 BY CONSTRUCTION, and any deviation from 1 is a
+    // measurement artifact — provider cache state, run ordering, or a transport
+    // difference — never a policy effect. The earlier run reported 1.606 here,
+    // which is what exposed the missing cache namespace and the unchanging arm
+    // order.
+    //
+    // This is asserted rather than reported: a null test that is not ~1 means
+    // every other ratio in the run is untrustworthy, so proceeding would only
+    // produce confident numbers resting on a broken instrument.
+    const nullTests = perFamily.filter(entry => !entry.engaged)
+    for (const nullTest of nullTests) {
+      console.log(
+        `NULL TEST ${nullTest.workload}: ratio ${nullTest.ratio.toFixed(3)} `
+        + '(identical requests in both arms, so this must be ~1.000)',
+      )
+      expect(
+        nullTest.ratio,
+        `${nullTest.workload} had no folds in either arm, so its two arms issued the same `
+        + 'requests and the ratio must be ~1. That it is not means the measurement is '
+        + 'confounded (cache namespace missing, arm order not counterbalanced, or a transport '
+        + 'difference), and no other ratio in this run can be trusted.',
+      ).toBeGreaterThan(0.9)
+      expect(nullTest.ratio).toBeLessThan(1.1)
+    }
+    if (nullTests.length === 0) {
+      console.log(
+        'NULL TEST: none available this run — every workload folded, so the instrument '
+        + 'had no self-check',
+      )
+    }
+
     const engagedFamilies = perFamily.filter(entry => entry.engaged)
     console.log(
       `
@@ -187,22 +240,69 @@ engaged families: ${engagedFamilies.map(e => e.workload).join(', ') || '(none)'}
     // --- The paired ratio series, one point per (workload, replicate).
     // NULL tests are excluded: their arms are byte-identical, so including them
     // would pull the mean toward 1 and understate the engaged effect.
+    // --- The paired ratio series, one point per (workload, replicate).
+    // NULL tests are excluded: their arms are byte-identical, so including them
+    // would pull the mean toward 1 and understate the engaged effect.
     const engagedIds = new Set(engagedFamilies.map(entry => entry.workload))
-    const ratios = pairs
-      .filter(pair => engagedIds.has(pair.workload))
-      .map(pair => {
-        const basicCost = summarize(pair.basic).cost
-        return basicCost === 0 ? Number.NaN : summarize(pair.economy).cost / basicCost
-      })
+    // --- A pair whose ARM FAILED WHOLESALE is not a cost observation.
+    //
+    // RC0-D established availability as its own axis, and this is why it
+    // matters. When every request in one arm returns nothing, that arm's bill is
+    // ~0 and its ratio collapses toward 0 — reporting a transport failure as a
+    // discount. One such pair (0.305) dragged the mean of an otherwise tight
+    // 0.90–0.98 series down to 0.868 while widening the interval.
+    //
+    // A pair is valid only when BOTH arms actually ran. Invalid pairs are
+    // reported on the availability axis and excluded from the cost estimate,
+    // never silently averaged in.
+    const engagedPairs = pairs.filter(pair => engagedIds.has(pair.workload))
+    const failedShare = (run: FullWireRun): number => {
+      if (run.bills.length === 0) return 1
+      const failed = run.bills.filter(bill => bill.promptTokens === 0 && bill.outputTokens === 0).length
+      return failed / run.bills.length
+    }
+    const validPairs: Pair[] = []
+    const invalidPairs: Array<{ readonly pair: Pair; readonly reason: string }> = []
+    for (const pair of engagedPairs) {
+      const economyFailed = failedShare(pair.economy)
+      const basicFailed = failedShare(pair.basic)
+      // A quarter of the calls failing means the arm did not complete its
+      // trajectory, so its total is not comparable to a run that did.
+      if (economyFailed > 0.25 || basicFailed > 0.25) {
+        invalidPairs.push({
+          pair,
+          reason: `economy ${(economyFailed * 100).toFixed(0)}% failed calls, `
+            + `basic ${(basicFailed * 100).toFixed(0)}%`,
+        })
+        continue
+      }
+      validPairs.push(pair)
+    }
+    for (const invalid of invalidPairs) {
+      console.log(
+        `EXCLUDED (availability): ${invalid.pair.workload} rep${invalid.pair.replicate} — `
+        + `${invalid.reason}; a failed arm's bill is not a cost observation`,
+      )
+    }
+
+    const ratios = validPairs.map(pair => {
+      const basicCost = summarize(pair.basic).cost
+      return basicCost === 0 ? Number.NaN : summarize(pair.economy).cost / basicCost
+    })
     const usable = ratios.filter(Number.isFinite)
     console.log(`\npaired ratios (n=${usable.length}): ${usable.map(r => r.toFixed(3)).join(', ')}`)
+    if (invalidPairs.length > 0) {
+      console.log(
+        `availability: ${invalidPairs.length}/${engagedPairs.length} engaged pair(s) excluded from `
+        + 'the cost estimate and reported here instead',
+      )
+    }
 
     // --- RC0 §18's gate, on the ratio scale.
     const ci = pairedBootstrapCi(usable, { seed: 20260929 })
-    const engagedPairs = pairs.filter(pair => engagedIds.has(pair.workload))
     const tally = tallyPairs(
-      engagedPairs.map(pair => summarize(pair.economy).cost),
-      engagedPairs.map(pair => summarize(pair.basic).cost),
+      validPairs.map(pair => summarize(pair.economy).cost),
+      validPairs.map(pair => summarize(pair.basic).cost),
     )
     console.log(`paired bootstrap interval (deterministic, over observed runs): ${ci === undefined ? 'OPEN (n<3)' : JSON.stringify(ci)}`)
     console.log(`wins/ties/losses: ${tally.wins}/${tally.ties}/${tally.losses} (tie band ±${tally.tieBand * 100}%)`)
@@ -248,6 +348,23 @@ RBCR distribution: n=${distribution.count} mean=${distribution.mean.toFixed(3)} 
       + (outliers.length > 0
         ? ` (excluding the outlier: ${usable.filter(v => v <= outlierThreshold && v < 1).length}/${usable.length - outliers.length})`
         : ''),
+    )
+
+    // --- The AGGREGATE ratio, which RC0 §25 says is what a product bill
+    // actually is: Σ C(economy) / Σ C(basic) over the whole experiment.
+    //
+    // It is reported alongside the mean-of-ratios because the two answer
+    // different questions and can disagree. The mean-of-ratios weights every
+    // replicate equally; the aggregate weights by spend, which is what a
+    // deployment pays. A single expensive replicate moves the aggregate more
+    // than it moves the mean, and a single failed arm moves it less.
+    const totalEconomy = validPairs.reduce((sum, pair) => sum + summarize(pair.economy).cost, 0)
+    const totalBasic = validPairs.reduce((sum, pair) => sum + summarize(pair.basic).cost, 0)
+    const aggregate = totalBasic <= 0 ? Number.NaN : totalEconomy / totalBasic
+    console.log(
+      `\nFullTaskRBCR aggregate (Σ C_economy / Σ C_basic, RC0 §25): `
+      + `${Number.isFinite(aggregate) ? aggregate.toFixed(3) : 'n/a'} `
+      + `(${totalEconomy.toFixed(5)} / ${totalBasic.toFixed(5)})`,
     )
 
     // --- The finding, stated either way.

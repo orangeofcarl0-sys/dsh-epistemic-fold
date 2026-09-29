@@ -17,7 +17,10 @@
 import { DSH_SEAM_PROVENANCE, framingModeSupported } from './compat.ts'
 import type { DshCapabilities } from './compat.ts'
 import { FOLD_MODE_NAMES, economyPresetValues, isFoldModeName, presetOverrides } from './preset.ts'
+import { resolveEfConfig } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
+import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
+import type { TriggerBreakdown } from './trigger.ts'
 
 /** One resolved setting, with where it came from. */
 export interface EffectiveSetting {
@@ -40,6 +43,15 @@ export interface EffectiveConfig {
    * preflight can surface them; the engine still throws.
    */
   readonly blockers: readonly string[]
+  /**
+   * The trigger arithmetic, when the routed model's capacity is known.
+   *
+   * `undefined` when no capacity was supplied, because the ratio/capacity
+   * comparison is meaningless without a window — and reporting a breakdown
+   * computed against an assumed window would be exactly the kind of confident
+   * wrong answer this surface exists to prevent (RC1-A §7).
+   */
+  readonly trigger?: TriggerBreakdown
 }
 
 /** The keys the economy preset owns, in report order. */
@@ -58,11 +70,15 @@ const ENGINE_DEFAULTS: Readonly<Record<string, unknown>> = {
  *
  * @param config - the deployment's configuration, as written.
  * @param capabilities - the DSH build's capabilities.
+ * @param capacity - the routed model's window and output reservation. Supplied
+ *   when known, so the report can name the binding trigger constraint (RC1-A
+ *   §7); omitted, the breakdown is simply absent rather than assumed.
  * @returns the resolved settings, the user's overrides, and any blockers.
  */
 export function describeEffectiveConfig(
   config: EpistemicFoldConfig = {},
   capabilities?: DshCapabilities,
+  capacity?: { readonly contextWindow: number; readonly reservedCompletionTokens: number },
 ): EffectiveConfig {
   const mode = config.mode ?? 'legacy'
   const known = isFoldModeName(mode)
@@ -100,7 +116,30 @@ export function describeEffectiveConfig(
     )
   }
 
-  return { mode: String(mode), settings, overrides, systemDedupSupported: supported.systemDedup, blockers }
+  // The trigger arithmetic, when the window is known. An unknown mode has no
+  // resolvable policy to break down, so it is skipped rather than guessed.
+  let trigger: TriggerBreakdown | undefined
+  if (capacity !== undefined && known) {
+    try {
+      trigger = triggerBreakdown(
+        resolveEfConfig(config),
+        capacity.contextWindow,
+        capacity.reservedCompletionTokens,
+      )
+    } catch {
+      // A configuration whose reservation and headroom leave no message budget
+      // is reported by the engine's own throw. The preflight stays descriptive.
+    }
+  }
+
+  return {
+    mode: String(mode),
+    settings,
+    overrides,
+    systemDedupSupported: supported.systemDedup,
+    blockers,
+    ...(trigger === undefined ? {} : { trigger }),
+  }
 }
 
 /**
@@ -121,6 +160,12 @@ export function effectiveConfigToText(effective: EffectiveConfig): string {
     }
   }
   lines.push(`  system-dedup framing available: ${effective.systemDedupSupported ? 'yes' : 'no'}`)
+  if (effective.trigger !== undefined) {
+    lines.push('  fold trigger (who controls compaction):')
+    for (const line of triggerBreakdownToText(effective.trigger).split(String.fromCharCode(10))) {
+      lines.push(line)
+    }
+  }
   if (effective.blockers.length > 0) {
     lines.push('  BLOCKERS (the engine will refuse to start):')
     for (const blocker of effective.blockers) lines.push(`    - ${blocker}`)

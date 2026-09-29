@@ -177,13 +177,31 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
   }
 
   override async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
+    // The system prompt goes in as a `system`-ROLE MESSAGE, not as a top-level
+    // `system` field.
+    //
+    // RC1-E found this the hard way: this endpoint accepts a top-level `system`
+    // field, returns HTTP 200, and silently ignores it. A 240,003-character
+    // system prompt billed 13 prompt tokens — the size of the user message
+    // alone. Every live measurement that assembled a real system prompt was
+    // therefore not sending it, which matters most for the R3 framing change:
+    // its entire saving is earned by moving the checkpoint preamble INTO the
+    // system prompt, and that saving was being measured on requests that
+    // carried no system prompt at all.
+    //
+    // The `system` role inside `messages` is the OpenAI-compatible spelling and
+    // is what this endpoint actually prices (verified: 12,007 tokens for a
+    // 12,000-token system message).
+    const messages: Record<string, unknown>[] = []
+    if (options.system !== undefined && options.system.length > 0) {
+      messages.push({ role: 'system', content: options.system })
+    }
+    messages.push(...options.messages.map(toWireMessage))
+
     const body: Record<string, unknown> = {
       model: this.model,
-      messages: options.messages.map(toWireMessage),
+      messages,
       stream: false,
-    }
-    if (options.system !== undefined && options.system.length > 0) {
-      body.system = options.system
     }
     if (options.maxTokens !== undefined) body.max_tokens = options.maxTokens
     if (options.temperature !== undefined) body.temperature = options.temperature

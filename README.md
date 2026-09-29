@@ -84,6 +84,10 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **R2-C** | Provider-aware amortized rebase + leaf-refusal handoff · 模型感知摊销式 rebase + 拒绝交接 | ✅ 10 tests |
 | **R2-D** | Checkpoint surface diet: omit empty sections, keep identity and recall · checkpoint 瘦身 | ✅ 8 tests |
 | **R2-E** | BCR/BQR price-dominance matrix · 价格支配矩阵 | ❌ **BCR 1.149 > 1** · [report](docs/14_R2_EVALUATION_REPORT.md) |
+| **R3** | Frozen-surface economy closure: pricing correctness, production idle rebase, framing seam, marker V2 · 冻结面经济闭合 | ✅ BCR 0.986 · [report](docs/16_R3_EVALUATION_REPORT.md) |
+| **R4** | Economy default closure: real-recall workload, realized billing, window safety, presets · 经济模式默认闭合 | ✅ 5/5 gate components · [report](docs/17_R4_EVALUATION_REPORT.md) |
+| **RC0** | Release hardening: config contract, pairwise non-inferiority, all-call billing recorder · 发布加固 | ⚠️ **cost gate OPEN (dispersion)** · superseded by RC1 · [report](docs/18_RC0_RELEASE_HARDENING.md) |
+| **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; cost gate **OPEN (dispersion at n=8)**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -166,6 +170,70 @@ detail in [the R2 report](docs/14_R2_EVALUATION_REPORT.md) ·
 warm token**，因为 frontier 不变量禁止重折叠已冻结的 checkpoint，而 Basic 会
 重折叠它唯一的那个。任何 rebase 节奏都达不到目标（最好为 1.096）。详见
 [R2 报告](docs/14_R2_EVALUATION_REPORT.md)。
+
+**R3–RC0 closed the price gap, then found the shipped defaults were not
+calibrated for it.** R3 removed the framing tax (BCR 1.149 → 0.986 on the
+economy workloads) and R4 built the real-recall workload, realized billing, and
+the presets — reaching all five gate components satisfied. RC0 then hardened the
+release contract and **changed the headline conclusion**: at the shipped
+defaults the full-task realized ratio has a median of 0.96 but a CI upper bound
+of 1.353, so the gate is **OPEN because of dispersion**, not because the typical
+run is dearer. The default flip stayed blocked by design ·
+**R3–RC0 收窄了价格差距，随后发现出厂默认值并未针对它校准。** R3 消除了 framing
+税（经济负载上 BCR 1.149 → 0.986），R4 建成了真实召回负载、实测计费与预设，
+五个 gate 组件全部满足。RC0 随后加固发布契约，并**改写了主结论**：在出厂默认值
+下全任务实测比中位数为 0.96，但置信区间上界 1.353——gate 因**离散度**而 OPEN，
+并非因为典型运行更贵。默认翻转按设计保持阻断。
+
+**RC1 then normalized the policy instead of adding mechanism.** It named the
+binding constraint (`thresholdRatio: 0.8` reads as an 80% trigger; the shipped
+reserve makes the real trigger **49.6%**), measured the safety reserve
+(**9,733** tokens needed vs **65,536** shipped — 6.73×), moved parameter search
+off the API and onto a replay simulator that calls the *production* policy
+functions, exonerated the frozen budget by measurement (0 of 135 shadow
+evaluations were profitable-but-blocked), and classified the RC0 outlier as
+**provider cache state** — at comparable prompt sizes the two request shapes
+cache identically (reuse ratio 1.000). Running it live exposed two instrument
+defects larger than the experiment itself: **the live endpoint accepts a
+top-level `system` field, returns HTTP 200, and silently ignores it** (so every
+earlier live measurement that relied on system-prompt assembly was not sending
+one — which matters most for R3's framing change, whose entire saving is earned
+there), and **the paired driver shared provider cache between runs and arms**,
+so its null test read 1.606 where it must read ~1. With both fixed the null test
+behaves (1.021) and the noise floor is 1.005 — but the cost verdict still does
+not reproduce at n=8 (0.965 vs 1.104), so the gate stays **OPEN for dispersion**
+on a sound instrument. The deliverable is a **certified operating profile** for
+the measured route, not a global default: an uncertified route falls back to
+`legacy`, never to `economy`.
+Full detail in [the RC1 report](docs/19_RC1_POLICY_NORMALIZATION.md) ·
+**RC1 随后选择规范化策略而非增加机制。** 它命名了真正的约束（`thresholdRatio:
+0.8` 读作 80% 触发，而出厂 reserve 使真实触发点落在 **49.6%**），实测了安全
+reserve（需要 **9,733** token，出厂 **65,536**，相差 6.73 倍），把参数搜索从
+API 搬到调用**生产**策略函数的 replay 模拟器上，用实测为 frozen budget 免责
+（135 次 shadow 评估中 0 次「有利可图却被阻断」），并把 RC0 的离群值归类为
+**provider 缓存状态**——在可比 prompt 长度下两种请求形状缓存表现完全一致
+（复用比 1.000）。实机运行还暴露了一个比实验本身更重要的缺陷：**实机端点接受
+顶层 `system` 字段、返回 HTTP 200、却静默忽略它**，因此此前所有依赖 system
+prompt 组装的实机测量都没有真正发送 system prompt——这对 R3 的 framing 改动
+影响最大，因为该改动的全部收益正来自那里。最终交付物是**针对已测路由的经济模式
+认证档案**，而非全局默认值：未认证路由回退到 `legacy`，绝不回退到 `economy`。
+详见 [RC1 报告](docs/19_RC1_POLICY_NORMALIZATION.md)。
+
+### Frozen stages · 已冻结阶段
+
+These are closed and should not be re-litigated in future reports. They reopen
+only when a new incident corpus produces corresponding evidence (RC1 §46) ·
+以下阶段已关闭，后续报告不再重复讨论；仅当新的故障语料产生对应证据时才重新开启
+（RC1 §46）：
+
+```
+M1           CLOSED / deferred by evidence
+M3b          CLOSED / deferred
+M4           CLOSED / deferred
+M5           CLOSED / no measured need
+RecallPrune  CLOSED / no measured problem
+DeltaLeaf    REJECTED (R1-B gate)
+```
 
 ## Development · 开发方式
 
@@ -341,6 +409,11 @@ All design documents live in [`docs/`](docs/) ·
 | [12_R1_EVALUATION_REPORT.md](docs/12_R1_EVALUATION_REPORT.md) | R1 evaluation report (GENERATED by `npm run eval:r1-report`): attribution, regime sensitivity, counterfactual bounds, per-profile policy, Pareto · R1 评估报告（由脚本生成） |
 | [13_R1_LIVE_BEHAVIORAL_RESULTS.md](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md) | Live behavioral subset results: the null result, measured cache realization h = 0.910, and the production bug it found · 实模型行为子集结果：零结果、实测缓存命中率、以及发现的真实缺陷 |
 | [14_R2_EVALUATION_REPORT.md](docs/14_R2_EVALUATION_REPORT.md) | R2 price-dominance report: BCR 1.276 → 1.149, why the objective was not reached, and what would be required · R2 价格支配报告 |
+| [15_R2_FRAMING_CEILING.md](docs/15_R2_FRAMING_CEILING.md) | R2 framing-ceiling analysis: the repeated preamble is the dominant checkpoint cost · R2 framing 天花板分析 |
+| [16_R3_EVALUATION_REPORT.md](docs/16_R3_EVALUATION_REPORT.md) | R3 frozen-surface economy closure: pricing correctness, production idle rebase, framing seam, and where the directive said to STOP · R3 冻结面经济闭合 |
+| [17_R4_EVALUATION_REPORT.md](docs/17_R4_EVALUATION_REPORT.md) | R4 economy default closure: real-recall workload, realized billing, window safety, presets, and the eligibility gate · R4 经济模式默认闭合 |
+| [18_RC0_RELEASE_HARDENING.md](docs/18_RC0_RELEASE_HARDENING.md) | RC0 release hardening: the configuration contract, pairwise non-inferiority, the all-call billing recorder, and the dispersion that keeps the cost gate OPEN · RC0 发布加固 |
+| [19_RC1_POLICY_NORMALIZATION.md](docs/19_RC1_POLICY_NORMALIZATION.md) | RC1 policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, and the certified economy profile · RC1 策略标准化与经济模式认证 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

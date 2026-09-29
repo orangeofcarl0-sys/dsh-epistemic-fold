@@ -41,6 +41,8 @@ import { assertDshCompatibility } from './compat.ts'
 import { resolveProfile } from './economics-profile.ts'
 import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
 import type { FramingMode } from './framing.ts'
+import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
+import type { TriggerBreakdown } from './trigger.ts'
 import { compileContextPolicy } from './policy-compiler.ts'
 import type { ContextPolicyDecision } from './policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
@@ -170,6 +172,15 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private rootFoldCountValue = 0
   /** Framing mode in force, resolved once against the mounted context. */
   private framingModeResolved: FramingMode | undefined
+  /**
+   * The most recent trigger decomposition, keyed by routed target (RC1-A).
+   *
+   * Kept per target rather than as one value because a session can be rerouted
+   * mid-flight, and the binding constraint is a property of the WINDOW, not of
+   * the engine. Reported once per target so a long run does not spam the log
+   * with the same six lines.
+   */
+  private readonly triggerReports = new Map<string, TriggerBreakdown>()
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -237,6 +248,48 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** The pending-rebase registry the idle consumer drives (R3-0b). */
   get rebaseIntentRegistry(): RebaseIntentRegistry {
     return this.rebaseIntents
+  }
+
+  /**
+   * The trigger decomposition for one routed target, or `undefined` before the
+   * engine has resolved that target's capacity (RC1-A §8).
+   *
+   * @param provider - routed provider.
+   * @param model - routed model.
+   * @returns the breakdown, so a caller can ask "who controls compaction?"
+   *   without re-deriving the arithmetic.
+   */
+  triggerFor(provider: string, model: string): TriggerBreakdown | undefined {
+    return this.triggerReports.get(`${provider}/${model}`)
+  }
+
+  /**
+   * Report the trigger decomposition once per routed target (RC1-A §7).
+   *
+   * Logged rather than thrown: a headroom-bound trigger is a legitimate
+   * configuration, and the failure mode being prevented is a deployment
+   * reading `thresholdRatio: 0.8` and believing it folds at 80% of the window.
+   * Naming the binding constraint in the log is what makes that visible without
+   * turning a valid configuration into a startup error.
+   */
+  private reportTriggerBreakdown(
+    target: { readonly provider: string; readonly model: string },
+    contextWindow: number,
+    reserved: number,
+  ): void {
+    const key = `${target.provider}/${target.model}`
+    if (this.triggerReports.has(key)) return
+    let breakdown: TriggerBreakdown
+    try {
+      breakdown = triggerBreakdown(this.efConfig, contextWindow, reserved)
+    } catch {
+      // `resolveEfCompactSpec` already threw with the actionable message.
+      return
+    }
+    this.triggerReports.set(key, breakdown)
+    const lines = triggerBreakdownToText(breakdown).split(String.fromCharCode(10))
+    this.ctx.logger.info(`[epistemic-fold] fold trigger for ${key}:`)
+    for (const line of lines) this.ctx.logger.info(`[epistemic-fold] ${line}`)
   }
 
   /**
@@ -420,11 +473,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         + 'configure contextWindow on that adapter model',
       )
     }
+    const reserved = reservedCompletionTokens(agent, info.defaultMaxTokens)
     const spec = resolveEfCompactSpec(
       this.efConfig,
       info.context.contextWindow,
-      reservedCompletionTokens(agent, info.defaultMaxTokens),
+      reserved,
     )
+    this.reportTriggerBreakdown(target, info.context.contextWindow, reserved)
     this.lastThresholdTokensValue = spec.thresholdTokens
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
