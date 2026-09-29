@@ -16,8 +16,9 @@
 
 import { DSH_SEAM_PROVENANCE, framingModeSupported } from './compat.ts'
 import type { DshCapabilities } from './compat.ts'
-import { FOLD_MODE_NAMES, economyPresetValues, isFoldModeName, presetOverrides } from './preset.ts'
-import { resolveEfConfig } from './policy.ts'
+import { FOLD_MODE_NAMES, TIERS, isFoldModeName, presetOverrides, tierValuesFor } from './preset.ts'
+import type { TierModeName } from './preset.ts'
+import { resolveEfConfig, DEFAULT_RETAIN_RATIO } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
 import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
 import type { TriggerBreakdown } from './trigger.ts'
@@ -52,17 +53,39 @@ export interface EffectiveConfig {
    * wrong answer this surface exists to prevent (RC1-A §7).
    */
   readonly trigger?: TriggerBreakdown
+  /**
+   * The named tier's own claim and how well backed it is (RC2).
+   *
+   * `undefined` for `legacy`, which is not a tier. Present for every tier so a
+   * diagnostic surface reports `HYPOTHESIS` alongside the settings rather than
+   * letting an unmeasured rung read as a measured one.
+   */
+  readonly tier?: {
+    readonly name: TierModeName
+    readonly summary: string
+    readonly intent: string
+    readonly steadinessMechanism: string
+    readonly evidence: string
+    readonly evidenceDetail: string
+  }
 }
 
-/** The keys the economy preset owns, in report order. */
-const PRESET_OWNED = ['leafAdmission', 'rootPolicy', 'semanticMode', 'framingMode'] as const
+/** The keys a tier may own, in report order. */
+const PRESET_OWNED = [
+  'leafAdmission',
+  'rootPolicy',
+  'semanticMode',
+  'framingMode',
+  'retainRatio',
+] as const
 
-/** Engine defaults for the preset-owned keys, so `origin` is always knowable. */
+/** Engine defaults for the tier-owned keys, so `origin` is always knowable. */
 const ENGINE_DEFAULTS: Readonly<Record<string, unknown>> = {
   leafAdmission: 'legacy',
   rootPolicy: 'legacy',
   semanticMode: 'rationale',
   framingMode: 'legacy',
+  retainRatio: DEFAULT_RETAIN_RATIO,
 }
 
 /**
@@ -99,9 +122,15 @@ export function describeEffectiveConfig(
     const value = explicit[key]
     if (overrideKeys.has(key)) return { key, value, origin: 'explicit' as const }
     if (value !== undefined) return { key, value, origin: 'explicit' as const }
-    if (known && mode === 'economy') {
-      // Filled by the preset; resolved here so the report needs no second pass.
-      return { key, value: economyPresetValues()[key], origin: 'preset' as const }
+    if (known && mode !== 'legacy') {
+      // Filled by the tier; resolved here so the report needs no second pass.
+      // Only keys the tier OWNS appear as `preset`; a key it leaves to the
+      // engine must report as `engine-default`, or the report would claim the
+      // tier chose a value it never mentioned.
+      const tierValues = tierValuesFor(mode)
+      if (key in tierValues) {
+        return { key, value: tierValues[key], origin: 'preset' as const }
+      }
     }
     return { key, value: ENGINE_DEFAULTS[key], origin: 'engine-default' as const }
   })
@@ -139,6 +168,20 @@ export function describeEffectiveConfig(
     systemDedupSupported: supported.systemDedup,
     blockers,
     ...(trigger === undefined ? {} : { trigger }),
+    ...(known && mode !== 'legacy' ? { tier: tierSummaryFor(mode) } : {}),
+  }
+}
+
+/** One tier's user-facing claim, for the effective-config report. */
+function tierSummaryFor(mode: TierModeName): NonNullable<EffectiveConfig['tier']> {
+  const tier = TIERS[mode]
+  return {
+    name: tier.name,
+    summary: tier.summary,
+    intent: tier.intent,
+    steadinessMechanism: tier.steadinessMechanism,
+    evidence: tier.evidence,
+    evidenceDetail: tier.evidenceDetail,
   }
 }
 
@@ -150,6 +193,15 @@ export function describeEffectiveConfig(
  */
 export function effectiveConfigToText(effective: EffectiveConfig): string {
   const lines = [`epistemic-fold effective configuration (mode: ${effective.mode})`]
+  if (effective.tier !== undefined) {
+    // The claim and its backing are printed BEFORE the settings, because a
+    // reader deciding whether to adopt a tier needs to know how much of it is
+    // measured before reading what it resolves to.
+    lines.push(`  tier: ${effective.tier.summary}`)
+    lines.push(`    for: ${effective.tier.intent}`)
+    lines.push(`    steadiness: ${effective.tier.steadinessMechanism}`)
+    lines.push(`    evidence: ${effective.tier.evidence.toUpperCase()} — ${effective.tier.evidenceDetail}`)
+  }
   for (const setting of effective.settings) {
     lines.push(`  ${setting.key} = ${JSON.stringify(setting.value)}  [${setting.origin}]`)
   }

@@ -15,6 +15,7 @@ import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'
 import { FOLD_MODE_NAMES, isFoldModeName, resolvePreset } from './preset.ts'
+import type { FoldModeName } from './preset.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -128,7 +129,8 @@ export interface ResolvedEconomicsPolicy {
 }
 
 const DEFAULT_THRESHOLD_RATIO = 0.8
-const DEFAULT_RETAIN_RATIO = 0.16
+/** Engine default recent-tail retention ratio; the `quality` tier raises it. */
+export const DEFAULT_RETAIN_RATIO = 0.16
 const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
@@ -190,12 +192,14 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    */
   framingMode?: FramingMode
   /**
-   * Named configuration mode (R4-F). `economy` fills in the policy keys R3
-   * measured as cheaper; `legacy` is the engine's own default. An explicit
-   * setting always beats the preset, and `resolvePreset` performs that fill
-   * BEFORE resolution, so nothing inside the engine branches on the mode name.
+   * Named configuration mode (R4-F, extended by RC2). The three TIERS —
+   * `economy`, `balanced`, `quality` — each fill in the policy keys that rung
+   * owns; `legacy` is the engine's own default and the frozen research
+   * baseline. An explicit setting always beats the tier, and `resolvePreset`
+   * performs that fill BEFORE resolution, so nothing inside the engine branches
+   * on the mode name.
    */
-  mode?: 'legacy' | 'economy'
+  mode?: FoldModeName
 }
 
 /**

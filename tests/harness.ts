@@ -32,8 +32,10 @@ import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { ToolRuntime } from '@deepseek-ai/dsh-tools'
+import { CommandRuntime } from '@deepseek-ai/dsh-commands'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
+import type { EpistemicFoldConfig } from '../src/policy.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 
@@ -125,7 +127,15 @@ export async function createHarness(
   options: {
     contextWindow?: number
     engine?: 'ef' | 'basic'
-    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale'; leafAdmission?: 'legacy' | 'economic'; minReclaimTokens?: number; minReclaimRatio?: number; rootPolicy?: 'legacy' | 'economics'; cacheRealizationRate?: number; paybackHorizonRequests?: number; framingMode?: 'legacy' | 'system-dedup'; mode?: 'legacy' | 'economy' }
+    /**
+     * The REAL plugin configuration type, not a hand-copied subset.
+     *
+     * This field used to inline its own structural copy of the config shape,
+     * which meant adding a tier name to `FoldModeName` broke every call site
+     * here with a type error that had nothing to do with the change. Naming the
+     * actual type keeps the harness in step with the product.
+     */
+    efConfig?: EpistemicFoldConfig
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
     /**
@@ -173,6 +183,13 @@ export async function createHarness(
      * zero looks like a policy failure rather than a missing service.
      */
     tools?: boolean
+    /**
+     * Mount the real `CommandRuntime` (RC2). The `/context` command registers
+     * only when a command registry is present, so a test that wants to drive it
+     * must ask for one — and a test that wants to prove the mount survives
+     * WITHOUT one simply omits this.
+     */
+    commands?: boolean
   } = {},
 ): Promise<Harness> {
   // FAIL LOUD on a mutually exclusive mount (RC1.2.1).
@@ -209,6 +226,9 @@ export async function createHarness(
   // The recall tools register only when a ToolRuntime is present, so a test
   // that wants a real agent loop must ask for one.
   if (options.tools === true) new ToolRuntime(ctx)
+  // The `/context` command registers only when a command registry is present,
+  // for the same reason: a compaction-only deployment mounts cleanly without it.
+  if (options.commands === true) new CommandRuntime(ctx)
   // Detached test sessions are not store-live; manual compaction's durability
   // checkpoint is observable through the flush record (mirrors the DSH
   // manual-compaction suite's flush spy).

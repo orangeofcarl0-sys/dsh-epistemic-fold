@@ -33,6 +33,7 @@ import { describeEffectiveConfig, effectiveConfigToText } from './effective-conf
 import type { EffectiveConfig } from './effective-config.ts'
 import { registerEpistemicFoldProjection } from './projection.ts'
 import { registerRecallTools } from './tools.ts'
+import { registerContextCommand } from './command.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
 
 declare module '@deepseek-ai/cordis' {
@@ -62,7 +63,7 @@ export class EpistemicFoldPlugin {
     compactionRetries: z.number(),
     maxOverflowRetries: z.number(),
     framingMode: z.union(['legacy', 'system-dedup'] as const),
-    mode: z.union(['legacy', 'economy'] as const),
+    mode: z.union(['legacy', 'economy', 'balanced', 'quality'] as const),
     auto: z.boolean(),
     modelPolicies: z.array(z.any()),
     frozenCheckpointTokenBudget: z.number(),
@@ -108,6 +109,21 @@ export class EpistemicFoldPlugin {
         for (const dispose of disposers) dispose()
       }
     }, 'epistemic-fold composition')
+
+    // The `/context` diagnostic command (RC2 §3). Registered through
+    // `ctx.inject` because `ctx.commands` is provided by an optional sibling:
+    // a compaction-only deployment has no command registry, and the command
+    // simply does not exist there rather than failing the mount.
+    ctx.inject(['commands'], commandCtx => {
+      const dispose = registerContextCommand(commandCtx, {
+        store: this.engine.bundleStore,
+        // The RAW config, not the resolved one: `mode` is a naming face the
+        // resolver expands and then drops, so the resolved object cannot report
+        // which tier a deployment actually asked for.
+        config: () => ({ mode: config.mode ?? 'legacy', raw: config as Record<string, unknown> }),
+      })
+      return () => dispose?.()
+    })
 
     // The idle rebase consumer (R3-0b): the production half of R2-C's handoff.
     // Registered unconditionally — whether a rebase is ever justified is the

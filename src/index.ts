@@ -35,13 +35,34 @@ export type {
   SearchMatchKind,
   SourceRange,
 } from './recall.ts'
-export { resolveEfConfig, resolveEfCompactSpec } from './policy.ts'
+export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './policy.ts'
 export type {
   EfCompactSpec,
   EpistemicFoldConfig,
   LeafAdmissionMode,
   ResolvedEpistemicFoldConfig,
 } from './policy.ts'
+export {
+  FOLD_MODE_NAMES,
+  TIERS,
+  TIER_MODE_NAMES,
+  economyPresetValues,
+  isFoldModeName,
+  isTierModeName,
+  presetOverrides,
+  resolvePreset,
+  tierLadder,
+  tierLadderToText,
+  tierValuesFor,
+} from './preset.ts'
+export type {
+  FoldModeName,
+  PresetOverride,
+  TierDefinition,
+  TierEvidenceStatus,
+  TierModeName,
+  TierSummary,
+} from './preset.ts'
 export {
   cacheRealizationRate,
   classifyRegime,
