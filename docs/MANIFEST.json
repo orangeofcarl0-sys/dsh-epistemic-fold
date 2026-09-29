@@ -98,5 +98,10 @@
     "file": "18_RC0_RELEASE_HARDENING.md",
     "bytes": 12749,
     "sha256": "381a98d71e570ec360ca9a836eac32a58304d43549b5bab1a3e13f6b3fa109e3"
+  },
+  {
+    "file": "19_RC1_POLICY_NORMALIZATION.md",
+    "bytes": 20183,
+    "sha256": "b46b531f31ef4a4f93bb08b4434338d945ff82cf50a65d964e662ee908aca249"
   }
 ]
