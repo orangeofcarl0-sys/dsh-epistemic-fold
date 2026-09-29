@@ -504,3 +504,99 @@ describe('RC2: the command registers against the REAL registry', () => {
   })
 
 })
+
+describe('RC3: /context mode is the control plane', () => {
+  /** A harness whose engine can be switched, plus the command deps. */
+  async function modeHarness() {
+    const harness = await createHarness({ text: 'digest' }, {
+      contextWindow: 131_072,
+      plugin: true,
+      systemPrompt: true,
+      commands: true,
+      efConfig: { mode: 'economy' },
+    })
+    const deps = {
+      store: harness.engine.bundleStore,
+      config: () => ({ mode: harness.engine.currentMode, raw: {} as Record<string, unknown> }),
+      setMode: (mode: Parameters<typeof harness.engine.setMode>[0]) => harness.engine.setMode(mode),
+    }
+    return { harness, deps }
+  }
+
+  it('switches the running engine and reports the transition', async () => {
+    const { harness, deps } = await modeHarness()
+    const definition = contextCommandDefinition(harness.ctx, deps)
+    const result = await definition.handler({
+      agent: { session: routedSession() } as never, rawInput: 'mode balanced',
+    } as never)
+    expect(result.kind).toBe('success')
+    expect(result.text).toContain('economy -> balanced')
+    // The switch really took effect on the engine, not just in the reply.
+    expect(harness.engine.currentMode).toBe('balanced')
+    expect(harness.engine.efConfig.retainRatio).toBeGreaterThan(0.16)
+  }, 120_000)
+
+  it('shows the ladder when no tier is given', async () => {
+    const { harness, deps } = await modeHarness()
+    const definition = contextCommandDefinition(harness.ctx, deps)
+    const result = await definition.handler({
+      agent: { session: routedSession() } as never, rawInput: 'mode',
+    } as never)
+    expect(result.text).toContain('ascending cost')
+    expect(result.text).toContain('economy')
+    expect(result.text).toContain('HYPOTHESIS')
+  }, 120_000)
+
+  it('rejects an unknown tier and names the valid ones', async () => {
+    const { harness, deps } = await modeHarness()
+    const definition = contextCommandDefinition(harness.ctx, deps)
+    const result = await definition.handler({
+      agent: { session: routedSession() } as never, rawInput: 'mode turbo',
+    } as never)
+    expect(result.text).toContain('unknown mode')
+    expect(result.text).toContain('balanced')
+    // And it did NOT change anything.
+    expect(harness.engine.currentMode).toBe('economy')
+  }, 120_000)
+
+  it('reports a no-op switch as already current', async () => {
+    const { harness, deps } = await modeHarness()
+    const definition = contextCommandDefinition(harness.ctx, deps)
+    const result = await definition.handler({
+      agent: { session: routedSession() } as never, rawInput: 'mode economy',
+    } as never)
+    expect(result.text).toContain('already economy')
+  }, 120_000)
+
+  it('says so when there is no switchable engine', async () => {
+    // A deployment with no engine must not be told the switch succeeded.
+    const { harness } = await modeHarness()
+    const definition = contextCommandDefinition(harness.ctx, {
+      store: harness.engine.bundleStore,
+      config: () => ({ mode: 'economy', raw: {} }),
+    })
+    const result = await definition.handler({
+      agent: { session: routedSession() } as never, rawInput: 'mode quality',
+    } as never)
+    expect(result.text).toContain('no switchable engine')
+  }, 120_000)
+
+  it('applies the tier policy keys, so a switch changes real behavior', async () => {
+    // The switch must move the RESOLVED policy, not only the reported name.
+    const { harness } = await modeHarness()
+    const before = harness.engine.efConfig
+    harness.engine.setMode('quality')
+    const after = harness.engine.efConfig
+    // quality adds the semantic face on top of balanced's retention.
+    expect(before.semanticMode).toBe('none')
+    expect(after.semanticMode).toBe('rationale')
+    expect(after.retainRatio).toBeGreaterThan(before.retainRatio)
+  }, 120_000)
+
+  it('returns the previous mode, so a caller can report the transition', async () => {
+    const { harness } = await modeHarness()
+    expect(harness.engine.setMode('balanced')).toBe('economy')
+    expect(harness.engine.setMode('quality')).toBe('balanced')
+    expect(harness.engine.currentMode).toBe('quality')
+  }, 120_000)
+})

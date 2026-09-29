@@ -1,0 +1,48 @@
+# dsh-epistemic-fold bundle patch (RC3): insert the Epistemic Fold runtime.
+#
+# Consumed as `dsh.bundle.patch` by the DSH loader. The `name` below is this
+# package, which the loader resolves from the profile's node_modules and loads
+# as a Cordis plugin.
+#
+# WHAT THIS ROW DOES
+#
+# `EpistemicFoldPlugin` OWNS `ctx.compaction`. Cordis allows one registration
+# per service, so this row and the shipped `compaction-basic` row cannot both be
+# active. A profile that mounts EF must therefore DISABLE `compaction-basic`,
+# which is what the `disabled` patch below does — and it is not optional: with
+# both live, whichever registers second throws and the profile fails to boot.
+#
+# WHY THE FRAMING MODE IS PINNED TO `legacy` HERE
+#
+# `mode: economy | balanced | quality` all select `framingMode: system-dedup`,
+# which removes the per-checkpoint preamble and moves those semantics into one
+# system-prompt section. That REQUIRES the `frameCheckpoint` seam in
+# `@deepseek-ai/dsh-compaction-basic` — and 0.2.0-rc.2 does NOT have it. The
+# seam exists only in a patched build (see `scripts/apply-framing-seam.mjs`).
+#
+# `assertDshCompatibility` fails LOUD on that combination rather than silently
+# running the costlier framing, so mounting a tier on an unpatched harness would
+# abort the profile boot. This patch therefore ships `mode: legacy` — the one
+# configuration that needs no seam and mounts on any DSH build — and the tier is
+# selected at RUNTIME with `/context mode <tier>` once the seam is present, or
+# here in `config` for a patched build.
+#
+# To run a tier on a patched harness, replace `mode: legacy` with the tier name.
+- insert:
+    - id: epistemic-fold
+      name: dsh-epistemic-fold
+      config:
+        # Bundles live under the profile's persistence root so they are cleaned
+        # with the profile rather than accumulating in the workspace.
+        bundleRoot: null
+        # `legacy` is the seam-free configuration; see the header.
+        mode: legacy
+        # The tier's own defaults are deliberately NOT restated here. The preset
+        # is the single definition of what a tier means, and a copy in YAML would
+        # drift from it. Override a specific key here only to depart from a tier.
+        auto: true
+
+# Replace the shipped compaction backend. EF owns ctx.compaction, so leaving
+# Basic active would make the second registration throw.
+- id: compaction-basic
+  disabled: true

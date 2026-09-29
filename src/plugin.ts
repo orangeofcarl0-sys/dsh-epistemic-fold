@@ -97,30 +97,48 @@ export class EpistemicFoldPlugin {
     ctx.provide('epistemicFold', this.anchors)
 
     // Deterministic state projection + recall tools: registered for the
-    // plugin's lifetime, torn down when the plugin unloads. Recall tools
-    // register only when a ToolRuntime is present (compaction-only
-    // deployments mount cleanly without `ctx.tools`).
+    // plugin's lifetime, torn down when the plugin unloads.
+    //
+    // The projection is unconditional. The recall tools need `ctx.tools`, which
+    // is an OPTIONAL sibling — a compaction-only deployment mounts cleanly
+    // without it — and cordis makes optionality a specific idiom:
+    //
+    //   ctx.get('tools')            THROWS when 'tools' is not in `inject`
+    //   ctx.inject(['tools'], cb)   runs `cb` only once the service exists
+    //
+    // RC3 found this the hard way: the first real DSH boot failed with
+    // `cannot get property "tools" without inject`. Every test harness had
+    // pre-mounted a ToolRuntime, so the broken probe was never exercised — the
+    // failure was only reachable in a real host, which is exactly the class of
+    // bug the harness could not see.
     ctx.effect(() => {
       const disposers: Array<() => void> = [registerEpistemicFoldProjection(ctx)]
-      if (ctx.get('tools') !== undefined) {
-        disposers.push(registerRecallTools(ctx, this.engine.bundleStore))
-      }
       return () => {
         for (const dispose of disposers) dispose()
       }
-    }, 'epistemic-fold composition')
+    }, 'epistemic-fold projection')
+
+    ctx.inject(['tools'], toolsCtx => {
+      const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore)
+      return () => dispose()
+    })
 
     // The `/context` diagnostic command (RC2 §3). Registered through
-    // `ctx.inject` because `ctx.commands` is provided by an optional sibling:
-    // a compaction-only deployment has no command registry, and the command
-    // simply does not exist there rather than failing the mount.
+    // `ctx.inject` for the same reason: a compaction-only deployment has no
+    // command registry, and the command simply does not exist there rather than
+    // failing the mount.
     ctx.inject(['commands'], commandCtx => {
       const dispose = registerContextCommand(commandCtx, {
         store: this.engine.bundleStore,
         // The RAW config, not the resolved one: `mode` is a naming face the
         // resolver expands and then drops, so the resolved object cannot report
         // which tier a deployment actually asked for.
-        config: () => ({ mode: config.mode ?? 'legacy', raw: config as Record<string, unknown> }),
+        // The mode is read from the ENGINE, not the constructor argument: a
+        // runtime `/context mode` switch changes what is in force, and a status
+        // report that kept echoing the startup value would be lying after the
+        // first switch.
+        config: () => ({ mode: this.engine.currentMode, raw: config as Record<string, unknown> }),
+        setMode: mode => this.engine.setMode(mode, config),
       })
       return () => dispose?.()
     })

@@ -5,21 +5,28 @@
   "license": "MIT",
   "private": true,
   "type": "module",
-  "main": "src/index.ts",
+  "main": "lib/entry.js",
   "types": "src/index.ts",
   "exports": {
     ".": {
+      "types": "./src/entry.ts",
+      "default": "./lib/entry.js"
+    },
+    "./library": {
       "types": "./src/index.ts",
-      "default": "./src/index.ts"
+      "default": "./lib/index.js"
     },
     "./plugin": {
       "types": "./src/plugin.ts",
-      "default": "./src/plugin.ts"
+      "default": "./lib/plugin.js"
     },
+    "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
   "files": [
+    "lib",
     "src",
+    "cordis.patch.yml",
     "README.md",
     "LICENSE"
   ],
@@ -41,7 +48,9 @@
     "eval:rc0": "vitest run tests/rc0a-config-contract.spec.ts tests/rc0b-billing-recorder.spec.ts tests/rc0e-default-regime.spec.ts",
     "eval:rc0-live": "vitest run tests/rc0c-full-wire-billing.spec.ts",
     "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts tests/rc11a-certification-semantics.spec.ts tests/rc11b-replay-correction.spec.ts tests/rc12a-recall-loop.spec.ts tests/rc12b-recall-mechanism.spec.ts",
-    "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts"
+    "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts",
+    "build": "node scripts/build-plugin.mjs",
+    "prepare": "node scripts/build-plugin.mjs"
   },
   "repository": {
     "type": "git",
@@ -82,5 +91,14 @@
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "cordis.patch.yml"
+    },
+    "compatibility": {
+      "node": ">=22.5.0",
+      "dsh": ">=0.1.7-rc.2"
+    }
   }
 }

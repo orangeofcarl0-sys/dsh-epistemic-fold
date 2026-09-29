@@ -3,6 +3,10 @@
 Baseline: `main@97eb0bb` (RC2 merged).
 Scope: corrections to RC2. No new architecture, no parameter sweep.
 
+> **RC3 CORRECTION.** The A/B below ran in the same hand-built harness as RC2,
+> not in DSH. The measurements stand; the host did not. See
+> [RC3](26_RC3_REAL_DSH_PLUGINIZATION.md).
+>
 > **One-line result.** Four correctness defects in `/context status` are fixed
 > (including one fabricated measurement and one heuristic labelled as measured);
 > the RC2 `legacy` arm is renamed to what it was — **EF legacy, not Basic** — with

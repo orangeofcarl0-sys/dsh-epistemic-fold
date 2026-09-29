@@ -4,7 +4,19 @@
  * Runs one real task across the four modes — `legacy` (Basic's own policy),
  * `economy`, `balanced`, `quality` — and records the three metrics per arm.
  *
- * ## What makes this a real DSH run rather than a synthetic benchmark
+ * ## What this is, precisely (corrected in RC3)
+ *
+ * This is a HARNESS, not a DSH session. It builds a bare `new Context()`, mounts
+ * the DSH services it needs BY HAND, and constructs the plugin directly. RC2
+ * described its output as a "real DSH" comparison; that was wrong — the provider
+ * and the tools were real, the HOST was not. EF could not have mounted in a real
+ * harness at that point at all (raw-TypeScript entry, no bundle patch).
+ *
+ * What is genuinely real here: the provider, the tools, the engine, and the
+ * policy. What is not: the host composition. For a real DSH run see
+ * `cordis.patch.yml` and the RC3 report.
+ *
+ * ## What is real about it
  *
  *  - The REAL `EpistemicFoldPlugin` is mounted, so the folds come from the
  *    production policy and the production idle-rebase consumer.
