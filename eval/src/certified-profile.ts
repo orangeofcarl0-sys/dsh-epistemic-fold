@@ -163,10 +163,13 @@ export interface CertifiedEconomyProfile {
   /**
    * What inputs the quality claim covers.
    *
-   * RC1.1 §5 measured that the economy preset preserves DECLARED state across
-   * folds but does NOT preserve unanchored narrative — reproducibly 0/3 on a
-   * three-fact probe, where Basic scored 1/3 and a rationale checkpoint 1.67/3.
-   * So the claim is scoped rather than unconditional.
+   * RC1.2 narrowed this. RC1.1 measured the economy preset losing unanchored
+   * narrative from the SURFACE and read that as the product boundary; RC1.2
+   * then showed the facts ARE recoverable through the product's own recall path
+   * (`context_search` → `context_recall`), deterministically and under BOTH
+   * semantic modes. So the correct scope is not "declared state only" — it is
+   * "declared state is hot on the surface; undeclared history is recoverable
+   * through bounded recall", and the model must choose to look.
    */
   readonly qualityScope: string
   readonly components: readonly ComponentVerdict[]

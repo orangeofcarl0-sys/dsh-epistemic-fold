@@ -106,7 +106,12 @@
   },
   {
     "file": "20_RC1_1_EVIDENCE_RECONCILIATION.md",
-    "bytes": 12552,
-    "sha256": "f864313035b3ca65702dc700818cb45a26e6a642f47644058371d9a9c6bc578b"
+    "bytes": 14078,
+    "sha256": "f1e53ad18c671b0fc07547d81e0d4628dc0ef3241badb07041964c03356ca28b"
+  },
+  {
+    "file": "21_RC1_2_RECALL_CLOSURE.md",
+    "bytes": 10070,
+    "sha256": "78cf8ec2e34433da53c3b4a08081a5c88c7d8994073811b6fd7f85bf4e999df5"
   }
 ]
