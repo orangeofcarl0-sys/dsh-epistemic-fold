@@ -22,7 +22,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { pairedBootstrapCi, summarizeFullBill, tallyPairs } from '../eval/live/billing.ts'
+import { describe as describeValues, pairedBootstrapCi, summarizeFullBill, tallyPairs } from '../eval/live/billing.ts'
 import type { FullBillSummary } from '../eval/live/billing.ts'
 import { fullWireWorkloads, runFullWire } from '../eval/live/full-wire.ts'
 import type { FullWireRun } from '../eval/live/full-wire.ts'
@@ -216,8 +216,42 @@ engaged families: ${engagedFamilies.map(e => e.workload).join(', ') || '(none)'}
     expect(pairs.every(pair => pair.basic.bills.length > 0)).toBe(true)
     expect(pairs.every(pair => pair.economy.bills.length > 0)).toBe(true)
 
+    // --- Robust statistics BEFORE the mean.
+    //
+    // The 5-pair run produced nine ratios in 0.776-0.984 and ONE at 2.265.
+    // That is bimodal, not a spread, and a mean over it is not a summary of
+    // anything: the single point drags the mean from ~0.95 to 1.074 and drives
+    // the CI upper bound to 1.353. Reporting only the mean would describe the
+    // outlier rather than the effect.
+    const distribution = describeValues(usable)
+    console.log(
+      `
+RBCR distribution: n=${distribution.count} mean=${distribution.mean.toFixed(3)} `
+      + `median=${distribution.median.toFixed(3)} p10=${distribution.p10.toFixed(3)} `
+      + `p90=${distribution.p90.toFixed(3)} min=${distribution.min.toFixed(3)} max=${distribution.max.toFixed(3)}`,
+    )
+    // An outlier is flagged, never silently dropped: a point this far from the
+    // rest is either a real mechanism difference or a measurement artifact, and
+    // deciding which requires looking at it rather than removing it.
+    const outlierThreshold = distribution.median * 1.5
+    const outliers = usable.filter(value => value > outlierThreshold)
+    if (outliers.length > 0) {
+      console.log(
+        `OUTLIER(S) beyond 1.5x the median (${outlierThreshold.toFixed(3)}): `
+        + `${outliers.map(v => v.toFixed(3)).join(', ')} — retained in the mean, and the mean is `
+        + 'therefore NOT a good summary of this sample',
+      )
+    }
+    const belowParity = usable.filter(value => value < 1).length
+    console.log(
+      `paired ratios below 1: ${belowParity}/${usable.length}`
+      + (outliers.length > 0
+        ? ` (excluding the outlier: ${usable.filter(v => v <= outlierThreshold && v < 1).length}/${usable.length - outliers.length})`
+        : ''),
+    )
+
     // --- The finding, stated either way.
-    const mean = usable.reduce((sum, value) => sum + value, 0) / Math.max(1, usable.length)
+    const mean = distribution.mean
     const upper = ci?.upper ?? Number.POSITIVE_INFINITY
     console.log(
       `\nFullTaskRBCR mean ${mean.toFixed(3)}; CI upper ${Number.isFinite(upper) ? upper.toFixed(3) : 'n/a'}; `
