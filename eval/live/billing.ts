@@ -48,12 +48,19 @@ export type RequestClass =
   | 'after-recall'
 
 /**
- * One request's bill, exactly as the provider reported it.
+ * One provider call's bill, exactly as the provider reported it.
  *
  * Every field is a provider counter. Nothing here is reconstructed from the
  * architecture, which is what makes the resulting cost a realized one.
+ *
+ * RC0-B widened this from "one main request" to "one provider call of ANY
+ * purpose", because Basic's fold issues a real `compaction` call that costs
+ * money and was previously omitted — understating Basic's bill and therefore
+ * OVERSTATING how much cheaper EF is.
  */
 export interface RequestBill {
+  /** Which provider call this was: the user's request, or an auxiliary one. */
+  readonly purpose?: 'main' | 'compaction' | 'rationale' | 'other'
   /** Provider-reported uncached input (`cache_miss` / prompt − cached). */
   readonly uncachedInputTokens: number
   /** Provider-reported cache reads. */
@@ -374,4 +381,154 @@ export function passesRbcrGate(
         + `${ratioCi.mean <= meanTarget ? '' : `, above the ${meanTarget} margin`})`
       : `upper CI bound ${ratioCi.upper.toFixed(3)} is NOT below 1 (mean ${ratioCi.mean.toFixed(3)})`,
   }
+}
+
+/* ------------------------------------------------------------------------ *
+ * RC0-B: all-call billing                                                     *
+ * ------------------------------------------------------------------------ */
+
+/** One purpose's share of a run's bill. */
+export interface PurposeCost {
+  readonly purpose: NonNullable<RequestBill['purpose']>
+  readonly calls: number
+  readonly promptTokens: number
+  readonly outputTokens: number
+  readonly cost: number
+}
+
+/**
+ * A run's FULL bill across every provider call, split by purpose.
+ *
+ * The split matters because the arms differ structurally: Basic pays for a
+ * compaction summary per fold, while economy EF runs `semanticMode: 'none'` and
+ * pays for none. Reporting only a total would hide which mechanism produced the
+ * difference.
+ */
+export interface FullBillSummary {
+  readonly arm: string
+  readonly calls: number
+  /** Calls that returned nothing and would be retried. */
+  readonly failedCalls: number
+  /** `failedCalls / calls`; the retry load this arm imposes. */
+  readonly retryRate: number
+  readonly uncachedInputTokens: number
+  readonly cacheReadTokens: number
+  readonly cacheWriteTokens: number
+  readonly outputTokens: number
+  readonly promptTokens: number
+  readonly cost: number
+  /** Cost per purpose, in a fixed order so a report is comparable. */
+  readonly byPurpose: readonly PurposeCost[]
+  /** Cost of calls that had to be retried, charged to the same budget. */
+  readonly retryCost: number
+}
+
+const PURPOSE_ORDER: ReadonlyArray<NonNullable<RequestBill['purpose']>> =
+  ['main', 'compaction', 'rationale', 'other']
+
+/**
+ * Summarize a run's FULL bill (RC0-B).
+ *
+ * Retries are included deliberately. A failed attempt that was retried consumed
+ * real tokens and real money, so excluding it would understate the cost of the
+ * arm that needed it — and an arm that folds more makes more calls, so it is
+ * exactly the arm whose retry exposure matters.
+ *
+ * @param arm - the arm label, for the report.
+ * @param bills - every provider call the recorder observed.
+ * @param profile - the routed model's economics.
+ * @returns the totals, the per-purpose split, and the retry load.
+ */
+export function summarizeFullBill(
+  arm: string,
+  bills: BillLog,
+  profile: ContextEconomicsProfile,
+): FullBillSummary {
+  const purposeTotals = new Map<NonNullable<RequestBill['purpose']>, PurposeCost>()
+  for (const purpose of PURPOSE_ORDER) {
+    purposeTotals.set(purpose, { purpose, calls: 0, promptTokens: 0, outputTokens: 0, cost: 0 })
+  }
+  let uncachedInputTokens = 0
+  let cacheReadTokens = 0
+  let cacheWriteTokens = 0
+  let outputTokens = 0
+  let promptTokens = 0
+  let cost = 0
+  let failedCalls = 0
+
+  for (const bill of bills) {
+    const purpose = bill.purpose ?? 'main'
+    const callCost = realizedCost([bill], profile)
+    const entry = purposeTotals.get(purpose)!
+    purposeTotals.set(purpose, {
+      purpose,
+      calls: entry.calls + 1,
+      promptTokens: entry.promptTokens + bill.promptTokens,
+      outputTokens: entry.outputTokens + bill.outputTokens,
+      cost: entry.cost + callCost,
+    })
+    uncachedInputTokens += bill.uncachedInputTokens
+    cacheReadTokens += bill.cacheReadTokens
+    cacheWriteTokens += bill.cacheWriteTokens ?? 0
+    outputTokens += bill.outputTokens
+    promptTokens += bill.promptTokens
+    cost += callCost
+    if (bill.promptTokens === 0 && bill.outputTokens === 0) failedCalls += 1
+  }
+
+  return {
+    arm,
+    calls: bills.length,
+    failedCalls,
+    retryRate: bills.length === 0 ? 0 : failedCalls / bills.length,
+    uncachedInputTokens,
+    cacheReadTokens,
+    cacheWriteTokens,
+    outputTokens,
+    promptTokens,
+    cost,
+    // Only purposes that actually occurred, in the fixed order.
+    byPurpose: PURPOSE_ORDER
+      .map(purpose => purposeTotals.get(purpose)!)
+      .filter(entry => entry.calls > 0),
+    // A failed attempt still consumed whatever it consumed; when it consumed
+    // nothing it costs nothing, and this is honestly 0.
+    retryCost: bills
+      .filter(bill => bill.promptTokens === 0 && bill.outputTokens === 0)
+      .reduce((sum, bill) => sum + realizedCost([bill], profile), 0),
+  }
+}
+
+/**
+ * FullTaskRBCR — the release metric (RC0-B).
+ *
+ * `Σ C(all provider calls, candidate) / Σ C(all provider calls, basic)`.
+ *
+ * Distinct from `realizedBcr`, which priced only main requests. The difference
+ * is not cosmetic: Basic's compaction calls are a real cost the main-only
+ * version omitted.
+ */
+export function fullTaskRbcr(
+  candidate: FullBillSummary,
+  basic: FullBillSummary,
+): number | undefined {
+  if (basic.cost <= 0) return undefined
+  return candidate.cost / basic.cost
+}
+
+/** Render a full-bill summary as Markdown for a report. */
+export function fullBillToMarkdown(summary: FullBillSummary): string {
+  const lines = [
+    `**${summary.arm}**: ${summary.calls} provider calls, cost ${summary.cost.toFixed(4)}, `
+    + `retry rate ${(summary.retryRate * 100).toFixed(1)}%`,
+    '',
+    '| Purpose | Calls | Prompt tokens | Output tokens | Cost |',
+    '|---|---:|---:|---:|---:|',
+  ]
+  for (const entry of summary.byPurpose) {
+    lines.push(
+      `| ${entry.purpose} | ${entry.calls} | ${entry.promptTokens} | ${entry.outputTokens} | ${entry.cost.toFixed(4)} |`,
+    )
+  }
+  return lines.join('\n')
 }
