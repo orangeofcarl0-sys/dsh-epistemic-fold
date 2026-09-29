@@ -156,7 +156,7 @@ NOISE FLOOR: two identical Basic runs cost ${noiseRuns.map(c => c.toFixed(5)).jo
     // --- Per-family detail, so a mechanism difference is attributable.
     console.log('\n| Workload | Economy calls | Basic calls | Economy cost | Basic cost | RBCR |')
     console.log('|---|---:|---:|---:|---:|---:|')
-    const perFamily: Array<{ workload: string; ratio: number }> = []
+    const perFamily: Array<{ workload: string; ratio: number; engaged: boolean; folds: number }> = []
     for (const workload of fullWireWorkloads()) {
       const family = pairs.filter(pair => pair.workload === workload.id)
       const economyCalls = family.reduce((sum, pair) => sum + pair.economy.bills.length, 0)
@@ -164,26 +164,45 @@ NOISE FLOOR: two identical Basic runs cost ${noiseRuns.map(c => c.toFixed(5)).jo
       const economyCost = family.reduce((sum, pair) => sum + summarize(pair.economy).cost, 0)
       const basicCost = family.reduce((sum, pair) => sum + summarize(pair.basic).cost, 0)
       const ratio = basicCost === 0 ? Number.NaN : economyCost / basicCost
-      perFamily.push({ workload: workload.id, ratio })
+      const folds = family.reduce((sum, pair) => sum + pair.economy.folds + pair.basic.folds, 0)
+      // A workload where NEITHER arm folded is a NULL TEST: the two arms issue
+      // identical requests, so its ratio measures nothing about the policy and
+      // must not be averaged into a verdict. At the real defaults a session
+      // needs ~65024 tokens before any fold happens, so a workload that grows
+      // slowly simply has not engaged the mechanism yet.
+      const engaged = folds > 0
+      perFamily.push({ workload: workload.id, ratio, engaged, folds })
       console.log(
         `| ${workload.id} | ${economyCalls} | ${basicCalls} | ${economyCost.toFixed(5)} | `
-        + `${basicCost.toFixed(5)} | ${ratio.toFixed(3)} |`,
+        + `${basicCost.toFixed(5)} | ${ratio.toFixed(3)} | ${engaged ? `${folds} folds` : 'NULL (no folds)'} |`,
       )
     }
+    const engagedFamilies = perFamily.filter(entry => entry.engaged)
+    console.log(
+      `
+engaged families: ${engagedFamilies.map(e => e.workload).join(', ') || '(none)'}; `
+      + `null tests: ${perFamily.filter(e => !e.engaged).map(e => e.workload).join(', ') || '(none)'}`,
+    )
 
     // --- The paired ratio series, one point per (workload, replicate).
-    const ratios = pairs.map(pair => {
-      const basicCost = summarize(pair.basic).cost
-      return basicCost === 0 ? Number.NaN : summarize(pair.economy).cost / basicCost
-    })
+    // NULL tests are excluded: their arms are byte-identical, so including them
+    // would pull the mean toward 1 and understate the engaged effect.
+    const engagedIds = new Set(engagedFamilies.map(entry => entry.workload))
+    const ratios = pairs
+      .filter(pair => engagedIds.has(pair.workload))
+      .map(pair => {
+        const basicCost = summarize(pair.basic).cost
+        return basicCost === 0 ? Number.NaN : summarize(pair.economy).cost / basicCost
+      })
     const usable = ratios.filter(Number.isFinite)
     console.log(`\npaired ratios (n=${usable.length}): ${usable.map(r => r.toFixed(3)).join(', ')}`)
 
     // --- RC0 §18's gate, on the ratio scale.
     const ci = pairedBootstrapCi(usable, { seed: 20260929 })
+    const engagedPairs = pairs.filter(pair => engagedIds.has(pair.workload))
     const tally = tallyPairs(
-      pairs.map(pair => summarize(pair.economy).cost),
-      pairs.map(pair => summarize(pair.basic).cost),
+      engagedPairs.map(pair => summarize(pair.economy).cost),
+      engagedPairs.map(pair => summarize(pair.basic).cost),
     )
     console.log(`paired bootstrap interval (deterministic, over observed runs): ${ci === undefined ? 'OPEN (n<3)' : JSON.stringify(ci)}`)
     console.log(`wins/ties/losses: ${tally.wins}/${tally.ties}/${tally.losses} (tie band ±${tally.tieBand * 100}%)`)
@@ -212,7 +231,10 @@ NOISE FLOOR: two identical Basic runs cost ${noiseRuns.map(c => c.toFixed(5)).jo
     // RC0 §28: no single workload should systematically lose money, because an
     // average can hide one family funding another.
     for (const entry of perFamily) {
-      console.log(`  ${entry.workload.padEnd(20)} RBCR ${entry.ratio.toFixed(3)}`)
+      console.log(
+        `  ${entry.workload.padEnd(20)} RBCR ${entry.ratio.toFixed(3)} `
+        + `${entry.engaged ? `(engaged, ${entry.folds} folds)` : '(NULL — not exercised at this scale)'}`,
+      )
     }
 
     // The gate is reported, not asserted into a shape: with n < 3 the interval
