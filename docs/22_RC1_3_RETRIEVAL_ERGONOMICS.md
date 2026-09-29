@@ -41,7 +41,7 @@ at a time, so the effect stays attributable.**
 | `matchKind` | `id` \| `checkpoint-text` \| `message-text` \| `tool-name` |
 | `matchedMessageIndex` | index of the matching archived message |
 | `excerpt` | bounded verbatim text around the match |
-| `exactPageOffset` | the `context_recall` page that holds the match |
+| `exactPageOffset` | the `context_recall` page that holds the match — **superseded in RC1.3.1**, see below |
 | `archiveMessages` | how many messages the checkpoint archived |
 
 The old hit said only "this checkpoint matched", leaving the model to guess
@@ -50,6 +50,12 @@ would be wasted) or the raw *archive* (folded away — a targeted recall is
 required). Those call for opposite actions, so the hit now says which one it was,
 and `exactPageOffset` turns a recall into a direct page fetch instead of paging
 from zero. The tool description was updated to match.
+
+> **RC1.3.1 correction.** `exactPageOffset` was page-aligned for the default page
+> size, so it was only ever "a page *containing* the match", and only for a caller
+> that happened to use that size. `matchedMessageIndex` replaces it and is valid at
+> every page size: the page BEGINS at the match. See
+> [RC1.3.1](23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md).
 
 ### 2.2 The failure taxonomy
 
@@ -242,7 +248,7 @@ retrieval quality       = CLOSED          (this stage)
 
 | file | change |
 | --- | --- |
-| `src/recall.ts` | `SearchHit` gains `matchKind` / `matchedMessageIndex` / `excerpt` / `exactPageOffset` / `archiveMessages`; `excerptAround` returns short messages whole |
+| `src/recall.ts` | `SearchHit` gains `matchKind` / `matchedMessageIndex` / `excerpt` / `exactPageOffset` / `archiveMessages`; `excerptAround` returns short messages whole (`exactPageOffset` later replaced by RC1.3.1) |
 | `src/tools.ts` | `context_search` description documents the hit as a pointer to recall |
 | `src/framing.ts` | `FOLD_FRAMING_SECTION` gains the retrieval rule |
 | `eval/src/retrieval-taxonomy.ts` | NEW — the five-link classifier and the one-change remedy map |
@@ -262,7 +268,8 @@ retrieval quality       = CLOSED          (this stage)
 | `rc12a-recall-loop.spec.ts` (scoring pins, live three-arm) | 6 keyless + 1 live | mixed |
 | `recall-loop.ts` (shared loop, facts, matchers, filler) | — | — |
 
-508 keyless tests pass, 20 skipped, typecheck clean.
+At this stage: 508 keyless tests pass, 20 skipped, typecheck clean. RC1.3.1 raised
+the totals to 528 passing (its 20-test temporal guard).
 
 ---
 
