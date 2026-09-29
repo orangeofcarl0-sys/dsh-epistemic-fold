@@ -35,6 +35,7 @@ export type TokenBucket =
   | 'checkpoint-basic'
   | 'checkpoint-leaf-state'
   | 'checkpoint-leaf-rationale'
+  | 'checkpoint-identity'
   | 'checkpoint-framing'
   | 'recall'
   | 'unattributed-envelope'
@@ -50,6 +51,7 @@ export const TOKEN_BUCKETS: readonly TokenBucket[] = [
   'checkpoint-basic',
   'checkpoint-leaf-state',
   'checkpoint-leaf-rationale',
+  'checkpoint-identity',
   'checkpoint-framing',
   'recall',
   'unattributed-envelope',
@@ -104,7 +106,7 @@ function densityPrice(text: string): number {
  */
 export function splitLeafCheckpointText(
   text: string,
-): { state: string; rationale: string; framing: string } | null {
+): { state: string; rationale: string; identity: string; framing: string } | null {
   if (parseCheckpointMarker(text) === undefined) return null
   const rationaleIdx = text.indexOf('\nRationale\n')
   const stateStart = ['\nCurrent\n', '\nEvidence\n', '\nOpen\n']
@@ -112,12 +114,22 @@ export function splitLeafCheckpointText(
     .filter(index => index >= 0)
     .sort((left, right) => left - right)[0]
   // The body ends where the rationale begins, or at end-of-text when there is
-  // no rationale. Everything before the first state header is framing.
+  // no rationale.
   const bodyEnd = rationaleIdx >= 0 ? rationaleIdx : text.length
   const hasState = stateStart !== undefined && stateStart < bodyEnd
+  const bodyStart = hasState ? stateStart + 1 : bodyEnd
+  // The marker line is IDENTITY, not framing: it is the checkpoint's machine
+  // identity and the model's recall reference at once, and no framing mode may
+  // remove it. Whatever sits between the marker and the body is removable
+  // framing (Basic's preamble and wrapper tags) — under `system-dedup` that
+  // region is empty, which is precisely what makes the saving measurable.
+  const v2Open = text.indexOf('[EF1 ')
+  const open = v2Open >= 0 ? v2Open : text.indexOf('[EF checkpoint ')
+  const markerEnd = open >= 0 ? text.indexOf(']', open) + 1 : 0
 
   return {
-    framing: hasState ? text.slice(0, stateStart + 1) : text.slice(0, bodyEnd),
+    identity: markerEnd > 0 ? text.slice(open, markerEnd) : '',
+    framing: text.slice(markerEnd, bodyStart),
     state: hasState ? text.slice(stateStart + 1, bodyEnd) : '',
     rationale: rationaleIdx >= 0 ? text.slice(rationaleIdx + 1) : '',
   }
@@ -218,10 +230,18 @@ export function attributeTokens(session: Session, measurement: TokenMeasurement)
       checkpoints.leaf += 1
       const stateTokens = densityPrice(split.state)
       const rationaleTokens = densityPrice(split.rationale)
+      const identityTokens = densityPrice(split.identity)
       buckets['checkpoint-leaf-state'] += stateTokens
       buckets['checkpoint-leaf-rationale'] += rationaleTokens
-      // Residual (role/block overhead) plus the fixed framing text.
-      buckets['checkpoint-framing'] += Math.max(0, node.tokens - stateTokens - rationaleTokens)
+      buckets['checkpoint-identity'] += identityTokens
+      // Residual: role/block overhead plus any framing text that remains.
+      // Identity is separated because no framing mode may remove it: under
+      // `system-dedup` the marker is all that is left, and counting it as
+      // "framing" would report a solved cost as unsolved.
+      buckets['checkpoint-framing'] += Math.max(
+        0,
+        node.tokens - stateTokens - rationaleTokens - identityTokens,
+      )
       continue
     }
 

@@ -30,6 +30,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
+import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
@@ -123,7 +124,7 @@ export async function createHarness(
   options: {
     contextWindow?: number
     engine?: 'ef' | 'basic'
-    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale'; leafAdmission?: 'legacy' | 'economic'; minReclaimTokens?: number; minReclaimRatio?: number; rootPolicy?: 'legacy' | 'economics'; cacheRealizationRate?: number; paybackHorizonRequests?: number }
+    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale'; leafAdmission?: 'legacy' | 'economic'; minReclaimTokens?: number; minReclaimRatio?: number; rootPolicy?: 'legacy' | 'economics'; cacheRealizationRate?: number; paybackHorizonRequests?: number; framingMode?: 'legacy' | 'system-dedup' }
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
     /**
@@ -149,6 +150,19 @@ export async function createHarness(
      * substitute its own policy.
      */
     plugin?: boolean
+    /**
+     * Build the context WITHOUT constructing an engine, so the caller can
+     * mount its own subclass. `ctx.compaction` is a single-registration
+     * service, so a test that wants a custom engine cannot use the default.
+     * The returned `engine` is a stub that must not be used.
+     */
+    noEngine?: boolean
+    /**
+     * Mount `ctx.systemPrompt` (R3-C). The `system-dedup` framing mode needs
+     * somewhere to put the checkpoint semantics once the per-checkpoint
+     * preamble is gone; without it the mode correctly falls back to `legacy`.
+     */
+    systemPrompt?: boolean
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -160,6 +174,7 @@ export async function createHarness(
   new SessionProjectionRegistry(ctx)
   void new TokenMeter(ctx)
   if (options.projection === true) registerEpistemicFoldProjection(ctx)
+  if (options.systemPrompt === true) new SystemPrompt(ctx, {})
   // Detached test sessions are not store-live; manual compaction's durability
   // checkpoint is observable through the flush record (mirrors the DSH
   // manual-compaction suite's flush spy).
@@ -186,6 +201,17 @@ export async function createHarness(
       ...(options.efConfig ?? {}),
     })
     return { ctx, engine: plugin.engine, store: plugin.engine.bundleStore, root, control, plugin }
+  }
+  if (options.noEngine === true) {
+    // The caller owns engine construction (a subclass under test); nothing may
+    // register `ctx.compaction` here or the caller's own mount would throw.
+    return {
+      ctx,
+      engine: undefined as unknown as EpistemicFoldEngine,
+      store,
+      root,
+      control,
+    }
   }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })

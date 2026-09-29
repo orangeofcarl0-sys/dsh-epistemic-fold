@@ -21,6 +21,7 @@
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
+import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
@@ -37,6 +38,8 @@ import { selectLeafSpan } from './leaf-policy.ts'
 import { leafMarginalReclaim, pressureBreakdown } from './pressure.ts'
 import type { LeafMarginalReclaim } from './pressure.ts'
 import { resolveProfile } from './economics-profile.ts'
+import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
+import type { FramingMode } from './framing.ts'
 import { compileContextPolicy } from './policy-compiler.ts'
 import type { ContextPolicyDecision } from './policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
@@ -82,6 +85,7 @@ const EF_OWNED_CONFIG_KEYS = [
   'economicsProfiles',
   'cacheRealizationRate',
   'paybackHorizonRequests',
+  'framingMode',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
@@ -162,6 +166,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private lastRebaseDecisionValue: ContextPolicyDecision | undefined
   /** Root folds committed by this engine, for maintenance-path verification. */
   private rootFoldCountValue = 0
+  /** Framing mode in force, resolved once against the mounted context. */
+  private framingModeResolved: FramingMode | undefined
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -703,6 +709,50 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       + `${advice.frozenCount} checkpoints (budget ${advice.budget}); a manual root rebase `
       + '(/compact) is recommended',
     )
+  }
+
+  /**
+   * EF's checkpoint framing hook (R3-B/C).
+   *
+   * Basic's default wraps every checkpoint body in a fixed preamble and
+   * `<compacted-summary>` tags. That framing is the largest single component of
+   * a leaf checkpoint's cost and it is repeated once per fold — the R2 framing
+   * analysis measured that no EF-side dieting can remove it, which is why the
+   * seam exists.
+   *
+   * Under `legacy` this delegates to the inherited framing, so the default
+   * deployment stays byte-identical to Basic. Under `system-dedup` the framing
+   * is dropped HERE because the same semantics are stated once in a stable
+   * system-prompt section, where a constant belongs.
+   *
+   * If `ctx.systemPrompt` is absent there is nowhere to put that explanation,
+   * so the mode falls back to `legacy` and the preamble stays. Dropping the
+   * preamble with nowhere to say what a checkpoint is would trade correctness
+   * for tokens.
+   */
+  protected override frameCheckpoint(
+    summary: readonly ContentBlock[],
+    agent: Agent,
+  ): ContentBlock[] {
+    if (this.resolvedFramingMode() === 'legacy') {
+      return super.frameCheckpoint(summary, agent)
+    }
+    return foldFrameCheckpoint(summary)
+  }
+
+  /**
+   * The framing mode actually in force, resolved against what is mounted.
+   * Cached because the fallback decision is stable for one mounting.
+   */
+  private resolvedFramingMode(): FramingMode {
+    if (this.framingModeResolved !== undefined) return this.framingModeResolved
+    const hasSystemPrompt = this.ctx.get('systemPrompt') !== undefined
+    const resolved = framingModeFor(this.efConfig.framingMode, hasSystemPrompt)
+    if (resolved.fallback !== undefined) {
+      this.ctx.logger.warn(`[epistemic-fold] ${resolved.fallback}`)
+    }
+    this.framingModeResolved = resolved.mode
+    return resolved.mode
   }
 
   /**

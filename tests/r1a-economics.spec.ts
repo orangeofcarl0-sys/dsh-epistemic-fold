@@ -227,8 +227,11 @@ describe('R1-A: token attribution reconciles exactly', () => {
     expect(split.state).toContain('Current')
     expect(split.state).toContain('ship it')
     expect(split.rationale).toContain('we chose X because Y')
-    // Framing owns the marker line, which is also the recall affordance.
-    expect(split.framing).toContain('[EF1 L cp:abc]')
+    // The marker is IDENTITY, kept separate from framing because no framing
+    // mode may remove it: it is both machine identity and recall reference.
+    expect(split.identity).toBe('[EF1 L cp:abc]')
+    // Framing is now ONLY the blank separator: no preamble, no wrapper tags.
+    expect(split.framing.trim()).toBe('')
   })
 
   it('returns null for text that is not an EF checkpoint', () => {
@@ -255,7 +258,7 @@ describe('R1-A: token attribution reconciles exactly', () => {
     const split = splitLeafCheckpointText(text)!
     expect(split.state).toContain('ship it')
     expect(split.rationale).toContain('legacy rationale')
-    expect(split.framing).toContain('[EF checkpoint v1')
+    expect(split.identity).toContain('[EF checkpoint v1')
   })
 
   it('accounts for every metered token of a raw conversation', async () => {

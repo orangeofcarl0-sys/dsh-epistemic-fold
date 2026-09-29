@@ -21,11 +21,14 @@
 
 import { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
+// Type-only: makes the optional sibling service available to `ctx.get()`.
+import type {} from '@deepseek-ai/dsh-system-prompt'
 import type { AnchorService } from './anchor-service.ts'
 import { createAnchorService } from './anchor-service.ts'
 import { EpistemicFoldEngine } from './engine.ts'
 import { registerIdleRebaseConsumer } from './idle-rebase.ts'
 import type { IdleRebaseAttempt, IdleRebaseRegistration } from './idle-rebase.ts'
+import { FOLD_FRAMING_SECTION, framingModeFor } from './framing.ts'
 import { registerEpistemicFoldProjection } from './projection.ts'
 import { registerRecallTools } from './tools.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
@@ -56,6 +59,7 @@ export class EpistemicFoldPlugin {
     maxTokens: z.number(),
     compactionRetries: z.number(),
     maxOverflowRetries: z.number(),
+    framingMode: z.union(['legacy', 'system-dedup'] as const),
     auto: z.boolean(),
     modelPolicies: z.array(z.any()),
     frozenCheckpointTokenBudget: z.number(),
@@ -115,6 +119,32 @@ export class EpistemicFoldPlugin {
         this.idleRebase = undefined
       }
     }, 'epistemic-fold idle rebase consumer')
+
+    // Checkpoint framing semantics (R3-C). Under `legacy` the per-checkpoint
+    // preamble carries them and nothing is registered. Under `system-dedup`
+    // the preamble is gone, so this section is what tells the model what a
+    // checkpoint is — O(1) per request instead of O(checkpoints), and
+    // cache-stable because it never changes.
+    ctx.effect(() => {
+      const resolved = framingModeFor(this.engine.efConfig.framingMode, ctx.get('systemPrompt') !== undefined)
+      if (resolved.fallback !== undefined) {
+        ctx.logger.warn(`[epistemic-fold] ${resolved.fallback}`)
+        return () => {}
+      }
+      if (resolved.mode !== 'system-dedup') return () => {}
+      const systemPrompt = ctx.get('systemPrompt')
+      if (systemPrompt === undefined) return () => {}
+      const dispose = systemPrompt.section({
+        name: 'epistemic-fold:checkpoints',
+        // Ahead of the deployment persona: it is a statement about how to read
+        // the conversation, not about who the model is.
+        order: systemPrompt.getSectionOrder('DEPLOYMENT_PERSONA_PREFIX') - 1,
+        text: FOLD_FRAMING_SECTION,
+      })
+      return () => {
+        dispose()
+      }
+    }, 'epistemic-fold framing section')
   }
 
   /** Most recent idle rebase attempt; `undefined` before any idle event. */

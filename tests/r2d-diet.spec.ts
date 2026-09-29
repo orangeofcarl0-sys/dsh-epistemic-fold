@@ -94,7 +94,9 @@ describe('R2-D: the attribution splitter still reads dieted checkpoints', () => 
     expect(split).not.toBeNull()
     expect(split!.state).toBe('')
     expect(split!.rationale).toBe('')
-    expect(split!.framing).toContain('[EF1 L cp:cp-bare]')
+    // The whole checkpoint is now identity; nothing remains to frame.
+    expect(split!.identity).toBe('[EF1 L cp:cp-bare]')
+    expect(split!.framing.trim()).toBe('')
   })
 
   it('splits state and rationale when both are present', () => {
