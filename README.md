@@ -86,8 +86,8 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **R2-E** | BCR/BQR price-dominance matrix · 价格支配矩阵 | ❌ **BCR 1.149 > 1** · [report](docs/14_R2_EVALUATION_REPORT.md) |
 | **R3** | Frozen-surface economy closure: pricing correctness, production idle rebase, framing seam, marker V2 · 冻结面经济闭合 | ✅ BCR 0.986 · [report](docs/16_R3_EVALUATION_REPORT.md) |
 | **R4** | Economy default closure: real-recall workload, realized billing, window safety, presets · 经济模式默认闭合 | ✅ 5/5 gate components · [report](docs/17_R4_EVALUATION_REPORT.md) |
-| **RC0** | Release hardening: config contract, pairwise non-inferiority, all-call billing recorder · 发布加固 | ⚠️ **cost gate OPEN (dispersion)** · [report](docs/18_RC0_RELEASE_HARDENING.md) |
-| **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
+| **RC0** | Release hardening: config contract, pairwise non-inferiority, all-call billing recorder · 发布加固 | ⚠️ **cost gate OPEN (dispersion)** · superseded by RC1 · [report](docs/18_RC0_RELEASE_HARDENING.md) |
+| **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; cost gate **OPEN (dispersion at n=8)**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -193,13 +193,18 @@ off the API and onto a replay simulator that calls the *production* policy
 functions, exonerated the frozen budget by measurement (0 of 135 shadow
 evaluations were profitable-but-blocked), and classified the RC0 outlier as
 **provider cache state** — at comparable prompt sizes the two request shapes
-cache identically (reuse ratio 1.000). Running it live also exposed a defect
-larger than the experiment: **the live endpoint accepts a top-level `system`
-field, returns HTTP 200, and silently ignores it**, so every earlier live
-measurement that relied on system-prompt assembly was not sending one — which
-matters most for R3's framing change, whose entire saving is earned there. The
-deliverable is a **certified operating profile** for the measured route, not a
-global default: an uncertified route falls back to `legacy`, never to `economy`.
+cache identically (reuse ratio 1.000). Running it live exposed two instrument
+defects larger than the experiment itself: **the live endpoint accepts a
+top-level `system` field, returns HTTP 200, and silently ignores it** (so every
+earlier live measurement that relied on system-prompt assembly was not sending
+one — which matters most for R3's framing change, whose entire saving is earned
+there), and **the paired driver shared provider cache between runs and arms**,
+so its null test read 1.606 where it must read ~1. With both fixed the null test
+behaves (1.021) and the noise floor is 1.005 — but the cost verdict still does
+not reproduce at n=8 (0.965 vs 1.104), so the gate stays **OPEN for dispersion**
+on a sound instrument. The deliverable is a **certified operating profile** for
+the measured route, not a global default: an uncertified route falls back to
+`legacy`, never to `economy`.
 Full detail in [the RC1 report](docs/19_RC1_POLICY_NORMALIZATION.md) ·
 **RC1 随后选择规范化策略而非增加机制。** 它命名了真正的约束（`thresholdRatio:
 0.8` 读作 80% 触发，而出厂 reserve 使真实触发点落在 **49.6%**），实测了安全

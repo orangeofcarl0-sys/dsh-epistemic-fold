@@ -223,12 +223,20 @@ arm order per replicate** (RC1 §22). A **null-test guard** now asserts that a
 workload which folded in neither arm measures within ±10% of 1, and fails the run
 otherwise, so a confounded instrument can no longer produce a confident number.
 
-**What this means for §4.2.** The gate was OPEN there and is OPEN after the
-correction; the release decision does not change. What changes is why the earlier
-figures cannot be quoted: they came from a path that omitted the system prompt
-and let the arms share cache. The corrected figures are reported in the RC1
-evaluation report rather than silently replacing this section — a number measured
-with a known-broken instrument is superseded, not edited.
+**What this means for §4.2.** The gate was OPEN there, and it is OPEN on the
+corrected instrument too — but for a different and better-understood reason. The
+corrected null test lands at 1.013 and 1.021 where this section's instrument
+reported 1.606, and the noise floor is 1.005 in both runs, so the instrument is
+sound. What does not reproduce is the verdict: two runs of identical code give
+FullTaskRBCR CI upper bounds of **0.965** and **1.104**, with the per-family
+direction on the fold-bearing workload flipping between them. The earlier
+figures still cannot be quoted — they came from a path that omitted the system
+prompt and let the arms share cache — so they are superseded rather than edited,
+and the corrected measurements live in the RC1 report §6.5.
+
+The availability axis gained one exclusion in the process: a pair whose arm
+returned nothing for every request is a transport failure, not a 0.3× discount,
+and the driver now excludes such pairs explicitly instead of averaging them in.
 
 ---
 

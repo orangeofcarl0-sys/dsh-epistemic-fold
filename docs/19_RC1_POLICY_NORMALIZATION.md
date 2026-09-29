@@ -5,7 +5,9 @@
 **Status:** normalization complete. The trigger is named, the reserve is measured,
 parameters were searched by replay instead of by API, the RC0 outlier is
 classified, and a **certified operating profile** exists for the measured route.
-The global default is **NOT** flipped — by design, see §9.
+The corrected realized-cost gate is **OPEN** — the instrument is fixed, but the
+verdict does not reproduce at n=8 (§6.5). The global default is **NOT** flipped —
+by design, see §9.
 
 ---
 
@@ -336,11 +338,95 @@ neither arm, its ratio is asserted to be within ±10% of 1. A null test that is
 not ~1 means every other ratio in the run rests on a broken instrument, and the
 run now fails loudly instead of reporting them.
 
-**This does not change the release decision, and it does change what the earlier
-RC0-C numbers mean.** They were measured through a path that (a) never sent the
-system prompt and (b) let the arms share cache in a fixed order. The gate was
-OPEN before and remains OPEN; the corrected figures are reported in the RC0
-report's own §4.2 addendum rather than silently replacing it.
+**This changes what the earlier RC0-C numbers mean, and it does not change the
+release decision.** RC0's gate was OPEN at a CI upper bound of 1.366, measured
+through a path that (a) never sent the system prompt and (b) let the arms share
+cache in a fixed order — so those figures described the instrument rather than
+the policy. Measured correctly, two runs of the same code give 0.965 and 1.104:
+the gate is **OPEN**, for the same reason as before — dispersion — but now on a
+sound instrument. §6.5 gives both runs and the correction; the RC0 report
+carries a §4.4 addendum recording the finding from its own side.
+
+### 6.5 The corrected full-wire result: the instrument is fixed, the verdict is NOT
+
+Fixing the instrument produced a materially different first run — and then a
+second run with the *same* instrument disagreed with it. Both are reported,
+because the disagreement is itself the finding.
+
+**Run 1** (4 replicates, namespaced + counterbalanced):
+
+```
+NOISE FLOOR: two identical Basic runs -> 1.004x spread
+NULL TEST FW-tool-heavy: ratio 1.013   (identical requests; must be ~1)
+| FW-long-trajectory | 96 | 104 | 0.11074 | 0.13659 | 0.811 |
+| FW-tool-heavy      | 96 |  96 | 0.03952 | 0.03902 | 1.013 |  <- NULL
+| FW-recall          | 96 | 106 | 0.08386 | 0.09028 | 0.929 |
+paired ratios (n=8): 0.973, 0.973, 0.305, 0.898, 0.973, 0.896, 0.975, 0.953
+mean 0.868; CI upper 0.965; wins/ties/losses 8/0/0 -> PASS
+```
+
+**Run 2** (same code, same parameters):
+
+```
+NOISE FLOOR: two identical Basic runs -> 1.005x spread
+NULL TEST FW-tool-heavy: ratio 1.021
+| FW-long-trajectory | 96 | 105 | 0.10514 | 0.09973 | 1.054 |
+| FW-tool-heavy      | 96 |  96 | 0.01380 | 0.01352 | 1.021 |  <- NULL
+| FW-recall          | 96 | 103 | 0.04765 | 0.05015 | 0.950 |
+paired ratios (n=8): 0.960, 0.954, 1.351, 0.934, 0.964, 0.952, 0.944, 0.961
+mean 1.002; CI upper 1.104; wins/ties/losses 7/0/1 -> OPEN
+```
+
+**What is now solid, and what is not.**
+
+Solid, and consistent across both runs:
+
+- **The instrument is sound.** The null test lands at 1.013 and 1.021 where the
+  old driver reported 1.606, and the noise floor is ~1.005 in both. A workload
+  where neither arm folds now measures ~1, as it must.
+- **The economy trajectory is stable**: 12 folds and **0 rebases** across 12
+  runs in both.
+- **Seven of eight pairs are below 1 in both runs.** The distributions are
+  tight — run 1 without its transport-failed pair: `0.973, 0.973, 0.898, 0.973,
+  0.896, 0.975, 0.953`; run 2: `0.960, 0.954, 0.934, 0.964, 0.952, 0.944, 0.961`.
+
+Not solid, and this is the honest headline:
+
+- **The verdict does not reproduce.** 0.965 (PASS) versus 1.104 (OPEN) from
+  identical code and parameters. The difference is one replicate: run 1 had a
+  transport failure that depressed its mean, run 2 had `1.351` on
+  `FW-long-trajectory` where run 1 had `0.811`.
+- **The per-family direction flips.** `FW-long-trajectory` is 0.811 in run 1 and
+  1.054 in run 2. That family is where the folds actually happen, so it is the
+  family that matters — and it is not stable.
+- **n=8 is too small for a verdict**, and RC0 §17's caveat applies unchanged:
+  this is a deterministic paired bootstrap over the observed runs, not a
+  large-sample interval. Two draws from it disagreeing by 0.14 is exactly what
+  that caveat predicts.
+
+**I over-claimed in an earlier draft of this section and am correcting it.** The
+first corrected run was reported as "the gate PASSES"; a second run with the
+same instrument does not reproduce it. The correct statement is:
+
+> The instrument is fixed, the null test now behaves, and the typical pair is
+> ~0.95 — but the aggregate verdict is **not determined** at this sample size.
+> The gate is **OPEN**, for the same reason RC0's was: **dispersion**, not a
+> typical run that is dearer.
+
+The `0.305` in run 1 is excluded as an availability event (its economy arm
+returned nothing for every request — a transport failure, not a 0.3× discount),
+and the driver now excludes any pair where either arm loses more than a quarter
+of its calls. Over run 1's seven valid pairs the mean is **0.949**; over run 2's
+eight it is **1.002**. The exclusion is not load-bearing for the verdict — the
+verdict is OPEN either way once both runs are considered — but it is
+load-bearing for any single-run number.
+
+**What would settle it.** RC0 §25's aggregate ratio (Σ C_economy / Σ C_basic) is
+now reported alongside the mean-of-ratios, because it weights by spend and is
+what a deployment actually pays. The path to a verdict is more replicates on the
+fold-bearing family, not a longer trajectory: the disagreement is in
+`FW-long-trajectory`, where 16 folds happen, and that is where the variance
+lives.
 
 ---
 
@@ -440,6 +526,7 @@ measured route:
 | Outlier classified | **satisfied** | provider cache state, at comparable shape, reuse ratio 1.000 |
 | Fold boundary | **satisfied** | real trigger crossed; cold shock 0.000 → recovery 0.986 |
 | Quality | **satisfied** | 2 folds, 3/3 facts, supersession included |
+| Cost (realized) | **OPEN** | instrument fixed (null test 1.021, was 1.606); CI upper **1.104**, and a second run gives 0.965 — the verdict does not reproduce at n=8 (§6.5) |
 | Certified profile | **satisfied** | `deepseek/deepseek-*flash*` |
 
 **Per §45, the global default is NOT flipped.** The correct release posture is:
@@ -450,13 +537,22 @@ A global automatic default waits for multi-provider certification. §36's future
 `mode: auto` is therefore already specified by the code — `certified → economy`,
 `unknown → legacy` — and deliberately not implemented yet.
 
-**One open item is recorded rather than closed.** The certified reserve (9,733)
-is 6.73× smaller than the shipped default (65,536), and the shipped default is
-what binds the trigger to 49.6% of the window. Changing it is a *configuration*
-change that would move the product into the regime R3/R4 measured — but it is a
-shipped-behavior change, so it belongs to a release decision, not to a
-normalization stage. The number and its evidence are in §2.2; the decision is
-not RC1's to take.
+Two open items are recorded rather than closed.
+
+1. **The certified reserve (9,733) is 6.73× smaller than the shipped default
+   (65,536), and the shipped default is what binds the trigger to 49.6% of the
+   window.** Changing it would move the product into the regime R3/R4 measured,
+   but it is a shipped-behavior change, so it belongs to a release decision, not
+   to a normalization stage. The number and its evidence are in §2.2.
+2. **The cost gate is OPEN, and the reason has changed.** It is no longer "the
+   instrument is broken" — the null test now behaves (1.021 where the old driver
+   said 1.606) and the noise floor is 1.005. It is **dispersion at n=8**: two
+   runs of identical code give CI upper bounds of 0.965 and 1.104, and the
+   per-family direction on the fold-bearing workload flips between them. §17's
+   caveat applies unchanged — this is a deterministic paired bootstrap over the
+   observed runs, not a large-sample interval. The way to settle it is more
+   replicates on `FW-long-trajectory`, where the variance lives, and that is the
+   natural next stage.
 
 ---
 
