@@ -37,7 +37,9 @@
     "eval:r3": "vitest run tests/r3a-pricing.spec.ts tests/r3b-idle-rebase.spec.ts tests/r3c-framing-seam.spec.ts tests/r3d-economy-gate.spec.ts",
     "eval:r3-live": "vitest run tests/r3f-live-chain.spec.ts",
     "eval:r4": "vitest run tests/r4a-baseline-closure.spec.ts tests/r4a-real-recall.spec.ts tests/r4d-live-billing.spec.ts tests/r4e-noninferiority.spec.ts tests/r4f-preset.spec.ts",
-    "eval:r4-live": "vitest run tests/r4d-live-billing.spec.ts tests/r4e-live-noninferiority.spec.ts"
+    "eval:r4-live": "vitest run tests/r4d-live-billing.spec.ts tests/r4e-live-noninferiority.spec.ts",
+    "eval:rc0": "vitest run tests/rc0a-config-contract.spec.ts tests/rc0b-billing-recorder.spec.ts tests/rc0e-default-regime.spec.ts",
+    "eval:rc0-live": "vitest run tests/rc0c-full-wire-billing.spec.ts"
   },
   "repository": {
     "type": "git",

@@ -93,5 +93,10 @@
     "file": "17_R4_EVALUATION_REPORT.md",
     "bytes": 13075,
     "sha256": "1c3e49da4118ba1859c84a468e8b935ee95cb42c2ef206db58e17cbb4dd32d4b"
+  },
+  {
+    "file": "18_RC0_RELEASE_HARDENING.md",
+    "bytes": 12749,
+    "sha256": "381a98d71e570ec360ca9a836eac32a58304d43549b5bab1a3e13f6b3fa109e3"
   }
 ]

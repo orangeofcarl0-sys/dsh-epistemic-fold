@@ -55,8 +55,31 @@ export function detectDshCapabilities(): DshCapabilities {
   }
 }
 
-/** The minimum DSH package version this build expects the seam in. */
-export const REQUIRED_DSH_RANGE = '>=0.1.7-rc.2'
+/**
+ * How the seam is currently obtained, stated honestly.
+ *
+ * RC0-A: this used to claim `>=0.1.7-rc.2`, which is WRONG and was actively
+ * misleading. The pinned vanilla build at `477b4f4` (version 0.1.7-rc.2) does
+ * NOT have `frameCheckpoint` — the seam was added to the vendored checkout by
+ * `scripts/apply-framing-seam.mjs`. A semver range would tell a user their
+ * 0.1.7-rc.2 "should support it" when it does not.
+ *
+ * A version range becomes correct only once the seam lands upstream. Until
+ * then the contract is a CAPABILITY plus the patch, and the error message says
+ * so rather than naming a version that does not satisfy it.
+ */
+export const DSH_SEAM_PROVENANCE =
+  'a patched DSH build (the `frameCheckpoint` seam is not in vanilla 0.1.7-rc.2; '
+  + 'apply it with `node scripts/apply-framing-seam.mjs <dsh-root>`)'
+
+/**
+ * The version range to require ONCE the seam is released upstream.
+ *
+ * Left `undefined` deliberately: asserting a range before the upstream release
+ * exists is the error this constant replaces. `assertDshCompatibility` uses the
+ * capability probe and {@link DSH_SEAM_PROVENANCE} while this is undefined.
+ */
+export const REQUIRED_DSH_RANGE: string | undefined = undefined
 
 /**
  * Assert the DSH build supports the requested framing mode (R4 §4).
@@ -82,11 +105,11 @@ export function assertDshCompatibility(
   if (capabilities.frameCheckpointSeam) return
   throw new Error(
     'epistemic-fold: framingMode "system-dedup" requires the DSH `frameCheckpoint` seam, which '
-    + `this @deepseek-ai/dsh-compaction-basic build does not provide (expected ${REQUIRED_DSH_RANGE}). `
+    + 'this @deepseek-ai/dsh-compaction-basic build does not provide. The seam is not in any '
+    + `released DSH version yet; it requires ${DSH_SEAM_PROVENANCE}. `
     + 'Refusing to start rather than silently running with per-checkpoint framing: that would report '
-    + 'an economy saving this deployment does not actually get. Either upgrade DSH to a build with '
-    + 'the seam, apply it with `node scripts/apply-framing-seam.mjs <dsh-root>`, or set '
-    + 'framingMode: "legacy" explicitly.',
+    + 'an economy saving this deployment does not actually get. Either apply the seam, use a DSH '
+    + 'build that carries it, or set framingMode: "legacy" (or mode: "legacy") explicitly.',
   )
 }
 

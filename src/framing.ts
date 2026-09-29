@@ -70,26 +70,38 @@ export function foldFrameCheckpoint(summary: readonly ContentBlock[]): ContentBl
 /**
  * Resolve the framing mode against what the deployment can actually support.
  *
- * `dsh-system-prompt` is an optional dependency, so a `system-dedup` request
- * in a deployment without it has nowhere to put the semantics. Silently
- * dropping the preamble would leave the model with unlabelled text where an
- * explanation used to be — trading correctness for tokens, which R3 forbids.
- * Falling back to `legacy` keeps the semantics and gives up only the saving.
+ * `dsh-system-prompt` is an optional dependency, so a `system-dedup` request in
+ * a deployment without it has nowhere to put the checkpoint semantics.
  *
- * @param requested - the configured mode.
+ * **RC0-A makes this FAIL LOUD rather than fall back.** R3 fell back to
+ * `legacy` with a warning, on the reasoning that dropping the preamble would
+ * trade correctness for tokens. That reasoning was right about the DANGER and
+ * wrong about the REMEDY: a silent downgrade means a deployment that asked for
+ * `mode: economy` — or `framingMode: system-dedup` directly — runs with
+ * per-checkpoint framing, and therefore does NOT get the measured economy
+ * result, while believing it does. A named mode has to mean one determinate
+ * behavior.
+ *
+ * Note that no fallback is needed for the DEFAULT path: the engine's default is
+ * `legacy`, which requires nothing. The fallback was only ever reachable by a
+ * deployment that had explicitly asked for `system-dedup`, so removing it costs
+ * the default deployment nothing and makes an explicit request honest.
+ *
+ * @param requested - the framing mode the deployment asked for.
  * @param hasSystemPrompt - whether `ctx.systemPrompt` is mounted.
- * @returns the mode to use, and why it differs from the request.
+ * @returns the mode to use.
+ * @throws when `system-dedup` was requested with nowhere to put the semantics.
  */
 export function framingModeFor(
   requested: FramingMode,
   hasSystemPrompt: boolean,
-): { readonly mode: FramingMode; readonly fallback?: string } {
+): { readonly mode: FramingMode } {
   if (requested === 'legacy') return { mode: 'legacy' }
   if (hasSystemPrompt) return { mode: 'system-dedup' }
-  return {
-    mode: 'legacy',
-    fallback:
-      'framingMode "system-dedup" requires ctx.systemPrompt to carry the checkpoint semantics; '
-      + 'falling back to "legacy" rather than dropping the preamble with nowhere to put it',
-  }
+  throw new Error(
+    'epistemic-fold: framingMode "system-dedup" requires ctx.systemPrompt, which is not mounted. '
+    + 'Refusing to start rather than silently running per-checkpoint framing: a deployment that '
+    + 'asked for the deduplicated framing would not get the economy result it was promised. Mount '
+    + '@deepseek-ai/dsh-system-prompt, or set framingMode: "legacy" (or mode: "legacy") explicitly.',
+  )
 }

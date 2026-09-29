@@ -29,6 +29,8 @@ import { EpistemicFoldEngine } from './engine.ts'
 import { registerIdleRebaseConsumer } from './idle-rebase.ts'
 import type { IdleRebaseAttempt, IdleRebaseRegistration } from './idle-rebase.ts'
 import { FOLD_FRAMING_SECTION, framingModeFor } from './framing.ts'
+import { describeEffectiveConfig, effectiveConfigToText } from './effective-config.ts'
+import type { EffectiveConfig } from './effective-config.ts'
 import { registerEpistemicFoldProjection } from './projection.ts'
 import { registerRecallTools } from './tools.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
@@ -72,8 +74,17 @@ export class EpistemicFoldPlugin {
   readonly engine: EpistemicFoldEngine
   /** The anchor service this plugin provides as `ctx.epistemicFold`. */
   readonly anchors: AnchorService
+  /** What the configuration actually resolved to (RC0-A). */
+  readonly effectiveConfig: EffectiveConfig
 
   constructor(ctx: Context, config: EpistemicFoldConfig = {}) {
+    // RC0-A: report what this configuration actually resolves to BEFORE the
+    // engine is constructed, so a deployment can see the effective settings and
+    // any blocker in the log rather than only in an exception.
+    this.effectiveConfig = describeEffectiveConfig(config)
+    for (const line of effectiveConfigToText(this.effectiveConfig).split(String.fromCharCode(10))) {
+      ctx.logger.info(`[epistemic-fold] ${line}`)
+    }
     // The engine owns ctx.compaction (one compaction backend per context).
     // Constructing it here places it on the plugin's own fiber, so unloading
     // the plugin disposes the engine with it.
@@ -127,11 +138,10 @@ export class EpistemicFoldPlugin {
     // checkpoint is — O(1) per request instead of O(checkpoints), and
     // cache-stable because it never changes.
     ctx.effect(() => {
+      // RC0-A: resolve against the mounted context. A `system-dedup` request
+      // without a system prompt throws here (inside the effect, so the mount
+      // fails loudly) instead of degrading to per-checkpoint framing.
       const resolved = framingModeFor(this.engine.efConfig.framingMode, ctx.get('systemPrompt') !== undefined)
-      if (resolved.fallback !== undefined) {
-        ctx.logger.warn(`[epistemic-fold] ${resolved.fallback}`)
-        return () => {}
-      }
       if (resolved.mode !== 'system-dedup') return () => {}
       const systemPrompt = ctx.get('systemPrompt')
       if (systemPrompt === undefined) return () => {}
