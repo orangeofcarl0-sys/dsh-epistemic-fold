@@ -60,6 +60,7 @@ export class EpistemicFoldPlugin {
     compactionRetries: z.number(),
     maxOverflowRetries: z.number(),
     framingMode: z.union(['legacy', 'system-dedup'] as const),
+    mode: z.union(['legacy', 'economy'] as const),
     auto: z.boolean(),
     modelPolicies: z.array(z.any()),
     frozenCheckpointTokenBudget: z.number(),

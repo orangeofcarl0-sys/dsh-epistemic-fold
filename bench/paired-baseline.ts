@@ -90,6 +90,39 @@ export interface StepSample {
   readonly appendedTokens: number
   /** Frozen-checkpoint token load after the step (EF arm only; Basic: 0). */
   readonly checkpointLoad: number
+  /**
+   * Surface pressure BEFORE this step's fold ran, measured after `grow`
+   * (R4-C). This is the pre-fold high-water mark: the surface the arm was
+   * willing to let build up before reducing it.
+   */
+  readonly preFoldTokens: number
+}
+
+/**
+ * The three peaks that R4-C requires be distinguished, because a single
+ * "PeakContext" number conflated them and produced a wrong explanation in R3.
+ *
+ * `main` is the one that matters as a product risk: it is what actually goes
+ * into the primary model request, so it is what can hit the context window.
+ * `compaction` is the auxiliary summarizer/rationale request peak, which is
+ * charged to the same budget but is not the user's request. `surface` is the
+ * internal session-surface high-water mark, which includes the pre-fold
+ * build-up a `main` peak can hide.
+ */
+export interface PeakBreakdown {
+  /** Peak prompt tokens actually sent to the primary model. */
+  readonly mainRequestPeak: number
+  /**
+   * Peak tokens of an auxiliary (compaction) request. `0` when the arm made no
+   * auxiliary call or the harness did not observe one.
+   */
+  readonly compactionRequestPeak: number
+  /** Peak surface pressure observed at any point, including pre-fold. */
+  readonly surfacePeak: number
+  /** Peak post-fold prompt tokens — the `main` peak measured after reduction. */
+  readonly postFoldPeak: number
+  /** Mean of `preFoldTokens - promptTokens`: how much a fold removed, on average. */
+  readonly meanFoldReclaim: number
 }
 
 /** Cache-adjusted cost for one discount factor: C_ρ = miss + ρ · hit. */
@@ -132,6 +165,8 @@ export interface BaselineResult {
   readonly attribution: RunAttribution
   /** R2-A pressure regime history (frozen/open split, fold-every-step flag). */
   readonly pressure: PressureHistory
+  /** R4-C: the three peaks, kept separate instead of one conflated number. */
+  readonly peaks: PeakBreakdown
   /** The pressure threshold in force, or 0 when no routed spec was resolved. */
   readonly thresholdTokens: number
 }
@@ -191,6 +226,10 @@ export async function runPairedBaseline(options: {
   let reclaimedTotal = 0
   let leafFoldCount = 0
   let rootFoldCount = 0
+  // R4-C peak telemetry: the pre-fold high-water mark and the auxiliary peak.
+  let surfacePeak = 0
+  let preFoldReclaimTotal = 0
+  let preFoldSamples = 0
 
   for (let step = 1; step <= steps; step += 1) {
     // Rebase window: close the previous step's turn first — root folds are
@@ -210,6 +249,10 @@ export async function runPairedBaseline(options: {
     }
 
     const beforeFolds = meter.measure(session).totalTokens
+    // R4-C: the surface pressure the arm was willing to let build up BEFORE
+    // reducing it. Recorded separately because R3's single "peak" number hid
+    // this term and produced a wrong explanation of the peak gap.
+    surfacePeak = Math.max(surfacePeak, beforeFolds)
     const engine = harness.engine as unknown as BenchEngine
     try {
       await engine.compactIfNeeded(agent, 'pressure', signal)
@@ -222,6 +265,8 @@ export async function runPairedBaseline(options: {
       reclaimedTotal += beforeFolds - afterTotal
       leafFoldCount += 1
     }
+    preFoldReclaimTotal += beforeFolds - afterTotal
+    preFoldSamples += 1
     // Close the turn so the next rebase window starts from a clean state.
     closeTurn()
 
@@ -266,6 +311,7 @@ export async function runPairedBaseline(options: {
       stablePrefixTokens: stable,
       appendedTokens,
       checkpointLoad,
+      preFoldTokens: beforeFolds,
     })
     // R1-A: attribute this request's tokens by source. The measurement was
     // just taken against the current surface, so it cannot be stale.
@@ -319,6 +365,18 @@ export async function runPairedBaseline(options: {
     cacheEconomics,
     attribution: summarizeAttribution(attributions),
     pressure: summarizePressureHistory(pressureSamples),
+    peaks: {
+      // The post-fold prompt summary's peak IS the main-request peak: the
+      // measurement is taken after the awaited fold, so what it prices is the
+      // surface the model would actually be sent.
+      mainRequestPeak: promptExposure(samples.map(sample => sample.promptTokens)).peakPromptTokens,
+      // Auxiliary calls are charged to the same budget. The harness's scripted
+      // adapter reports no usage, so this is 0 there and measured live.
+      compactionRequestPeak: auxIn ?? 0,
+      surfacePeak,
+      postFoldPeak: promptExposure(samples.map(sample => sample.promptTokens)).peakPromptTokens,
+      meanFoldReclaim: preFoldSamples === 0 ? 0 : preFoldReclaimTotal / preFoldSamples,
+    },
     thresholdTokens: (harness.engine as unknown as { lastThresholdTokens?: number }).lastThresholdTokens ?? 0,
   }
 }

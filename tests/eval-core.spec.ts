@@ -286,6 +286,10 @@ describe('schemas are closed and reports generated', () => {
       cacheEconomics: [{ rho: 0, hitTokens: 0, missTokens: 0, cost: 0 }],
       attribution: summarizeAttribution([]),
       pressure: summarizePressureHistory([]),
+      peaks: {
+        mainRequestPeak: 0, compactionRequestPeak: 0,
+        surfacePeak: 0, postFoldPeak: 0, meanFoldReclaim: 0,
+      },
       thresholdTokens: 0,
     })).toContain('| absolutePrefixInvalidation | 0 |')
   })

@@ -35,7 +35,9 @@
     "eval:r2": "vitest run tests/r2a-pressure.spec.ts tests/r2b-admission.spec.ts tests/r2c-root.spec.ts tests/r2d-diet.spec.ts tests/r2e-dominance.spec.ts",
     "eval:r2-live": "vitest run tests/r2-live-behavior.spec.ts",
     "eval:r3": "vitest run tests/r3a-pricing.spec.ts tests/r3b-idle-rebase.spec.ts tests/r3c-framing-seam.spec.ts tests/r3d-economy-gate.spec.ts",
-    "eval:r3-live": "vitest run tests/r3f-live-chain.spec.ts"
+    "eval:r3-live": "vitest run tests/r3f-live-chain.spec.ts",
+    "eval:r4": "vitest run tests/r4a-baseline-closure.spec.ts tests/r4a-real-recall.spec.ts tests/r4d-live-billing.spec.ts tests/r4e-noninferiority.spec.ts tests/r4f-preset.spec.ts",
+    "eval:r4-live": "vitest run tests/r4d-live-billing.spec.ts tests/r4e-live-noninferiority.spec.ts"
   },
   "repository": {
     "type": "git",

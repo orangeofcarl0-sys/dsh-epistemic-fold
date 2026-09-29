@@ -249,6 +249,39 @@ DSH profile YAML（等价形态 · equivalent form）:
     semanticMode: rationale
 ```
 
+### Configuration modes · 配置模式
+
+R4 adds a named mode, so a deployment does not have to understand the internal
+mechanisms to use the product. R4 引入命名模式，部署方无需理解内部机制：
+
+```yaml
+- name: dsh-epistemic-fold
+  config:
+    bundleRoot: <profile persistence root>/epistemic-fold
+    mode: economy          # or: legacy (the default) · 或 legacy（默认）
+```
+
+`mode: economy` fills in the policy keys R3 measured as cheaper
+(`leafAdmission: economic`, `rootPolicy: economics`, `semanticMode: none`,
+`framingMode: system-dedup`). It is a named **set of values, not a branch**:
+expansion happens before resolution, so the engine cannot tell a preset from the
+same keys written by hand, and **an explicit setting always wins** over the
+preset. `mode: economy` 展开为 R3 实测更省的策略键组合；它是「一组具名取值」而非分支，
+展开在解析之前完成，因此引擎无法区分 preset 与手写配置，且**显式设置始终覆盖 preset**。
+
+`framingMode: system-dedup` requires the DSH `frameCheckpoint` seam. Without it
+the engine **refuses to start** rather than silently running with per-checkpoint
+framing — which would report an economy saving the deployment does not get.
+Apply the seam with `node scripts/apply-framing-seam.mjs <dsh-root>`, upgrade
+DSH, or set `framingMode: legacy` explicitly.
+`system-dedup` 依赖 DSH 的 `frameCheckpoint` seam；缺失时引擎**拒绝启动**，而不是静默退回
+per-checkpoint framing（那会报告一个实际并未获得的节省）。
+
+`reliability` is deliberately **not** offered yet: there is no live evidence for
+what the right reliability configuration is, and naming one would assert a
+conclusion the project does not have. `reliability` 暂不提供：尚无实测证据确定最优
+reliability 配置，命名它等于断言一个项目尚未得到的结论。
+
 Continuous Integration runs two lanes on every push: the **pinned DSH
 baseline** (mandatory) and **DSH master** (allowed-to-fail compatibility
 probe) · CI 每次推送跑两条 lane：pinned 基线（必过）与 DSH master

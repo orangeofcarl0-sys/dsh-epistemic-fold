@@ -27,6 +27,8 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
+import { realRecallCommon } from '../eval/workloads/real-recall.ts'
+import { evaluateWindowSafety, peakRatioDiagnostic } from '../eval/src/window-safety.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
@@ -36,8 +38,18 @@ import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
 
 const STEPS = 64
 const WINDOW = 16_000
-/** R3 §25: the economy workloads, in workload order (W2 excluded by design). */
-const ECONOMY_WORKLOADS = ['W1-narrative-heavy', 'W3-tool-heavy', 'W4-recall-heavy', 'W5-multi-agent'] as const
+/**
+ * R3 §25: the economy workloads. W2 is excluded by design (the reliability
+ * region).
+ *
+ * **R4-A replaced W4-recall-heavy with W4R-common here.** R4-A established that
+ * the synthetic W4 never recalled anything — its ref was the literal string
+ * `cp:earlier` and its payload was generated inline — so treating its 1.002 as
+ * "real recall is the last blocker" was acting on an unmeasured claim. With a
+ * SHARED archive materialized identically into both arms, real recall carry
+ * measures 0.988 and passes.
+ */
+const ECONOMY_WORKLOADS = ['W1-narrative-heavy', 'W3-tool-heavy', 'W4R-common', 'W5-multi-agent'] as const
 
 const PROFILES = [
   'deepseek-flash-2026-09',
@@ -56,11 +68,13 @@ function profile(id: string): ContextEconomicsProfile {
  * separates `legacy` from `system-dedup`.
  */
 async function runArm(options: {
-  workloadIndex: number
+  workloadIndex?: number
+  /** Run a benchmark-owned workload instead of one of W1-W5 (R4-A's W4R). */
+  workload?: { id: string; createSession: () => Session; grow: (session: Session, step: number) => void }
   basic?: boolean
   framing: 'legacy' | 'system-dedup'
 }): Promise<BaselineResult> {
-  const workload = allWorkloads()[options.workloadIndex]!
+  const workload = options.workload ?? allWorkloads()[options.workloadIndex!]!
   const harness = await createHarness({ text: 'digest' }, {
     contextWindow: WINDOW,
     workloadModel: WORKLOAD_MODEL,
@@ -86,11 +100,24 @@ async function runArm(options: {
     steps: STEPS,
     grow: (session: Session, step: number) => {
       workload.grow(session, step)
-      workload.declareState?.(session, step)
+      ;(workload as { declareState?: (s: Session, step: number) => void }).declareState?.(session, step)
     },
     ...(options.basic === true ? {} : { rebase: createIdleMaintenanceHook(harness) }),
     signal: SIGNAL,
   })
+}
+
+/**
+ * Steps whose surface was STILL above the pressure threshold after folding.
+ *
+ * This is NOT an overflow count, and the name must not pretend otherwise: the
+ * keyless bench only ever drives `compactIfNeeded(agent, 'pressure', …)`, so no
+ * `context-overflow` recovery can occur here at all. What this measures is a
+ * fold that failed to restore headroom — a real signal, but a different one.
+ */
+function stepsAboveThresholdAfterFold(result: BaselineResult): number {
+  if (result.thresholdTokens <= 0) return 0
+  return result.samples.filter(sample => sample.promptTokens > result.thresholdTokens).length
 }
 
 function cost(result: BaselineResult, economics: ContextEconomicsProfile): number {
@@ -109,14 +136,32 @@ describe('R3-C: the economy gate with the framing seam', () => {
       id: string
       legacy: number
       dedup: number
-      peakRatio: number
       economy: boolean
+      /** R4-C: the peak that actually reaches the primary model request. */
+      peakMain: number
+      peakBasic: number
+      /**
+       * Context-overflow recoveries. Always 0 in the keyless tier — the bench
+       * cannot trigger one — so this clause is only meaningful live.
+       */
+      overflows: number
+      /** Diagnostic: folds that did not restore headroom (NOT an overflow). */
+      stuckAboveThreshold: number
     }> = []
 
-    for (const [index, workload] of allWorkloads().entries()) {
-      const basic = await runArm({ workloadIndex: index, basic: true, framing: 'legacy' })
-      const legacy = await runArm({ workloadIndex: index, framing: 'legacy' })
-      const dedup = await runArm({ workloadIndex: index, framing: 'system-dedup' })
+    // W4R-common REPLACES the synthetic W4 (R4-A): the real recall benchmark
+    // materializes a shared archive into both arms, where the old W4 recalled
+    // from a ref that was never a checkpoint.
+    const realRecall = realRecallCommon()
+    const workloads = [
+      ...allWorkloads().filter(workload => workload.id !== 'W4-recall-heavy'),
+      { id: realRecall.id, createSession: realRecall.createSession, grow: realRecall.grow },
+    ]
+
+    for (const workload of workloads) {
+      const basic = await runArm({ workload, basic: true, framing: 'legacy' })
+      const legacy = await runArm({ workload, framing: 'legacy' })
+      const dedup = await runArm({ workload, framing: 'system-dedup' })
 
       // DeepSeek Flash is the primary profile for the gate; the others are
       // reported for spread but the ratio is profile-invariant in shape.
@@ -126,7 +171,18 @@ describe('R3-C: the economy gate with the framing seam', () => {
         id: workload.id,
         legacy: cost(legacy, flash) / basicCost,
         dedup: cost(dedup, flash) / basicCost,
-        peakRatio: dedup.promptSummary.peakPromptTokens / basic.promptSummary.peakPromptTokens,
+        // R4-0a/C: the MAIN-request peak from the new telemetry, not the
+        // conflated prompt peak. `surfacePeak` is the pre-fold high-water mark
+        // and is reported separately by the peak test.
+        peakMain: dedup.peaks.mainRequestPeak,
+        peakBasic: basic.peaks.mainRequestPeak,
+        stuckAboveThreshold: stepsAboveThresholdAfterFold(dedup),
+        // The keyless tier CANNOT observe a context overflow: the bench only
+        // drives the pressure path, so no provider overflow recovery ever
+        // runs. Reporting a manufactured count here would be exactly the
+        // error R4 exists to stop, so this is 0 and the overflow clause of the
+        // window-safety gate is exercised live (R4-D) instead.
+        overflows: 0,
         economy: (ECONOMY_WORKLOADS as readonly string[]).includes(workload.id),
       })
     }
@@ -134,7 +190,8 @@ describe('R3-C: the economy gate with the framing seam', () => {
     for (const row of rows) {
       console.log(
         `${row.id.padEnd(20)} BCR legacy=${row.legacy.toFixed(3)} dedup=${row.dedup.toFixed(3)} `
-        + `peakRatio=${row.peakRatio.toFixed(2)} ${row.economy ? '(economy)' : '(reliability)'}`,
+        + `peakMain=${row.peakMain} stuck=${row.stuckAboveThreshold} `
+        + `${row.economy ? '(economy)' : '(reliability)'}`,
       )
     }
 
@@ -169,58 +226,77 @@ describe('R3-C: the economy gate with the framing seam', () => {
     }
 
     const overParity = economy.filter(row => row.dedup > 1)
-    const peakOverBudget = economy.filter(row => row.peakRatio > 1.05)
     console.log(
       overParity.length === 0
         ? `ECONOMY GATE (cost): PASS on ${economy.length}/${economy.length}, mean ${meanDedup.toFixed(3)}`
         : `ECONOMY GATE (cost): FAIL — ${overParity.map(r => r.id).join(', ')} above 1`,
     )
-    // R3 §39's peak guard is reported, not assumed. It is violated, and the
-    // violation is a FINDING about fold timing rather than a bug: EF's peak is
-    // measured at the moment the fold has been appended but the replacement
-    // has not yet reduced the surface, so a policy that folds later than Basic
-    // shows a momentarily larger peak. Recording the direction keeps that
-    // honest instead of quietly relaxing the bound to make a gate green.
+
+    // --- R4-C: WINDOW SAFETY replaces the 1.05x peak ratio as the release gate.
+    //
+    // R3 gated on `Peak_candidate <= Peak_Basic * 1.05` and reported it
+    // VIOLATED. R4-0a then established that the ratio measures fold-cadence
+    // quantization — EF's post-fold floor is ~84 tokens lower, so it needs one
+    // more append to cross the same threshold — which is not a product risk.
+    // For a cache-dominant model, EF carrying a longer context more cheaply is
+    // the point; "shorter than Basic" was never the objective. So the ratio is
+    // reported as a DIAGNOSTIC and the gate is the window-safety condition.
+    const RESERVED_OUTPUT = 3_000
+    const SAFETY_HEADROOM = 2_000
+    const safety = economy.map(row => ({
+      id: row.id,
+      verdict: evaluateWindowSafety({
+        peakMainRequestTokens: row.peakMain,
+        contextWindow: WINDOW,
+        reservedOutputTokens: RESERVED_OUTPUT,
+        safetyHeadroomTokens: SAFETY_HEADROOM,
+        overflowEvents: row.overflows,
+      }),
+      ratio: peakRatioDiagnostic(row.peakMain, row.peakBasic),
+    }))
+    for (const entry of safety) {
+      console.log(
+        `${entry.id.padEnd(20)} worst-case ${entry.verdict.requiredTokens}/${WINDOW} `
+        + `(${(entry.verdict.windowUtilization * 100).toFixed(1)}% of window), `
+        + `peak ratio ${entry.ratio?.toFixed(3) ?? 'n/a'} (diagnostic), `
+        + `safe=${entry.verdict.safe}`,
+      )
+    }
+    const unsafe = safety.filter(entry => !entry.verdict.safe)
     console.log(
-      peakOverBudget.length === 0
-        ? `PEAK GUARD (<= 1.05x Basic): PASS on ${economy.length}/${economy.length}`
-        : `PEAK GUARD (<= 1.05x Basic): VIOLATED on ${peakOverBudget.length}/${economy.length} — `
-          + peakOverBudget.map(r => `${r.id}=${r.peakRatio.toFixed(2)}x`).join(', '),
+      unsafe.length === 0
+        ? `WINDOW SAFETY GATE: PASS on ${safety.length}/${safety.length}`
+        : `WINDOW SAFETY GATE: FAIL — ${unsafe.map(e => `${e.id}: ${e.verdict.reason}`).join('; ')}`,
     )
-    // The bound the gate actually justifies: bounded, not unbounded.
-    for (const row of economy) {
-      expect(row.peakRatio, `${row.id} peak context must stay bounded`).toBeLessThanOrEqual(1.25)
+    // The gate that actually protects the product. Every economy workload must
+    // fit its worst-case request inside the window with headroom, and must have
+    // produced no overflow recovery.
+    for (const entry of safety) {
+      expect(entry.verdict.safe, `${entry.id}: ${entry.verdict.reason ?? ''}`).toBe(true)
     }
   }, 1_800_000)
 
-  it('W4 misses parity on RECALL VOLUME, not on framing or state', async () => {
-    // W4 is the one economy workload the seam does not close (0.2% above 1),
-    // so its cause is worth pinning: the next stage should attack the actual
-    // remaining term rather than re-tuning framing that is already solved.
-    const index = allWorkloads().findIndex(workload => workload.id === 'W4-recall-heavy')
-    const basic = await runArm({ workloadIndex: index, basic: true, framing: 'legacy' })
-    const dedup = await runArm({ workloadIndex: index, framing: 'system-dedup' })
+  it('real recall is not the remaining cost — the synthetic W4 was (R4-A)', async () => {
+    // R3 concluded that recall carry was the last 0.2% blocker. R4-A showed the
+    // workload it drew that from never recalled anything, so the conclusion was
+    // unsupported. With a SHARED archive materialized identically into both
+    // arms, the same measurement passes. Pinned so "recall is the problem"
+    // cannot be re-asserted without re-measuring.
+    const realRecall = realRecallCommon()
+    const workload = { id: realRecall.id, createSession: realRecall.createSession, grow: realRecall.grow }
+    const basic = await runArm({ workload, basic: true, framing: 'legacy' })
+    const dedup = await runArm({ workload, framing: 'system-dedup' })
+    const flash = profile('deepseek-flash-2026-09')
+    const bcr = cost(dedup, flash) / cost(basic, flash)
 
-    const b = basic.attribution.totals
-    const d = dedup.attribution.totals
-    const framingShare = (d['checkpoint-framing'] + d['checkpoint-identity']) / dedup.attribution.grandTotal
-    const recallDelta = d.recall - b.recall
     console.log(
-      `W4 recall: basic=${b.recall} dedup=${d.recall} (delta ${recallDelta}); `
-      + `framing+identity share of EF total = ${(framingShare * 100).toFixed(1)}%`,
+      `W4R-common BCR = ${bcr.toFixed(3)}; recall tokens basic=${basic.attribution.totals.recall} `
+      + `economy=${dedup.attribution.totals.recall}`,
     )
-
-    // Framing is no longer the dominant term on this workload. What is left of
-    // it is the irreducible marker plus a small residual, so further framing
-    // work cannot close W4 — the remaining lever is recall VOLUME.
-    expect(framingShare).toBeLessThan(0.10)
-    // The gap is recall: EF's economic admission folds less aggressively, so
-    // more recalled pages stay on the surface as fresh (cold-priced) input.
-    expect(recallDelta).toBeGreaterThan(0)
-    // And that recall delta is large enough on its own to account for the
-    // whole miss, which is what makes it the right next target.
-    const gap = dedup.promptSummary.totalPromptTokens - basic.promptSummary.totalPromptTokens
-    console.log(`W4 total-token gap = ${gap}, of which recall = ${recallDelta}`)
-    expect(recallDelta).toBeGreaterThan(gap * 0.5)
+    // A vacuity guard: the comparison must be over an actual materialization.
+    expect(basic.attribution.totals.recall).toBeGreaterThan(0)
+    expect(dedup.attribution.totals.recall).toBeGreaterThan(0)
+    // The finding: real recall materialization does not put EF over Basic.
+    expect(bcr).toBeLessThanOrEqual(1)
   }, 900_000)
 })
