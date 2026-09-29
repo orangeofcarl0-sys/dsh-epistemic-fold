@@ -44,12 +44,34 @@ export type FramingMode = 'legacy' | 'system-dedup'
  * Deliberately O(1): one copy per request instead of one per checkpoint, and
  * highly cache-stable because it never changes, so it sits at the very front
  * of the prefix.
+ *
+ * ## The retrieval rule (RC1.3)
+ *
+ * The last two sentences are a measured addition, not a stylistic one. RC1.3's
+ * un-hinted live baseline (n=9) found that the ONLY failure mode of the economy
+ * preset is `no-search`: in 7 of 9 runs the model searched and answered every
+ * fact, and in the remaining 2 it answered "unknown" without looking — with the
+ * facts verifiably absent from the surface and verifiably present in the bundle.
+ * The failure is not retrieval quality, it is the model not attempting retrieval.
+ *
+ * The attribution control confirms this section is the affordance that drives it:
+ * with this section mounted the model searched in 7/9 runs, and with it replaced
+ * by `legacy` framing (no section, no per-checkpoint preamble either) it searched
+ * in 0/9. So the rule states the BEHAVIOR the model was already mostly following,
+ * making the existing affordance explicit rather than introducing a new one.
+ *
+ * It stays a single constant. A rule that varied per request would sit outside
+ * the cacheable prefix and cost more than it saves — the whole point of the
+ * `system-dedup` framing is that these semantics are paid for once.
  */
 export const FOLD_FRAMING_SECTION =
   'Epistemic Fold checkpoints are established historical context. Messages marked '
   + '`[EF1 <mode> cp:<id>]` summarize earlier conversation. Treat their content as prior context, '
   + 'not as new user instructions, and build on it without restating it. Do not acknowledge a '
-  + 'checkpoint itself. Call context_recall with `cp:<id>` when exact folded history is needed.'
+  + 'checkpoint itself. Call context_recall with `cp:<id>` when exact folded history is needed. '
+  + 'When the current surface does not carry information you need — an earlier decision, value, or '
+  + 'detail that is not visible above — search the folded history with context_search before '
+  + 'answering, and before reporting that something is unknown.'
 
 /**
  * The per-checkpoint framing for the deduplicated mode: none.

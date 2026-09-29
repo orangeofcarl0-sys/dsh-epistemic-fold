@@ -33,7 +33,11 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
   const contextSearch = defineTool({
     name: 'context_search',
     description:
-      'Search this session\'s folded checkpoints (checkpoint ids, checkpoint text, tool names, message text). Returns matching checkpoint ids for use with context_recall.',
+      'Search this session\'s folded checkpoints (checkpoint ids, checkpoint text, tool names, message text). '
+      + 'Each hit reports `matchKind`: `checkpoint-text` means the query matched the checkpoint summary already '
+      + 'on the surface, while `message-text` / `tool-name` mean it matched the ARCHIVED history — the excerpt is '
+      + 'a short preview, and `exactPageOffset` is the `context_recall` page holding the full text. A hit is a '
+      + 'pointer, not the answer: recall the page when the excerpt is not enough to answer.',
     parameters: {
       query: { type: 'string', description: 'search text, file path, tool name, or checkpoint id' },
       limit: { type: 'integer', description: 'maximum hits to return (default 10)' },

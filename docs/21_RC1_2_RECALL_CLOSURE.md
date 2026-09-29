@@ -423,4 +423,47 @@ is **more expensive than the baseline it would be trying to beat**.
 | `rc11b-replay-correction.spec.ts` (incl. RC1.2-C tax) | 9 | no |
 | `rc11a-certification-semantics.spec.ts` | 12 | no |
 
-459 keyless tests pass, 19 skipped, typecheck clean.
+At this stage: 459 keyless tests pass, 19 skipped, typecheck clean. RC1.3 raised
+the totals to 508 passing, 20 skipped.
+
+---
+
+## 13. Superseded by RC1.3 (retrieval ergonomics)
+
+RC1.3 re-ran this stage's comparison un-hinted, with a per-fact failure taxonomy,
+and found that §11.2's `2.40/3` was **not** the policy's ceiling. Two defects sat
+underneath it, and both are now fixed:
+
+1. **The excerpt window manufactured a `search-miss`.** `context_search` returned
+   a 240-character excerpt *centred* on the match. All three facts live in one
+   230-character message, so a query for the error code cut the batch-size fact
+   off the front: the model received an excerpt naming the timeout and the error
+   code, saw no batch limit, and answered it `unknown`. Short messages now come
+   back whole, and hits report `matchKind`, a verbatim excerpt, and the
+   `context_recall` page holding the match.
+2. **This suite's fixture satisfied its own matchers.** `filler()` numbered its
+   units in decimal, so `unit 64`, `unit 90` and `unit 30` appeared in retained
+   filler — the exact tokens the matchers search for. An answer could therefore
+   score a point by reading a unit index rather than the fact, and the "facts left
+   the surface" premise could never hold. The filler index is now base-26 letters.
+
+With both fixed, and one measured addition to `FOLD_FRAMING_SECTION` (search the
+folded history before answering or reporting something unknown), the corrected
+figures are:
+
+| arm | this stage (§11.2) | after RC1.3 |
+| --- | --- | --- |
+| economy-none | 2.40/3 | **3.00/3** |
+| true Basic | 3.00/3 | 3.00/3 |
+
+So the residual gap this document attributed to **model tool use** was in fact
+**retrieval ergonomics** — a product-side return-shape defect plus an ambiguous
+framing affordance, not a model limitation. The mechanism conclusion in §11.3 is
+unchanged and was re-confirmed with the corrected excerpt and filler:
+`semanticMode:none` recovers every fact through `context_search → context_recall`.
+
+The numbers recorded in §11.2 remain a faithful record of what was measured then
+and are **not** retracted as measurements — only the conclusion drawn from them is
+superseded. The prohibition on publishing `none 3.00 vs Basic 2.40` as
+Basic-vs-EF evidence stands, and is now moot: the corrected comparison is at equal
+measured quality. See [RC1.3](22_RC1_3_RETRIEVAL_ERGONOMICS.md).

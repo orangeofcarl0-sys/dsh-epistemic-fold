@@ -90,6 +90,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; cost gate **OPEN (dispersion at n=8)**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
 | **RC1.1** | Evidence reconciliation: component-wise certification, reserve demoted to a scoped estimate, replay confounds removed, unanchored-narrative boundary measured · 证据闭合与重放修正 | ✅ **mechanics certified**; cost recommendation **OPEN**; RC1-H withdrawn · [report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) |
 | **RC1.2** | End-to-end recall closure: real agent-loop recall smoke, deterministic mechanism proof, rationale tax priced from its measured size · 端到端召回闭合 | ✅ **recall proven**; preset unchanged; RC1.1 boundary corrected · [report](docs/21_RC1_2_RECALL_CLOSURE.md) |
+| **RC1.3** | Retrieval ergonomics closure: un-hinted baseline, per-fact failure taxonomy, self-describing search hits, measured retrieval rule · 检索工效学闭合 | ✅ **quality side CLOSED** — economy 3.00/3, matching Basic; cost gate still **OPEN**; default still `legacy` · [report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -253,11 +254,30 @@ passed `plugin: true` unconditionally, and since the harness returns early on
 that, its `engine: 'basic'` spread was dead code — **the "Basic" arm was really
 EF**, which is why it reported `facts retrievable 2/5` on a metric undefined for
 real Basic. The harness now **refuses** that combination outright, and the
-corrected comparison is: true Basic scores **3.00/3 with zero tool calls**, while
-economy-none scores 2.40/3 with a tool returning the facts in **5/5** runs. So the
-gap is **retrieval policy and model tool use**, not storage or mechanism — economy
-is a retrieval-dependent low-cost mode, roughly **13×** cheaper on the n=3 sample,
-not a drop-in replacement for Basic on undeclared narrative. Full detail in
+corrected comparison was: true Basic scores **3.00/3 with zero tool calls**, while
+economy-none scores 2.40/3 with a tool returning the facts in **5/5** runs — so the
+gap is **retrieval policy and model tool use**, not storage or mechanism.
+
+**RC1.3 then closed that gap, and it was retrieval ergonomics on both sides.**
+An un-hinted baseline (no "use context_search" in the probe) plus a per-fact
+failure taxonomy found the only failure mode was `no-search` — never a
+`recall-miss`, so no product-side retrieval defect — and two concrete defects
+underneath it. First, `context_search` returned a 240-character excerpt *centred*
+on the match, which cut a 230-character message's **other** facts off the front:
+the model searched for one value, got an excerpt naming its neighbours, and
+answered the rest `unknown`. A hit was manufacturing a `search-miss`. Short
+messages now come back whole, and hits report `matchKind`, a verbatim excerpt, and
+the `context_recall` page that holds the match. Second, the test filler numbered
+its units in decimal, so `unit 64` and `unit 90` satisfied the fact matchers from
+retained filler — a confound that also affected RC1.2's numbers. With both fixed
+the baseline read 2.33/3, and one measured change to the framing section — search
+the folded history before answering or reporting something unknown — took it to
+**3.00/3, matching Basic**, reproduced in two independent n=9 runs with search in
+9/9. The hint is now worth **0.00**: a deployment no longer needs to tell the
+agent how to use its own tools. Economy remains a **retrieval-dependent low-cost
+mode** (still ~17× cheaper on the n=5 sample) and is **not** promoted to a generic
+default replacement. Full detail in
+[the RC1.3 report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) ·
 [the RC1.2 report](docs/21_RC1_2_RECALL_CLOSURE.md) ·
 **RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
 只能说明**表面**不携带未声明叙述，而非 EF 无法恢复它。通过真实 agent loop
@@ -273,8 +293,22 @@ not a drop-in replacement for Basic on undeclared narrative. Full detail in
 EF**，这正是它报出 `facts retrievable 2/5` 的原因（该指标对真正的 Basic 并无定义）。
 harness 现在**直接拒绝**该组合。修正后的比较为：真正的 Basic 以**零工具调用**取得
 **3.00/3**，而 economy-none 取得 2.40/3，且工具有 **5/5** 的运行返回了事实。因此差距在于
-**检索策略与模型工具使用**，而非存储或机制——economy 是**依赖检索的低成本模式**（n=3
-样本上约便宜 **13 倍**），而非针对未声明叙述的 Basic 直接替代品。详见
+**检索策略与模型工具使用**，而非存储或机制。
+
+**RC1.3 随后闭合了这一差距，而它两侧都是检索工效学问题。** 通过无提示 baseline
+（probe 中不再出现 "use context_search"）与逐事实的失败分类，发现唯一的失败模式是
+`no-search`——从未出现 `recall-miss`，因此不存在产品侧的检索缺陷——其下有两个具体缺陷。
+其一，`context_search` 返回以命中位置**居中**的 240 字符摘录，会把一条 230 字符消息的
+**其他**事实截掉：模型检索某个值时拿到只提到其邻居的摘录，于是把其余问题答成
+`unknown`。**命中本身在制造 `search-miss`。** 现在短消息整体返回，命中同时报告
+`matchKind`、逐字摘录，以及承载该命中的 `context_recall` 页码。其二，测试填充文本以
+十进制编号单元，于是保留的填充里 `unit 64`、`unit 90` 直接满足了事实匹配器——这一
+confound 同样影响了 RC1.2 的数字。两者修正后 baseline 为 2.33/3；对 framing section
+做一处可测量的改动——在回答或将某事报告为未知之前，先检索已折叠历史——使其达到
+**3.00/3，与 Basic 持平**，并在两次独立的 n=9 运行中复现（9/9 均发生检索）。提示词现在
+的增量为 **0.00**：部署方不再需要告诉 agent 如何使用它自己的工具。economy 仍是
+**依赖检索的低成本模式**（n=5 样本上仍约便宜 **17 倍**），**并未**被提升为通用默认
+替代品。详见 [RC1.3 报告](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) ·
 [RC1.2 报告](docs/21_RC1_2_RECALL_CLOSURE.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
@@ -487,6 +521,7 @@ All design documents live in [`docs/`](docs/) ·
 | [19_RC1_POLICY_NORMALIZATION.md](docs/19_RC1_POLICY_NORMALIZATION.md) | RC1 policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, and the certified economy profile · RC1 策略标准化与经济模式认证 |
 | [20_RC1_1_EVIDENCE_RECONCILIATION.md](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) | RC1.1 evidence reconciliation: component-wise certification, the reserve as a scoped estimate, both replay confounds removed, the withdrawn RC1-H conclusion, and the measured unanchored-narrative boundary · RC1.1 证据闭合与重放修正 |
 | [21_RC1_2_RECALL_CLOSURE.md](docs/21_RC1_2_RECALL_CLOSURE.md) | RC1.2 end-to-end recall closure: the real agent-loop recall smoke, the deterministic mechanism proof, the corrected product boundary, and the rationale tax at its measured size · RC1.2 端到端召回闭合 |
+| [22_RC1_3_RETRIEVAL_ERGONOMICS.md](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) | RC1.3 retrieval ergonomics closure: the un-hinted baseline, the per-fact failure taxonomy, the self-describing `context_search` hit, the excerpt-window defect, and the measured retrieval rule that brought economy to parity with Basic · RC1.3 检索工效学闭合 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never
