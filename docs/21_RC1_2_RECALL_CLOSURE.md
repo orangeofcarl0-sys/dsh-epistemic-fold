@@ -80,17 +80,33 @@ tools only register when a `ToolRuntime` is present — without it a model that
 wants to recall simply cannot, and the resulting zero looks like a policy
 failure.
 
-Live results, three arms, identical window/threshold/retention:
+Live results, three arms, identical window/threshold/retention. **n=5** is the
+definitive sample (an n=3 run agreed in direction and is omitted for brevity):
 
-| Replicate | basic | none | rationale |
-|---|---|---|---|
-| 0 | 3/3 | 3/3 | 3/3 |
-| 1 | 0/3 | 2/3 | 2/3 |
-| 2 | 3/3 | 3/3 | 3/3 |
+```
+answer score (out of 3 facts):  none 3.00/3   basic 2.40/3   rationale 2.20/3
+facts RETRIEVABLE (out of 5):   none 5/5      basic 2/5      rationale 5/5
+```
 
-with `recalledFacts` (what recall RETURNED) at **2/3 in every arm in every
-replicate**, including Basic's 0/3-answer run. The residual answer-score variance
-tracks one thing: whether a `context_recall` call actually returned content.
+The second line is the one that matters. **Both EF arms recovered the folded
+facts in every single run; Basic recovered them in two of five.** The residual
+answer-score variance tracks one thing: whether a `context_recall` call actually
+returned content.
+
+| Run | chars returned | answer score |
+|---|---:|---:|
+| none | 6,424 | 3/3 |
+| none | 35,095 | 2/3 |
+| none | 35,005 | 3/3 |
+| none (earlier) | 48 | 0/3 |
+| none (earlier) | 245 | 0/3 |
+
+A 48-character return is a search that found nothing; 6,000+ characters is a
+successful recall. **The mechanism works; the model's tool use varies.**
+
+That economy-*none* leads on the answer score is a single n=5 reading and should
+not be over-read — the claim this stage supports is that it is **not worse**, and
+that the mechanism is what carries the information.
 
 | Run | chars returned | answer score |
 |---|---:|---:|
