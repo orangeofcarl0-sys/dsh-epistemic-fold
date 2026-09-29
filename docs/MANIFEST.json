@@ -126,12 +126,17 @@
   },
   {
     "file": "24_RC2_PRODUCT_INTEGRATION.md",
-    "bytes": 15070,
-    "sha256": "8f9e8fdc555bcadd82d7430d567ff5439b85429fd546ef32ebbb2ec00e9a503c"
+    "bytes": 15686,
+    "sha256": "977122d9ce269dc10f81f380a1b48f2ac754c43490cd08ebf0c1ba2307227178"
   },
   {
     "file": "25_RC2_1_STATUS_AND_RETENTION_AB.md",
-    "bytes": 10700,
-    "sha256": "07913bb8d2b44c531cf72e09fde66254c4108a059cf8404068ba256061b94787"
+    "bytes": 11119,
+    "sha256": "66bf76f8bd18f3e2da645d3484e62792df5aabfef7d4afcab56046d5cb574ff7"
+  },
+  {
+    "file": "26_RC3_REAL_DSH_PLUGINIZATION.md",
+    "bytes": 9855,
+    "sha256": "8ec85207394845215303da797e7fd11e47300854ec3c1ad34b6b884b091e7b4f"
   }
 ]

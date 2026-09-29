@@ -32,7 +32,7 @@ import { buildContextStatus, contextStatusToLine, contextStatusToText } from './
 import type { ContextStatus } from './status.ts'
 import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from './policy.ts'
 import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from './economics-profile.ts'
-import { TIERS, isTierModeName } from './preset.ts'
+import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
 import type { FoldBundleStore } from './types.ts'
 
@@ -42,12 +42,74 @@ export const CONTEXT_COMMAND_NAME = 'context'
 /** The sub-command that reports status; the default when none is given. */
 export const CONTEXT_STATUS_SUBCOMMAND = 'status'
 
+/**
+ * The sub-command that switches tiers (RC3).
+ *
+ * The control plane, and deliberately the ONLY control this command exposes.
+ * RC3's directive is explicit that a user normally touches three modes and
+ * nothing else: a dozen internal-parameter commands would turn a context
+ * runtime into a configuration console, and the internal knobs stay in config
+ * where they belong.
+ */
+export const CONTEXT_MODE_SUBCOMMAND = 'mode'
+
+/**
+ * Apply `/context mode <tier>` and describe the result.
+ *
+ * Every failure is REPORTED as an error result rather than thrown, because a
+ * command's job is to tell the user what happened. Four cases, each with its
+ * own message: no argument (show the ladder), an unknown tier (name the valid
+ * ones), no engine to switch (say so), and a switch the engine refuses (relay
+ * its reason).
+ */
+function applyModeChange(
+  deps: ContextCommandDeps,
+  rest: readonly string[],
+): string {
+  const requested = rest[0]
+  if (requested === undefined) {
+    // No argument shows the ladder, which doubles as the help screen.
+    return tierLadderToText()
+  }
+  if (!isTierModeName(requested)) {
+    return `unknown mode ${JSON.stringify(requested)}; choose one of `
+      + `${TIER_MODE_NAMES.map(name => JSON.stringify(name)).join(', ')}`
+  }
+  if (deps.setMode === undefined) {
+    return 'this deployment has no switchable engine mounted, so the mode cannot be changed at runtime'
+  }
+  try {
+    const previous = deps.setMode(requested)
+    const tier = TIERS[requested]
+    return previous === requested
+      ? `mode is already ${requested}`
+      : `mode ${previous} -> ${requested}
+  ${tier.summary}
+  evidence: ${tier.evidence.toUpperCase()}`
+  } catch (error: unknown) {
+    // The engine refuses a switch that would change framing mid-session; its
+    // message already explains why, so it is relayed rather than reworded.
+    return `cannot switch mode: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+
 /** Everything the command handler needs, injected so it stays testable. */
 export interface ContextCommandDeps {
   /** The store whose bundles describe archived history. */
   readonly store: FoldBundleStore
   /** The configuration this deployment resolved, for the mode and thresholds. */
   readonly config: () => { readonly mode: FoldModeName; readonly raw: Record<string, unknown> }
+  /**
+   * Switch the running engine's tier (RC3), returning the PREVIOUS mode.
+   *
+   * A callback rather than an engine reference: the command is a UI surface and
+   * must not reach into engine internals, and a test can drive the control plane
+   * without constructing an engine at all.
+   *
+   * Optional, because a compaction-only deployment may have no engine to switch
+   * — `/context mode` then reports that rather than pretending to succeed.
+   */
+  readonly setMode?: (mode: FoldModeName) => FoldModeName
 }
 
 /** Parse the command's own grammar; the handler owns it, the registry does not. */
@@ -187,16 +249,18 @@ export function contextCommandDefinition(
     // Branded identity; the brand is a compile-time marker over this literal.
     definitionId: 'dsh-epistemic-fold/context' as NonNullable<CommandDefinition['definitionId']>,
     name: CONTEXT_COMMAND_NAME,
-    description: 'Report Epistemic Fold status: mode, context, checkpoints, recalls, folds, cost',
-    input: { hint: '[status|line]' },
+    description: 'Epistemic Fold: report status, or switch the mode tier (economy|balanced|quality)',
+    input: { hint: '[status|line|mode <economy|balanced|quality>]' },
     handler: async ({ agent, rawInput }) => {
-      const { subcommand } = parseContextArgs(rawInput)
+      const { subcommand, rest } = parseContextArgs(rawInput)
       switch (subcommand) {
         case CONTEXT_STATUS_SUBCOMMAND:
           return { kind: 'success', text: contextStatusToText(await gatherStatus(ctx, agent, deps)) }
         case 'line':
           // The one-line form, for a status bar or a script.
           return { kind: 'success', text: contextStatusToLine(await gatherStatus(ctx, agent, deps)) }
+        case CONTEXT_MODE_SUBCOMMAND:
+          return { kind: 'success', text: applyModeChange(deps, rest) }
         default:
           return {
             kind: 'error',

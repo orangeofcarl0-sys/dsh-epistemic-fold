@@ -9,6 +9,15 @@ Scope: the product surface. No context or retrieval research.
 > discriminate the modes**: TaskQuality saturated at 1.00 for every arm, and the
 > single steadiness loss was not reproducible. That is a finding about the TASK
 > SET, and it is reported as such rather than dressed up as a tier ranking.
+>
+> **RC3 CORRECTION — the runs below were NOT in DSH.** They ran in a hand-built
+> `new Context()` with services mounted by hand and the plugin constructed
+> directly. The provider and the tools were real; the HOST was not DSH, and at
+> the time EF could not have mounted in a real one at all (raw-TS entry, no
+> bundle patch). "Real DSH tasks" below means real tasks and a real provider, not
+> a real DSH session. EF only became loadable by a real harness in RC3 — see
+> [the RC3 report](26_RC3_REAL_DSH_PLUGINIZATION.md), which also corrects the
+> `mounts the real plugin` wording in the file table.
 
 ---
 

@@ -94,6 +94,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC1.3.1** | Temporal retrieval guard: newest-first chronology from source spans, latest-match supersession, `matchedMessageIndex` as the recall offset · 时序检索守卫 | ✅ **retrieval layer FROZEN** — chronology closed keylessly; only the cost gate remains open · [report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) |
 | **RC2** | Product integration: the `economy`/`balanced`/`quality` tier ladder, `/context status` on the real DSH command plane, and a real-task comparison · 产品集成与模式调优 | ⚠️ **surface SHIPPED**; tier steadiness benefit **HYPOTHESIS** — the task set did not discriminate the modes · [report](docs/24_RC2_PRODUCT_INTEGRATION.md) |
 | **RC2.1** | Status correctness, baseline naming, and the retention A/B: four `/context status` defects fixed, `legacy` renamed to EF legacy with a real Basic arm added, the ladder reordered retention-first · 状态正确性、基线命名与保留量 A/B | ⚠️ **status FIXED**; retention bought **no measurable steadiness** (0.90→0.90) at +0.003 cost, so the tier stays **HYPOTHESIS** · [report](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) |
+| **RC3** | Real DSH pluginization: a build step producing loadable JS, a `dsh.bundle` patch, `/context mode` as the control plane, and mounting into a real local DSH · 真实 DSH 插件化 | ✅ **mounts and folds in real DSH** — 2 compactions, `EF1` markers, bundles on disk; `/context mode` switches the live engine; RC2's "in DSH" claim corrected · [report](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -424,6 +425,20 @@ A/B 单独隔离保留量：12 次运行中稳定性 **0.90 → 0.90（delta 0.0
 [RC2.1 报告](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md)。
 [RC2 报告](docs/24_RC2_PRODUCT_INTEGRATION.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
+**RC3 随后把它变成了真正的插件，并纠正了一处说法。** RC2.1 之前的一切都跑在手工搭建的
+`new Context()` 里，而不是 DSH 中——provider 与工具是真的，宿主不是；而且当时 EF 根本
+无法挂载到真实宿主：入口是裸 TypeScript，Node 无法执行。RC3 增加了构建步骤产出可加载的
+`lib/`、插入 EF 并禁用 `compaction-basic` 的 `dsh.bundle` patch（EF 持有
+`ctx.compaction`），以及 loader 读取的入口。挂载进本机真实的 DSH 0.2.0-rc.2 profile 后，
+EF **确实发生了折叠**：两次已提交的 compaction 事务、真实表面上的 `EF1 L cp:…` 标记，
+以及磁盘上经哈希校验的 bundle。`/context mode economy|balanced|quality` 可切换运行中的
+引擎，且控制面会拒绝"中途改变 framing"的切换，而不是半途生效。真实宿主还暴露了一个测试
+harness 无法发现的 bug：在 Cordis 中 `ctx.get('tools')` 会**抛错**，除非 `tools` 在
+`inject` 中声明，而所有 harness 都预先挂载了 ToolRuntime，因此这条坏探测永远不可达——
+已改用 `ctx.inject(['tools'], …)`。仍有一项未决：**Sidebar 面板**需要打包的客户端产物
+（核心 sidebar 仅浏览器端；真实 sidebar 插件带 1.1 MB 客户端 JS），EF 是自建浏览器构建
+还是依赖第三方 sidebar 服务，属于范围决策。详见
+[RC3 报告](docs/26_RC3_REAL_DSH_PLUGINIZATION.md)。
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
 一个约 30K 采样尺度的安全估计被当作生产 headroom；重放同时变动了 trigger 与
@@ -613,6 +628,35 @@ unearned name. `reliability` 暂不提供：尚无实测证据确定最优 relia
 等于断言一个项目尚未得到的结论。两个稳定性档命名为 `balanced` 与 `quality`，并显式标注
 `HYPOTHESIS` 状态。
 
+### Installing into a real DSH · 安装到真实 DSH
+
+EF is a real DSH plugin as of RC3: it builds to loadable JS and ships a bundle
+patch. A profile adds it as a dependency and lists it as a bundle ·
+自 RC3 起 EF 是真正的 DSH 插件：构建为可加载 JS 并附带 bundle patch。profile 将其作为
+依赖并列为 bundle：
+
+```jsonc
+// <DSH_HOME>/profiles/<name>/package.json
+{
+  "dependencies": { "dsh-epistemic-fold": "file:/path/to/dsh-epistemic-fold" },
+  "dsh": { "profile": { "bundles": ["@deepseek-ai/dsh-base", "dsh-epistemic-fold"] } }
+}
+```
+
+Then `pnpm install` in the profile directory and boot with
+`dsh --profile <name>`. The patch **disables `compaction-basic`**, because EF
+owns `ctx.compaction` and Cordis allows one registration per service ·
+在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。patch 会
+**禁用 `compaction-basic`**：EF 持有 `ctx.compaction`，而 Cordis 每个服务只允许一次注册。
+
+> **The patch ships `mode: legacy`, deliberately.** Every tier selects
+> `framingMode: system-dedup`, which requires the `frameCheckpoint` seam — and
+> released DSH does not have it. A tier on an unpatched harness **refuses to
+> start** rather than silently running the costlier framing. Select a tier in
+> `config` on a seam-carrying build, or at runtime with `/context mode`.
+> patch **有意**使用 `mode: legacy`：三档都需要 `frameCheckpoint` seam，而已发布的 DSH
+> 没有它。未打补丁的宿主上选择档位会**拒绝启动**，而不是静默使用更贵的 framing。
+
 Continuous Integration runs two lanes on every push: the **pinned DSH
 baseline** (mandatory) and **DSH master** (allowed-to-fail compatibility
 probe) · CI 每次推送跑两条 lane：pinned 基线（必过）与 DSH master
@@ -683,6 +727,7 @@ All design documents live in [`docs/`](docs/) ·
 | [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) | RC1.3.1 temporal retrieval guard: newest-first chronology keyed on source spans rather than the clock, latest-match supersession with `matchCount`, and `matchedMessageIndex` replacing the page-aligned offset — the stage that freezes the retrieval layer · RC1.3.1 时序检索守卫 |
 | [24_RC2_PRODUCT_INTEGRATION.md](docs/24_RC2_PRODUCT_INTEGRATION.md) | RC2 product integration: the three-tier mode ladder with declared evidence status, the `/context status` command on the real DSH command plane, the real-task comparison with its three metrics, and why that comparison did not discriminate the modes · RC2 产品集成与模式调优 |
 | [25_RC2_1_STATUS_AND_RETENTION_AB.md](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) | RC2.1 status correctness and the retention A/B: the four `/context status` defects (`unknown` reported as a measured 0, a `chars/4` heuristic labelled measured, hand-rolled usage instead of the DSH projection, current checkpoints conflated with lifetime folds), the EF-legacy-vs-Basic baseline correction, the retention-first reorder, and the one critical A/B that measured no steadiness gain · RC2.1 状态正确性与保留量 A/B |
+| [26_RC3_REAL_DSH_PLUGINIZATION.md](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) | RC3 real DSH pluginization: the build step that produces loadable JS, the bundle patch that replaces `compaction-basic`, the `ctx.inject` bug only a real host could find, the proof that EF folds in a real DSH session, `/context mode` as the control plane, and the correction of RC2's "measured in DSH" claim · RC3 真实 DSH 插件化 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

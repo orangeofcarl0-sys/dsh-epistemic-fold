@@ -61,6 +61,7 @@ import {
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
 } from './policy.ts'
+import type { FoldModeName } from './preset.ts'
 import type { FoldCurrentState } from './state.ts'
 import type {
   CheckpointBundleV1,
@@ -145,8 +146,34 @@ export interface EpistemicFoldOptions {
 export class EpistemicFoldEngine extends BasicCompactionEngine {
   static override inject = BasicCompactionEngine.inject
 
-  /** EF-resolved policy face; Basic keeps its own resolved config for summarization. */
-  readonly efConfig: ResolvedEpistemicFoldConfig
+  /**
+   * EF-resolved policy face; Basic keeps its own resolved config for summarization.
+   *
+   * MUTABLE since RC3, behind {@link setMode}. `/context mode <tier>` changes the
+   * policy of a RUNNING session, so the resolved face cannot be frozen at
+   * construction. Everything that reads it reads the CURRENT value, which is
+   * what makes a switch take effect on the next fold rather than the next boot.
+   */
+  private resolvedConfig: ResolvedEpistemicFoldConfig
+
+  /** The EF-resolved policy in force right now. */
+  get efConfig(): ResolvedEpistemicFoldConfig {
+    return this.resolvedConfig
+  }
+
+  /**
+   * The mode name currently in force.
+   *
+   * Tracked separately from the resolved keys because `mode` is a NAMING face
+   * that resolution expands and then drops — the resolved object cannot say
+   * which tier produced it, and a status surface must be able to report it.
+   */
+  private currentModeValue: FoldModeName = 'legacy'
+
+  /** The mode name in force right now. */
+  get currentMode(): FoldModeName {
+    return this.currentModeValue
+  }
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
@@ -190,16 +217,63 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // Basic validates its config keys strictly; EF-owned fields must be
     // stripped before the super call (they are resolved by resolveEfConfig).
     super(ctx, stripEfConfigKeys(config))
-    this.efConfig = resolveEfConfig(config)
+    this.resolvedConfig = resolveEfConfig(config)
+    this.currentModeValue = config.mode ?? 'legacy'
     // R4 §4: the framing seam is an EXTERNAL dependency, so its presence is
     // verified once, here, against the requested mode — never sniffed per fold
     // and never silently downgraded. `legacy` needs no seam, so the default
     // deployment mounts on any DSH build.
-    assertDshCompatibility(this.efConfig.framingMode)
+    assertDshCompatibility(this.resolvedConfig.framingMode)
     // Loader deployments pass exactly (ctx, config): the store then comes
     // from `bundleRoot` in the config face, honoring the DSH persistence
     // lifecycle (R0-B). Programmatic callers may inject a store directly.
     this.bundles = options.bundleStore ?? new FileBundleStore(this.efConfig.bundleRoot)
+  }
+
+  /**
+   * Switch the policy tier of this RUNNING engine (RC3).
+   *
+   * `/context mode <tier>` is the control-plane half of the product: a user
+   * picks a tier and the NEXT fold uses it, without a restart and without
+   * touching the session.
+   *
+   * ## What a switch does and does not change
+   *
+   * It re-resolves the policy face from the tier's values, so admission,
+   * rebasing, retention and the semantic face all take effect immediately.
+   * Three things are deliberately NOT changed, because changing them mid-session
+   * would be a correctness hazard rather than a policy choice:
+   *
+   *  - **`bundleRoot`.** A tier never sets it (it is not a preset key), and a
+   *    switch must not redirect where an in-flight session writes its bundles.
+   *  - **`framingMode`.** It is verified against the DSH build at construction;
+   *    switching it later would need a re-verification this method does not do.
+   *    A tier that wanted a different framing is refused rather than
+   *    half-applied.
+   *  - **Everything the user set explicitly.** A tier fills by OMISSION, so an
+   *    explicit key keeps winning after a switch — the same rule that governs
+   *    construction.
+   *
+   * @param mode - the tier to switch to.
+   * @param explicit - the deployment's own config, so explicit keys still win.
+   * @returns the previous mode name.
+   * @throws when the tier would change the framing mode, which cannot be
+   *   switched at runtime.
+   */
+  setMode(mode: FoldModeName, explicit: EpistemicFoldConfig = {}): FoldModeName {
+    const previous = this.currentModeValue
+    if (mode === previous) return previous
+    const next = resolveEfConfig({ ...explicit, mode })
+    if (next.framingMode !== this.resolvedConfig.framingMode) {
+      throw new Error(
+        `epistemic-fold: cannot switch to mode ${JSON.stringify(mode)} at runtime — it changes `
+        + `framingMode (${this.resolvedConfig.framingMode} -> ${next.framingMode}), which is verified `
+        + 'against the DSH build at construction. Restart with the mode in config instead.',
+      )
+    }
+    this.resolvedConfig = next
+    this.currentModeValue = mode
+    return previous
   }
 
   /** The bundle store this engine publishes checkpoints into. */
