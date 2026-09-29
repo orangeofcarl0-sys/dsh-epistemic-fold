@@ -196,9 +196,18 @@ npm install
 node scripts/generate-maps.cjs
 
 # 4. Run everything · 全量运行
-npx vitest run                     # 49 tests across 5 suites · 5 个套件共 49 个测试
+npx vitest run                     # the whole suite · 全量测试套件
 npx tsc --noEmit -p tsconfig.json  # type check against vendor declarations
 ```
+
+The suite grows every stage, so this file deliberately does NOT state a test
+count: a hardcoded number goes stale the moment a spec is added, and a stale
+count is read as an unfinished suite. `vitest run` prints the authoritative
+totals. The live tiers are opt-in (`EF_LIVE=1`) and SKIP without a resolved
+route, so an unmeasured behavior is never reported as a passing one.
+本文件刻意不写死测试数量：每个阶段都会增加用例，写死的数字一经添加新用例即过期，
+而过期的数字会被误读为套件不完整。权威数字以 `vitest run` 的输出为准。
+Live 层为可选（`EF_LIVE=1`），没有可用路由时跳过，绝不把「未测量」报成「通过」。
 
 `scripts/generate-maps.cjs` extracts the `@deepseek-ai/*` path table from the
 vendored monorepo and emits two maps: `scripts/vendor-paths.json` (sources,

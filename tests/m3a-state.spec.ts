@@ -290,7 +290,7 @@ describe('S07–S08: projection boundedness', () => {
 })
 
 describe('M3a rendering and gates', () => {
-  it('structured checkpoint renders Current/Evidence/Open/Rationale/Recall', async () => {
+  it('structured checkpoint renders Current/Evidence/Open/Rationale, and a recall affordance', async () => {
     const { engine, ctx } = await createHarness({ text: 'why we folded' }, MOUNT)
     registerEpistemicFoldProjection(ctx)
     const session = toolConversation(2, { failTurns: [2] })
@@ -300,10 +300,11 @@ describe('M3a rendering and gates', () => {
     const summaryEvent = session.eventAt((session.seq - 2) as never)
     const state = currentFoldState(ctx, session)
     const rendered = renderStructuredCheckpoint(state, 'test-cp', 'why we folded')
-    // Identity and reachability are never omitted (R2-D keeps both).
-    expect(rendered).toContain('[EF checkpoint v1 mode=leaf id=test-cp]')
-    expect(rendered).toContain('Recall')
-    expect(rendered).toContain('- cp:test-cp')
+    // Identity and reachability are never omitted. R3-A merged them: the
+    // marker's `cp:test-cp` IS the reference context_recall accepts, so there
+    // is no separate Recall section to lose.
+    expect(rendered).toContain('[EF1 L cp:test-cp]')
+    expect(rendered).not.toMatch(/^Recall$/mu)
     // The failure's DESCRIPTION must reach the surface, not just its id: an
     // id-only line tells the model something is unresolved but not what, which
     // was observed to produce a wrong answer on the live behavioral subset.
@@ -317,11 +318,11 @@ describe('M3a rendering and gates', () => {
 
   it('omits empty sections entirely rather than announcing them (R2-D)', async () => {
     // A checkpoint with no state, no evidence, no open items and no rationale
-    // must not spend tokens on four `- (none)` placeholders. Identity and the
-    // recall pointer survive because they carry correctness, not decoration.
+    // must not spend tokens on four `- (none)` placeholders. The marker
+    // survives because it carries correctness — identity AND the recall
+    // reference — not decoration.
     const empty = renderStructuredCheckpoint(emptyCurrentState(), 'bare-cp')
-    expect(empty).toContain('[EF checkpoint v1 mode=leaf id=bare-cp]')
-    expect(empty).toContain('- cp:bare-cp')
+    expect(empty).toContain('[EF1 L cp:bare-cp]')
     expect(empty).not.toContain('- (none)')
     expect(empty).not.toContain('Current')
     expect(empty).not.toContain('Evidence')

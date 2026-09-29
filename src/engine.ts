@@ -21,7 +21,9 @@
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
+import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import { SessionSeq } from '@deepseek-ai/dsh-session'
+import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 import {
@@ -36,8 +38,12 @@ import { selectLeafSpan } from './leaf-policy.ts'
 import { leafMarginalReclaim, pressureBreakdown } from './pressure.ts'
 import type { LeafMarginalReclaim } from './pressure.ts'
 import { resolveProfile } from './economics-profile.ts'
+import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
+import type { FramingMode } from './framing.ts'
 import { compileContextPolicy } from './policy-compiler.ts'
 import type { ContextPolicyDecision } from './policy-compiler.ts'
+import { createRebaseIntentRegistry } from './rebase-intent.ts'
+import type { PendingRebaseIntent, RebaseCause, RebaseIntentRegistry } from './rebase-intent.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { renderStructuredCheckpoint } from './renderer.ts'
@@ -79,6 +85,7 @@ const EF_OWNED_CONFIG_KEYS = [
   'economicsProfiles',
   'cacheRealizationRate',
   'paybackHorizonRequests',
+  'framingMode',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
@@ -139,6 +146,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
+  /**
+   * Outstanding rebase requests, keyed per agent (R3-0b). R2-C only
+   * RECOMMENDED a rebase; this is the state the production consumer reads at
+   * idle. It is owned by the engine because the engine is what detects the
+   * condition, and it is per-agent because a rebase is an agent-level action.
+   */
+  private readonly rebaseIntents: RebaseIntentRegistry = createRebaseIntentRegistry()
   /** Last bundle this engine published (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
   private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
@@ -150,6 +164,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
   /** Most recent provider-aware rebase decision (R2-C telemetry). */
   private lastRebaseDecisionValue: ContextPolicyDecision | undefined
+  /** Root folds committed by this engine, for maintenance-path verification. */
+  private rootFoldCountValue = 0
+  /** Framing mode in force, resolved once against the mounted context. */
+  private framingModeResolved: FramingMode | undefined
 
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
@@ -198,6 +216,69 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Most recent provider-aware rebase decision (R2-C); `undefined` under `legacy`. */
   get lastRebaseDecision(): ContextPolicyDecision | undefined {
     return this.lastRebaseDecisionValue
+  }
+
+  /**
+   * Root folds this engine has committed. Exposed so a benchmark can verify a
+   * maintenance event actually landed a rebase rather than inferring it from a
+   * token delta (R3-0c).
+   */
+  get rootFoldCount(): number {
+    return this.rootFoldCountValue
+  }
+
+  /** The pending-rebase registry the idle consumer drives (R3-0b). */
+  get rebaseIntentRegistry(): RebaseIntentRegistry {
+    return this.rebaseIntents
+  }
+
+  /**
+   * Record a pending rebase intent for one session (R3-0b).
+   *
+   * Deliberately stores identity and cause only: the measurement that
+   * justified the request describes a surface that will be gone by the time
+   * the agent is idle, and a stale measurement replayed as authority is worse
+   * than no intent at all.
+   *
+   * Keyed by SESSION: the pressure turn and the later idle event are not
+   * guaranteed to hold the same agent wrapper, and the session is the identity
+   * both ends actually share.
+   */
+  private recordRebaseIntent(session: Session, cause: RebaseCause): void {
+    const intent: PendingRebaseIntent = {
+      sessionId: session.id,
+      preparedGeneration: session.surface.replaceGeneration,
+      cause,
+      createdAtSeq: SessionSeq(session.seq),
+    }
+    this.rebaseIntents.set(session, intent)
+  }
+
+  /**
+   * Re-decide a rebase against the CURRENT surface, from scratch (R3-0b).
+   *
+   * This is the "recommendation is not authority" rule made executable: the
+   * idle consumer calls this instead of trusting whatever the pressure turn
+   * concluded. Everything is re-measured — the frozen prefix, the tail, the
+   * routed target — and the policy compiler runs again on those numbers.
+   *
+   * @returns the fresh decision, or `null` when no routed target exists (an
+   *   unroutable session has no economics to reason about).
+   */
+  async rebaseDecisionAtIdle(agent: Agent): Promise<ContextPolicyDecision | null> {
+    const target = routedTarget(agent.session)
+    if (target === undefined) return null
+    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, undefined)
+    if (info.context === undefined) return null
+    const spec = resolveEfCompactSpec(
+      this.efConfig,
+      info.context.contextWindow,
+      reservedCompletionTokens(agent, info.defaultMaxTokens),
+    )
+    const measurement = this.ctx.tokenMeter.measure(agent.session)
+    const decision = this.evaluateEconomicRebase(agent, measurement, spec, true)
+    this.lastRebaseDecisionValue = decision
+    return decision
   }
 
   /**
@@ -279,6 +360,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       if (result !== null) {
         await this.recordCommit(candidate, result)
         this.stepsSinceRootRebase = 0
+        this.rootFoldCountValue += 1
+        // A landed root clears any outstanding intent: the rebase the intent
+        // asked for has happened, so a later idle event must not repeat it.
+        this.rebaseIntents.clear(agent.session)
         // Invalidate the stale advice: without this, the rebase consumer
         // re-reads the pre-root recommendation every step and the arm
         // degenerates into leaf/root thrashing (R0-C anti-oscillation).
@@ -373,7 +458,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       result = await this.compactRegion(span.start, span.end, agent, signal)
       measurement = meter.measure(agent.session)
       if (measurement.totalTokens < spec.thresholdTokens) {
-        this.recordRootRebaseAdvice(agent.session, measurement)
+        this.recordRootRebaseAdvice(agent.session, measurement, agent)
         return result
       }
     }
@@ -485,22 +570,25 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   }
 
   /**
-   * The rebase handoff after an economic leaf refusal (R2-C).
+   * The rebase handoff after an economic leaf refusal (R2-C, R3-0b).
    *
-   * R2-B measured that refusing a leaf and stopping is a 1.8x REGRESSION:
-   * the unfolded history stays on the surface as raw tokens, which cost far
-   * more than the framing tax the refusal avoided. A refusal is therefore only
+   * R2-B measured that refusing a leaf and stopping is a 1.8x REGRESSION: the
+   * unfolded history stays on the surface as raw tokens, which cost far more
+   * than the framing tax the refusal avoided. A refusal is therefore only
    * correct when it hands off to the mechanism that can actually shrink the
    * frozen prefix.
    *
-   * The handoff is expressed as a REBASE RECOMMENDATION rather than performed
-   * here, and that is deliberate. A rebase needs an idle agent and no open
-   * turn, but this path runs inside the caller's open turn and (in the real
-   * loop) inside the caller's own maintenance bracket; nesting a second
-   * bracket would either deadlock or corrupt the caller's transaction. The
-   * recommendation is consumed by the SAME rebase window that already serves
-   * manual `/compact` and R0-C's benchmark hook, so no new execution path is
-   * introduced and the proven one is reused.
+   * The handoff is expressed as a PENDING INTENT rather than performed here,
+   * and that is deliberate. A rebase needs an idle agent and no open turn, but
+   * this path runs inside the caller's open turn and (in the real loop) inside
+   * the caller's own maintenance bracket; nesting a second bracket would
+   * either deadlock or corrupt the caller's transaction.
+   *
+   * R2-C consumed the handoff through a benchmark-only hook that re-read the
+   * engine's advice and called `compactNow` — so the E3 numbers described the
+   * engine plus a test policy, not the product. R3-0b replaces that with an
+   * intent the PRODUCTION idle consumer drains, which re-decides from the
+   * surface as it then stands.
    *
    * @returns always `null` — the caller's turn is left untouched.
    */
@@ -509,7 +597,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     measurement: TokenMeasurement,
     spec: EfCompactSpec,
   ): CompactionResult | null {
-    this.recordRootRebaseAdvice(agent.session, measurement)
+    this.recordRootRebaseAdvice(agent.session, measurement, agent)
 
     if (this.efConfig.rootPolicy.mode !== 'economics') return null
 
@@ -517,20 +605,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     this.lastRebaseDecisionValue = decision
     if (decision.action !== 'root') return null
 
-    // Override the token-budget heuristic with the economic verdict: on THIS
-    // model, at THIS frozen size, the rebase's break-even horizon is short
-    // enough to be worth its cost. The cooldown still applies, so a rebase
-    // cannot thrash.
-    const prior = this.lastRootRebaseAdviceValue
+    // The cooldown still applies, so a rebase cannot thrash.
     if (this.stepsSinceRootRebase < ROOT_REBASE_COOLDOWN) return null
-    this.lastRootRebaseAdviceValue = {
-      recommended: true,
-      frozenTokens: prior?.frozenTokens ?? 0,
-      budget: prior?.budget ?? this.efConfig.frozenCheckpointTokenBudget,
-      frozenCount: prior?.frozenCount ?? 0,
-    }
+
+    this.recordRebaseIntent(agent.session, 'economic_leaf_refusal')
     this.ctx.logger.warn(
-      `[epistemic-fold] economic rebase recommended: ${decision.reason}`,
+      `[epistemic-fold] economic rebase pending: ${decision.reason}`,
     )
     return null
   }
@@ -542,11 +622,18 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * and the measured cache realization. The payback horizon answers the only
    * question that matters: will the frozen prefix be carried for enough
    * further requests to repay the rebase?
+   *
+   * @param atIdle - whether this decision is being made at the idle seam
+   *   (R3-0b) rather than inside a pressure turn. It changes nothing about the
+   *   economics; it only relaxes the anti-oscillation cooldown, because the
+   *   cooldown exists to stop leaf/root thrashing WITHIN a turn, and an idle
+   *   re-decision is by construction not part of that churn.
    */
   private evaluateEconomicRebase(
     agent: Agent,
     measurement: TokenMeasurement,
     spec: EfCompactSpec,
+    atIdle = false,
   ): ContextPolicyDecision {
     const target = routedTarget(agent.session)
     const profile = resolveProfile(
@@ -562,7 +649,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         frozenCheckpointCount: breakdown.frozenCount,
         rawTailTokens: breakdown.openTokens,
         promptTokens: breakdown.totalTokens,
-        recentFoldCadence: this.stepsSinceRootRebase,
+        recentFoldCadence: atIdle ? Number.POSITIVE_INFINITY : this.stepsSinceRootRebase,
       },
       pressure: {
         contextWindow: spec.contextWindow,
@@ -573,17 +660,33 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         realizationRate: this.efConfig.rootPolicy.realizationRate,
         pressureRatio: this.efConfig.thresholdRatio,
         compactionCost: this.efConfig.rootPolicy.compactionCost,
-        rebaseCooldownFolds: ROOT_REBASE_COOLDOWN,
-        // This path is reached only AFTER a leaf was refused, so a leaf is not
-        // an available action. Without this the pressure override would demand
-        // the very fold that was just rejected.
+        rebaseCooldownFolds: atIdle ? 0 : ROOT_REBASE_COOLDOWN,
+        // Inside a pressure turn this path is reached only AFTER a leaf was
+        // refused, so a leaf is not an available action — without this the
+        // pressure override would demand the very fold just rejected. At idle
+        // the question is purely whether a root is worth it, so a leaf is
+        // likewise not the alternative being weighed.
         leafAvailable: false,
       },
     })
   }
 
-  /** Record frozen-budget telemetry after pressure work settles. */
-  private recordRootRebaseAdvice(session: Session, measurement: TokenMeasurement): void {
+  /**
+   * Record frozen-budget telemetry after pressure work settles, and — when the
+   * budget heuristic fires on its own (R3-0b) — raise a pending rebase intent
+   * for the idle consumer.
+   *
+   * Under `legacy` root policy this only logs, preserving the R0 behavior
+   * exactly: the advice is emitted for a human to act on with `/compact`.
+   * Under `economics` the same condition is routed through the production
+   * consumer instead, because "the frozen prefix is over its budget" is
+   * precisely the case where a leaf cannot help.
+   */
+  private recordRootRebaseAdvice(
+    session: Session,
+    measurement: TokenMeasurement,
+    agent?: Agent,
+  ): void {
     const advice = evaluateRootRebase(
       session,
       measurement,
@@ -596,13 +699,60 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       && this.stepsSinceRootRebase >= ROOT_REBASE_COOLDOWN
     this.lastRootRebaseAdviceValue = { ...advice, recommended }
     this.stepsSinceRootRebase += 1
-    if (recommended) {
-      this.ctx.logger.warn(
-        `[epistemic-fold] frozen checkpoint budget exceeded: ${advice.frozenTokens} tokens across `
-        + `${advice.frozenCount} checkpoints (budget ${advice.budget}); a manual root rebase `
-        + '(/compact) is recommended',
-      )
+    if (!recommended) return
+    if (this.efConfig.rootPolicy.mode === 'economics' && agent !== undefined) {
+      this.recordRebaseIntent(agent.session, 'frozen_budget')
+      return
     }
+    this.ctx.logger.warn(
+      `[epistemic-fold] frozen checkpoint budget exceeded: ${advice.frozenTokens} tokens across `
+      + `${advice.frozenCount} checkpoints (budget ${advice.budget}); a manual root rebase `
+      + '(/compact) is recommended',
+    )
+  }
+
+  /**
+   * EF's checkpoint framing hook (R3-B/C).
+   *
+   * Basic's default wraps every checkpoint body in a fixed preamble and
+   * `<compacted-summary>` tags. That framing is the largest single component of
+   * a leaf checkpoint's cost and it is repeated once per fold — the R2 framing
+   * analysis measured that no EF-side dieting can remove it, which is why the
+   * seam exists.
+   *
+   * Under `legacy` this delegates to the inherited framing, so the default
+   * deployment stays byte-identical to Basic. Under `system-dedup` the framing
+   * is dropped HERE because the same semantics are stated once in a stable
+   * system-prompt section, where a constant belongs.
+   *
+   * If `ctx.systemPrompt` is absent there is nowhere to put that explanation,
+   * so the mode falls back to `legacy` and the preamble stays. Dropping the
+   * preamble with nowhere to say what a checkpoint is would trade correctness
+   * for tokens.
+   */
+  protected override frameCheckpoint(
+    summary: readonly ContentBlock[],
+    agent: Agent,
+  ): ContentBlock[] {
+    if (this.resolvedFramingMode() === 'legacy') {
+      return super.frameCheckpoint(summary, agent)
+    }
+    return foldFrameCheckpoint(summary)
+  }
+
+  /**
+   * The framing mode actually in force, resolved against what is mounted.
+   * Cached because the fallback decision is stable for one mounting.
+   */
+  private resolvedFramingMode(): FramingMode {
+    if (this.framingModeResolved !== undefined) return this.framingModeResolved
+    const hasSystemPrompt = this.ctx.get('systemPrompt') !== undefined
+    const resolved = framingModeFor(this.efConfig.framingMode, hasSystemPrompt)
+    if (resolved.fallback !== undefined) {
+      this.ctx.logger.warn(`[epistemic-fold] ${resolved.fallback}`)
+    }
+    this.framingModeResolved = resolved.mode
+    return resolved.mode
   }
 
   /**

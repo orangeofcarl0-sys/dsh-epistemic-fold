@@ -142,7 +142,7 @@ describe('R0-B: native plugin composition', () => {
     expect(state.stateHeads).toBeDefined()
 
     // Recall works against the plugin-configured bundle root.
-    const checkpointId = /id=([0-9a-f-]{36})/u.exec(
+    const checkpointId = /cp:([0-9a-f-]{36})\]/u.exec(
       (lastSummary(session)!.summary as never as { text?: string }[])?.map(b => b.text ?? '').join('\n') ?? '',
     )?.[1]
     expect(checkpointId).toBeDefined()
@@ -189,7 +189,7 @@ describe('R0-B: native plugin composition', () => {
     const session = conversation()
     const nodes = [...session.surface.nodes]
     await engine.compactRegion(nodes[0]!, nodes[7]!, { session, options: { provider: MODEL, model: MODEL } } as never, SIGNAL)
-    const checkpointId = /id=([0-9a-f-]{36})/u.exec(
+    const checkpointId = /cp:([0-9a-f-]{36})\]/u.exec(
       (lastSummary(session)!.summary as never as { text?: string }[])?.map(b => b.text ?? '').join('\n') ?? '',
     )?.[1]!
     expect(checkpointId).toBeDefined()

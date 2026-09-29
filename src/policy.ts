@@ -13,6 +13,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
 import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
+import type { FramingMode } from './framing.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -81,6 +82,17 @@ export interface ResolvedEpistemicFoldConfig {
   readonly minReclaimRatio: number
   /** Provider-aware rebase policy (R2-C). */
   readonly rootPolicy: ResolvedEconomicsPolicy
+  /**
+   * Checkpoint framing strategy (R3-B/C).
+   *
+   * `legacy` — Basic's per-checkpoint preamble and wrapper tags, exactly as
+   * inherited. Correct with no system-prompt dependency.
+   * `system-dedup` — no per-checkpoint preamble; the semantics move to one
+   * stable system-prompt section, which is where they belong if they are
+   * constant. Requires `ctx.systemPrompt`, and RESOLVES to `legacy` when it is
+   * absent rather than silently dropping the preamble.
+   */
+  readonly framingMode: FramingMode
 }
 
 /** Leaf admission policy mode (R2-B). */
@@ -139,6 +151,11 @@ const DEFAULT_REALIZATION_RATE = 1
  */
 const DEFAULT_PAYBACK_HORIZON = 200
 const DEFAULT_COMPACTION_COST = 0
+/**
+ * Default framing is `legacy` until the R3 economy gate is actually met.
+ * Flipping it is a product decision the matrix must justify, not a default.
+ */
+const DEFAULT_FRAMING_MODE: FramingMode = 'legacy'
 
 /** Public plugin configuration: Basic's compaction policy plus EF's budget. */
 export interface EpistemicFoldConfig extends BasicCompactionConfig {
@@ -165,6 +182,12 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   cacheRealizationRate?: number
   /** Payback horizon for `economics` mode, in requests. */
   paybackHorizonRequests?: number
+  /**
+   * Checkpoint framing strategy (R3-B/C); default `legacy`. `system-dedup`
+   * moves the checkpoint preamble into one stable system-prompt section,
+   * requiring `ctx.systemPrompt` to be mounted.
+   */
+  framingMode?: FramingMode
 }
 
 /** Resolve and validate the EF-specific policy face of the plugin config. */
@@ -220,6 +243,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (!Number.isFinite(paybackHorizonRequests) || paybackHorizonRequests < 0) {
     throw new Error('epistemic-fold: paybackHorizonRequests must be a non-negative number')
   }
+  const framingMode = config.framingMode ?? DEFAULT_FRAMING_MODE
+  if (framingMode !== 'legacy' && framingMode !== 'system-dedup') {
+    throw new Error('epistemic-fold: framingMode must be "legacy" or "system-dedup"')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -232,6 +259,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     leafAdmission,
     minReclaimTokens,
     minReclaimRatio,
+    framingMode,
     rootPolicy: {
       mode: rootPolicy,
       profiles: config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,

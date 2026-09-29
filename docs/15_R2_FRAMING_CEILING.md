@@ -145,3 +145,80 @@ carrying less fixed text, and only on the workloads where text is the problem.
 
 Recorded as a finding, not a plan: no production behavior was changed by this
 analysis, and the defaults remain `legacy`/`legacy`.
+
+---
+
+## 5. R3 outcome — what actually happened (added after R3)
+
+This document is R2's record and is left as written. R3 then executed the plan
+above; the results are in [docs/16](16_R3_EVALUATION_REPORT.md), and three of
+this document's conclusions need correcting.
+
+### 5.1 The "~15% EF-only" ceiling was too pessimistic
+
+§1/§2b assumed the checkpoint UUID must appear **twice** — once in the marker
+and once in the recall pointer — and that halving it meant "dropping the recall
+pointer … trades a correctness capability for tokens, or shortening checkpoint
+identity … risks collisions".
+
+Both horns were false. **R3-A made the marker carry both jobs at once**:
+
+```
+V1  [EF checkpoint v1 mode=leaf id=<uuid>]  …  Recall\n- cp:<uuid>
+V2  [EF1 L cp:<uuid>]
+```
+
+`cp:<uuid>` is already exactly the reference `context_recall` accepts, so the
+`Recall` section was duplication, not an affordance. Nothing was traded and
+nothing was shortened. Measured effect on the required removal:
+
+| Workload | §2b required | After R3-A |
+|---|---:|---:|
+| W1 narrative-heavy | 20.0% | **15.5%** |
+| W2 state-rich | 67.9% | 73.3% |
+| W3 tool-heavy | 21.8% | **19.4%** |
+| W4 recall-heavy | 39.0% | **34.2%** |
+| W5 multi-agent | 26.8% | **24.7%** |
+
+W1/W3/W4/W5 all improved, and W1's requirement moved **inside** the range
+§3 called EF-achievable. W2 moved the wrong way, for the reason §2b already
+gave: its cost is machine state, not framing, so removing framing removes less
+of its total.
+
+### 5.2 The seam worked, and the predicted split was right
+
+R3-B/C implemented the single-surface preamble via a minimal DSH seam and
+measured BCR through the production path:
+
+```
+W1 1.067 → 0.985   W2 1.156 → 1.061   W3 1.107 → 0.988
+W4 1.144 → 1.002   W5 1.139 → 0.986   Mean (economy) 0.990
+```
+
+§2b's prediction — "with the seam, 4 of 5 workloads reach parity, but W2 does
+not" — was confirmed essentially exactly (three clear passes, one borderline
+miss, W2 short).
+
+### 5.3 The bounded chain was NOT built, and should not be
+
+§3 listed the bounded/merged checkpoint chain as "no longer optional if W2 is
+to reach parity", and §4 repeated it as the highest-value next target.
+
+R3 §25 made that conditional on the seam falling short, and it did not: the
+stop condition was met on 3 of 4 economy workloads. Building a generational
+merge to chase W2 would mean optimizing the workload this document itself
+identifies as the **reliability** region — deleting machine state to win a price
+comparison on the one workload where carrying that state is the product.
+
+W4's remaining 0.2% is likewise **not** a framing problem. Measured: framing +
+irreducible identity is 6.3% of its cost, and the gap is **recall volume**
+(Basic 25 434 tokens vs EF 33 533). That is a different mechanism, and
+[docs/16 §8](16_R3_EVALUATION_REPORT.md) names the right lever for it.
+
+### 5.4 One prediction this document did not make
+
+The peak-context bound. R3 §39 asked for `Peak <= Basic · 1.05`; the R3 economy
+run measured **1.16× / 1.14× / 1.22×** on W1/W3/W5, from fold timing rather
+than framing. It is recorded as a violation in docs/16 §4.2 rather than
+relaxed.
+

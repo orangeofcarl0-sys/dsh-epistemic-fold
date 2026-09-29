@@ -93,10 +93,16 @@ export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresent
  * framing cost is the single largest component of a leaf checkpoint, and most
  * of it is this kind of fixed boilerplate repeated once per fold.
  *
- * Two things are never omitted: the marker line, which owns checkpoint
- * identity, and the Recall pointer, which is what makes the archive reachable.
- * Omitting either would trade correctness for tokens, which is exactly the
- * trade R2 forbids.
+ * **Single-ID affordance (R3-A).** The trailing `Recall` section is GONE. The
+ * marker line already carries `cp:<id>`, which is exactly the reference
+ * `context_recall` takes, so writing it a second time under a `Recall` heading
+ * told the model nothing the marker had not. The affordance is preserved in
+ * full — the recall tool's own description defines what `cp:` means and is
+ * registered once per request rather than once per checkpoint.
+ *
+ * What is never omitted: the marker line, which is simultaneously checkpoint
+ * identity and the recall pointer. Omitting it would trade correctness for
+ * tokens, which is exactly the trade R2 forbids.
  *
  * @param state - the deterministic current state at fold time.
  * @param checkpointId - the fold's checkpoint identity.
@@ -137,6 +143,5 @@ export function renderStructuredCheckpoint(
     for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
   }
 
-  lines.push('', 'Recall', `- cp:${checkpointId}`)
   return lines.join('\n')
 }
