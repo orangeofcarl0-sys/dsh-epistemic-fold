@@ -37,6 +37,7 @@ import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { leafMarginalReclaim, pressureBreakdown } from './pressure.ts'
 import type { LeafMarginalReclaim } from './pressure.ts'
+import { assertDshCompatibility } from './compat.ts'
 import { resolveProfile } from './economics-profile.ts'
 import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
 import type { FramingMode } from './framing.ts'
@@ -179,6 +180,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // stripped before the super call (they are resolved by resolveEfConfig).
     super(ctx, stripEfConfigKeys(config))
     this.efConfig = resolveEfConfig(config)
+    // R4 §4: the framing seam is an EXTERNAL dependency, so its presence is
+    // verified once, here, against the requested mode — never sniffed per fold
+    // and never silently downgraded. `legacy` needs no seam, so the default
+    // deployment mounts on any DSH build.
+    assertDshCompatibility(this.efConfig.framingMode)
     // Loader deployments pass exactly (ctx, config): the store then comes
     // from `bundleRoot` in the config face, honoring the DSH persistence
     // lifecycle (R0-B). Programmatic callers may inject a store directly.

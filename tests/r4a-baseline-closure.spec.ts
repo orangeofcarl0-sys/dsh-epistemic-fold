@@ -33,6 +33,7 @@ import {
   peakRatioDiagnostic,
   windowSafetyToMarkdown,
 } from '../eval/src/window-safety.ts'
+import { assertDshCompatibility, detectDshCapabilities, framingModeSupported } from '../src/compat.ts'
 import type { SessionId } from '@deepseek-ai/dsh-session'
 
 describe('R4-0a: the intent registry keys on live Session identity', () => {
@@ -333,5 +334,53 @@ describe('R4-C: window safety replaces the peak ratio as the gate', () => {
     // ...and the report states the verdict without ever showing the ratio as a
     // pass/fail criterion.
     expect(windowSafetyToMarkdown(verdict)).toContain('Window safe: **PASS**')
+  })
+})
+
+describe('R4 §4: the DSH seam is a capability CONTRACT, not a runtime sniff', () => {
+  it('detects the seam in the vendored build', () => {
+    // The seam IS present here (R3-B applied it), so a green economy run can
+    // rely on it. If this ever reports false, every system-dedup measurement
+    // becomes suspect, which is precisely why the capability is asserted.
+    expect(detectDshCapabilities().frameCheckpointSeam).toBe(true)
+  })
+
+  it('legacy framing needs NO seam, so the default mounts anywhere', () => {
+    expect(() => assertDshCompatibility('legacy', { frameCheckpointSeam: false })).not.toThrow()
+    expect(framingModeSupported({ frameCheckpointSeam: false }).legacy).toBe(true)
+  })
+
+  it('system-dedup WITHOUT the seam FAILS LOUD — it never silently degrades', () => {
+    // R4 §3: a user on vanilla DSH who sets system-dedup must not get no
+    // dedup while believing otherwise, which would report a saving that does
+    // not exist. The error must name the remedy.
+    expect(() => assertDshCompatibility('system-dedup', { frameCheckpointSeam: false }))
+      .toThrow(/frameCheckpoint` seam/u)
+    expect(() => assertDshCompatibility('system-dedup', { frameCheckpointSeam: false }))
+      .toThrow(/apply-framing-seam/u)
+    // ...and the non-throwing preflight says the same thing, so a diagnostic
+    // surface can report it without forcing the failure.
+    const supported = framingModeSupported({ frameCheckpointSeam: false })
+    expect(supported.systemDedup).toBe(false)
+    expect(supported.reason).toContain('silently not deduplicate')
+  })
+
+  it('system-dedup WITH the seam passes', () => {
+    expect(() => assertDshCompatibility('system-dedup', { frameCheckpointSeam: true })).not.toThrow()
+    expect(framingModeSupported({ frameCheckpointSeam: true }).systemDedup).toBe(true)
+  })
+
+  it('the only permitted runtime probe is a single prototype typeof, used to REFUSE', () => {
+    // The distinction from the forbidden `(Basic as any).frameCheckpoint` form:
+    // that shape picks a behavior when the capability is missing and therefore
+    // fails OPEN. This module probes once and fails CLOSED. Assert that no
+    // other module probes at all.
+    const compat = readFileSync(join(import.meta.dirname, '..', 'src', 'compat.ts'), 'utf8')
+    expect(compat).toContain("typeof prototype['frameCheckpoint']")
+    // The probe exists in exactly one file.
+    for (const file of ['engine.ts', 'plugin.ts', 'framing.ts']) {
+      const source = readFileSync(join(import.meta.dirname, '..', 'src', file), 'utf8')
+      expect(source, `${file} must not probe the seam`).not.toContain("prototype['frameCheckpoint']")
+    }
   })
 })
