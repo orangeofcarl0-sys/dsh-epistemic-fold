@@ -67,16 +67,30 @@ const ECONOMY_PRESET = {
   /** Decide a rebase by amortized break-even under the routed model's prices. */
   rootPolicy: 'economics',
   /**
-   * No LLM call for a checkpoint. The machine state is authoritative and the
-   * narrative was advisory; R3 measured that removing the call costs nothing
-   * in quality and removes an auxiliary request per fold.
+   * No LLM call for a checkpoint.
+   *
+   * The machine state is authoritative and the checkpoint is a marker plus that
+   * state, so an auxiliary call is not needed to carry DECLARED facts across a
+   * fold — R3 measured that much, and RC1-F's smoke still confirms it.
+   *
+   * What this does NOT do is carry narrative prose. RC1.1 measured a
+   * marker-only checkpoint surface losing undeclared narrative where Basic kept
+   * some of it (rc11c-live-smokes), and whether EF's bounded recall recovers
+   * that is the open question RC1.2 exists to answer. Do not read this as
+   * "removing the call costs nothing in quality": that claim is scoped to
+   * declared state.
    */
   semanticMode: 'none',
   /**
    * No per-checkpoint preamble; the semantics live in one system-prompt
-   * section. REQUIRES `ctx.systemPrompt` — `resolveEfConfig` falls back to
-   * `legacy` framing when it is absent rather than dropping the preamble with
-   * nowhere to put the explanation.
+   * section. REQUIRES `ctx.systemPrompt`.
+   *
+   * `framingModeFor` REFUSES TO START when the system prompt is absent — it
+   * throws rather than falling back to `legacy` framing, because a deployment
+   * that asked for the deduplicated framing must not silently receive the
+   * per-checkpoint preamble and a different price than the one it was promised
+   * (RC0-A). Mount `@deepseek-ai/dsh-system-prompt`, or set
+   * `framingMode: 'legacy'` explicitly.
    */
   framingMode: 'system-dedup',
 } as const satisfies Pick<EpistemicFoldConfig, (typeof PRESET_KEYS)[number]>
