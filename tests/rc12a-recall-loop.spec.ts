@@ -14,29 +14,29 @@
  *
  * `context_search` and `context_recall` are exactly the mechanism EF provides
  * for recovering folded raw history, and they were never invoked. So this smoke
- * drives a real loop:
+ * drives a real loop, bounded to a few rounds and recording what the loop
+ * actually did (calls, recalled tokens, cost) rather than only the final answer.
  *
- *   model -> tool-call -> ToolRuntime.execute -> tool/result -> next model step
- *
- * bounded to a few rounds so a confused model cannot loop forever, and recording
- * what the loop actually did (calls, recalled tokens, cost) rather than only the
- * final answer.
+ * The loop itself now lives in `tests/recall-loop.ts`, shared with RC1.3, so the
+ * two suites cannot drift: RC1.3 changes only the PROBE TEXT and the ANALYSIS,
+ * which is what makes a difference between their results attributable to the
+ * probe rather than to two subtly different harnesses.
  *
  * @module tests/rc12a-recall-loop
  */
 
 import { describe, expect, it } from 'vitest'
+import { createHarness } from './harness.ts'
 import {
-  createMessage,
-  createToolResultMessage,
-  createUserMessage,
-  ToolCallId,
-} from '@deepseek-ai/dsh-llm'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { Session as SessionType } from '@deepseek-ai/dsh-session'
-import { createHarness, SIGNAL } from './harness.ts'
-import type { Harness } from './harness.ts'
+  FACTS,
+  FACT_PROBES,
+  growAndFold,
+  MAX_ROUNDS,
+  runRecallLoop,
+  scoreAnswer,
+  seedNarrative,
+} from './recall-loop.ts'
+import type { LoopOutcome } from './recall-loop.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
@@ -49,18 +49,6 @@ import { join } from 'node:path'
 
 const LIVE_ENABLED = process.env.EF_LIVE === '1'
 const LIVE_PROVIDER = 'live'
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
-
-/**
- * How many model→tool→model rounds a probe may take before it is cut off.
- *
- * Raised from 3 after the first run: the model's real path is
- * `context_search` → `context_recall(summary)` → `context_recall(exact)` →
- * answer, so a 3-round cap truncated it mid-thought and the empty answer was
- * then scored as a WRONG answer. That is the same defect R4-E had to fix, and it
- * is why `truncated` is now reported separately from a wrong answer.
- */
-const MAX_ROUNDS = Number(process.env.EF_LIVE_RECALL_ROUNDS ?? 6)
 
 function flash(): ContextEconomicsProfile {
   return parseEconomicsProfile(JSON.parse(
@@ -68,307 +56,17 @@ function flash(): ContextEconomicsProfile {
   ))
 }
 
-/** Deterministic filler. */
-function filler(label: string, units: number): string {
-  return Array.from(
-    { length: units },
-    (_, index) => `${label} unit ${index} ${'payload '.repeat(12)}`,
-  ).join(' ')
-}
-
 /**
- * The three facts, planted as ORDINARY PROSE with no anchor declared.
+ * The HINTED probe RC1.2 used: it tells the model the tools exist and to use
+ * them.
  *
- * This is the whole point: a user states these once and expects them
- * remembered. Nothing here goes through the authority gate, so the only way
- * they survive a fold is a checkpoint that carries prose, or recall.
+ * Retained so RC1.2's recorded result stays reproducible. RC1.3's un-hinted
+ * baseline is the control against it — see
+ * `tests/rc13a-live-retrieval.spec.ts`.
+ *
+ * The questions come from `FACT_PROBES` rather than being retyped, so the probe
+ * cannot drift away from the matchers that score it.
  */
-const FACTS = {
-  constraint: 'Our batch size must never exceed 64 items.',
-  superseded: 'The parser timeout was 30 seconds.',
-  supersession: 'CORRECTION: the parser timeout is now 90 seconds, superseding the 30.',
-  exact: 'The failing error code we are chasing is PARSE-7741.',
-}
-
-function seedNarrative(): SessionType {
-  const session = Session.create(SessionId(`rc12-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`))
-  session.append('turn/start', { turn: 1 })
-  session.append('request/header', { header: { config: MODEL_OPTIONS }, reason: 'initial' })
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text:
-      `Some context before we start. ${FACTS.constraint} ${FACTS.superseded} `
-      + `${FACTS.supersession} ${FACTS.exact} Please keep all of this in mind.` }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text: filler('background', 40) }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
-  session.append('turn/end', { turn: 1, reason: { kind: 'completed' } })
-  return session
-}
-
-/** What one probe's agent loop actually did. */
-export interface LoopOutcome {
-  readonly answer: string
-  readonly rounds: number
-  readonly searchCalls: number
-  readonly recallCalls: number
-  readonly otherCalls: number
-  /** Characters of tool output the loop fed back to the model. */
-  readonly recalledChars: number
-  /**
-   * Whether the tool output the loop received carried each fact.
-   *
-   * This separates two questions the smoke could otherwise conflate:
-   *
-   *   did a tool RETURN the folded facts?   (a property of the mechanism)
-   *   did the model then USE them?          (a property of the model)
-   *
-   * **It is only defined for arms that HAVE EF recall tools.** Real Basic has no
-   * Bundle and no `context_search` / `context_recall`, so scoring Basic on this
-   * is meaningless — and reporting it as `Basic 2/5` is precisely the error
-   * RC1.2.1 corrected. Callers must read it only for EF arms.
-   */
-  readonly toolOutputFacts: ReturnType<typeof scoreAnswer>
-  /** Model calls the loop made. */
-  readonly providerCalls: number
-  /**
-   * Whether the loop hit the round cap while STILL calling tools.
-   *
-   * A truncated loop has no final answer, and scoring its empty string as wrong
-   * would convert "the harness ran out of rounds" into "the policy lost a fact".
-   * Such a replicate is reported and EXCLUDED from the quality tally.
-   */
-  readonly truncated: boolean
-}
-
-/** Assemble the system prompt and tool schemas a production request carries. */
-async function assemble(harness: Harness): Promise<{
-  readonly system?: string
-  readonly tools?: readonly { name: string; description: string; parameters: Record<string, unknown> }[]
-}> {
-  const service = harness.ctx.get('systemPrompt') as unknown as
-    | { assemble?: (context: unknown) => Promise<{ sections?: readonly { text?: string }[]; tools?: readonly { name: string; description: string; parameters: Record<string, unknown> }[] }> }
-    | undefined
-  if (service?.assemble === undefined) {
-    throw new Error(
-      'recall smoke: no SystemPrompt service is mounted, so the request shape would differ from '
-      + 'production. A live measurement must fail loud rather than measure a request that carries '
-      + 'no system prompt (RC0/RC1 both proved this with real incidents).',
-    )
-  }
-  // NO silent catch. An assembly failure changes the WIRE SHAPE, and a live
-  // measurement taken over a corrupted shape is worse than no measurement —
-  // that is exactly how the R3 framing change was once measured against a
-  // request that never carried a system prompt at all.
-  const assembly = await service.assemble({})
-  const text = (assembly.sections ?? [])
-    .map(section => section.text ?? '')
-    .filter(part => part.length > 0)
-    .join(String.fromCharCode(10, 10))
-  return {
-    ...(text.length === 0 ? {} : { system: text }),
-    ...(assembly.tools === undefined || assembly.tools.length === 0 ? {} : { tools: assembly.tools }),
-  }
-}
-
-/** The session surface as request messages. */
-function surfaceMessages(session: SessionType): unknown[] {
-  const messages: unknown[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null) continue
-    messages.push(message)
-  }
-  return messages
-}
-
-/**
- * Drive one real agent loop and return what it did.
- *
- * The loop is deliberately minimal but REAL in the one way that matters: a tool
- * call is executed through `ctx.tools.execute`, its result is appended to the
- * session as a durable `tool/result`, and the model is asked again. That is the
- * path `context_search` → `context_recall` → answer.
- *
- * @param harness - a harness mounted with `tools: true`.
- * @param session - the session to probe.
- * @param question - the probe text.
- * @returns the final answer plus the loop's own telemetry.
- */
-export async function runRecallLoop(
-  harness: Harness,
-  session: SessionType,
-  question: string,
-): Promise<LoopOutcome> {
-  session.append('turn/start', { turn: 900 })
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text: question }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
-
-  const { system, tools } = await assemble(harness)
-  let answer = ''
-  let rounds = 0
-  let searchCalls = 0
-  let recallCalls = 0
-  let otherCalls = 0
-  let recalledChars = 0
-  // Counts CALLS, not chunks. The previous version incremented inside the
-  // `for await` over the stream, so it counted stream chunks and the name lied.
-  // `BillingRecorder.bill.length` is the real provider-call count.
-  let providerCalls = 0
-  let truncated = false
-  let recalledText = ''
-
-  const agent = { session, options: MODEL_OPTIONS } as never
-
-  for (let round = 0; round < MAX_ROUNDS; round += 1) {
-    rounds = round + 1
-    // The last round is allowed to be a tool round, but if it is, the loop was
-    // cut off rather than finished.
-    const isLastRound = round === MAX_ROUNDS - 1
-    const messages = surfaceMessages(session)
-    let text = ''
-    const toolCalls: Array<{ id: string; name: string; args: string }> = []
-
-    providerCalls += 1
-    for await (const chunk of harness.ctx.llm.stream({
-      provider: LIVE_PROVIDER,
-      model: 'live',
-      messages,
-      ...(system === undefined ? {} : { system }),
-      ...(tools === undefined ? {} : { tools }),
-      maxTokens: 300,
-    } as never)) {
-      if (chunk.type === 'text-delta') text += chunk.text
-      if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
-        toolCalls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
-      }
-    }
-
-    answer = text.length > 0 ? text : answer
-
-    // No tool call means the loop is done — the model answered.
-    if (toolCalls.length === 0) break
-    if (isLastRound) truncated = true
-
-    // Commit the assistant turn carrying the calls, so the next request sees it.
-    session.append('step/start', { turn: 900, step: round + 1 })
-    session.append('assistant/message', {
-      stream: [], turn: 900, step: round + 1,
-      message: createMessage({
-        role: 'assistant',
-        content: [
-          ...(text.length === 0 ? [] : [{ type: 'text' as const, text }]),
-          ...toolCalls.map(call => ({
-            type: 'tool-call' as const,
-            id: ToolCallId(call.id),
-            name: call.name,
-            arguments: call.args,
-          })),
-        ],
-        source: { kind: 'model', ...MODEL_OPTIONS },
-      }),
-    }, { surfaceOp: 'append' })
-
-    for (const call of toolCalls) {
-      const callId = ToolCallId(call.id)
-      session.append('tool/call', { turn: 900, step: round + 1, callId, name: call.name, arguments: call.args })
-      if (call.name === 'context_search') searchCalls += 1
-      else if (call.name === 'context_recall') recallCalls += 1
-      else otherCalls += 1
-
-      // THE EXECUTION, through the real runtime. A recall tool that cannot run
-      // here would make the loop report "the model did not recall" when the
-      // truth is "the model was not allowed to".
-      let content: ContentBlock[]
-      // A thrown execution is an ERROR result, and the model must be told so.
-      // The previous version wrote failure text but passed `isError: false`,
-      // which tells the model the tool SUCCEEDED while its content says it did
-      // not — the worst of both, because the model may then treat the failure
-      // message as data.
-      let isError = false
-      try {
-        const result = await harness.ctx.tools.execute({
-          callId,
-          name: call.name,
-          arguments: safeParse(call.args),
-          agent,
-          signal: SIGNAL,
-        })
-        content = result.content as ContentBlock[]
-        isError = result.isError
-      } catch (error: unknown) {
-        isError = true
-        content = [{
-          type: 'text',
-          text: `tool execution failed: ${error instanceof Error ? error.message : String(error)}`,
-        }]
-      }
-      const rendered = content
-        .map(block => (block.type === 'text' ? block.text : ''))
-        .join('\n')
-      recalledChars += rendered.length
-      recalledText += rendered
-      session.append('tool/result', {
-        turn: 900, step: round + 1,
-        message: createToolResultMessage({ callId, content, isError }),
-      }, { surfaceOp: 'append' })
-    }
-    session.append('step/end', { turn: 900, step: round + 1 })
-  }
-
-  session.append('turn/end', { turn: 900, reason: { kind: 'completed' } })
-  return {
-    answer, rounds, searchCalls, recallCalls, otherCalls, recalledChars, providerCalls, truncated,
-    // Scored with the SAME function as the answer, so "a tool returned the
-    // fact" and "the model said it" are measured identically and comparable.
-    toolOutputFacts: scoreAnswer(recalledText),
-  }
-}
-
-/** Parse tool arguments, tolerating a model that emits malformed JSON. */
-function safeParse(raw: string): unknown {
-  try {
-    return JSON.parse(raw) as unknown
-  } catch {
-    return {}
-  }
-}
-
-/**
- * Grow the session and fold it, so the facts end up inside a checkpoint.
- *
- * @returns the number of leaf folds that actually landed.
- */
-async function growAndFold(
-  harness: Harness,
-  session: SessionType,
-  steps: number,
-  tokensPerStep: number,
-): Promise<number> {
-  const meter = harness.ctx.tokenMeter
-  let folds = 0
-  for (let step = 2; step <= steps + 1; step += 1) {
-    session.append('turn/start', { turn: step })
-    session.append('user/message', createUserMessage({
-      content: [{ type: 'text', text: filler(`step ${step}`, Math.ceil(tokensPerStep / 12)) }],
-      source: { kind: 'user' },
-    }), { surfaceOp: 'append' })
-    const before = meter.measure(session).totalTokens
-    try {
-      await (harness.engine as unknown as {
-        compactIfNeeded(a: unknown, t: string, s: AbortSignal): Promise<unknown>
-      }).compactIfNeeded({ session, options: MODEL_OPTIONS }, 'pressure', SIGNAL)
-    } catch { /* a refused fold is a decision */ }
-    if (meter.measure(session).totalTokens < before) folds += 1
-    session.append('turn/end', { turn: step, reason: { kind: 'completed' } })
-  }
-  return folds
-}
-
 const PROBE = [
   'Answer these three questions about our earlier conversation, one line each, no preamble.',
   'If a value is not available, say "unknown" rather than guessing.',
@@ -376,51 +74,12 @@ const PROBE = [
   'You have context_search and context_recall tools that can read folded history —',
   'use them if the answer is not on the current surface.',
   '',
-  '1. What is the maximum batch size?',
-  '2. What is the parser timeout in seconds?',
-  '3. What is the exact failing error code?',
+  ...FACT_PROBES.map(probe => probe.question),
 ].join('\n')
 
-/**
- * Score an answer against the three facts.
- *
- * The supersession check is about what the answer ASSERTS, not which numbers it
- * mentions. A correct answer very often says "90 seconds, superseding the
- * earlier 30" — and a check that penalized any occurrence of `30` scored that as
- * WRONG for naming the very value it correctly identified as obsolete. The first
- * version of this function did exactly that, under-counting every arm.
- *
- * So `30` counts against the answer only when it appears in a clause that does
- * NOT mark it as superseded.
- */
-export function scoreAnswer(answer: string): {
-  readonly constraint: boolean
-  readonly supersession: boolean
-  readonly exact: boolean
-  readonly total: number
-} {
-  const constraint = /\b64\b/u.test(answer)
-  const exact = /PARSE-7741/u.test(answer)
-
-  // Split into clauses so a mention can be read in its own context.
-  const clauses = answer
-    .split(/[.;,\n]/u)
-    .map(clause => clause.trim())
-    .filter(clause => clause.length > 0)
-  const supersessionMarkers = /supersed|earlier|original|previous|old\b|was\b|no longer|now\b|revis|correct/i
-  const claimsNinety = clauses.some(clause => /\b90\b/u.test(clause))
-  // A `30` claim is a failure only when its clause does not mark it obsolete.
-  const claimsThirtyAsCurrent = clauses.some(clause =>
-    /\b30\b/u.test(clause) && !supersessionMarkers.test(clause))
-  const supersession = claimsNinety && !claimsThirtyAsCurrent
-
-  return {
-    constraint,
-    supersession,
-    exact,
-    total: Number(constraint) + Number(supersession) + Number(exact),
-  }
-}
+// Re-exported so the RC1.2 §3 scoring semantics remain pinned by this suite's
+// own tests even though the implementation moved to the shared module.
+export { scoreAnswer }
 
 describe('RC1.2-A: the supersession check reads assertions, not mentions', () => {
   it('accepts a correct answer that NAMES the superseded value', () => {
@@ -459,6 +118,12 @@ describe('RC1.2-A: the supersession check reads assertions, not mentions', () =>
     // answer, even though the clause carries a marker.
     const evasive = '1. 64 items. 2. The 30-second value was superseded. 3. PARSE-7741.'
     expect(scoreAnswer(evasive).supersession).toBe(false)
+  })
+
+  it('the planted facts match their own matchers', () => {
+    // A fixture whose facts do not satisfy the matchers would make every arm
+    // score zero for a reason that has nothing to do with EF.
+    expect(scoreAnswer(Object.values(FACTS).join(' ')).total).toBe(3)
   })
 })
 
@@ -528,7 +193,7 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
             : { ...resolvePreset('economy'), ...shared },
           adapter: { provider: LIVE_PROVIDER, instance: recorder },
         })
-      const session = seedNarrative()
+      const session = seedNarrative('rc12')
       const folds = await growAndFold(harness, session, 14, 3_000)
       const outcome = await runRecallLoop(harness, session, PROBE)
       const bill = summarizeFullBill(`${arm}-${replicate}`, recorder.bill, profile)
@@ -595,9 +260,6 @@ describe.skipIf(!LIVE_ENABLED)('RC1.2-A live: the recall loop actually executes 
       }
     }
 
-    // --- THE SEPARATION. `recalledFacts` measures EF's recall mechanism;
-    // `answerScore` measures the model's use of it. Reporting only the second
-    // would attribute a tool-use failure to the policy.
     // --- The mechanism metric is EF-ONLY. Basic has no Bundle and no EF recall
     // tools, so "facts retrievable through EF recall" is undefined for it, and
     // reporting a number there was the error RC1.2.1 corrected.
