@@ -14,7 +14,7 @@ import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
 import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'
-import { isFoldModeName, resolvePreset } from './preset.ts'
+import { FOLD_MODE_NAMES, isFoldModeName, resolvePreset } from './preset.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -206,6 +206,17 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
  * An explicit key always wins, because the expansion fills by omission.
  */
 export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpistemicFoldConfig {
+  // RC0-A: an unknown mode is an ERROR, not a silent fallthrough to `legacy`.
+  // A typo like `econnomy` previously ran the legacy policy while the
+  // deployment believed it had requested economy — the worst possible failure
+  // for a named mode, because the user gets neither the behavior nor an
+  // indication that anything was wrong.
+  if (config.mode !== undefined && !isFoldModeName(config.mode)) {
+    throw new Error(
+      `epistemic-fold: unknown mode ${JSON.stringify(config.mode)}; `
+      + `expected one of ${FOLD_MODE_NAMES.map(name => JSON.stringify(name)).join(', ')}`,
+    )
+  }
   const expanded: EpistemicFoldConfig = isFoldModeName(config.mode)
     ? resolvePreset(config.mode, config)
     : config

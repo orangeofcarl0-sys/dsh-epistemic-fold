@@ -102,16 +102,26 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     expect(viaPreset).toEqual(byHand)
   })
 
-  it('rejects an unknown mode name rather than defaulting', () => {
+  it('REJECTS an unknown mode name — it never falls through to legacy', () => {
+    // RC0-A corrected this test. Its previous version was named "rejects an
+    // unknown mode name" while actually ASSERTING the opposite — that an
+    // unrecognized mode is silently ignored and the engine runs legacy. That
+    // is the worst failure a named mode can have: a typo like `econnomy` would
+    // run the legacy policy while the deployment believed it had asked for
+    // economy, with no indication anything was wrong.
     expect(isFoldModeName('economy')).toBe(true)
     expect(isFoldModeName('reliability')).toBe(false)
     // `reliability` is deliberately NOT offered: there is no live evidence for
     // what the right reliability configuration is, so naming one would assert
     // a conclusion the project does not have.
     expect(FOLD_MODE_NAMES).toEqual(['legacy', 'economy'])
-    const unknown = resolveEfConfig({ mode: 'nonsense' as never })
-    // An unrecognized mode is ignored by expansion, leaving engine defaults.
-    expect(unknown.leafAdmission).toBe('legacy')
+
+    expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/unknown mode/u)
+    expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/economy/u)
+    // The realistic typo, which is the case this guard exists for.
+    expect(() => resolveEfConfig({ mode: 'econnomy' as never })).toThrow(/unknown mode/u)
+    // An explicit `legacy` still resolves, so the guard rejects only typos.
+    expect(resolveEfConfig({ mode: 'legacy' }).leafAdmission).toBe('legacy')
   })
 })
 

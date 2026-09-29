@@ -124,7 +124,7 @@ export async function createHarness(
   options: {
     contextWindow?: number
     engine?: 'ef' | 'basic'
-    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale'; leafAdmission?: 'legacy' | 'economic'; minReclaimTokens?: number; minReclaimRatio?: number; rootPolicy?: 'legacy' | 'economics'; cacheRealizationRate?: number; paybackHorizonRequests?: number; framingMode?: 'legacy' | 'system-dedup' }
+    efConfig?: { thresholdRatio?: number; headroomTokens?: number; retainTokens?: number; maxTokens?: number; frozenCheckpointTokenBudget?: number; semanticMode?: 'none' | 'rationale'; leafAdmission?: 'legacy' | 'economic'; minReclaimTokens?: number; minReclaimRatio?: number; rootPolicy?: 'legacy' | 'economics'; cacheRealizationRate?: number; paybackHorizonRequests?: number; framingMode?: 'legacy' | 'system-dedup'; mode?: 'legacy' | 'economy' }
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
     /**

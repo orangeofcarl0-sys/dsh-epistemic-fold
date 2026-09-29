@@ -753,11 +753,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   private resolvedFramingMode(): FramingMode {
     if (this.framingModeResolved !== undefined) return this.framingModeResolved
-    const hasSystemPrompt = this.ctx.get('systemPrompt') !== undefined
-    const resolved = framingModeFor(this.efConfig.framingMode, hasSystemPrompt)
-    if (resolved.fallback !== undefined) {
-      this.ctx.logger.warn(`[epistemic-fold] ${resolved.fallback}`)
-    }
+    // RC0-A: no fallback branch. A `system-dedup` request without a system
+    // prompt THROWS here rather than silently running per-checkpoint framing,
+    // because a named mode must mean one determinate behavior.
+    const resolved = framingModeFor(this.efConfig.framingMode, this.ctx.get('systemPrompt') !== undefined)
     this.framingModeResolved = resolved.mode
     return resolved.mode
   }
