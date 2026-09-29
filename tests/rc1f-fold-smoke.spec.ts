@@ -33,11 +33,12 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import { createMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { Session as SessionType } from '@deepseek-ai/dsh-session'
 import { createHarness, SIGNAL } from './harness.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
+import { createAnchorService } from '../src/anchor-service.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
@@ -57,8 +58,23 @@ function filler(label: string, tokens: number): string {
   return unit.repeat(Math.max(1, Math.ceil((tokens * 4) / unit.length)))
 }
 
-/** A session seeded with a payload of a requested approximate size. */
-function seed(tokens: number, facts: readonly string[] = []): SessionType {
+/**
+ * A session seeded with `tokens` of history, delivered as `steps` messages.
+ *
+ * The number of MESSAGES matters as much as the total size, and the first
+ * version of this smoke got that wrong: it seeded one 61,000-token message,
+ * and the fold was then refused — not by admission, but by span selection.
+ * `retainTokens` at the shipped defaults is 20,889 (16% of the message budget),
+ * so the retention walk kept the entire two-node surface and `selectLeafSpan`
+ * returned null. A real session reaches 65,024 tokens across many turns, which
+ * is what leaves a foldable prefix behind the retained tail.
+ *
+ * @param tokens - approximate total size.
+ * @param steps - how many messages to spread it across.
+ * @param facts - verbatim facts to plant first.
+ * @returns the seeded session.
+ */
+function seed(tokens: number, steps: number, facts: readonly string[] = []): SessionType {
   const session = Session.create(SessionId(`rc1f-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`))
   session.append('turn/start', { turn: 1 })
   session.append('request/header', { header: { config: MODEL_OPTIONS }, reason: 'initial' })
@@ -68,12 +84,95 @@ function seed(tokens: number, facts: readonly string[] = []): SessionType {
       source: { kind: 'user' },
     }), { surfaceOp: 'append' })
   }
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text: filler('seed', tokens) }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
+  const perStep = Math.max(1, Math.floor(tokens / steps))
+  for (let step = 0; step < steps; step += 1) {
+    session.append('user/message', createUserMessage({
+      content: [{ type: 'text', text: filler(`seed ${step}`, perStep) }],
+      source: { kind: 'user' },
+    }), { surfaceOp: 'append' })
+  }
   session.append('turn/end', { turn: 1, reason: { kind: 'completed' } })
   return session
+}
+
+
+
+/**
+ * Plant a failing-test tool result carrying an exact error code.
+ *
+ * @param session - the session to append to.
+ * @param code - the verbatim error code the result reports.
+ */
+function plantToolResult(session: SessionType, code: string): void {
+  const callId = ToolCallId('rc1f-test-run')
+  session.append('turn/start', { turn: 1 })
+  session.append('step/start', { turn: 1, step: 900 })
+  session.append('assistant/message', {
+    stream: [], turn: 1, step: 900,
+    message: createMessage({
+      role: 'assistant',
+      content: [
+        { type: 'text', text: 'Running the parser test suite.' },
+        { type: 'tool-call', id: callId, name: 'test', arguments: '{}' },
+      ],
+      source: { kind: 'model', ...MODEL_OPTIONS },
+    }),
+  }, { surfaceOp: 'append' })
+  session.append('tool/call', { turn: 1, step: 900, callId, name: 'test', arguments: '{}' })
+  session.append('tool/result', {
+    turn: 1, step: 900,
+    message: createToolResultMessage({
+      callId,
+      content: [{ type: 'text', text: `FAIL parser.test.ts
+  2 tests failed
+  error code: ${code}` }],
+      isError: true,
+    }),
+  }, { surfaceOp: 'append' })
+  session.append('step/end', { turn: 1, step: 900 })
+  session.append('turn/end', { turn: 1, reason: { kind: 'completed' } })
+}
+
+/**
+ * Declare the smoke's facts as anchors through the real authority gate.
+ *
+ * Mirrors R4-E's helper: each fact cites the durable event that carries it, so
+ * authority terminates at a raw root rather than at prose.
+ *
+ * @param session - the seeded session.
+ */
+function declareAnchors(session: SessionType): void {
+  const service = createAnchorService()
+  const userSeqs: number[] = []
+  let toolResultSeq: number | undefined
+  for (let seq = 0; seq < session.seq; seq += 1) {
+    const type = session.eventAt(seq as never)?.type
+    if (type === 'user/message') userSeqs.push(seq)
+    if (type === 'tool/result') toolResultSeq = seq
+  }
+  const declarations = [
+    { id: 'rc1f-constraint', kind: 'constraint' as const, authority: 'normative' as const,
+      value: 64, stateKey: { namespace: 'batch', entity: 'size', property: 'limit' } },
+    { id: 'rc1f-timeout', kind: 'value' as const, authority: 'decision' as const,
+      value: 90, stateKey: { namespace: 'parser', entity: 'timeout', property: 'seconds' } },
+    { id: 'rc1f-code', kind: 'value' as const, authority: 'empirical' as const,
+      value: 'PARSE-7741', stateKey: { namespace: 'parser', entity: 'error', property: 'code' } },
+  ]
+  for (const [index, declaration] of declarations.entries()) {
+    // An empirical claim must cite the tool result that produced it; everything
+    // else cites the user message that stated it.
+    const sourceSeq = declaration.authority === 'empirical'
+      ? toolResultSeq
+      : userSeqs[index] ?? userSeqs[0]
+    service.declare(session, {
+      id: declaration.id,
+      kind: declaration.kind,
+      stateKey: declaration.stateKey,
+      value: declaration.value,
+      authority: declaration.authority,
+      sourceRefs: [{ seq: (sourceSeq ?? 0) as never }],
+    })
+  }
 }
 
 describe.skipIf(!LIVE_ENABLED)('RC1-F live: the fold boundary, near the real trigger', () => {
@@ -95,15 +194,19 @@ describe.skipIf(!LIVE_ENABLED)('RC1-F live: the fold boundary, near the real tri
 
     const harness = await createHarness({ text: 'digest' }, {
       contextWindow: WINDOW, plugin: true, systemPrompt: true, efConfig: policy,
+      // The ENGINE resolves its route through `ctx.llm`, so the provider must
+      // be registered for the routed model as well. Without this the fold
+      // throws 'no adapter registered' and the smoke reports "no fold happened"
+      // when the real cause is that the engine could not reach the provider.
+      adapter: { provider: LIVE_PROVIDER, instance: recorder },
     })
-    harness.ctx.llm.registerAdapter([LIVE_PROVIDER], recorder)
 
     // Seed to just BELOW the trigger, so the next append crosses it. The token
     // meter prices at ~4 chars/token, and the meter is the authority here — so
     // the seed is sized from the meter's own reading rather than from the
     // nominal target.
     const meter = harness.ctx.tokenMeter
-    const session = seed(Math.max(1, spec.thresholdTokens - 4_000))
+    const session = seed(Math.max(1, spec.thresholdTokens - 4_000), 40)
     const beforeSeed = meter.measure(session).totalTokens
     console.log(`SMOKE-B pre-trigger surface: ${beforeSeed} tokens (threshold ${spec.thresholdTokens})`)
     expect(beforeSeed).toBeLessThan(spec.thresholdTokens)
@@ -134,7 +237,9 @@ describe.skipIf(!LIVE_ENABLED)('RC1-F live: the fold boundary, near the real tri
       }).compactIfNeeded({ session, options: MODEL_OPTIONS }, 'pressure', SIGNAL)
       folded = meter.measure(session).totalTokens < afterCross
     } catch (error: unknown) {
-      console.log(`SMOKE-B fold refused: ${error instanceof Error ? error.message : String(error)}`)
+      // Reported loudly: a thrown fold is NOT the same as a refused fold, and
+      // conflating them is how a harness defect reads as "the policy declined".
+      console.log(`SMOKE-B fold THREW: ${error instanceof Error ? error.message : String(error)}`)
     }
     const afterFold = meter.measure(session).totalTokens
     console.log(`SMOKE-B after fold: ${afterFold} tokens; folded=${folded}`)
@@ -215,15 +320,32 @@ describe.skipIf(!LIVE_ENABLED)('RC1-F live: the quality smoke', () => {
     const policy = { ...resolvePreset('economy'), thresholdRatio: 0.15, headroomTokens: 0, retainTokens: 0, maxTokens: 1_500 }
     const harness = await createHarness({ text: 'digest' }, {
       contextWindow: SMOKE_WINDOW, plugin: true, systemPrompt: true, efConfig: policy,
+      adapter: { provider: LIVE_PROVIDER, instance: recorder },
     })
-    harness.ctx.llm.registerAdapter([LIVE_PROVIDER], recorder)
 
     const CONSTRAINT = 'HARD LIMIT: the batch size must never exceed 64 items.'
     const SUPERSEDED = 'The parser timeout is 30 seconds.'
     const SUPERSESSION = 'CORRECTION: the parser timeout is now 90 seconds, superseding the 30.'
     const EXACT = 'The failing error code is PARSE-7741.'
 
-    const session = seed(2_000, [CONSTRAINT, SUPERSEDED, SUPERSESSION, EXACT])
+    const session = seed(2_000, 12, [CONSTRAINT, SUPERSEDED, SUPERSESSION])
+    // The exact error code is planted as a TOOL RESULT, not as prose: its
+    // authority is `empirical`, and the authority gate correctly refuses to
+    // ground an empirical claim in a user message. That refusal is the product
+    // working, not an obstacle — a failure that was only ever described in
+    // prose is not evidence that it happened.
+    plantToolResult(session, EXACT)
+    // The facts are carried as MACHINE STATE, through the real authority gate.
+    //
+    // This is not decoration. Under `mode: economy` the preset sets
+    // `semanticMode: 'none'`, so a checkpoint is marker-only: it names the
+    // folded region and carries no narrative. State survives a fold because it
+    // was declared as an anchor, not because a summary happened to mention it.
+    // The first version of this smoke planted the facts as plain prose and
+    // asserted they would come back — which tested a mechanism the economy
+    // preset deliberately does not use, and would have reported the policy as
+    // broken when it was behaving exactly as designed.
+    declareAnchors(session)
     const meter = harness.ctx.tokenMeter
     let folds = 0
     for (let step = 2; step <= 14; step += 1) {
