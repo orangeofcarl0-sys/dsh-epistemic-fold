@@ -125,6 +125,17 @@ export interface ReplayPolicy {
   readonly basicCheckpointTokens: number
   /** Output tokens per request, for the cost estimate. */
   readonly outputTokensPerRequest: number
+  /**
+   * Input tokens one rationale auxiliary call carries.
+   *
+   * MEASURED, not assumed: the call summarizes the folded span, so its input
+   * tracks the span size rather than being a small fixed prompt. RC1.2 measured
+   * ~7,383 tokens at a 6000-token window. The default is deliberately the
+   * measured value rather than a convenient small number.
+   */
+  readonly rationaleInputTokens: number
+  /** Output tokens a rationale call may produce; production uses 400. */
+  readonly rationaleOutputTokens: number
   /** Whether the arm performs idle rebase maintenance (EF only). */
   readonly idleMaintenance: boolean
 }
@@ -348,9 +359,18 @@ export function simulate(
     const realization = realizations[rebased ? 'after-root' : folded ? 'after-leaf' : 'normal']
     let stepCost = requestCost(profile, promptTokens, policy.outputTokensPerRequest, realization)
     if (folded && arm === 'ef' && resolved.semanticMode === 'rationale') {
-      // A rationale-only auxiliary call: small prompt, small output, and it
-      // shares no prefix with the conversation, so it is priced cold.
-      stepCost += requestCost(profile, 512, 128, realizations.compaction)
+      // The rationale call, priced from its MEASURED size.
+      //
+      // RC1.2 measured this against the production path and the previous
+      // constants were badly wrong: the call carries the summarized SPAN as its
+      // input, not a small fixed prompt. Measured across 14 folds at a 6000-token
+      // window, input ran ~7,383 tokens with `maxTokens: 400` — roughly 14x the
+      // 512/128 the earlier model assumed. Pricing it at 512 made `rationale`
+      // look nearly free, which is exactly the error that would have made
+      // "rationale is an affordable upgrade" look true.
+      stepCost += requestCost(
+        profile, policy.rationaleInputTokens, policy.rationaleOutputTokens, realizations.compaction,
+      )
     }
     if (folded && arm === 'basic') {
       // Basic summarizes the span it folds — a real provider call over the

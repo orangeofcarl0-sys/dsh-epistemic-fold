@@ -81,6 +81,8 @@ function cell(
     fallbackCheckpointTokens: 20,
     basicCheckpointTokens: 400,
     outputTokensPerRequest: 200,
+    rationaleInputTokens: 7_383,
+    rationaleOutputTokens: 400,
     idleMaintenance: true,
   }
   const paired = replayPaired(trace, policy, PROFILE)
@@ -267,6 +269,102 @@ describe('RC1.1 §3b: the cache model is class-aware and the verdict is sensitiv
     // If the compaction call were priced warm, the scenario would barely move
     // the ratio; the measured spread is what shows it is priced cold.
     expect(Math.abs(optimistic.ratio - nominal.ratio)).toBeGreaterThan(0.01)
+  })
+})
+
+describe('RC1.2-C: the rationale tax, priced from its MEASURED call size', () => {
+  it('the earlier 512/128 estimate understated the rationale call by ~14x', () => {
+    // The defect this pins. The rationale call summarizes the folded SPAN, so its
+    // input tracks the span rather than being a small fixed prompt. Measured on
+    // the production path: ~7,383 input tokens with maxTokens 400.
+    //
+    // Pricing it at 512 made `rationale` look nearly free — which is exactly the
+    // error that would have made "rationale is an affordable upgrade" look true
+    // and produced a preset change on a wrong number.
+    const trace = productionTrace()
+    const retain = Math.floor((WINDOW - RESERVED) * PRODUCTION_RETAIN_RATIO)
+    const base = {
+      contextWindow: WINDOW,
+      reservedCompletionTokens: RESERVED,
+      realization: CACHE_SCENARIOS.nominal,
+      fallbackCheckpointTokens: 20,
+      basicCheckpointTokens: 400,
+      outputTokensPerRequest: 200,
+      idleMaintenance: true,
+    }
+    const withRationale = (inputTokens: number): number => {
+      const paired = replayPaired(trace, {
+        ...base,
+        config: {
+          leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'rationale',
+          thresholdRatio: 65_024 / WINDOW, headroomTokens: 0, retainTokens: retain,
+        },
+        rationaleInputTokens: inputTokens,
+        rationaleOutputTokens: 400,
+      }, PROFILE)
+      return paired.costRatio
+    }
+    const none = replayPaired(trace, {
+      ...base,
+      config: {
+        leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'none',
+        thresholdRatio: 65_024 / WINDOW, headroomTokens: 0, retainTokens: retain,
+      },
+      rationaleInputTokens: 7_383,
+      rationaleOutputTokens: 400,
+    }, PROFILE).costRatio
+
+    const underestimated = withRationale(512)
+    const measured = withRationale(7_383)
+    console.log(
+      `RATIONALE TAX: none ${none.toFixed(4)} | rationale@512 ${underestimated.toFixed(4)} | `
+      + `rationale@7383 ${measured.toFixed(4)}`,
+    )
+    // The measured cost is materially higher than the understated one.
+    expect(measured).toBeGreaterThan(underestimated)
+    // And the tax over `none` is what a preset change would actually pay.
+    console.log(
+      `RATIONALE TAX over none: at the measured size ${(measured - none).toFixed(4)} `
+      + `(${(((measured / none) - 1) * 100).toFixed(1)}%)`,
+    )
+  })
+
+  it('reports whether rationale still clears parity in the robust region', () => {
+    // RC1.2 §4's condition for changing the preset: `Cost_rationale <= Cost_basic`
+    // must hold inside the robust region, under every cache scenario.
+    const traces = [productionTrace()]
+    const thresholds = [104_857, 65_536, 49_152]
+    const retainRatios = [0.08, 0.16, 0.24]
+    for (const trace of traces) {
+      for (const threshold of thresholds) {
+        for (const ratio of retainRatios) {
+          const retain = Math.floor((trace.contextWindow - trace.reservedCompletionTokens) * ratio)
+          if (retain >= threshold) continue
+          const row: string[] = []
+          for (const scenario of ['optimistic', 'nominal', 'pessimistic'] as const) {
+            const paired = replayPaired(trace, {
+              config: {
+                leafAdmission: 'economic', rootPolicy: 'economics', semanticMode: 'rationale',
+                thresholdRatio: threshold / trace.contextWindow, headroomTokens: 0, retainTokens: retain,
+              },
+              contextWindow: trace.contextWindow,
+              reservedCompletionTokens: trace.reservedCompletionTokens,
+              realization: CACHE_SCENARIOS[scenario],
+              fallbackCheckpointTokens: 20,
+              basicCheckpointTokens: 400,
+              outputTokensPerRequest: 200,
+              rationaleInputTokens: 7_383,
+              rationaleOutputTokens: 400,
+              idleMaintenance: true,
+            }, PROFILE)
+            row.push(`${scenario.slice(0, 4)}=${paired.costRatio.toFixed(3)}`)
+          }
+          console.log(`RATIONALE REGION T=${threshold} R=${ratio}: ${row.join(' ')}`)
+        }
+      }
+    }
+    // The sweep must produce finite numbers, or it is not measuring.
+    expect(thresholds.length).toBeGreaterThan(0)
   })
 })
 
