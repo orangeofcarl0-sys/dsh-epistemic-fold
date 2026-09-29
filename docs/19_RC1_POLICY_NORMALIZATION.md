@@ -428,6 +428,30 @@ fold-bearing family, not a longer trajectory: the disagreement is in
 `FW-long-trajectory`, where 16 folds happen, and that is where the variance
 lives.
 
+**A third attempt was abandoned, and the reason is part of the result.** An
+8-replicate run was started to settle the question and was stopped partway
+through: **28.4% of its requests returned nothing** (243 of 857 recorded
+prompts were zero), across both arms and all three workloads. That is a
+provider-side degradation, not a policy effect — the same code that had produced
+clean runs minutes earlier.
+
+It is recorded rather than retried indefinitely, for two reasons:
+
+1. **A degraded provider cannot answer a cost question.** RC0-D established
+   availability as its own axis precisely so that transport failures are
+   classified rather than averaged in, and a run where a quarter of the requests
+   vanish is measuring the provider, not the policy. The availability exclusion
+   added in §6.4 caught this at the pair level, but at 28% the sample is not
+   salvageable.
+2. **The honest status is unchanged by stopping.** The gate is OPEN on
+   dispersion; a contaminated run would neither open nor close it.
+
+The practical consequence is that **the cost gate needs a healthy provider
+window, not more attempts**. That is a scheduling fact about the measurement, and
+it is worth stating plainly because the alternative — running until a favorable
+sample appears — is how a dispersion problem gets laundered into a point
+estimate.
+
 ---
 
 ## 7. RC1-F — two cheap live smokes
