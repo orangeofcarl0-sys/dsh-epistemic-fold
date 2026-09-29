@@ -188,6 +188,48 @@ effect was provider cache state at the time each arm ran. The probe is now part
 of the suite, before any verdict is read. Without it I would have reported a 2.4×
 regression that does not exist.
 
+### 4.4 RC1 addendum: the numbers in §4.2 were measured through a broken path
+
+RC1 found two further defects in the instrument this section's numbers came
+from, and both are more consequential than the ones in §4.3.
+
+**The live adapter never sent the system prompt.** This endpoint accepts a
+top-level `system` field, returns HTTP 200, and **silently ignores it**: a
+240,003-character system prompt billed **13 prompt tokens**, the size of the user
+message alone. The `system`-role message spelling bills 12,007. The consequence
+is specific and severe — **R3's framing change earns its entire saving by moving
+the checkpoint preamble *into the system prompt***, so this tier was measuring
+the saving of a change that never reached the model. Fixed in
+`eval/live/openai-adapter.ts`, with a stub-fetch regression test and an assertion
+in the live suites that the reported prompt is at least half the intended prefix.
+
+**The paired design shared provider cache between runs and between arms.** The
+workload fixtures are deterministic, so every run of a workload produced a
+byte-identical prompt sequence, and the arms always ran economy-then-basic. The
+re-run's cache splits show what that does:
+
+```
+E4 (economy)  m:3906/3906u  m:7517/3677u  m:11128/3704u  m:14739/3731u  ...
+B1 (basic)    m:3824/240u   m:7435/139u   m:11046/166u   m:14657/193u   ...
+```
+
+Same prompts, same call counts, and one arm paid ~3,600 uncached tokens per
+request while the other paid ~200. The internal control settles it:
+`FW-tool-heavy` folds in neither arm, so its arms issue identical requests and
+its ratio is 1.000 by construction — the run reported **1.606**.
+
+Fixed by giving each run a **cache namespace** (RC1 §23) and **alternating the
+arm order per replicate** (RC1 §22). A **null-test guard** now asserts that a
+workload which folded in neither arm measures within ±10% of 1, and fails the run
+otherwise, so a confounded instrument can no longer produce a confident number.
+
+**What this means for §4.2.** The gate was OPEN there and is OPEN after the
+correction; the release decision does not change. What changes is why the earlier
+figures cannot be quoted: they came from a path that omitted the system prompt
+and let the arms share cache. The corrected figures are reported in the RC1
+evaluation report rather than silently replacing this section — a number measured
+with a known-broken instrument is superseded, not edited.
+
 ---
 
 ## 5. RC0-E — the shipped defaults imply a *different* regime

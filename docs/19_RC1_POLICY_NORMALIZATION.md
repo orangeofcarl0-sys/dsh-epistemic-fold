@@ -303,6 +303,45 @@ a deficit, so this is a measurement rather than a rubber stamp — and it stays
 `unknown`, keeping the flip blocked, when the baseline is missing or
 incomparable.
 
+### 6.4 Re-running RC0-C exposed a second measurement defect
+
+Fixing the adapter made RC0-C's full-wire numbers worth re-taking, and the
+re-run found something the earlier one could not see. With the system prompt
+finally arriving, the arms' **cache splits diverged sharply**:
+
+```
+E4 (economy)  m:3906/3906u  m:7517/3677u  m:11128/3704u  m:14739/3731u  ...
+B1 (basic)    m:3824/240u   m:7435/139u   m:11046/166u   m:14657/193u   ...
+```
+
+The two arms issued **the same prompts and the same call counts**, yet Basic
+reported ~200 uncached input tokens per request and EF ~3,600. **No policy can
+cause that.** The internal control made it unambiguous: `FW-tool-heavy` folded
+in *neither* arm, so its two arms issued byte-identical requests and its ratio
+must be 1.000 by construction — and the run reported **1.606**.
+
+Two design defects, both of which RC1 §22/§23 explicitly forbid and the
+full-wire driver (built in RC0, before RC1) did not implement:
+
+1. **The workloads are deterministic, so consecutive runs shared provider
+   cache.** Every run of `FW-long-trajectory` produced a byte-identical prompt
+   sequence, so run *n+1* inherited run *n*'s warm prefix. Fixed by giving each
+   run a **cache namespace** as the first line of its seed.
+2. **Arm order never changed.** Economy always ran first, so the arm that ran
+   second systematically inherited the first arm's cache state. Fixed by
+   **alternating the order per replicate**.
+
+The corrected run also carries a **null-test guard**: when a workload folds in
+neither arm, its ratio is asserted to be within ±10% of 1. A null test that is
+not ~1 means every other ratio in the run rests on a broken instrument, and the
+run now fails loudly instead of reporting them.
+
+**This does not change the release decision, and it does change what the earlier
+RC0-C numbers mean.** They were measured through a path that (a) never sent the
+system prompt and (b) let the arms share cache in a fixed order. The gate was
+OPEN before and remains OPEN; the corrected figures are reported in the RC0
+report's own §4.2 addendum rather than silently replacing it.
+
 ---
 
 ## 7. RC1-F — two cheap live smokes

@@ -31,7 +31,14 @@ const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 /** A benchmark workload the full-wire driver can run. */
 export interface FullWireWorkload {
   readonly id: string
-  readonly createSession: () => SessionType
+  /**
+   * Fresh session for one run.
+   *
+   * Takes a per-run `runId`, which becomes the run's cache namespace (RC1 §23).
+   * A workload that ignored it would let consecutive runs share a provider
+   * cache entry and turn a paired cost comparison into a cache-state comparison.
+   */
+  readonly createSession: (runId: string) => SessionType
   /** One growth turn, inside the turn the driver opens. */
   readonly grow: (session: SessionType, step: number) => void
   /**
@@ -56,7 +63,7 @@ export function longTrajectory(): FullWireWorkload {
   return {
     id: 'FW-long-trajectory',
     shape: 'long-trajectory',
-    createSession: () => seed('fw-long'),
+    createSession: runId => seed('fw-long', runId),
     grow: (session, step) => {
       session.append('user/message', createUserMessage({
         content: [{ type: 'text', text: prose(step, 40) }],
@@ -72,7 +79,7 @@ export function toolHeavy(): FullWireWorkload {
   return {
     id: 'FW-tool-heavy',
     shape: 'tool-heavy',
-    createSession: () => seed('fw-tools'),
+    createSession: runId => seed('fw-tools', runId),
     grow: (session, step) => {
       const callId = `fw-call-${step}` as never
       session.append('user/message', createUserMessage({
@@ -112,7 +119,7 @@ export function recallShaped(): FullWireWorkload {
   return {
     id: 'FW-recall',
     shape: 'recall',
-    createSession: () => seed('fw-recall'),
+    createSession: runId => seed('fw-recall', runId),
     grow: (session, step) => {
       if (step % 4 !== 0) {
         session.append('user/message', createUserMessage({
@@ -173,12 +180,38 @@ function appendAssistant(session: SessionType, step: number): void {
   session.append('step/end', { turn: step, step })
 }
 
-function seed(label: string): SessionType {
+/**
+ * A per-run cache namespace token.
+ *
+ * RC1 §23's rule, applied to the paired tier. This driver's workload fixtures
+ * are DETERMINISTIC — every run of `FW-long-trajectory` produces a byte-identical
+ * prompt sequence — so without a namespace, run *n+1* of a workload shares the
+ * provider cache with run *n*. The RC1-E re-run showed what that does to a
+ * paired comparison: with identical prompts and identical call counts, one arm
+ * reported ~200 uncached input per request and the other ~3,600, because the
+ * arm that happened to run second inherited a warm prefix from the previous
+ * run. No policy can cause that, and a paired design that permits it is
+ * measuring cache luck rather than cost.
+ *
+ * The token goes in the FIRST line of the seed message, which is the earliest
+ * position the provider's cache can key on, so two runs cannot share an entry.
+ *
+ * @param runId - a token unique to one run.
+ * @returns the namespace line to prefix the seed with.
+ */
+export function cacheNamespace(runId: string): string {
+  return `CACHE-RUN-${runId}-7f924c`
+}
+
+function seed(label: string, runId: string): SessionType {
   const session = Session.create(SessionId(`ef-${label}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`))
   session.append('turn/start', { turn: 1 })
   session.append('request/header', { header: { config: MODEL_OPTIONS }, reason: 'initial' })
   session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text: `seed ${'context '.repeat(200)}` }],
+    // The namespace is what keeps this run's prefix out of every other run's
+    // cache (RC1 §23). Without it a paired comparison silently compares cache
+    // states rather than policies.
+    content: [{ type: 'text', text: `${cacheNamespace(runId)} seed ${'context '.repeat(200)}` }],
     source: { kind: 'user' },
   }), { surfaceOp: 'append' })
   session.append('turn/end', { turn: 1, reason: { kind: 'completed' } })
@@ -248,7 +281,7 @@ export async function runFullWire(options: {
   })
   harness.ctx.llm.registerAdapter([LIVE_PROVIDER], recorder)
 
-  const session = options.workload.createSession()
+  const session = options.workload.createSession(options.arm)
   const meter = harness.ctx.tokenMeter
   let folds = 0
   let roots = 0

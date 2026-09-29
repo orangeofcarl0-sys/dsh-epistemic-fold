@@ -76,7 +76,18 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
     for (let replicate = 0; replicate < PAIRS; replicate += 1) {
       for (const workload of fullWireWorkloads()) {
         // Same workload, same replicate, both arms — a genuine pair.
-        const economy = await runFullWire({
+        //
+        // ARM ORDER IS COUNTERBALANCED (RC1 §22). The first version always ran
+        // economy first, and because the workloads are deterministic, the arm
+        // that ran second inherited a warm provider prefix from the arm before
+        // it. The re-run showed the consequence with unmistakable clarity:
+        // identical prompts and identical call counts, yet one arm reported
+        // ~200 uncached input per request and the other ~3,600. No policy can
+        // cause that, so the earlier ratios described cache luck rather than
+        // cost. Alternating the order makes that effect cancel across
+        // replicates instead of accumulating into one arm.
+        const economyFirst = replicate % 2 === 0
+        const runEconomy = async (): Promise<FullWireRun> => runFullWire({
           arm: `E4-${workload.id}-${replicate}`,
           basic: false,
           workload,
@@ -86,7 +97,7 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
           idleMaintenance: true,
           systemPrompt: true,
         })
-        const basic = await runFullWire({
+        const runBasic = async (): Promise<FullWireRun> => runFullWire({
           arm: `B1-${workload.id}-${replicate}`,
           basic: true,
           workload,
@@ -99,13 +110,19 @@ describe.skipIf(!LIVE_ENABLED)('RC0-C live: FullTaskRBCR from the real agent pat
           // carried a system prompt and Basic's did not.
           systemPrompt: true,
         })
-        pairs.push({ workload: workload.id, replicate, economy, basic })
-        runs.push(economy, basic)
+        const economy = economyFirst ? await runEconomy() : undefined
+        const basic = economyFirst ? await runBasic() : undefined
+        const basicSecond = economyFirst ? basic! : await runBasic()
+        const economySecond = economyFirst ? economy! : await runEconomy()
+        pairs.push({ workload: workload.id, replicate, economy: economySecond, basic: basicSecond })
+        runs.push(economySecond, basicSecond)
         console.log(
-          `${workload.id} rep${replicate}: economy calls=${economy.bills.length} `
-          + `prompts=[${economy.callPromptTokens.join(',')}] folds=${economy.folds} roots=${economy.roots}`
-          + ` | basic calls=${basic.bills.length} prompts=[${basic.callPromptTokens.join(',')}] `
-          + `folds=${basic.folds} compactionCall=${basic.sawCompactionCall}`,
+          `${workload.id} rep${replicate} (${economyFirst ? 'E-first' : 'B-first'}): `
+          + `economy calls=${economySecond.bills.length} `
+          + `prompts=[${economySecond.callPromptTokens.join(',')}] folds=${economySecond.folds} `
+          + `roots=${economySecond.roots}`
+          + ` | basic calls=${basicSecond.bills.length} prompts=[${basicSecond.callPromptTokens.join(',')}] `
+          + `folds=${basicSecond.folds} compactionCall=${basicSecond.sawCompactionCall}`,
         )
       }
     }
@@ -177,6 +194,42 @@ NOISE FLOOR: two identical Basic runs cost ${noiseRuns.map(c => c.toFixed(5)).jo
         + `${basicCost.toFixed(5)} | ${ratio.toFixed(3)} | ${engaged ? `${folds} folds` : 'NULL (no folds)'} |`,
       )
     }
+    // --- THE INTERNAL CONTROL, and the guard that would have caught the
+    // measurement defect on the first run.
+    //
+    // A workload where NEITHER arm folded issued byte-identical requests in
+    // both arms: same prompts, same call counts, same everything. Its ratio is
+    // therefore 1.000 BY CONSTRUCTION, and any deviation from 1 is a
+    // measurement artifact — provider cache state, run ordering, or a transport
+    // difference — never a policy effect. The earlier run reported 1.606 here,
+    // which is what exposed the missing cache namespace and the unchanging arm
+    // order.
+    //
+    // This is asserted rather than reported: a null test that is not ~1 means
+    // every other ratio in the run is untrustworthy, so proceeding would only
+    // produce confident numbers resting on a broken instrument.
+    const nullTests = perFamily.filter(entry => !entry.engaged)
+    for (const nullTest of nullTests) {
+      console.log(
+        `NULL TEST ${nullTest.workload}: ratio ${nullTest.ratio.toFixed(3)} `
+        + '(identical requests in both arms, so this must be ~1.000)',
+      )
+      expect(
+        nullTest.ratio,
+        `${nullTest.workload} had no folds in either arm, so its two arms issued the same `
+        + 'requests and the ratio must be ~1. That it is not means the measurement is '
+        + 'confounded (cache namespace missing, arm order not counterbalanced, or a transport '
+        + 'difference), and no other ratio in this run can be trusted.',
+      ).toBeGreaterThan(0.9)
+      expect(nullTest.ratio).toBeLessThan(1.1)
+    }
+    if (nullTests.length === 0) {
+      console.log(
+        'NULL TEST: none available this run — every workload folded, so the instrument '
+        + 'had no self-check',
+      )
+    }
+
     const engagedFamilies = perFamily.filter(entry => entry.engaged)
     console.log(
       `
