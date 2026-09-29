@@ -170,7 +170,7 @@ describe('R2: framing-free ceiling', () => {
       if (text.includes(PREAMBLE)) preambleChars += PREAMBLE.length
       const marker = parseCheckpointMarker(text)
       if (marker !== undefined) {
-        markerChars += `[EF checkpoint v1 mode=leaf id=${marker.checkpointId}]`.length
+        markerChars += `[EF1 L cp:${marker.checkpointId}]`.length
       }
     }
 

@@ -29,11 +29,13 @@ function stateWith(constraints: FoldCurrentState['constraints']): FoldCurrentSta
   return { ...emptyCurrentState(), constraints }
 }
 
-describe('R2-D: empty sections are omitted, identity and recall are not', () => {
-  it('emits only the marker and recall pointer for a checkpoint with no content', () => {
+describe('R2-D: empty sections are omitted, identity is not', () => {
+  it('emits only the marker for a checkpoint with no content', () => {
+    // R3-A folded the recall pointer INTO the marker, so the entire checkpoint
+    // is now one line. Both affordances (machine identity, model recall
+    // reference) are still present — they are the same token.
     const rendered = renderStructuredCheckpoint(emptyCurrentState(), 'cp-bare')
-    expect(rendered).toContain('[EF checkpoint v1 mode=leaf id=cp-bare]')
-    expect(rendered).toContain('- cp:cp-bare')
+    expect(rendered).toBe('[EF1 L cp:cp-bare]')
     // No placeholders, no empty headers.
     expect(rendered).not.toContain('- (none)')
     for (const header of ['Current', 'Evidence', 'Open', 'Rationale']) {
@@ -44,7 +46,7 @@ describe('R2-D: empty sections are omitted, identity and recall are not', () => 
   it('saves real tokens on the empty case', () => {
     const dieted = renderStructuredCheckpoint(emptyCurrentState(), 'cp-bare')
     const verbose = [
-      '[EF checkpoint v1 mode=leaf id=cp-bare]', '', 'Current', '- (none)',
+      '[EF1 L cp:cp-bare]', '', 'Current', '- (none)',
       '', 'Evidence', '- (none)', '', 'Open', '- (none)',
       '', 'Rationale', '- (none)', '', 'Recall', '- cp:cp-bare',
     ].join('\n')
@@ -92,8 +94,7 @@ describe('R2-D: the attribution splitter still reads dieted checkpoints', () => 
     expect(split).not.toBeNull()
     expect(split!.state).toBe('')
     expect(split!.rationale).toBe('')
-    expect(split!.framing).toContain('[EF checkpoint v1')
-    expect(split!.framing).toContain('cp:cp-bare')
+    expect(split!.framing).toContain('[EF1 L cp:cp-bare]')
   })
 
   it('splits state and rationale when both are present', () => {

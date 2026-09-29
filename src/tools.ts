@@ -12,6 +12,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import type { JsonValue } from '@deepseek-ai/dsh-util-values'
 import type { FoldBundleStore } from './types.ts'
+import { CHECKPOINT_MARKER_EXPLANATION } from './checkpoint-marker.ts'
 import { EXACT_PAGE_LIMIT, recall, search } from './recall.ts'
 import type { RecallDepth } from './recall.ts'
 
@@ -61,9 +62,10 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
   const contextRecall = defineTool({
     name: 'context_recall',
     description:
-      'Recover folded context by checkpoint id. depth=summary returns the checkpoint view; depth=detail adds the semantic digest; depth=exact returns one bounded page of the archived model history.',
+      `${CHECKPOINT_MARKER_EXPLANATION} depth=summary returns the checkpoint view; depth=detail adds the `
+      + 'semantic digest; depth=exact returns one bounded page of the archived model history.',
     parameters: {
-      ref: { type: 'string', description: 'checkpoint id (from context_search or a checkpoint marker)' },
+      ref: { type: 'string', description: 'checkpoint reference, e.g. `cp:<id>` from a checkpoint marker' },
       depth: { type: 'string', enum: ['summary', 'detail', 'exact'], description: 'recall depth (default summary)' },
       offset: { type: 'integer', description: 'exact-depth page offset' },
       limit: { type: 'integer', description: `exact-depth page size (max ${EXACT_PAGE_LIMIT})` },

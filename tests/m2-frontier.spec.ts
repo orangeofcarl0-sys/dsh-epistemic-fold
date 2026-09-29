@@ -216,7 +216,7 @@ describe('P05: manual compaction is a root fold', () => {
     const verification = await store.verify(session.id, bundles[0]!.checkpointId)
     expect(verification.status).toBe('verified')
     if (verification.status === 'verified') {
-      expect(verification.bundle.rendered.text).toContain('[EF checkpoint v1 mode=root id=')
+      expect(verification.bundle.rendered.text).toContain('[EF1 R cp:')
     }
   })
 })

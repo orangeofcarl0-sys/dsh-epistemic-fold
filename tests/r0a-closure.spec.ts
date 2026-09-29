@@ -54,13 +54,41 @@ function lastSummaryEnvelope(session: Session): {
   return undefined
 }
 
-describe('checkpoint marker protocol (R0-A1)', () => {
+describe('checkpoint marker protocol (R0-A1, R3-A V2)', () => {
   it('encode/parse round-trips and ignores body extensions', () => {
     const marker = encodeCheckpointMarker({ checkpointId: 'a'.repeat(36), mode: 'leaf' })
-    expect(marker).toBe(`[EF checkpoint v1 mode=leaf id=${'a'.repeat(36)}]`)
+    // R3-A: the writer emits V2, whose id is already the `cp:` reference the
+    // recall tool accepts. The marker is both machine identity and affordance.
+    expect(marker).toBe(`[EF1 L cp:${'a'.repeat(36)}]`)
     const parsed = parseCheckpointMarker(`${marker}\nCurrent\nEvidence\nOpen · whatever]`)
-    expect(parsed).toEqual({ version: 1, checkpointId: 'a'.repeat(36), mode: 'leaf' })
+    expect(parsed).toEqual({ version: 2, checkpointId: 'a'.repeat(36), mode: 'leaf' })
     expect(parseCheckpointMarker('no marker here')).toBeUndefined()
+  })
+
+  it('still READS every V1 marker an older build could have written', () => {
+    // R3 §32: reader V1+V2, writer V2. A surface persisted by an older build
+    // must keep folding, recalling, and rebasing correctly.
+    for (const mode of ['leaf', 'root', 'emergency'] as const) {
+      const uuid = 'c'.repeat(36)
+      expect(parseCheckpointMarker(`[EF checkpoint v1 mode=${mode} id=${uuid}]`))
+        .toEqual({ version: 1, checkpointId: uuid, mode })
+    }
+  })
+
+  it('maps each V2 mode code back to its fold mode', () => {
+    const uuid = 'd'.repeat(36)
+    expect(parseCheckpointMarker(`[EF1 L cp:${uuid}]`)?.mode).toBe('leaf')
+    expect(parseCheckpointMarker(`[EF1 R cp:${uuid}]`)?.mode).toBe('root')
+    expect(parseCheckpointMarker(`[EF1 E cp:${uuid}]`)?.mode).toBe('emergency')
+    // `G` is reserved for R3-D's chain merge and is NOT yet a fold mode: an
+    // unreserved code must not silently become a checkpoint.
+    expect(parseCheckpointMarker(`[EF1 G cp:${uuid}]`)).toBeUndefined()
+  })
+
+  it('prefers a V2 marker when both grammars appear', () => {
+    const uuid = 'e'.repeat(36)
+    const text = `[EF checkpoint v1 mode=root id=${'f'.repeat(36)}]\n[EF1 L cp:${uuid}]`
+    expect(parseCheckpointMarker(text)).toEqual({ version: 2, checkpointId: uuid, mode: 'leaf' })
   })
 
   it('normalizeCheckpointRef accepts the display forms and bare uuids', () => {
@@ -85,7 +113,7 @@ describe('checkpoint marker protocol (R0-A1)', () => {
     expect(frontier.frozenCount).toBe(1)
     expect(frontier.frozenPrefixContiguous).toBe(true)
     const text = summaryText(lastCompactionSummary(session)!.summary as ContentBlock[])
-    expect(text).toContain('[EF checkpoint v1 mode=leaf id=')
+    expect(text).toContain('[EF1 L cp:')
     expect(text).not.toContain(' · state]')
   })
 })
@@ -286,11 +314,10 @@ describe('semantic profiles and audit metadata (R0-A6)', () => {
     expect(envelope.llmStreamCall).toBeUndefined()
     const text = summaryText(envelope.summary as ContentBlock[])
     // semanticMode=none produces no rationale, and R2-D omits an empty section
-    // rather than emitting a `- (none)` placeholder for it. What must survive
-    // is checkpoint identity and the recall pointer.
-    expect(text).toContain('[EF checkpoint v1 mode=leaf id=')
-    expect(text).toContain('Recall')
-    expect(text).toContain('- cp:')
+    // rather than emitting a `- (none)` placeholder for it. R3-A then removed
+    // the `Recall` section too: the marker line IS the recall pointer, so
+    // what must survive is the marker — and nothing may be lost with it.
+    expect(text).toContain('[EF1 L cp:')
     expect(text).not.toContain('Rationale')
     void store
   })
@@ -312,7 +339,7 @@ describe('semantic profiles and audit metadata (R0-A6)', () => {
     expect(Array.isArray(envelope.rawOutput)).toBe(true)
     // Machine sections remain authoritative; the narrative is rationale only.
     const text = summaryText(envelope.summary as ContentBlock[])
-    expect(text).toContain('[EF checkpoint v1 mode=leaf id=')
+    expect(text).toContain('[EF1 L cp:')
     expect(text).toContain('- rationale text only')
   })
 })

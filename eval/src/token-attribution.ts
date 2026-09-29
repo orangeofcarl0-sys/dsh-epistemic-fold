@@ -85,44 +85,41 @@ function densityPrice(text: string): number {
 }
 
 /**
- * The three payloads of one rendered leaf checkpoint, split by section header.
+ * The payloads of one rendered leaf checkpoint, split by section header.
  *
  * R2-D made sections OPTIONAL: a section carrying nothing is omitted entirely
  * rather than emitted as a header plus `- (none)`. The splitter therefore
  * locates whichever headers are present instead of requiring all of them.
  *
- * A checkpoint with NO state sections at all is still a perfectly valid leaf —
+ * R3-A removed the `Recall` section: the marker line carries `cp:<id>`, which
+ * is the recall affordance, so there is no longer a trailing pointer to anchor
+ * on. The split is therefore bounded by the state/rationale headers alone, and
+ * a checkpoint with NO state sections at all is still a perfectly valid leaf —
  * a fold with no declared anchors has no machine state to hand off — so it
  * splits with an empty state rather than being rejected. Rejecting it would
  * misclassify a legitimate leaf as a root and silently misattribute its cost.
  *
- * @returns character slices, or `null` when the text carries no Recall anchor,
- *   which means it is not a structured leaf layout at all.
+ * @returns character slices, or `null` when the text carries no EF marker at
+ *   all, which means it is not an EF leaf layout.
  */
 export function splitLeafCheckpointText(
   text: string,
 ): { state: string; rationale: string; framing: string } | null {
-  const recallIdx = text.indexOf('\nRecall\n')
-  if (recallIdx < 0) return null
+  if (parseCheckpointMarker(text) === undefined) return null
   const rationaleIdx = text.indexOf('\nRationale\n')
-
-  // The state region runs from the first state header (if any) to Rationale,
-  // or to Recall when there is no Rationale.
   const stateStart = ['\nCurrent\n', '\nEvidence\n', '\nOpen\n']
     .map(header => text.indexOf(header))
     .filter(index => index >= 0)
     .sort((left, right) => left - right)[0]
-  const stateEnd = rationaleIdx >= 0 ? rationaleIdx : recallIdx
-
-  const hasState = stateStart !== undefined && stateStart < stateEnd
-  // Framing is everything before the state/rationale/recall body: the marker
-  // line, the preamble, and the wrapper tags.
-  const framingEnd = hasState ? stateStart + 1 : stateEnd
+  // The body ends where the rationale begins, or at end-of-text when there is
+  // no rationale. Everything before the first state header is framing.
+  const bodyEnd = rationaleIdx >= 0 ? rationaleIdx : text.length
+  const hasState = stateStart !== undefined && stateStart < bodyEnd
 
   return {
-    framing: text.slice(0, framingEnd) + text.slice(recallIdx),
-    state: hasState ? text.slice(stateStart + 1, stateEnd) : '',
-    rationale: rationaleIdx >= 0 ? text.slice(rationaleIdx + 1, recallIdx) : '',
+    framing: hasState ? text.slice(0, stateStart + 1) : text.slice(0, bodyEnd),
+    state: hasState ? text.slice(stateStart + 1, bodyEnd) : '',
+    rationale: rationaleIdx >= 0 ? text.slice(rationaleIdx + 1) : '',
   }
 }
 

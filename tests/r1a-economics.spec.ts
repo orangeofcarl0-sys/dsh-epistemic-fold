@@ -206,8 +206,10 @@ describe('R1-A: cost model relationships (docs/11 §3, §15-§16)', () => {
 
 describe('R1-A: token attribution reconciles exactly', () => {
   it('splits a rendered leaf checkpoint into state/rationale/framing sections', () => {
+    // R3-A format: the marker carries `cp:abc`, which is the recall reference,
+    // so there is no trailing Recall section to anchor the split on.
     const text = [
-      '[EF checkpoint v1 mode=leaf id=abc]',
+      '[EF1 L cp:abc]',
       '',
       'Current',
       '- [objective] ship it (normative)',
@@ -220,22 +222,40 @@ describe('R1-A: token attribution reconciles exactly', () => {
       '',
       'Rationale',
       '- we chose X because Y',
-      '',
-      'Recall',
-      '- cp:abc',
     ].join('\n')
     const split = splitLeafCheckpointText(text)!
     expect(split.state).toContain('Current')
     expect(split.state).toContain('ship it')
     expect(split.rationale).toContain('we chose X because Y')
-    // Framing owns the marker preamble and the recall pointer.
-    expect(split.framing).toContain('[EF checkpoint v1')
-    expect(split.framing).toContain('cp:abc')
+    // Framing owns the marker line, which is also the recall affordance.
+    expect(split.framing).toContain('[EF1 L cp:abc]')
   })
 
-  it('returns null for text that is not a structured leaf checkpoint', () => {
+  it('returns null for text that is not an EF checkpoint', () => {
     expect(splitLeafCheckpointText('plain text')).toBeNull()
-    expect(splitLeafCheckpointText('[EF checkpoint v1 mode=leaf id=a]\n\nCurrent\n')).toBeNull()
+    // A Basic checkpoint has no EF marker: it is one opaque narrative node.
+    expect(splitLeafCheckpointText('<compacted-summary>\nnarrative\n</compacted-summary>')).toBeNull()
+  })
+
+  it('still splits a V1 checkpoint written by an older build', () => {
+    // Reader compatibility (R3 §32): a persisted V1 surface must keep
+    // attributing its cost to the right buckets.
+    const text = [
+      '[EF checkpoint v1 mode=leaf id=old]',
+      '',
+      'Current',
+      '- [objective] ship it (normative)',
+      '',
+      'Rationale',
+      '- legacy rationale',
+      '',
+      'Recall',
+      '- cp:old',
+    ].join('\n')
+    const split = splitLeafCheckpointText(text)!
+    expect(split.state).toContain('ship it')
+    expect(split.rationale).toContain('legacy rationale')
+    expect(split.framing).toContain('[EF checkpoint v1')
   })
 
   it('accounts for every metered token of a raw conversation', async () => {
