@@ -110,11 +110,13 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     // run the legacy policy while the deployment believed it had asked for
     // economy, with no indication anything was wrong.
     expect(isFoldModeName('economy')).toBe(true)
+    // `reliability` is still NOT a mode name. RC2 added the tier ladder, and the
+    // rung that buys steadiness is named `balanced`/`quality` — not the R4-era
+    // `reliability` placeholder, which would have asserted a configuration the
+    // project never measured. The rungs that DO make a steadiness claim carry
+    // `evidence: 'hypothesis'` rather than borrowing an unearned name.
     expect(isFoldModeName('reliability')).toBe(false)
-    // `reliability` is deliberately NOT offered: there is no live evidence for
-    // what the right reliability configuration is, so naming one would assert
-    // a conclusion the project does not have.
-    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'economy'])
+    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'economy', 'balanced', 'quality'])
 
     expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/unknown mode/u)
     expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/economy/u)

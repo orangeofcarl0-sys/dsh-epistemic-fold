@@ -92,6 +92,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC1.2** | End-to-end recall closure: real agent-loop recall smoke, deterministic mechanism proof, rationale tax priced from its measured size · 端到端召回闭合 | ✅ **recall proven**; preset unchanged; RC1.1 boundary corrected · [report](docs/21_RC1_2_RECALL_CLOSURE.md) |
 | **RC1.3** | Retrieval ergonomics closure: un-hinted baseline, per-fact failure taxonomy, self-describing search hits, measured retrieval rule · 检索工效学闭合 | ✅ **quality side CLOSED** — economy 3.00/3, matching Basic; cost gate still **OPEN**; default still `legacy` · [report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) |
 | **RC1.3.1** | Temporal retrieval guard: newest-first chronology from source spans, latest-match supersession, `matchedMessageIndex` as the recall offset · 时序检索守卫 | ✅ **retrieval layer FROZEN** — chronology closed keylessly; only the cost gate remains open · [report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) |
+| **RC2** | Product integration: the `economy`/`balanced`/`quality` tier ladder, `/context status` on the real DSH command plane, and a real-task comparison · 产品集成与模式调优 | ⚠️ **surface SHIPPED**; tier steadiness benefit **HYPOTHESIS** — the task set did not discriminate the modes · [report](docs/24_RC2_PRODUCT_INTEGRATION.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -303,6 +304,26 @@ recommended or defaulted and must not drive the architecture further. Full detai
 in [the RC1.3.1 report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) ·
 [the RC1.3 report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) ·
 [the RC1.2 report](docs/21_RC1_2_RECALL_CLOSURE.md) ·
+
+**RC2 then built the product surface, and honestly failed to rank its own tiers.**
+Three modes now ship — `economy`, `balanced`, `quality` — as a ladder that varies
+ONE lever per rung (the semantic face, then retention), with everything else held
+identical so a difference is attributable. `economy` is the rung with measured
+end-to-end evidence (RC1.3); the two steadiness rungs are marked **HYPOTHESIS** on
+every surface that describes them, because paying for steadiness is a claim this
+project has not measured. `/context status` registers on the real DSH **command**
+plane, so it costs zero model tokens, and it labels every figure `measured` or
+`estimated` — an unknown figure prints `unknown`, never `0`. A real-task
+comparison then ran 24 times across the four modes over real filesystem and
+execution tools, with clean transport (0/261 provider calls lost). It did **not**
+discriminate the modes: TaskQuality saturated at 1.00 for every arm, and the one
+steadiness loss was not reproducible on re-run (0.75 → 1.00 for the same cell). So
+the ladder's benefit stays a hypothesis, and the reason is the instrument, not the
+code — the tasks are too easy and n=1 cannot separate a mode effect from model
+variance. What the run does establish positively is the fold/recall contract under
+`restart` and `model-switch`: every arm still produced the artifact to the
+corrected spec after folding and resuming. Full detail in
+[the RC2 report](docs/24_RC2_PRODUCT_INTEGRATION.md) ·
 **RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
 只能说明**表面**不携带未声明叙述，而非 EF 无法恢复它。通过真实 agent loop
 （`model → tool-call → ToolRuntime → tool/result → 下一模型步`）与确定性的 keyless
@@ -349,6 +370,20 @@ agent 而言，这是最有害的一类错误，因为答案看起来有据可�
 （仍为 3.00/3，9/9 检索）。**至此检索层正式冻结**——压缩架构、召回正确性、检索工效学三者
 全部 CLOSED，仅剩路由级实际成本 gate 仍为 OPEN，且它只影响是否推荐/默认启用 economy，
 不再反向驱动架构增长。详见 [RC1.3.1 报告](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md)。
+
+**RC2 随后构建了产品表面，并如实承认未能区分自己的三档。** 现提供三档模式——
+`economy`、`balanced`、`quality`——构成一个阶梯，每上一档只变动**一个**杠杆
+（先是语义面，再是保留比例），其余全部保持不变，因此差异可归因。`economy` 是唯一
+有端到端实测证据的一档（RC1.3）；两个稳定性档在所有描述它们的界面上都标注为
+**HYPOTHESIS**，因为"为稳定性付费"这一主张本项目尚未测量。`/context status` 注册在真实
+DSH **命令**层，因此不消耗任何模型 token，且每个数值都标明 `measured` 或 `estimated`
+——无法确立的数值显示 `unknown`，绝不为 `0`。随后在真实文件系统与执行工具上，对四种
+模式各跑了 24 次真实任务，传输干净（261 次 provider 调用 0 次丢失）。但结果**未能区分
+各模式**：TaskQuality 在所有 arm 上都饱和于 1.00，唯一一次稳定性丢失在重跑后不复现
+（同一单元 0.75 → 1.00）。因此阶梯的收益仍为假设，原因在**测量工具**而非代码——任务
+过于简单，且 n=1 无法把模式效应与模型方差分开。该运行确实正面确认的一点是 `restart` 与
+`model-switch` 下的折叠/召回契约：每个 arm 在折叠并恢复后，仍按**更正后**的规格产出了
+工件。详见 [RC2 报告](docs/24_RC2_PRODUCT_INTEGRATION.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
@@ -387,6 +422,14 @@ Compression architecture  CLOSED  (fold/frontier; unchanged since R3)
 Recall correctness        CLOSED  (RC1.2 mechanism proof; exact recall bounded)
 Retrieval ergonomics      CLOSED  (RC1.3 probe + RC1.3.1 temporal guard)
 semanticMode              none    (nothing required rationale)
+```
+
+RC2 adds the product surface without reopening any of them · RC2 增加了产品表面，
+且未重新开启上述任何一层：
+
+```
+Product surface           SHIPPED    economy / balanced / quality + /context status
+Tier steadiness benefit   HYPOTHESIS (not confirmed by the RC2 task sample)
 ```
 
 Only one question remains open, and it is a **pricing** question that must not
@@ -480,23 +523,37 @@ DSH profile YAML（等价形态 · equivalent form）:
 
 ### Configuration modes · 配置模式
 
-R4 adds a named mode, so a deployment does not have to understand the internal
-mechanisms to use the product. R4 引入命名模式，部署方无需理解内部机制：
+The product exposes **three tiers**, plus `legacy` (the engine's own default)
+· 产品提供**三档模式**，另有 `legacy`（引擎自身默认值）：
 
 ```yaml
 - name: dsh-epistemic-fold
   config:
     bundleRoot: <profile persistence root>/epistemic-fold
-    mode: economy          # or: legacy (the default) · 或 legacy（默认）
+    mode: economy     # economy | balanced | quality | legacy (default)
 ```
+
+| tier | what it costs | evidence |
+| --- | --- | --- |
+| `economy` | lowest | **MEASURED** — RC1.3: parity with Basic at ~1/17 the cost |
+| `balanced` | a small premium | **HYPOTHESIS** — the benefit is not measured |
+| `quality` | a larger premium | **HYPOTHESIS** — the benefit is not measured |
+
+The ladder varies **one lever per rung** — the semantic face, then retention —
+with everything else held identical, so a difference between adjacent rungs is
+attributable. Run `/context status` in a session to see the active mode, its
+evidence status, and the live figures · 阶梯每上一档只变动**一个**杠杆（先语义面、
+再保留比例），其余保持不变；在会话中运行 `/context status` 可查看当前模式、其证据状态
+与实时数值。
 
 `mode: economy` fills in the policy keys R3 measured as cheaper
 (`leafAdmission: economic`, `rootPolicy: economics`, `semanticMode: none`,
-`framingMode: system-dedup`). It is a named **set of values, not a branch**:
-expansion happens before resolution, so the engine cannot tell a preset from the
-same keys written by hand, and **an explicit setting always wins** over the
-preset. `mode: economy` 展开为 R3 实测更省的策略键组合；它是「一组具名取值」而非分支，
-展开在解析之前完成，因此引擎无法区分 preset 与手写配置，且**显式设置始终覆盖 preset**。
+`framingMode: system-dedup`). Every tier is a named **set of values, not a
+branch**: expansion happens before resolution, so the engine cannot tell a preset
+from the same keys written by hand, and **an explicit setting always wins** over
+the tier. `mode: economy` 展开为 R3 实测更省的策略键组合；每一档都是「一组具名取值」
+而非分支，展开在解析之前完成，因此引擎无法区分 preset 与手写配置，且**显式设置始终
+覆盖 preset**。
 
 `framingMode: system-dedup` requires the DSH `frameCheckpoint` seam. Without it
 the engine **refuses to start** rather than silently running with per-checkpoint
@@ -506,10 +563,13 @@ DSH, or set `framingMode: legacy` explicitly.
 `system-dedup` 依赖 DSH 的 `frameCheckpoint` seam；缺失时引擎**拒绝启动**，而不是静默退回
 per-checkpoint framing（那会报告一个实际并未获得的节省）。
 
-`reliability` is deliberately **not** offered yet: there is no live evidence for
-what the right reliability configuration is, and naming one would assert a
-conclusion the project does not have. `reliability` 暂不提供：尚无实测证据确定最优
-reliability 配置，命名它等于断言一个项目尚未得到的结论。
+`reliability` is deliberately **not** offered: there is no live evidence for what
+the right reliability configuration is, and naming one would assert a conclusion
+the project does not have. The two steadiness rungs are named `balanced` and
+`quality` and carry an explicit `HYPOTHESIS` status instead of borrowing an
+unearned name. `reliability` 暂不提供：尚无实测证据确定最优 reliability 配置，命名它
+等于断言一个项目尚未得到的结论。两个稳定性档命名为 `balanced` 与 `quality`，并显式标注
+`HYPOTHESIS` 状态。
 
 Continuous Integration runs two lanes on every push: the **pinned DSH
 baseline** (mandatory) and **DSH master** (allowed-to-fail compatibility
@@ -579,6 +639,7 @@ All design documents live in [`docs/`](docs/) ·
 | [21_RC1_2_RECALL_CLOSURE.md](docs/21_RC1_2_RECALL_CLOSURE.md) | RC1.2 end-to-end recall closure: the real agent-loop recall smoke, the deterministic mechanism proof, the corrected product boundary, and the rationale tax at its measured size · RC1.2 端到端召回闭合 |
 | [22_RC1_3_RETRIEVAL_ERGONOMICS.md](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) | RC1.3 retrieval ergonomics closure: the un-hinted baseline, the per-fact failure taxonomy, the self-describing `context_search` hit, the excerpt-window defect, and the measured retrieval rule that brought economy to parity with Basic · RC1.3 检索工效学闭合 |
 | [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) | RC1.3.1 temporal retrieval guard: newest-first chronology keyed on source spans rather than the clock, latest-match supersession with `matchCount`, and `matchedMessageIndex` replacing the page-aligned offset — the stage that freezes the retrieval layer · RC1.3.1 时序检索守卫 |
+| [24_RC2_PRODUCT_INTEGRATION.md](docs/24_RC2_PRODUCT_INTEGRATION.md) | RC2 product integration: the three-tier mode ladder with declared evidence status, the `/context status` command on the real DSH command plane, the real-task comparison with its three metrics, and why that comparison did not discriminate the modes · RC2 产品集成与模式调优 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

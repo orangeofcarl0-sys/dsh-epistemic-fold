@@ -121,7 +121,12 @@
   },
   {
     "file": "23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md",
-    "bytes": 9536,
-    "sha256": "25c840ebabb7f775f50d5931eda97c720c35405dedec20e8168091f1a85d469f"
+    "bytes": 9742,
+    "sha256": "63044d2ebf2faa9d72de92cd74dbe9b9b7b5c9dfb6228c0f7fc303cc0e57d506"
+  },
+  {
+    "file": "24_RC2_PRODUCT_INTEGRATION.md",
+    "bytes": 14008,
+    "sha256": "561bbf11ffb77d3aca4e53632d260937d336a958ad0c62a6b8da82d8dfaeef96"
   }
 ]
