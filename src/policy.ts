@@ -14,6 +14,7 @@ import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
 import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'
+import { isFoldModeName, resolvePreset } from './preset.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -188,14 +189,30 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * requiring `ctx.systemPrompt` to be mounted.
    */
   framingMode?: FramingMode
+  /**
+   * Named configuration mode (R4-F). `economy` fills in the policy keys R3
+   * measured as cheaper; `legacy` is the engine's own default. An explicit
+   * setting always beats the preset, and `resolvePreset` performs that fill
+   * BEFORE resolution, so nothing inside the engine branches on the mode name.
+   */
+  mode?: 'legacy' | 'economy'
 }
 
-/** Resolve and validate the EF-specific policy face of the plugin config. */
+/**
+ * Resolve and validate the EF-specific policy face of the plugin config.
+ *
+ * A named `mode` is expanded FIRST, into the same flat keys a user could write
+ * by hand, so nothing downstream can tell a preset from an explicit setting.
+ * An explicit key always wins, because the expansion fills by omission.
+ */
 export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpistemicFoldConfig {
-  const headroomTokens = config.headroomTokens ?? DEFAULT_HEADROOM_TOKENS
-  const thresholdRatio = config.thresholdRatio ?? DEFAULT_THRESHOLD_RATIO
-  const retainRatio = config.retainRatio ?? DEFAULT_RETAIN_RATIO
-  const retainTokens = config.retainTokens
+  const expanded: EpistemicFoldConfig = isFoldModeName(config.mode)
+    ? resolvePreset(config.mode, config)
+    : config
+  const headroomTokens = expanded.headroomTokens ?? DEFAULT_HEADROOM_TOKENS
+  const thresholdRatio = expanded.thresholdRatio ?? DEFAULT_THRESHOLD_RATIO
+  const retainRatio = expanded.retainRatio ?? DEFAULT_RETAIN_RATIO
+  const retainTokens = expanded.retainTokens
   if (!Number.isFinite(thresholdRatio) || thresholdRatio <= 0 || thresholdRatio > 1) {
     throw new Error('epistemic-fold: thresholdRatio must be a number in (0, 1]')
   }
@@ -206,44 +223,44 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     && (!Number.isInteger(retainTokens) || retainTokens < 0)) {
     throw new Error('epistemic-fold: retainTokens must be a non-negative integer')
   }
-  const compactionRetries = config.compactionRetries ?? 1
+  const compactionRetries = expanded.compactionRetries ?? 1
   if (!Number.isInteger(compactionRetries) || compactionRetries < 0) {
     throw new Error('epistemic-fold: compactionRetries must be a non-negative integer')
   }
-  const frozenCheckpointTokenBudget = config.frozenCheckpointTokenBudget ?? DEFAULT_FROZEN_BUDGET
+  const frozenCheckpointTokenBudget = expanded.frozenCheckpointTokenBudget ?? DEFAULT_FROZEN_BUDGET
   if (!Number.isInteger(frozenCheckpointTokenBudget) || frozenCheckpointTokenBudget < 0) {
     throw new Error('epistemic-fold: frozenCheckpointTokenBudget must be a non-negative integer')
   }
-  const semanticMode = config.semanticMode ?? DEFAULT_SEMANTIC_MODE
+  const semanticMode = expanded.semanticMode ?? DEFAULT_SEMANTIC_MODE
   if (semanticMode !== 'none' && semanticMode !== 'rationale') {
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
   }
-  const bundleRoot = config.bundleRoot ?? DEFAULT_BUNDLE_ROOT
-  const leafAdmission = config.leafAdmission ?? DEFAULT_LEAF_ADMISSION
+  const bundleRoot = expanded.bundleRoot ?? DEFAULT_BUNDLE_ROOT
+  const leafAdmission = expanded.leafAdmission ?? DEFAULT_LEAF_ADMISSION
   if (leafAdmission !== 'legacy' && leafAdmission !== 'economic') {
     throw new Error('epistemic-fold: leafAdmission must be "legacy" or "economic"')
   }
-  const minReclaimTokens = config.minReclaimTokens ?? DEFAULT_MIN_RECLAIM_TOKENS
+  const minReclaimTokens = expanded.minReclaimTokens ?? DEFAULT_MIN_RECLAIM_TOKENS
   if (!Number.isFinite(minReclaimTokens) || minReclaimTokens < 0) {
     throw new Error('epistemic-fold: minReclaimTokens must be a non-negative number')
   }
-  const minReclaimRatio = config.minReclaimRatio ?? DEFAULT_MIN_RECLAIM_RATIO
+  const minReclaimRatio = expanded.minReclaimRatio ?? DEFAULT_MIN_RECLAIM_RATIO
   if (!Number.isFinite(minReclaimRatio) || minReclaimRatio < 0 || minReclaimRatio > 1) {
     throw new Error('epistemic-fold: minReclaimRatio must be a number in [0, 1]')
   }
-  const rootPolicy = config.rootPolicy ?? DEFAULT_ROOT_POLICY
+  const rootPolicy = expanded.rootPolicy ?? DEFAULT_ROOT_POLICY
   if (rootPolicy !== 'legacy' && rootPolicy !== 'economics') {
     throw new Error('epistemic-fold: rootPolicy must be "legacy" or "economics"')
   }
-  const realizationRate = config.cacheRealizationRate ?? DEFAULT_REALIZATION_RATE
+  const realizationRate = expanded.cacheRealizationRate ?? DEFAULT_REALIZATION_RATE
   if (!Number.isFinite(realizationRate) || realizationRate < 0 || realizationRate > 1) {
     throw new Error('epistemic-fold: cacheRealizationRate must be a number in [0, 1]')
   }
-  const paybackHorizonRequests = config.paybackHorizonRequests ?? DEFAULT_PAYBACK_HORIZON
+  const paybackHorizonRequests = expanded.paybackHorizonRequests ?? DEFAULT_PAYBACK_HORIZON
   if (!Number.isFinite(paybackHorizonRequests) || paybackHorizonRequests < 0) {
     throw new Error('epistemic-fold: paybackHorizonRequests must be a non-negative number')
   }
-  const framingMode = config.framingMode ?? DEFAULT_FRAMING_MODE
+  const framingMode = expanded.framingMode ?? DEFAULT_FRAMING_MODE
   if (framingMode !== 'legacy' && framingMode !== 'system-dedup') {
     throw new Error('epistemic-fold: framingMode must be "legacy" or "system-dedup"')
   }
@@ -262,7 +279,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     framingMode,
     rootPolicy: {
       mode: rootPolicy,
-      profiles: config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
+      profiles: expanded.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
       realizationRate,
       paybackHorizonRequests,
       compactionCost: DEFAULT_COMPACTION_COST,

@@ -86,6 +86,7 @@ const EF_OWNED_CONFIG_KEYS = [
   'cacheRealizationRate',
   'paybackHorizonRequests',
   'framingMode',
+  'mode',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
