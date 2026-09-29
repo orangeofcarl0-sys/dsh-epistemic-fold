@@ -314,6 +314,8 @@ describe('RC1-C: measured on the corpus, at both checkpoint regimes', () => {
       fallbackCheckpointTokens: 200,
       basicCheckpointTokens: 400,
       outputTokensPerRequest: 200,
+      rationaleInputTokens: 7_383,
+      rationaleOutputTokens: 400,
       idleMaintenance: false,
     }, 'ef', PROFILE)
     expect(result.rootRebases).toBe(0)

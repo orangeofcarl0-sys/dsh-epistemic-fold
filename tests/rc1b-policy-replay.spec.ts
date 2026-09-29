@@ -63,6 +63,8 @@ function candidatePolicy(overrides: Partial<ReplayPolicy> & {
     fallbackCheckpointTokens: 200,
     basicCheckpointTokens: 400,
     outputTokensPerRequest: 200,
+    rationaleInputTokens: 7_383,
+    rationaleOutputTokens: 400,
     idleMaintenance: true,
     ...rest,
   }

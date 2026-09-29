@@ -89,6 +89,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC0** | Release hardening: config contract, pairwise non-inferiority, all-call billing recorder · 发布加固 | ⚠️ **cost gate OPEN (dispersion)** · superseded by RC1 · [report](docs/18_RC0_RELEASE_HARDENING.md) |
 | **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; cost gate **OPEN (dispersion at n=8)**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
 | **RC1.1** | Evidence reconciliation: component-wise certification, reserve demoted to a scoped estimate, replay confounds removed, unanchored-narrative boundary measured · 证据闭合与重放修正 | ✅ **mechanics certified**; cost recommendation **OPEN**; RC1-H withdrawn · [report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) |
+| **RC1.2** | End-to-end recall closure: real agent-loop recall smoke, deterministic mechanism proof, rationale tax priced from its measured size · 端到端召回闭合 | ✅ **recall proven**; preset unchanged; RC1.1 boundary corrected · [report](docs/21_RC1_2_RECALL_CLOSURE.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -229,13 +230,34 @@ what produced RC1-H's "the shipped reserve helps" conclusion. Holding retention
 fixed **reverses the sign**, so that conclusion is withdrawn. With both confounds
 removed the region Ω is wide (10 robust cells, 7 below parity across all cache
 scenarios) and the mature production values sit in its widest band, but the live
-cost verdict still does not reproduce at n=8. The live smoke also measured a real
+cost verdict still does not reproduce at n=8. The live smoke also measured what looked like a
 product boundary: the economy preset preserves **declared** state across folds and
-does **not** carry unanchored narrative (reproducibly 0/3 where Basic scored
-1/3), because a marker-only checkpoint has no prose in it — a rationale checkpoint
-recovers most of it, so it is the preset's choice rather than the architecture.
+its marker-only checkpoint has no prose in it.
 The project state is now **Economy mechanics certified; route-level cost
 recommendation still open**, with no new architecture added to flip a default.
+
+**RC1.2 then closed that boundary question, and corrected it.** RC1.1's smoke
+never executed a tool call, so it could only show that the *surface* lacks
+undeclared prose — not that EF cannot recover it. With a real agent loop
+(`model → tool-call → ToolRuntime → tool/result → next model step`) and a
+deterministic keyless proof, the facts are recovered in **every** arm and every
+replicate: `PARSE-7741` is absent from the surface and present in what
+`context_search → context_recall` returns, under **both** semantic modes. So
+`semanticMode` does not gate recall, and the correct contract is **declared state
+is hot; undeclared history is recoverable through bounded recall**. The preset
+keeps `semanticMode: 'none'` — not because rationale is unaffordable (it costs
++6.4%, measured against its real ~7.4K-token call rather than the 512 the
+simulator had assumed) but because nothing requires it. Full detail in
+[the RC1.2 report](docs/21_RC1_2_RECALL_CLOSURE.md) ·
+**RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
+只能说明**表面**不携带未声明叙述，而非 EF 无法恢复它。通过真实 agent loop
+（`model → tool-call → ToolRuntime → tool/result → 下一模型步`）与确定性的 keyless
+证明，所有 arm、所有重复中事实均被恢复：`PARSE-7741` 不在表面上，却存在于
+`context_search → context_recall` 的返回中，且在**两种** semantic mode 下均如此。
+因此 semanticMode 并不限制召回，正确的契约是**已声明状态热保存；未声明历史可通过有界
+召回恢复**。preset 保持 `semanticMode: 'none'`——并非因为 rationale 负担不起（实测
+其真实约 7.4K token 的调用后仅增加 6.4%，而非模拟器假设的 512），而是因为没有证据
+表明需要它。详见 [RC1.2 报告](docs/21_RC1_2_RECALL_CLOSURE.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
@@ -446,6 +468,7 @@ All design documents live in [`docs/`](docs/) ·
 | [18_RC0_RELEASE_HARDENING.md](docs/18_RC0_RELEASE_HARDENING.md) | RC0 release hardening: the configuration contract, pairwise non-inferiority, the all-call billing recorder, and the dispersion that keeps the cost gate OPEN · RC0 发布加固 |
 | [19_RC1_POLICY_NORMALIZATION.md](docs/19_RC1_POLICY_NORMALIZATION.md) | RC1 policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, and the certified economy profile · RC1 策略标准化与经济模式认证 |
 | [20_RC1_1_EVIDENCE_RECONCILIATION.md](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) | RC1.1 evidence reconciliation: component-wise certification, the reserve as a scoped estimate, both replay confounds removed, the withdrawn RC1-H conclusion, and the measured unanchored-narrative boundary · RC1.1 证据闭合与重放修正 |
+| [21_RC1_2_RECALL_CLOSURE.md](docs/21_RC1_2_RECALL_CLOSURE.md) | RC1.2 end-to-end recall closure: the real agent-loop recall smoke, the deterministic mechanism proof, the corrected product boundary, and the rationale tax at its measured size · RC1.2 端到端召回闭合 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

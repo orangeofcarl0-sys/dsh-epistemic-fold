@@ -46,8 +46,9 @@ function openCostEvidence(): CertificationEvidence {
     },
     qualitySource: 'r4e-live-noninferiority + rc1f-fold-smoke: 20/20 and 3/3 facts across folds',
     qualityPassed: true,
-    qualityScope: 'DECLARED state only: the economy preset is marker-only, so it carries anchors and '
-      + 'not unanchored narrative (rc11c-live-smokes: 0/3 on undeclared prose where Basic scored 1/3)',
+    qualityScope: 'Declared state is hot on the surface; undeclared history is recoverable through '
+      + 'bounded recall (rc12b-recall-mechanism: the fact is off-surface and recall returns it, under '
+      + 'both semantic modes)',
     window: {
       passed: true,
       source: 'rc1f-fold-smoke: peak 67379 of 131072, zero overflows',

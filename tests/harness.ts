@@ -31,6 +31,7 @@ import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
+import { ToolRuntime } from '@deepseek-ai/dsh-tools'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
@@ -163,6 +164,15 @@ export async function createHarness(
      * preamble is gone; without it the mode correctly falls back to `legacy`.
      */
     systemPrompt?: boolean
+    /**
+     * Mount the real `ToolRuntime` so recall tools can actually EXECUTE.
+     *
+     * Needed by any test that drives a real agent loop: without it the
+     * `context_search` / `context_recall` tools are never registered, so a model
+     * that correctly decides to recall has no way to do it — and the resulting
+     * zero looks like a policy failure rather than a missing service.
+     */
+    tools?: boolean
   } = {},
 ): Promise<Harness> {
   const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
@@ -175,6 +185,9 @@ export async function createHarness(
   void new TokenMeter(ctx)
   if (options.projection === true) registerEpistemicFoldProjection(ctx)
   if (options.systemPrompt === true) new SystemPrompt(ctx, {})
+  // The recall tools register only when a ToolRuntime is present, so a test
+  // that wants a real agent loop must ask for one.
+  if (options.tools === true) new ToolRuntime(ctx)
   // Detached test sessions are not store-live; manual compaction's durability
   // checkpoint is observable through the flush record (mirrors the DSH
   // manual-compaction suite's flush spy).

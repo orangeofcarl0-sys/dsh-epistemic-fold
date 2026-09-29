@@ -281,6 +281,38 @@ Two items remain open and are recorded rather than closed:
 
 ---
 
+## 8b. Post-publication correction (RC1.2)
+
+**§7's boundary was too strong, and the reason is a defect in its smoke.** The
+probe assembled a system prompt, streamed a response, and collected text deltas —
+it never executed a tool call. So a model that correctly decided "this fact is in
+an older checkpoint, I should search for it" had no way to act.
+
+What §7 legitimately established:
+
+> the marker-only checkpoint **surface** does not directly retain undeclared narrative
+
+What it claimed but could not support:
+
+> EF economy **cannot recover** undeclared narrative
+
+`context_search` and `context_recall` are exactly the mechanism for recovering
+folded raw history, and they were never invoked. RC1.2 closed that gap and the
+claim does not survive: with a real agent loop and a deterministic keyless proof,
+the facts are recovered in every arm and every replicate, under **both** semantic
+modes, with `PARSE-7741` absent from the surface and present in what recall
+returns. The corrected contract is **declared state is hot; undeclared history is
+recoverable through bounded recall**, and `qualityScope` now says so.
+
+The three-arm table in §7 also carried a second defect worth recording: only the
+economy arm was configured in an earlier version, so Basic never folded and won
+by keeping everything verbatim. That was fixed before publication, but it is the
+same class of error — a comparison that was not comparing what it claimed.
+
+See [docs/21](21_RC1_2_RECALL_CLOSURE.md).
+
+---
+
 ## 9. Prohibitions observed
 
 No M1, M3b, M4, M5, RecallPrune, or Delta Leaf. No new cache soak. No 700-turn
