@@ -52,41 +52,51 @@ export interface PendingRebaseIntent {
 /**
  * Per-session one-shot intent storage.
  *
- * Keyed by SESSION, not by agent object. A rebase is a property of one
- * conversation's surface, and the session outlives any particular agent
- * wrapper — the pressure turn and the later idle event are not guaranteed to
- * hold the same object reference, so keying on the agent would silently lose
- * intents. The session id is the identity both ends actually share.
+ * **Keyed by the LIVE SESSION OBJECT's identity**, not by session id. Two
+ * properties follow, and both are deliberate:
+ *
+ * 1. **The pressure turn and the idle event must observe the same object.**
+ *    They do: both reach the engine through `agent.session`, and an agent's
+ *    session is not swapped mid-life. (R3-0b's first cut keyed on the AGENT
+ *    object instead, which was wrong — the wrapper is not guaranteed stable
+ *    across the turn→idle boundary — and intents were silently lost.)
+ * 2. **A dropped session's intent cannot keep it alive.** A `WeakMap` releases
+ *    the entry with the session, so a disposed conversation's intent can never
+ *    fire for a later one. This is why the registry is NOT a
+ *    `Map<SessionId, …>`: id keys would retain every intent for the process
+ *    lifetime, which is a lifecycle leak, not a fix.
+ *
+ * `PendingRebaseIntent.sessionId` is therefore a **fail-closed audit check**,
+ * not the lookup key: the consumer re-verifies it against `agent.session.id`
+ * before acting, so even a mis-keyed intent cannot rebase the wrong
+ * conversation.
  */
 export interface RebaseIntentRegistry {
   /**
-   * Record an intent. A second request for the same session REPLACES the
+   * Record an intent for one live session. A second request REPLACES the
    * first rather than queueing: two reasons to rebase once are still one
    * rebase.
    * @returns true when this replaced an existing intent.
    */
-  set(session: SessionKey, intent: PendingRebaseIntent): boolean
+  set(session: object, intent: PendingRebaseIntent): boolean
   /** Read the outstanding intent without consuming it. */
-  peek(session: SessionKey): PendingRebaseIntent | undefined
+  peek(session: object): PendingRebaseIntent | undefined
   /**
    * Read AND clear the outstanding intent. The one-shot primitive: a rebase
    * may be attempted at most once per intent, so two idle events cannot
    * produce two roots.
    */
-  consume(session: SessionKey): PendingRebaseIntent | undefined
+  consume(session: object): PendingRebaseIntent | undefined
   /** Drop any outstanding intent (session change, disposal, failed rebase). */
-  clear(session: SessionKey): void
+  clear(session: object): void
   /** Number of sessions with an outstanding intent (telemetry/tests). */
   readonly size: number
 }
 
-/** Anything carrying a session identity; the registry keys on `id`. */
-export interface SessionKey {
-  readonly id: SessionId
-}
-
-/** Create an empty registry. Intents are weakly held, so a dropped session's
- * intent never keeps it alive and never fires for a later one. */
+/**
+ * Create an empty registry. Intents are weakly held, so a dropped session's
+ * intent never keeps it alive and never fires for a later one.
+ */
 export function createRebaseIntentRegistry(): RebaseIntentRegistry {
   const intents = new WeakMap<object, PendingRebaseIntent>()
   let count = 0

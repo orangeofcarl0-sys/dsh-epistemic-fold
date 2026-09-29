@@ -152,9 +152,32 @@ export async function runIdleRebase(
 export interface IdleRebaseRegistration {
   /** Remove the listener. */
   dispose(): void
-  /** Resolve once no idle-triggered maintenance is in flight. */
+  /**
+   * Resolve once no idle-triggered maintenance is in flight.
+   *
+   * @throws when the drain does not converge within
+   *   {@link SETTLE_ROUND_LIMIT} rounds. See that constant for why this must
+   *   be loud rather than capped.
+   */
   settled(): Promise<void>
 }
+
+/**
+ * How many drain rounds `settled()` tolerates before declaring non-convergence.
+ *
+ * The cap exists so a bug cannot hang a caller forever, but hitting it is a
+ * FAILURE, not a quiet exit. A rebase that keeps producing idle events that
+ * keep producing rebases is the `idle → maintenance → idle → maintenance`
+ * loop — an architecture bug — and swallowing it would hide exactly the defect
+ * the consumer's one-shot discipline exists to prevent. A first version
+ * returned silently here, which reported "settled" for a consumer that was
+ * still churning.
+ *
+ * 100 is far above any legitimate chain: a single idle event settles in one
+ * round, and a rebase that triggers a further idle event is still only a
+ * handful. Reaching 100 means the loop is self-sustaining.
+ */
+export const SETTLE_ROUND_LIMIT = 100
 
 /**
  * Register the idle consumer against a context.
@@ -182,10 +205,20 @@ export function registerIdleRebaseConsumer(deps: IdleRebaseDeps): IdleRebaseRegi
     },
     settled: async () => {
       // A run may itself trigger another idle event; drain until quiet.
-      for (let round = 0; round < 100; round += 1) {
+      let rounds = 0
+      for (;;) {
         const current = inFlight
         await current
         if (current === inFlight) return
+        rounds += 1
+        if (rounds >= SETTLE_ROUND_LIMIT) {
+          throw new Error(
+            `epistemic-fold: idle rebase did not settle after ${SETTLE_ROUND_LIMIT} drain rounds; `
+            + 'maintenance is still producing idle events that produce more maintenance. '
+            + 'This is the idle→rebase→idle loop the one-shot intent is meant to prevent, '
+            + 'not a slow consumer — the cap is not a substitute for convergence.',
+          )
+        }
       }
     },
   }
