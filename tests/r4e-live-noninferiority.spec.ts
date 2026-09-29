@@ -158,17 +158,45 @@ function probePrompt(session: SessionType, probe: string): string {
   return lines.join('\n\n')
 }
 
-async function ask(adapter: OpenAiCompatibleAdapter, prompt: string): Promise<string> {
-  const parts: string[] = []
-  for await (const chunk of adapter.stream({
-    provider: LIVE_PROVIDER,
-    model: 'live',
-    messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
-    maxTokens: 60,
-  } as never)) {
-    if (chunk.type === 'text-delta') parts.push(chunk.text)
+/**
+ * Ask one probe, distinguishing a WRONG answer from NO answer.
+ *
+ * The distinction is load-bearing and its absence was a real defect in the
+ * first version of this suite: a transport failure produced an empty string,
+ * which every family check scored as a wrong answer. That silently converts an
+ * infrastructure hiccup into a measured quality regression — and it is exactly
+ * how the first R4-E run reported "economy 8/12 vs Basic 12/12" for BOTH EF
+ * arms while Basic was untouched.
+ *
+ * An empty or error response is retried once, and if it still yields nothing it
+ * is reported as `no-answer` and EXCLUDED from the quality tally rather than
+ * counted against the arm.
+ */
+async function ask(
+  adapter: OpenAiCompatibleAdapter,
+  prompt: string,
+): Promise<{ answer: string; failed: boolean; failure?: string }> {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const parts: string[] = []
+    let failure: string | undefined
+    for await (const chunk of adapter.stream({
+      provider: LIVE_PROVIDER,
+      model: 'live',
+      messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
+      maxTokens: 60,
+    } as never)) {
+      if (chunk.type === 'text-delta') parts.push(chunk.text)
+      if (chunk.type === 'finish' && chunk.reason.kind === 'error') {
+        failure = chunk.reason.failure.message
+      }
+    }
+    const answer = parts.join('').trim()
+    if (answer.length > 0) return { answer, failed: false }
+    if (attempt === 1) return { answer: '', failed: true, ...(failure === undefined ? {} : { failure }) }
+    // A transient failure gets one retry before it is called a transport error.
+    await new Promise(resolve => setTimeout(resolve, 500))
   }
-  return parts.join('').trim()
+  return { answer: '', failed: true }
 }
 
 /** One arm's chain, with its fold/rebase counts. */
@@ -237,6 +265,8 @@ describe.skipIf(!LIVE_ENABLED)('R4-E live: non-inferiority across scenario famil
   it('economy mode is not inferior to Basic or legacy EF across 4 families', async () => {
     const replicates: ScenarioReplicate[] = []
     const chainLog: Array<{ arm: string; rep: number; folds: number; roots: number }> = []
+    /** Probes that returned nothing: excluded from quality, reported separately. */
+    const transportFailures: string[] = []
 
     for (let rep = 0; rep < REPLICATES; rep += 1) {
       for (const arm of SCENARIO_ARMS) {
@@ -245,10 +275,17 @@ describe.skipIf(!LIVE_ENABLED)('R4-E live: non-inferiority across scenario famil
         })
         chainLog.push({ arm: arm.id, rep, folds: run.folds, roots: run.roots })
         for (const fact of SCENARIO_FACTS) {
-          const answer = await ask(run.adapter, probePrompt(run.session, fact.probe))
+          const response = await ask(run.adapter, probePrompt(run.session, fact.probe))
+          if (response.failed) {
+            // A transport failure is NOT a quality result. Report it and leave
+            // it out of the tally rather than scoring it as a wrong answer.
+            transportFailures.push(`${arm.id}/${fact.family}: ${response.failure ?? 'empty response'}`)
+            console.log(`${arm.id} rep${rep} ${fact.family}: NO ANSWER (${response.failure ?? 'empty'})`)
+            continue
+          }
           replicates.push({
             arm: arm.id, family: fact.family,
-            passed: fact.check(answer), answer,
+            passed: fact.check(response.answer), answer: response.answer,
             folds: run.folds, roots: run.roots,
           })
         }
@@ -302,6 +339,12 @@ describe.skipIf(!LIVE_ENABLED)('R4-E live: non-inferiority across scenario famil
         candidateId: `E4/${family}`, referenceId: `B1/${family}`,
       })
       console.log(`  ${family.padEnd(14)} ${familyVerdict.reason}`)
+    }
+
+    if (transportFailures.length > 0) {
+      console.log(`
+transport failures (excluded from quality): ${transportFailures.length}`)
+      for (const failure of transportFailures) console.log(`  ${failure}`)
     }
 
     expect(versusBasic.nonInferior, versusBasic.reason).toBe(true)
