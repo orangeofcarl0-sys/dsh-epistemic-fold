@@ -93,6 +93,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC1.3** | Retrieval ergonomics closure: un-hinted baseline, per-fact failure taxonomy, self-describing search hits, measured retrieval rule · 检索工效学闭合 | ✅ **quality side CLOSED** — economy 3.00/3, matching Basic; cost gate still **OPEN**; default still `legacy` · [report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) |
 | **RC1.3.1** | Temporal retrieval guard: newest-first chronology from source spans, latest-match supersession, `matchedMessageIndex` as the recall offset · 时序检索守卫 | ✅ **retrieval layer FROZEN** — chronology closed keylessly; only the cost gate remains open · [report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) |
 | **RC2** | Product integration: the `economy`/`balanced`/`quality` tier ladder, `/context status` on the real DSH command plane, and a real-task comparison · 产品集成与模式调优 | ⚠️ **surface SHIPPED**; tier steadiness benefit **HYPOTHESIS** — the task set did not discriminate the modes · [report](docs/24_RC2_PRODUCT_INTEGRATION.md) |
+| **RC2.1** | Status correctness, baseline naming, and the retention A/B: four `/context status` defects fixed, `legacy` renamed to EF legacy with a real Basic arm added, the ladder reordered retention-first · 状态正确性、基线命名与保留量 A/B | ⚠️ **status FIXED**; retention bought **no measurable steadiness** (0.90→0.90) at +0.003 cost, so the tier stays **HYPOTHESIS** · [report](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -322,7 +323,29 @@ the ladder's benefit stays a hypothesis, and the reason is the instrument, not t
 code — the tasks are too easy and n=1 cannot separate a mode effect from model
 variance. What the run does establish positively is the fold/recall contract under
 `restart` and `model-switch`: every arm still produced the artifact to the
-corrected spec after folding and resuming. Full detail in
+corrected spec after folding and resuming.
+
+**RC2.1 then corrected the surface and asked the one question that mattered.**
+Four `/context status` defects were fixed, two of them the familiar error of a
+number claiming more than it measured: an absent reading was reported as a
+*measured* `0` pressure (and `0.0%` occupancy computed from it), and the archived
+token figure — a `chars/4` heuristic — was labelled `measured` while only the
+message *count* really was. Usage is now read from DSH's own `tokenUsage`
+projection rather than hand-summed from `compaction/summary` events, which had
+missed every ordinary assistant turn; and **current checkpoints** (on the surface
+now) are separated from **lifetime folds** (ever committed, from the bundle
+store), because RC2 reported the first under the second's name. The RC2 `legacy`
+arm was also renamed to what it was — **EF legacy, not Basic**: it mounted the EF
+plugin with the legacy policy, which still folds through the EF engine, writes
+Bundles and exposes the recall tools, so "versus Basic" was not supported. A real
+Basic arm now exists. The ladder was reordered **retention first** (the stronger
+and cheaper mechanism), and one critical A/B isolated retention alone: across 12
+runs it moved steadiness **0.90 → 0.90 (delta 0.00)** while costing **+0.003**,
+with both arms losing the identical probe. So `balanced` buys no measurable
+steadiness on this instrument, and its status stays **HYPOTHESIS** — the honest
+reading is "this instrument could not see the benefit", not "the benefit is
+absent". Full detail in
+[the RC2.1 report](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) ·
 [the RC2 report](docs/24_RC2_PRODUCT_INTEGRATION.md) ·
 **RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
 只能说明**表面**不携带未声明叙述，而非 EF 无法恢复它。通过真实 agent loop
@@ -383,7 +406,23 @@ DSH **命令**层，因此不消耗任何模型 token，且每个数值都标明
 （同一单元 0.75 → 1.00）。因此阶梯的收益仍为假设，原因在**测量工具**而非代码——任务
 过于简单，且 n=1 无法把模式效应与模型方差分开。该运行确实正面确认的一点是 `restart` 与
 `model-switch` 下的折叠/召回契约：每个 arm 在折叠并恢复后，仍按**更正后**的规格产出了
-工件。详见 [RC2 报告](docs/24_RC2_PRODUCT_INTEGRATION.md)。
+工件。
+
+**RC2.1 随后修正了表面，并只问了一个真正重要的问题。** 修复了 `/context status` 的四处
+缺陷，其中两处属于本项目熟悉的那类错误——数值宣称的比实际测到的更多：缺失读数被报成
+**已测量**的 `0` 压力（并据此算出 `0.0%` 占用率）；归档 token 数（`chars/4` 启发式）
+被标为 `measured`，而真正被测量的只有消息**条数**。用量现在直接读取 DSH 自身的
+`tokenUsage` projection，而不是从 `compaction/summary` 事件手工累加（后者漏掉了每一次
+普通 assistant 回合）；并且把**当前 checkpoints**（此刻在表面上）与**生命周期 folds**
+（自会话开始累计、来自 bundle store）分开——RC2 曾用后者的名义报告前者。RC2 的 `legacy`
+arm 也被正名为它本来的样子——**EF legacy，而非 Basic**：它挂载的是 EF 插件 + legacy
+策略，仍经由 EF 引擎折叠、仍写 Bundle、仍暴露 recall 工具，因此"对比 Basic"并不成立。
+现在有了真正的 Basic arm。阶梯改为**保留量优先**（机制更强、代价更低），并用一次关键
+A/B 单独隔离保留量：12 次运行中稳定性 **0.90 → 0.90（delta 0.00）**，而成本 **+0.003**，
+两个 arm 丢失的探针完全相同。因此在本测量工具下 `balanced` 买不到可测的稳定性，其状态
+仍为 **HYPOTHESIS**——诚实的读法是"该工具看不见这项收益"，而不是"收益不存在"。详见
+[RC2.1 报告](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md)。
+[RC2 报告](docs/24_RC2_PRODUCT_INTEGRATION.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
@@ -533,18 +572,21 @@ The product exposes **three tiers**, plus `legacy` (the engine's own default)
     mode: economy     # economy | balanced | quality | legacy (default)
 ```
 
-| tier | what it costs | evidence |
+| tier | the lever it adds | evidence |
 | --- | --- | --- |
-| `economy` | lowest | **MEASURED** — RC1.3: parity with Basic at ~1/17 the cost |
-| `balanced` | a small premium | **HYPOTHESIS** — the benefit is not measured |
-| `quality` | a larger premium | **HYPOTHESIS** — the benefit is not measured |
+| `economy` | — (default retention) | **MEASURED** — RC1.3: parity with Basic at ~1/17 the cost |
+| `balanced` | a larger verbatim tail (retention 0.16 → 0.24) | **HYPOTHESIS** — the RC2.1 A/B measured no gain |
+| `quality` | + narrative checkpoints (`semanticMode: rationale`) | **HYPOTHESIS** — not measured |
 
-The ladder varies **one lever per rung** — the semantic face, then retention —
-with everything else held identical, so a difference between adjacent rungs is
-attributable. Run `/context status` in a session to see the active mode, its
-evidence status, and the live figures · 阶梯每上一档只变动**一个**杠杆（先语义面、
-再保留比例），其余保持不变；在会话中运行 `/context status` 可查看当前模式、其证据状态
-与实时数值。
+The ladder varies **one lever per rung** — retention first, then the semantic
+face — with everything else held identical, so a difference between adjacent
+rungs is attributable. Retention comes first because it is the stronger and
+cheaper mechanism: a fact inside the retained tail never leaves the surface,
+while a rationale checkpoint still has to be read. Run `/context status` in a
+session to see the active mode, its evidence status, and the live figures ·
+阶梯每上一档只变动**一个**杠杆（先保留比例、再语义面），其余保持不变。保留量在前，
+因为它更强也更省：留在保留尾部的事实根本不会离开表面，而 rationale checkpoint 仍需
+被读取。在会话中运行 `/context status` 可查看当前模式、其证据状态与实时数值。
 
 `mode: economy` fills in the policy keys R3 measured as cheaper
 (`leafAdmission: economic`, `rootPolicy: economics`, `semanticMode: none`,
@@ -640,6 +682,7 @@ All design documents live in [`docs/`](docs/) ·
 | [22_RC1_3_RETRIEVAL_ERGONOMICS.md](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) | RC1.3 retrieval ergonomics closure: the un-hinted baseline, the per-fact failure taxonomy, the self-describing `context_search` hit, the excerpt-window defect, and the measured retrieval rule that brought economy to parity with Basic · RC1.3 检索工效学闭合 |
 | [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) | RC1.3.1 temporal retrieval guard: newest-first chronology keyed on source spans rather than the clock, latest-match supersession with `matchCount`, and `matchedMessageIndex` replacing the page-aligned offset — the stage that freezes the retrieval layer · RC1.3.1 时序检索守卫 |
 | [24_RC2_PRODUCT_INTEGRATION.md](docs/24_RC2_PRODUCT_INTEGRATION.md) | RC2 product integration: the three-tier mode ladder with declared evidence status, the `/context status` command on the real DSH command plane, the real-task comparison with its three metrics, and why that comparison did not discriminate the modes · RC2 产品集成与模式调优 |
+| [25_RC2_1_STATUS_AND_RETENTION_AB.md](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) | RC2.1 status correctness and the retention A/B: the four `/context status` defects (`unknown` reported as a measured 0, a `chars/4` heuristic labelled measured, hand-rolled usage instead of the DSH projection, current checkpoints conflated with lifetime folds), the EF-legacy-vs-Basic baseline correction, the retention-first reorder, and the one critical A/B that measured no steadiness gain · RC2.1 状态正确性与保留量 A/B |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

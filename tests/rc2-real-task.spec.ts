@@ -31,8 +31,16 @@ import {
   measureSteadiness,
   taskRunToText,
 } from '../eval/real-task/metrics.ts'
-import { CODING_TASK, REAL_TASKS, RESEARCH_TASK, TOOL_HEAVY_TASK } from '../eval/real-task/tasks.ts'
-import { ARMS } from '../eval/real-task/driver.ts'
+import {
+  CODING_TASK,
+  LONG_CODING_TASK,
+  LONG_RESEARCH_TASK,
+  REAL_TASKS,
+  RESEARCH_TASK,
+  RETENTION_AB_TASKS,
+  TOOL_HEAVY_TASK,
+} from '../eval/real-task/tasks.ts'
+import { ARMS, EF_ARMS } from '../eval/real-task/driver.ts'
 import { readdir } from 'node:fs/promises'
 import { relative, sep } from 'node:path'
 
@@ -323,8 +331,19 @@ describe('RC2: the steadiness probes are per-task and meaningful', () => {
 })
 
 describe('RC2: the arms are the four modes, and the ladder is ordered', () => {
-  it('runs legacy plus the three tiers', () => {
-    expect(ARMS.map(arm => arm.mode)).toEqual(['legacy', 'economy', 'balanced', 'quality'])
+  it('runs the real Basic baseline plus the EF ladder', () => {
+    // RC2.1: `legacy` in RC2 was EF-with-legacy-policy, mislabelled as Basic.
+    // The arm model now names the ENGINE, so the baseline is a real
+    // BasicCompactionEngine and the EF arms are labelled `ef-*`.
+    expect(ARMS.map(arm => arm.label)).toEqual(['basic', 'ef-legacy', 'economy', 'balanced', 'quality'])
+    expect(ARMS.filter(arm => arm.engine === 'basic').map(arm => arm.label)).toEqual(['basic'])
+    expect(EF_ARMS.map(arm => arm.mode)).toEqual(['legacy', 'economy', 'balanced', 'quality'])
+  })
+
+  it('the EF ladder never contains a Basic arm', () => {
+    // The ladder is EF-only; a Basic arm inside it would double-count the
+    // baseline in any pooled per-mode figure.
+    expect(EF_ARMS.every(arm => arm.engine === 'ef')).toBe(true)
   })
 
   it('every arm label is distinct, so a report cannot merge two arms', () => {
@@ -382,6 +401,89 @@ describe('RC2: the resurrection check reads assertions, not mentions', () => {
     expect(assertsValueAsCurrent('timeoutMs: 1500', /\b1500\b/u, /timeout|ms\b/iu)).toBe(true)
     expect(assertsValueAsCurrent('timeoutMs is 3000, corrected from 1500', /\b1500\b/u, /timeout|ms\b/iu))
       .toBe(false)
+  })
+})
+
+describe('RC2.1: the A/B tasks can actually discriminate', () => {
+  it('the retention A/B uses the two long tasks', () => {
+    expect(RETENTION_AB_TASKS.map(task => task.id)).toEqual([
+      'coding-config-loader', 'research-ingest-spec',
+    ])
+  })
+
+  it('the long tasks are HARDER than the RC2 tasks in facts and revisions', () => {
+    // RC2's tasks saturated at 1.00 quality, so they could not separate
+    // anything. The A/B tasks must carry more facts and more revisions, or the
+    // single critical run would repeat RC2's failure to discriminate.
+    for (const task of RETENTION_AB_TASKS) {
+      const revisions = task.context.filter(fact => /CORRECTION/iu.test(fact)).length
+      expect(revisions, `${task.id} must revise more than once`).toBeGreaterThanOrEqual(2)
+      expect(task.context.length, `${task.id} must state many facts`).toBeGreaterThanOrEqual(10)
+      expect(task.work.length, `${task.id} must do more work`).toBeGreaterThanOrEqual(4)
+    }
+  })
+
+  it('the long tasks add a consolidation probe the RC2 tasks did not have', () => {
+    // The probe that catches a session which kept the value but reported the old
+    // one — the failure a filesystem-only check misses.
+    for (const task of RETENTION_AB_TASKS) {
+      expect(task.steadiness.map(probe => probe.id)).toContain('facts-consolidated')
+      expect(task.steadiness.length).toBeGreaterThanOrEqual(5)
+    }
+  })
+
+  it('the long tasks still fail on an empty workspace', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rc21-empty-'))
+    const state = await finishedState(root, '', listFiles)
+    for (const task of RETENTION_AB_TASKS) {
+      const quality = await Promise.all(task.quality.map(check => check.passed(state)))
+      expect(quality.some(Boolean), `${task.id} must not pass on an empty workspace`).toBe(false)
+      const steady = await measureSteadiness(state, task.steadiness)
+      expect(steady.score, `${task.id} must score zero with no artifact`).toBe(0)
+    }
+  })
+
+  it('the long coding task distinguishes the corrected values from the superseded ones', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'rc21-good-'))
+    await mkdir(join(root, 'src'), { recursive: true })
+    await writeFile(join(root, 'src', 'loader.js'), [
+      'const SCHEMA_VERSION = 2',
+      'export function loadConfig(path, options = {}) {',
+      '  if (options.strict) return { ok: false, error: "unexpected-key" }',
+      '  if (path === null) return { ok: false, error: "invalid" }',
+      '  return { ok: false, error: "missing" }',
+      '}',
+    ].join(String.fromCharCode(10)), 'utf8')
+    await writeFile(join(root, 'NOTES.md'), 'schema version 2; strict error is unexpected-key', 'utf8')
+    const good = await measureSteadiness(await finishedState(root, '', listFiles), LONG_CODING_TASK.steadiness)
+    expect(good.satisfied).toBe(good.total)
+
+    // The SUPERSEDED version of the same artifact.
+    const stale = await mkdtemp(join(tmpdir(), 'rc21-stale-'))
+    await mkdir(join(stale, 'src'), { recursive: true })
+    await writeFile(join(stale, 'src', 'loader.js'), [
+      'const SCHEMA_VERSION = 1',
+      'export function loadConfig(path) { return { ok: false, error: "unknown-key" } }',
+    ].join(String.fromCharCode(10)), 'utf8')
+    await writeFile(join(stale, 'NOTES.md'), 'schema version 1; strict error is unknown-key', 'utf8')
+    const staleSteady = await measureSteadiness(await finishedState(stale, '', listFiles), LONG_CODING_TASK.steadiness)
+    expect(staleSteady.probes.find(p => p.id === 'revision-honoured')?.held).toBe(false)
+    expect(staleSteady.probes.find(p => p.id === 'no-resurrection')?.held).toBe(false)
+    expect(staleSteady.probes.find(p => p.id === 'facts-consolidated')?.held).toBe(false)
+  })
+
+  it('the long research task scopes its resurrection check to the field', async () => {
+    // `250` is BOTH a superseded batch size AND the legitimate backoff, so a
+    // bare-number check would fire on a correct spec. The probe must be scoped.
+    const root = await mkdtemp(join(tmpdir(), 'rc21-research-'))
+    await writeFile(join(root, 'spec.json'), JSON.stringify({
+      batchSize: 500, flushIntervalMs: 5000, maxRetries: 2, dlq: 'ingest-dlq',
+      maxRecordSizeKb: 128, concurrency: 4, backoffMs: 250,
+    }), 'utf8')
+    await writeFile(join(root, 'validate.js'), '// validator', 'utf8')
+    await writeFile(join(root, 'SUMMARY.md'), 'batch 500, record size 128', 'utf8')
+    const good = await measureSteadiness(await finishedState(root, '', listFiles), LONG_RESEARCH_TASK.steadiness)
+    expect(good.satisfied, 'the legitimate 250 backoff must not read as a resurrection').toBe(good.total)
   })
 })
 

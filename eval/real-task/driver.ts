@@ -69,19 +69,47 @@ const STEP_MAX_TOKENS = 900
 /** Which lifecycle stress a run applies. */
 export type LifecycleScenario = 'plain' | 'restart' | 'model-switch'
 
-/** One arm's configuration for a task run. */
+/**
+ * One arm's configuration for a task run.
+ *
+ * ## `engine` is not a detail (RC2.1)
+ *
+ * RC2's arms were all EF: the `legacy` arm mounted the EF PLUGIN with the legacy
+ * POLICY, and the report described it as "Basic's own policy". Those are
+ * different things, and the difference matters — `legacy` still folds through
+ * the EF engine, still writes bundles, still exposes the recall tools and the EF
+ * framing. It is **EF legacy**, and calling it Basic overstated the baseline.
+ *
+ * So the engine is now explicit. `'ef'` mounts the plugin with `mode`; `'basic'`
+ * mounts the real `BasicCompactionEngine`, which has no Bundle, no recall tools,
+ * and no EF framing. Basic is added only where it is actually wanted, because it
+ * costs an extra arm and answers a different question.
+ */
 export interface ArmSpec {
+  readonly engine: 'ef' | 'basic'
+  /** The EF mode. Ignored for a Basic arm, which has no EF policy to select. */
   readonly mode: FoldModeName
   readonly label: string
 }
 
-/** The four arms, in ascending cost order with Basic's policy first. */
-export const ARMS: readonly ArmSpec[] = [
-  { mode: 'legacy', label: 'legacy' },
-  { mode: 'economy', label: 'economy' },
-  { mode: 'balanced', label: 'balanced' },
-  { mode: 'quality', label: 'quality' },
+/** The EF arms, in ascending cost order. */
+export const EF_ARMS: readonly ArmSpec[] = [
+  { engine: 'ef', mode: 'legacy', label: 'ef-legacy' },
+  { engine: 'ef', mode: 'economy', label: 'economy' },
+  { engine: 'ef', mode: 'balanced', label: 'balanced' },
+  { engine: 'ef', mode: 'quality', label: 'quality' },
 ]
+
+/** The real Basic arm. Mounted only when a run explicitly asks for a baseline. */
+export const BASIC_ARM: ArmSpec = { engine: 'basic', mode: 'legacy', label: 'basic' }
+
+/**
+ * The arms a full comparison runs: the EF ladder plus the real Basic baseline.
+ *
+ * `basic` is included by default so a report can say "versus DSH Basic" and mean
+ * it. A run that only wants the ladder can pass {@link EF_ARMS}.
+ */
+export const ARMS: readonly ArmSpec[] = [BASIC_ARM, ...EF_ARMS]
 
 /** List workspace files, relative and slash-separated. */
 async function listWorkspaceFiles(root: string): Promise<readonly string[]> {
@@ -153,20 +181,32 @@ export async function runTaskArm(options: {
   })
   const recorder = new BillingRecorder(adapter, `${arm.label}-${task.id}-${replicate}`)
 
-  const harness = await createHarness({ text: 'checkpoint digest' }, {
-    contextWindow: TASK_WINDOW,
-    plugin: true,
-    systemPrompt: true,
-    tools: true,
-    efConfig: {
-      // The arm IS the mode: everything else is held identical so a difference
-      // is attributable to the mode rather than to the fixture.
-      ...(arm.mode === 'legacy' ? {} : resolvePreset(arm.mode)),
-      headroomTokens: 0,
-      maxTokens: 1_500,
-    },
-    adapter: { provider: LIVE_PROVIDER, instance: recorder },
-  })
+  // The engine is explicit (RC2.1). `basic` mounts the real BasicCompactionEngine
+  // — no Bundle, no recall tools, no EF framing — so a report can say "versus
+  // DSH Basic" and mean it. `ef` mounts the plugin with the arm's mode.
+  const harness = await createHarness({ text: 'checkpoint digest' }, arm.engine === 'basic'
+    ? {
+      contextWindow: TASK_WINDOW,
+      engine: 'basic' as const,
+      systemPrompt: true,
+      tools: true,
+      efConfig: { headroomTokens: 0, maxTokens: 1_500 },
+      adapter: { provider: LIVE_PROVIDER, instance: recorder },
+    }
+    : {
+      contextWindow: TASK_WINDOW,
+      plugin: true,
+      systemPrompt: true,
+      tools: true,
+      efConfig: {
+        // The arm IS the mode: everything else is held identical so a difference
+        // is attributable to the mode rather than to the fixture.
+        ...(arm.mode === 'legacy' ? {} : resolvePreset(arm.mode)),
+        headroomTokens: 0,
+        maxTokens: 1_500,
+      },
+      adapter: { provider: LIVE_PROVIDER, instance: recorder },
+    })
   const disposeTools = registerWorkspaceTools(harness.ctx, workspaceRoot)
 
   const session = Session.create(SessionId(`rc2-${arm.label}-${task.id}-${Date.now()}-${replicate}`))

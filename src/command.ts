@@ -27,6 +27,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { CommandDefinition } from '@deepseek-ai/dsh-commands'
+import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { buildContextStatus, contextStatusToLine, contextStatusToText } from './status.ts'
 import type { ContextStatus } from './status.ts'
 import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from './policy.ts'
@@ -123,14 +124,18 @@ export async function gatherStatus(
     loaded = undefined
   }
 
-  // Cost: the routed model's profile, priced against what the provider reported.
+  // Cost: the routed model's profile, priced against the provider's own usage.
   // Both halves must exist. Without a profile there are no prices, and without
   // reported usage there is no split to price.
   const profiles = (raw.economicsProfiles as never) ?? BUILTIN_ECONOMICS_PROFILES
   const profile = target === undefined
     ? undefined
     : resolveProfile(profiles, target.provider, target.model)
-  const usage = readObservedUsage(session)
+  // DSH's OWN cumulative usage, read from the token meter's projection rather
+  // than re-summed from the log. RC2 hand-rolled a scan over
+  // `compaction/summary` events, which missed every ordinary assistant turn —
+  // the projection is the harness's own answer and cannot drift from it.
+  const usage = readTokenUsage(ctx, session)
 
   return buildContextStatus({
     mode,
@@ -146,54 +151,26 @@ export async function gatherStatus(
 }
 
 /**
- * Sum the provider-reported usage across the session's own durable records.
+ * Read the session's cumulative provider usage from DSH's own projection.
  *
- * Read from the session log rather than from any in-memory counter, so the
- * figure survives a restart — and `undefined` when the log carries none,
- * because "no priced calls" and "zero tokens" differ.
+ * `tokenUsage` is registered by the token meter over the whole durable log, so
+ * it is authoritative in a way a local scan is not: it accounts for retries
+ * (via `llm/retry-started`) and for assistant settlements the hand-rolled
+ * version never saw. The four buckets it exposes are exactly the ones the cost
+ * model needs.
  *
- * The miss/hit split is DERIVED: `TokenUsage.inputTokens` is the call's whole
- * prompt, and `cacheReadTokens` is the cached part of it, so the uncached part
- * is the difference. Clamped at zero, because a provider reporting a cache read
- * larger than its own input total is inconsistent and must not produce a
- * negative price.
+ * @returns the usage, or `undefined` when the projection is not mounted or no
+ *   provider has reported yet — in which case the cost is UNKNOWN, not zero.
  */
-function readObservedUsage(session: Agent['session']): {
-  readonly uncachedInputTokens: number
-  readonly cacheReadTokens: number
-  readonly cacheWriteTokens: number
-  readonly outputTokens: number
-} | undefined {
-  let inputTokens = 0
-  let cacheReadTokens = 0
-  let cacheWriteTokens = 0
-  let outputTokens = 0
-  let found = false
-  for (let raw = 0; raw < session.seq; raw += 1) {
-    const event = session.eventAt(raw as never)
-    if (event?.type !== 'compaction/summary') continue
-    const usage = (event.data as {
-      usage?: {
-        inputTokens?: number
-        cacheReadTokens?: number
-        cacheWriteTokens?: number
-        outputTokens?: number
-      }
-    }).usage
-    if (usage === undefined) continue
-    found = true
-    inputTokens += usage.inputTokens ?? 0
-    cacheReadTokens += usage.cacheReadTokens ?? 0
-    cacheWriteTokens += usage.cacheWriteTokens ?? 0
-    outputTokens += usage.outputTokens ?? 0
-  }
-  if (!found) return undefined
-  return {
-    uncachedInputTokens: Math.max(0, inputTokens - cacheReadTokens),
-    cacheReadTokens,
-    cacheWriteTokens,
-    outputTokens,
-  }
+function readTokenUsage(
+  ctx: Context,
+  session: Agent['session'],
+): TokenUsageProjection | undefined {
+  const registry = ctx.get('sessionProjections')
+  if (registry === undefined) return undefined
+  const state = registry.stateOf(session, 'tokenUsage')
+  if (state === undefined) return undefined
+  return state.totals
 }
 
 /**

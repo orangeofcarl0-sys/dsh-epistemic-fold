@@ -370,3 +370,238 @@ export const TOOL_HEAVY_TASK: RealTask = {
 
 /** Every task, in the order a run should execute them. */
 export const REAL_TASKS: readonly RealTask[] = [CODING_TASK, RESEARCH_TASK, TOOL_HEAVY_TASK]
+
+/**
+ * A long coding task: many facts, two revisions, and work that needs all of them.
+ *
+ * The interface is stated once and used much later, and two values are revised
+ * after intervening work — so the session has to hold the CURRENT value across
+ * several folds, not merely recall that a value existed.
+ */
+export const LONG_CODING_TASK: RealTask = {
+  id: 'coding-config-loader',
+  kind: 'coding',
+  brief:
+    'We are building a config loader. I will state the requirements as we go, then ask for the '
+    + 'implementation. Read carefully — some values change later.',
+  context: [
+    'Interface: the loader must be written to `src/loader.js` and export a function named `loadConfig`.',
+    'Requirement: `loadConfig(path)` reads a JSON file and returns the parsed object.',
+    'Constraint: a missing file must NOT throw. It must return `{ ok: false, error: "missing" }`.',
+    'Constraint: malformed JSON must NOT throw. It must return `{ ok: false, error: "invalid" }`.',
+    'Requirement: a successful load returns `{ ok: true, value: <parsed> }`.',
+    'Constraint: the loader must never mutate the object it returns after handing it over.',
+    'Decision: the module must also export a constant `SCHEMA_VERSION`.',
+    'Requirement: `SCHEMA_VERSION` starts at 1.',
+    // REVISION ONE.
+    'CORRECTION: `SCHEMA_VERSION` must be 2, not 1. Use 2.',
+    'Requirement: the loader must accept an optional second argument `{ strict: true }`.',
+    'Constraint: in strict mode, an object containing an unknown top-level key must return '
+    + '`{ ok: false, error: "unknown-key" }`.',
+    // REVISION TWO.
+    'CORRECTION: in strict mode the error string must be `"unexpected-key"`, not `"unknown-key"`.',
+    'Decision: the file must also export `DEFAULT_OPTIONS` equal to `{ strict: false }`.',
+  ],
+  work: [
+    'Write `src/loader.js` implementing every requirement above, using the CORRECTED values.',
+    'Write `test.js` that exercises ALL FOUR error and success paths: a good file, a missing file, '
+    + 'a malformed file, and a strict-mode unknown key. Print `JSON.stringify` of each result.',
+    'Create the fixture files your test needs, then run it with run_node.',
+    'Write `NOTES.md` listing every requirement you implemented and the value you used for each.',
+    'Report the final contents of src/loader.js and the output of your test.',
+  ],
+  quality: [
+    { id: 'loader-exists', detail: 'src/loader.js was written', passed: ({ files }) => files.includes('src/loader.js') },
+    {
+      id: 'exports-named',
+      detail: 'exports `loadConfig`',
+      passed: async ({ read }) => {
+        const source = await read('src/loader.js')
+        if (source === undefined) return false
+        return /loadConfig/u.test(source)
+      },
+    },
+    { id: 'test-exists', detail: 'a test script was written', passed: ({ files }) => files.includes('test.js') },
+    {
+      id: 'four-paths',
+      detail: 'the test exercises all four paths',
+      passed: async ({ read }) => {
+        const source = await read('test.js')
+        if (source === undefined) return false
+        return ['missing', 'invalid', 'strict'].every(token => source.includes(token))
+      },
+    },
+  ],
+  steadiness: [
+    {
+      id: 'constraint-retained',
+      question: 'the no-throw contract on missing and malformed files survived the folds',
+      holds: async ({ read }) => {
+        const source = await read('src/loader.js')
+        if (source === undefined) return false
+        return source.includes('missing') && source.includes('invalid')
+      },
+    },
+    {
+      id: 'revision-honoured',
+      question: 'BOTH corrected values (SCHEMA_VERSION 2, "unexpected-key") are the ones implemented',
+      holds: async ({ read }) => {
+        const source = await read('src/loader.js')
+        if (source === undefined) return false
+        return /\b2\b/u.test(source) && source.includes('unexpected-key')
+      },
+    },
+    {
+      id: 'no-resurrection',
+      question: 'neither superseded value (SCHEMA_VERSION 1, "unknown-key") came back',
+      holds: async ({ read }) => {
+        const source = await read('src/loader.js')
+        if (source === undefined) return false
+        return !/SCHEMA_VERSION\s*=\s*1\b/u.test(source) && !source.includes('unknown-key')
+      },
+    },
+    {
+      id: 'interface-honoured',
+      question: 'the declared path and export are the ones used',
+      holds: async ({ files, read }) => {
+        if (!files.includes('src/loader.js')) return false
+        const source = await read('src/loader.js')
+        return source !== undefined && /loadConfig/u.test(source)
+      },
+    },
+    {
+      id: 'facts-consolidated',
+      question: 'the notes agree with the artifact on the corrected values',
+      holds: async ({ read }) => {
+        const notes = await read('NOTES.md')
+        if (notes === undefined) return false
+        // The prose must not contradict the code: a session that kept the value
+        // but reported the old one has not retained the revision.
+        return notes.includes('unexpected-key') && !notes.includes('unknown-key')
+      },
+    },
+  ],
+}
+
+/**
+ * A long research/engineering task: many numeric facts, a late revision, and a
+ * final artifact that must satisfy all of them at once.
+ */
+export const LONG_RESEARCH_TASK: RealTask = {
+  id: 'research-ingest-spec',
+  kind: 'research',
+  brief:
+    'We are specifying an ingestion pipeline. I will state the parameters, then you will produce '
+    + 'the spec and a validator for it.',
+  context: [
+    'Parameter: the batch size is 250 records.',
+    'Parameter: the flush interval is 5000 ms.',
+    'Constraint: a failed batch is retried at most 2 times after the first attempt.',
+    'Parameter: the dead-letter queue is named `ingest-dlq`.',
+    'Constraint: records must be validated BEFORE they are written, never after.',
+    'Parameter: the maximum record size is 64 KB.',
+    'Constraint: the pipeline must be idempotent by record id.',
+    'Parameter: the concurrency is 4 workers.',
+    // REVISION ONE.
+    'CORRECTION: the batch size is 500 records, not 250. Use 500.',
+    'Parameter: the retry backoff is 250 ms, doubling each attempt.',
+    // REVISION TWO.
+    'CORRECTION: the maximum record size is 128 KB, not 64 KB. Use 128.',
+    'Decision: the spec ships as `spec.json` and the validator as `validate.js`.',
+  ],
+  work: [
+    'Write `spec.json` encoding every parameter and constraint exactly, using the CORRECTED values.',
+    'Write `validate.js` that reads `spec.json`, checks each of the twelve stated facts against the '
+    + 'corrected values, and prints `OK <name>` or `MISMATCH <name>` for each.',
+    'Run your validator with run_node and make sure it reports OK for every check.',
+    'Write `SUMMARY.md` restating each parameter and the value you used.',
+    'Report the final JSON and your validator output.',
+  ],
+  quality: [
+    { id: 'spec-exists', detail: 'spec.json was written', passed: ({ files }) => files.includes('spec.json') },
+    {
+      id: 'spec-valid',
+      detail: 'the spec parses as JSON',
+      passed: async ({ read }) => {
+        const raw = await read('spec.json')
+        if (raw === undefined) return false
+        try { JSON.parse(raw); return true } catch { return false }
+      },
+    },
+    { id: 'validator-exists', detail: 'validate.js was written', passed: ({ files }) => files.includes('validate.js') },
+    {
+      id: 'all-params',
+      detail: 'every parameter appears in the spec',
+      passed: async ({ read }) => {
+        const raw = await read('spec.json')
+        if (raw === undefined) return false
+        return ['500', '5000', '2', 'ingest-dlq', '128', '4'].every(value => raw.includes(value))
+      },
+    },
+  ],
+  steadiness: [
+    {
+      id: 'constraint-retained',
+      question: 'the non-revised parameters (flush interval, DLQ name, concurrency) survived',
+      holds: async ({ read }) => {
+        const raw = await read('spec.json')
+        if (raw === undefined) return false
+        return ['5000', 'ingest-dlq', '4'].every(value => raw.includes(value))
+      },
+    },
+    {
+      id: 'revision-honoured',
+      question: 'BOTH corrected values (batch 500, record size 128) are the ones shipped',
+      holds: async ({ read }) => {
+        const raw = await read('spec.json')
+        if (raw === undefined) return false
+        return raw.includes('500') && raw.includes('128')
+      },
+    },
+    {
+      id: 'no-resurrection',
+      question: 'neither superseded value (batch 250, record size 64) came back',
+      holds: async ({ read }) => {
+        const raw = await read('spec.json')
+        if (raw === undefined) return false
+        // `250` also appears legitimately as the backoff, so the check is
+        // scoped to the batch field rather than to the bare number.
+        const batchStale = /"batch[A-Za-z]*"\s*:\s*250\b/u.test(raw)
+        const sizeStale = /"max[A-Za-z]*Size[A-Za-z]*"\s*:\s*64\b/u.test(raw)
+        return !batchStale && !sizeStale
+      },
+    },
+    {
+      id: 'interface-honoured',
+      question: 'the declared artifact paths are the ones used',
+      holds: ({ files }) => files.includes('spec.json') && files.includes('validate.js'),
+    },
+    {
+      id: 'facts-consolidated',
+      question: 'the summary agrees with the spec on the corrected values',
+      holds: async ({ read }) => {
+        const summary = await read('SUMMARY.md')
+        if (summary === undefined) return false
+        return summary.includes('500') && summary.includes('128')
+      },
+    },
+  ],
+}
+
+/**
+ * The tasks for the RC2.1 retention A/B (RC2.1).
+ *
+ * ## Why these are HARDER than the RC2 tasks
+ *
+ * RC2's tasks were solved in every mode, so TaskQuality saturated at 1.00 and no
+ * metric could separate anything. A task that needs nothing it forgot cannot
+ * measure forgetting, so these differ in the one way that matters: **more work
+ * lands after the facts are folded**, and the work depends on facts stated once,
+ * early, and revised.
+ *
+ * The mechanism is the same — the session must still know what it established —
+ * but the DOSE is higher: more facts, more revisions, more intervening work, and
+ * a final artifact that must agree with all of them at once. A mode that drops
+ * one early fact produces an artifact the checks catch.
+ */
+export const RETENTION_AB_TASKS: readonly RealTask[] = [LONG_CODING_TASK, LONG_RESEARCH_TASK]

@@ -123,29 +123,46 @@ describe('RC2: a tier is a named set of values, not a branch', () => {
 describe('RC2: the rungs differ only in the steadiness levers', () => {
   const resolved = (name: 'economy' | 'balanced' | 'quality') => resolveEfConfig({ mode: name })
 
-  it('economy and balanced differ ONLY in the semantic face', () => {
+  it('economy and balanced differ ONLY in retention (the RC2.1 reorder)', () => {
     // This is what makes a measured difference between them attributable to the
-    // semantic face rather than to some other setting that also moved.
+    // RETENTION rather than to some other setting that also moved. RC2 ordered
+    // the ladder the other way (balanced bought the semantic face); RC2.1 moved
+    // retention first because it is the stronger and cheaper mechanism.
     const economy = resolved('economy')
     const balanced = resolved('balanced')
     expect(economy.leafAdmission).toBe(balanced.leafAdmission)
     expect(economy.rootPolicy.mode).toBe(balanced.rootPolicy.mode)
     expect(economy.framingMode).toBe(balanced.framingMode)
-    expect(economy.retainRatio).toBe(balanced.retainRatio)
-    // The one lever.
-    expect(economy.semanticMode).toBe('none')
-    expect(balanced.semanticMode).toBe('rationale')
+    // The semantic face does NOT move on this rung.
+    expect(balanced.semanticMode).toBe(economy.semanticMode)
+    expect(balanced.semanticMode).toBe('none')
+    // The one lever, and it moves UP.
+    expect(balanced.retainRatio).toBeGreaterThan(economy.retainRatio)
   })
 
-  it('balanced and quality differ ONLY in retention', () => {
+  it('balanced and quality differ ONLY in the semantic face', () => {
+    // The top rung adds the rationale call on top of balanced's retention, so a
+    // difference between them is attributable to the semantic face.
     const balanced = resolved('balanced')
     const quality = resolved('quality')
-    expect(balanced.semanticMode).toBe(quality.semanticMode)
+    expect(balanced.retainRatio).toBe(quality.retainRatio)
     expect(balanced.leafAdmission).toBe(quality.leafAdmission)
     expect(balanced.rootPolicy.mode).toBe(quality.rootPolicy.mode)
     expect(balanced.framingMode).toBe(quality.framingMode)
-    // The one lever, and it moves UP: a larger verbatim tail.
-    expect(quality.retainRatio).toBeGreaterThan(balanced.retainRatio)
+    // The one lever.
+    expect(balanced.semanticMode).toBe('none')
+    expect(quality.semanticMode).toBe('rationale')
+  })
+
+  it('RETENTION comes before RATIONALE in the ladder', () => {
+    // The design decision itself, pinned so a later edit cannot silently revert
+    // it: the cheaper rung buys the stronger mechanism.
+    expect(TIERS.balanced.values.retainRatio).toBeGreaterThan(0.16)
+    expect(TIERS.balanced.values.semanticMode).toBe('none')
+    expect(TIERS.quality.values.semanticMode).toBe('rationale')
+    // And the top rung does NOT raise retention further, or its difference from
+    // balanced would be two levers rather than one.
+    expect(TIERS.quality.values.retainRatio).toBe(TIERS.balanced.values.retainRatio)
   })
 
   it('the levers are monotone up the ladder, never contradictory', () => {
@@ -284,18 +301,33 @@ describe('RC2: a tier declares how well backed its claim is', () => {
 
 describe('RC2: the report tells the truth about origins', () => {
   it('marks a key the tier owns as `preset` and one it does not as `engine-default`', () => {
+    // After the RC2.1 reorder, `balanced` owns RETENTION. It also sets the
+    // semantic face EXPLICITLY to `none` — necessarily, because the engine's own
+    // default for that key is `rationale`, so omitting it would silently buy the
+    // auxiliary call the rung is defined not to make.
     const effective = describeEffectiveConfig({ mode: 'balanced' })
     const origin = (key: string) => effective.settings.find(s => s.key === key)?.origin
-    // Balanced owns the semantic face...
+    expect(origin('retainRatio')).toBe('preset')
     expect(origin('semanticMode')).toBe('preset')
-    // ...and leaves retention to the engine. Reporting `preset` here would claim
-    // the tier chose a value it never mentioned.
-    expect(origin('retainRatio')).toBe('engine-default')
+    // A key the tier does NOT own reports as the engine default. Reporting
+    // `preset` for it would claim the tier chose a value it never mentioned.
+    expect(origin('thresholdRatio')).toBeUndefined()
   })
 
-  it('quality owns retention, so it reports as `preset`', () => {
+  it('economy owns neither retention nor a raised tail', () => {
+    const effective = describeEffectiveConfig({ mode: 'economy' })
+    const origin = (key: string) => effective.settings.find(s => s.key === key)?.origin
+    // Economy leaves retention to the engine — it makes no tail claim at all.
+    expect(origin('retainRatio')).toBe('engine-default')
+    // Economy DOES own the semantic face, explicitly setting it to `none`.
+    expect(origin('semanticMode')).toBe('preset')
+  })
+
+  it('quality owns retention AND the semantic face', () => {
     const effective = describeEffectiveConfig({ mode: 'quality' })
-    expect(effective.settings.find(s => s.key === 'retainRatio')?.origin).toBe('preset')
+    const origin = (key: string) => effective.settings.find(s => s.key === key)?.origin
+    expect(origin('retainRatio')).toBe('preset')
+    expect(origin('semanticMode')).toBe('preset')
   })
 
   it('an explicit value is reported as `explicit` on every tier', () => {

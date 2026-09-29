@@ -38,8 +38,27 @@
  * to the one lever that changed:
  *
  *   economy   marker checkpoints, default retention
- *   balanced  + the checkpoint carries narrative prose
- *   quality   + a larger verbatim recent tail
+ *   balanced  + a larger verbatim recent tail   (RETENTION FIRST)
+ *   quality   + a rationale checkpoint as well
+ *
+ * ## Why retention comes before rationale (RC2.1)
+ *
+ * RC2 ordered the ladder the other way: `balanced` bought the semantic face
+ * (`semanticMode: rationale`, one auxiliary call per fold) and `quality` added
+ * retention. That order is wrong for two reasons:
+ *
+ *  1. **Retention is the stronger mechanism.** A fact inside the retained tail
+ *     never leaves the surface at all, so it depends on neither the checkpoint
+ *     nor the model choosing to retrieve. A rationale checkpoint still has to be
+ *     READ by the model, and RC1.3 measured that the marker-only economy preset
+ *     already reaches parity without it.
+ *  2. **Retention is the cheaper first step to justify.** It costs context on
+ *     every request but no auxiliary call, and it does not add a provider round
+ *     trip to every fold.
+ *
+ * So the cheap rung buys the stronger mechanism, and the expensive rung adds the
+ * one whose measured case is weaker. That ordering is a DESIGN decision, not a
+ * measurement — see each tier's `evidence` field.
  *
  * @module dsh-epistemic-fold/preset
  */
@@ -84,6 +103,26 @@ const PRESET_KEYS = [
 ] as const
 
 type PresetKey = (typeof PRESET_KEYS)[number]
+
+/**
+ * The retention ratio the `balanced` rung raises to.
+ *
+ * 1.5x the engine default of 0.16. `resolveEfCompactSpec` refuses a
+ * configuration whose retention reaches its own fold threshold, and retention
+ * competes with the headroom reserve for the same window — so this value is
+ * CHECKED against every shipped window by the tier suite rather than assumed.
+ */
+export const BALANCED_RETAIN_RATIO = 0.24
+
+/**
+ * How much verbatim tail the `quality` rung keeps.
+ *
+ * Deliberately the SAME as `balanced`: `quality` adds the semantic face on top
+ * of `balanced`'s retention, so the only difference between the top two rungs is
+ * the rationale call. If this differed, a difference between them would not be
+ * attributable to the lever the tier claims.
+ */
+export const QUALITY_RETAIN_RATIO = BALANCED_RETAIN_RATIO
 
 /**
  * How much live evidence stands behind a tier's claimed benefit.
@@ -161,67 +200,67 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
   balanced: {
     name: 'balanced',
     values: {
-      // Identical to economy on admission, rebasing and framing, so the ONLY
-      // difference between the two rungs is the semantic face. That is what
-      // makes a measured difference attributable to it.
+      // Identical to economy on admission, rebasing, framing and the semantic
+      // face, so the ONLY difference between the two rungs is retention. That is
+      // what makes a measured difference attributable to it.
       leafAdmission: 'economic',
       rootPolicy: 'economics',
-      /**
-       * One auxiliary call per fold, and the checkpoint carries narrative prose.
-       *
-       * This is the steadiness lever: a rationale checkpoint keeps the
-       * conversation's own words, so a fact does not depend on the model
-       * choosing to retrieve it. RC1.2 measured the tax (priced from the call's
-       * real size, not a 512-token assumption).
-       */
-      semanticMode: 'rationale',
+      semanticMode: 'none',
       framingMode: 'system-dedup',
+      /**
+       * Keep a larger recent tail verbatim (1.5x the engine default of 0.16).
+       *
+       * The FIRST steadiness lever, and the stronger one: facts inside the
+       * retained tail never leave the surface, so they depend on neither the
+       * checkpoint nor the model choosing to retrieve. It costs context on every
+       * request, but no auxiliary call and no extra provider round trip per fold.
+       */
+      retainRatio: BALANCED_RETAIN_RATIO,
     },
-    summary: 'A small premium for checkpoints that carry narrative',
-    intent: 'Work where losing the thread costs more than an extra call per fold',
+    summary: 'A small premium for a larger verbatim tail',
+    intent: 'Work where losing the thread costs more than carrying more context',
     steadinessMechanism:
-      'the checkpoint itself carries narrative prose, so fewer facts depend on '
-      + 'the model choosing to search',
+      'a larger verbatim recent tail, so more facts never leave the surface at all '
+      + 'and depend on neither the checkpoint nor recall',
     evidence: 'hypothesis',
     evidenceDetail:
-      'No live measurement. The mechanism is supported (RC1.2-C priced the call; RC1.2-B '
-      + 'proved both semantic modes recover folded facts) but the END-TO-END steadiness '
-      + 'benefit is unmeasured — RC1.3 measured that economy already reaches parity '
-      + 'without it, which weakens rather than supports the case for paying it.',
+      'No live measurement. The mechanism is supported by the engine (retention is '
+      + 'a tested policy key) but the END-TO-END steadiness benefit is unmeasured. '
+      + 'RC2.1 ran the one critical A/B for it — economy vs balanced, retention '
+      + 'isolated — and reports the result.',
   },
   quality: {
     name: 'quality',
     values: {
       leafAdmission: 'economic',
       rootPolicy: 'economics',
+      /**
+       * The SECOND steadiness lever, added on top of `balanced`'s retention.
+       *
+       * A rationale checkpoint carries the conversation's own words, so a fact
+       * does not depend on the model choosing to retrieve it. RC1.2-C priced the
+       * call from its real size; RC1.2-B proved both semantic modes can recover
+       * folded facts. What is NOT measured is whether paying for it improves
+       * end-to-end steadiness — and RC1.3 found economy already reaches parity
+       * without it, which weakens rather than supports the case.
+       */
       semanticMode: 'rationale',
       framingMode: 'system-dedup',
-      /**
-       * Keep a larger recent tail verbatim (1.5x the engine default of 0.16).
-       *
-       * The second steadiness lever: facts inside the retained tail never leave
-       * the surface at all, so they depend on neither the checkpoint nor recall.
-       * This is what makes the third rung more expensive in a way the second is
-       * not — a bigger tail is carried on EVERY request, not once per fold.
-       *
-       * BOUNDED DELIBERATELY. `resolveEfCompactSpec` refuses a configuration
-       * whose retention reaches its own fold threshold, and retention competes
-       * with the headroom reserve for the same window. 0.24 is safe across the
-       * windows this project ships profiles for, and the tier suite resolves
-       * every rung against them rather than assuming it.
-       */
-      retainRatio: 0.24,
+      // The SAME retention as `balanced`, so the top two rungs differ only in
+      // the semantic face and a difference between them is attributable to it.
+      retainRatio: QUALITY_RETAIN_RATIO,
     },
-    summary: 'A larger premium for maximum steadiness',
+    summary: 'A larger premium for a larger tail AND narrative checkpoints',
     intent: 'Long-horizon work where a lost detail is expensive to rediscover',
     steadinessMechanism:
-      'narrative checkpoints AND a larger verbatim tail, so fewer facts ever '
-      + 'leave the surface',
+      'a larger verbatim tail AND narrative checkpoints, so facts are protected both '
+      + 'on the surface and across a fold',
     evidence: 'hypothesis',
     evidenceDetail:
       'No live measurement. Composed of two supported capabilities; neither the '
       + 'combined nor the individual steadiness benefit has been measured, and the '
-      + 'retention rung carries cost on every request rather than once per fold.',
+      + 'rationale half carries an auxiliary call per fold plus the retention cost '
+      + 'on every request.',
   },
 }
 

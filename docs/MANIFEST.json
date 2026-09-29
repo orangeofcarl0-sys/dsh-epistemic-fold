@@ -126,7 +126,12 @@
   },
   {
     "file": "24_RC2_PRODUCT_INTEGRATION.md",
-    "bytes": 14008,
-    "sha256": "561bbf11ffb77d3aca4e53632d260937d336a958ad0c62a6b8da82d8dfaeef96"
+    "bytes": 15070,
+    "sha256": "8f9e8fdc555bcadd82d7430d567ff5439b85429fd546ef32ebbb2ec00e9a503c"
+  },
+  {
+    "file": "25_RC2_1_STATUS_AND_RETENTION_AB.md",
+    "bytes": 10700,
+    "sha256": "07913bb8d2b44c531cf72e09fde66254c4108a059cf8404068ba256061b94787"
   }
 ]

@@ -167,6 +167,17 @@ RC2 BY MODE (plain scenario, all tasks pooled)
   quality   cost=0.001927  quality=1.00  steady=0.92
 ```
 
+> **RC2.1 CORRECTION — the `legacy` arm was mislabelled.** Every arm in this run
+> was **EF**: the `legacy` arm mounted the EF *plugin* with the legacy *policy*,
+> and this report described it as "Basic's own policy". Those are different
+> things. EF-legacy still folds through the EF engine, still writes Bundles, still
+> exposes the recall tools and the EF framing section; a real DSH Basic session
+> has none of that. So the row above is **EF legacy**, not Basic, and the phrase
+> "versus Basic" was not supported by it. RC2.1 made the engine an explicit arm
+> field and added a real `basic` arm (`BasicCompactionEngine`, no Bundle, no
+> recall tools) for runs that want that baseline. The numbers themselves are
+> unchanged — only what they are called.
+
 **The task set did not discriminate the modes.** Three observations, in order of
 importance:
 
