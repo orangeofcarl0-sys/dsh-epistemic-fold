@@ -40,7 +40,7 @@
     "eval:r4-live": "vitest run tests/r4d-live-billing.spec.ts tests/r4e-live-noninferiority.spec.ts",
     "eval:rc0": "vitest run tests/rc0a-config-contract.spec.ts tests/rc0b-billing-recorder.spec.ts tests/rc0e-default-regime.spec.ts",
     "eval:rc0-live": "vitest run tests/rc0c-full-wire-billing.spec.ts",
-    "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts",
+    "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts tests/rc1g-certified-profile.spec.ts tests/rc1h-production-trigger.spec.ts",
     "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts"
   },
   "repository": {

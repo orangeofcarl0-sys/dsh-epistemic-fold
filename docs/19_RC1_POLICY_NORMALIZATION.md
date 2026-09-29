@@ -432,6 +432,53 @@ lives.
 
 ## 7. RC1-F — two cheap live smokes
 
+§2.2 measured the shipped 65,536-token reserve as **6.73× larger than the route
+needs**. The natural next sentence — "so reduce it" — does not follow, and this
+section is why.
+
+The RC1-B scan ran on traces observed at a small window, and it recommended
+`alpha = 0.8` on a broad plateau. That answer is correct for the traces it was
+taken on. At the window the product **actually** runs, the relationship is
+different and monotone:
+
+| Effective threshold | Window fraction | Paired cost ratio |
+|---:|---:|---:|
+| 104,857 | 80.0% | 0.9457 |
+| 65,024 *(shipped)* | 49.6% | **0.9239** |
+| 50,000 | 38.1% | 0.9005 |
+| 39,321 | 30.0% | 0.8545 |
+| 26,000 | 19.8% | 0.7934 |
+| 20,000 | 15.3% | 0.7498 |
+| 16,000 | 12.2% | 0.6934 |
+| 12,000 | 9.2% | 0.6102 |
+| 8,000 | 6.1% | 0.4794 |
+
+Cost falls **monotonically** as the effective threshold falls, with zero
+overflows and no fold-every-step loop at any point. So:
+
+> **The shipped reserve is not hurting the policy — it is helping it.** It lowers
+> the effective trigger from 80% of the window to 49.6%, and a lower trigger is
+> cheaper on this route. Installing the measured 9,733-token reserve would
+> *raise* the trigger back to 104,857 and make the policy **more expensive**
+> (0.9457 vs 0.9239).
+
+The reserve's job is **safety**; the trigger's job is **economy**. One number is
+serving both today, and that conflation is what makes "the reserve is 6.73× too
+large" and "the reserve should be reduced" look like the same claim when they are
+opposites. `tests/rc1h-production-trigger.spec.ts` pins the relationship, the
+inversion, and the window safety of every point.
+
+**This is a configuration finding for the release decision, not a mechanism
+change**, and it is recorded rather than acted on: retuning a shipped default is
+a product decision, and the numbers here are modeled rather than realized. What
+it does establish is that the two open items in §9 are really one item — the
+trigger is the lever, and the reserve is only how it is currently being set — so
+any future change must separate them.
+
+---
+
+## 8. RC1-H — the reserve finding inverts at the production window
+
 ### 7.1 The fold boundary, at the real trigger
 
 Constructed at the **shipped production configuration** (131,072 window, economy
@@ -481,7 +528,7 @@ constraint(64)=true   supersession(90 not 30)=true   exact(PARSE-7741)=true
 
 ---
 
-## 8. RC1-G — the certified operating profile
+## 9. RC1-G — the certified operating profile
 
 RC1 §34 is the stage's most important contraction. The live evidence comes from
 **one** DeepSeek-compatible route, and cache economics are strongly
@@ -511,7 +558,7 @@ Three rules make it a claim rather than a promotion:
 
 ---
 
-## 9. Release decision
+## 10. Release decision
 
 RC1 §44 asks whether the conditions for certification are met. They are, for the
 measured route:
@@ -528,6 +575,7 @@ measured route:
 | Quality | **satisfied** | 2 folds, 3/3 facts, supersession included |
 | Cost (realized) | **OPEN** | instrument fixed (null test 1.021, was 1.606); CI upper **1.104**, and a second run gives 0.965 — the verdict does not reproduce at n=8 (§6.5) |
 | Certified profile | **satisfied** | `deepseek/deepseek-*flash*` |
+| Production trigger | **measured** | cost falls monotonically as the trigger falls; the shipped reserve HELPS (§7) |
 
 **Per §45, the global default is NOT flipped.** The correct release posture is:
 
@@ -556,7 +604,7 @@ Two open items are recorded rather than closed.
 
 ---
 
-## 10. Frozen stages
+## 11. Frozen stages
 
 Per §46, these are now **closed** and should not be re-litigated in future
 reports. They reopen only on a new incident corpus producing corresponding
@@ -573,7 +621,7 @@ DeltaLeaf    REJECTED (R1-B gate)
 
 ---
 
-## 11. Test inventory
+## 12. Test inventory
 
 | Suite | Tests | Live |
 |---|---:|---|
@@ -583,6 +631,7 @@ DeltaLeaf    REJECTED (R1-B gate)
 | `rc1d-cache-contract.spec.ts` | 9 | no |
 | `rc1e-cache-microbench.spec.ts` | 20 | no |
 | `rc1g-certified-profile.spec.ts` | 9 | no |
+| `rc1h-production-trigger.spec.ts` | 3 | no |
 | `rc1a-live-reserve.spec.ts` | 1 | **yes** |
 | `rc1e-live-cache.spec.ts` | 1 | **yes** |
 | `rc1f-fold-smoke.spec.ts` | 2 | **yes** |
