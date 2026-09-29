@@ -53,6 +53,48 @@ import type { PolicyTrace } from './trace.ts'
 /** Which arm a replay simulates. */
 export type ReplayArm = 'ef' | 'basic'
 
+/**
+ * The four request classes a cache realization rate must be stated for
+ * (RC1.1 §3b).
+ *
+ * The previous simulator priced EVERY request at one `h`. That is wrong in a
+ * direction that flatters the policy: a request following a fold arrives on a
+ * surface the provider has never seen, so its realization is near zero, and
+ * averaging those into a single rate hides the cost the fold actually imposes.
+ * RC1-E measured exactly this shape live — a root mutation showed 0.236 reuse
+ * against 0.933 warm — so the classes are not a refinement, they are the
+ * mechanism.
+ *
+ *   `normal`      steady state; nothing structural changed since the last request
+ *   `after-leaf`  the first request after a leaf fold appended a checkpoint
+ *   `after-root`  the first request after a root rebase rewrote the prefix
+ *   `compaction`  the auxiliary summarizer call, which shares no prefix at all
+ */
+export const CACHE_CLASSES = ['normal', 'after-leaf', 'after-root', 'compaction'] as const
+export type CacheClass = (typeof CACHE_CLASSES)[number]
+
+/** A realization rate per request class. */
+export type CacheRealization = Readonly<Record<CacheClass, number>>
+
+/**
+ * The nominal realization set, and the sensitivity band around it.
+ *
+ * `nominal` uses the RC1-E measurements where they exist (after-leaf and
+ * after-root show a genuine cold shock) and a conservative mid-value for
+ * `normal`, since RC1-E's stable-append probes measured 0.93 but that is the
+ * BEST case — a prefix that nothing disturbed.
+ *
+ * `optimistic` and `pessimistic` exist because RC1.1 §3b asks for a
+ * sensitivity analysis rather than a point estimate: the whole point of the
+ * gate is to know whether the verdict survives the assumption, and a single
+ * `h` cannot answer that.
+ */
+export const CACHE_SCENARIOS: Readonly<Record<'optimistic' | 'nominal' | 'pessimistic', CacheRealization>> = {
+  optimistic: { 'normal': 0.95, 'after-leaf': 0.35, 'after-root': 0.10, 'compaction': 0.0 },
+  nominal: { 'normal': 0.85, 'after-leaf': 0.24, 'after-root': 0.05, 'compaction': 0.0 },
+  pessimistic: { 'normal': 0.60, 'after-leaf': 0.05, 'after-root': 0.0, 'compaction': 0.0 },
+}
+
 /** One candidate operating profile to replay. */
 export interface ReplayPolicy {
   /** Deployment configuration, as a user would write it. */
@@ -61,8 +103,15 @@ export interface ReplayPolicy {
   readonly contextWindow: number
   /** Output tokens the routed request reserves. */
   readonly reservedCompletionTokens: number
-  /** Realized cache hit rate `h` for the cost estimate. */
-  readonly realizationRate: number
+  /**
+   * Realized cache hit rate per request CLASS (RC1.1 §3b).
+   *
+   * A single number is still accepted for compatibility and is expanded to the
+   * same rate in every class, but a caller that supplies one is stating that
+   * folds impose no cache cost — which RC1-E measured to be false. New work
+   * should pass {@link CACHE_SCENARIOS}.
+   */
+  readonly realization: CacheRealization | number
   /**
    * Tokens one checkpoint costs, when the trace itself never evidenced one.
    * The trace's own median wins whenever it exists.
@@ -80,6 +129,12 @@ export interface ReplayPolicy {
   readonly idleMaintenance: boolean
 }
 
+/** Expand a scalar realization into every class, or pass a set through. */
+export function realizationSet(value: CacheRealization | number): CacheRealization {
+  if (typeof value !== 'number') return value
+  return { 'normal': value, 'after-leaf': value, 'after-root': value, 'compaction': value }
+}
+
 /** One step's simulated state, kept for diagnosis rather than only totals. */
 export interface ReplayStep {
   readonly step: number
@@ -88,6 +143,10 @@ export interface ReplayStep {
   readonly promptTokens: number
   readonly folded: boolean
   readonly rebased: boolean
+  /** Which cache class this request was priced under (RC1.1 §3b). */
+  readonly cacheClass: CacheClass
+  /** The realization rate applied to this request. */
+  readonly realization: number
   readonly cost: number
 }
 
@@ -120,7 +179,7 @@ export interface ReplayResult {
   readonly frozenBound: boolean
 }
 
-/** Cache-adjusted cost of one request under one profile. */
+/** Cache-adjusted cost of one request under one profile, at one realization. */
 function requestCost(
   profile: ContextEconomicsProfile,
   promptTokens: number,
@@ -153,6 +212,8 @@ export function simulate(
   profile: ContextEconomicsProfile,
 ): ReplayResult {
   const resolved = resolveEfConfig(policy.config)
+  // Expanded once, so every request is priced against the same class set.
+  const realizations = realizationSet(policy.realization)
   // The TRACE owns the window. A trace is an observation made at a particular
   // capacity, and replaying it at a different one silently changes the
   // threshold it was produced against — the apples-to-oranges error RC0 found
@@ -212,7 +273,10 @@ export function simulate(
         pressure: { contextWindow, currentTokens: promptTokens },
         policy: {
           paybackHorizonRequests: resolved.rootPolicy.paybackHorizonRequests,
-          realizationRate: policy.realizationRate,
+          // The compiler's break-even uses the STEADY-STATE rate: the question
+          // it answers is whether a rebase repays over FUTURE requests, and
+          // those are normal-class requests, not cold ones.
+          realizationRate: realizations.normal,
           pressureRatio: resolved.thresholdRatio,
           compactionCost: resolved.rootPolicy.compactionCost,
           // The production idle path sets this, and it is load-bearing: with a
@@ -275,16 +339,25 @@ export function simulate(
     if (promptTokens > contextWindow) overflowEvents += 1
     peakPromptTokens = Math.max(peakPromptTokens, promptTokens)
 
-    // --- Cost. Cache-adjusted at the profile's own rho under h, plus the
-    // auxiliary compaction call this arm's semanticMode implies.
-    let stepCost = requestCost(profile, promptTokens, policy.outputTokensPerRequest, policy.realizationRate)
+    // --- Cost, priced by REQUEST CLASS (RC1.1 §3b).
+    //
+    // The class is the state this request ARRIVES in, which is what determines
+    // how much of its prefix the provider can serve from cache. A request after
+    // a fold is a cold shock; a steady-state request is warm. Pricing both at
+    // one rate was the defect: it made the cost of a fold invisible.
+    const realization = realizations[rebased ? 'after-root' : folded ? 'after-leaf' : 'normal']
+    let stepCost = requestCost(profile, promptTokens, policy.outputTokensPerRequest, realization)
     if (folded && arm === 'ef' && resolved.semanticMode === 'rationale') {
-      // A rationale-only auxiliary call: small prompt, small output.
-      stepCost += requestCost(profile, 512, 128, policy.realizationRate)
+      // A rationale-only auxiliary call: small prompt, small output, and it
+      // shares no prefix with the conversation, so it is priced cold.
+      stepCost += requestCost(profile, 512, 128, realizations.compaction)
     }
     if (folded && arm === 'basic') {
-      // Basic summarizes the span it folds — a real provider call.
-      stepCost += requestCost(profile, foldable + checkpointTokens, checkpointTokens, policy.realizationRate)
+      // Basic summarizes the span it folds — a real provider call over the
+      // span, which is likewise a fresh prefix rather than a cached one.
+      stepCost += requestCost(
+        profile, foldable + checkpointTokens, checkpointTokens, realizations.compaction,
+      )
     }
     totalCost += stepCost
     totalPromptTokens += promptTokens
@@ -296,6 +369,8 @@ export function simulate(
       promptTokens,
       folded,
       rebased,
+      cacheClass: rebased ? 'after-root' : folded ? 'after-leaf' : 'normal',
+      realization,
       cost: stepCost,
     })
 

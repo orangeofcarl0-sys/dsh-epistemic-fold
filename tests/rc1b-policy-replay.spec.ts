@@ -56,7 +56,10 @@ function candidatePolicy(overrides: Partial<ReplayPolicy> & {
     },
     contextWindow: CORPUS_WINDOW,
     reservedCompletionTokens: CORPUS_RESERVED,
-    realizationRate: 0.9,
+    // A scalar realization is expanded to every class; the RC1.1 suites use
+    // the class-aware scenarios, and this one is retained for the RC1-B replay
+    // whose subject is the policy arithmetic rather than the cache model.
+    realization: 0.9,
     fallbackCheckpointTokens: 200,
     basicCheckpointTokens: 400,
     outputTokensPerRequest: 200,

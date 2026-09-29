@@ -645,7 +645,35 @@ DeltaLeaf    REJECTED (R1-B gate)
 
 ---
 
-## 12. Test inventory
+## 12. Post-publication corrections (RC1.1)
+
+RC1.1 audited this report and **withdrew one of its conclusions**. Recorded here
+so a reader of this document is not misled by it:
+
+1. **§7 (RC1-H) is WITHDRAWN.** The sweep varied the trigger and the retention
+   together (`retainTokens = 0.16 × threshold`). Holding retention fixed
+   **reverses the sign**, so "the shipped reserve helps by lowering the trigger"
+   was an artifact of the confound, not a finding. Both sweeps now run in one
+   test and `tests/rc1h-production-trigger.spec.ts` is removed.
+2. **§9's certified profile was unsound.** It reported `certified: true` and
+   `recommendedMode() === 'economy'` while the cost gate was OPEN, because a
+   **cache** reuse ratio was fed into `priceEffect.realizedRatio`, a **price**
+   claim. Certification is now component-wise and the two claims are separate;
+   see [docs/20](20_RC1_1_EVIDENCE_RECONCILIATION.md) §2.
+3. **§2.2's reserve is a scoped estimate, not a production headroom.** The
+   meter's error is strongly relative (CJK +92%), so a fixed absolute reserve
+   from a ~30K sample has not been shown to extrapolate to a 65K prompt.
+4. **§8's quality claim is CONDITIONAL ON DECLARATION.** The RC1.1 smoke measured
+   that the economy preset does not carry unanchored narrative (0/3 where Basic
+   scored 1/3), because a marker-only checkpoint has no prose in it. The
+   certification now carries a `qualityScope`.
+
+What survives: the trigger decomposition, the class-aware cache model, the
+region Ω, the certified-profile structure, and the instrument fixes.
+
+---
+
+## 13. Test inventory
 
 | Suite | Tests | Live |
 |---|---:|---|

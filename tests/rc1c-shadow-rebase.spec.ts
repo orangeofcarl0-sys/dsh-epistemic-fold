@@ -310,7 +310,7 @@ describe('RC1-C: measured on the corpus, at both checkpoint regimes', () => {
       },
       contextWindow: SYNTHETIC_WINDOW,
       reservedCompletionTokens: SYNTHETIC_RESERVED,
-      realizationRate: 0.9,
+      realization: 0.9,
       fallbackCheckpointTokens: 200,
       basicCheckpointTokens: 400,
       outputTokensPerRequest: 200,
