@@ -91,6 +91,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC1.1** | Evidence reconciliation: component-wise certification, reserve demoted to a scoped estimate, replay confounds removed, unanchored-narrative boundary measured · 证据闭合与重放修正 | ✅ **mechanics certified**; cost recommendation **OPEN**; RC1-H withdrawn · [report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) |
 | **RC1.2** | End-to-end recall closure: real agent-loop recall smoke, deterministic mechanism proof, rationale tax priced from its measured size · 端到端召回闭合 | ✅ **recall proven**; preset unchanged; RC1.1 boundary corrected · [report](docs/21_RC1_2_RECALL_CLOSURE.md) |
 | **RC1.3** | Retrieval ergonomics closure: un-hinted baseline, per-fact failure taxonomy, self-describing search hits, measured retrieval rule · 检索工效学闭合 | ✅ **quality side CLOSED** — economy 3.00/3, matching Basic; cost gate still **OPEN**; default still `legacy` · [report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) |
+| **RC1.3.1** | Temporal retrieval guard: newest-first chronology from source spans, latest-match supersession, `matchedMessageIndex` as the recall offset · 时序检索守卫 | ✅ **retrieval layer FROZEN** — chronology closed keylessly; only the cost gate remains open · [report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -276,7 +277,30 @@ the folded history before answering or reporting something unknown — took it t
 9/9. The hint is now worth **0.00**: a deployment no longer needs to tell the
 agent how to use its own tools. Economy remains a **retrieval-dependent low-cost
 mode** (still ~17× cheaper on the n=5 sample) and is **not** promoted to a generic
-default replacement. Full detail in
+default replacement.
+
+**RC1.3.1 then froze the retrieval layer.** RC1.3's probe put every fact in ONE
+message of ONE checkpoint — the easy case, and one that hid three chronological
+defects which appear only in a long task. First, `list()` returns bundles in
+ascending `createdAt` and `search` applied its `limit` mid-scan, so the checkpoints
+**dropped** were the newest: the current value was the first thing lost. Second,
+`locate` returned the **first** matching message, so a superseded value shadowed
+its own correction. Third, `exactPageOffset` was page-aligned for the default page
+size, so it only "contained the match" for a caller that happened to use that
+size. Each makes a model read an **old** value as current — the most damaging
+class of error for an agent working from folded history, because the answer looks
+well-sourced. Now hits are ordered **newest-first by conversation position**
+(`source.orderedSurfaceSeqs`, not a clock that can run backwards or collide), so
+`limit` means "the most recent N"; `locate` returns the **latest** match and
+reports `matchCount` (above 1 means the fact has history) plus
+`earliestMatchedMessageIndex` (the superseded value stays precisely reachable);
+and `matchedMessageIndex` replaces the aligned offset, valid at **any** page size.
+20 keyless tests pin this, and the live suite was re-run to confirm no regression
+(still 3.00/3, searching 9/9). **The retrieval layer is now frozen** — compression
+architecture, recall correctness, and retrieval ergonomics are all CLOSED, leaving
+only the route-level realized cost gate OPEN, which affects whether `economy` is
+recommended or defaulted and must not drive the architecture further. Full detail
+in [the RC1.3.1 report](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) ·
 [the RC1.3 report](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) ·
 [the RC1.2 report](docs/21_RC1_2_RECALL_CLOSURE.md) ·
 **RC1.2 随后闭合了该边界问题，并作出修正。** RC1.1 的 smoke 从未执行工具调用，因此
@@ -310,6 +334,21 @@ confound 同样影响了 RC1.2 的数字。两者修正后 baseline 为 2.33/3�
 **依赖检索的低成本模式**（n=5 样本上仍约便宜 **17 倍**），**并未**被提升为通用默认
 替代品。详见 [RC1.3 报告](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) ·
 [RC1.2 报告](docs/21_RC1_2_RECALL_CLOSURE.md)。
+
+**RC1.3.1 随后冻结了检索层。** RC1.3 的 probe 把全部事实放在**一个** checkpoint 的
+**一条**消息里——这是最简单的情形，它掩盖了三个只在长任务中才会出现的时序缺陷。
+其一，`list()` 按 `createdAt` 升序返回，而 `search` 在扫描途中就按 `limit` 截断，于是被丢弃的
+恰恰是**最新**的 checkpoint：当前值最先消失。其二，`locate` 返回**第一条**匹配消息，因此被
+取代的旧值会遮住它自己的更正。其三，`exactPageOffset` 是按默认页大小对齐的，只有在调用方
+恰好使用该页大小时才"包含命中"。三者都让模型把**旧**值当作当前值——对基于折叠历史工作的
+agent 而言，这是最有害的一类错误，因为答案看起来有据可依。修正后：命中按**会话时序**
+（`source.orderedSurfaceSeqs`，而非会回拨、会碰撞的墙钟）新→旧排序，`limit` 因此意味着
+"最近 N 条"；`locate` 返回**最新**匹配并给出 `matchCount`（大于 1 即表示该事实有历史）与
+`earliestMatchedMessageIndex`（旧值仍可精确取回）；`matchedMessageIndex` 取代页对齐偏移，
+在**任意**页大小下都有效。20 个 keyless 测试钉住这些行为，并重跑了实机套件确认无回归
+（仍为 3.00/3，9/9 检索）。**至此检索层正式冻结**——压缩架构、召回正确性、检索工效学三者
+全部 CLOSED，仅剩路由级实际成本 gate 仍为 OPEN，且它只影响是否推荐/默认启用 economy，
+不再反向驱动架构增长。详见 [RC1.3.1 报告](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md)。
 Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
 **RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
 成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
@@ -338,6 +377,23 @@ M4           CLOSED / deferred
 M5           CLOSED / no measured need
 RecallPrune  CLOSED / no measured problem
 DeltaLeaf    REJECTED (R1-B gate)
+```
+
+The three layers RC1.3.1 closes are frozen the same way · RC1.3.1 闭合的三个层次
+以同样方式冻结：
+
+```
+Compression architecture  CLOSED  (fold/frontier; unchanged since R3)
+Recall correctness        CLOSED  (RC1.2 mechanism proof; exact recall bounded)
+Retrieval ergonomics      CLOSED  (RC1.3 probe + RC1.3.1 temporal guard)
+semanticMode              none    (nothing required rationale)
+```
+
+Only one question remains open, and it is a **pricing** question that must not
+drive the architecture · 仅剩一个未决问题，且它属于**定价**问题，不得反向驱动架构：
+
+```
+route-level realized cost gate   OPEN (dispersion at n=8)
 ```
 
 ## Development · 开发方式
@@ -522,6 +578,7 @@ All design documents live in [`docs/`](docs/) ·
 | [20_RC1_1_EVIDENCE_RECONCILIATION.md](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) | RC1.1 evidence reconciliation: component-wise certification, the reserve as a scoped estimate, both replay confounds removed, the withdrawn RC1-H conclusion, and the measured unanchored-narrative boundary · RC1.1 证据闭合与重放修正 |
 | [21_RC1_2_RECALL_CLOSURE.md](docs/21_RC1_2_RECALL_CLOSURE.md) | RC1.2 end-to-end recall closure: the real agent-loop recall smoke, the deterministic mechanism proof, the corrected product boundary, and the rationale tax at its measured size · RC1.2 端到端召回闭合 |
 | [22_RC1_3_RETRIEVAL_ERGONOMICS.md](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) | RC1.3 retrieval ergonomics closure: the un-hinted baseline, the per-fact failure taxonomy, the self-describing `context_search` hit, the excerpt-window defect, and the measured retrieval rule that brought economy to parity with Basic · RC1.3 检索工效学闭合 |
+| [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) | RC1.3.1 temporal retrieval guard: newest-first chronology keyed on source spans rather than the clock, latest-match supersession with `matchCount`, and `matchedMessageIndex` replacing the page-aligned offset — the stage that freezes the retrieval layer · RC1.3.1 时序检索守卫 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never

@@ -111,12 +111,17 @@
   },
   {
     "file": "21_RC1_2_RECALL_CLOSURE.md",
-    "bytes": 20388,
-    "sha256": "98c764b9f7b53399a43a361b5efba711a4772c1b4d55a95abe97657fa536fc5b"
+    "bytes": 20400,
+    "sha256": "19c6ffff617f645edcbd8562a93c4e40669db92708019fea602db329c84f4b2e"
   },
   {
     "file": "22_RC1_3_RETRIEVAL_ERGONOMICS.md",
-    "bytes": 12876,
-    "sha256": "e8c7db67d096ec25188d33f66809c8f3f7db3ef06119a2626cc5057bf1823f6a"
+    "bytes": 13693,
+    "sha256": "b6187a01e2f04b5c6ff33c34ff18fdb711f526f8d5d8908e0a9c4f06f191ad6d"
+  },
+  {
+    "file": "23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md",
+    "bytes": 9536,
+    "sha256": "25c840ebabb7f775f50d5931eda97c720c35405dedec20e8168091f1a85d469f"
   }
 ]

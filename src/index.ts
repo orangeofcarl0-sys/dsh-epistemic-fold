@@ -21,8 +21,20 @@ export {
 } from './compiler.ts'
 export type { SplitSummarizationInput } from './compiler.ts'
 export { canonicalHash, canonicalJson, sha256Hex } from './hash.ts'
-export { recall, search, EXACT_PAGE_LIMIT } from './recall.ts'
-export type { RecallDepth, RecallResult, SearchHit } from './recall.ts'
+export {
+  compareCheckpointRecencyDescending,
+  recall,
+  search,
+  sourceRangeOf,
+  EXACT_PAGE_LIMIT,
+} from './recall.ts'
+export type {
+  RecallDepth,
+  RecallResult,
+  SearchHit,
+  SearchMatchKind,
+  SourceRange,
+} from './recall.ts'
 export { resolveEfConfig, resolveEfCompactSpec } from './policy.ts'
 export type {
   EfCompactSpec,

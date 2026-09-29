@@ -423,8 +423,8 @@ is **more expensive than the baseline it would be trying to beat**.
 | `rc11b-replay-correction.spec.ts` (incl. RC1.2-C tax) | 9 | no |
 | `rc11a-certification-semantics.spec.ts` | 12 | no |
 
-At this stage: 459 keyless tests pass, 19 skipped, typecheck clean. RC1.3 raised
-the totals to 508 passing, 20 skipped.
+At this stage: 459 keyless tests pass, 19 skipped, typecheck clean. RC1.3 and
+RC1.3.1 raised the totals to 528 passing, 20 skipped.
 
 ---
 

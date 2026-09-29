@@ -34,13 +34,17 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
     name: 'context_search',
     description:
       'Search this session\'s folded checkpoints (checkpoint ids, checkpoint text, tool names, message text). '
-      + 'Each hit reports `matchKind`: `checkpoint-text` means the query matched the checkpoint summary already '
-      + 'on the surface, while `message-text` / `tool-name` mean it matched the ARCHIVED history — the excerpt is '
-      + 'a short preview, and `exactPageOffset` is the `context_recall` page holding the full text. A hit is a '
-      + 'pointer, not the answer: recall the page when the excerpt is not enough to answer.',
+      + 'Hits are returned NEWEST FIRST by conversation position, so the first hit is the most recent statement '
+      + 'of what you searched for — when a fact changed over time, read the first hit, not the last. '
+      + 'Each hit reports `matchCount`: a count above 1 means this fact has history, and '
+      + '`earliestMatchedMessageIndex` locates the superseded version. `matchKind` says where it matched: '
+      + '`checkpoint-text` means the query matched the checkpoint summary already on the surface, while '
+      + '`message-text` / `tool-name` mean it matched the ARCHIVED history. A hit is a pointer, not the answer: '
+      + '`matchedMessageIndex` is the `offset` for context_recall with `depth: "exact"`, whose page then begins '
+      + 'at the match.',
     parameters: {
       query: { type: 'string', description: 'search text, file path, tool name, or checkpoint id' },
-      limit: { type: 'integer', description: 'maximum hits to return (default 10)' },
+      limit: { type: 'integer', description: 'maximum hits to return (default 10, most recent first)' },
     },
     output: {
       schema: { type: 'json' },

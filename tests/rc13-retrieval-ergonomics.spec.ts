@@ -22,7 +22,7 @@ import { createHarness, extractCheckpointId, foldAgent, lastCompactionSummary, S
 import { FACTS, FACT_PROBES } from './recall-loop.ts'
 import {
   excerptAround,
-  EXACT_PAGE_LIMIT,
+  recall,
   SEARCH_EXCERPT_CHARS,
   SEARCH_WHOLE_MESSAGE_CHARS,
   search,
@@ -91,10 +91,18 @@ describe('RC1.3: a search hit says where it matched', () => {
     // The excerpt is the actionable part: the model can see the fact is there.
     expect(hit.excerpt).toContain('PARSE-7741')
     expect(hit.excerpt!.length).toBeLessThanOrEqual(SEARCH_EXCERPT_CHARS + 2)
-    // The page offset must actually contain the matched message.
-    expect(hit.exactPageOffset).toBeTypeOf('number')
-    const page = Math.floor(hit.matchedMessageIndex! / EXACT_PAGE_LIMIT) * EXACT_PAGE_LIMIT
-    expect(hit.exactPageOffset).toBe(page)
+    // RC1.3.1: `matchedMessageIndex` IS the recall offset, and it is a valid
+    // offset for any page size — unlike the page-aligned `exactPageOffset` it
+    // replaced, which was only "a page containing the match" for the default
+    // page size. A page fetched at this offset BEGINS at the match.
+    expect(hit.matchedMessageIndex).toBeTypeOf('number')
+    const page = await recall({
+      store, sessionId: session.id, checkpointId: hit.checkpointId,
+      depth: 'exact', offset: hit.matchedMessageIndex!,
+    })
+    const first = page!.page!.messages[0]!
+    const text = first.content.map(block => (block.type === 'text' ? block.text : '')).join('')
+    expect(text).toContain('PARSE-7741')
   }, 300_000)
 
   it('a hit on ONE fact does not hide the message\'s OTHER facts', async () => {
@@ -157,9 +165,10 @@ describe('RC1.3: a search hit says where it matched', () => {
     expect(hits.length).toBeGreaterThan(0)
     expect(hits[0]!.matchKind).toBe('checkpoint-text')
     expect(hits[0]!.excerpt).toContain('parser module')
-    // No archive location, so no page to point at.
-    expect(hits[0]!.exactPageOffset).toBeUndefined()
+    // No archive location, so no message offset to point at.
     expect(hits[0]!.matchedMessageIndex).toBeUndefined()
+    expect(hits[0]!.earliestMatchedMessageIndex).toBeUndefined()
+    expect(hits[0]!.matchCount).toBe(1)
   }, 300_000)
 
   it('reports a tool-name match with the tool in the excerpt', async () => {
@@ -221,7 +230,7 @@ describe('RC1.3: a search hit says where it matched', () => {
     // The argument preview travels with it, so the model can see WHAT was
     // searched for rather than only which tool ran.
     expect(hits[0]!.excerpt).toContain('timeout')
-    expect(hits[0]!.exactPageOffset).toBeTypeOf('number')
+    expect(hits[0]!.matchedMessageIndex).toBeTypeOf('number')
   }, 300_000)
 
   it('an id query matches by identity alone', async () => {
@@ -234,7 +243,8 @@ describe('RC1.3: a search hit says where it matched', () => {
     const hits = await search({ store, sessionId: session.id, query: checkpointId })
     expect(hits).toHaveLength(1)
     expect(hits[0]!.matchKind).toBe('id')
-    expect(hits[0]!.exactPageOffset).toBeUndefined()
+    expect(hits[0]!.matchedMessageIndex).toBeUndefined()
+    expect(hits[0]!.matchCount).toBe(1)
   }, 300_000)
 })
 
