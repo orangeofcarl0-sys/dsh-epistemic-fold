@@ -160,6 +160,15 @@ export interface CertifiedEconomyProfile {
   readonly priceEffect: CertifiedPriceEffect
   /** Quality is INHERITED where the change cannot affect it. */
   readonly quality: CertifiedClaim<string>
+  /**
+   * What inputs the quality claim covers.
+   *
+   * RC1.1 §5 measured that the economy preset preserves DECLARED state across
+   * folds but does NOT preserve unanchored narrative — reproducibly 0/3 on a
+   * three-fact probe, where Basic scored 1/3 and a rationale checkpoint 1.67/3.
+   * So the claim is scoped rather than unconditional.
+   */
+  readonly qualityScope: string
   readonly components: readonly ComponentVerdict[]
   /**
    * Whether the MECHANICS are verified: runtime, cache contract, quality, and
@@ -191,6 +200,8 @@ export interface CertificationEvidence {
   readonly reuseRatio?: { readonly value: number; readonly source: string }
   readonly qualitySource?: string
   readonly qualityPassed?: boolean
+  /** What inputs the quality claim covers (RC1.1 §5). */
+  readonly qualityScope?: string
   readonly window?: { readonly passed: boolean; readonly source: string; readonly detail: string }
   readonly priceEffect?: CertifiedPriceEffect
   readonly safetyReserveEstimate?: CertifiedTrigger['safetyReserveEstimate']
@@ -249,6 +260,12 @@ export function certifyRoute(evidence: CertificationEvidence): CertifiedEconomyP
       evidence: 'inherited',
       source: evidence.qualitySource,
     }
+  // RC1.1 §5 measured a boundary that scopes this claim, so the profile carries
+  // it. A quality claim without its input class is the same kind of error as a
+  // price claim without its measurement: it reads as unconditional when it is
+  // not. The economy preset's `semanticMode: none` makes a checkpoint
+  // marker-only, which carries DECLARED state and not unanchored prose.
+  const qualityScope: string | undefined = evidence.qualityScope
 
   const priceEffect: CertifiedPriceEffect = evidence.priceEffect ?? {
     source: 'no paired cost measurement recorded',
@@ -361,6 +378,8 @@ export function certifyRoute(evidence: CertificationEvidence): CertifiedEconomyP
     },
     priceEffect,
     quality,
+    qualityScope: qualityScope
+      ?? 'UNSCOPED: no input class was recorded, so this claim must not be read as unconditional',
     components,
     mechanicsCertified,
     economyRecommended,
@@ -480,6 +499,7 @@ export function profileToMarkdown(profile: CertifiedEconomyProfile): string {
         + (profile.priceEffect.intervalUpper === undefined
           ? '' : ` (upper ${profile.priceEffect.intervalUpper.toFixed(3)})`)}`,
     `- Quality: ${profile.quality.value} (${profile.quality.evidence})`,
+    `- Quality scope: ${profile.qualityScope}`,
   )
   if (profile.blocking.length > 0) {
     lines.push('', '**Components not passing:**')

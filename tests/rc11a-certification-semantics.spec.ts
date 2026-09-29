@@ -46,6 +46,8 @@ function openCostEvidence(): CertificationEvidence {
     },
     qualitySource: 'r4e-live-noninferiority + rc1f-fold-smoke: 20/20 and 3/3 facts across folds',
     qualityPassed: true,
+    qualityScope: 'DECLARED state only: the economy preset is marker-only, so it carries anchors and '
+      + 'not unanchored narrative (rc11c-live-smokes: 0/3 on undeclared prose where Basic scored 1/3)',
     window: {
       passed: true,
       source: 'rc1f-fold-smoke: peak 67379 of 131072, zero overflows',
@@ -216,5 +218,26 @@ describe('RC1.1: the report renders the component table', () => {
     const markdown = profileToMarkdown(profile)
     expect(markdown).not.toContain('Components not passing:')
     expect(markdown).toContain('Economy recommended: **yes**')
+  })
+})
+
+describe('RC1.1 §5: the quality claim carries its scope', () => {
+  it('records what inputs the claim covers, and defaults to UNSCOPED', () => {
+    // The live smoke measured a real boundary: the economy preset preserves
+    // DECLARED state across folds and does NOT preserve unanchored narrative
+    // (reproducibly 0/3, where Basic scored 1/3 and a rationale checkpoint
+    // 1.67/3). An unscoped quality claim would read as unconditional, which is
+    // the same error as a price claim without its measurement.
+    const scoped = certifyRoute({
+      ...openCostEvidence(),
+      qualityScope: 'DECLARED state only; undeclared prose is not carried',
+    })
+    expect(scoped.qualityScope).toContain('DECLARED state only')
+    expect(profileToMarkdown(scoped)).toContain('Quality scope: DECLARED state only')
+
+    // Absent a scope, the profile says so rather than implying universality.
+    const { qualityScope: _dropped, ...unscoped } = openCostEvidence()
+    const bare = certifyRoute(unscoped)
+    expect(bare.qualityScope).toContain('UNSCOPED')
   })
 })
