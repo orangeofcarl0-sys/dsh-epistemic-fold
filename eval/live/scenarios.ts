@@ -152,6 +152,12 @@ export const SCENARIO_ARMS: readonly ScenarioArm[] = [
 export interface ScenarioReplicate {
   readonly arm: string
   readonly family: string
+  /**
+   * Which replicate this observation came from. REQUIRED for pairing: the
+   * comparison is per (family, replicate), because the two arms must be judged
+   * on the SAME trajectory rather than on aggregate pass counts.
+   */
+  readonly replicate: number
   /** Whether the machine check passed. */
   readonly passed: boolean
   /** The model's raw answer, kept for diagnosis. */
@@ -185,55 +191,193 @@ export function tallyScenarios(replicates: readonly ScenarioReplicate[]): readon
 }
 
 /**
- * Non-inferiority verdict for one arm against a reference (R4 §32).
+ * One paired comparison's outcome (RC0-D).
  *
- * The bar is `candidate >= reference - epsilon` on the pass COUNT, with the
- * epsilon expressed as a fraction of the reference's total so it means the
- * same thing at any replicate count. It deliberately does NOT require the
- * candidate to be better: R4 §32 states that proving superiority is not a
- * precondition for shipping an economy mode.
+ * The four cells exist because the DANGEROUS one is not "candidate scored
+ * lower" in aggregate — it is the specific case where the reference got it
+ * right and the candidate did not. That is a candidate-only regression, and it
+ * is the thing a default flip must not introduce.
+ */
+export interface PairedOutcome {
+  /** Both passed: agreement, not evidence of quality. */
+  readonly bothPass: number
+  /** Reference passed, candidate FAILED — the candidate-only regression. */
+  readonly referenceOnlyPass: number
+  /** Candidate passed, reference failed — a candidate win. */
+  readonly candidateOnlyPass: number
+  /** Both failed: usually a scenario or harness problem, not a policy one. */
+  readonly bothFail: number
+  /** Pairs that could not be formed (a missing or duplicate observation). */
+  readonly unpaired: number
+}
+
+/**
+ * Non-inferiority verdict for one arm against a reference (R4 §32, RC0-D).
+ *
+ * **RC0-D replaced the aggregate-count rule with a pairwise one.** The old
+ * version compared total passes with `epsilon = ceil(total * 0.1)`, which at
+ * `n = 1` gave `epsilon = 1` and therefore declared "Basic 1/1, candidate 0/1"
+ * NON-INFERIOR. A helper that passes a candidate which failed everything is not
+ * a release gate, and R4's real result (20/20 vs 20/20) was never affected by
+ * it — but it would have become the long-term regression gate after a flip.
+ *
+ * The gate is now stated on the count that actually matters:
+ *
+ *   N(reference pass, candidate fail) <= epsilon
+ *
+ * so a single candidate-only regression on a probe the reference got right is
+ * visible immediately instead of being absorbed by a favourable aggregate.
  */
 export interface NonInferiorityVerdict {
   readonly candidate: string
   readonly reference: string
-  readonly candidatePassed: number
-  readonly referencePassed: number
-  readonly total: number
-  /** Absolute passes the candidate may trail by and still count as equal. */
+  readonly outcomes: PairedOutcome
+  /** Paired observations actually compared. */
+  readonly pairs: number
+  /** Absolute candidate-only regressions the gate tolerates. */
   readonly epsilon: number
   readonly nonInferior: boolean
+  /** Candidate wins minus candidate-only regressions; a tie is 0. */
+  readonly netWins: number
   readonly reason: string
 }
 
-/** Evaluate non-inferiority of one arm against a reference arm. */
+/**
+ * Compare two arms PAIRWISE, by (family, replicate).
+ *
+ * @param options - the two arms' observations and the tolerated regression count.
+ * @returns the paired outcome counts and the verdict.
+ */
 export function nonInferiority(options: {
   readonly candidate: readonly ScenarioReplicate[]
   readonly reference: readonly ScenarioReplicate[]
   readonly candidateId: string
   readonly referenceId: string
-  /** Fraction of the reference's total that a shortfall may reach. */
-  readonly epsilonRatio?: number
+  /**
+   * Candidate-only regressions the gate tolerates. Defaults to 0: RC0's first
+   * default-flip gate is deliberately strict ("not worse than Basic" needs no
+   * statistical margin), and a margin can be introduced once N is large enough
+   * to justify one.
+   */
+  readonly epsilon?: number
 }): NonInferiorityVerdict {
-  const epsilonRatio = options.epsilonRatio ?? 0.1
-  const candidatePassed = options.candidate.filter(r => r.passed).length
-  const referencePassed = options.reference.filter(r => r.passed).length
-  const total = options.reference.length
-  const epsilon = Math.ceil(total * epsilonRatio)
-  const shortfall = referencePassed - candidatePassed
-  const nonInferior = shortfall <= epsilon
+  const epsilon = options.epsilon ?? 0
+  const key = (entry: ScenarioReplicate): string => `${entry.family}\u0000${entry.replicate}`
+  const referenceByKey = new Map(options.reference.map(entry => [key(entry), entry]))
+
+  let bothPass = 0
+  let referenceOnlyPass = 0
+  let candidateOnlyPass = 0
+  let bothFail = 0
+  let unpaired = 0
+  const seen = new Set<string>()
+
+  for (const candidate of options.candidate) {
+    const mapKey = key(candidate)
+    const reference = referenceByKey.get(mapKey)
+    if (reference === undefined) {
+      // A candidate observation with no reference counterpart cannot be
+      // compared. It is reported rather than silently dropped, because a
+      // systematically missing reference would otherwise look like a clean run.
+      unpaired += 1
+      continue
+    }
+    seen.add(mapKey)
+    if (reference.passed && candidate.passed) bothPass += 1
+    else if (reference.passed && !candidate.passed) referenceOnlyPass += 1
+    else if (!reference.passed && candidate.passed) candidateOnlyPass += 1
+    else bothFail += 1
+  }
+  // Reference observations with no candidate counterpart are also unpaired.
+  for (const reference of options.reference) {
+    if (!seen.has(key(reference))) unpaired += 1
+  }
+
+  const pairs = bothPass + referenceOnlyPass + candidateOnlyPass + bothFail
+  const netWins = candidateOnlyPass - referenceOnlyPass
+  const nonInferior = referenceOnlyPass <= epsilon
   return {
     candidate: options.candidateId,
     reference: options.referenceId,
-    candidatePassed,
-    referencePassed,
-    total,
+    outcomes: { bothPass, referenceOnlyPass, candidateOnlyPass, bothFail, unpaired },
+    pairs,
     epsilon,
     nonInferior,
+    netWins,
     reason: nonInferior
-      ? `${options.candidateId} ${candidatePassed}/${total} vs ${options.referenceId} ${referencePassed}/${total}; `
-        + `shortfall ${shortfall} <= epsilon ${epsilon}`
-      : `${options.candidateId} ${candidatePassed}/${total} vs ${options.referenceId} ${referencePassed}/${total}; `
-        + `shortfall ${shortfall} > epsilon ${epsilon}`,
+      ? `${options.candidateId} vs ${options.referenceId}: ${pairs} paired probes, `
+        + `${referenceOnlyPass} candidate-only regression(s) <= epsilon ${epsilon} `
+        + `(both-pass ${bothPass}, candidate-only wins ${candidateOnlyPass}, both-fail ${bothFail}`
+        + `${unpaired === 0 ? '' : `, UNPAIRED ${unpaired}`})`
+      : `${options.candidateId} vs ${options.referenceId}: ${referenceOnlyPass} candidate-only `
+        + `regression(s) > epsilon ${epsilon} — the reference passed probes the candidate failed `
+        + `(pairs ${pairs}, both-pass ${bothPass})`,
+  }
+}
+
+/**
+ * Availability and retry load, kept separate from semantic quality (RC0-D).
+ *
+ * A transport failure is correctly NOT a quality error — the model was never
+ * asked. But it is not nothing either: if the candidate needs 20 retries to
+ * reach the same answers the reference reached with none, the two are not
+ * equivalent products. Conflating the two is how a reliability regression gets
+ * recorded as a quality result, in either direction.
+ */
+export interface AvailabilitySummary {
+  readonly arm: string
+  /** Probes that produced an answer, over probes attempted. */
+  readonly answered: number
+  readonly attempted: number
+  /** `answered / attempted`; 1 when nothing was attempted. */
+  readonly availability: number
+  /** Provider attempts that returned nothing and had to be retried. */
+  readonly transportFailures: number
+  /** `transportFailures / attempted`; the retry load the arm imposes. */
+  readonly retryRate: number
+}
+
+/** Summarize one arm's availability from its observed and failed probes. */
+export function summarizeAvailability(options: {
+  readonly arm: string
+  readonly answered: number
+  readonly transportFailures: number
+}): AvailabilitySummary {
+  const attempted = options.answered + options.transportFailures
+  return {
+    arm: options.arm,
+    answered: options.answered,
+    attempted,
+    availability: attempted === 0 ? 1 : options.answered / attempted,
+    transportFailures: options.transportFailures,
+    retryRate: attempted === 0 ? 0 : options.transportFailures / attempted,
+  }
+}
+
+/**
+ * Availability non-inferiority: `A_candidate >= A_reference - epsilon_A`.
+ *
+ * Reported alongside semantic quality, never merged into it.
+ */
+export function availabilityNonInferior(options: {
+  readonly candidate: AvailabilitySummary
+  readonly reference: AvailabilitySummary
+  readonly epsilon?: number
+}): { readonly nonInferior: boolean; readonly reason: string } {
+  const epsilon = options.epsilon ?? 0.05
+  const shortfall = options.reference.availability - options.candidate.availability
+  // Boundary comparison on ratios needs a tolerance: `1 - 0.95` evaluates to
+  // 0.050000000000000044, so a gate stated at exactly 0.05 would FAIL a
+  // candidate that sits precisely on its threshold. The gate's contract is
+  // `>=`, so a floating-point artifact must not flip it.
+  const TOLERANCE = 1e-9
+  const nonInferior = shortfall <= epsilon + TOLERANCE
+  return {
+    nonInferior,
+    reason: `availability ${options.candidate.arm} ${options.candidate.availability.toFixed(3)} vs `
+      + `${options.reference.arm} ${options.reference.availability.toFixed(3)}; `
+      + `shortfall ${shortfall.toFixed(3)} ${nonInferior ? '<=' : '>'} epsilon ${epsilon}`
+      + ` (retry rates ${options.candidate.retryRate.toFixed(3)} vs ${options.reference.retryRate.toFixed(3)})`,
   }
 }
 

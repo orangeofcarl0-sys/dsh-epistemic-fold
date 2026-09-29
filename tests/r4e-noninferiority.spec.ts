@@ -21,8 +21,10 @@ import { describe, expect, it } from 'vitest'
 import {
   SCENARIO_ARMS,
   SCENARIO_FACTS,
+  availabilityNonInferior,
   nonInferiority,
   scenariosToMarkdown,
+  summarizeAvailability,
   tallyScenarios,
 } from '../eval/live/scenarios.ts'
 import type { ScenarioReplicate } from '../eval/live/scenarios.ts'
@@ -32,8 +34,9 @@ function replicate(
   arm: string,
   family: string,
   passed: boolean,
+  index = 0,
 ): ScenarioReplicate {
-  return { arm, family, passed, answer: '', folds: 4, roots: 1 }
+  return { arm, family, replicate: index, passed, answer: '', folds: 4, roots: 1 }
 }
 
 describe('R4-E: the four scenario families are distinct and machine-checked', () => {
@@ -102,12 +105,12 @@ describe('R4-E: the four scenario families are distinct and machine-checked', ()
   })
 })
 
-describe('R4-E: tallies and non-inferiority', () => {
+describe('RC0-D: tallies and PAIRWISE non-inferiority', () => {
   it('tallies per arm and family, not just a grand total', () => {
     const tallies = tallyScenarios([
-      replicate('E4', 'constraint', true), replicate('E4', 'constraint', true),
-      replicate('E4', 'supersession', false), replicate('E4', 'supersession', true),
-      replicate('B1', 'constraint', true),
+      replicate('E4', 'constraint', true, 0), replicate('E4', 'constraint', true, 1),
+      replicate('E4', 'supersession', false, 0), replicate('E4', 'supersession', true, 1),
+      replicate('B1', 'constraint', true, 0),
     ])
     const econConstraint = tallies.find(t => t.arm === 'E4' && t.family === 'constraint')!
     expect(econConstraint.passed).toBe(2)
@@ -121,56 +124,134 @@ describe('R4-E: tallies and non-inferiority', () => {
     // The reason the tallies are per-family: an aggregate could hide a family
     // going to zero while others compensate.
     const tallies = tallyScenarios([
-      ...Array.from({ length: 4 }, () => replicate('E4', 'constraint', true)),
-      ...Array.from({ length: 4 }, () => replicate('E4', 'supersession', false)),
-      ...Array.from({ length: 4 }, () => replicate('B1', 'constraint', true)),
-      ...Array.from({ length: 4 }, () => replicate('B1', 'supersession', true)),
+      ...Array.from({ length: 4 }, (_, i) => replicate('E4', 'constraint', true, i)),
+      ...Array.from({ length: 4 }, (_, i) => replicate('E4', 'supersession', false, i)),
+      ...Array.from({ length: 4 }, (_, i) => replicate('B1', 'constraint', true, i)),
+      ...Array.from({ length: 4 }, (_, i) => replicate('B1', 'supersession', true, i)),
     ])
     const markdown = scenariosToMarkdown(tallies, ['B1', 'E4'])
     expect(markdown).toContain('| supersession | 4/4 | 0/4 |')
     expect(markdown).toContain('| constraint | 4/4 | 4/4 |')
   })
 
-  it('non-inferiority allows a bounded shortfall and does not demand superiority', () => {
+  it('pairs by (family, replicate), counting the four outcomes', () => {
+    // The pairing is the point: the arms must be judged on the SAME probe, so
+    // an aggregate pass count cannot hide a swap (candidate wins one, loses
+    // another, total unchanged).
     const candidate = [
-      ...Array.from({ length: 19 }, () => replicate('E4', 'constraint', true)),
-      replicate('E4', 'constraint', false),
+      replicate('E4', 'constraint', true, 0),   // both pass
+      replicate('E4', 'constraint', false, 1),  // REFERENCE-ONLY PASS
+      replicate('E4', 'constraint', true, 2),   // candidate-only win
+      replicate('E4', 'constraint', false, 3),  // both fail
     ]
-    const reference = Array.from({ length: 20 }, () => replicate('B1', 'constraint', true))
+    const reference = [
+      replicate('B1', 'constraint', true, 0),
+      replicate('B1', 'constraint', true, 1),
+      replicate('B1', 'constraint', false, 2),
+      replicate('B1', 'constraint', false, 3),
+    ]
     const verdict = nonInferiority({
       candidate, reference, candidateId: 'E4', referenceId: 'B1',
     })
-    // 19/20 against 20/20 is a shortfall of 1, inside epsilon 2.
-    expect(verdict.nonInferior).toBe(true)
-    expect(verdict.candidatePassed).toBe(19)
-    expect(verdict.epsilon).toBe(2)
-  })
-
-  it('non-inferiority FAILS a shortfall beyond epsilon', () => {
-    const candidate = Array.from({ length: 20 }, (_, index) =>
-      replicate('E4', 'constraint', index >= 5))
-    const reference = Array.from({ length: 20 }, () => replicate('B1', 'constraint', true))
-    const verdict = nonInferiority({ candidate, reference, candidateId: 'E4', referenceId: 'B1' })
+    expect(verdict.pairs).toBe(4)
+    expect(verdict.outcomes).toEqual({
+      bothPass: 1, referenceOnlyPass: 1, candidateOnlyPass: 1, bothFail: 1, unpaired: 0,
+    })
+    // Aggregate counts are EQUAL (2 passes each) yet the gate still fails,
+    // because the candidate regressed on a probe the reference got right.
     expect(verdict.nonInferior).toBe(false)
-    expect(verdict.reason).toContain('shortfall 5 > epsilon 2')
+    expect(verdict.reason).toContain('candidate-only regression')
   })
 
-  it('epsilon scales with the replicate count, so it means the same thing at any n', () => {
-    const small = nonInferiority({
-      candidate: [replicate('E4', 'c', false)],
-      reference: [replicate('B1', 'c', true)],
+  it('the n=1 case that the OLD rule passed is now correctly FAILED', () => {
+    // RC0-D's motivating bug: with `epsilon = ceil(total * 0.1)`, n=1 gave
+    // epsilon=1, so "Basic 1/1, candidate 0/1" was declared NON-INFERIOR. A
+    // gate that passes a candidate which failed everything is not a gate.
+    const verdict = nonInferiority({
+      candidate: [replicate('E4', 'constraint', false, 0)],
+      reference: [replicate('B1', 'constraint', true, 0)],
       candidateId: 'E4', referenceId: 'B1',
     })
-    const large = nonInferiority({
-      candidate: [replicate('E4', 'c', false), ...Array.from({ length: 9 }, () => replicate('E4', 'c', true))],
-      reference: Array.from({ length: 10 }, () => replicate('B1', 'c', true)),
+    expect(verdict.epsilon).toBe(0)
+    expect(verdict.nonInferior).toBe(false)
+    expect(verdict.outcomes.referenceOnlyPass).toBe(1)
+  })
+
+  it('a candidate-only WIN does not fail the gate', () => {
+    const verdict = nonInferiority({
+      candidate: [replicate('E4', 'c', true, 0)],
+      reference: [replicate('B1', 'c', false, 0)],
       candidateId: 'E4', referenceId: 'B1',
     })
-    // At n=1 an epsilon of 10% would round to 1 and accept a total failure, so
-    // it is ceil'd — and at n=10 one miss is still inside epsilon 1.
-    expect(small.epsilon).toBe(1)
-    expect(small.nonInferior).toBe(true)
-    expect(large.epsilon).toBe(1)
-    expect(large.nonInferior).toBe(true)
+    expect(verdict.nonInferior).toBe(true)
+    expect(verdict.outcomes.candidateOnlyPass).toBe(1)
+    expect(verdict.netWins).toBe(1)
+  })
+
+  it('identical arms are non-inferior with zero regressions', () => {
+    const observations = Array.from({ length: 5 }, (_, i) => replicate('E4', 'c', i !== 3, i))
+    const reference = Array.from({ length: 5 }, (_, i) => replicate('B1', 'c', i !== 3, i))
+    const verdict = nonInferiority({
+      candidate: observations, reference, candidateId: 'E4', referenceId: 'B1',
+    })
+    expect(verdict.nonInferior).toBe(true)
+    expect(verdict.outcomes.bothPass).toBe(4)
+    expect(verdict.outcomes.bothFail).toBe(1)
+    expect(verdict.netWins).toBe(0)
+  })
+
+  it('an UNPAIRED observation is reported, not silently dropped', () => {
+    // A systematically missing reference would otherwise look like a clean run.
+    const verdict = nonInferiority({
+      candidate: [replicate('E4', 'c', true, 0), replicate('E4', 'c', true, 1)],
+      reference: [replicate('B1', 'c', true, 0)],
+      candidateId: 'E4', referenceId: 'B1',
+    })
+    expect(verdict.pairs).toBe(1)
+    expect(verdict.outcomes.unpaired).toBe(1)
+    expect(verdict.reason).toContain('UNPAIRED')
+  })
+
+  it('epsilon is an explicit allowance, not a fraction that rounds to one', () => {
+    const candidate = [replicate('E4', 'c', false, 0), replicate('E4', 'c', true, 1)]
+    const reference = [replicate('B1', 'c', true, 0), replicate('B1', 'c', true, 1)]
+    expect(nonInferiority({ candidate, reference, candidateId: 'E4', referenceId: 'B1' }).nonInferior)
+      .toBe(false)
+    // Allowing exactly one regression admits it; allowing zero does not.
+    expect(nonInferiority({ candidate, reference, candidateId: 'E4', referenceId: 'B1', epsilon: 1 })
+      .nonInferior).toBe(true)
+  })
+})
+
+describe('RC0-D: availability is measured separately from quality', () => {
+  it('a transport failure is not a wrong answer, and not nothing either', () => {
+    // The distinction R4-E's fix established, made quantitative. Semantic
+    // quality excludes transport failures; availability and retry load report
+    // them. Both must be visible, because an arm needing retries to reach the
+    // same answers is not the same product.
+    const withFailures = summarizeAvailability({ arm: 'E4', answered: 18, transportFailures: 2 })
+    const clean = summarizeAvailability({ arm: 'B1', answered: 20, transportFailures: 0 })
+    expect(withFailures.availability).toBeCloseTo(0.9, 6)
+    expect(clean.availability).toBe(1)
+    expect(withFailures.retryRate).toBeCloseTo(0.1, 6)
+    expect(clean.retryRate).toBe(0)
+  })
+
+  it('the availability gate is separate and states both rates', () => {
+    const candidate = summarizeAvailability({ arm: 'E4', answered: 19, transportFailures: 1 })
+    const reference = summarizeAvailability({ arm: 'B1', answered: 20, transportFailures: 0 })
+    const verdict = availabilityNonInferior({ candidate, reference })
+    expect(verdict.nonInferior).toBe(true)
+    expect(verdict.reason).toContain('retry rates')
+
+    // A large availability shortfall fails on its own axis.
+    const degraded = summarizeAvailability({ arm: 'E4', answered: 10, transportFailures: 10 })
+    expect(availabilityNonInferior({ candidate: degraded, reference }).nonInferior).toBe(false)
+  })
+
+  it('an arm with nothing attempted reports full availability, not NaN', () => {
+    const empty = summarizeAvailability({ arm: 'E4', answered: 0, transportFailures: 0 })
+    expect(empty.availability).toBe(1)
+    expect(empty.retryRate).toBe(0)
   })
 })

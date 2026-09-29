@@ -284,7 +284,7 @@ describe.skipIf(!LIVE_ENABLED)('R4-E live: non-inferiority across scenario famil
             continue
           }
           replicates.push({
-            arm: arm.id, family: fact.family,
+            arm: arm.id, family: fact.family, replicate: rep,
             passed: fact.check(response.answer), answer: response.answer,
             folds: run.folds, roots: run.roots,
           })
