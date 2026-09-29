@@ -88,6 +88,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **R4** | Economy default closure: real-recall workload, realized billing, window safety, presets · 经济模式默认闭合 | ✅ 5/5 gate components · [report](docs/17_R4_EVALUATION_REPORT.md) |
 | **RC0** | Release hardening: config contract, pairwise non-inferiority, all-call billing recorder · 发布加固 | ⚠️ **cost gate OPEN (dispersion)** · superseded by RC1 · [report](docs/18_RC0_RELEASE_HARDENING.md) |
 | **RC1** | Policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, certified profile · 策略标准化与经济模式认证 | ✅ **certified profile**; cost gate **OPEN (dispersion at n=8)**; global default NOT flipped · [report](docs/19_RC1_POLICY_NORMALIZATION.md) |
+| **RC1.1** | Evidence reconciliation: component-wise certification, reserve demoted to a scoped estimate, replay confounds removed, unanchored-narrative boundary measured · 证据闭合与重放修正 | ✅ **mechanics certified**; cost recommendation **OPEN**; RC1-H withdrawn · [report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -218,6 +219,36 @@ prompt 组装的实机测量都没有真正发送 system prompt——这对 R3 �
 影响最大，因为该改动的全部收益正来自那里。最终交付物是**针对已测路由的经济模式
 认证档案**，而非全局默认值：未认证路由回退到 `legacy`，绝不回退到 `economy`。
 详见 [RC1 报告](docs/19_RC1_POLICY_NORMALIZATION.md)。
+
+**RC1.1 then reconciled the evidence, and withdrew one RC1 conclusion.** Three
+defects did not survive audit: the certified profile reported `certified: true`
+while the cost gate was OPEN (a **cache** reuse ratio was standing in for a
+**price** measurement), a ~30K-scale safety estimate was reported as a production
+headroom, and the replay varied the trigger and the retention together — which is
+what produced RC1-H's "the shipped reserve helps" conclusion. Holding retention
+fixed **reverses the sign**, so that conclusion is withdrawn. With both confounds
+removed the region Ω is wide (10 robust cells, 7 below parity across all cache
+scenarios) and the mature production values sit in its widest band, but the live
+cost verdict still does not reproduce at n=8. The live smoke also measured a real
+product boundary: the economy preset preserves **declared** state across folds and
+does **not** carry unanchored narrative (reproducibly 0/3 where Basic scored
+1/3), because a marker-only checkpoint has no prose in it — a rationale checkpoint
+recovers most of it, so it is the preset's choice rather than the architecture.
+The project state is now **Economy mechanics certified; route-level cost
+recommendation still open**, with no new architecture added to flip a default.
+Full detail in [the RC1.1 report](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) ·
+**RC1.1 随后校正了证据，并撤回了一条 RC1 结论。** 三处缺陷未能通过审计：认证档案在
+成本 gate 为 OPEN 时报告 `certified: true`（**缓存**复用比冒充了**价格**测量）；
+一个约 30K 采样尺度的安全估计被当作生产 headroom；重放同时变动了 trigger 与
+retention——而这正是 RC1-H「出厂 reserve 有益」结论的来源。固定 retention 后符号
+**反转**，该结论予以撤回。两个 confound 去除后，区域 Ω 足够宽（10 个稳健格点，
+7 个在所有缓存情景下均低于平价），成熟的生产参数位于最宽区间内，但实机成本结论在
+n=8 下仍不可复现。实机 smoke 还测出了一条真实产品边界：经济模式预设能跨折叠保留
+**已声明**状态，但**不**承载未锚定的叙述（可复现地 0/3，而 Basic 为 1/3），因为
+marker-only checkpoint 里没有叙述文本——rationale checkpoint 能恢复其中大部分，
+因此这是预设自身的选择而非架构限制。项目状态现为**经济机制已认证；路由级成本推荐
+仍然开放**，且未为翻转默认值新增任何架构。详见
+[RC1.1 报告](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md)。
 
 ### Frozen stages · 已冻结阶段
 
@@ -414,6 +445,7 @@ All design documents live in [`docs/`](docs/) ·
 | [17_R4_EVALUATION_REPORT.md](docs/17_R4_EVALUATION_REPORT.md) | R4 economy default closure: real-recall workload, realized billing, window safety, presets, and the eligibility gate · R4 经济模式默认闭合 |
 | [18_RC0_RELEASE_HARDENING.md](docs/18_RC0_RELEASE_HARDENING.md) | RC0 release hardening: the configuration contract, pairwise non-inferiority, the all-call billing recorder, and the dispersion that keeps the cost gate OPEN · RC0 发布加固 |
 | [19_RC1_POLICY_NORMALIZATION.md](docs/19_RC1_POLICY_NORMALIZATION.md) | RC1 policy normalization: trigger breakdown, measured safety reserve, replay simulator, cache microbench, and the certified economy profile · RC1 策略标准化与经济模式认证 |
+| [20_RC1_1_EVIDENCE_RECONCILIATION.md](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) | RC1.1 evidence reconciliation: component-wise certification, the reserve as a scoped estimate, both replay confounds removed, the withdrawn RC1-H conclusion, and the measured unanchored-narrative boundary · RC1.1 证据闭合与重放修正 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never
