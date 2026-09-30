@@ -37,12 +37,22 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(exports['./library']).toBeDefined()
   })
 
-  it('declares the bundle patch a profile loader consumes', async () => {
+  it('declares the bundle patches a profile loader consumes', async () => {
+    // RC5 made this an ARRAY, the same shape `dsh-web-app` uses for its own
+    // presets: one patch file per tier, plus the (now empty) top-level file.
     const pkg = await readJson('package.json')
-    const dsh = pkg['dsh'] as { bundle?: { patch?: string } } | undefined
-    expect(dsh?.bundle?.patch).toBe('cordis.patch.yml')
-    // The referenced file must actually ship.
-    await expect(access(join(ROOT, 'cordis.patch.yml'))).resolves.toBeUndefined()
+    const dsh = pkg['dsh'] as { bundle?: { patch?: string | string[] } } | undefined
+    const declared = dsh?.bundle?.patch
+    expect(Array.isArray(declared), 'the patch list must be an array').toBe(true)
+    const list = declared as string[]
+    expect(list).toContain('./cordis.patch.yml')
+    for (const tier of ['ef-economy', 'ef-balanced', 'ef-quality']) {
+      expect(list).toContain(`./presets/${tier}.patch.yml`)
+    }
+    // Every referenced file must actually ship.
+    for (const entry of list) {
+      await expect(access(join(ROOT, entry)), `${entry} must exist`).resolves.toBeUndefined()
+    }
   })
 
   it('ships `lib` in `files`, or an install would omit the entry', async () => {
@@ -58,23 +68,42 @@ describe('RC3: the package declares a real plugin entry', () => {
   })
 })
 
-describe('RC3: the patch replaces the compaction backend', () => {
-  it('inserts EF and DISABLES compaction-basic', async () => {
-    // EF owns `ctx.compaction`; Cordis allows one registration per service. A
-    // profile with both active fails to boot, so the disable is load-bearing
-    // rather than tidiness.
-    const patch = await readFile(join(ROOT, 'cordis.patch.yml'), 'utf8')
-    expect(patch).toContain('name: dsh-epistemic-fold')
-    expect(patch).toMatch(/id:\s*compaction-basic\s*\n\s*disabled:\s*true/u)
+describe('RC5: the presets replace the compaction backend, per session', () => {
+  it('declares one preset per tier, each mounting EF in its compaction group', async () => {
+    // RC3 mounted EF at the TOP level and disabled the top-level
+    // `compaction-basic`. RC4-A found that is a NO-OP in a web profile, because
+    // `dsh-web-app` already disables that row and puts a compaction group inside
+    // each agent preset, isolated — so a top-level EF was invisible to every
+    // session. RC5 declares EF's OWN presets instead.
+    for (const tier of ['ef-economy', 'ef-balanced', 'ef-quality']) {
+      const patch = await readFile(join(ROOT, 'presets', `${tier}.patch.yml`), 'utf8')
+      expect(patch, `${tier} must declare a preset row`).toContain(`id: preset-${tier}`)
+      expect(patch).toContain('@deepseek-ai/dsh-agent-preset')
+      // EF replaces Basic inside the group...
+      expect(patch).toContain('name: dsh-epistemic-fold')
+      expect(patch).not.toContain("name: '@deepseek-ai/dsh-compaction-basic'")
+      // ...and the realm is isolated, or the second preset to mount collides.
+      expect(patch, `${tier} must isolate epistemicFold`).toContain('epistemicFold: true')
+    }
   })
 
-  it('ships a seam-free mode, so it mounts on an unpatched harness', async () => {
-    // Every tier selects `system-dedup`, which REQUIRES the `frameCheckpoint`
-    // seam — absent from released DSH. Shipping a tier here would make the
-    // profile abort at boot on a vanilla install.
+  it('the top-level patch no longer mounts EF over DSH', async () => {
+    // It is deliberately empty: mounting EF globally is what failed. A row here
+    // would re-introduce the invisible-EF problem in every preset-based profile.
     const patch = await readFile(join(ROOT, 'cordis.patch.yml'), 'utf8')
-    expect(patch).toMatch(/mode:\s*legacy/u)
-    expect(patch).not.toMatch(/^\s*mode:\s*(economy|balanced|quality)/mu)
+    const rows = patch.split(String.fromCharCode(10))
+      .filter(line => line.trim().startsWith('- id:'))
+    expect(rows, 'the top-level patch must declare no rows').toEqual([])
+  })
+
+  it('each tier preset pins its own mode', async () => {
+    for (const tier of ['economy', 'balanced', 'quality']) {
+      const patch = await readFile(join(ROOT, 'presets', `ef-${tier}.patch.yml`), 'utf8')
+      // A word boundary, so `mode: economy` cannot be satisfied by a longer
+      // tier name that merely starts with it.
+      expect(patch, `ef-${tier} must set mode: ${tier}`)
+        .toMatch(new RegExp(`mode: ${tier}(?![a-z])`, 'u'))
+    }
   })
 })
 

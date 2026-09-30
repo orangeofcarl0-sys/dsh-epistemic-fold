@@ -96,7 +96,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC2.1** | Status correctness, baseline naming, and the retention A/B: four `/context status` defects fixed, `legacy` renamed to EF legacy with a real Basic arm added, the ladder reordered retention-first · 状态正确性、基线命名与保留量 A/B | ⚠️ **status FIXED**; retention bought **no measurable steadiness** (0.90→0.90) at +0.003 cost, so the tier stays **HYPOTHESIS** · [report](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) |
 | **RC3** | Real DSH pluginization: a build step producing loadable JS, a `dsh.bundle` patch, `/context mode` as the control plane, and mounting into a real local DSH · 真实 DSH 插件化 | ✅ **mounts and folds in real DSH** — 2 compactions, `EF1` markers, bundles on disk; `/context mode` switches the live engine; RC2's "in DSH" claim corrected · [report](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) |
 | **RC4** | Sidebar panel: command = control / Sidebar = observation, both rendering ONE status model; a hand-authored client bundle with no bundler added · 侧边栏面板 | ✅ **panel SHIPPED** — reads the shared model (not parsed command text), renders `—` for unknown, and cannot enter model context by construction · [report](docs/27_RC4_SIDEBAR_PANEL.md) |
-| **RC5** (design) | EF as its own agent preset: EF declares `preset-ef-*`, so a session that selects it gets EF and every other session is untouched native Basic · EF 独立 preset 设计 | 📐 **design + mechanism verified** — prototyped against the real web profile; a live session fold still unverified · [design](docs/29_RC5_PRESET_DESIGN.md) |
+| **RC5** | EF as its own agent preset: three tier presets generated from the installed DSH, so a session that selects one gets EF and every other session is untouched native Basic · EF 独立 preset | ✅ **IMPLEMENTED** — three presets coexist in the real web profile with zero conflicts; drift test verified to fail on divergence; a live session fold still unverified · [report](docs/29_RC5_PRESET_DESIGN.md) |
 | **RC4-A** | Interaction audit: every `/context` path exercised in a real host, the panel checked against the directive's UI spec, and three defects found and fixed · 交互审计 | ⚠️ **3 fixed, 1 BLOCKER open** — in the WEB profile sessions still use DSH Basic (preset-scoped compaction isolates EF out); failure-as-success and a mislabelled lifetime figure fixed · [report](docs/28_RC4A_INTERACTION_AUDIT.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
@@ -647,10 +647,28 @@ patch. A profile adds it as a dependency and lists it as a bundle ·
 ```
 
 Then `pnpm install` in the profile directory and boot with
-`dsh --profile <name>`. The patch **disables `compaction-basic`**, because EF
-owns `ctx.compaction` and Cordis allows one registration per service ·
-在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。patch 会
-**禁用 `compaction-basic`**：EF 持有 `ctx.compaction`，而 Cordis 每个服务只允许一次注册。
+`dsh --profile <name>`. EF ships **three agent presets** — `EF · economy`,
+`EF · balanced`, `EF · quality` — and you choose one when starting a session.
+Every session that does not choose one is **untouched native Basic**: no EF
+engine, no EF command, no EF surface ·
+在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。EF 附带
+**三个 agent preset**——`EF · economy`、`EF · balanced`、`EF · quality`——在新建会话时
+选择其一。**未选择的会话就是原封不动的原生 Basic**：没有 EF 引擎、没有 EF 命令、没有
+EF 表面。
+
+Presets are chosen **before** a session starts, because DSH refuses to recompose a
+running one. That is why there are three presets rather than one preset with a
+mode switch: the tier has to be the thing you pick ·
+preset 必须在会话开始**之前**选择，因为 DSH 拒绝重组运行中的会话。这就是为什么是三个
+preset 而不是"一个 preset + 运行时切换"：档位必须是你要选的那个东西。
+
+The presets are **generated** from your installed DSH
+(`node scripts/generate-presets.mjs`), so their non-compaction rows mirror DSH's
+own session composition instead of being a hand-copy that rots. Regenerate after a
+DSH upgrade; `tests/rc5-preset-drift.spec.ts` fails loudly when they diverge ·
+preset 是从你安装的 DSH **生成**的（`node scripts/generate-presets.mjs`），因此其非
+compaction 行镜像 DSH 自身的会话组合，而不是会腐坏的手抄副本。DSH 升级后重新生成；
+一旦分叉，`tests/rc5-preset-drift.spec.ts` 会大声失败。
 
 ### The Sidebar panel · 侧边栏面板
 
