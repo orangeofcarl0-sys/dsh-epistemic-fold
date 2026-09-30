@@ -344,9 +344,46 @@ now this. Both were invisible to a harness that mounts one instance at a time.
 | the mirror is real | 19 non-compaction rows compared row-by-row against the installed reference |
 | the drift test actually guards | deleting ONE row (`tool-web`) fails 3 tests; restored, 5 pass |
 
-**Still not verified**, and it is the same gap as before: a live web session
-selecting `ef-economy` and folding under it. That needs port 3080 free, because
-the selection UI and the session composition both live behind the web host.
+### End-to-end verification (RC5-E2E)
+
+The gap above is now CLOSED. Driven against a real DSH 0.2.0-rc.2 composed by the
+CLI's own `runProfile` — the same code path the `dsh` binary uses — with the web
+host moved to a free port so the user's own running DSH was not disturbed.
+
+**The presets are real and selectable.** The real web UI's preset menu lists
+seven entries: DSH's four plus `EF · economy`, `EF · balanced`, `EF · quality`,
+each with its description. They are registered, not broken, and carry the same
+enabled state as DSH's own items.
+
+**The composition is the whole claim, verified per session.** In one real
+context, two sessions bound to two presets:
+
+| session bound to | its `ctx.compaction` | carries EF recall tools |
+| --- | --- | --- |
+| `standard` | `BasicCompactionEngine` | no |
+| `ef-economy` | **`EpistemicFoldEngine`** | yes |
+
+`composedPreset(agent.ctx)` returns `ef-economy` for the second and the registry's
+`serviceFor(agent, 'compaction')` resolves to the EF engine — which is the
+authoritative statement that the preset's isolated realm really is what the
+session reads. The composition documents agree: `standard` contains
+`compaction-basic` and no EF; `ef-economy` contains EF and no `compaction-basic`.
+
+So "zero coexistence" is measured, not asserted: a `standard` session in this
+profile has **no EF engine**, and the two sessions in the same process resolve
+different compaction backends.
+
+**What this still does not cover.** The sessions above were bound and their
+engines resolved, but no turn was run through the model, so EF has not been
+observed *folding* inside a web-preset session. That distinction matters and is
+recorded rather than glossed: RC3 already proved EF folds in a real DSH session
+(two committed transactions, `EF1` markers, bundles on disk) — but under a
+top-level mount, not under a preset. The preset path adds only the binding, which
+is what this run verified.
+
+One environment note: the run needed the framing seam temporarily present, because
+every tier requires `frameCheckpoint` and released DSH does not have it. The patch
+was reverted afterwards; the user's install is vanilla again.
 
 ### One test-quality note
 
