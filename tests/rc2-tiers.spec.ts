@@ -43,10 +43,17 @@ describe('RC2: the ladder is three tiers, and only three', () => {
     // `legacy` is the engine's own default and the frozen research baseline. It
     // is a MODE but not a TIER: the product surface offers the ladder, and a
     // deployment that configured nothing is reported as `legacy`.
-    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'economy', 'balanced', 'quality'])
+    //
+    // RC7 added `basic`, the install-time opt-out. It is a MODE but not a TIER
+    // for the same reason: it fills in no policy values, it makes EF stand
+    // aside. The ladder is still exactly three rungs.
+    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'basic', 'economy', 'balanced', 'quality'])
     expect(isTierModeName('legacy')).toBe(false)
+    expect(isTierModeName('basic')).toBe(false)
     expect(isTierModeName('economy')).toBe(true)
     expect(isTierModeName('quality')).toBe(true)
+    // `basic` must not appear in the ladder the product shows.
+    expect(tierLadder().map(rung => rung.name)).toEqual(['economy', 'balanced', 'quality'])
   })
 
   it('every tier is described for a user, not for an engineer', () => {

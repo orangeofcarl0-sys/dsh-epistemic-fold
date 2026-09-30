@@ -112,9 +112,13 @@ describe('RC0-A: the DSH contract names a capability, not a version that lacks i
     // The audit finding: `>=0.1.7-rc.2` is the version of the pinned vanilla
     // build at 477b4f4, which does NOT have the seam. A range would tell a
     // user their build "should" support it.
+    //
+    // RC7 moved the seam into EF's own vendored base class, so there is no
+    // host capability left to name a version for. What must survive is the
+    // reason the old text was wrong: no version claim at all.
     expect(REQUIRED_DSH_RANGE).toBeUndefined()
-    expect(DSH_SEAM_PROVENANCE).toContain('not in vanilla 0.1.7-rc.2')
-    expect(DSH_SEAM_PROVENANCE).toContain('apply-framing-seam')
+    expect(DSH_SEAM_PROVENANCE).toContain('src/basic/')
+    expect(DSH_SEAM_PROVENANCE).toMatch(/vendored/u)
   })
 
   it('the failure message names the capability and the remedy, not a version', () => {
@@ -125,9 +129,11 @@ describe('RC0-A: the DSH contract names a capability, not a version that lacks i
       message = error instanceof Error ? error.message : String(error)
     }
     expect(message).toContain('frameCheckpoint')
-    expect(message).toContain('not in any released DSH version yet')
-    // It must NOT promise that a version satisfies the requirement.
+    expect(message).toContain('system-dedup')
+    // It must NOT promise that a version satisfies the requirement, and it must
+    // not send the user to patch their DSH — RC7 removed that requirement.
     expect(message).not.toMatch(/>=\s*0\.1\.7/u)
+    expect(message).not.toContain('apply-framing-seam')
   })
 })
 

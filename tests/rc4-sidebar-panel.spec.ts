@@ -237,8 +237,10 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     }
     expect(pkg.dsh?.client?.platform).toBe('web')
     expect(pkg.exports['./client']).toBeDefined()
-    // The tab registers through the sidebar service, so the client must wait
-    // for it rather than assuming it.
+    // `dsh.client.inject` lists PACKAGE ids for module-graph ordering, not
+    // service names: it is what makes the browser kernel load the sidebar-right
+    // package before this client. The SERVICE the tab registers against is
+    // `betterSidebar`, and it is optional — see the test below.
     expect(pkg.dsh?.client?.inject).toContain('@deepseek-ai/dsh-client-ui-sidebar-right')
   })
 
@@ -281,27 +283,40 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     }
     expect(captured?.id).toBe('dsh-epistemic-fold')
     expect(captured?.mod['name']).toBe('epistemic-fold')
-    expect(captured?.mod['inject']).toEqual(['betterSidebar'])
     expect(typeof captured?.mod['apply']).toBe('function')
+    // The module must declare NO hard `inject`: `betterSidebar` belongs to a
+    // third-party plugin a deployment may not have, and a declared inject holds
+    // the entry pending forever — which was measured to fail the WHOLE web boot,
+    // not just hide the panel.
+    expect(captured?.mod['inject']).toBeUndefined()
 
-    // Driving apply() against a fake service registers ONE tab with a stable id.
+    // Driving apply() against a context whose `inject` fires immediately
+    // registers ONE tab with a stable id.
     let tab: { id: string; single?: boolean; title: () => string } | undefined
+    const service = { registerTab: (descriptor: typeof tab) => { tab = descriptor; return () => { tab = undefined } } }
     const ctx = {
-      get: (key: string) => (key === 'betterSidebar'
-        ? { registerTab: (descriptor: typeof tab) => { tab = descriptor; return () => { tab = undefined } } }
-        : undefined),
+      inject: (names: readonly string[], cb: (c: unknown) => unknown) => {
+        expect(names).toEqual(['betterSidebar'])
+        return cb({ get: () => service })
+      },
     }
     const apply = captured?.mod['apply'] as (c: unknown) => unknown
-    const dispose = apply(ctx)
+    apply(ctx)
     expect(tab?.id).toBe('epistemic-fold:status')
     expect(tab?.single).toBe(true)
     expect(tab?.title()).toBe('Epistemic Fold')
-    expect(typeof dispose).toBe('function')
   })
 
-  it('does nothing when no sidebar service is mounted', async () => {
-    // A deployment without the sidebar must still load the client face rather
-    // than fail — the same conditional rule the host follows for `ctx.tools`.
+  it('does nothing when no sidebar service is ever mounted', async () => {
+    // A deployment without the sidebar plugin must still load the client face
+    // rather than fail — the same conditional rule the host follows for
+    // `ctx.tools`.
+    //
+    // The mechanism matters: the module declares NO hard `inject`, and the
+    // optional service is requested through `ctx.inject([...], cb)`, whose
+    // callback simply never runs when the service never appears. A declared
+    // inject would instead hold the entry pending forever, which was measured to
+    // fail the whole web boot.
     const source = await readFile(join(ROOT, 'client.js'), 'utf8')
     let mod: Record<string, unknown> | undefined
     const previous = (globalThis as { window?: unknown }).window
@@ -321,7 +336,15 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
       ;(globalThis as { window?: unknown }).window = previous
     }
     const apply = mod?.['apply'] as (c: unknown) => unknown
-    expect(() => apply({ get: () => undefined })).not.toThrow()
+    // A context where the optional service NEVER arrives: `inject` must be
+    // called, and must not throw even though the callback never fires.
+    let requested: readonly string[] | undefined
+    const ctx = { inject: (names: readonly string[]) => { requested = names } }
+    expect(() => apply(ctx)).not.toThrow()
+    expect(requested).toEqual(['betterSidebar'])
+    // ...and a callback that DOES fire but finds no service must also not throw.
+    const ctxEmpty = { inject: (_n: readonly string[], cb: (c: unknown) => unknown) => cb({ get: () => undefined }) }
+    expect(() => apply(ctxEmpty)).not.toThrow()
   })
 })
 

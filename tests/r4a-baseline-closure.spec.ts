@@ -337,11 +337,12 @@ describe('R4-C: window safety replaces the peak ratio as the gate', () => {
   })
 })
 
-describe('R4 §4: the DSH seam is a capability CONTRACT, not a runtime sniff', () => {
-  it('detects the seam in the vendored build', () => {
-    // The seam IS present here (R3-B applied it), so a green economy run can
-    // rely on it. If this ever reports false, every system-dedup measurement
-    // becomes suspect, which is precisely why the capability is asserted.
+describe('R4 §4: the seam is a capability CONTRACT, not a runtime sniff', () => {
+  it('detects the seam in the base class EF extends', () => {
+    // RC7: the base class is EF's own vendored copy, so this asserts the
+    // VENDORING carries the seam — the thing that lets a tier mount on a DSH
+    // build that ships none. If this ever reports false, every system-dedup
+    // measurement becomes suspect, which is why the capability is asserted.
     expect(detectDshCapabilities().frameCheckpointSeam).toBe(true)
   })
 
@@ -351,13 +352,15 @@ describe('R4 §4: the DSH seam is a capability CONTRACT, not a runtime sniff', (
   })
 
   it('system-dedup WITHOUT the seam FAILS LOUD — it never silently degrades', () => {
-    // R4 §3: a user on vanilla DSH who sets system-dedup must not get no
-    // dedup while believing otherwise, which would report a saving that does
-    // not exist. The error must name the remedy.
+    // R4 §3: a user who sets system-dedup must not get no dedup while
+    // believing otherwise, which would report a saving that does not exist.
+    // The error must name the capability. RC7 changed the remedy: the seam is
+    // EF's own now, so a missing one means a broken vendoring, not a DSH the
+    // user must patch.
     expect(() => assertDshCompatibility('system-dedup', { frameCheckpointSeam: false }))
-      .toThrow(/frameCheckpoint` seam/u)
+      .toThrow(/frameCheckpoint/u)
     expect(() => assertDshCompatibility('system-dedup', { frameCheckpointSeam: false }))
-      .toThrow(/apply-framing-seam/u)
+      .toThrow(/vendored base/u)
     // ...and the non-throwing preflight says the same thing, so a diagnostic
     // surface can report it without forcing the failure.
     const supported = framingModeSupported({ frameCheckpointSeam: false })

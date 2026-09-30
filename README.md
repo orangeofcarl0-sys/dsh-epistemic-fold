@@ -97,6 +97,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC3** | Real DSH pluginization: a build step producing loadable JS, a `dsh.bundle` patch, `/context mode` as the control plane, and mounting into a real local DSH · 真实 DSH 插件化 | ✅ **mounts and folds in real DSH** — 2 compactions, `EF1` markers, bundles on disk; `/context mode` switches the live engine; RC2's "in DSH" claim corrected · [report](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) |
 | **RC4** | Sidebar panel: command = control / Sidebar = observation, both rendering ONE status model; a hand-authored client bundle with no bundler added · 侧边栏面板 | ✅ **panel SHIPPED** — reads the shared model (not parsed command text), renders `—` for unknown, and cannot enter model context by construction · [report](docs/27_RC4_SIDEBAR_PANEL.md) |
 | **RC5** | EF as its own agent preset: three tier presets generated from the installed DSH, so a session that selects one gets EF and every other session is untouched native Basic · EF 独立 preset | ✅ **VERIFIED END TO END** — the presets appear in the real UI menu, and two sessions in one real context resolve `EpistemicFoldEngine` vs `BasicCompactionEngine` respectively · [report](docs/29_RC5_PRESET_DESIGN.md) |
+| **RC7** | Distribution-grade integration: EF substitutes into DSH's own presets in place (menu unchanged), vendors its own copy of the Basic backend so tiers mount on any DSH build, and gains `mode: basic` to stand aside entirely · 可分发集成 | ✅ **VERIFIED** — three presets run EF with the menu still at four items, `minimal` and every tool-result pruner untouched, all tiers mount on vanilla DSH, and a broken install is reported loudly instead of silently reverting to Basic · [plan](docs/31_RC7_TRANSFORMATION_PLAN.md) |
 | **RC4-A** | Interaction audit: every `/context` path exercised in a real host, the panel checked against the directive's UI spec, and three defects found and fixed · 交互审计 | ⚠️ **3 fixed, 1 BLOCKER open** — in the WEB profile sessions still use DSH Basic (preset-scoped compaction isolates EF out); failure-as-success and a mislabelled lifetime figure fixed · [report](docs/28_RC4A_INTERACTION_AUDIT.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
@@ -647,28 +648,45 @@ patch. A profile adds it as a dependency and lists it as a bundle ·
 ```
 
 Then `pnpm install` in the profile directory and boot with
-`dsh --profile <name>`. EF ships **three agent presets** — `EF · economy`,
-`EF · balanced`, `EF · quality` — and you choose one when starting a session.
-Every session that does not choose one is **untouched native Basic**: no EF
-engine, no EF command, no EF surface ·
-在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。EF 附带
-**三个 agent preset**——`EF · economy`、`EF · balanced`、`EF · quality`——在新建会话时
-选择其一。**未选择的会话就是原封不动的原生 Basic**：没有 EF 引擎、没有 EF 命令、没有
-EF 表面。
+`dsh --profile <name>`. **The preset menu does not change**: EF substitutes itself
+into DSH's own `standard`, `ptc` and `cordis` presets, so there is nothing new to
+choose. `minimal` is left exactly as DSH ships it — it declares no compaction
+group, so there is nothing to substitute ·
+在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。**preset 菜单不会
+改变**：EF 把自己替换进 DSH 自带的 `standard`、`ptc`、`cordis` preset，因此没有新的
+东西要选。`minimal` 保持 DSH 原样——它本身不声明 compaction 组，没有可替换的东西。
 
-Presets are chosen **before** a session starts, because DSH refuses to recompose a
-running one. That is why there are three presets rather than one preset with a
-mode switch: the tier has to be the thing you pick ·
-preset 必须在会话开始**之前**选择，因为 DSH 拒绝重组运行中的会话。这就是为什么是三个
-preset 而不是"一个 preset + 运行时切换"：档位必须是你要选的那个东西。
+`dsh-epistemic-fold` **must be listed AFTER `@deepseek-ai/dsh-web-app`** in the
+bundle order, because the substitution patch overrides rows that `dsh-web-app`
+declares. Listed before it, the patch finds nothing and EF's own doctor reports
+that loudly rather than silently leaving you on Basic ·
+`dsh-epistemic-fold` 在 bundle 顺序中**必须排在 `@deepseek-ai/dsh-web-app` 之后**，
+因为替换 patch 覆盖的是 `dsh-web-app` 声明的行。排在它前面，patch 什么也找不到，EF 自带
+的 doctor 会大声报告，而不是静默地把你留在 Basic 上。
 
-The presets are **generated** from your installed DSH
-(`node scripts/generate-presets.mjs`), so their non-compaction rows mirror DSH's
-own session composition instead of being a hand-copy that rots. Regenerate after a
-DSH upgrade; `tests/rc5-preset-drift.spec.ts` fails loudly when they diverge ·
-preset 是从你安装的 DSH **生成**的（`node scripts/generate-presets.mjs`），因此其非
-compaction 行镜像 DSH 自身的会话组合，而不是会腐坏的手抄副本。DSH 升级后重新生成；
-一旦分叉，`tests/rc5-preset-drift.spec.ts` 会大声失败。
+The tier is chosen with `/context mode economy|balanced|quality` — not with a
+preset, because a preset is picked before a session starts and DSH refuses to
+recompose a running one. Switching a tier affects the sessions of that preset;
+it does not leak into another preset's sessions ·
+档位用 `/context mode economy|balanced|quality` 选择，而不是用 preset——因为 preset 在
+会话开始前就要选定，而 DSH 拒绝重组运行中的会话。切换档位影响该 preset 的会话，不会
+泄漏到其他 preset。
+
+**Want native Basic?** Set `mode: basic` in the package's config. EF then stands
+aside entirely: folds delegate to a byte-identical Basic backend, and no EF
+surface is registered at all — no projection, no Sidebar panel, no `/context`, no
+recall tools ·
+**想要原生 Basic？** 在该包配置里设 `mode: basic`。EF 会完全让位：fold 委派给逐字节
+一致的 Basic 后端，且不注册任何 EF 表面——没有投影、没有 Sidebar 面板、没有 `/context`、
+没有召回工具。
+
+The substitution rows are **generated** from your installed DSH
+(`node scripts/generate-presets.mjs`), so they mirror DSH's own presets instead of
+being a hand-copy that rots. Regeneration also runs at install time via
+`prepare`. `tests/rc7-inplace-drift.spec.ts` fails loudly when they diverge ·
+替换行是从你安装的 DSH **生成**的（`node scripts/generate-presets.mjs`），因此镜像 DSH
+自身的 preset，而不是会腐坏的手抄副本。安装时也会通过 `prepare` 自动重新生成。一旦
+分叉，`tests/rc7-inplace-drift.spec.ts` 会大声失败。
 
 ### The Sidebar panel · 侧边栏面板
 

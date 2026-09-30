@@ -246,34 +246,47 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Register the panel against the sidebar service.
+     * Register the panel against the sidebar service, if one is mounted.
      *
-     * Registered through `ctx.betterSidebar`, which a deployment may not have
-     * mounted. The panel then simply does not exist rather than failing the
-     * client load — the same conditional rule the host side follows for
-     * `ctx.tools` and `ctx.commands`.
+     * ## Why this is `ctx.inject`, not a declared `inject: [...]`
+     *
+     * `betterSidebar` belongs to a THIRD-PARTY plugin a deployment may not have.
+     * Declaring it in this module's `inject` list makes cordis hold the whole
+     * entry in a pending state until the service appears — measured in a real
+     * web boot with no `dsh-better-sidebar` installed:
+     *
+     *   Failed to load plugins
+     *   web boot: 1 entry did not activate dsh-epistemic-fold:
+     *   pending (waiting for service: betterSidebar)
+     *
+     * That does not just hide the panel: it fails the WEB BOOT, so an unrelated
+     * missing plugin takes the whole UI down. The guarded body below already
+     * handled a missing service correctly; the declaration was what broke it.
+     *
+     * `ctx.inject` is cordis's idiom for exactly this: run the callback only once
+     * the service exists, and mount cleanly when it never does. It is the same
+     * rule the host half follows for the optional `ctx.tools` / `ctx.commands`.
      */
     function apply(ctx) {
-      const service = ctx.get('betterSidebar')
-      if (service === undefined) return
-      const dispose = service.registerTab({
-        id: TAB_ID,
-        title: () => STRINGS.tabTitle,
-        description: () => STRINGS.tabDesc,
-        order: 60,
-        single: true,
-        component: (props) => jsx.jsx(EpistemicFoldPanel, {
-          ...props,
-          t: (key) => STRINGS[key] ?? key,
-        }),
+      ctx.inject(['betterSidebar'], (sidebarCtx) => {
+        const service = sidebarCtx.get('betterSidebar')
+        if (service === undefined) return () => {}
+        const dispose = service.registerTab({
+          id: TAB_ID,
+          title: () => STRINGS.tabTitle,
+          description: () => STRINGS.tabDesc,
+          order: 60,
+          single: true,
+          component: (props) => jsx.jsx(EpistemicFoldPanel, {
+            ...props,
+            t: (key) => STRINGS[key] ?? key,
+          }),
+        })
+        // cordis auto-invokes a returned disposer on fiber disposal (HMR-safe).
+        return dispose
       })
-      // cordis auto-invokes a returned disposer on fiber disposal (HMR-safe).
-      return dispose
     }
 
-    /** The sidebar service must exist before the panel can register. */
-    const inject = ['betterSidebar']
-
-    return { apply, inject, name: 'epistemic-fold' }
+    return { apply, name: 'epistemic-fold' }
   },
 })

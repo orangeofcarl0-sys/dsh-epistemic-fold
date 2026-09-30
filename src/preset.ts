@@ -65,17 +65,52 @@
 
 import type { EpistemicFoldConfig } from './policy.ts'
 
-/** Every mode name the engine accepts, including the non-tier default. */
-export type FoldModeName = 'legacy' | 'economy' | 'balanced' | 'quality'
+/** Every mode name the engine accepts, including the non-tier defaults. */
+export type FoldModeName = 'legacy' | 'basic' | 'economy' | 'balanced' | 'quality'
 
 /** The three tiers the PRODUCT surface exposes. */
 export type TierModeName = 'economy' | 'balanced' | 'quality'
 
 /** Every mode name, for validation and diagnostics. */
-export const FOLD_MODE_NAMES: readonly FoldModeName[] = ['legacy', 'economy', 'balanced', 'quality']
+export const FOLD_MODE_NAMES: readonly FoldModeName[] = ['legacy', 'basic', 'economy', 'balanced', 'quality']
 
 /** The tier names, in ascending cost order. */
 export const TIER_MODE_NAMES: readonly TierModeName[] = ['economy', 'balanced', 'quality']
+
+/**
+ * The mode that makes EF stand aside (RC7).
+ *
+ * `basic` is NOT a tier and is not offered by `/context mode`: it is the
+ * install-time opt-out. Under it EF delegates every fold to its own vendored
+ * copy of Basic and registers none of its own surface — no state projection, no
+ * status projection, no recall tools, no `/context` command. A session under
+ * `mode: basic` is indistinguishable from one where EF is not installed.
+ *
+ * The distinction from `legacy` matters and is easy to miss:
+ *
+ *   legacy  EF's own default policy, marker-only checkpoints, EF's frontier.
+ *   basic   EF standing aside entirely; Basic's checkpoints, Basic's surface.
+ *
+ * `legacy` exists because the engine must do something when no mode is named;
+ * `basic` exists because a user must be able to say "not this — the native one".
+ */
+export const BASIC_MODE: FoldModeName = 'basic'
+
+/** Whether a mode makes EF stand aside entirely. */
+export function isBasicMode(mode: FoldModeName): boolean {
+  return mode === BASIC_MODE
+}
+
+/**
+ * Narrow a mode name to a TIER, so the tier table can be indexed safely.
+ *
+ * `legacy` and `basic` are modes but not tiers: neither appears in `TIERS`.
+ * Stating that as a type predicate is what lets the resolvers below branch once
+ * and then index without a cast.
+ */
+export function isTierMode(mode: FoldModeName): mode is TierModeName {
+  return mode !== 'legacy' && mode !== BASIC_MODE
+}
 
 /** Whether a string is a known mode name (including `legacy`). */
 export function isFoldModeName(value: unknown): value is FoldModeName {
@@ -270,14 +305,15 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
  * @param mode - the requested mode name.
  * @param explicit - the user's own configuration.
  * @returns `explicit` with the tier's values filled in for keys the user did
- *   not supply. For `legacy` this is `explicit` unchanged, because `legacy` is
- *   the engine's own default.
+ *   not supply. For `legacy` and `basic` this is `explicit` unchanged: neither
+ *   is a tier. `legacy` is the engine's own default; `basic` makes EF stand
+ *   aside, so there is nothing for it to fill in.
  */
 export function resolvePreset(
   mode: FoldModeName,
   explicit: EpistemicFoldConfig = {},
 ): EpistemicFoldConfig {
-  if (mode === 'legacy') return { ...explicit }
+  if (!isTierMode(mode)) return { ...explicit }
   const tier = TIERS[mode]
   const resolved: EpistemicFoldConfig = { ...explicit }
   // Fill by OMISSION: a key the user set is never touched, so an explicit
@@ -293,10 +329,10 @@ export function resolvePreset(
 /**
  * The values one tier fills in, for a report or a `--print-config` surface.
  * @param mode - the tier to describe.
- * @returns that tier's exact settings, or `{}` for `legacy`.
+ * @returns that tier's exact settings, or `{}` for a non-tier mode.
  */
 export function tierValuesFor(mode: FoldModeName): Readonly<Record<string, unknown>> {
-  if (mode === 'legacy') return {}
+  if (!isTierMode(mode)) return {}
   return { ...TIERS[mode].values }
 }
 
@@ -331,7 +367,7 @@ export function presetOverrides(
   mode: FoldModeName,
   explicit: EpistemicFoldConfig = {},
 ): readonly PresetOverride[] {
-  if (mode === 'legacy') return []
+  if (!isTierMode(mode)) return []
   const values = TIERS[mode].values
   const target = explicit as Record<string, unknown>
   const overrides: PresetOverride[] = []

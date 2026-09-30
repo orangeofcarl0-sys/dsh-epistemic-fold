@@ -14,7 +14,6 @@ import { describe, expect, it } from 'vitest'
 import { readFile, access } from 'node:fs/promises'
 import { join } from 'node:path'
 import { createHarness } from './harness.ts'
-import { EpistemicFoldPlugin } from '../src/plugin.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 
@@ -37,22 +36,18 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(exports['./library']).toBeDefined()
   })
 
-  it('declares the bundle patches a profile loader consumes', async () => {
-    // RC5 made this an ARRAY, the same shape `dsh-web-app` uses for its own
-    // presets: one patch file per tier, plus the (now empty) top-level file.
+  it('declares the bundle patch a profile loader consumes', async () => {
+    // RC7: ONE patch file. It carries the in-place preset overrides plus the
+    // doctor row, so there is a single artifact to ship, install and reason
+    // about. RC5's array of three per-tier preset files is retired.
     const pkg = await readJson('package.json')
     const dsh = pkg['dsh'] as { bundle?: { patch?: string | string[] } } | undefined
     const declared = dsh?.bundle?.patch
-    expect(Array.isArray(declared), 'the patch list must be an array').toBe(true)
-    const list = declared as string[]
-    expect(list).toContain('./cordis.patch.yml')
-    for (const tier of ['ef-economy', 'ef-balanced', 'ef-quality']) {
-      expect(list).toContain(`./presets/${tier}.patch.yml`)
-    }
-    // Every referenced file must actually ship.
-    for (const entry of list) {
-      await expect(access(join(ROOT, entry)), `${entry} must exist`).resolves.toBeUndefined()
-    }
+    expect(declared, 'the patch must be declared').toBe('./cordis.patch.yml')
+    await expect(access(join(ROOT, './cordis.patch.yml')), 'the patch must exist').resolves.toBeUndefined()
+    // The retired per-tier files must NOT be declared, or an install would fail
+    // on a missing path.
+    expect(JSON.stringify(declared)).not.toContain('presets/')
   })
 
   it('ships `lib` in `files`, or an install would omit the entry', async () => {
@@ -68,68 +63,141 @@ describe('RC3: the package declares a real plugin entry', () => {
   })
 })
 
-describe('RC5: the presets replace the compaction backend, per session', () => {
-  it('declares one preset per tier, each mounting EF in its compaction group', async () => {
+describe("RC7: the patch substitutes EF into DSH's own presets, in place", () => {
+  it('rewrites only the compaction backend inside each shipped preset', async () => {
     // RC3 mounted EF at the TOP level and disabled the top-level
     // `compaction-basic`. RC4-A found that is a NO-OP in a web profile, because
     // `dsh-web-app` already disables that row and puts a compaction group inside
     // each agent preset, isolated — so a top-level EF was invisible to every
-    // session. RC5 declares EF's OWN presets instead.
-    for (const tier of ['ef-economy', 'ef-balanced', 'ef-quality']) {
-      const patch = await readFile(join(ROOT, 'presets', `${tier}.patch.yml`), 'utf8')
-      expect(patch, `${tier} must declare a preset row`).toContain(`id: preset-${tier}`)
-      expect(patch).toContain('@deepseek-ai/dsh-agent-preset')
-      // EF replaces Basic inside the group...
-      expect(patch).toContain('name: dsh-epistemic-fold')
-      expect(patch).not.toContain("name: '@deepseek-ai/dsh-compaction-basic'")
-      // ...and the realm is isolated, or the second preset to mount collides.
-      expect(patch, `${tier} must isolate epistemicFold`).toContain('epistemicFold: true')
-    }
-  })
-
-  it('the top-level patch no longer mounts EF over DSH', async () => {
-    // It is deliberately empty: mounting EF globally is what failed. A row here
-    // would re-introduce the invisible-EF problem in every preset-based profile.
+    // session. RC5 declared EF's own presets, which worked but added three menu
+    // items. RC7 substitutes the backend INSIDE the shipped presets instead, so
+    // the menu is unchanged and nothing else about a preset moves.
     const patch = await readFile(join(ROOT, 'cordis.patch.yml'), 'utf8')
-    const rows = patch.split(String.fromCharCode(10))
-      .filter(line => line.trim().startsWith('- id:'))
-    expect(rows, 'the top-level patch must declare no rows').toEqual([])
-  })
-
-  it('each tier preset pins its own mode', async () => {
-    for (const tier of ['economy', 'balanced', 'quality']) {
-      const patch = await readFile(join(ROOT, 'presets', `ef-${tier}.patch.yml`), 'utf8')
-      // A word boundary, so `mode: economy` cannot be satisfied by a longer
-      // tier name that merely starts with it.
-      expect(patch, `ef-${tier} must set mode: ${tier}`)
-        .toMatch(new RegExp(`mode: ${tier}(?![a-z])`, 'u'))
+    for (const name of ['standard', 'ptc', 'cordis']) {
+      expect(patch, `${name} must be overridden`).toContain(`- id: preset-${name}`)
     }
+    // `minimal` ships with NO compaction group, so EF deliberately leaves it
+    // exactly as DSH ships it. Substituting it would change what "minimal" means.
+    expect(patch, 'minimal must not be substituted').not.toContain('- id: preset-minimal')
+
+    expect(patch).toContain('name: dsh-epistemic-fold')
+    // The realm must be EXTENDED, not replaced: DSH's own two keys stay.
+    expect(patch).toContain('epistemicFold: true')
+    expect(patch).toMatch(/^ {18}compaction: true$/mu)
+    expect(patch).toMatch(/^ {18}toolResultPruner: true$/mu)
+  })
+
+  it('mounts the doctor OUTSIDE the generated block', async () => {
+    // EF is mounted BY the substitution, so when the substitution misses, EF
+    // never mounts — and a check living inside EF can never run. The doctor
+    // therefore mounts at the top level, where it always runs. Its row must sit
+    // outside the generated markers, or a regeneration would delete it.
+    const patch = await readFile(join(ROOT, 'cordis.patch.yml'), 'utf8')
+    const begin = patch.indexOf('# >>> epistemic-fold preset overrides')
+    expect(begin).toBeGreaterThan(-1)
+    expect(patch.slice(0, begin)).toContain('epistemic-fold-doctor')
+    // ...and the package must export the subpath that row names.
+    const pkg = await readJson('package.json')
+    const exports = pkg['exports'] as Record<string, unknown>
+    expect(exports['./doctor'], 'the doctor subpath must be exported').toBeDefined()
+  })
+
+  it('mounts no EF row of its own beyond the doctor', async () => {
+    // A second mount path would re-introduce the invisible-EF problem in every
+    // preset-based profile: the substitution is the only way EF reaches a
+    // session. The doctor is the sole exception, and it is observation-only.
+    //
+    // The property is stated as "which plugin names this patch mounts", not as
+    // an indent filter: preset rows, their nested plugin rows, and top-level
+    // rows all appear at various indents, so indentation cannot distinguish a
+    // mount path. The plugin NAME can.
+    const patch = await readFile(join(ROOT, 'cordis.patch.yml'), 'utf8')
+    const names = patch.split(String.fromCharCode(10))
+      .map(line => line.trim())
+      .filter(line => line.startsWith('name: '))
+      .map(line => line.slice('name: '.length).replace(/^['"]|['"]$/gu, ''))
+
+    // Exactly ONE top-level row mounts a plugin from this package: the doctor.
+    // The three `dsh-epistemic-fold` names are the SUBSTITUTION rows, nested
+    // inside each preset's compaction group — that is what replaces Basic, and
+    // they are reached only through a preset, never on their own.
+    const topLevel = patch.slice(0, patch.indexOf('# >>> epistemic-fold preset overrides'))
+      .split(String.fromCharCode(10))
+      .map(line => line.trim())
+      .filter(line => line.startsWith('name: '))
+      .map(line => line.slice('name: '.length).replace(/^['"]|['"]$/gu, ''))
+    // The BARE package name: DSH's client roster only recognises an exact
+    // package specifier (no slash), and a package it cannot recognise loses its
+    // browser half. See the entry test below.
+    expect(topLevel).toEqual(['dsh-epistemic-fold'])
+
+    // ...and `dsh-epistemic-fold` appears FOUR times: the bare-name doctor row
+    // plus the three substitution rows, one per preset. The count is asserted
+    // exactly so a fifth mount path cannot appear unnoticed.
+    expect(names.filter(name => name === 'dsh-epistemic-fold').length).toBe(4)
+    expect(names.filter(name => name === '@deepseek-ai/dsh-agent-preset').length).toBe(3)
   })
 })
 
-describe('RC3: the plugin entry exposes what the loader reads', () => {
-  it('exports name, inject, Config and a default plugin class', async () => {
+describe('RC7: the bare-name entry mounts the doctor, not the plugin', () => {
+  it('exports name, inject and a default mount function', async () => {
     const entry = await import('../src/entry.ts')
-    expect(entry.name).toBe('epistemic-fold')
+    expect(entry.name).toBe('epistemic-fold-doctor')
     expect(Array.isArray(entry.inject)).toBe(true)
-    expect(entry.Config).toBeDefined()
     expect(typeof entry.default).toBe('function')
+    expect(typeof entry.apply).toBe('function')
   })
 
-  it('does NOT require the optional services it mounts conditionally', () => {
-    // `tools` and `commands` are optional siblings: a compaction-only deployment
-    // must mount without them. Listing them in `inject` would make the whole
-    // plugin wait for services a deployment may never compose.
-    const entry = require_entry_inject()
-    expect(entry).not.toContain('tools')
-    expect(entry).not.toContain('commands')
+  it('the bare name is load-bearing, and only the doctor may hold it', async () => {
+    // DSH's client module system finds a package's browser half by scanning the
+    // host Loader for a row whose `name` is an EXACT package specifier — a bare
+    // name with no slash. `exactPackageSpecifier('dsh-epistemic-fold')` is
+    // accepted; `.../doctor` is rejected. A package whose only top-level row uses
+    // a subpath is therefore skipped entirely, and its `client.js` never reaches
+    // the browser — which silently drops the Sidebar panel AND, because the
+    // client declared a hard `inject`, fails the whole web boot.
+    //
+    // So the bare name must be held by a row that ALWAYS mounts and is
+    // observation-only. That is the doctor.
+    const entry = await import('../src/entry.ts')
+    const source = await readFile(join(ROOT, 'src', 'entry.ts'), 'utf8')
+    // It must be the doctor...
+    expect(entry.name).toContain('doctor')
+    // ...and it must NOT be the plugin: mounting the plugin at the root would
+    // create a second engine whose surface reports on sessions it never folds.
+    expect(source).not.toContain("from './plugin.ts'")
+  })
+
+  it('the plugin stays reachable at its own subpath', async () => {
+    // A preset-based profile mounts the plugin per preset; a preset-free
+    // deployment (headless/CLI) mounts it explicitly. Either way it must be
+    // importable without going through the doctor.
+    const pkg = await readJson('package.json')
+    const exports = pkg['exports'] as Record<string, unknown>
+    expect(exports['./plugin']).toBeDefined()
+    expect(exports['./doctor']).toBeDefined()
+    const entry = await import('../src/plugin.ts')
+    expect(entry.EpistemicFoldPlugin).toBeDefined()
+  })
+
+  it('the client declares NO hard inject, so a missing sidebar cannot fail boot', () => {
+    // `betterSidebar` belongs to a third-party plugin a deployment may not have.
+    // A declared `inject: ['betterSidebar']` holds the entry pending forever —
+    // measured in a real web boot with no dsh-better-sidebar installed:
+    //
+    //   Failed to load plugins
+    //   web boot: 1 entry did not activate dsh-epistemic-fold:
+    //   pending (waiting for service: betterSidebar)
+    //
+    // That fails the WHOLE UI, not just the panel. The optional-service idiom is
+    // `ctx.inject([...], cb)` inside apply().
+    const client = require('node:fs').readFileSync(join(ROOT, 'client.js'), 'utf8')
+    expect(client, 'the client must use ctx.inject for the optional service')
+      .toContain("ctx.inject(['betterSidebar']")
+    expect(client, 'the client must NOT declare a hard inject list')
+      .not.toMatch(/const inject = \['betterSidebar'\]/u)
   })
 })
-
-/** The entry's inject list, read once for the assertion above. */
-function require_entry_inject(): readonly string[] {
-  return EpistemicFoldPlugin.inject
-}
 
 describe('RC3: conditional mounts never throw on a missing service', () => {
   it('mounts with NO ToolRuntime and NO CommandRuntime', async () => {

@@ -116,7 +116,12 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     // project never measured. The rungs that DO make a steadiness claim carry
     // `evidence: 'hypothesis'` rather than borrowing an unearned name.
     expect(isFoldModeName('reliability')).toBe(false)
-    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'economy', 'balanced', 'quality'])
+    // RC7 added `basic`, the install-time opt-out that makes EF stand aside.
+    // The set is asserted EXACTLY so a mode cannot be added without this test
+    // noticing — which is what makes it a guard rather than a restatement.
+    expect(FOLD_MODE_NAMES).toEqual(['legacy', 'basic', 'economy', 'balanced', 'quality'])
+    // ...and `basic` is not a TIER: it fills in no policy values at all.
+    expect(resolvePreset('basic')).toEqual({})
 
     expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/unknown mode/u)
     expect(() => resolveEfConfig({ mode: 'nonsense' as never })).toThrow(/economy/u)

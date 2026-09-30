@@ -65,7 +65,7 @@ export class EpistemicFoldPlugin {
     compactionRetries: z.number(),
     maxOverflowRetries: z.number(),
     framingMode: z.union(['legacy', 'system-dedup'] as const),
-    mode: z.union(['legacy', 'economy', 'balanced', 'quality'] as const),
+    mode: z.union(['legacy', 'basic', 'economy', 'balanced', 'quality'] as const),
     auto: z.boolean(),
     modelPolicies: z.array(z.any()),
     frozenCheckpointTokenBudget: z.number(),
@@ -75,8 +75,14 @@ export class EpistemicFoldPlugin {
 
   /** The engine instance this plugin mounts (owns `ctx.compaction`). */
   readonly engine: EpistemicFoldEngine
-  /** The anchor service this plugin provides as `ctx.epistemicFold`. */
-  readonly anchors: AnchorService
+  /**
+   * The anchor service this plugin provides as `ctx.epistemicFold`.
+   *
+   * ABSENT under `mode: basic`: that mode mounts no EF surface, and a provided
+   * service is a surface. A consumer that needs it must handle its absence,
+   * exactly as it must when EF is not installed at all.
+   */
+  readonly anchors: AnchorService | undefined
   /** What the configuration actually resolved to (RC0-A). */
   readonly effectiveConfig: EffectiveConfig
 
@@ -92,6 +98,26 @@ export class EpistemicFoldPlugin {
     // Constructing it here places it on the plugin's own fiber, so unloading
     // the plugin disposes the engine with it.
     this.engine = new EpistemicFoldEngine(ctx, config)
+
+    // `mode: basic` mounts NO EF surface at all (RC7, the C2 requirement).
+    //
+    // The RC4-A blocker is the reason this is a construction-time decision: a
+    // mounted EF whose engine is not folding still REPORTS — the Sidebar panel
+    // and `/context` would show an EF with zero folds while Basic did the work,
+    // which reads as "EF is idle" rather than "EF is not running". Suppressing
+    // the engine's behaviour is not enough; the surface must not exist.
+    //
+    // So under `basic` the plugin returns here, having provided `ctx.compaction`
+    // (the engine delegates to Basic) and nothing else: no anchor service, no
+    // projection, no status, no recall tools, no command. A session under
+    // `mode: basic` is indistinguishable from one where EF is not installed.
+    if (this.engine.basicMode) {
+      ctx.logger.info(
+        '[epistemic-fold] mode "basic": EF is standing aside — compaction delegates to the '
+        + 'vendored Basic backend, and no EF surface (projection, status, tools, command) is registered.',
+      )
+      return
+    }
 
     // Anchor service: the sanctioned `ef/anchor` producer, provided for the
     // plugin's fiber lifetime (cordis requires provide, not assignment).

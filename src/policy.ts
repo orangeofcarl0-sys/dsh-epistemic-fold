@@ -10,7 +10,9 @@
 import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { BasicCompactionConfig } from '@deepseek-ai/dsh-compaction-basic'
+// RC7: the config vocabulary comes from EF's own vendored copy of Basic, so the
+// package no longer depends on the host shipping `@deepseek-ai/dsh-compaction-basic`.
+import type { BasicCompactionConfig } from './basic/types.ts'
 import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'

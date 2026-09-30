@@ -18,7 +18,12 @@
  * @module dsh-epistemic-fold/engine
  */
 
-import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
+// EF extends its OWN copy of Basic, not the host's package (RC7). Two things
+// depend on that: `framingMode: system-dedup` needs a `frameCheckpoint` hook the
+// host build does not ship, and `mode: basic` must reproduce native Basic
+// exactly — which a subclass of the host engine cannot do, because virtual
+// dispatch re-enters EF's own overrides. See src/basic/ and THIRD_PARTY_NOTICES.md.
+import BasicCompactionEngine from './basic/index.ts'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
@@ -61,6 +66,7 @@ import {
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
 } from './policy.ts'
+import { isBasicMode } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
 import type { FoldCurrentState } from './state.ts'
 import type {
@@ -175,6 +181,29 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     return this.currentModeValue
   }
 
+  /**
+   * Whether EF is standing aside for this engine (`mode: basic`, RC7).
+   *
+   * Read by all five divergence points. It is a getter over the same mutable
+   * field `setMode` writes, so it cannot drift from `currentMode`.
+   */
+  private isBasic(): boolean {
+    return isBasicMode(this.currentModeValue)
+  }
+
+  /**
+   * Whether this engine registered any EF surface at all.
+   *
+   * `mode: basic` mounts NOTHING: no projection, no status, no recall tools, no
+   * command. The plugin decides that at construction, because projection
+   * registration is a mount-time fact rather than a policy knob — see
+   * `plugin.ts`. This accessor exists so a test can assert the suppression
+   * rather than infer it.
+   */
+  get basicMode(): boolean {
+    return this.isBasic()
+  }
+
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
   /**
@@ -263,6 +292,19 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   setMode(mode: FoldModeName, explicit: EpistemicFoldConfig = {}): FoldModeName {
     const previous = this.currentModeValue
     if (mode === previous) return previous
+    // `basic` is an INSTALL-TIME mode (RC7). It suppresses EF's whole surface at
+    // mount — projection, status, recall tools, command — and those are
+    // registrations, not policy: a running engine cannot unregister them
+    // without leaving the RC4-A defect (a mounted EF reporting folds it is not
+    // performing). So switching in or out of it is refused rather than
+    // half-applied.
+    if (isBasicMode(mode) || isBasicMode(previous)) {
+      throw new Error(
+        `epistemic-fold: cannot switch ${isBasicMode(previous) ? 'out of' : 'to'} mode `
+        + `${JSON.stringify(mode)} at runtime — "basic" is an install-time mode, because it decides `
+        + 'whether EF registers any surface at all. Restart with the mode in config instead.',
+      )
+    }
     const next = resolveEfConfig({ ...explicit, mode })
     if (next.framingMode !== this.resolvedConfig.framingMode) {
       throw new Error(
@@ -426,6 +468,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     agent: Agent,
     signal?: AbortSignal,
   ): Promise<CompactionResult> {
+    // `mode: basic` — no frontier invariant, no candidate, no bundle. Basic's
+    // own transaction runs unmodified. See the note on `compactIfNeeded`.
+    if (this.isBasic()) return super.compactRegion(start, end, agent, signal)
     // Leaf-fold hard invariant (R0-A): a leaf fold may only compact the open
     // trajectory PAST the frontier, and the surface must carry a contiguous
     // frozen prefix. Violations are refused before any candidate exists.
@@ -486,6 +531,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   override async compactNow(
     ...args: Parameters<BasicCompactionEngine['compactNow']>
   ): Promise<CompactionResult | null> {
+    // `mode: basic` — a manual `/compact` must behave exactly as Basic's, so no
+    // candidate is prepared and no commit record is written. See the note on
+    // `compactIfNeeded`.
+    if (this.isBasic()) return super.compactNow(...args)
     const [agent] = args
     const candidate = createFoldCandidate({ mode: 'root', session: agent.session })
     this.candidates.prepare(agent.session, candidate)
@@ -523,6 +572,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     trigger: CompactionTrigger,
     signal: AbortSignal,
   ): Promise<CompactionResult | null> {
+    // `mode: basic` — EF stands aside (RC7). Branching here is not enough on
+    // its own: Basic's own `compactIfNeeded` calls `this.compactRegion`, which
+    // virtual dispatch routes back into EF's override, so every divergence
+    // point needs its own branch. All five are marked `mode: basic`; see
+    // tests/rc7-basic-parity.spec.ts, which is what holds them together.
+    if (this.isBasic()) return super.compactIfNeeded(agent, trigger, signal)
     const target = routedTarget(agent.session)
     if (target === undefined) return null
     const meter = this.ctx.tokenMeter
@@ -870,6 +925,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     summary: readonly ContentBlock[],
     agent: Agent,
   ): ContentBlock[] {
+    // `mode: basic` — the stock framing, unconditionally. `basic` never sets
+    // `system-dedup`, so the mode check below would already route here, but the
+    // branch is stated so the five divergence points are symmetric and a future
+    // tier cannot make `basic` inherit its framing. See `compactIfNeeded`.
+    if (this.isBasic()) return super.frameCheckpoint(summary, agent)
     if (this.resolvedFramingMode() === 'legacy') {
       return super.frameCheckpoint(summary, agent)
     }
@@ -902,6 +962,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     agent: Agent,
     signal?: AbortSignal,
   ): Promise<SummaryResult> {
+    // `mode: basic` — Basic's own summarizer, and crucially NO bundle: the fold
+    // never becomes an EF checkpoint, so no `[EF1 …]` marker is stamped and
+    // there is nothing for the fold frontier to misread. See `compactIfNeeded`.
+    if (this.isBasic()) return super.summarize(input, agent, signal)
     const session = agent.session
     const candidate = this.candidates.get(session)
     if (candidate === undefined) {

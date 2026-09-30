@@ -16,7 +16,7 @@
 
 import { DSH_SEAM_PROVENANCE, framingModeSupported } from './compat.ts'
 import type { DshCapabilities } from './compat.ts'
-import { FOLD_MODE_NAMES, TIERS, isFoldModeName, presetOverrides, tierValuesFor } from './preset.ts'
+import { FOLD_MODE_NAMES, TIERS, isFoldModeName, isTierMode, presetOverrides, tierValuesFor } from './preset.ts'
 import type { TierModeName } from './preset.ts'
 import { resolveEfConfig, DEFAULT_RETAIN_RATIO } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
@@ -168,7 +168,7 @@ export function describeEffectiveConfig(
     systemDedupSupported: supported.systemDedup,
     blockers,
     ...(trigger === undefined ? {} : { trigger }),
-    ...(known && mode !== 'legacy' ? { tier: tierSummaryFor(mode) } : {}),
+    ...(known && isTierMode(mode) ? { tier: tierSummaryFor(mode) } : {}),
   }
 }
 

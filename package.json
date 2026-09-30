@@ -24,6 +24,10 @@
     "./package.json": "./package.json",
     "./client": {
       "default": "./lib/client.js"
+    },
+    "./doctor": {
+      "types": "./src/doctor.ts",
+      "default": "./lib/doctor.js"
     }
   },
   "files": [
@@ -31,9 +35,10 @@
     "src",
     "client.js",
     "cordis.patch.yml",
-    "presets",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "scripts"
   ],
   "scripts": {
     "test": "vitest run",
@@ -55,7 +60,7 @@
     "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts tests/rc11a-certification-semantics.spec.ts tests/rc11b-replay-correction.spec.ts tests/rc12a-recall-loop.spec.ts tests/rc12b-recall-mechanism.spec.ts",
     "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts",
     "build": "node scripts/build-plugin.mjs",
-    "prepare": "node scripts/build-plugin.mjs",
+    "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",
     "generate-presets": "node scripts/generate-presets.mjs"
   },
   "repository": {
@@ -77,7 +82,6 @@
     "@deepseek-ai/dsh-agent": ">=0.1.7-rc.2",
     "@deepseek-ai/dsh-atomic-write": ">=0.1.7-rc.2",
     "@deepseek-ai/dsh-compaction": ">=0.1.7-rc.2",
-    "@deepseek-ai/dsh-compaction-basic": ">=0.1.7-rc.2",
     "@deepseek-ai/dsh-llm": ">=0.1.7-rc.2",
     "@deepseek-ai/dsh-session": ">=0.1.7-rc.2",
     "@deepseek-ai/dsh-session-projection": ">=0.1.7-rc.2",
@@ -100,12 +104,7 @@
   },
   "dsh": {
     "bundle": {
-      "patch": [
-        "./cordis.patch.yml",
-        "./presets/ef-economy.patch.yml",
-        "./presets/ef-balanced.patch.yml",
-        "./presets/ef-quality.patch.yml"
-      ]
+      "patch": "./cordis.patch.yml"
     },
     "compatibility": {
       "node": ">=22.5.0",

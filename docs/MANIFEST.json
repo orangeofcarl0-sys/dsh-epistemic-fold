@@ -151,7 +151,22 @@
   },
   {
     "file": "29_RC5_PRESET_DESIGN.md",
-    "bytes": 17807,
-    "sha256": "3be9bf5999706f324625ab85585e138d4c21efbe274580225f097648e98c8f73"
+    "bytes": 43418,
+    "sha256": "93ffe0102509b4ca19b6a9522bb5daacf07824d287da04baef3c368f83e4b1c4"
+  },
+  {
+    "file": "30_RC6_PRIOR_ART_SURVEY.md",
+    "bytes": 11419,
+    "sha256": "73152d74d7af30ef2353560a1a42305e056f939484503f2881a990042dc3cd72"
+  },
+  {
+    "file": "31_RC7_TRANSFORMATION_PLAN.md",
+    "bytes": 39161,
+    "sha256": "307d49507025d21e4755386256c6cd0245b242eeb5cfff70b22cafdd1833e271"
+  },
+  {
+    "file": "32_RC7D_PARALLEL_LONG_TASK_TESTING.md",
+    "bytes": 18822,
+    "sha256": "f08baab9f96f07cc047a5ba938f5cb5a7b7c52f4fe5c415db062df85de7b3238"
   }
 ]
