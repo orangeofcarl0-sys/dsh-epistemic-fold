@@ -61,98 +61,98 @@
   },
   {
     "file": "11_R1B_ROUTE_SELECTION_GATE.md",
-    "bytes": 6087,
-    "sha256": "c4e7213bd25f7b2dabe310d53237a313633815bbb4da4ba388d3cd43cea9dfe7"
+    "bytes": 5960,
+    "sha256": "5991c0b65aced4295390d38960baa76b2e9a6cbf6dc405be5ea6d8765848a955"
   },
   {
     "file": "12_R1_EVALUATION_REPORT.md",
-    "bytes": 13247,
-    "sha256": "8853a78283ea0278dbb76706766aef03ccc070bdaefea95c8a50e0177da0171c"
+    "bytes": 12981,
+    "sha256": "226b0659dcb889cdee908c803622a9b812ce9c4f0983b5b9d89973ec79344f97"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
-    "bytes": 6766,
-    "sha256": "2dbfaade9d1d6de7c7a72733bd627673c3f2fb99228349686a74adaa670b4c79"
+    "bytes": 6618,
+    "sha256": "af10e7566da7d9aa15afecc6df825d9e038d2d5f1558492d42da7b64dac0d5f8"
   },
   {
     "file": "14_R2_EVALUATION_REPORT.md",
-    "bytes": 9037,
-    "sha256": "124987f847d4d43e6d86d0b8033d60370b2bee321fccfe1229d4fc893591f3a3"
+    "bytes": 8834,
+    "sha256": "9c64c8fe0ae7f0c6e55dbc81fa83ce3d751c468ae857ab6943c1102f62f30543"
   },
   {
     "file": "15_R2_FRAMING_CEILING.md",
-    "bytes": 10080,
-    "sha256": "aa87078ed38ce86479b2e2d50c0fc7ecf5f10f1a4b6bd74753b6e04a29807f6e"
+    "bytes": 9856,
+    "sha256": "6b1354ca1e6e2f358964c38755299cec6530af8b627e0056a13fb8717d48e3ca"
   },
   {
     "file": "16_R3_EVALUATION_REPORT.md",
-    "bytes": 12219,
-    "sha256": "482d204cdaefb493ceae55dc8b427679020e77ffaec020b4b56042b626f9ce09"
+    "bytes": 11955,
+    "sha256": "0e56bc54f0cd47b258090f64af01f141cc0788c8124fc5d52bf5230ecac8f86b"
   },
   {
     "file": "17_R4_EVALUATION_REPORT.md",
-    "bytes": 13075,
-    "sha256": "1c3e49da4118ba1859c84a468e8b935ee95cb42c2ef206db58e17cbb4dd32d4b"
+    "bytes": 12767,
+    "sha256": "178eb415bb727689015693ae7f38336b3984d91651b600dff1085be71e44281d"
   },
   {
     "file": "18_RC0_RELEASE_HARDENING.md",
-    "bytes": 15784,
-    "sha256": "d1e2956c69d8d0fc8357c27dcacd84db0f117cac6b95d00c310128f0f7682fbe"
+    "bytes": 15455,
+    "sha256": "a302c9c564039ace8eb4df76413e22e5e44c5d92eca5a406fd7961d5e3a5499d"
   },
   {
     "file": "19_RC1_POLICY_NORMALIZATION.md",
-    "bytes": 33468,
-    "sha256": "b58f736687b199e7ffdc2f186714105596fbcab9a79565f8be4a5c5d95e7c907"
+    "bytes": 32777,
+    "sha256": "2db12db3dc85412428e6c08bb547510b47e69dd99d672b12e29c21a349ab6aa0"
   },
   {
     "file": "20_RC1_1_EVIDENCE_RECONCILIATION.md",
-    "bytes": 14078,
-    "sha256": "f1e53ad18c671b0fc07547d81e0d4628dc0ef3241badb07041964c03356ca28b"
+    "bytes": 13745,
+    "sha256": "498d74709c0e47f5d487c31a05b54a6dabe4de28dfd02a6e1cc68000eda780dc"
   },
   {
     "file": "21_RC1_2_RECALL_CLOSURE.md",
-    "bytes": 20400,
-    "sha256": "19c6ffff617f645edcbd8562a93c4e40669db92708019fea602db329c84f4b2e"
+    "bytes": 19931,
+    "sha256": "aaadc8256004837c037405faf33d0601667c69112330029054009b3076f5bc2b"
   },
   {
     "file": "22_RC1_3_RETRIEVAL_ERGONOMICS.md",
-    "bytes": 13693,
-    "sha256": "b6187a01e2f04b5c6ff33c34ff18fdb711f526f8d5d8908e0a9c4f06f191ad6d"
+    "bytes": 13405,
+    "sha256": "bcdbe0e1bb120378df293984f3d3a8a8f2cc7c087854e6f8579397993f7dd112"
   },
   {
     "file": "23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md",
-    "bytes": 9742,
-    "sha256": "63044d2ebf2faa9d72de92cd74dbe9b9b7b5c9dfb6228c0f7fc303cc0e57d506"
+    "bytes": 9536,
+    "sha256": "25c840ebabb7f775f50d5931eda97c720c35405dedec20e8168091f1a85d469f"
   },
   {
     "file": "24_RC2_PRODUCT_INTEGRATION.md",
-    "bytes": 15686,
-    "sha256": "977122d9ce269dc10f81f380a1b48f2ac754c43490cd08ebf0c1ba2307227178"
+    "bytes": 15377,
+    "sha256": "8d1b998322dec5af3c4415850191bacec8e6e9b024c66bb439a30b7ce8480010"
   },
   {
     "file": "25_RC2_1_STATUS_AND_RETENTION_AB.md",
-    "bytes": 11119,
-    "sha256": "66bf76f8bd18f3e2da645d3484e62792df5aabfef7d4afcab56046d5cb574ff7"
+    "bytes": 10884,
+    "sha256": "d64bb41060409213281d06c18010d815fee8e75be401d9947d514fda50744cc5"
   },
   {
     "file": "26_RC3_REAL_DSH_PLUGINIZATION.md",
-    "bytes": 10086,
-    "sha256": "e1b08989a2b72fd2cead9ae9bd91477f33ce1422db6f2183346a78f9978f606c"
+    "bytes": 9855,
+    "sha256": "8ec85207394845215303da797e7fd11e47300854ec3c1ad34b6b884b091e7b4f"
   },
   {
     "file": "27_RC4_SIDEBAR_PANEL.md",
-    "bytes": 8731,
-    "sha256": "afe9f78e93c1f623066743d5b970cbf61b7aea4e2aa061d760a1d1c3f7c00f8f"
+    "bytes": 8527,
+    "sha256": "fa49873c40b6f61e325f2e4123178b8aeee4152aaf9ffacb50dd091d00a09fa3"
   },
   {
     "file": "28_RC4A_INTERACTION_AUDIT.md",
-    "bytes": 11291,
-    "sha256": "fafd2d5c00b829844c677e35efab3453077ce2b66a7e08cb4abf63f174165f87"
+    "bytes": 11055,
+    "sha256": "81da927ed5211c678a2711eab672bb67047844b36d91731a1dbca31bf0121032"
   },
   {
     "file": "29_RC5_PRESET_DESIGN.md",
-    "bytes": 43418,
-    "sha256": "93ffe0102509b4ca19b6a9522bb5daacf07824d287da04baef3c368f83e4b1c4"
+    "bytes": 42863,
+    "sha256": "15d760a44a067642bf72daac2e1b1ba1bdfacecff310ac8e7b3825de655b9501"
   },
   {
     "file": "30_RC6_PRIOR_ART_SURVEY.md",
@@ -161,8 +161,8 @@
   },
   {
     "file": "31_RC7_TRANSFORMATION_PLAN.md",
-    "bytes": 39161,
-    "sha256": "307d49507025d21e4755386256c6cd0245b242eeb5cfff70b22cafdd1833e271"
+    "bytes": 38522,
+    "sha256": "9d40f5d34058e5c3bce379f029680503bb69ed96e48e86dab5b2e574c48a8ef0"
   },
   {
     "file": "32_RC7D_PARALLEL_LONG_TASK_TESTING.md",

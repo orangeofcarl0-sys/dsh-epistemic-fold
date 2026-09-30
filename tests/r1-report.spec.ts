@@ -415,6 +415,19 @@ describe('R1 report generator', () => {
 
     // The docs manifest is regenerated here too, so a hash manifest can never
     // go stale against the report this same run just produced.
+    //
+    // ## Why the bytes are normalized before hashing
+    //
+    // This repository has `core.autocrlf=true` and no `.gitattributes`, so a
+    // checkout materializes CRLF while git stores LF. Hashing the working-tree
+    // bytes therefore produced a manifest that verified on the machine that
+    // generated it and MISMATCHED on every other checkout — and, worse, a
+    // manifest whose entries disagreed with the very blobs `git show` returns
+    // for the commit that contains them.
+    //
+    // Normalizing to LF makes the hash a property of the CONTENT rather than of
+    // the checkout, which is what a manifest is for. `bytes` is normalized the
+    // same way so the two fields stay consistent with each other.
     const docsDir = join(import.meta.dirname, '..', 'docs')
     const { createHash } = await import('node:crypto')
     const manifest = readdirSync(docsDir)
@@ -422,14 +435,15 @@ describe('R1 report generator', () => {
       .sort()
       .map(name => {
         const bytes = readFileSync(join(docsDir, name))
+        const normalized = Buffer.from(bytes.toString('utf8').replace(/\r\n/gu, '\n'), 'utf8')
         return {
           file: name,
-          bytes: bytes.length,
-          sha256: createHash('sha256').update(bytes).digest('hex'),
+          bytes: normalized.length,
+          sha256: createHash('sha256').update(normalized).digest('hex'),
         }
       })
     writeFileSync(join(docsDir, 'MANIFEST.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-    console.log(`wrote docs/MANIFEST.json (${manifest.length} files)`)
+    console.log(`wrote docs/MANIFEST.json (${manifest.length} files, hashed LF-normalized)`)
 
     expect(report).toContain('R1 Evaluation Report')
   }, 600_000)

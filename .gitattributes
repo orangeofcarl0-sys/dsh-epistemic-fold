@@ -1,0 +1,50 @@
+# Line-ending policy.
+#
+# ## Why this file exists
+#
+# This repository had `core.autocrlf=true` and no `.gitattributes`, so a checkout
+# materialized CRLF while git stored LF. That is invisible until something hashes
+# file bytes — and `docs/MANIFEST.json` does exactly that. The result was a
+# manifest that verified on the machine that generated it and mismatched
+# everywhere else, including against the very blobs `git show` returns for the
+# commit containing it.
+#
+# Two independent fixes, because either alone leaves a hole:
+#
+#   1. the manifest generator hashes LF-NORMALIZED bytes, so the hash is a
+#      property of the content rather than of the checkout;
+#   2. this file pins the checkout to LF for text, so a working tree cannot
+#      disagree with the blob in the first place.
+#
+# Both are present on purpose: (1) keeps an existing manifest meaningful, (2)
+# stops new divergence. A tool that bypasses one is still covered by the other.
+
+# Normalize every text file to LF in the repository, and check out LF too.
+# `text=auto` lets git decide what is text; `eol=lf` fixes the working tree.
+* text=auto eol=lf
+
+# Binary assets must never be normalized: rewriting their bytes corrupts them.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.tgz binary
+
+# Windows-only launchers need CRLF to run correctly, and are not hashed.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Shell scripts must stay LF or their shebang breaks under a POSIX shell.
+*.sh text eol=lf
+
+# `pnpm-lock.yaml` and other generated lockfiles are compared byte-wise by their
+# tooling; keep them exactly as published.
+pnpm-lock.yaml -text
+package-lock.json -text
