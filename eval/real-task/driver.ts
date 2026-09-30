@@ -39,8 +39,7 @@
  */
 
 import { readFileSync } from 'node:fs'
-import { mkdtemp, readdir, readFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
   createMessage,
@@ -65,6 +64,7 @@ import { finishedState, measureSteadiness } from './metrics.ts'
 import type { CostResult, TaskOutcomeKind, TaskRun } from './metrics.ts'
 import type { RealTask } from './tasks.ts'
 import { relative, sep } from 'node:path'
+import { makeTemp } from '../tmp.ts'
 
 /** The live provider id these runs register. */
 const LIVE_PROVIDER = 'live'
@@ -435,7 +435,7 @@ export async function runTaskArm(options: {
 
 /** A fresh workspace directory for one run. */
 export async function newWorkspace(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'ef-task-'))
+  return makeTemp('ef-task-')
 }
 
 /** The tool names a task run should expect to see, for a sanity check. */

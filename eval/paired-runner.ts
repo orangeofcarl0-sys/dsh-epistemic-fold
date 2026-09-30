@@ -15,9 +15,6 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
 import { createUserMessage, LlmAdapter, LlmRuntime } from '@deepseek-ai/dsh-llm'
 import type {
@@ -38,6 +35,7 @@ import { recall } from '../src/recall.ts'
 import { emptyCurrentState } from '../src/state.ts'
 import type { FoldCurrentState } from '../src/state.ts'
 import { FileBundleStore } from '../src/bundle-store.ts'
+import { makeTemp, releaseTemp } from './tmp.ts'
 import { evaluateOracles, type VerifierWorld } from './src/verifier.ts'
 import { markDuplicates, normalizeAction } from './src/actions.ts'
 import { isEfOnlyOracle } from './src/arm-scope.ts'
@@ -130,7 +128,7 @@ export async function runPairedCase(scenario: ScenarioDefinition, replicate = 0)
   const verdicts: Partial<Record<ArmId, readonly { passed: boolean; detail: string }[]>> = {}
 
   for (const arm of EVAL_ARMS) {
-    const bundleRoot = await mkdtemp(join(tmpdir(), 'ef-eval-'))
+    const bundleRoot = await makeTemp('ef-eval-')
     const mounted = await mountArm(arm, bundleRoot)
     const session = scenario.buildSession()
     const agent = { session, options: { provider: MODEL, model: MODEL } } as unknown as Agent
@@ -314,6 +312,10 @@ export async function runPairedCase(scenario: ScenarioDefinition, replicate = 0)
     results[arm] = raw
     verdicts[arm] = evaluation.verdicts
     void randomUUID
+    // The arm's bundle root is only read while the arm runs; every fact the
+    // caller needs is in `raw` and `verdicts` by here. Releasing it keeps a
+    // multi-case sweep from leaving one directory per arm behind.
+    await releaseTemp(bundleRoot)
   }
 
   return {

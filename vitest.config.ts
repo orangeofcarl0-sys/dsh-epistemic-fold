@@ -75,5 +75,8 @@ export default defineConfig({
   test: {
     pool: 'forks',
     include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
+    // Reclaims each worker's scratch directories on the way out. Without it a
+    // full run leaves a few hundred empty directories behind; see tests/setup.ts.
+    setupFiles: ['tests/setup.ts'],
   },
 })

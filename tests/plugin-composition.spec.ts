@@ -5,11 +5,11 @@
  * through the mounted composition, not through hand-wired test seams.
  */
 
-import { mkdtemp, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
+import { makeTemp } from '../eval/tmp.ts'
 import {
   createMessage,
   createUserMessage,
@@ -58,7 +58,7 @@ async function createContextWithPlugin(config: { bundleRoot?: string } = {}): Pr
   bundleRoot: string
   plugin: EpistemicFoldPlugin
 }> {
-  const root = await mkdtemp(join(tmpdir(), 'ef-plugin-'))
+  const root = await makeTemp('ef-plugin-')
   roots.push(root)
   const bundleRoot = join(root, 'bundles')
   const ctx = new Context()

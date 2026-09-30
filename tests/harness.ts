@@ -25,9 +25,6 @@ export type { Session }
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import { mkdtemp } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
@@ -38,9 +35,10 @@ import EpistemicFoldPlugin from '../src/plugin.ts'
 import type { EpistemicFoldConfig } from '../src/policy.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
+import { makeTemp } from '../eval/tmp.ts'
 
 export async function tempRoot(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'ef-m0-'))
+  return makeTemp('ef-m0-')
 }
 
 export const MODEL = 'test-model'
@@ -213,7 +211,7 @@ export async function createHarness(
     )
   }
 
-  const root = await mkdtemp(join(tmpdir(), 'ef-m0-'))
+  const root = await makeTemp('ef-m0-')
   const store = options.bundleStore ?? new FileBundleStore(root)
   const control: HarnessControl = { semantic, calls: [] }
   const ctx = new Context()

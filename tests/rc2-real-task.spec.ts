@@ -19,11 +19,11 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { mkdtemp, writeFile, mkdir, readFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { writeFile, mkdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import { createHarness, SIGNAL } from './harness.ts'
+import { makeTemp } from '../eval/tmp.ts'
 import { confinePath, registerWorkspaceTools, resetWorkspace } from '../eval/real-task/workspace-tools.ts'
 import {
   assertsValueAsCurrent,
@@ -105,7 +105,7 @@ async function callTool(
 
 describe('RC2: the workspace tools do real work', () => {
   it('writes and reads a file through the real ToolRuntime', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-tools-'))
+    const root = await makeTemp('rc2-tools-')
     const { harness, dispose } = await toolHarness(root)
 
     const written = await callTool(harness, 'write_file', {
@@ -126,7 +126,7 @@ describe('RC2: the workspace tools do real work', () => {
   it('reports a missing file as data, not as a tool error', async () => {
     // A model exploring a tree hits absent files constantly; a thrown error
     // would read as a malfunction and derail the task.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-tools-'))
+    const root = await makeTemp('rc2-tools-')
     const { harness, dispose } = await toolHarness(root)
     const read = await callTool(harness, 'read_file', { path: 'nope.js' })
     expect(read.isError).toBe(false)
@@ -136,7 +136,7 @@ describe('RC2: the workspace tools do real work', () => {
 
   it('CONFINES every path to the workspace', async () => {
     // The tools take model-authored paths, so this is a real boundary.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-tools-'))
+    const root = await makeTemp('rc2-tools-')
     const { harness, dispose } = await toolHarness(root)
     for (const escape of ['../outside.js', '../../etc/passwd', 'a/../../outside.js']) {
       expect(() => confinePath(root, escape)).toThrow(/escapes the workspace/u)
@@ -148,7 +148,7 @@ describe('RC2: the workspace tools do real work', () => {
   })
 
   it('runs a real script and reports its exit code and output', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-tools-'))
+    const root = await makeTemp('rc2-tools-')
     const { harness, dispose } = await toolHarness(root)
     await callTool(harness, 'write_file', {
       path: 'ok.js', content: 'console.log(JSON.stringify({ sum: 1 + 1 }))\n',
@@ -178,7 +178,7 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
     // The vacuity guard for the whole comparison: if the checks passed on an
     // empty workspace, every arm would score full marks and the run would prove
     // nothing.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-empty-'))
+    const root = await makeTemp('rc2-empty-')
     const state = await finishedState(root, '', listFiles)
     for (const task of REAL_TASKS) {
       const results = await Promise.all(task.quality.map(check => check.passed(state)))
@@ -187,7 +187,7 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
   })
 
   it('scores a CORRECT artifact highly, and a WRONG one low', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-artifact-'))
+    const root = await makeTemp('rc2-artifact-')
     // A correct artifact, built to the CORRECTED spec.
     await mkdir(join(root, 'src'), { recursive: true })
     await writeFile(join(root, 'src', 'paginate.js'), [
@@ -206,7 +206,7 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
     expect(goodSteady.score).toBe(1)
 
     // The SAME task built to the SUPERSEDED spec: the default is still 10.
-    const stale = await mkdtemp(join(tmpdir(), 'rc2-stale-'))
+    const stale = await makeTemp('rc2-stale-')
     await mkdir(join(stale, 'src'), { recursive: true })
     await writeFile(join(stale, 'src', 'paginate.js'),
       'export function paginate(items, page = 1, pageSize = 10) { return {} }\n', 'utf8')
@@ -225,14 +225,14 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
     // syntax, and a live run that used `module.exports = { paginate }` — a
     // perfectly good named export — was scored as a failure. A quality check
     // that rejects correct work manufactures a mode difference.
-    const esm = await mkdtemp(join(tmpdir(), 'rc2-esm-'))
+    const esm = await makeTemp('rc2-esm-')
     await mkdir(join(esm, 'src'), { recursive: true })
     await writeFile(join(esm, 'src', 'paginate.js'),
       'export function paginate(items, pageSize = 25) { return {} }' + String.fromCharCode(10), 'utf8')
     const esmState = await finishedState(esm, '', listFiles)
     expect(await CODING_TASK.quality.find(c => c.id === 'named-export')!.passed(esmState)).toBe(true)
 
-    const cjs = await mkdtemp(join(tmpdir(), 'rc2-cjs-'))
+    const cjs = await makeTemp('rc2-cjs-')
     await mkdir(join(cjs, 'src'), { recursive: true })
     await writeFile(join(cjs, 'src', 'paginate.js'), [
       'function paginate(items, pageSize = 25) { return {} }',
@@ -246,7 +246,7 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
   })
 
   it('a mutating implementation fails the no-mutation constraint', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-mutate-'))
+    const root = await makeTemp('rc2-mutate-')
     await mkdir(join(root, 'src'), { recursive: true })
     await writeFile(join(root, 'src', 'paginate.js'),
       'export function paginate(items, page = 1, pageSize = 25) { items.sort(); return items }\n', 'utf8')
@@ -261,7 +261,7 @@ describe('RC2: quality checks discriminate a real artifact from an empty one', (
   it('catches a model that WROTE the revision but REPORTED the old value', async () => {
     // The failure mode the `no-resurrection` probe exists for: the artifact is
     // right and the prose is wrong, which a filesystem-only check would miss.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-report-'))
+    const root = await makeTemp('rc2-report-')
     await mkdir(join(root, 'src'), { recursive: true })
     await writeFile(join(root, 'src', 'paginate.js'),
       'export function paginate(items, pageSize = 25) { return {} }\n', 'utf8')
@@ -292,7 +292,7 @@ describe('RC2: the steadiness probes are per-task and meaningful', () => {
   })
 
   it('the research task distinguishes its corrected timeout from the superseded one', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-research-'))
+    const root = await makeTemp('rc2-research-')
     await mkdir(join(root, 'config'), { recursive: true })
     await writeFile(join(root, 'config', 'retry.json'),
       JSON.stringify({ attempts: 3, timeoutMs: 3000, baseMs: 100, jitter: 'full' }), 'utf8')
@@ -307,7 +307,7 @@ describe('RC2: the steadiness probes are per-task and meaningful', () => {
   })
 
   it('the tool-heavy task catches the superseded score range', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc2-heavy-'))
+    const root = await makeTemp('rc2-heavy-')
     await writeFile(join(root, 'schema.json'),
       JSON.stringify({ fields: { id: 'int', name: 'string', score: { max: 100 }, tag: 'string' } }), 'utf8')
     await writeFile(join(root, 'sample.json'), '{}', 'utf8')
@@ -319,7 +319,7 @@ describe('RC2: the steadiness probes are per-task and meaningful', () => {
   it('a probe that throws counts as FAILED, not as absent', async () => {
     // An agent that produced nothing has not demonstrated steadiness. Dropping
     // the probe would let a total failure score as a clean sheet.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-throw-'))
+    const root = await makeTemp('rc2-throw-')
     const state = await finishedState(root, '', listFiles)
     const result = await measureSteadiness(state, [{
       id: 'explodes', question: 'never evaluable', holds: () => { throw new Error('boom') },
@@ -433,7 +433,7 @@ describe('RC2.1: the A/B tasks can actually discriminate', () => {
   })
 
   it('the long tasks still fail on an empty workspace', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc21-empty-'))
+    const root = await makeTemp('rc21-empty-')
     const state = await finishedState(root, '', listFiles)
     for (const task of RETENTION_AB_TASKS) {
       const quality = await Promise.all(task.quality.map(check => check.passed(state)))
@@ -444,7 +444,7 @@ describe('RC2.1: the A/B tasks can actually discriminate', () => {
   })
 
   it('the long coding task distinguishes the corrected values from the superseded ones', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'rc21-good-'))
+    const root = await makeTemp('rc21-good-')
     await mkdir(join(root, 'src'), { recursive: true })
     await writeFile(join(root, 'src', 'loader.js'), [
       'const SCHEMA_VERSION = 2',
@@ -459,7 +459,7 @@ describe('RC2.1: the A/B tasks can actually discriminate', () => {
     expect(good.satisfied).toBe(good.total)
 
     // The SUPERSEDED version of the same artifact.
-    const stale = await mkdtemp(join(tmpdir(), 'rc21-stale-'))
+    const stale = await makeTemp('rc21-stale-')
     await mkdir(join(stale, 'src'), { recursive: true })
     await writeFile(join(stale, 'src', 'loader.js'), [
       'const SCHEMA_VERSION = 1',
@@ -475,7 +475,7 @@ describe('RC2.1: the A/B tasks can actually discriminate', () => {
   it('the long research task scopes its resurrection check to the field', async () => {
     // `250` is BOTH a superseded batch size AND the legitimate backoff, so a
     // bare-number check would fire on a correct spec. The probe must be scoped.
-    const root = await mkdtemp(join(tmpdir(), 'rc21-research-'))
+    const root = await makeTemp('rc21-research-')
     await writeFile(join(root, 'spec.json'), JSON.stringify({
       batchSize: 500, flushIntervalMs: 5000, maxRetries: 2, dlq: 'ingest-dlq',
       maxRecordSizeKb: 128, concurrency: 4, backoffMs: 250,
@@ -491,7 +491,7 @@ describe('RC2: the driver resets between arms', () => {
   it('resetWorkspace clears prior artifacts', async () => {
     // Without this, arm N+1 would be scored on arm N's files and every arm would
     // look equally good.
-    const root = await mkdtemp(join(tmpdir(), 'rc2-reset-'))
+    const root = await makeTemp('rc2-reset-')
     await writeFile(join(root, 'leftover.js'), 'x', 'utf8')
     expect(await listFiles(root)).toContain('leftover.js')
     await resetWorkspace(root)

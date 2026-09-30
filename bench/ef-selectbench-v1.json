@@ -1,0 +1,133 @@
+{
+  "schema": "ef-selectbench/1",
+  "frozenAt": "2026-10-01",
+  "purpose": "A fixed acceptance set for the EF context runtimes. Every entry was verified against its upstream source before inclusion; every reward figure is quoted from published per-task results, not estimated.",
+  "designRules": [
+    "Use mature benchmarks as the grader. EF does not author tasks or graders for the acceptance set.",
+    "Three lanes test three different claims: sustained long work, interaction state, memory pressure. They are never pooled into one score.",
+    "Selection is conditioned on the ROUTE MODEL's own reward band, not on the cross-model mean. A task that is discriminating for a weak model may be saturated for ours.",
+    "Headline metrics are the benchmark's own (LHTB reward, tau2 DB x COMMUNICATE, LME-V2 accuracy). EF telemetry is reported alongside, never substituted.",
+    "A task is excluded when its published reward is saturated (>0.85) or floored (<0.15) FOR OUR ROUTE, because such a task cannot separate the arms."
+  ],
+  "route": {
+    "model": "deepseek-v4.1-flash",
+    "provider": "opencode-zen (space-bunny-free)",
+    "note": "The model this workspace's live suites already run. All band judgements below use the published 'DeepSeek V4 Flash' rows."
+  },
+  "lanes": {
+    "longwork": {
+      "benchmark": "LHTB (Long-Horizon Terminal-Bench)",
+      "repo": "zli12321/LHTB",
+      "dataset": "IntelligenceLab/Long-Horizon-Terminal-Bench",
+      "tasksTotal": 46,
+      "grader": "hidden rebuild-from-artifact verifier; continuous partial reward in [0,1]; solved at R>=0.95",
+      "whyThisLane": "The only lane that measures sustained work over hundreds of steps, which is the claim EF exists to make.",
+      "hostFeasibility": "BLOCKED for parallel runs: every cited task requests 4-8 GB RAM and WSL is capped at 8 GB total, so at most one cell can run at a time.",
+      "cells": [
+        {
+          "id": "vector-db-iterative-build",
+          "role": "discriminator",
+          "rewardAllModels": 0.567,
+          "rewardOurRoute": 0.84,
+          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 8192 },
+          "agentTimeoutSec": 14400,
+          "estimatedDurationSec": null,
+          "efDiscrimination": "Four gated stages (smoke -> exact -> 2x QPS -> 5x QPS) with a recall floor and a required JOURNAL, so earlier performance/correctness trade-offs must survive to the end.",
+          "hostVerdict": "runnable alone"
+        },
+        {
+          "id": "unknown-config-semantics",
+          "role": "discriminator",
+          "rewardAllModels": 0.223,
+          "rewardOurRoute": 0.50,
+          "resources": { "cpus": 2, "memoryMb": 4096, "storageMb": 6144 },
+          "agentTimeoutSec": 14400,
+          "estimatedDurationSec": 6000,
+          "efDiscrimination": "Five sequential stages recovering hidden config semantics; each revision fixes an old lie and may plant a new one, so resolved facts must be retained and superseded correctly.",
+          "hostVerdict": "runnable alone"
+        },
+        {
+          "id": "riscv-core-debug",
+          "role": "anchor",
+          "rewardAllModels": 0.843,
+          "rewardOurRoute": 0.88,
+          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 10240 },
+          "agentTimeoutSec": 21600,
+          "estimatedDurationSec": 21600,
+          "efDiscrimination": "Ten gated stages across a multi-bug RV32 core where symptoms alias; a mode that resurrects a retired root cause repeats work.",
+          "hostVerdict": "runnable alone",
+          "anchorReason": "0.88 is above the 0.85 discriminator band for our route, so this task is NOT admitted as a discriminator. It is kept as a STABILITY ANCHOR only: a task our route usually solves, where a mode that breaks long-horizon behaviour would show a visible regression. It cannot show an improvement."
+        },
+        {
+          "id": "duckdb-optimizer-closure",
+          "rewardAllModels": 0.512,
+          "rewardOurRoute": 1.00,
+          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 10240 },
+          "agentTimeoutSec": 21600,
+          "estimatedDurationSec": null,
+          "efDiscrimination": "A bounded rebuild budget (<=8) with a hard correctness gate then a speedup target, so profiling conclusions and regression history must persist.",
+          "hostVerdict": "EXCLUDED for our route",
+          "exclusionReason": "Our route's published reward is 1.00. A saturated task cannot separate the arms, so including it would only add cost and false confidence."
+        }
+      ],
+      "excluded": [
+        { "id": "nbody-accel-iterative", "rewardOurRoute": 1.00, "reason": "saturated for our route" },
+        { "id": "spot-scheduler-traces", "rewardOurRoute": 0.74, "rewardAllModels": 0.944, "reason": "near-saturated across models; low headroom" },
+        { "id": "robotics-slam-benchmark-repair", "rewardAllModels": 0.029, "reason": "floored across all models; no headroom" }
+      ],
+      "recommendedPrimarySet": ["vector-db-iterative-build", "unknown-config-semantics"],
+      "recommendedAnchorSet": ["riscv-core-debug"],
+      "stressExtension": [
+        { "id": "commit0-multilib-tdd", "rewardOurRoute": 0.80, "note": "rebuild three libraries from spec; specification retention" },
+        { "id": "langchain-version-migration", "rewardOurRoute": 0.00, "note": "FLOORED for our route: 0.00. Do not use as a discriminator without a stronger route." },
+        { "id": "foldseek-paper-reproduction", "rewardOurRoute": 0.56, "note": "research reproduction" }
+      ]
+    },
+    "interaction": {
+      "benchmark": "tau2-bench-verified",
+      "repo": "amazon-agi/tau2-bench-verified",
+      "upstream": "sierra-research/tau2-bench",
+      "grader": "final database state + communication criteria; pass^k over k repeated runs",
+      "whyThisLane": "Native multi-turn reliability. pass^k answers 'did it work every time' rather than 'did it work once', which is the variance problem the custom suite could not resolve.",
+      "hostFeasibility": "FEASIBLE: text-mode needs Python >=3.12 and uv only, no Docker and no GPU. This is the only lane that can run at scale on this host.",
+      "note": "The six cited ids were confirmed present in the Verified fork, not only in upstream. The Verified fork exists because upstream tasks had policy, DB, and expected-action inconsistencies.",
+      "cells": [
+        { "domain": "retail", "id": "5", "actions": 5, "efDiscrimination": "Multi-level supersession: swap bottle+lamp, then only the lamp, then a further revision." },
+        { "domain": "retail", "id": "18", "actions": 5, "efDiscrimination": "Conditional intent tree: return, then exchange same model, then a specific variant if out of stock." },
+        { "domain": "retail", "id": "21", "actions": 12, "efDiscrimination": "Late intent injection plus product-id/item-id confusion; highest action count in the set." },
+        { "domain": "retail", "id": "22", "actions": 7, "efDiscrimination": "Partial rollback: change address and all orders, then revert only the user address." },
+        { "domain": "airline", "id": "11", "actions": 1, "efDiscrimination": "Delayed information (reservation id withheld for two rounds) then a conditional fallback." },
+        { "domain": "airline", "id": "42", "actions": 10, "efDiscrimination": "Cross-object, cross-time current-state consistency over duplicate flights." }
+      ],
+      "metric": "pass^1, pass^2, pass^4 at k=4 repeats per arm"
+    },
+    "memory": {
+      "benchmark": "LongMemEval-V2",
+      "repo": "xiaowu0162/LongMemEval-V2",
+      "dataset": "xiaowu0162/longmemeval-v2",
+      "questionsTotal": 451,
+      "haystack": { "tiers": ["small", "medium"], "maxTrajectories": 500, "maxTokens": "115M" },
+      "grader": "official question accuracy plus query latency",
+      "whyThisLane": "Directly measures whether long histories are retained, updated, and correctly abstained on. This is the closest published analogue to EF's own claim.",
+      "hostFeasibility": "BLOCKED on this host: the harness expects local Qwen3.5-9B reader and Qwen3-Embedding-8B endpoints. The GPU has 8 GB, which is below a 9B reader plus an 8B embedder. Data is 7.1 GB, of which trajectories.jsonl is 1.2 GB and screenshot bundles are 5.9 GB.",
+      "storagePlan": "The 5.9 GB screenshot bundles are optional for the text-only questions below; downloading trajectories.jsonl plus haystacks is ~1.2 GB.",
+      "cells": [
+        { "id": "01307e07", "type": "dynamic-environment", "domain": "enterprise", "efDiscrimination": "Current filter behaviour after state changed over time." },
+        { "id": "109b334c", "type": "dynamic-environment-abs", "domain": "enterprise", "efDiscrimination": "Negative knowledge: the correct answer is that a field does NOT exist. A mode that hallucinates from a folded summary fails here." },
+        { "id": "025db8ef", "type": "procedure", "domain": "enterprise", "efDiscrimination": "Cross-trajectory workflow order." },
+        { "id": "059974dd", "type": "procedure-abs", "domain": "enterprise", "efDiscrimination": "Procedure plus abstention." },
+        { "id": "18b91103", "type": "errors-gotchas", "domain": "enterprise", "efDiscrimination": "Environment-specific trap that must be learned from a past failure." },
+        { "id": "0574c69a", "type": "errors-gotchas", "domain": "web", "efDiscrimination": "Search syntax that the environment does not support." }
+      ],
+      "metric": "accuracy at small and medium haystack, reported with the small->medium degradation per arm"
+    }
+  },
+  "notSelected": {
+    "SWE-bench Pro V2": "Real (scaleapi/SWE-bench_Pro-os, v2/ with 642 tasks and a HARD-51 subset) and a sound coding grader, but it needs Docker and a long agent budget. Deferred until the LHTB lane is unblocked, since the two overlap in what they measure.",
+    "AgencyBench V2": "Real (GAIR-NLP/AgencyBench, 32 scenarios / 138 tasks, ~1M tokens and ~90 tool calls per run). Deferred as a final stress test: it is the most expensive lane and depends on a Docker sandbox."
+  },
+  "costDiscipline": {
+    "rule": "Quality and reliability runs may be parallel. Any run whose purpose is realized cost must be cache-isolated (concurrency 1), because concurrent cells share a provider prefix cache.",
+    "enforcement": "eval/real-task/parallel.ts throws when purpose='cost' is combined with concurrency>1."
+  }
+}

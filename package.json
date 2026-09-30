@@ -61,7 +61,8 @@
     "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts",
     "build": "node scripts/build-plugin.mjs",
     "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",
-    "generate-presets": "node scripts/generate-presets.mjs"
+    "generate-presets": "node scripts/generate-presets.mjs",
+    "sweep-temp": "node scripts/sweep-temp.mjs"
   },
   "repository": {
     "type": "git",

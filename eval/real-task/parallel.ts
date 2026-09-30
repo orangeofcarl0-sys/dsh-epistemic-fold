@@ -38,6 +38,7 @@ import type { ArmRunResult, ArmSpec, LifecycleScenario } from './driver.ts'
 import type { RealTask } from './tasks.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
 import { newWorkspace } from './driver.ts'
+import { releaseTemp } from '../tmp.ts'
 
 /** One unit of work: a (task, arm, scenario, replicate) cell. */
 export interface CellSpec {
@@ -145,9 +146,10 @@ export async function runCellsParallel(
       const spec = cells[index]!
       const label = `${spec.task.id}/${spec.arm.label}/${spec.scenario}/r${spec.replicate}`
       const started = Date.now()
+      let workspaceRoot: string | undefined
       try {
         // Each cell owns its workspace, so parallel cells cannot collide.
-        const workspaceRoot = await newWorkspace()
+        workspaceRoot = await newWorkspace()
         const run = await runTaskArm({ ...spec, profile, workspaceRoot })
         outcomes[index] = { kind: 'ok', spec, run, ms: Date.now() - started }
         log(`  ok   ${label} (${((Date.now() - started) / 1000).toFixed(0)}s) `
@@ -162,6 +164,12 @@ export async function runCellsParallel(
         const message = error instanceof Error ? error.message : String(error)
         outcomes[index] = { kind: 'failed', spec, error: message, ms: Date.now() - started }
         log(`  FAIL ${label}: ${message.slice(0, 160)}`)
+      } finally {
+        // The run has already read everything it needs off disk — `run` carries
+        // the file-derived results — so the workspace is dead weight from here.
+        // Releasing it per cell is what keeps a 25-cell batch from leaving 25
+        // directories behind, which is how this suite previously leaked 44,035.
+        if (workspaceRoot !== undefined) await releaseTemp(workspaceRoot)
       }
       done += 1
       if (done % 10 === 0) log(`  ... ${done}/${cells.length} cells complete`)

@@ -168,5 +168,10 @@
     "file": "32_RC7D_PARALLEL_LONG_TASK_TESTING.md",
     "bytes": 18822,
     "sha256": "f08baab9f96f07cc047a5ba938f5cb5a7b7c52f4fe5c415db062df85de7b3238"
+  },
+  {
+    "file": "33_RC8_EXTERNAL_BENCHMARKS.md",
+    "bytes": 10953,
+    "sha256": "c49d7ca9b2ae3dfdebbec431f5912fff7e7d99fc020473b5e021cbdc9b563b90"
   }
 ]
