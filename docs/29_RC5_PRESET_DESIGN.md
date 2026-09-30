@@ -1,8 +1,15 @@
 # RC5 — EF as its own agent preset (design)
 
 Baseline: `main@38deea7` (RC4-A).
-Status: **design + verified mechanism.** Prototyped against the real web profile;
-not yet shipped as the default packaging.
+Status: **IMPLEMENTED.** Three tier presets ship, generated from the installed
+DSH; verified to coexist in the real web profile with zero conflicts.
+
+> **Update (RC5 implementation).** This document was the design. It is now built:
+> `scripts/generate-presets.mjs` emits `presets/ef-{economy,balanced,quality}.patch.yml`
+> from the installed DSH reference, `package.json` declares them as a
+> `dsh.bundle.patch` array, and `tests/rc5-preset-drift.spec.ts` fails when they
+> stop mirroring DSH. See §9 for what implementation changed versus this design —
+> one of the design's assumptions was WRONG and the first real boot caught it.
 
 > **The idea in one line.** Instead of mounting EF over DSH's compaction backend
 > and hoping it wins, EF **declares its own agent preset**; a session that selects
@@ -278,3 +285,72 @@ mechanism is confirmed; the end-to-end behaviour is not.
 **Environment left as found.** The prototype lived in the throwaway
 `~/.dsh/profiles/ef-web` and has been reverted; the user's real `web` profile was
 never touched.
+
+---
+
+## 9. What implementation changed versus this design
+
+### The isolate realm — the design's one wrong assumption
+
+The design said the substitution was "one row". **It was two.** The first real
+boot failed:
+
+```
+agent preset ef-economy: Preset services require isolate realms: epistemicFold
+service "epistemicFold" has been registered at <EpistemicFoldPlugin>
+```
+
+`AgentPresetRegistry` audits every mounted preset with `leakedServices()`: a
+service whose registration lands in the ROOT isolate realm is a leak, because the
+SECOND preset to mount the same plugin collides on it. EF's
+`ctx.provide('epistemicFold', …)` did exactly that — and since EF ships three
+presets, the collision was certain, not hypothetical.
+
+The fix is the one DSH itself uses for `compaction`, `toolResultPruner` and
+`planMode`: name the service in the group's `isolate:` map, so each preset's mount
+provides it into its OWN realm.
+
+```yaml
+isolate:
+  compaction: true
+  toolResultPruner: true
+  epistemicFold: true        # <- the second row the design missed
+```
+
+The generator now adds it and THROWS if the group has no `isolate:` map to add it
+to, so the failure cannot come back silently.
+
+This is worth recording because it is the second time in this project that a real
+host found something no amount of reading had: RC3's `ctx.get('tools')` throw, and
+now this. Both were invisible to a harness that mounts one instance at a time.
+
+### What the generator does that the design did not specify
+
+- **Emits one file per tier** rather than one file with three rows, mirroring
+  `dsh-web-app`'s own layout, so regenerating a tier cannot disturb the others.
+- **Reads the reference from the installed DSH** (`$DSH_HOME`, default `~/.dsh`)
+  and refuses to run without one — inventing a preset from memory would be the
+  hand-copy the design rejected.
+- **Keeps `command-compact` and `tool-result-pruner`** in the group, which the
+  design anticipated and the implementation confirmed: the base bundle documents
+  them as backend-independent.
+
+### Verification performed
+
+| check | result |
+| --- | --- |
+| three presets compose into the tree | `--dump-config` shows all three with EF inside the isolated compaction group |
+| they coexist at boot | **zero** EF lines, zero `already registered`, zero `isolate realms` errors |
+| the mirror is real | 19 non-compaction rows compared row-by-row against the installed reference |
+| the drift test actually guards | deleting ONE row (`tool-web`) fails 3 tests; restored, 5 pass |
+
+**Still not verified**, and it is the same gap as before: a live web session
+selecting `ef-economy` and folding under it. That needs port 3080 free, because
+the selection UI and the session composition both live behind the web host.
+
+### One test-quality note
+
+The drift test's first version used a hand-rolled YAML reader, which mis-parsed
+the reference and reported a missing preset row. It was replaced with the real
+`js-yaml` resolved from the DSH install — the repository has no YAML dependency,
+and adding one to compare two files would be a dependency bought for a test.
