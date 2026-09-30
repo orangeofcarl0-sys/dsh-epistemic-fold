@@ -65,31 +65,48 @@ export const CONTEXT_MODE_SUBCOMMAND = 'mode'
 function applyModeChange(
   deps: ContextCommandDeps,
   rest: readonly string[],
-): string {
+): { readonly kind: 'success' | 'error'; readonly text: string } {
   const requested = rest[0]
   if (requested === undefined) {
     // No argument shows the ladder, which doubles as the help screen.
-    return tierLadderToText()
+    return { kind: 'success', text: tierLadderToText() }
   }
   if (!isTierModeName(requested)) {
-    return `unknown mode ${JSON.stringify(requested)}; choose one of `
-      + `${TIER_MODE_NAMES.map(name => JSON.stringify(name)).join(', ')}`
+    // A REJECTED input is an error result, not a success carrying bad news.
+    // RC4-A found these all returning `success`, so a refused switch was
+    // indistinguishable from a completed one to the client and to the
+    // `command/done` record a log reader sees.
+    return {
+      kind: 'error',
+      text: `unknown mode ${JSON.stringify(requested)}; choose one of `
+        + `${TIER_MODE_NAMES.map(name => JSON.stringify(name)).join(', ')}`,
+    }
   }
   if (deps.setMode === undefined) {
-    return 'this deployment has no switchable engine mounted, so the mode cannot be changed at runtime'
+    return {
+      kind: 'error',
+      text: 'this deployment has no switchable engine mounted, so the mode cannot be changed at runtime',
+    }
   }
   try {
     const previous = deps.setMode(requested)
     const tier = TIERS[requested]
-    return previous === requested
-      ? `mode is already ${requested}`
-      : `mode ${previous} -> ${requested}
+    return {
+      kind: 'success',
+      text: previous === requested
+        ? `mode is already ${requested}`
+        : `mode ${previous} -> ${requested}
   ${tier.summary}
-  evidence: ${tier.evidence.toUpperCase()}`
+  evidence: ${tier.evidence.toUpperCase()}`,
+    }
   } catch (error: unknown) {
     // The engine refuses a switch that would change framing mid-session; its
-    // message already explains why, so it is relayed rather than reworded.
-    return `cannot switch mode: ${error instanceof Error ? error.message : String(error)}`
+    // message already explains why, so it is relayed rather than reworded —
+    // but as an ERROR, because the mode did not change.
+    return {
+      kind: 'error',
+      text: `cannot switch mode: ${error instanceof Error ? error.message : String(error)}`,
+    }
   }
 }
 
@@ -260,7 +277,9 @@ export function contextCommandDefinition(
           // The one-line form, for a status bar or a script.
           return { kind: 'success', text: contextStatusToLine(await gatherStatus(ctx, agent, deps)) }
         case CONTEXT_MODE_SUBCOMMAND:
-          return { kind: 'success', text: applyModeChange(deps, rest) }
+          // The helper decides success vs error: a rejected tier or a refused
+          // switch IS a failure and must be reported as one.
+          return applyModeChange(deps, rest)
         default:
           return {
             kind: 'error',

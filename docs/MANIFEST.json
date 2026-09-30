@@ -66,8 +66,8 @@
   },
   {
     "file": "12_R1_EVALUATION_REPORT.md",
-    "bytes": 13247,
-    "sha256": "8853a78283ea0278dbb76706766aef03ccc070bdaefea95c8a50e0177da0171c"
+    "bytes": 12981,
+    "sha256": "226b0659dcb889cdee908c803622a9b812ce9c4f0983b5b9d89973ec79344f97"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -143,5 +143,10 @@
     "file": "27_RC4_SIDEBAR_PANEL.md",
     "bytes": 8731,
     "sha256": "afe9f78e93c1f623066743d5b970cbf61b7aea4e2aa061d760a1d1c3f7c00f8f"
+  },
+  {
+    "file": "28_RC4A_INTERACTION_AUDIT.md",
+    "bytes": 11291,
+    "sha256": "fafd2d5c00b829844c677e35efab3453077ce2b66a7e08cb4abf63f174165f87"
   }
 ]

@@ -70,10 +70,24 @@ export interface FoldStatusState {
   readonly mode: FoldModeName
   /** Σ shadowedTokenCount over every fold — the meter's own number. */
   readonly archivedTokens: number
-  /** Folds that have completed. */
+  /** Leaf folds that have completed (LIFETIME). */
   readonly folds: number
-  /** Root rebases that have completed. */
+  /** Root rebases that have completed (LIFETIME). */
   readonly roots: number
+  /**
+   * EF checkpoints frozen on the surface RIGHT NOW.
+   *
+   * Distinct from `folds + roots`, which is a lifetime total. A root rebase
+   * collapses the surface to one checkpoint, so a session that folded 40 times
+   * and rebased has many lifetime folds and one current checkpoint. RC4-A found
+   * the panel rendering `folds + roots` under the label "Checkpoints now",
+   * which is the same conflation RC2.1 corrected on the command plane.
+   *
+   * Maintained from the checkpoint markers: every fold adds one (its own
+   * checkpoint joins the frozen prefix), and the marker's mode says whether the
+   * fold also collapsed the prefix to itself.
+   */
+  readonly currentCheckpoints: number
   /** `context_recall` calls. */
   readonly recalls: number
   /** `context_search` calls. */
@@ -101,6 +115,7 @@ export interface FoldStatusView {
   readonly archivedTokens: number
   readonly folds: number
   readonly roots: number
+  readonly currentCheckpoints: number
   readonly recalls: number
   readonly searches: number
   readonly resumed: boolean
@@ -130,6 +145,7 @@ const stateSchema = z.looseObject({
   archivedTokens: z.number(),
   folds: z.number(),
   roots: z.number(),
+  currentCheckpoints: z.number(),
   recalls: z.number(),
   searches: z.number(),
   uncachedInputTokens: z.number(),
@@ -148,6 +164,7 @@ const viewSchema = z.looseObject({
   archivedTokens: z.number(),
   folds: z.number(),
   roots: z.number(),
+  currentCheckpoints: z.number(),
   recalls: z.number(),
   searches: z.number(),
   resumed: z.boolean(),
@@ -190,6 +207,10 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
         archivedTokens,
         folds: state.folds + (root ? 0 : 1),
         roots: state.roots + (root ? 1 : 0),
+        // A leaf checkpoint JOINS the frozen prefix, so the surface gains one.
+        // A root REBASES: the prefix collapses to the single new checkpoint, so
+        // the count becomes one rather than growing.
+        currentCheckpoints: root ? 1 : state.currentCheckpoints + 1,
       }
     }
     case 'compaction/end': {
@@ -304,6 +325,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     archivedTokens: 0,
     folds: 0,
     roots: 0,
+    currentCheckpoints: 0,
     recalls: 0,
     searches: 0,
     uncachedInputTokens: 0,
@@ -338,6 +360,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
           archivedTokens: state.archivedTokens,
           folds: state.folds,
           roots: state.roots,
+          currentCheckpoints: state.currentCheckpoints,
           recalls: state.recalls,
           searches: state.searches,
           resumed: state.resumed,

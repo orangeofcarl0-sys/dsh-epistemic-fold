@@ -97,6 +97,11 @@ window.__ModuleLoader__.load({
      */
     const EpistemicFoldPanel = ({ useProjection, t }) => {
       const status = useProjection(STATUS_KEY)
+      // The token meter's OWN pressure unit, read the same way DSH's built-in
+      // ContextMeter reads it. Our projection is a pure event fold and cannot
+      // carry a meter reading, so the join happens here rather than in the
+      // host — the alternative would be a second source of the same fact.
+      const pressure = useProjection('contextPressure')
       const translate = typeof t === 'function' ? t : (key) => key
 
       if (status === undefined || status === null) {
@@ -127,6 +132,28 @@ window.__ModuleLoader__.load({
             ],
           }),
 
+          pressure !== undefined && pressure !== null
+            ? jsx.jsxs(Section, {
+              title: translate('currentContext'),
+              children: [
+                // `projectedTokens` is what the NEXT request would cost; it
+                // falls back to `pressureTokens`, the last provider-reported
+                // prompt size. Either may be absent before any provider call,
+                // in which case the row shows an em dash.
+                jsx.jsx(Row, {
+                  label: translate('pressure'),
+                  value: pressure.projectedTokens !== undefined
+                    ? k(pressure.projectedTokens)
+                    : (pressure.pressureTokens !== undefined ? k(pressure.pressureTokens) : null),
+                  suffix: 'tokens',
+                }),
+                pressure.contextWindow !== undefined
+                  ? jsx.jsx(Row, { label: translate('window'), value: k(pressure.contextWindow), suffix: 'tokens' })
+                  : null,
+              ],
+            })
+            : null,
+
           jsx.jsxs(Section, {
             title: translate('archived'),
             children: [
@@ -134,7 +161,11 @@ window.__ModuleLoader__.load({
               // `shadowedTokenCount` summed over the folds, which is a better
               // number than the command plane can produce from bundle text.
               jsx.jsx(Row, { label: translate('archivedTokens'), value: k(status.archivedTokens) }),
-              jsx.jsx(Row, { label: translate('checkpointsNow'), value: status.folds + status.roots }),
+              // CURRENT, not lifetime. RC4-A found this row rendering
+              // `folds + roots` — a lifetime total — under a label that claims
+              // the surface right now, which is the conflation RC2.1 corrected
+              // on the command plane.
+              jsx.jsx(Row, { label: translate('checkpointsNow'), value: status.currentCheckpoints }),
             ],
           }),
 
@@ -191,6 +222,9 @@ window.__ModuleLoader__.load({
       tabTitle: 'Epistemic Fold',
       tabDesc: 'Context runtime status: archived history, folds, recall activity and estimated cost.',
       noSession: 'No active session.',
+      currentContext: 'Current context',
+      pressure: 'Pressure',
+      window: 'Window',
       archived: 'Archived history',
       archivedTokens: 'Archived tokens',
       checkpointsNow: 'Checkpoints now',

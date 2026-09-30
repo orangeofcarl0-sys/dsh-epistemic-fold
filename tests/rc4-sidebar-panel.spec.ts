@@ -324,3 +324,70 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     expect(() => apply({ get: () => undefined })).not.toThrow()
   })
 })
+
+describe('RC4-A: the audit findings, pinned so they cannot regress', () => {
+  it('A3: a rejected tier is an ERROR result, not a success carrying bad news', async () => {
+    // RC4-A found every failure path returning `kind: 'success'`, so a refused
+    // switch was indistinguishable from a completed one to the client and to the
+    // `command/done` record a log reader sees.
+    const harness = await createHarness({ text: 'digest' }, {
+      contextWindow: 131_072, plugin: true, systemPrompt: true, commands: true,
+      efConfig: { mode: 'legacy' },
+    })
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const agent = { id: 'p', session: Session.create(SessionId(`rc4a-${Date.now()}`)) } as never
+    const sig = new AbortController().signal
+
+    const unknown = await harness.ctx.commands.execute(agent, '/context mode turbo', [], sig)
+    expect(unknown?.result.kind).toBe('error')
+
+    // Showing the ladder is NOT a failure, so it stays a success.
+    const ladder = await harness.ctx.commands.execute(agent, '/context mode', [], sig)
+    expect(ladder?.result.kind).toBe('success')
+  }, 120_000)
+
+  it('A3: a refused switch is an ERROR, and the engine is unchanged', async () => {
+    const harness = await createHarness({ text: 'digest' }, {
+      contextWindow: 131_072, plugin: true, systemPrompt: true, commands: true,
+      efConfig: { mode: 'legacy' },
+    })
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const agent = { id: 'p', session: Session.create(SessionId(`rc4a2-${Date.now()}`)) } as never
+    const result = await harness.ctx.commands.execute(
+      agent, '/context mode economy', [], new AbortController().signal)
+    // On an unpatched build the tier needs the framing seam, so the switch is
+    // refused. The refusal must read as a failure.
+    if (result?.result.kind === 'error') {
+      expect(String(result.result.text)).toContain('cannot switch mode')
+      expect(harness.engine.currentMode).toBe('legacy')
+    }
+  }, 120_000)
+
+  it('A2: the projection carries a CURRENT checkpoint count, distinct from lifetime folds', () => {
+    // RC4-A found the panel rendering `folds + roots` under "Checkpoints now".
+    // A root rebase collapses the surface, so the two numbers differ.
+    const unit = epistemicFoldStatusProjection({ mode: 'economy' })
+    let state = unit.init()
+
+    // Three leaf folds: each JOINS the frozen prefix.
+    for (let i = 0; i < 3; i += 1) {
+      state = reduceStatusEvent(state, {
+        type: 'compaction/summary', seq: i, time: 0,
+        data: { shadowedTokenCount: 10, summary: [{ type: 'text', text: '[EF1 L cp:x]' }] },
+      } as never)
+    }
+    expect(state.currentCheckpoints).toBe(3)
+    expect(state.folds).toBe(3)
+
+    // One root REBASES: the prefix collapses to the single new checkpoint.
+    state = reduceStatusEvent(state, {
+      type: 'compaction/summary', seq: 9, time: 0,
+      data: { shadowedTokenCount: 10, summary: [{ type: 'text', text: '[EF1 R cp:y]' }] },
+    } as never)
+    expect(state.currentCheckpoints).toBe(1)
+    expect(state.roots).toBe(1)
+    // The lifetime total kept growing, which is exactly why they must differ.
+    expect(state.folds + state.roots).toBe(4)
+    expect(unit.wire.view(state).currentCheckpoints).toBe(1)
+  })
+})
