@@ -66,8 +66,8 @@
   },
   {
     "file": "12_R1_EVALUATION_REPORT.md",
-    "bytes": 12981,
-    "sha256": "a38f45fb41c4273e47020b32fa3c56a06fa01bfbe2da9673c794bd53617ff164"
+    "bytes": 13247,
+    "sha256": "8853a78283ea0278dbb76706766aef03ccc070bdaefea95c8a50e0177da0171c"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -136,7 +136,12 @@
   },
   {
     "file": "26_RC3_REAL_DSH_PLUGINIZATION.md",
-    "bytes": 9855,
-    "sha256": "8ec85207394845215303da797e7fd11e47300854ec3c1ad34b6b884b091e7b4f"
+    "bytes": 10086,
+    "sha256": "e1b08989a2b72fd2cead9ae9bd91477f33ce1422db6f2183346a78f9978f606c"
+  },
+  {
+    "file": "27_RC4_SIDEBAR_PANEL.md",
+    "bytes": 8527,
+    "sha256": "fa49873c40b6f61e325f2e4123178b8aeee4152aaf9ffacb50dd091d00a09fa3"
   }
 ]
