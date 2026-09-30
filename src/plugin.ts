@@ -32,6 +32,8 @@ import { FOLD_FRAMING_SECTION, framingModeFor } from './framing.ts'
 import { describeEffectiveConfig, effectiveConfigToText } from './effective-config.ts'
 import type { EffectiveConfig } from './effective-config.ts'
 import { registerEpistemicFoldProjection } from './projection.ts'
+import { registerEpistemicFoldStatus } from './status-projection.ts'
+import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import { registerRecallTools } from './tools.ts'
 import { registerContextCommand } from './command.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
@@ -117,6 +119,27 @@ export class EpistemicFoldPlugin {
         for (const dispose of disposers) dispose()
       }
     }, 'epistemic-fold projection')
+
+    // The client-facing status projection (RC4): the Sidebar's data source.
+    // Registered on the SAME registry as the state projection, but WITH a wire
+    // view so a client can read it. Nothing here enters a prompt, so it cannot
+    // affect the context it reports on.
+    ctx.effect(() => {
+      const profiles = config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES
+      const dispose = registerEpistemicFoldStatus(ctx, {
+        // A GETTER: `/context mode` switches the tier of a running session, and
+        // capturing the mode here would leave the panel reporting the startup
+        // mode forever.
+        mode: () => this.engine.currentMode,
+        // The panel prices with a shipped profile, because a pure fold cannot
+        // resolve the routed model. A deployment whose route is priced
+        // differently sets `economicsProfiles`; the figure is labelled as an
+        // estimate either way, and names the profile it used. With no profile
+        // at all the panel reports cost as UNKNOWN rather than guessing.
+        ...(profiles.length === 0 ? {} : { profile: profiles[0] }),
+      })
+      return () => dispose()
+    }, 'epistemic-fold status projection')
 
     ctx.inject(['tools'], toolsCtx => {
       const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore)

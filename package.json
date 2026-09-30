@@ -21,11 +21,15 @@
       "default": "./lib/plugin.js"
     },
     "./cordis.patch.yml": "./cordis.patch.yml",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./client": {
+      "default": "./lib/client.js"
+    }
   },
   "files": [
     "lib",
     "src",
+    "client.js",
     "cordis.patch.yml",
     "README.md",
     "LICENSE"
@@ -99,6 +103,12 @@
     "compatibility": {
       "node": ">=22.5.0",
       "dsh": ">=0.1.7-rc.2"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right"
+      ]
     }
   }
 }

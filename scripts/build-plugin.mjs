@@ -39,7 +39,7 @@
  * @module scripts/build-plugin
  */
 
-import { mkdir, readdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import ts from 'typescript'
@@ -101,17 +101,22 @@ async function main() {
   if (files.length === 0) throw new Error('build: no source files found under src/')
 
   for (const rel of files) {
-    const source = await import('node:fs/promises').then(fs => fs.readFile(join(SRC, rel), 'utf8'))
+    const source = await readFile(join(SRC, rel), 'utf8')
     const js = transpile(source, rel)
     const target = join(OUT, rel.replace(/\.ts$/u, '.js'))
     await mkdir(dirname(target), { recursive: true })
     await writeFile(target, js, 'utf8')
   }
 
-  // The plugin entry the DSH loader imports. It re-exports the composite
-  // plugin, so `name` resolution and the default export both work the way the
-  // loader expects.
+  // The CLIENT face is copied verbatim, not transpiled: it is already in the
+  // loader's own `window.__ModuleLoader__.load({...})` format and imports only
+  // React, which the host provides. Shipping it through the compiler would
+  // rewrite those shared imports into file paths the browser cannot resolve.
+  const clientSource = await readFile(join(ROOT, 'client.js'), 'utf8')
+  await writeFile(join(OUT, 'client.js'), clientSource, 'utf8')
+
   console.log(`build: wrote ${files.length} module(s) to ${relative(ROOT, OUT)}/`)
+  console.log(`build: client face ${relative(ROOT, join(OUT, 'client.js'))}`)
   console.log(`build: entry ${relative(ROOT, join(OUT, 'index.js'))}`)
 }
 

@@ -95,6 +95,7 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC2** | Product integration: the `economy`/`balanced`/`quality` tier ladder, `/context status` on the real DSH command plane, and a real-task comparison · 产品集成与模式调优 | ⚠️ **surface SHIPPED**; tier steadiness benefit **HYPOTHESIS** — the task set did not discriminate the modes · [report](docs/24_RC2_PRODUCT_INTEGRATION.md) |
 | **RC2.1** | Status correctness, baseline naming, and the retention A/B: four `/context status` defects fixed, `legacy` renamed to EF legacy with a real Basic arm added, the ladder reordered retention-first · 状态正确性、基线命名与保留量 A/B | ⚠️ **status FIXED**; retention bought **no measurable steadiness** (0.90→0.90) at +0.003 cost, so the tier stays **HYPOTHESIS** · [report](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) |
 | **RC3** | Real DSH pluginization: a build step producing loadable JS, a `dsh.bundle` patch, `/context mode` as the control plane, and mounting into a real local DSH · 真实 DSH 插件化 | ✅ **mounts and folds in real DSH** — 2 compactions, `EF1` markers, bundles on disk; `/context mode` switches the live engine; RC2's "in DSH" claim corrected · [report](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) |
+| **RC4** | Sidebar panel: command = control / Sidebar = observation, both rendering ONE status model; a hand-authored client bundle with no bundler added · 侧边栏面板 | ✅ **panel SHIPPED** — reads the shared model (not parsed command text), renders `—` for unknown, and cannot enter model context by construction · [report](docs/27_RC4_SIDEBAR_PANEL.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -649,6 +650,27 @@ owns `ctx.compaction` and Cordis allows one registration per service ·
 在 profile 目录执行 `pnpm install`，然后 `dsh --profile <name>` 启动。patch 会
 **禁用 `compaction-basic`**：EF 持有 `ctx.compaction`，而 Cordis 每个服务只允许一次注册。
 
+### The Sidebar panel · 侧边栏面板
+
+EF also ships a Sidebar **observation** panel (`client.js`), which reads the same
+status model the `/context status` command renders rather than running the
+command and parsing its text. It shows archived tokens, current checkpoints,
+lifetime folds, recall activity and estimated cost, and renders `—` for any
+figure that cannot be established — never a zero. It reads a client-side
+projection, so it **cannot enter the model context** by construction: it cannot
+grow the context it reports on or invalidate a prefix cache ·
+EF 还附带一个侧边栏**观测**面板（`client.js`），读取与 `/context status` 命令同一套状态
+模型，而不是执行命令再解析其文本。它显示归档 token、当前 checkpoint、历史折叠、召回
+活动与估算成本；无法确立的数值显示 `—`，绝不为 0。它读取客户端 projection，因此
+**结构上不可能进入模型上下文**：既不会撑大它所观测的上下文，也不会破坏 prefix cache。
+
+The panel is hand-authored in DSH's client-module format and copied verbatim into
+`lib/client.js` — no bundler was added. It registers through `ctx.betterSidebar`,
+so a deployment without that service simply has no panel rather than a broken
+client load · 面板直接以 DSH 客户端模块格式编写，原样拷贝到 `lib/client.js`，**未引入
+打包器**。它通过 `ctx.betterSidebar` 注册，因此没有该服务的部署只是没有面板，而不会导致
+客户端加载失败。
+
 > **The patch ships `mode: legacy`, deliberately.** Every tier selects
 > `framingMode: system-dedup`, which requires the `frameCheckpoint` seam — and
 > released DSH does not have it. A tier on an unpatched harness **refuses to
@@ -728,6 +750,7 @@ All design documents live in [`docs/`](docs/) ·
 | [24_RC2_PRODUCT_INTEGRATION.md](docs/24_RC2_PRODUCT_INTEGRATION.md) | RC2 product integration: the three-tier mode ladder with declared evidence status, the `/context status` command on the real DSH command plane, the real-task comparison with its three metrics, and why that comparison did not discriminate the modes · RC2 产品集成与模式调优 |
 | [25_RC2_1_STATUS_AND_RETENTION_AB.md](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) | RC2.1 status correctness and the retention A/B: the four `/context status` defects (`unknown` reported as a measured 0, a `chars/4` heuristic labelled measured, hand-rolled usage instead of the DSH projection, current checkpoints conflated with lifetime folds), the EF-legacy-vs-Basic baseline correction, the retention-first reorder, and the one critical A/B that measured no steadiness gain · RC2.1 状态正确性与保留量 A/B |
 | [26_RC3_REAL_DSH_PLUGINIZATION.md](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) | RC3 real DSH pluginization: the build step that produces loadable JS, the bundle patch that replaces `compaction-basic`, the `ctx.inject` bug only a real host could find, the proof that EF folds in a real DSH session, `/context mode` as the control plane, and the correction of RC2's "measured in DSH" claim · RC3 真实 DSH 插件化 |
+| [27_RC4_SIDEBAR_PANEL.md](docs/27_RC4_SIDEBAR_PANEL.md) | RC4 Sidebar panel: the command/observation split over one shared status model, why the projection is a separate pure event fold rather than `buildContextStatus`, the `shadowedTokenCount` figure the panel has and the command cannot, the live-mode getter, and the hand-written client bundle that adds no build pipeline · RC4 侧边栏面板 |
 
 `profiles/economics/` holds versioned provider pricing data (asOf + source,
 caller-overridable) used by the R1 cost model — benchmark input, never
