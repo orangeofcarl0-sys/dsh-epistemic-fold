@@ -29,7 +29,11 @@
           "role": "discriminator",
           "rewardAllModels": 0.567,
           "rewardOurRoute": 0.84,
-          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 8192 },
+          "resources": {
+            "cpus": 4,
+            "memoryMb": 8192,
+            "storageMb": 8192
+          },
           "agentTimeoutSec": 14400,
           "estimatedDurationSec": null,
           "efDiscrimination": "Four gated stages (smoke -> exact -> 2x QPS -> 5x QPS) with a recall floor and a required JOURNAL, so earlier performance/correctness trade-offs must survive to the end.",
@@ -39,8 +43,12 @@
           "id": "unknown-config-semantics",
           "role": "discriminator",
           "rewardAllModels": 0.223,
-          "rewardOurRoute": 0.50,
-          "resources": { "cpus": 2, "memoryMb": 4096, "storageMb": 6144 },
+          "rewardOurRoute": 0.5,
+          "resources": {
+            "cpus": 2,
+            "memoryMb": 4096,
+            "storageMb": 6144
+          },
           "agentTimeoutSec": 14400,
           "estimatedDurationSec": 6000,
           "efDiscrimination": "Five sequential stages recovering hidden config semantics; each revision fixes an old lie and may plant a new one, so resolved facts must be retained and superseded correctly.",
@@ -51,7 +59,11 @@
           "role": "anchor",
           "rewardAllModels": 0.843,
           "rewardOurRoute": 0.88,
-          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 10240 },
+          "resources": {
+            "cpus": 4,
+            "memoryMb": 8192,
+            "storageMb": 10240
+          },
           "agentTimeoutSec": 21600,
           "estimatedDurationSec": 21600,
           "efDiscrimination": "Ten gated stages across a multi-bug RV32 core where symptoms alias; a mode that resurrects a retired root cause repeats work.",
@@ -61,8 +73,12 @@
         {
           "id": "duckdb-optimizer-closure",
           "rewardAllModels": 0.512,
-          "rewardOurRoute": 1.00,
-          "resources": { "cpus": 4, "memoryMb": 8192, "storageMb": 10240 },
+          "rewardOurRoute": 1.0,
+          "resources": {
+            "cpus": 4,
+            "memoryMb": 8192,
+            "storageMb": 10240
+          },
           "agentTimeoutSec": 21600,
           "estimatedDurationSec": null,
           "efDiscrimination": "A bounded rebuild budget (<=8) with a hard correctness gate then a speedup target, so profiling conclusions and regression history must persist.",
@@ -71,16 +87,46 @@
         }
       ],
       "excluded": [
-        { "id": "nbody-accel-iterative", "rewardOurRoute": 1.00, "reason": "saturated for our route" },
-        { "id": "spot-scheduler-traces", "rewardOurRoute": 0.74, "rewardAllModels": 0.944, "reason": "near-saturated across models; low headroom" },
-        { "id": "robotics-slam-benchmark-repair", "rewardAllModels": 0.029, "reason": "floored across all models; no headroom" }
+        {
+          "id": "nbody-accel-iterative",
+          "rewardOurRoute": 1.0,
+          "reason": "saturated for our route"
+        },
+        {
+          "id": "spot-scheduler-traces",
+          "rewardOurRoute": 0.74,
+          "rewardAllModels": 0.944,
+          "reason": "near-saturated across models; low headroom"
+        },
+        {
+          "id": "robotics-slam-benchmark-repair",
+          "rewardAllModels": 0.029,
+          "reason": "floored across all models; no headroom"
+        }
       ],
-      "recommendedPrimarySet": ["vector-db-iterative-build", "unknown-config-semantics"],
-      "recommendedAnchorSet": ["riscv-core-debug"],
+      "recommendedPrimarySet": [
+        "vector-db-iterative-build",
+        "unknown-config-semantics"
+      ],
+      "recommendedAnchorSet": [
+        "riscv-core-debug"
+      ],
       "stressExtension": [
-        { "id": "commit0-multilib-tdd", "rewardOurRoute": 0.80, "note": "rebuild three libraries from spec; specification retention" },
-        { "id": "langchain-version-migration", "rewardOurRoute": 0.00, "note": "FLOORED for our route: 0.00. Do not use as a discriminator without a stronger route." },
-        { "id": "foldseek-paper-reproduction", "rewardOurRoute": 0.56, "note": "research reproduction" }
+        {
+          "id": "commit0-multilib-tdd",
+          "rewardOurRoute": 0.8,
+          "note": "rebuild three libraries from spec; specification retention"
+        },
+        {
+          "id": "langchain-version-migration",
+          "rewardOurRoute": 0.0,
+          "note": "FLOORED for our route: 0.00. Do not use as a discriminator without a stronger route."
+        },
+        {
+          "id": "foldseek-paper-reproduction",
+          "rewardOurRoute": 0.56,
+          "note": "research reproduction"
+        }
       ]
     },
     "interaction": {
@@ -92,32 +138,144 @@
       "hostFeasibility": "FEASIBLE: text-mode needs Python >=3.12 and uv only, no Docker and no GPU. This is the only lane that can run at scale on this host.",
       "note": "The six cited ids were confirmed present in the Verified fork, not only in upstream. The Verified fork exists because upstream tasks had policy, DB, and expected-action inconsistencies.",
       "cells": [
-        { "domain": "retail", "id": "5", "actions": 5, "efDiscrimination": "Multi-level supersession: swap bottle+lamp, then only the lamp, then a further revision." },
-        { "domain": "retail", "id": "18", "actions": 5, "efDiscrimination": "Conditional intent tree: return, then exchange same model, then a specific variant if out of stock." },
-        { "domain": "retail", "id": "21", "actions": 12, "efDiscrimination": "Late intent injection plus product-id/item-id confusion; highest action count in the set." },
-        { "domain": "retail", "id": "22", "actions": 7, "efDiscrimination": "Partial rollback: change address and all orders, then revert only the user address." },
-        { "domain": "airline", "id": "11", "actions": 1, "efDiscrimination": "Delayed information (reservation id withheld for two rounds) then a conditional fallback." },
-        { "domain": "airline", "id": "42", "actions": 10, "efDiscrimination": "Cross-object, cross-time current-state consistency over duplicate flights." }
+        {
+          "role": "discriminator",
+          "domain": "retail",
+          "id": "5",
+          "actions": 5,
+          "efDiscrimination": "Multi-level supersession: swap bottle+lamp, then only the lamp, then a further revision.",
+          "rewardOurRoute": 0.56,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled"
+        },
+        {
+          "role": "discriminator",
+          "domain": "retail",
+          "id": "18",
+          "actions": 5,
+          "efDiscrimination": "Conditional intent tree: return, then exchange same model, then a specific variant if out of stock.",
+          "rewardOurRoute": 0.44,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled"
+        },
+        {
+          "role": "anchor",
+          "domain": "retail",
+          "id": "21",
+          "actions": 12,
+          "efDiscrimination": "Late intent injection plus product-id/item-id confusion; highest action count in the set.",
+          "rewardOurRoute": 1.0,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled",
+          "anchorReason": "SATURATED for this route (1.00) - keep as anchor, not discriminator"
+        },
+        {
+          "role": "anchor",
+          "domain": "retail",
+          "id": "22",
+          "actions": 7,
+          "efDiscrimination": "Partial rollback: change address and all orders, then revert only the user address.",
+          "rewardOurRoute": 0.88,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled",
+          "anchorReason": "saturated (0.88) - anchor"
+        },
+        {
+          "role": "anchor",
+          "domain": "airline",
+          "id": "11",
+          "actions": 1,
+          "efDiscrimination": "Delayed information (reservation id withheld for two rounds) then a conditional fallback.",
+          "rewardOurRoute": 0.94,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled",
+          "anchorReason": "saturated (0.94) - anchor"
+        },
+        {
+          "role": "excluded",
+          "domain": "airline",
+          "id": "42",
+          "actions": 10,
+          "efDiscrimination": "Cross-object, cross-time current-state consistency over duplicate flights.",
+          "rewardOurRoute": 0.06,
+          "measuredOn": "96-episode sweep, n=16 per task, all arms pooled",
+          "exclusionReason": "FLOORED (0.06) - excluded from headline, kept as a hard-case diagnostic"
+        }
       ],
-      "metric": "pass^1, pass^2, pass^4 at k=4 repeats per arm"
+      "metric": "pass^1, pass^2, pass^4 at k=4 repeats per arm",
+      "selectionRule": "Route-conditioned band 0.15-0.85, the same rule as the longwork lane, applied AFTER the first run measured the actual route difficulty.",
+      "discriminators": [
+        "retail/5",
+        "retail/18"
+      ],
+      "anchors": [
+        "retail/21",
+        "retail/22",
+        "airline/11"
+      ],
+      "excluded": [
+        "airline/42"
+      ],
+      "firstRun": {
+        "episodes": 96,
+        "replicates": 4,
+        "seed": 20261001,
+        "concurrency": 6,
+        "purpose": "quality",
+        "folds": 0,
+        "note": "Zero folds is EXPECTED, not a malfunction: the fold threshold is 16000 tokens at a 32K window x 0.5, while episodes peak at 3-5K. tau2 is the interaction-reliability lane; it is deliberately NOT shrunk-window-forced into folding.",
+        "result": "No arm separation: permutation test on economy-basic gave p=0.164. Task-level spread (0.94) dwarfs arm-level spread (0.17)."
+      }
     },
     "memory": {
       "benchmark": "LongMemEval-V2",
       "repo": "xiaowu0162/LongMemEval-V2",
       "dataset": "xiaowu0162/longmemeval-v2",
       "questionsTotal": 451,
-      "haystack": { "tiers": ["small", "medium"], "maxTrajectories": 500, "maxTokens": "115M" },
+      "haystack": {
+        "tiers": [
+          "small",
+          "medium"
+        ],
+        "maxTrajectories": 500,
+        "maxTokens": "115M"
+      },
       "grader": "official question accuracy plus query latency",
       "whyThisLane": "Directly measures whether long histories are retained, updated, and correctly abstained on. This is the closest published analogue to EF's own claim.",
       "hostFeasibility": "BLOCKED on this host: the harness expects local Qwen3.5-9B reader and Qwen3-Embedding-8B endpoints. The GPU has 8 GB, which is below a 9B reader plus an 8B embedder. Data is 7.1 GB, of which trajectories.jsonl is 1.2 GB and screenshot bundles are 5.9 GB.",
       "storagePlan": "The 5.9 GB screenshot bundles are optional for the text-only questions below; downloading trajectories.jsonl plus haystacks is ~1.2 GB.",
       "cells": [
-        { "id": "01307e07", "type": "dynamic-environment", "domain": "enterprise", "efDiscrimination": "Current filter behaviour after state changed over time." },
-        { "id": "109b334c", "type": "dynamic-environment-abs", "domain": "enterprise", "efDiscrimination": "Negative knowledge: the correct answer is that a field does NOT exist. A mode that hallucinates from a folded summary fails here." },
-        { "id": "025db8ef", "type": "procedure", "domain": "enterprise", "efDiscrimination": "Cross-trajectory workflow order." },
-        { "id": "059974dd", "type": "procedure-abs", "domain": "enterprise", "efDiscrimination": "Procedure plus abstention." },
-        { "id": "18b91103", "type": "errors-gotchas", "domain": "enterprise", "efDiscrimination": "Environment-specific trap that must be learned from a past failure." },
-        { "id": "0574c69a", "type": "errors-gotchas", "domain": "web", "efDiscrimination": "Search syntax that the environment does not support." }
+        {
+          "id": "01307e07",
+          "type": "dynamic-environment",
+          "domain": "enterprise",
+          "efDiscrimination": "Current filter behaviour after state changed over time."
+        },
+        {
+          "id": "109b334c",
+          "type": "dynamic-environment-abs",
+          "domain": "enterprise",
+          "efDiscrimination": "Negative knowledge: the correct answer is that a field does NOT exist. A mode that hallucinates from a folded summary fails here."
+        },
+        {
+          "id": "025db8ef",
+          "type": "procedure",
+          "domain": "enterprise",
+          "efDiscrimination": "Cross-trajectory workflow order."
+        },
+        {
+          "id": "059974dd",
+          "type": "procedure-abs",
+          "domain": "enterprise",
+          "efDiscrimination": "Procedure plus abstention."
+        },
+        {
+          "id": "18b91103",
+          "type": "errors-gotchas",
+          "domain": "enterprise",
+          "efDiscrimination": "Environment-specific trap that must be learned from a past failure."
+        },
+        {
+          "id": "0574c69a",
+          "type": "errors-gotchas",
+          "domain": "web",
+          "efDiscrimination": "Search syntax that the environment does not support."
+        }
       ],
       "metric": "accuracy at small and medium haystack, reported with the small->medium degradation per arm"
     }

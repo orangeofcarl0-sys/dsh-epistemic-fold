@@ -11,3 +11,7 @@ tsconfig.tsbuildinfo
 
 # vendored DSH source (separate upstream repo, not part of this repo)
 vendor/
+
+# Python bytecode (tau2 bridge adapter)
+__pycache__/
+*.pyc

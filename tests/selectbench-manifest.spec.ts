@@ -21,7 +21,7 @@ import { join } from 'node:path'
 interface Cell {
   readonly id?: string
   readonly domain?: string
-  readonly role?: 'discriminator' | 'anchor'
+  readonly role?: 'discriminator' | 'anchor' | 'excluded'
   readonly rewardOurRoute?: number
   readonly resources?: { readonly cpus: number; readonly memoryMb: number; readonly storageMb: number }
   readonly efDiscrimination: string
@@ -133,6 +133,53 @@ describe('EF-SelectBench v1 is frozen and internally consistent', () => {
     expect(manifest.lanes.longwork!.hostFeasibility).toMatch(/BLOCKED/i)
     expect(manifest.lanes.memory!.hostFeasibility).toMatch(/BLOCKED/i)
     expect(manifest.lanes.interaction!.hostFeasibility).toMatch(/FEASIBLE/i)
+  })
+
+  it('admits no tau2 DISCRIMINATOR that is saturated or floored FOR OUR ROUTE', () => {
+    // The same rule as the longwork lane, applied to the lane that has now been
+    // measured. The first tau2 run showed why it matters here too: four of the
+    // six selected tasks sit outside the band for this route, and one of them
+    // (airline/42, 0.06) was dragging every arm's headline down by an equal and
+    // uninformative amount.
+    let discriminators = 0
+    for (const cell of manifest.lanes.interaction!.cells) {
+      const label = `${String(cell.domain)}/${String(cell.id)}`
+      const reward = cell.rewardOurRoute
+      expect(reward, `${label} must state its measured route reward`).toBeDefined()
+      if (cell.role === 'excluded') {
+        expect(cell.exclusionReason, `${label} is excluded and must say why`).toBeDefined()
+        continue
+      }
+      if (cell.role === 'anchor') {
+        expect(cell.anchorReason, `${label} is an anchor and must say why`).toBeDefined()
+        expect(
+          reward! > SATURATED || reward! < FLOOR,
+          `${label} is labelled anchor but sits inside the discriminator band`,
+        ).toBe(true)
+        continue
+      }
+      expect(cell.role, `${label} must declare a role`).toBe('discriminator')
+      expect(reward, `${label}: ${reward} is saturated for our route`).toBeLessThanOrEqual(SATURATED)
+      expect(reward, `${label}: ${reward} is floored for our route`).toBeGreaterThanOrEqual(FLOOR)
+      discriminators += 1
+    }
+    expect(discriminators, 'the interaction lane needs at least one discriminator').toBeGreaterThan(0)
+  })
+
+  it('records the first tau2 run honestly, including the null result', () => {
+    const first = (manifest.lanes.interaction as unknown as {
+      readonly firstRun?: { readonly episodes: number; readonly folds: number; readonly result: string; readonly note: string }
+    }).firstRun
+    expect(first, 'the interaction lane must record its first measured run').toBeDefined()
+    expect(first!.episodes).toBe(96)
+    // Zero folds is the expected outcome, not a defect: at a 32K window with a
+    // 0.5 ratio the threshold is 16K tokens and episodes peak near 3-5K. If a
+    // future run reports folds, that is a real change and this pin should move
+    // deliberately rather than silently.
+    expect(first!.folds).toBe(0)
+    expect(first!.note).toMatch(/EXPECTED/)
+    // The result must state the null finding rather than a winner.
+    expect(first!.result).toMatch(/No arm separation|p=0\.1|dwarfs/)
   })
 
   it('keeps every cited id unique within its lane', () => {

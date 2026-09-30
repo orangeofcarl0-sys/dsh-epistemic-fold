@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# Run the tau2-Bench-Verified integration against the space-bunny-free route.
+#
+# ## Why a script rather than a documented command line
+#
+# Four environment facts must all be right or the run fails in ways that look
+# like benchmark failures: the proxy (this machine reaches the provider only
+# through a local HTTP proxy), the route (space-bunny-free is served by OpenCode
+# Zen, not by the default ZCode route), the credential (read from DSH's own store
+# so no key is ever copied into a repository or a shell history), and the Python
+# interpreter (tau2 requires >=3.12,<3.14, which is NOT this machine's default).
+#
+# ## The key
+#
+# It is read at runtime from DSH's credential store and exported only into this
+# process tree. It is never printed, never written to a file, and never passed as
+# an argument. `set -x` is deliberately NOT used.
+#
+# Usage:
+#   bash scripts/run-tau2.sh selfcheck
+#   bash scripts/run-tau2.sh gate                 # 2 tasks x 2 arms x 1 rep
+#   bash scripts/run-tau2.sh sweep                # 6 tasks x 4 arms x 4 reps
+#
+# Environment overrides:
+#   EF_TAU2_ARM        arm for a single-run invocation (default: basic)
+#   EF_TAU2_THRESHOLD  fold threshold ratio (default: 0.5)
+
+set -euo pipefail
+
+MODE="${1:-selfcheck}"
+shift || true
+
+EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TAU2_ROOT="${TAU2_ROOT:-/f/Codex_Work_Space/bench-workspace/tau2-verified}"
+TAU2_PY="${TAU2_ROOT}/.venv/Scripts/python.exe"
+
+[ -x "$TAU2_PY" ] || { echo "tau2 venv not found at $TAU2_PY (run: uv sync)" >&2; exit 1; }
+
+CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
+[ -f "$CREDENTIALS" ] || CREDENTIALS="D:/dsh/.credentials.yaml"
+[ -f "$CREDENTIALS" ] || { echo "credential store not found" >&2; exit 1; }
+
+# Read ONE value out of the refs block. Never echoed.
+KEY=$("$TAU2_PY" - "$CREDENTIALS" <<'PY'
+import re, sys
+text = open(sys.argv[1], encoding='utf-8').read()
+m = re.search(r'^\s+OPENCODE_GO_API_KEY:\s*(\S+)\s*$', text, re.M)
+sys.stdout.write(m.group(1) if m else '')
+PY
+)
+[ -n "$KEY" ] || { echo "OPENCODE_GO_API_KEY not present in the credential store" >&2; exit 1; }
+echo "live route: opencode.ai/zen/v1 model=space-bunny-free (key len ${#KEY})"
+
+export EF_ROOT
+export EF_LIVE=1
+export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
+export EF_LIVE_API_KEY="$KEY"
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
+# Node reaches the provider only through the local proxy. NODE_USE_ENV_PROXY
+# makes Node's own fetch honour HTTPS_PROXY, so no adapter change is needed.
+export NODE_USE_ENV_PROXY=1
+export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
+
+# Scratch for EF bundles. Kept under the managed temp root so the sweep owns it.
+export EF_TAU2_BUNDLE_ROOT="${EF_TAU2_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/tau2-bundles}"
+
+# The adapter must be importable; it lives in the EF repo, not in the benchmark.
+export PYTHONPATH="${EF_ROOT}/eval/tau2:${TAU2_ROOT}/src:${PYTHONPATH:-}"
+
+case "$MODE" in
+  selfcheck)
+    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/ef_tau2_adapter.py"
+    ;;
+  gate|sweep)
+    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/run_tau2.py" --preset "$MODE" "$@"
+    ;;
+  *)
+    echo "unknown mode: $MODE (expected selfcheck|gate|sweep)" >&2
+    exit 2
+    ;;
+esac

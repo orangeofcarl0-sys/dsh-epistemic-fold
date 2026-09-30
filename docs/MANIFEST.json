@@ -173,5 +173,10 @@
     "file": "33_RC8_EXTERNAL_BENCHMARKS.md",
     "bytes": 10953,
     "sha256": "c49d7ca9b2ae3dfdebbec431f5912fff7e7d99fc020473b5e021cbdc9b563b90"
+  },
+  {
+    "file": "34_RC9_TAU2_INTEGRATION.md",
+    "bytes": 10675,
+    "sha256": "771adb901cbfc258fa5addb87f499c6e45fe006da2ad20f0cf590e6631476be0"
   }
 ]
