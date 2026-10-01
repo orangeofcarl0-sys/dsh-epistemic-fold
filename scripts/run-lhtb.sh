@@ -77,4 +77,9 @@ export EF_LHTB_ARM="${EF_LHTB_ARM:-basic}"
 export EF_LHTB_BUNDLE_ROOT="${EF_LHTB_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/lhtb-bundles}"
 
 echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
+
+# The config's dataset path is relative to the WORKING DIRECTORY, and Harbor
+# resolves it there. Running from the EF repo would make `./tasks` resolve to a
+# path that does not exist, so the run happens from the benchmark checkout.
+cd "$LHTB_ROOT"
 exec "$HARBOR_EXE" run -c "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml"

@@ -214,6 +214,30 @@ class EFLhtbAgent(BaseAgent):
             "ef_shell_calls": total_calls,
         }
         self._bridge.close()
+        self._write_transcript(telemetry, total_calls)
+
+    def _write_transcript(self, telemetry: dict[str, Any], total_calls: int) -> None:
+        """
+        Persist the run's transcript next to Harbor's other agent logs.
+
+        Without this a zero score is undiagnosable: the verifier reports only the
+        reward, and the container is deleted afterwards, so there is no record of
+        what the agent actually tried. That was exactly the position the first
+        LHTB probe left us in.
+        """
+        try:
+            self.logs_dir.mkdir(parents=True, exist_ok=True)
+            payload = {
+                "arm": self.arm,
+                "shell_calls": total_calls,
+                "telemetry": telemetry,
+                "transcript": self._transcript,
+            }
+            (self.logs_dir / "ef-transcript.json").write_text(
+                json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+        except Exception as error:  # noqa: BLE001 - logging must not fail a run
+            print(f"ef-lhtb: could not write transcript: {error}", file=sys.stderr)
 
     def stop(
         self,
