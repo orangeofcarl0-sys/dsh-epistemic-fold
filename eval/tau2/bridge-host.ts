@@ -240,6 +240,15 @@ function appendIncoming(message: TauMessage | TauMultiTool): void {
   throw new Error(`bridge: unsupported incoming role "${message.role}"`)
 }
 
+/** Close the current turn and open the next one, if it carries content. */
+function rotateTurn(): void {
+  if (turnHasContent) {
+    closeTurn()
+    openTurn()
+  }
+  turnHasContent = true
+}
+
 /** Open a turn, so automatic compaction has an enclosing turn (EF requires one). */
 function openTurn(): void {
   turnCounter += 1
@@ -515,17 +524,25 @@ async function main(): Promise<void> {
         if (op === 'init') {
           await init(request as never)
           emit({ ok: true, telemetry: await telemetry() })
+        } else if (op === 'append') {
+          // Append WITHOUT calling the model.
+          //
+          // This exists because a model may emit SEVERAL tool calls in one
+          // message, and every result must be in the history before the next
+          // model call. Folding the two operations together forced one model
+          // call per result, which would show the model a transcript with some
+          // of its own tool calls still unanswered.
+          appendIncoming(request.message as TauMessage)
+          emit({ ok: true, telemetry: await telemetry() })
+        } else if (op === 'step') {
+          // One model call on the current surface, with a fresh turn boundary.
+          rotateTurn()
+          const assistant = await modelTurn()
+          emit({ ok: true, assistant, telemetry: await telemetry() })
         } else if (op === 'turn') {
-          // Each tau2 turn maps to one DSH turn. The previous turn is closed and
-          // a new one opened BEFORE the incoming message is appended, so the fold
-          // frontier sees real turn boundaries: without them every step lands in
-          // the single turn opened at init, and the frontier has no admissible
-          // span to fold.
-          if (turnHasContent) {
-            closeTurn()
-            openTurn()
-          }
-          turnHasContent = true
+          // Append and call, for callers whose protocol delivers exactly one
+          // message per exchange (tau2's orchestrator).
+          rotateTurn()
           appendIncoming(request.message as TauMessage)
           const assistant = await modelTurn()
           emit({ ok: true, assistant, telemetry: await telemetry() })

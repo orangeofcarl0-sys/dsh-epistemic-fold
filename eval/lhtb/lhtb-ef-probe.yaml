@@ -1,0 +1,49 @@
+# LHTB x EF — serial probe.
+#
+# One task, one arm, one attempt. The point is NOT a statistic: it is to confirm
+# that the DSH adapter can enter an LHTB container, act through the official
+# environment, and be graded by the official hidden verifier.
+#
+# ## Why serial
+#
+# Every LHTB task requests 4-8 GB of RAM and this host's WSL VM is capped at
+# 8 GB total, so at most one trial can run at a time. `n_concurrent_trials: 1` is
+# a hardware limit, not a choice.
+#
+# ## Why this task
+#
+# `unknown-config-semantics` is one of the two DISCRIMINATORS in
+# bench/ef-selectbench-v1.json for this route (published reward 0.50). The
+# saturated tasks were excluded precisely because they cannot show a difference.
+#
+# ## The arm
+#
+# Selected by `import_path` pointing at the EF agent module, so the LHTB checkout
+# is never modified. EF_LHTB_ARM chooses the context runtime.
+#
+# Usage:
+#   bash scripts/run-lhtb.sh probe                 # default arm: basic
+#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh probe
+
+job_name: lhtb-ef-probe
+jobs_dir: ./jobs
+n_attempts: 1
+# Serial: see the memory note above. This is a host limit, not a preference.
+n_concurrent_trials: 1
+timeout_multiplier: 1.0
+
+environment:
+  type: docker
+  force_build: false
+  delete: true
+
+agents:
+  - import_path: "ef_lhtb_agent:EFLhtbAgent"
+    model_name: openai/space-bunny-free
+    # The task's own agent budget is the real limit; this bounds a runaway loop.
+    override_timeout_sec: 10800
+
+datasets:
+  - path: ./tasks
+    task_names:
+      - unknown-config-semantics

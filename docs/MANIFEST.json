@@ -67,7 +67,7 @@
   {
     "file": "12_R1_EVALUATION_REPORT.md",
     "bytes": 12981,
-    "sha256": "226b0659dcb889cdee908c803622a9b812ce9c4f0983b5b9d89973ec79344f97"
+    "sha256": "382c290dda33d2fd538ac749e59de70ecd790077e2d3b1f8d43d1890548cb32d"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -178,5 +178,10 @@
     "file": "34_RC9_TAU2_INTEGRATION.md",
     "bytes": 10675,
     "sha256": "771adb901cbfc258fa5addb87f499c6e45fe006da2ad20f0cf590e6631476be0"
+  },
+  {
+    "file": "35_RC10_LHTB_INTEGRATION.md",
+    "bytes": 4662,
+    "sha256": "67dd7d602250eb0f06fabbab747c71ab427312f33067571312970efe0212175a"
   }
 ]

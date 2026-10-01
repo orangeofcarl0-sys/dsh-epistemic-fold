@@ -27,15 +27,11 @@ orchestrator, the user simulator and the evaluator all stay stock.
 
 from __future__ import annotations
 
-import atexit
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Optional
-
-from loguru import logger
 
 from tau2.agent.base import LocalAgent, ValidAgentInputMessage
 from tau2.data_model.message import (
@@ -46,149 +42,17 @@ from tau2.data_model.message import (
 )
 from tau2.environment.tool import Tool
 
-# The EF checkout root, derived from this file's own location
-# (`<root>/eval/tau2/ef_tau2_adapter.py`), so the bridge is found without a
-# hard-coded absolute path.
-EF_ROOT = Path(
-    os.environ.get("EF_ROOT", str(Path(__file__).resolve().parents[2]))
-).resolve()
+# The bridge client lives in a framework-free module so the LHTB lane (a
+# different Python framework with a disjoint dependency set) can share it.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bridge"))
+from ef_bridge_client import (  # noqa: E402
+    ARM_SPECS,
+    BridgeError,
+    EpistemicFoldBridge,
+)
 
-# The arm under test. `basic` mounts the real DSH Basic engine; the tiers mount
-# EF with that preset's policy.
 ARM_ENV = "EF_TAU2_ARM"
 DEFAULT_ARM = "basic"
-
-ARM_SPECS: dict[str, dict[str, str]] = {
-    "basic": {"label": "basic", "engine": "basic", "mode": "legacy"},
-    "economy": {"label": "economy", "engine": "ef", "mode": "economy"},
-    "balanced": {"label": "balanced", "engine": "ef", "mode": "balanced"},
-    "quality": {"label": "quality", "engine": "ef", "mode": "quality"},
-}
-
-
-class BridgeError(RuntimeError):
-    """The Node host refused a request or died."""
-
-
-class EpistemicFoldBridge:
-    """
-    A long-lived Node process holding one EF session.
-
-    One instance per episode, so the session, the fold state and the bundle
-    store persist across turns. Restarting per turn would reset the very state
-    under test.
-    """
-
-    def __init__(self, arm: str, bundle_root: str, domain: str, task_id: str) -> None:
-        spec = ARM_SPECS.get(arm)
-        if spec is None:
-            raise BridgeError(
-                f"unknown arm {arm!r}; expected one of {sorted(ARM_SPECS)}"
-            )
-        self.arm = arm
-        self.spec = spec
-        self.domain = domain
-        self.task_id = task_id
-        self.telemetry: list[dict[str, Any]] = []
-        self.last_telemetry: dict[str, Any] = {}
-
-        env = dict(os.environ)
-        env["EF_TAU2_BUNDLE_ROOT"] = bundle_root
-        # The credential is inherited through the environment and never passed
-        # as an argument, so it cannot appear in a process listing.
-        self._proc = subprocess.Popen(
-            [
-                "node",
-                "--experimental-transform-types",
-                str(EF_ROOT / "eval" / "tau2" / "bridge-host.ts"),
-            ],
-            cwd=str(EF_ROOT),
-            env=env,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            bufsize=1,
-        )
-        atexit.register(self.close)
-
-    # -- protocol ---------------------------------------------------------
-
-    def _send(self, request: dict[str, Any]) -> dict[str, Any]:
-        """Write one request and read one response line."""
-        if self._proc.poll() is not None:
-            stderr = ""
-            if self._proc.stderr is not None:
-                stderr = self._proc.stderr.read() or ""
-            raise BridgeError(
-                f"bridge host exited with code {self._proc.returncode}: {stderr[-600:]}"
-            )
-        assert self._proc.stdin is not None and self._proc.stdout is not None
-        self._proc.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
-        self._proc.stdin.flush()
-        line = self._proc.stdout.readline()
-        if not line:
-            stderr = ""
-            if self._proc.stderr is not None:
-                stderr = self._proc.stderr.read() or ""
-            raise BridgeError(f"bridge host closed the stream: {stderr[-600:]}")
-        response = json.loads(line)
-        if not response.get("ok"):
-            raise BridgeError(str(response.get("error", "unknown bridge error")))
-        telemetry = response.get("telemetry")
-        if isinstance(telemetry, dict):
-            self.last_telemetry = telemetry
-            self.telemetry.append(telemetry)
-        return response
-
-    def init(self, policy: str, tools: list[Tool]) -> None:
-        """Mount the session and the engine for this episode."""
-        self._send(
-            {
-                "op": "init",
-                "arm": self.spec,
-                "policy": policy,
-                "tools": [
-                    {
-                        "name": tool.name,
-                        "description": tool.openai_schema.get("function", {}).get(
-                            "description", ""
-                        ),
-                        "parameters": tool.openai_schema.get("function", {}).get(
-                            "parameters", {}
-                        ),
-                    }
-                    for tool in tools
-                ],
-                "taskId": self.task_id,
-                "domain": self.domain,
-            }
-        )
-
-    def turn(self, message: Message) -> AssistantMessage:
-        """Relay one tau2 message and return the assistant's reply."""
-        response = self._send({"op": "turn", "message": _to_wire(message)})
-        return _from_wire(response["assistant"])
-
-    def close(self) -> None:
-        """Tell the host the episode is over, then stop it."""
-        if getattr(self, "_closed", False):
-            return
-        self._closed = True
-        try:
-            if self._proc.poll() is None:
-                self._send({"op": "close"})
-        except Exception:  # noqa: BLE001 - shutdown must never mask a result
-            pass
-        try:
-            self._proc.terminate()
-            self._proc.wait(timeout=10)
-        except Exception:  # noqa: BLE001
-            try:
-                self._proc.kill()
-            except Exception:  # noqa: BLE001
-                pass
 
 
 def _to_wire(message: Message) -> dict[str, Any]:
@@ -284,8 +148,13 @@ class EFTau2Agent(LocalAgent[dict]):
                 task_id=self.task_id,
             )
             self._bridge.init(self.domain_policy, self.tools)
-            logger.info(
-                f"EF bridge mounted: arm={self.arm} domain={self.domain} task={self.task_id}"
+            # Printed rather than logged through loguru: this module is shared
+            # with the LHTB lane, whose Harbor venv has no loguru. A bridge
+            # client that imports cleanly under both frameworks is worth more
+            # than the log-level control it costs.
+            print(
+                f"EF bridge mounted: arm={self.arm} domain={self.domain} task={self.task_id}",
+                file=sys.stderr,
             )
         return self._bridge
 
