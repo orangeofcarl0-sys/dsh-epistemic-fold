@@ -183,5 +183,10 @@
     "file": "35_RC10_LHTB_INTEGRATION.md",
     "bytes": 8045,
     "sha256": "245a04fe245168fb6dc08cbbf131d07878d8c35700e997fc090c6502b28cf3ad"
+  },
+  {
+    "file": "36_RC10_SESSION_PAUSE.md",
+    "bytes": 5607,
+    "sha256": "1aab74944be84647954b9a8910ca52d193efc30ecae514127ac262bc014addb2"
   }
 ]
