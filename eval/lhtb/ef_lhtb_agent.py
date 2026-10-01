@@ -192,11 +192,20 @@ class EFLhtbAgent(BaseAgent):
                 # sustained streak of blanks ends the loop.
                 if content == "" or content == EMPTY_PLACEHOLDER:
                     empty_streak += 1
+                    finish = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
                     self._transcript.append(
-                        {"turn": turn, "anomaly": "empty response", "streak": empty_streak}
+                        {
+                            "turn": turn,
+                            "anomaly": "empty response",
+                            "streak": empty_streak,
+                            "finishReason": finish,
+                        }
                     )
                     if empty_streak >= MAX_EMPTY_STREAK:
                         break
+                    # A transport failure is retried with a plain nudge; the model
+                    # never saw the request, so nothing about the task changed.
+                    # The message differs only in what it tells the reader.
                     self._bridge.append(
                         {
                             "role": "user",

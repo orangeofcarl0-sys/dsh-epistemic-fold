@@ -128,6 +128,14 @@ interface Telemetry {
   readonly surfaceNodesLast: number
   readonly archivedBundles: number
   readonly costTotal: number
+  /**
+   * How the most recent model call finished.
+   *
+   * `error:...` means the call failed in transport, so an empty reply is NOT the
+   * model declining to act. Without this, a dead proxy and a finished task look
+   * identical to the caller.
+   */
+  readonly lastFinishReason: string
 }
 
 let ctx: Context | undefined
@@ -143,6 +151,8 @@ let turnHasContent = false
 let folds = 0
 let roots = 0
 let modelCalls = 0
+/** How the last model call finished, so an empty reply can be attributed. */
+let lastFinishReason = 'unknown'
 let promptTokensLast = 0
 let surfaceNodesLast = 0
 let costTotal = 0
@@ -328,6 +338,7 @@ async function modelTurn(): Promise<TauAssistant> {
 
   let text = ''
   const calls: { id: string; name: string; args: string }[] = []
+  let finishReason = 'unknown'
   for await (const chunk of ctx!.llm.stream({
     provider: LIVE_PROVIDER,
     model: 'live',
@@ -340,7 +351,17 @@ async function modelTurn(): Promise<TauAssistant> {
     if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
       calls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
     }
+    if (chunk.type === 'finish') {
+      finishReason = chunk.reason.kind === 'error'
+        ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 160)}`
+        : chunk.reason.kind
+    }
   }
+  // An empty reply is ambiguous on its own: the model may have said nothing, or
+  // the call may have failed in transport. The finish reason separates them, and
+  // a caller that sees only "no tool calls" would misread a dead connection as a
+  // finished task. That ambiguity cost a full LHTB probe run, so it is reported.
+  lastFinishReason = finishReason
   // Cost is computed from the WHOLE bill at report time rather than accumulated
   // per turn: `realizedCost` prices the full log, so adding its result each turn
   // would count every earlier call again.
@@ -505,6 +526,7 @@ async function telemetry(): Promise<Telemetry> {
     surfaceNodesLast,
     archivedBundles: archived,
     costTotal,
+    lastFinishReason,
   }
 }
 
