@@ -251,6 +251,8 @@ class EFLhtbAgent(BaseAgent):
                         "error": False,
                     }
                 )
+                # Flushed per command, so a killed run still leaves a record.
+                self._write_transcript(self._bridge.last_telemetry, total_calls)
             reply = self._bridge.step()
 
         telemetry = self._bridge.last_telemetry
@@ -266,10 +268,15 @@ class EFLhtbAgent(BaseAgent):
         """
         Persist the run's transcript next to Harbor's other agent logs.
 
-        Without this a zero score is undiagnosable: the verifier reports only the
-        reward, and the container is deleted afterwards, so there is no record of
-        what the agent actually tried. That was exactly the position the first
-        LHTB probe left us in.
+        Written after EVERY step, not once at the end. A run stopped by a timeout,
+        a killed container, or a host that ran out of memory never reaches the
+        end of `run()`, and the first three LHTB probes each lost their entire
+        transcript that way — which is the only record of what the agent tried,
+        since the verifier reports a reward and nothing else and the container is
+        deleted afterwards.
+
+        Failures here are reported but never raised: a diagnostic must not be
+        able to fail the measurement it exists to explain.
         """
         try:
             self.logs_dir.mkdir(parents=True, exist_ok=True)

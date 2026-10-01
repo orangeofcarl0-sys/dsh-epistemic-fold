@@ -93,7 +93,67 @@ agent run needs at least that. A run that looks "stuck" at 0% CPU is the task's
 time-floored gate working as designed — verified by watching
 `/opt/cfg/runs/actions.log` advance stage by stage.
 
-## 6. Reproducing
+## 6. What the probes established
+
+The oracle smoke **passed end to end**: reward 1.0, 5/5 stages (A→B→C→D→E), 696/696
+fields across 58 cases, in ~1.75 h. That validates Docker, the staged gate
+structure, and the official hidden verifier — none of which EF touches.
+
+The EF-driven runs then established that the integration works and produced four
+real defects, each found by running rather than reading. Every one would have
+silently corrupted a measurement:
+
+1. **An empty model response was treated as task completion.** The first
+   diagnostic run scored 0 after only 14 shell calls because the loop read "no
+   tool calls" as "the model is done". One blank completion silently ended a task
+   budgeted in hours. An empty reply is now an anomaly to nudge past; only a
+   sustained streak ends the loop. After the fix the same task ran 101 shell
+   calls with 8 folds.
+
+2. **`retainTokens: 0` was the opposite of a neutral default.** DSH Basic's own
+   default is `retainRatio 0.16`. Pinning the token form to zero made every fold
+   retain *nothing*, so the agent re-read the same files repeatedly — `spec.md`
+   seven times, `engine.py` six times. That is a property of the configuration,
+   not of the mode under test. The field is now omitted for every arm.
+   (This never affected the tau2 sweep: that run folded zero times, so the
+   setting could not take effect.)
+
+3. **A transport failure was indistinguishable from a silent model.** A run
+   produced five consecutive empty replies with `costTotal 0`; reproducing the
+   same call moments later returned proper tool calls, and the log showed the
+   local proxy saturated. The bridge now reports the stream's finish reason, so
+   `error:fetch failed` is visibly different from the model declining to act.
+
+4. **Harbor reuses a job directory and reports the stale result.** A second
+   invocation exited in 60 s while printing "Total runtime: 29m 31s" and the
+   previous run's reward. Each run now gets a timestamped job directory.
+
+A fifth, operational rather than logical: the bridge host's stderr was a pipe
+drained only on crash, so a live failure left no trace. It now goes to a file.
+
+### The result, and what it means
+
+With the wiring verified, the runs scored **reward 0, 0 stages, 0 submits** — and
+the transcript shows why. Across 38–101 shell calls with 3–8 folds, the agent
+spent its budget reading `spec.md`, `cfg_daemon.py` and the data pools, and
+**never modified `/opt/cfg/engine.py`** (`cmp` against `engine.orig.py` stayed
+identical). It never reached `cfg probe`, so no stage gate could pass.
+
+That is a statement about the model's approach on this task, not about the
+harness: the loop ran, folded, executed commands, and was graded correctly. It is
+also the honest baseline — the published route reward for this task is 0.50
+*with* the full 90-minute budget and a harness that continues until timeout,
+which this probe does not replicate.
+
+**What is proven:** DSH's Basic and EF runtimes mount inside a real LHTB trial,
+fold a long transcript (checkpoints carry "Folded 30 message(s)" with the exact
+history archived for `context_recall`), execute commands through Harbor's
+official environment, and are graded by the official hidden verifier.
+
+**What is not:** any comparison between arms. That needs the same probe repeated
+per arm, and this host runs one LHTB cell at a time.
+
+## 7. Reproducing
 
 ```bash
 # one-time: install the bundled (LHTB-patched) Harbor
