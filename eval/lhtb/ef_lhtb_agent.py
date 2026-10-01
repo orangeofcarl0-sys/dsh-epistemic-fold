@@ -56,6 +56,14 @@ SHELL_TOOL = "run_shell"
 # is the real budget; this is a safety net so a looping model cannot run forever.
 MAX_TURNS = int(os.environ.get("EF_LHTB_MAX_TURNS", "400"))
 
+# How many consecutive empty responses end the loop. A single blank completion is
+# an anomaly to nudge past, not a reason to abandon a multi-hour task.
+MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
+
+# The placeholder the bridge substitutes when the model produced nothing. Kept in
+# sync with `EMPTY_TURN_PLACEHOLDER` in bridge-host.ts.
+EMPTY_PLACEHOLDER = "(no response)"
+
 SYSTEM_TEMPLATE = """\
 You are working in a stateful Linux container on a long-horizon task. You act by
 calling the `{tool}` tool; the command runs inside the container and its output is
@@ -166,6 +174,7 @@ class EFLhtbAgent(BaseAgent):
         self._bridge.append({"role": "user", "content": instruction})
 
         total_calls = 0
+        empty_streak = 0
         # The first step carries no incoming message: the instruction is already
         # in the session.
         reply = self._bridge.step()
@@ -174,9 +183,37 @@ class EFLhtbAgent(BaseAgent):
             calls = reply.get("tool_calls") or []
 
             if not calls:
-                # The model answered in prose: the task loop is over.
-                self._transcript.append({"turn": turn, "assistant": reply.get("content")})
+                content = (reply.get("content") or "").strip()
+                # An EMPTY response is an anomaly, not a completion. Treating it
+                # as "done" ended the first diagnostic run after 14 shell calls:
+                # one blank completion silently terminated a task budgeted in
+                # hours, and the verifier then reported reward 0 with no
+                # indication of why. The model is nudged instead, and only a
+                # sustained streak of blanks ends the loop.
+                if content == "" or content == EMPTY_PLACEHOLDER:
+                    empty_streak += 1
+                    self._transcript.append(
+                        {"turn": turn, "anomaly": "empty response", "streak": empty_streak}
+                    )
+                    if empty_streak >= MAX_EMPTY_STREAK:
+                        break
+                    self._bridge.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                "Your last reply was empty. Continue the task: run a "
+                                "command with run_shell, or state plainly that the task "
+                                "is complete."
+                            ),
+                        }
+                    )
+                    reply = self._bridge.step()
+                    continue
+                # Prose with content: the model is reporting it is finished.
+                self._transcript.append({"turn": turn, "assistant": content})
                 break
+
+            empty_streak = 0
 
             # EVERY result from this message is appended BEFORE the next model
             # call. A model may emit several tool calls at once, and calling the
