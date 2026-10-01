@@ -449,10 +449,18 @@ async function init(request: {
   // mean it. Everything else is held identical so a difference is attributable
   // to the mode rather than to the fixture.
   //
-  // `retainTokens` is deliberately NOT set here. The tier presets carry
-  // `retainRatio` instead, and Basic rejects a config that supplies both
-  // ("retainRatio and retainTokens are mutually exclusive"), so pinning the
-  // token form would make every tier arm fail to mount.
+  // `retainTokens` is deliberately NOT set for ANY arm.
+  //
+  // Setting it to 0 for `basic` looked like a neutral "use the library default"
+  // choice and was the opposite: DSH Basic's own default is `retainRatio 0.16`
+  // (DEFAULT_RETAIN_RATIO), so pinning the token form to zero made every fold
+  // retain nothing. The agent then re-read the same files again and again — the
+  // first LHTB run read `spec.md` seven times across 101 shell calls — which is
+  // a property of this configuration, not of the mode under test.
+  //
+  // The tier presets carry `retainRatio`, and Basic rejects a config supplying
+  // both ("retainRatio and retainTokens are mutually exclusive"), so omitting
+  // the field is the only setting that leaves each engine on its own default.
   const common = {
     auto: true,
     thresholdRatio: Number(process.env.EF_TAU2_THRESHOLD ?? 0.5),
@@ -461,7 +469,7 @@ async function init(request: {
     bundleRoot,
   }
   engine = new EpistemicFoldEngine(ctx, request.arm.engine === 'basic'
-    ? { ...common, retainTokens: 0 }
+    ? common
     : {
       ...common,
       ...(request.arm.mode === 'legacy' ? {} : resolvePreset(request.arm.mode)),
