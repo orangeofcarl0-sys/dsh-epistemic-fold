@@ -82,4 +82,17 @@ echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
 # resolves it there. Running from the EF repo would make `./tasks` resolve to a
 # path that does not exist, so the run happens from the benchmark checkout.
 cd "$LHTB_ROOT"
-exec "$HARBOR_EXE" run -c "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml"
+
+# A UNIQUE job name per invocation.
+#
+# Harbor keys its output on `job_name` and, finding one already present, exits
+# immediately while still reporting the previous run's runtime and reward. An
+# invocation that measures nothing while appearing to succeed is the worst
+# failure mode available here, so each run gets its own directory.
+JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${EF_LHTB_ARM}"
+CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
+sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
+  "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml" > "$CONFIG_TMP"
+
+echo "job: lhtb-ef-${JOB_SUFFIX}"
+exec "$HARBOR_EXE" run -c "$CONFIG_TMP"
