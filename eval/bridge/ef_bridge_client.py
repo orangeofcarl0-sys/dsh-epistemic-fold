@@ -78,6 +78,21 @@ class EpistemicFoldBridge:
         env["EF_TAU2_BUNDLE_ROOT"] = bundle_root
         # The credential is inherited through the environment and never passed as
         # an argument, so it cannot appear in a process listing.
+        #
+        # The host's stderr is captured to a file rather than a pipe that is only
+        # drained on crash. A live transport failure ("fetch failed") left no
+        # trace otherwise, which is what made an LHTB probe undiagnosable: the
+        # bridge reported the error through telemetry, but the cause was in a
+        # stream nobody read.
+        self._stderr_path = Path(
+            os.environ.get("EF_BRIDGE_STDERR", "")
+        ) if os.environ.get("EF_BRIDGE_STDERR") else None
+        stderr_target: Any = subprocess.PIPE
+        self._stderr_file = None
+        if self._stderr_path is not None:
+            self._stderr_path.parent.mkdir(parents=True, exist_ok=True)
+            self._stderr_file = open(self._stderr_path, "a", encoding="utf-8")
+            stderr_target = self._stderr_file
         self._proc = subprocess.Popen(
             [
                 "node",
@@ -88,27 +103,39 @@ class EpistemicFoldBridge:
             env=env,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=stderr_target,
             text=True,
             encoding="utf-8",
             bufsize=1,
         )
         atexit.register(self.close)
 
+    def _stderr_tail(self, limit: int = 600) -> str:
+        """The host's stderr, from the file when one was configured."""
+        if self._stderr_path is not None:
+            try:
+                return self._stderr_path.read_text(encoding="utf-8", errors="replace")[-limit:]
+            except OSError:
+                return ""
+        if self._proc.stderr is None:
+            return ""
+        try:
+            return (self._proc.stderr.read() or "")[-limit:]
+        except (OSError, ValueError):
+            return ""
+
     def _send(self, request: dict[str, Any]) -> dict[str, Any]:
         """Write one request and read one response line."""
         if self._proc.poll() is not None:
-            stderr = self._proc.stderr.read() if self._proc.stderr is not None else ""
             raise BridgeError(
-                f"bridge host exited with code {self._proc.returncode}: {stderr[-600:]}"
+                f"bridge host exited with code {self._proc.returncode}: {self._stderr_tail()}"
             )
         assert self._proc.stdin is not None and self._proc.stdout is not None
         self._proc.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
         self._proc.stdin.flush()
         line = self._proc.stdout.readline()
         if not line:
-            stderr = self._proc.stderr.read() if self._proc.stderr is not None else ""
-            raise BridgeError(f"bridge host closed the stream: {stderr[-600:]}")
+            raise BridgeError(f"bridge host closed the stream: {self._stderr_tail()}")
         response = json.loads(line)
         if not response.get("ok"):
             raise BridgeError(str(response.get("error", "unknown bridge error")))
@@ -174,4 +201,9 @@ class EpistemicFoldBridge:
             try:
                 self._proc.kill()
             except Exception:  # noqa: BLE001
+                pass
+        if self._stderr_file is not None:
+            try:
+                self._stderr_file.close()
+            except OSError:
                 pass

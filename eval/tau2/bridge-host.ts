@@ -69,8 +69,21 @@ import { join } from 'node:path'
 /** The provider id the harness registers the live adapter under. */
 const LIVE_PROVIDER = 'live'
 
-/** Completion budget per model call. tau2's own runs use a comparable cap. */
-const STEP_MAX_TOKENS = Number(process.env.EF_TAU2_MAX_TOKENS ?? 900)
+/**
+ * Completion budget per model call.
+ *
+ * 900 is right for the tau2 lane, where a turn is one short customer-service
+ * message, and that lane's recorded sweep was measured with it. It is too small
+ * for LHTB: the agent writes multi-line shell scripts and heredocs, and a reply
+ * cut off mid-tool-call arrives as `max-tokens` carrying nothing usable.
+ *
+ * So the budget is per-run rather than global. `EF_BRIDGE_MAX_TOKENS` is the
+ * setting; the tau2 name is still honoured so an existing invocation does not
+ * change behaviour.
+ */
+const STEP_MAX_TOKENS = Number(
+  process.env.EF_BRIDGE_MAX_TOKENS ?? process.env.EF_TAU2_MAX_TOKENS ?? 900,
+)
 
 /** Context window the engine prices its fold threshold against. */
 const TAU2_WINDOW = Number(process.env.EF_TAU2_WINDOW ?? 32_000)

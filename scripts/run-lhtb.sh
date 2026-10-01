@@ -76,6 +76,15 @@ export PYTHONPATH="${EF_ROOT}/eval/lhtb:${EF_ROOT}/eval/tau2:${PYTHONPATH:-}"
 export EF_LHTB_ARM="${EF_LHTB_ARM:-basic}"
 export EF_LHTB_BUNDLE_ROOT="${EF_LHTB_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/lhtb-bundles}"
 
+# The bridge host's stderr goes to a file, because Harbor captures the agent's
+# own output and a transport failure inside the bridge otherwise leaves no trace.
+export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles}/bridge-stderr.log}"
+
+# A larger completion budget than tau2's 900. LHTB agents write heredocs and
+# multi-line scripts; a reply truncated at 900 tokens arrives as `max-tokens`
+# carrying nothing usable.
+export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-4096}"
+
 echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
 
 # The config's dataset path is relative to the WORKING DIRECTORY, and Harbor
