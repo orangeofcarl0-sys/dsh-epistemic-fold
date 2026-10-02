@@ -146,8 +146,8 @@
   },
   {
     "file": "28_RC4A_INTERACTION_AUDIT.md",
-    "bytes": 11640,
-    "sha256": "0848c8912dae3fb2901fd1feceb9dc5d4f1ab57f7f511ded2b0a0d3032206044"
+    "bytes": 11773,
+    "sha256": "0efceb8700763d99f0cbff6146b2715d52dbc7af69fbc8508f668ec6b32e03de"
   },
   {
     "file": "29_RC5_PRESET_DESIGN.md",
@@ -191,7 +191,12 @@
   },
   {
     "file": "37_RC11_BROWSER_VERIFICATION.md",
-    "bytes": 8155,
-    "sha256": "ae127c156ddf8c32a144d8fbe1fccd2242f1d7149286cf4c68e75a157458c7c6"
+    "bytes": 9123,
+    "sha256": "35b7471a735cb3a76c1f8f4d12c46bc5766661aa5f5a69a855aae00efe405d92"
+  },
+  {
+    "file": "38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md",
+    "bytes": 6356,
+    "sha256": "0c4ceed05f0fe5e7122e9f040675d592e1ba16c3444d4874888c09302cedd033"
   }
 ]

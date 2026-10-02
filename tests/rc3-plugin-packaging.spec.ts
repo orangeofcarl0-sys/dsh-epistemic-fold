@@ -117,10 +117,10 @@ describe("RC7: the patch substitutes EF into DSH's own presets, in place", () =>
       .filter(line => line.startsWith('name: '))
       .map(line => line.slice('name: '.length).replace(/^['"]|['"]$/gu, ''))
 
-    // Exactly ONE top-level row mounts a plugin from this package: the doctor.
-    // The three `dsh-epistemic-fold` names are the SUBSTITUTION rows, nested
-    // inside each preset's compaction group — that is what replaces Basic, and
-    // they are reached only through a preset, never on their own.
+    // Exactly ONE top-level row mounts from this package: the doctor. The three
+    // `dsh-epistemic-fold/plugin` rows are the SUBSTITUTION rows, nested inside
+    // each preset's compaction group — that is what replaces Basic, and they are
+    // reached only through a preset, never on their own.
     const topLevel = patch.slice(0, patch.indexOf('# >>> epistemic-fold preset overrides'))
       .split(String.fromCharCode(10))
       .map(line => line.trim())
@@ -131,10 +131,17 @@ describe("RC7: the patch substitutes EF into DSH's own presets, in place", () =>
     // browser half. See the entry test below.
     expect(topLevel).toEqual(['dsh-epistemic-fold'])
 
-    // ...and `dsh-epistemic-fold` appears FOUR times: the bare-name doctor row
-    // plus the three substitution rows, one per preset. The count is asserted
-    // exactly so a fifth mount path cannot appear unnoticed.
-    expect(names.filter(name => name === 'dsh-epistemic-fold').length).toBe(4)
+    // ...and the two specifiers are counted EXACTLY, so a new mount path cannot
+    // appear unnoticed. They are DIFFERENT specifiers, and conflating them was
+    // the defect: the bare name resolves to the doctor (which provides no
+    // service), so a preset row naming it mounts a module that cannot register
+    // `ctx.compaction`, and every session on the profile fails to resume.
+    //
+    //   dsh-epistemic-fold          x1  the top-level doctor row (bare, for the
+    //                                   client roster; see the entry test below)
+    //   dsh-epistemic-fold/plugin   x3  the substitution rows, one per preset
+    expect(names.filter(name => name === 'dsh-epistemic-fold').length).toBe(1)
+    expect(names.filter(name => name === 'dsh-epistemic-fold/plugin').length).toBe(3)
     expect(names.filter(name => name === '@deepseek-ai/dsh-agent-preset').length).toBe(3)
   })
 })

@@ -139,7 +139,7 @@
                   epistemicFold: true
                 config:
                   - id: compaction-basic
-                    name: dsh-epistemic-fold
+                    name: dsh-epistemic-fold/plugin
                     config:
                       bundleRoot: null
                       mode: economy
@@ -285,7 +285,7 @@
                   epistemicFold: true
                 config:
                   - id: compaction-basic
-                    name: dsh-epistemic-fold
+                    name: dsh-epistemic-fold/plugin
                     config:
                       bundleRoot: null
                       mode: economy
@@ -436,7 +436,7 @@
                   epistemicFold: true
                 config:
                   - id: compaction-basic
-                    name: dsh-epistemic-fold
+                    name: dsh-epistemic-fold/plugin
                     config:
                       bundleRoot: null
                       mode: economy

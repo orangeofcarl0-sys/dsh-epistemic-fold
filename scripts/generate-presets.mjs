@@ -67,6 +67,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
  */
 const TARGETS = ['standard', 'ptc', 'cordis']
 
+/**
+ * The specifier a preset's compaction row must name: the PLUGIN subpath.
+ *
+ * Never the bare package name. The bare name is reserved for the doctor (see
+ * `src/entry.ts`), and a preset that mounts the doctor has no `compaction`
+ * provider — which fails the whole preset at mount time.
+ */
+const PLUGIN_SPECIFIER = 'dsh-epistemic-fold/plugin'
+
 /** The output file, and the marker block that makes regeneration safe. */
 const OUT_FILE = join(ROOT, 'cordis.patch.yml')
 const BEGIN = '# >>> epistemic-fold preset overrides — GENERATED, do not edit'
@@ -119,7 +128,7 @@ function extractConfig(source, presetId) {
  * Substitute the compaction backend inside the `compaction` group.
  *
  * Three edits, all scoped to that group:
- *  1. the `compaction-basic` row's `name:` becomes `dsh-epistemic-fold`;
+ *  1. the `compaction-basic` row's `name:` becomes `dsh-epistemic-fold/plugin`;
  *  2. that row gains EF's `config` (`mode`, `bundleRoot`);
  *  3. the group's existing `isolate:` map gains `epistemicFold: true`.
  *
@@ -181,7 +190,23 @@ function substituteBackend(block, mode) {
     if (inGroup && trimmed === '- id: compaction-basic') {
       const pad = ' '.repeat(indent)
       out.push(`${pad}- id: compaction-basic`)
-      out.push(`${pad}  name: dsh-epistemic-fold`)
+      // The `/plugin` subpath is REQUIRED, not cosmetic.
+      //
+      // The bare package name resolves to `lib/entry.js`, which mounts the
+      // DOCTOR — an observation-only module whose whole job is to occupy the
+      // bare name so the client roster can find the package's browser half. It
+      // provides no service. Substituting it here left the preset's compaction
+      // group without a `compaction` provider, so `command-compact` (which
+      // injects that service) stayed pending forever and the whole mount failed:
+      // every session on the profile then failed to resume with
+      // "command-compact (...): waiting for compaction".
+      //
+      // The loader accepts subpath specifiers; DSH's own presets use them
+      // (`@deepseek-ai/dsh-plugin-manager/tools`). The bare-name rule that
+      // motivates the doctor belongs to `exactPackageSpecifier` in
+      // `dsh-client-modules`, which is the CLIENT roster — a different
+      // mechanism that never sees this row.
+      out.push(`${pad}  name: ${PLUGIN_SPECIFIER}`)
       out.push(`${pad}  config:`)
       out.push(`${pad}    bundleRoot: null`)
       out.push(`${pad}    mode: ${mode}`)
@@ -197,8 +222,18 @@ function substituteBackend(block, mode) {
     out.push(line)
   }
 
-  if (!out.some(line => line.includes('name: dsh-epistemic-fold'))) {
-    throw new Error('no compaction-basic row found inside the compaction group')
+  // Assert the EXACT specifier, not merely that the bare name appears.
+  //
+  // The previous check passed as long as any line contained
+  // `name: dsh-epistemic-fold` — which the doctor row satisfies. So a patch that
+  // substituted the doctor instead of the plugin sailed through generation and
+  // only failed at mount time, on the user's machine.
+  if (!out.some(line => line.includes(`name: ${PLUGIN_SPECIFIER}`))) {
+    throw new Error(
+      `no compaction-basic row naming ${PLUGIN_SPECIFIER} was produced. The preset's compaction `
+      + 'backend must name the plugin SUBPATH: the bare package name resolves to the doctor, which '
+      + 'provides no service, and every session on the profile then fails to resume.',
+    )
   }
   if (!addedRealm) {
     throw new Error(

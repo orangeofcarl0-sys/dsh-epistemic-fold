@@ -168,7 +168,16 @@ describeIfDsh('RC7-T2: the in-place preset block matches the installed DSH', () 
       // Same children, same order: only the backend's name and config change.
       expect(genChildren.map(c => c.id)).toEqual(refChildren.map(c => c.id))
       const backend = genChildren.find(c => c.id === 'compaction-basic')!
-      expect(backend.name, `${name}: the backend must be EF`).toBe('dsh-epistemic-fold')
+      // The PLUGIN subpath, never the bare package name.
+      //
+      // This assertion previously read `toBe('dsh-epistemic-fold')`, which is
+      // what the bare name resolves to for the DOCTOR. So the test actively
+      // protected the defect: the generator emitted a row that mounted an
+      // observation-only module, the group had no `compaction` provider,
+      // `command-compact` waited on it forever, and every session on the profile
+      // failed to resume. The test passed the whole time.
+      expect(backend.name, `${name}: the backend must be the EF plugin subpath`)
+        .toBe('dsh-epistemic-fold/plugin')
 
       // The pruner row must SURVIVE. This is the §14 defect: the top-level
       // variant lost it silently, because the engine that calls it could not

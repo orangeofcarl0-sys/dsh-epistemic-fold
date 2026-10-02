@@ -1,9 +1,25 @@
 # RC11 — Real-Browser Verification of the Interaction Surface
 
+> ## CORRECTION (see [RC12](38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md))
+>
+> **This document's central claim — "A1 CLOSED" — was WRONG.** It was based on
+> two pieces of evidence that cannot support it: `--dump-config` output, which
+> shows the composed *config* rather than what activated, and the UI preset chip,
+> which renders the *preset's* name rather than the module that mounted.
+>
+> A1 was not closed. On this profile it had merely changed cause: RC7 fixed
+> RC4-A's no-op patch, but the preset then mounted the **doctor** instead of the
+> engine, so `ctx.compaction` was never provided and **every session on the
+> profile failed to resume**. That is fixed in RC12, and `/context status` has
+> since been observed running for real.
+>
+> The A5 finding below stands, and so do the two protocol notes. Everything that
+> rests on a *name* rather than an *activation* does not.
+
 **Method:** installed RC7 into a real profile, booted the real web UI on port
 **3099** (the user's 3080 was never touched), and drove it with browser automation.
-**Result:** the two long-standing open items are now **resolved** — one fixed, one
-**disproven** — and one new non-blocking defect was found.
+**Result:** one of the two open items was **disproven** (A5); the other (A1) was
+reported closed here and is corrected above; one new non-blocking defect was found.
 
 ---
 
@@ -49,7 +65,7 @@ after:   dsh --profile ef-web --dump-config
 
 Menu unchanged, `minimal` untouched, and every native preset now runs EF.
 
-## 3. A1 (the RC4-A blocker) — FIXED
+## 3. A1 (the RC4-A blocker) — REPORTED FIXED HERE; THIS WAS WRONG (see correction above)
 
 A1 was: *"in the web profile, sessions do not use EF."* In the running UI, the
 session header renders its preset as a chip:
@@ -128,7 +144,7 @@ the plugin is broken.
 are (a) have EF report readiness later, or (b) make the doctor detect and log the
 race. Both need a decision, so this is recorded rather than patched.
 
-## 6. Computer-use follow-up: A1 confirmed on a real pre-existing session
+## 6. Computer-use follow-up (the A1 reading here was also wrong — see correction)
 
 The IAB session could not deliver synthetic input into the composer. Computer use
 could — it typed the command successfully — but could not **submit** it: the

@@ -14,8 +14,10 @@ document's own commit unless noted.
 >
 > **Status.** A2, A3 and A4 are **FIXED** and pinned by tests.
 >
-> **All four are now closed.** A1 was fixed by RC7 (in-place preset
-> substitution) and verified in a real browser session on 2026-10-03 — the
+> **All four are now closed — but A1 took TWO fixes.** RC7 fixed the no-op
+> patch, then silently mounted the doctor instead of the engine, which broke
+> every session on the profile; that is fixed in RC12. A1 was genuinely closed
+> and observed running on 2026-10-03 — the
 > session header renders the `standard` preset chip, which RC7 rewrote to run EF.
 > A5 was **disproven**: the client factory loads with zero import errors, so the
 > differing inject lists were never a defect. See
