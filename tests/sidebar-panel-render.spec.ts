@@ -101,20 +101,58 @@ function loadClientModule(): { apply: (ctx: unknown) => unknown } {
   return captured as { apply: (ctx: unknown) => unknown }
 }
 
-/** Capture the tab descriptor the module registers. */
-function registeredTab(): Record<string, unknown> {
+/**
+ * Capture BOTH registrations the module makes.
+ *
+ * EF registers with the native right sidebar and with `dsh-better-sidebar`, which
+ * keep separate tab registries — see `apply` in client.js. A helper that captured
+ * only one would hide a regression in the other.
+ */
+function registrations(): {
+  readonly betterTab: Record<string, unknown>
+  readonly nativeType: Record<string, unknown>
+  readonly nativeBody: (props: unknown) => unknown
+} {
   const mod = loadClientModule()
-  let tab: Record<string, unknown> | undefined
-  const service = {
+  let betterTab: Record<string, unknown> | undefined
+  let nativeType: Record<string, unknown> | undefined
+  let nativeBody: ((props: unknown) => unknown) | undefined
+  const betterService = {
     registerTab: (descriptor: Record<string, unknown>) => {
-      tab = descriptor
+      betterTab = descriptor
       return () => {}
     },
   }
-  const ctx = { inject: (_names: readonly string[], cb: (c: unknown) => unknown) => cb({ get: () => service }) }
+  const nativeTabs = {
+    register: (definition: Record<string, unknown>) => {
+      nativeType = definition
+      return () => {}
+    },
+  }
+  const slots = {
+    inject: (_name: string, cb: () => unknown) => cb(),
+    register: (_def: unknown, component: (props: unknown) => unknown) => {
+      nativeBody = component
+      return () => {}
+    },
+  }
+  const ctx = {
+    slots,
+    inject: (names: readonly string[], cb: (c: unknown) => unknown) => {
+      if (names.includes('betterSidebar')) return cb({ get: () => betterService })
+      return cb({ get: () => nativeTabs })
+    },
+  }
   mod.apply(ctx)
-  if (tab === undefined) throw new Error('no tab was registered')
-  return tab
+  if (betterTab === undefined) throw new Error('no better-sidebar tab was registered')
+  if (nativeType === undefined) throw new Error('no native tab type was registered')
+  if (nativeBody === undefined) throw new Error('no native tab body was registered')
+  return { betterTab, nativeType, nativeBody }
+}
+
+/** Capture the better-sidebar tab descriptor (the common case in these tests). */
+function registeredTab(): Record<string, unknown> {
+  return registrations().betterTab
 }
 
 /**
@@ -275,5 +313,93 @@ describe('the sidebar panel renders under the REAL tab props', () => {
     expect(source.includes('useProjection')).toBe(false)
     // But the ctx path the panel now uses IS the sidebar's own:
     expect(source.includes('projectionsBySession')).toBe(true)
+  })
+})
+
+/**
+ * The native right sidebar.
+ *
+ * DSH ships `@deepseek-ai/dsh-client-ui-sidebar-right`, and `dsh-better-sidebar`
+ * is a third-party replacement built on top of it — but they keep SEPARATE tab
+ * registries, and better-sidebar's `registerNativeSurface` bridge runs the other
+ * way (it pushes better-sidebar's tabs into the native registry, not the
+ * reverse). So a panel registered only natively is invisible in better-sidebar,
+ * and one registered only with better-sidebar is invisible on a native-only
+ * deployment. EF registers with both; these tests pin the native half.
+ */
+describe('the panel also registers with the NATIVE right sidebar', () => {
+  it('registers a tab TYPE with the native registry', () => {
+    const { nativeType } = registrations()
+    expect(nativeType['id']).toBe('dsh-epistemic-fold')
+    expect(nativeType['kind']).toBe('dsh-epistemic-fold')
+    // A type from outside the product: the band the native registry documents for
+    // extensions, and the one that outranks the shipped viewers.
+    expect(nativeType['priority']).toBe('extension')
+    expect(typeof nativeType['title']).toBe('function')
+    expect((nativeType['title'] as () => string)()).toBe('Epistemic Fold')
+  })
+
+  it('registers a BODY into the pane.tab slot, keyed by the same id', () => {
+    // The native contract is two-stage: the type alone renders an empty pane.
+    // A type with no body is the failure this assertion exists to catch.
+    const { nativeType, nativeBody } = registrations()
+    expect(typeof nativeBody).toBe('function')
+    expect(nativeType['id']).toBe('dsh-epistemic-fold')
+  })
+
+  it('renders the SAME panel as better-sidebar, from the closed-over context', () => {
+    // The native body props carry only `{ sessionId, efCtx }` — the slot injects
+    // them, and `efCtx` is the closure the registration captured. There is no
+    // `useProjection` and no `store` here either, which is why the projection is
+    // read through ctx on both paths.
+    const { nativeBody } = registrations()
+    const sessionId = 'session-native-1'
+    const text = textOf(nativeBody({
+      sessionId,
+      efCtx: {
+        get: (name: string) =>
+          name === 'sessions'
+            ? {
+              list: {
+                getSnapshot: () => ({
+                  projectionsBySession: {
+                    [sessionId]: {
+                      values: {
+                        [STATUS_KEY]: statusView({ mode: 'balanced', isTier: true }),
+                        contextPressure: { projectedTokens: 12_000, contextWindow: 500_000 },
+                      },
+                      state: 'ready',
+                      error: null,
+                    },
+                  },
+                }),
+                subscribe: () => () => {},
+              },
+            }
+            : undefined,
+      },
+    }))
+    // One component, so the two sidebars cannot report different things.
+    expect(text).toContain('balanced')
+    expect(text).toContain('12k')
+  })
+
+  it('renders the no-session state when the native session has no projection', () => {
+    const { nativeBody } = registrations()
+    const text = textOf(nativeBody({
+      sessionId: 'session-native-empty',
+      efCtx: { get: () => undefined },
+    }))
+    expect(text.length).toBeGreaterThan(0)
+    expect(text).not.toContain('NaN')
+  })
+
+  it('a deployment with NEITHER sidebar still boots', () => {
+    // Both registrations are `ctx.inject` callbacks precisely so a missing
+    // service cannot hold the entry pending — which was measured to fail the
+    // whole web boot, not merely hide the panel.
+    const mod = loadClientModule()
+    const ctx = { slots: {}, inject: () => {} }
+    expect(() => mod.apply(ctx)).not.toThrow()
   })
 })

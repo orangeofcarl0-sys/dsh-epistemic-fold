@@ -298,10 +298,22 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     // tests/sidebar-panel-render.spec.ts, against the sidebar's real props.
     let tab: { id: string; single?: boolean; title: () => string; component?: unknown } | undefined
     const service = { registerTab: (descriptor: typeof tab) => { tab = descriptor; return () => { tab = undefined } } }
+    // EF registers with BOTH sidebars — they keep separate tab registries — so
+    // this stub answers each `inject` with the service that call asks for. The
+    // native path is asserted in tests/sidebar-panel-render.spec.ts.
+    const nativeTabs = { register: () => () => {} }
+    const slots = { inject: (_name: string, cb: () => unknown) => cb(), register: () => () => {} }
     const ctx = {
+      slots,
       inject: (names: readonly string[], cb: (c: unknown) => unknown) => {
-        expect(names).toEqual(['betterSidebar'])
-        return cb({ get: () => service })
+        if (names.includes('betterSidebar')) {
+          expect(names).toEqual(['betterSidebar'])
+          return cb({ get: () => service })
+        }
+        // The native registration asks for the tab registry ONLY; `slots` is
+        // read off the plugin's own ctx, as better-sidebar does.
+        expect(names).toEqual(['sidebarRightTabs'])
+        return cb({ get: () => nativeTabs })
       },
     }
     const apply = captured?.mod['apply'] as (c: unknown) => unknown
@@ -340,12 +352,13 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
       ;(globalThis as { window?: unknown }).window = previous
     }
     const apply = mod?.['apply'] as (c: unknown) => unknown
-    // A context where the optional service NEVER arrives: `inject` must be
-    // called, and must not throw even though the callback never fires.
-    let requested: readonly string[] | undefined
-    const ctx = { inject: (names: readonly string[]) => { requested = names } }
+    // A context where the optional services NEVER arrive: `inject` must be
+    // called for EACH sidebar, and must not throw even though neither callback
+    // fires. EF registers with both because they keep separate tab registries.
+    const requested: (readonly string[])[] = []
+    const ctx = { inject: (names: readonly string[]) => { requested.push(names) } }
     expect(() => apply(ctx)).not.toThrow()
-    expect(requested).toEqual(['betterSidebar'])
+    expect(requested).toEqual([['betterSidebar'], ['sidebarRightTabs']])
     // ...and a callback that DOES fire but finds no service must also not throw.
     const ctxEmpty = { inject: (_n: readonly string[], cb: (c: unknown) => unknown) => cb({ get: () => undefined }) }
     expect(() => apply(ctxEmpty)).not.toThrow()

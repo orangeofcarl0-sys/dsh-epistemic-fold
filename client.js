@@ -44,6 +44,18 @@ window.__ModuleLoader__.load({
     /** The tab id; `betterSidebar` uses it as `SidebarTab.type`. */
     const TAB_ID = 'epistemic-fold:status'
 
+    /**
+     * The native sidebar's implementation id.
+     *
+     * Distinct from `TAB_ID` on purpose: the native registry documents `id` as
+     * "this implementation's identity … unique across every registration (a
+     * package name is the natural value)", and it is the key the body and title
+     * slots register under. Reusing the better-sidebar id would work today but
+     * would collide the moment both sidebars are mounted at once, which is
+     * exactly the configuration this adapter exists to support.
+     */
+    const NATIVE_ID = 'dsh-epistemic-fold'
+
     /** Format a token count compactly: 47_000 -> "47k". */
     const k = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n))
 
@@ -318,32 +330,61 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Register the panel against the sidebar service, if one is mounted.
+     * Register the panel against whichever sidebar is mounted.
      *
-     * ## Why this is `ctx.inject`, not a declared `inject: [...]`
+     * ## The two sidebars, and why BOTH registrations are needed
      *
-     * `betterSidebar` belongs to a THIRD-PARTY plugin a deployment may not have.
-     * Declaring it in this module's `inject` list makes cordis hold the whole
-     * entry in a pending state until the service appears — measured in a real
-     * web boot with no `dsh-better-sidebar` installed:
+     * DSH ships a native right sidebar (`@deepseek-ai/dsh-client-ui-sidebar-right`)
+     * and `dsh-better-sidebar` is a third-party REPLACEMENT built on top of it.
+     * They keep SEPARATE tab registries:
+     *
+     *   native          `ctx.sidebarRightTabs.register(definition)` plus a body
+     *                   registered into the `sidebar.right.pane.tab` slot
+     *   better-sidebar  `ctx.betterSidebar.registerTab({ id, title, component })`
+     *
+     * `dsh-better-sidebar` runs a `registerNativeSurface` bridge, which is easy to
+     * mistake for a one-way compatibility layer. It is the opposite direction: it
+     * pushes BETTER-sidebar's own tabs INTO the native registry (so DSH's native
+     * surface can show them), and its UI renders from its own `tabs` Map. Nothing
+     * copies native registrations back into better-sidebar.
+     *
+     * So a panel that registers only natively is invisible in better-sidebar, and a
+     * panel that registers only with better-sidebar is invisible on a native-only
+     * deployment. EF registers with BOTH, and each is guarded independently: a
+     * deployment with neither sidebar must still boot.
+     *
+     * ## Why these are `ctx.inject`, not a declared `inject: [...]`
+     *
+     * Both services belong to plugins a deployment may not have. Declaring either
+     * in this module's `inject` list makes cordis hold the whole entry pending
+     * until the service appears — measured in a real web boot with no
+     * `dsh-better-sidebar` installed:
      *
      *   Failed to load plugins
      *   web boot: 1 entry did not activate dsh-epistemic-fold:
      *   pending (waiting for service: betterSidebar)
      *
      * That does not just hide the panel: it fails the WEB BOOT, so an unrelated
-     * missing plugin takes the whole UI down. The guarded body below already
-     * handled a missing service correctly; the declaration was what broke it.
-     *
-     * `ctx.inject` is cordis's idiom for exactly this: run the callback only once
-     * the service exists, and mount cleanly when it never does. It is the same
-     * rule the host half follows for the optional `ctx.tools` / `ctx.commands`.
+     * missing plugin takes the whole UI down. `ctx.inject` is cordis's idiom for
+     * exactly this: run the callback once the service exists, and mount cleanly
+     * when it never does.
      */
     function apply(ctx) {
+      const disposeBetter = applyBetterSidebar(ctx)
+      const disposeNative = applyNativeSidebar(ctx)
+      return () => {
+        disposeBetter()
+        disposeNative()
+      }
+    }
+
+    /** better-sidebar's registration, when that plugin is mounted. */
+    function applyBetterSidebar(ctx) {
+      let dispose
       ctx.inject(['betterSidebar'], (sidebarCtx) => {
         const service = sidebarCtx.get('betterSidebar')
         if (service === undefined) return () => {}
-        const dispose = service.registerTab({
+        dispose = service.registerTab({
           id: TAB_ID,
           title: () => STRINGS.tabTitle,
           description: () => STRINGS.tabDesc,
@@ -357,7 +398,94 @@ window.__ModuleLoader__.load({
         // cordis auto-invokes a returned disposer on fiber disposal (HMR-safe).
         return dispose
       })
+      return () => {
+        if (typeof dispose === 'function') dispose()
+      }
     }
+
+    /**
+     * The native right sidebar's registration, when that plugin is mounted.
+     *
+     * Two-stage, as the native contract requires: the TYPE goes into
+     * `sidebarRightTabs`, and the BODY into the `sidebar.right.pane.tab` slot
+     * keyed by the same id. A type with no body renders an empty pane.
+     *
+     * The body is a closure over `ctx` because the native body props carry only
+     * `{ hooks: { tabInfo } }` — no `ctx`, no `store`. That is the same technique
+     * `dsh-better-sidebar` uses for its own native bodies, and it is why the
+     * projection read cannot live in the props here.
+     */
+    function applyNativeSidebar(ctx) {
+      const disposers = []
+      // Inject ONLY the tab registry, and read `ctx.slots` off the plugin's own
+      // context — exactly how `dsh-better-sidebar` does it.
+      //
+      // Injecting `slots` alongside it looks equivalent and is not: a declared
+      // inject makes cordis hold the callback until EVERY named service is
+      // available on that chain, and `slots` is not reachable the same way. The
+      // symptom was silent — the callback never ran, so no type registered, no
+      // body registered, and the tab never appeared at all. Reading `ctx.slots`
+      // directly is safe because it is declared on Context by the renderer.
+      const mount = (injected) => {
+        const tabs = injected.get('sidebarRightTabs')
+        if (tabs === undefined) return () => {}
+        // Stage one: what this type IS. `priority: 'extension'` is the band for a
+        // type from outside the product, and `title` is the chip text captured at
+        // open time (the slot below can override it live, but a title here means
+        // the chip is correct even before the body mounts).
+        const disposeType = tabs.register({
+          id: NATIVE_ID,
+          kind: NATIVE_ID,
+          priority: 'extension',
+          title: () => STRINGS.tabTitle,
+          guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: STRINGS.tabDesc }],
+        })
+        disposers.push(disposeType)
+
+        // Stage two: the body. `ctx.slots.inject` binds the contribution to this
+        // plugin's fiber, so it lives exactly as long as the plugin does.
+        const disposeBody = ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
+          name: 'sidebar.right.pane.tab',
+          key: NATIVE_ID,
+          inject: (sessionId) => ({ sessionId, efCtx: ctx }),
+        }, NativePanelBody))
+        disposers.push(disposeBody)
+
+        return () => {
+          for (const dispose of disposers.reverse()) {
+            try {
+              dispose()
+            } catch {
+              // A disposal that throws must not strand the others.
+            }
+          }
+        }
+      }
+      // `sidebarRightTabs` is the native registry; `slots` is the slot registry.
+      ctx.inject(['sidebarRightTabs'], mount)
+      return () => {
+        for (const dispose of disposers.reverse()) {
+          try {
+            dispose()
+          } catch {
+            // Same rule as above.
+          }
+        }
+      }
+    }
+
+    /**
+     * The native tab body.
+     *
+     * Receives the slot's injected props (`sessionId` plus the closed-over context)
+     * and renders the SAME panel better-sidebar renders — one component, so the two
+     * sidebars cannot drift apart in what they report.
+     */
+    const NativePanelBody = (props) => jsx.jsx(EpistemicFoldPanel, {
+      ctx: props.efCtx,
+      scope: { sessionId: props.sessionId },
+      t: (key) => STRINGS[key] ?? key,
+    })
 
     return { apply, name: 'epistemic-fold' }
   },

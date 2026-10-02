@@ -203,5 +203,10 @@
     "file": "39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md",
     "bytes": 6984,
     "sha256": "cbf203d0648cfa3dd184713c62b3c6940b509475ea14e11cd0e748673ec5b9eb"
+  },
+  {
+    "file": "40_RC14_DUAL_SIDEBAR_ADAPTER.md",
+    "bytes": 7333,
+    "sha256": "9da21cb97e144b9349b7fe483a3bf373fccea57e5d9da4b804f274f08e3c7eec"
   }
 ]
