@@ -60,7 +60,12 @@ banner: generic "本任务的 Agent 预设，在任务开始时确定": text: st
 
 The session runs the **`standard`** preset — the one RC7 substituted in place.
 There is no `ef-*` entry anywhere in the menu, so this is EF running *as* the
-native preset rather than beside it. **A1 is closed.**
+native preset rather than beside it.
+
+Confirmed again on a **pre-existing** session (§6) whose chip reads `ptc`, with
+the composed tree showing `preset-ptc`'s compaction row renamed to
+`dsh-epistemic-fold`. **A1 is closed** — by observation on a real session, not by
+inference from the patch file.
 
 ## 4. A5 — DISPROVEN (it is not a defect)
 
@@ -123,21 +128,50 @@ the plugin is broken.
 are (a) have EF report readiness later, or (b) make the doctor detect and log the
 race. Both need a decision, so this is recorded rather than patched.
 
-## 6. What the browser session could NOT verify
+## 6. Computer-use follow-up: A1 confirmed on a real pre-existing session
 
-The IAB session could not reliably deliver synthetic input into the composer:
-`click()` on app controls timed out repeatedly, `cua.keypress` did not reach the
-`contenteditable`, and `cua.type` appended to leftover text instead of replacing
-it. The page's own DOM reads (`evaluate`) worked throughout, which is how A1 and
-A5 were proven.
+The IAB session could not deliver synthetic input into the composer. Computer use
+could — it typed the command successfully — but could not **submit** it: the
+composer is a `contenteditable`, and every submit path was tried and refused
+(`Return` with both default and `event` strategy, a coordinate click on the send
+button, and `Control+a`/`BackSpace` to clear). The observed cause is that the
+composer never held keyboard focus — the focused element after each attempt was
+an unrelated statistics button, so key events were delivered elsewhere.
 
-So **`/context status` was not exercised through the UI**, and no live fold was
-observed in this profile. Those remain to verify. The evidence that they will
-work is strong — the engine mounts as the `compaction` service, the command is
-registered by the same plugin, and the panel factory is loaded — but "strong
-evidence" is not "observed", and this document does not claim otherwise.
+What the follow-up **did** establish, and it is the stronger evidence:
 
-## 7. Reproducing
+The session driven was a **pre-existing** one (`最小 Docker dsh 测试环境`, created
+23 days earlier), whose preset chip renders **`ptc`** — a native DSH preset name,
+with no `ef-*` entry anywhere in the menu. The composed tree for that same
+profile shows what `ptc` actually mounts:
+
+```
+- id: preset-ptc
+  config:
+    ...
+      - id: compaction-basic
+        name: dsh-epistemic-fold      <- RC7 substituted this row in place
+```
+
+So a real, already-existing session on this machine, labelled with a native preset
+name, resolves its compaction backend to **EF**. That is A1 closed by observation
+rather than by inference, and it is the state a user would actually encounter.
+
+## 7. What remains unverified
+
+`/context status` was **not** executed through the UI, and no live fold was
+observed in this profile. The command text reached the composer and the send
+control was enabled, but submission did not land through either automation path.
+
+Everything else about that path is proven: the engine registers as the
+`compaction` service (`engine.name === "compaction"`, `ctx.compaction.compactNow`
+is a function), the command is registered by the same plugin, and the client
+factory is loaded with zero import errors. But "will work" is not "was observed",
+and this document does not claim otherwise.
+
+A human pressing Enter in that window would settle it in one second.
+
+## 8. Reproducing
 
 ```bash
 # install the repo build into the profile (backup first)
@@ -153,7 +187,7 @@ dsh --profile ef-web --dump-config | grep -E "preset-|dsh-epistemic-fold"
 dsh --profile ef-web --port 3099 --no-open
 ```
 
-## 8. State at the end of this session
+## 9. State at the end of this session
 
 - `ef-web` now carries **RC7** (4 in-place substitutions, no `presets/`).
   Backup: `D:/dsh/profiles/ef-web-backup-20261003-004626`.
