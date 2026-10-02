@@ -89,19 +89,91 @@ window.__ModuleLoader__.load({
       })
 
     /**
+     * Read one projection key for the current session, and keep it live.
+     *
+     * ## Why this does not rely on a `useProjection` prop
+     *
+     * EF originally destructured `useProjection` from the tab props, on the stated
+     * assumption that "the sidebar hands every tab component" one. It does not.
+     * `dsh-better-sidebar` 0.24.1 declares `TabComponentProps` as
+     * `{ ctx, store, scope, tab, visible, ... }`, and the string `useProjection`
+     * appears nowhere in the package — so the panel threw
+     * `useProjection is not a function` inside the sidebar's render boundary and
+     * showed an error instead of the status.
+     *
+     * The prop IS the right idiom for DSH's own docks (`ContextMeter` reads the
+     * same `contextPressure` key that way) — but those are mounted by DSH's
+     * conversation skeleton, which supplies it. EF's panel is mounted by a
+     * third-party sidebar whose tab contract does not.
+     *
+     * So this reads the projection the way the sidebar itself reads projections
+     * (`projectionsBySession[id].values[key]`, the same shape its own subagent
+     * catalogs use) and still prefers the prop when a host does provide one.
+     *
+     * @param ctx - the tab's cordis context (always passed by the sidebar).
+     * @param scope - the tab's session scope; `scope.sessionId` names the session.
+     * @param useProjectionProp - the optional hook prop, when a host supplies it.
+     * @param key - projection key.
+     * @returns the value plus the store's state/error, or `undefined` when unknown.
+     */
+    const useProjectionValue = (ctx, scope, useProjectionProp, key) => {
+      // A host that hands the hook owns the subscription; prefer it.
+      const propDriven = typeof useProjectionProp === 'function'
+      const sessions = ctx === undefined || ctx === null
+        ? undefined
+        : (typeof ctx.get === 'function' ? ctx.get('sessions') : ctx.sessions)
+      const sessionId = scope === undefined || scope === null ? undefined : scope.sessionId
+
+      const read = () => {
+        if (sessions === undefined || sessions === null || sessionId === undefined) return undefined
+        const list = sessions.list
+        if (list === undefined || list === null || typeof list.getSnapshot !== 'function') return undefined
+        const per = list.getSnapshot().projectionsBySession
+        if (per === undefined || per === null) return undefined
+        const entry = per[sessionId]
+        if (entry === undefined || entry === null) return undefined
+        const values = entry.values
+        return {
+          value: values === undefined || values === null ? undefined : values[key],
+          state: entry.state === undefined ? 'ready' : entry.state,
+          error: entry.error === undefined ? null : entry.error,
+        }
+      }
+
+      const [snapshot, setSnapshot] = React.useState(read)
+
+      React.useEffect(() => {
+        if (propDriven) return undefined
+        const list = sessions === undefined || sessions === null ? undefined : sessions.list
+        if (list === undefined || list === null || typeof list.subscribe !== 'function') return undefined
+        // The projection store publishes through the list snapshot, so the
+        // list's own subscription is the sidebar's wake-up path.
+        const unsubscribe = list.subscribe(() => setSnapshot(read()))
+        setSnapshot(read())
+        return unsubscribe
+      }, [sessions, sessionId, key, propDriven])
+
+      if (propDriven) {
+        return { value: useProjectionProp(key), state: 'ready', error: null }
+      }
+      return snapshot
+    }
+
+    /**
      * The EF status panel.
      *
-     * Reads the projection through the props' own `useProjection`, which the
-     * sidebar hands every tab component — so this never needs a Remote call of
-     * its own.
+     * Reads the host-computed projection rather than running `/context` and
+     * parsing its text: the panel must show the facts, not a rendering of them.
      */
-    const EpistemicFoldPanel = ({ useProjection, t }) => {
-      const status = useProjection(STATUS_KEY)
+    const EpistemicFoldPanel = ({ useProjection, t, ctx, scope }) => {
+      const statusRead = useProjectionValue(ctx, scope, useProjection, STATUS_KEY)
       // The token meter's OWN pressure unit, read the same way DSH's built-in
       // ContextMeter reads it. Our projection is a pure event fold and cannot
       // carry a meter reading, so the join happens here rather than in the
       // host — the alternative would be a second source of the same fact.
-      const pressure = useProjection('contextPressure')
+      const pressureRead = useProjectionValue(ctx, scope, useProjection, 'contextPressure')
+      const status = statusRead === undefined ? undefined : statusRead.value
+      const pressure = pressureRead === undefined ? undefined : pressureRead.value
       const translate = typeof t === 'function' ? t : (key) => key
 
       if (status === undefined || status === null) {

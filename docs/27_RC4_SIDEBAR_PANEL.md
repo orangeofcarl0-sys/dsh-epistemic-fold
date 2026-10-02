@@ -3,6 +3,15 @@
 Baseline: `main@c8927f1` (RC3 merged).
 Scope: the observation plane. No context or retrieval research.
 
+> **CORRECTION (RC13).** The claim below that the panel "renders" was verified by
+> invoking the component DIRECTLY with hand-made props. It was never rendered
+> under the props the real sidebar passes, and those props do not include the
+> `useProjection` hook the panel called — so in the browser the panel threw
+> `useProjection is not a function` and displayed an error. Fixed and
+> browser-verified in [RC13](39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md). Rendering
+> the component with props you chose proves it works with THOSE props; it does
+> not prove the host supplies them.
+>
 > **One-line result.** The Sidebar panel ships as a second renderer over the SAME
 > status model the command already uses — not a panel that runs `/context status`
 > and parses its text. `/context mode <tier>` is the control plane; the panel is

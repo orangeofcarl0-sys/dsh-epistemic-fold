@@ -292,7 +292,11 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
 
     // Driving apply() against a context whose `inject` fires immediately
     // registers ONE tab with a stable id.
-    let tab: { id: string; single?: boolean; title: () => string } | undefined
+    // `component` is part of the captured descriptor on purpose: the earlier
+    // type omitted it, which is exactly why nothing ever called it and the panel
+    // shipped unable to render. Rendering is asserted in
+    // tests/sidebar-panel-render.spec.ts, against the sidebar's real props.
+    let tab: { id: string; single?: boolean; title: () => string; component?: unknown } | undefined
     const service = { registerTab: (descriptor: typeof tab) => { tab = descriptor; return () => { tab = undefined } } }
     const ctx = {
       inject: (names: readonly string[], cb: (c: unknown) => unknown) => {

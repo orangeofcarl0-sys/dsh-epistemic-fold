@@ -141,8 +141,8 @@
   },
   {
     "file": "27_RC4_SIDEBAR_PANEL.md",
-    "bytes": 8527,
-    "sha256": "fa49873c40b6f61e325f2e4123178b8aeee4152aaf9ffacb50dd091d00a09fa3"
+    "bytes": 9110,
+    "sha256": "5b8f0668838fac19646ca4777237406167c56819625402cd9a98e9ba1e220c98"
   },
   {
     "file": "28_RC4A_INTERACTION_AUDIT.md",
@@ -198,5 +198,10 @@
     "file": "38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md",
     "bytes": 6356,
     "sha256": "0c4ceed05f0fe5e7122e9f040675d592e1ba16c3444d4874888c09302cedd033"
+  },
+  {
+    "file": "39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md",
+    "bytes": 6984,
+    "sha256": "cbf203d0648cfa3dd184713c62b3c6940b509475ea14e11cd0e748673ec5b9eb"
   }
 ]
