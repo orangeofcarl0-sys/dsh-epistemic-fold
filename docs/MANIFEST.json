@@ -67,7 +67,7 @@
   {
     "file": "12_R1_EVALUATION_REPORT.md",
     "bytes": 12981,
-    "sha256": "382c290dda33d2fd538ac749e59de70ecd790077e2d3b1f8d43d1890548cb32d"
+    "sha256": "65031cf04a79e95cf583c8f54bec8fd4977ecc5864125d7eed6bd780c0d684f3"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -146,8 +146,8 @@
   },
   {
     "file": "28_RC4A_INTERACTION_AUDIT.md",
-    "bytes": 11055,
-    "sha256": "81da927ed5211c678a2711eab672bb67047844b36d91731a1dbca31bf0121032"
+    "bytes": 11640,
+    "sha256": "0848c8912dae3fb2901fd1feceb9dc5d4f1ab57f7f511ded2b0a0d3032206044"
   },
   {
     "file": "29_RC5_PRESET_DESIGN.md",
@@ -188,5 +188,10 @@
     "file": "36_RC10_SESSION_PAUSE.md",
     "bytes": 5607,
     "sha256": "1aab74944be84647954b9a8910ca52d193efc30ecae514127ac262bc014addb2"
+  },
+  {
+    "file": "37_RC11_BROWSER_VERIFICATION.md",
+    "bytes": 6610,
+    "sha256": "89e3a36e7651fefd4ad0c1d346cef81ac3d459b5ef36395c3a1375ec84e1ca48"
   }
 ]

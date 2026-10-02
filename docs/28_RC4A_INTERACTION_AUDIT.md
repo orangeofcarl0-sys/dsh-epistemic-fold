@@ -12,13 +12,23 @@ document's own commit unless noted.
 > plane; and **every command failure was reported as `kind: 'success'`**, so a
 > refused switch looked successful to the client.
 >
-> **Status.** A2, A3 and A4 are **FIXED** and pinned by tests. A1 (the blocker)
-> and A5 are **OPEN**: A1 needs a decision about how EF ships to preset-scoped
-> profiles, and A5 needs the web UI running to confirm.
+> **Status.** A2, A3 and A4 are **FIXED** and pinned by tests.
+>
+> **All four are now closed.** A1 was fixed by RC7 (in-place preset
+> substitution) and verified in a real browser session on 2026-10-03 — the
+> session header renders the `standard` preset chip, which RC7 rewrote to run EF.
+> A5 was **disproven**: the client factory loads with zero import errors, so the
+> differing inject lists were never a defect. See
+> [37_RC11_BROWSER_VERIFICATION.md](37_RC11_BROWSER_VERIFICATION.md).
+>
+> One caveat that document records: the RC7 fix reached a real profile only on
+> 2026-10-03. Before that, every install carried an RC5-era build whose empty
+> patch meant A1 was still live — which is why the blocker read as open here for
+> so long.
 
 ---
 
-## A1 — BLOCKER, OPEN: in the web profile, sessions do not use EF
+## A1 — BLOCKER, FIXED (RC7; browser-verified 2026-10-03): in the web profile, sessions do not use EF
 
 **Evidence.** The composed tree of a real web profile with EF added:
 
@@ -160,7 +170,7 @@ carrying?") rather than only the historical one.
 
 ---
 
-## A5 — MEDIUM, OPEN: the client faces declare different inject lists
+## A5 — MEDIUM, DISPROVEN (2026-10-03): the client faces declare different inject lists
 
 ```jsonc
 // package.json
