@@ -46,36 +46,52 @@ stable closed-loop continuation.
 ## Install
 
 EF is a real DSH plugin: it builds to loadable JS and ships a bundle patch that
-substitutes itself into DSH's own agent presets. There are **three ways** to
-install it, and they differ in one way that matters — whether the build runs for
-you.
+substitutes itself into DSH's own agent presets.
 
-| channel | spec | runs the build? | what it needs |
-| --- | --- | --- | --- |
-| **tarball** (simplest) | the `.tgz` from [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) | no | nothing — `lib/` is prebuilt |
-| **git** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | **yes** | one `allowBuilds` line, which dsh prints for you |
-| **path** | `file:/path/to/dsh-epistemic-fold` | **no** | run `npm install` in the source tree first |
-| **registry** | `dsh-epistemic-fold` | n/a | not available — the package is `private` and unpublished |
+| channel | spec | pinned? | runs the build? | what it needs |
+| --- | --- | --- | --- | --- |
+| **tarball** (recommended) | the `.tgz` from [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) | **yes** | no | nothing — `lib/` is prebuilt |
+| **git, at a tag** | `github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0` | **yes** | yes | one `allowBuilds` line, which dsh prints for you |
+| **git, tracking main** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | no | yes | the same line, but it follows every push |
+| **path** | `file:/path/to/dsh-epistemic-fold` | n/a | no | run `npm install` in the source tree first |
+| **registry** | `dsh-epistemic-fold` | n/a | n/a | not available — the package is `private` and unpublished |
 
-### Install from a release tarball
+> **Releases are not an install channel — only their attachment is.** Measured:
+> `dsh plugin` never queries the GitHub Releases API. It hands the spec to pnpm,
+> which resolves a git spec to a **commit tarball** on `codeload.github.com`.
+> `github:owner/repo` resolves to the tip of the default branch; only an explicit
+> `#<tag-or-commit>` pins anything. So the plain git spec follows every push to
+> `main`, including commits that have not been released.
+
+### Install from a release tarball (recommended)
 
 ```bash
 dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
 ```
 
-The tarball already contains the built `lib/`, so nothing runs `prepare` and no
-`allowBuilds` entry is needed.
+The tarball already contains the built `lib/`, so nothing runs `prepare`, no
+`allowBuilds` entry is needed, and you get exactly the code the release notes
+describe.
 
-### Install from git
+### Install from git, pinned to a tag
 
 ```bash
-dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold
+dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0
 ```
 
 The first run stops with `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`. That is pnpm
 blocking build scripts, not a defect: **dsh prints the exact `allowBuilds` line to
 paste** into the profile's `pnpm-workspace.yaml`. Add it and re-run. The install
 then builds `lib/` and generates the preset rows as part of `prepare`.
+
+The `allowBuilds` key embeds the resolved commit, so pinning the tag also pins the
+allowlist entry.
+
+### Install from git, tracking `main`
+
+Drop the `#v0.1.0` to follow the default branch. This is the right choice if you
+want unreleased work — and the wrong one if you want what the release notes
+describe, because the two diverge the moment a commit lands.
 
 ### Install from a local checkout
 

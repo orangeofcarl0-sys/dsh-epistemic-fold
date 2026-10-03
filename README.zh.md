@@ -40,33 +40,48 @@ prefix cache 局部性、长期状态一致性与闭环延续稳定性。
 ## 安装
 
 EF 是真正的 DSH 插件：构建为可加载 JS，并附带把自己替换进 DSH 自带 preset 的
-bundle patch。有四种安装方式，差别在于**构建是否自动完成**：
+bundle patch。
 
-| 通道 | 写法 | 会跑构建吗 | 需要什么 |
-| --- | --- | --- | --- |
-| **tarball**（最省事） | [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) 里的 `.tgz` | 不会 | 什么都不需要，`lib/` 已预构建 |
-| **git** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | **会** | 一行 `allowBuilds`，dsh 会替你打印出来 |
-| **path** | `file:/path/to/dsh-epistemic-fold` | 不会 | 先在源码树里跑 `npm install` |
-| **registry** | `dsh-epistemic-fold` | 不适用 | 不可用——包是 `private` 且未发布 |
+| 通道 | 写法 | 是否固定版本 | 会跑构建吗 | 需要什么 |
+| --- | --- | --- | --- | --- |
+| **tarball**（推荐） | [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) 里的 `.tgz` | **是** | 不会 | 什么都不需要，`lib/` 已预构建 |
+| **git，固定 tag** | `github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0` | **是** | 会 | 一行 `allowBuilds`，dsh 会替你打印出来 |
+| **git，跟随 main** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | 否 | 会 | 同一行，但每次推送都会跟随 |
+| **path** | `file:/path/to/dsh-epistemic-fold` | 不适用 | 不会 | 先在源码树里跑 `npm install` |
+| **registry** | `dsh-epistemic-fold` | 不适用 | 不适用 | 不可用——包是 `private` 且未发布 |
 
-### 从 release tarball 安装
+> **Release 不是安装通道，只有它的附件是。** 实测：`dsh plugin` 从不查询 GitHub
+> Releases API。它把 spec 交给 pnpm，由 pnpm 把 git spec 解析成
+> **commit tarball**（来自 `codeload.github.com`）。`github:owner/repo` 解析为
+> 默认分支的最新提交；只有显式写 `#<tag 或 commit>` 才真正固定版本。所以裸 git
+> spec 会跟随 `main` 的每一次推送，包括尚未发布的提交。
+
+### 从 release tarball 安装（推荐）
 
 ```bash
 dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
 ```
 
-tarball 里已含构建好的 `lib/`，所以不会跑 `prepare`，也不需要 `allowBuilds`。
+tarball 里已含构建好的 `lib/`，所以不会跑 `prepare`，也不需要 `allowBuilds`，
+拿到的就是 release notes 描述的那份代码。
 
-### 从 git 安装
+### 从 git 安装，固定到某个 tag
 
 ```bash
-dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold
+dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0
 ```
 
 首次运行会以 `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED` 停止。这是 pnpm 拦截构建
 脚本，不是缺陷：**dsh 会打印出要粘贴到 profile `pnpm-workspace.yaml` 的
 `allowBuilds` 行**。加上后重跑即可；安装过程会在 `prepare` 里构建 `lib/` 并生成
 preset 替换行。
+
+`allowBuilds` 的键里嵌的是解析后的 commit，所以固定 tag 同时也固定了这条允许项。
+
+### 从 git 安装，跟随 `main`
+
+去掉 `#v0.1.0` 即跟随默认分支。想要未发布的工作就用这个——但如果你想要的是
+release notes 描述的那份，这就是错的选择，因为一旦有新提交落地，两者就分叉了。
 
 ### 从本地检出安装
 

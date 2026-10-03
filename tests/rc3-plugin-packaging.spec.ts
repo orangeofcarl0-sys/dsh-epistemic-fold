@@ -99,6 +99,29 @@ describe('RC3: the package declares a real plugin entry', () => {
     }
   })
 
+  it('documents that a bare git spec follows the branch, not the release', async () => {
+    // MEASURED, and the reason this test exists: `dsh plugin` never queries the
+    // GitHub Releases API. It hands the spec to pnpm, which resolves
+    // `github:owner/repo` to the TIP of the default branch and only pins when the
+    // spec carries `#<tag-or-commit>` — observed as a `codeload.github.com`
+    // tarball URL ending in the resolved commit sha.
+    //
+    // That makes "install from git" and "install the release" different things
+    // whenever an unreleased commit exists. A reader who assumes otherwise gets
+    // code the release notes do not describe, so both editions must SAY so.
+    for (const name of ['README.md', 'README.zh.md']) {
+      const text = await readFile(join(ROOT, name), 'utf8')
+      expect(text, `${name} must show the pinned git form`)
+        .toContain('dsh-epistemic-fold#v0.1.0')
+      expect(text, `${name} must name the resolver, so the claim is checkable`)
+        .toContain('codeload.github.com')
+      // The release ATTACHMENT is the pinned, no-build channel; the README must
+      // keep offering it as such.
+      expect(text, `${name} must document the tarball channel`)
+        .toContain('dsh-epistemic-fold-0.1.0.tgz')
+    }
+  })
+
   it('ships every top-level directory the README documents', async () => {
     // THE DEFECT THIS PINS: the README's repository layout listed
     // `profiles/economics/`, and `src/economics-profile.ts` calls those files
