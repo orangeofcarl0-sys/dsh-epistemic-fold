@@ -116,33 +116,68 @@ any instrumentation result.** Checking `__DSH_BOOT__.entries[id].rev` against th
 file's mtime, or fetching the entry URL and looking for the marker, would have
 caught both mistakes immediately.
 
-### What remains unknown
+### The trace above was an artifact of the probe — RC15 supersedes it
 
-`body-registered` never fires and nothing is thrown (`__EF_ERR__` stays unset), so
-`ctx.slots.inject('sidebar.right.pane.tab', …)` either is not reached or returns
-without running its callback. `@deepseek-ai/dsh-client-ui-slots` — the package that
-provides `ctx.slots` — has since been added to EF's `dsh.client.inject` (it is
-present in `dsh-better-sidebar`'s list and was missing from EF's), which is the
-right dependency regardless, but it did not by itself make the tab appear.
+The `type-registered` / never-`body-registered` trace in the section above is
+**not** a property of the product. The instrumented build that produced it did
+not parse. The probe inserted `try {` before `const mount` and the matching
+`} catch` after the `tabs.register({...})` call, which closed `mount`'s body
+early:
 
-Until the body registration is understood, the accurate statement is:
+```
+$ node -e "new Function(require('fs').readFileSync(SERVED,'utf8'))"
+PARSE ERROR: Unexpected token 'catch'
+```
 
-> EF's panel renders on any deployment that has `dsh-better-sidebar`. On a
-> native-only deployment the tab type registers successfully but its body does
-> not, so the pane stays empty. The cause is narrowed to the single
-> `ctx.slots.inject` call and is not yet identified.
+A module that fails to parse never reaches `apply` at all, so every marker in
+that trace came from an earlier, working revision still cached in the page. The
+"narrowed to one call" framing, and the "honest state" paragraph that followed
+it, were conclusions about my own broken file.
 
-### Honest state
+This is the *third* instrumentation error in this investigation, and it is the
+same one twice over: the first was editing root `client.js` while
+`exports['./client']` served `lib/client.js`; the second was anchoring markers
+inside a doc comment. The rule that catches all three is not "be careful" — it
+is mechanical:
 
-The dual registration is written to the documented native contract and covered by
-tests, but the native half has **never been observed rendering**. The better-half
-works; the native half is inert because its module never runs. Both facts are
-stated above rather than papered over.
+> **Parse the served bytes, and diff them against the file you edited, before
+> reading any instrumentation result.**
+
+`scripts/build-plugin.mjs` copies root `client.js` → `lib/client.js`, so an
+install needs both files; and `curl`ing the entry URL
+(`/plugins/??dsh-epistemic-fold/client.js&rev=…`) is the only way to know what
+the browser actually got.
+
+### The real defect, and the fix (RC15)
+
+With a clean, parse-verified build the native path fails differently and for a
+nameable reason. Two separate bugs, both in `client.js`:
+
+1. **The guide entry's `description` was a string, not a thunk.** The native
+   contract calls it — `entry.description?.()` — so passing `STRINGS.tabDesc`
+   threw `not a function`. The guide page is the *doorway* to the type, so the
+   throw took out the whole guide body; the entry never appeared and the tab
+   could not be opened at all.
+2. **`ctx.slots` was never declared in an `inject` list.** Cordis refuses the
+   property outright:
+
+   ```
+   cannot get property "slots" without inject
+   ```
+
+   Because the type registration runs *before* the `ctx.slots` access, the chip
+   appeared and the tab opened while the body threw — which the sidebar renders
+   as the legitimate-looking "no available way to view this content".
+
+Both are fixed and the native panel is now **observed rendering** in a real
+browser (see `docs/41_RC15_NATIVE_SIDEBAR_RENDERS.md`, which also records the
+experiment that proved the `inject` requirement rather than inferring it).
 
 ## 5. State at the end of this session
 
 - `ef-web` is restored to its normal configuration (better-sidebar enabled); the
   panel works there.
-- The native registration is in the code and covered by tests, but should be
-  treated as **unverified**.
+- The native registration is in the code and covered by tests. It was unverified
+  when this document was written; RC15 verified it and found the two defects
+  above.
 - The user's 3080 was never touched.

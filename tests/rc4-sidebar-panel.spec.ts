@@ -284,11 +284,22 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     expect(captured?.id).toBe('dsh-epistemic-fold')
     expect(captured?.mod['name']).toBe('epistemic-fold')
     expect(typeof captured?.mod['apply']).toBe('function')
-    // The module must declare NO hard `inject`: `betterSidebar` belongs to a
-    // third-party plugin a deployment may not have, and a declared inject holds
-    // the entry pending forever — which was measured to fail the WHOLE web boot,
-    // not just hide the panel.
-    expect(captured?.mod['inject']).toBeUndefined()
+    // The module declares exactly ONE hard `inject`: `slots`.
+    //
+    // The two services are NOT alike, and the difference is the whole point.
+    // `betterSidebar` belongs to a third-party plugin a deployment may not have,
+    // so declaring it holds the entry pending forever — measured to fail the
+    // WHOLE web boot, not just hide the panel — and it stays on `ctx.inject`.
+    // `slots` is provided by `@deepseek-ai/dsh-client-ui-renderer`, the shell
+    // that mounts this module at all, so it cannot be absent where this code
+    // runs; and cordis refuses `ctx.slots` outright unless it is declared:
+    //
+    //   cannot get property "slots" without inject
+    //
+    // The native body seat is `ctx.slots.inject(...)`, so omitting it let the
+    // tab TYPE register while the BODY threw, and the pane reported the
+    // legitimate-looking "no available way to view this content".
+    expect(captured?.mod['inject']).toEqual(['slots'])
 
     // Driving apply() against a context whose `inject` fires immediately
     // registers ONE tab with a stable id.
@@ -328,11 +339,11 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
     // rather than fail — the same conditional rule the host follows for
     // `ctx.tools`.
     //
-    // The mechanism matters: the module declares NO hard `inject`, and the
-    // optional service is requested through `ctx.inject([...], cb)`, whose
-    // callback simply never runs when the service never appears. A declared
-    // inject would instead hold the entry pending forever, which was measured to
-    // fail the whole web boot.
+    // The mechanism matters: the module's only hard `inject` is `slots` (always
+    // present, see the export test above), and each SIDEBAR service is requested
+    // through `ctx.inject([...], cb)`, whose callback simply never runs when the
+    // service never appears. Declaring a sidebar service instead would hold the
+    // entry pending forever, which was measured to fail the whole web boot.
     const source = await readFile(join(ROOT, 'client.js'), 'utf8')
     let mod: Record<string, unknown> | undefined
     const previous = (globalThis as { window?: unknown }).window

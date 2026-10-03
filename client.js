@@ -417,15 +417,10 @@ window.__ModuleLoader__.load({
      */
     function applyNativeSidebar(ctx) {
       const disposers = []
-      // Inject ONLY the tab registry, and read `ctx.slots` off the plugin's own
-      // context — exactly how `dsh-better-sidebar` does it.
-      //
-      // Injecting `slots` alongside it looks equivalent and is not: a declared
-      // inject makes cordis hold the callback until EVERY named service is
-      // available on that chain, and `slots` is not reachable the same way. The
-      // symptom was silent — the callback never ran, so no type registered, no
-      // body registered, and the tab never appeared at all. Reading `ctx.slots`
-      // directly is safe because it is declared on Context by the renderer.
+      // Wait for the tab registry only. `slots` is not named here because the
+      // module declares it in its own `inject` (see the export at the bottom):
+      // this callback reads `ctx.slots` off the plugin's own context, and that
+      // access resolves only because the module-level inject put it there.
       const mount = (injected) => {
         const tabs = injected.get('sidebarRightTabs')
         if (tabs === undefined) return () => {}
@@ -438,7 +433,13 @@ window.__ModuleLoader__.load({
           kind: NATIVE_ID,
           priority: 'extension',
           title: () => STRINGS.tabTitle,
-          guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: STRINGS.tabDesc }],
+          // `description` is THUNKED copy, like `title` beside it: the guide calls
+          // it as `entry.description?.()` on every render so a language change
+          // needs no re-registration. Passing the string itself throws
+          // `STRINGS.tabDesc is not a function`, and because the guide page is the
+          // doorway to this type, the throw takes out the whole guide body — the
+          // entry never appears and the tab cannot be opened at all.
+          guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: () => STRINGS.tabDesc }],
         })
         disposers.push(disposeType)
 
@@ -487,6 +488,27 @@ window.__ModuleLoader__.load({
       t: (key) => STRINGS[key] ?? key,
     })
 
-    return { apply, name: 'epistemic-fold' }
+    // `slots` is a REQUIRED cordis service for this module, and it has to be
+    // declared here rather than reached for lazily.
+    //
+    // The native sidebar's body seat is `ctx.slots.inject(...)`, and cordis
+    // refuses that property outright when the service is not in the fiber's
+    // inject list:
+    //
+    //   cannot get property "slots" without inject
+    //
+    // The failure is shaped to look like something else. The TYPE registration
+    // above runs first and succeeds, so the chip appears and the tab opens —
+    // then the body seat throws, the renderer's boundary catches it, and the
+    // pane reads "这类内容还没有可用的查看方式。" (no available way to view this
+    // content). A registered type with a missing body is a legitimate state
+    // (the owning plugin was unmounted), so the UI reports it as one and the
+    // real cause never surfaces.
+    //
+    // Declaring it is safe because it cannot be absent in a web deployment: the
+    // slot registry is provided by `@deepseek-ai/dsh-client-ui-renderer`, which
+    // is the shell that mounts this module at all. `dsh-better-sidebar` declares
+    // the same service the same way.
+    return { apply, name: 'epistemic-fold', inject: ['slots'] }
   },
 })

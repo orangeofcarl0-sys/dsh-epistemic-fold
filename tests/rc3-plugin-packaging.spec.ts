@@ -187,7 +187,10 @@ describe('RC7: the bare-name entry mounts the doctor, not the plugin', () => {
     expect(entry.EpistemicFoldPlugin).toBeDefined()
   })
 
-  it('the client declares NO hard inject, so a missing sidebar cannot fail boot', () => {
+  it('the client hard-injects only `slots`, never the optional sidebar services', () => {
+    // The two kinds of service need opposite treatment, and collapsing them is
+    // what broke the native path once already.
+    //
     // `betterSidebar` belongs to a third-party plugin a deployment may not have.
     // A declared `inject: ['betterSidebar']` holds the entry pending forever —
     // measured in a real web boot with no dsh-better-sidebar installed:
@@ -198,11 +201,19 @@ describe('RC7: the bare-name entry mounts the doctor, not the plugin', () => {
     //
     // That fails the WHOLE UI, not just the panel. The optional-service idiom is
     // `ctx.inject([...], cb)` inside apply().
+    //
+    // `slots` is the opposite case: `@deepseek-ai/dsh-client-ui-renderer`
+    // provides it and is the shell that mounts this module, so it is always
+    // there — and cordis REFUSES the property unless it is declared. Leaving it
+    // out let the tab type register while its body threw, which the UI reported
+    // as the legitimate "no available way to view this content".
     const client = require('node:fs').readFileSync(join(ROOT, 'client.js'), 'utf8')
     expect(client, 'the client must use ctx.inject for the optional service')
       .toContain("ctx.inject(['betterSidebar']")
-    expect(client, 'the client must NOT declare a hard inject list')
-      .not.toMatch(/const inject = \['betterSidebar'\]/u)
+    expect(client, 'the optional service must NOT be hard-injected')
+      .not.toMatch(/inject:\s*\[[^\]]*'betterSidebar'/u)
+    expect(client, 'the slot registry must be hard-injected')
+      .toMatch(/inject:\s*\['slots'\]/u)
   })
 })
 

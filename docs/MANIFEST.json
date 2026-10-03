@@ -206,7 +206,12 @@
   },
   {
     "file": "40_RC14_DUAL_SIDEBAR_ADAPTER.md",
-    "bytes": 7156,
-    "sha256": "1ae383636186657a59b3104db3d0e7d8e6ff3cb195eac4ccc58163469d566895"
+    "bytes": 8675,
+    "sha256": "fe00e8a5b43cc510f0c1de232f75e5a4a93d879f801ba68e6553f90e5fb2bdd4"
+  },
+  {
+    "file": "41_RC15_NATIVE_SIDEBAR_RENDERS.md",
+    "bytes": 6828,
+    "sha256": "1f6f8c37a86c65cbf4940ccb6d91e3d0c7e009db201bc1f03278b8e09c29a7a3"
   }
 ]
