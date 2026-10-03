@@ -2,7 +2,7 @@
   {
     "file": "00_README_EF.md",
     "bytes": 12266,
-    "sha256": "1b81b32360e823a36bbcc8a17cd8d38e84d25c35c8e49f3ea353f10e4acaa362"
+    "sha256": "bc6252ee1b3129eff982533a57888a98a3ba4106cf38a92771f9f40751c05f59"
   },
   {
     "file": "01_EF_RFC_001_ARCHITECTURE.md",
@@ -216,8 +216,8 @@
   },
   {
     "file": "42_DEPLOYMENT_CHAIN.md",
-    "bytes": 15366,
-    "sha256": "7762e2f1c03e1267bd2f373100a9d2c86b6eccf7cfb183920e1f4742b591debf"
+    "bytes": 16066,
+    "sha256": "4dfd14db918983b858e3d1186fcb2f852bbb6f199b5fe4b2ec219bd188544709"
   },
   {
     "file": "43_RC17_SIDEBAR_ENTRY_DEDUPE.md",

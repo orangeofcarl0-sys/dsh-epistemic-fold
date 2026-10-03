@@ -52,6 +52,22 @@ matter operationally:
 `npm run prepare` (which npm runs on install) chains the build and the
 generator below, so a fresh install cannot ship a stale `lib/` or a stale patch.
 
+### Two typecheck projects, because the client face cannot join the first
+
+```bash
+npm run typecheck:all     # both projects
+```
+
+`tsconfig.json` covers `src/` and `tests/` under full `strict`, resolving
+`@deepseek-ai/*` through a 93-entry path table into the vendored DSH **sources**.
+`client.js` cannot join that graph: it `require`s React from the host loader
+rather than depending on it. So it has its own project (`tsconfig.client.json`,
+`checkJs` + `strict`) plus a 12-line ambient shim declaring what the **browser**
+supplies.
+
+Excluding it was not neutral — measured, it was the only file no compiler looked
+at, and it is the file every recent defect round touched. CI runs both projects.
+
 ## 3. Generate the substitution rows
 
 ```bash
