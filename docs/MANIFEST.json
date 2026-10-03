@@ -213,5 +213,10 @@
     "file": "41_RC15_NATIVE_SIDEBAR_RENDERS.md",
     "bytes": 6828,
     "sha256": "1f6f8c37a86c65cbf4940ccb6d91e3d0c7e009db201bc1f03278b8e09c29a7a3"
+  },
+  {
+    "file": "42_DEPLOYMENT_CHAIN.md",
+    "bytes": 11532,
+    "sha256": "d1cdf25268f21ca018d93dc4fb6ac4dd43af708920a1511f1ec9f91074b66144"
   }
 ]
