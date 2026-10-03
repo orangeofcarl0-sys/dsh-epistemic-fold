@@ -39,16 +39,40 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import BasicCompactionEngine from '../src/basic/index.ts'
+// The seam edits, shared with the vendoring script that produces the copy.
+import { applySeam, SEAM_MODULES } from '../scripts/framing-seam.mjs'
 
 const ROOT = join(import.meta.dirname, '..')
 const COPY_DIR = join(ROOT, 'src', 'basic')
 const REF_DIR = join(ROOT, 'vendor', 'deepseek-harness', 'packages', 'compaction', 'compaction-basic', 'src')
 
 /** The five modules the copy carries. */
-const MODULES = ['config', 'types', 'summarizer', 'region', 'index'] as const
+const MODULES = SEAM_MODULES as readonly string[]
 
 const readCopy = (m: string) => readFileSync(join(COPY_DIR, `${m}.ts`), 'utf8')
-const readRef = (m: string) => readFileSync(join(REF_DIR, `${m}.ts`), 'utf8')
+
+/**
+ * The upstream module, with the seam applied.
+ *
+ * ## Why the seam is applied here rather than assumed
+ *
+ * The comparison below is against a checkout that has NOT been patched: upstream
+ * ships `compaction-basic` without a `frameCheckpoint` hook, and the seam is
+ * what EF adds. Applying it in-memory makes this test a property of the two
+ * sources rather than of the machine's checkout state.
+ *
+ * That distinction is not academic — it is why CI was red for a month. The
+ * check used to compare against the checkout as found, so it passed only where
+ * `apply-framing-seam.mjs` had been run by hand:
+ *
+ *   locally  the vendor tree was left dirty by that script → passed (FALSE)
+ *   CI       a clean checkout at the pinned commit       → failed (the truth)
+ *
+ * With the seam applied here, both environments reach the same verdict.
+ */
+const readRef = (m: string) => applySeam(stripRefDoc(
+  readFileSync(join(REF_DIR, `${m}.ts`), 'utf8'),
+), m)
 
 /** Strip the provenance header the vendoring script prepends. */
 function stripHeader(text: string): string {

@@ -43,58 +43,20 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+// The seam edits live in ONE place, shared with the drift test. They used to be
+// defined here AND in `apply-framing-seam.mjs`, with a third implicit copy in
+// `tests/rc7-vendored-basic.spec.ts` — which assumed a pre-patched checkout and
+// therefore failed on every clean one. See `scripts/framing-seam.mjs`.
+import { applySeam, SEAM_MODULES } from './framing-seam.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(ROOT, 'src', 'basic')
 
 /** The upstream files the copy carries, in dependency order. */
-const MODULES = ['config', 'types', 'summarizer', 'region', 'index']
+const MODULES = SEAM_MODULES
 
 /** The upstream release this copy tracks. */
 const UPSTREAM_VERSION = 'dsh-v0.1.7-rc.2'
-
-/** One exact text edit, with the anchor that proves the source has not drifted. */
-const SEAM_EDITS = [
-  {
-    module: 'region',
-    marker: 'readonly frameCheckpoint?:',
-    find: "import type { Message, UserMessage } from '@deepseek-ai/dsh-llm'",
-    replace: "import type { Message, UserMessage, ContentBlock } from '@deepseek-ai/dsh-llm'",
-  },
-  {
-    module: 'region',
-    marker: 'readonly frameCheckpoint?:',
-    find: '  recover(error: unknown, agent: Agent, sourceEventSeqs: readonly SessionSeq[], signal?: AbortSignal): boolean\n}',
-    replace: '  recover(error: unknown, agent: Agent, sourceEventSeqs: readonly SessionSeq[], signal?: AbortSignal): boolean\n'
-      + '  /**\n'
-      + '   * Wrap a summary into the durable checkpoint message content.\n'
-      + '   *\n'
-      + '   * The SEAM (R3-B): the default is the stock framing, so a deployment that\n'
-      + '   * overrides nothing produces byte-identical surfaces. EF overrides it to move\n'
-      + '   * the per-checkpoint preamble into one stable system-prompt section.\n'
-      + '   */\n'
-      + '  readonly frameCheckpoint?: (summary: readonly ContentBlock[], agent: Agent) => ContentBlock[]\n'
-      + '}',
-  },
-  {
-    module: 'region',
-    marker: '(dependencies.frameCheckpoint ?? frameSummary)',
-    find: '    content: frameSummary(summaryResult.summary),',
-    replace: '    content: (dependencies.frameCheckpoint ?? frameSummary)(summaryResult.summary, agent),',
-  },
-  {
-    module: 'index',
-    marker: 'protected frameCheckpoint(',
-    find: "import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'",
-    replace: "import type { ContentBlock, LlmCallConfig } from '@deepseek-ai/dsh-llm'",
-  },
-  {
-    module: 'index',
-    marker: 'protected frameCheckpoint(',
-    find: "import { summarizeWithLlm } from './summarizer.ts'",
-    replace: "import { frameSummary, summarizeWithLlm } from './summarizer.ts'",
-  },
-]
 
 /** The provenance header every copied module carries. */
 function header(module) {
@@ -116,23 +78,6 @@ function header(module) {
 function stripLeadingDocComment(text, module) {
   if (!text.startsWith('/**')) throw new Error(`${module}.ts: does not start with a doc comment`)
   return text.slice(text.indexOf('*/') + 2).replace(/^\s*\n/u, '')
-}
-
-/** Apply every seam edit for one module, verifying each anchor is present. */
-function applySeam(text, module) {
-  let out = text
-  for (const edit of SEAM_EDITS) {
-    if (edit.module !== module) continue
-    if (out.includes(edit.marker) && !out.includes(edit.find)) continue // already applied
-    if (!out.includes(edit.find)) {
-      throw new Error(
-        `${module}.ts: seam anchor not found — the upstream source has drifted.\n`
-        + `  expected: ${JSON.stringify(edit.find.slice(0, 80))}`,
-      )
-    }
-    out = out.replace(edit.find, edit.replace)
-  }
-  return out
 }
 
 const argv = process.argv.slice(2)
