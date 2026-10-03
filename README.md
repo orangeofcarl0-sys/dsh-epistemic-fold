@@ -2,9 +2,10 @@
 
 > **Epistemic Fold for DeepSeek Harness**
 > *A contract-preserving context runtime for long-horizon agents.*
-> *面向长周期 Agent 的、保持契约的上下文运行时。*
 
-## What is this? · 这是什么？
+[中文文档](README.zh.md)
+
+## What is this?
 
 Epistemic Fold (EF) is a compaction backend plugin for the
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) that treats
@@ -20,63 +21,50 @@ Its core principle:
 > externally relevant epistemic effects have been materialized, preserved, and
 > made recoverable.**
 
-EF 是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
-的一个 compaction backend 插件。它把会话历史、记忆与工作上下文当作三件不同
-的事，核心命题：
-
-> **只有当一段轨迹对未来仍有意义的知识效应已经被稳定对象吸收、关键状态与
-> 边界得到保留、且原始证据可以恢复时，该轨迹才有资格被折叠出工作上下文。**
-
-Concretely, when the runtime folds a span of conversation it ·
-运行时折叠一段会话时：
+Concretely, when the runtime folds a span of conversation it:
 
 1. **archives the exact model-visible messages** into an immutable,
    hash-verified `CheckpointBundle` *before* any lossy surface replacement
-   commits (`BundleDurable ≺ SurfaceLoss`) —
-   **先归档精确的模型可见消息**到不可变、哈希校验的 `CheckpointBundle`，
-   在任何有损 surface 替换提交之前；
-2. **never re-folds what is already frozen** — a monotonically advancing
-   *Fold Frontier* separates frozen checkpoints from the open trajectory, so
-   the cached prefix stays byte-stable across folds —
-   **绝不重折叠已冻结的内容** —— 单调前进的 Fold Frontier 分隔冻结
-   checkpoint 与开放轨迹，缓存的 prefix 在多次折叠间逐字节稳定；
+   commits (`BundleDurable ≺ SurfaceLoss`);
+2. **never re-folds what is already frozen** — a monotonically advancing *Fold
+   Frontier* separates frozen checkpoints from the open trajectory, so the cached
+   prefix stays byte-stable across folds;
 3. **derives the current state deterministically from raw session events** —
    objectives, constraints, decisions, values, evidence, failures, and
-   obligations, with full provenance and a hard rule that narrative summaries
-   can never verify state (`Raw Events → State` and `Raw Events → Summary`
-   run in parallel; `Raw → Summary → State` is forbidden) —
-   **当前状态由原始 session 事件确定性派生**，全部携带完整 provenance；
-   语义摘要永远不能验证状态（`Raw → Summary → State` 被禁止）；
+   obligations, with full provenance and a hard rule that narrative summaries can
+   never verify state (`Raw Events → State` and `Raw Events → Summary` run in
+   parallel; `Raw → Summary → State` is forbidden);
 4. **recovers exactly** — `context_search` / `context_recall` serve bounded,
-   paginated, provenance-checked recall of anything that left the working
-   set —
-   **精确恢复** —— `context_search` / `context_recall` 提供有界、分页、
-   经 provenance 校验的召回。
+   paginated, provenance-checked recall of anything that left the working set.
 
-The optimization goal is not maximal compression. It is correctness first —
-then information density, prefix-cache locality, long-horizon state
-consistency, and stable closed-loop continuation.
-
-优化目标不是最大压缩率，而是 correctness first —— 在硬正确性约束下提高信息
-密度、prefix cache 局部性、长期状态一致性与闭环延续稳定性。
+The optimization goal is not maximal compression. It is correctness first — then
+information density, prefix-cache locality, long-horizon state consistency, and
+stable closed-loop continuation.
 
 ---
 
-## Install · 安装
+## Install
 
 EF is a real DSH plugin: it builds to loadable JS and ships a bundle patch that
 substitutes itself into DSH's own agent presets. There are **three ways** to
 install it, and they differ in one way that matters — whether the build runs for
 you.
 
-EF 是真正的 DSH 插件：构建为可加载 JS，并附带把自己替换进 DSH 自带 preset 的
-bundle patch。有三种安装方式，差别在于**构建是否自动完成**。
-
 | channel | spec | runs the build? | what it needs |
 | --- | --- | --- | --- |
-| **git** (recommended) | `github:orangeofcarl0-sys/dsh-epistemic-fold` | **yes** | one `allowBuilds` line, which dsh prints for you |
+| **tarball** (simplest) | the `.tgz` from [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) | no | nothing — `lib/` is prebuilt |
+| **git** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | **yes** | one `allowBuilds` line, which dsh prints for you |
 | **path** | `file:/path/to/dsh-epistemic-fold` | **no** | run `npm install` in the source tree first |
 | **registry** | `dsh-epistemic-fold` | n/a | not available — the package is `private` and unpublished |
+
+### Install from a release tarball
+
+```bash
+dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
+```
+
+The tarball already contains the built `lib/`, so nothing runs `prepare` and no
+`allowBuilds` entry is needed.
 
 ### Install from git
 
@@ -85,13 +73,9 @@ dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold
 ```
 
 The first run stops with `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`. That is pnpm
-blocking build scripts, not a defect: **dsh prints the exact `allowBuilds` line
-to paste** into the profile's `pnpm-workspace.yaml`. Add it and re-run. The
-install then builds `lib/` and generates the preset rows as part of `prepare`.
-
-首次运行会以 `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED` 停止。这是 pnpm 拦截构建
-脚本，不是缺陷：**dsh 会打印出要粘贴到 profile `pnpm-workspace.yaml` 的
-`allowBuilds` 行**。加上后重跑即可。
+blocking build scripts, not a defect: **dsh prints the exact `allowBuilds` line to
+paste** into the profile's `pnpm-workspace.yaml`. Add it and re-run. The install
+then builds `lib/` and generates the preset rows as part of `prepare`.
 
 ### Install from a local checkout
 
@@ -106,10 +90,6 @@ build** — measured, pnpm skips `prepare` for path dependencies. Without
 `npm install` the install copies a directory whose `main` (`lib/entry.js`) does
 not exist, and the loader reports `failed to import` for an entry that is itself
 the install doctor. `npm run preflight` catches that before you install.
-
-`file:` 通道**不会**替你构建——实测 pnpm 对路径依赖跳过 `prepare`。不先
-`npm install` 就会装入一个 `main` 指向不存在文件的目录。`npm run preflight`
-会在安装前拦住这种情况。
 
 ### Configure the profile
 
@@ -136,17 +116,10 @@ rows that `@deepseek-ai/dsh-web-app` declares. Listed before it, the patch finds
 nothing — and EF's doctor reports that loudly rather than silently leaving you on
 native Basic.
 
-**bundle 顺序是正确性要求。** 替换 patch 覆盖的是 `dsh-web-app` 声明的行；排在
-它前面，patch 什么也找不到——EF 自带的 doctor 会大声报告，而不是静默把你留在
-Basic 上。
-
 **The preset menu does not change.** EF substitutes itself into DSH's own
 `standard`, `ptc` and `cordis` presets, so there is nothing new to choose.
 `minimal` is left exactly as DSH ships it — it declares no compaction group, so
 there is nothing to substitute.
-
-**preset 菜单不会改变**：EF 把自己替换进 DSH 自带的三个 preset，没有新东西要选。
-`minimal` 保持原样。
 
 ### Verify the install
 
@@ -167,17 +140,14 @@ logger buffers in memory and `dsh-app-boot` captures only warn/error. The three
 surfaces above are what you actually check. See
 [the deployment chain](docs/42_DEPLOYMENT_CHAIN.md) for the full matrix.
 
-doctor 的成功日志在正常启动时**不会**打印（cordis logger 只缓冲在内存，
-`dsh-app-boot` 仅捕获 warn/error）。上面三个表面才是实际要看的。
-
 ---
 
-## Usage · 用法
+## Usage
 
 ### Modes
 
 Three **tiers**, plus `legacy` (the engine's own default) and `basic` (stand
-aside entirely) · 三档模式，另有 `legacy`（引擎默认）与 `basic`（完全让位）：
+aside entirely):
 
 ```yaml
 - name: dsh-epistemic-fold
@@ -200,32 +170,22 @@ rungs is attributable. Every tier is a named **set of values, not a branch**:
 expansion happens before resolution, so the engine cannot tell a preset from the
 same keys written by hand, and **an explicit setting always wins**.
 
-阶梯每上一档只变动**一个**杠杆（先保留比例、再语义面）。每一档都是「一组具名
-取值」而非分支，展开在解析之前完成，因此**显式设置始终覆盖 preset**。
-
 `reliability` is deliberately **not** offered: there is no live evidence for what
 the right reliability configuration is, and naming one would assert a conclusion
-the project does not have. `reliability` 暂不提供：尚无实测证据，命名它等于断言
-一个项目尚未得到的结论。
+the project does not have.
 
 The tier is chosen with `/context mode economy|balanced|quality` — not with a
 preset, because a preset is picked before a session starts and DSH refuses to
-recompose a running one · 档位用 `/context mode` 选择，而不是用 preset——preset
-在会话开始前就要选定，而 DSH 拒绝重组运行中的会话。
+recompose a running one.
 
 ### The `frameCheckpoint` seam
 
 `framingMode: system-dedup` (which every tier selects) needs a `frameCheckpoint`
 hook on the compaction engine. **EF carries that seam in its own vendored copy of
-the Basic backend** (`src/basic/`), so it mounts on **any** DSH build and needs
-no patch script. If the vendored copy is ever damaged, the engine **refuses to
+the Basic backend** (`src/basic/`), so it mounts on **any** DSH build and needs no
+patch script. If the vendored copy is ever damaged, the engine **refuses to
 start** rather than silently running the costlier per-checkpoint framing — which
 would report an economy saving the deployment does not get.
-
-`system-dedup` 需要 compaction 引擎上的 `frameCheckpoint` hook。**EF 把这个
-seam 内联进自己 vendor 的 Basic 副本**（`src/basic/`），因此在**任何** DSH 构建上
-都能挂载，无需打补丁脚本。若该副本损坏，引擎**拒绝启动**，而不是静默退回更贵的
-per-checkpoint framing。
 
 ### The Sidebar panel
 
@@ -235,38 +195,25 @@ context's proportion and the provider's cache-hit share, and renders `—` for a
 figure it cannot establish — never a zero. It reads a client-side projection, so
 it **cannot enter the model context** by construction.
 
-EF 附带侧边栏**观测**面板，读取与 `/context status` 同一套状态模型，显示上下文
-占比与缓存命中率，无法确立的数值显示 `—`。它读取客户端投影，**结构上不可能进入
-模型上下文**。
-
 It reaches **both** right sidebars, which keep separate tab registries. The two
-halves are **not** symmetric: better-sidebar is the optional idiom, and the
-native registration is a **fallback**, because better-sidebar bridges its own
-tabs *into* the native registry — registering both unconditionally showed two
-identical entries ([docs/43](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md)).
-
-它同时接入两套右侧边栏，两者**并不对称**：better-sidebar 走可选惯用法，原生一侧
-是**回退**——better-sidebar 会把自己的 tab 桥接进原生注册表，无条件双注册会出现
-两条一模一样的条目。
+halves are **not** symmetric: better-sidebar is the optional idiom, and the native
+registration is a **fallback**, because better-sidebar bridges its own tabs *into*
+the native registry — registering both unconditionally showed two identical
+entries ([docs/43](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md)).
 
 ### Standing aside
 
-Set `mode: basic` to get native Basic back without uninstalling. EF then
-delegates folds to a byte-identical Basic backend and registers **no** EF surface
-at all — no projection, no panel, no `/context`, no recall tools. This is a
-supported configuration, not a degraded one.
-
-设 `mode: basic` 即可在不卸载的情况下拿回原生 Basic。EF 完全让位且不注册任何 EF
-表面。这是受支持的配置，不是降级。
+Set `mode: basic` to get native Basic back without uninstalling. EF then delegates
+folds to a byte-identical Basic backend and registers **no** EF surface at all —
+no projection, no panel, no `/context`, no recall tools. This is a supported
+configuration, not a degraded one.
 
 ---
 
-## Status · 状态
+## Status
 
-**What is measured, and what is not.** EF's discipline is that a claim carries
-its evidence status, and this file follows the same rule.
-
-**已测量的与未测量的。** EF 的纪律是每个主张都标注证据状态，本文件同样如此。
+**What is measured, and what is not.** EF's discipline is that a claim carries its
+evidence status, and this file follows the same rule.
 
 | area | status |
 | --- | --- |
@@ -281,27 +228,20 @@ its evidence status, and this file follows the same rule.
 | Live behavioral tier (opt-in, `EF_LIVE=1`) | ⚠️ **NULL RESULT** — the task sample did not discriminate the modes |
 | External benchmarks (τ²-Bench, LHTB) | ⚠️ **PARTIAL** — integrated; see docs 33–36 |
 
-**Frozen stages** — closed, not to be re-litigated without new incident
-evidence: `M1`, `M3b`, `M4`, `M5`, `RecallPrune` (deferred by evidence);
-`DeltaLeaf` (**rejected** on measured ROI, R1-B).
-
-**已冻结阶段**——已关闭，除非有新的故障证据否则不再讨论。
+**Frozen stages** — closed, not to be re-litigated without new incident evidence:
+`M1`, `M3b`, `M4`, `M5`, `RecallPrune` (deferred by evidence); `DeltaLeaf`
+(**rejected** on measured ROI, R1-B).
 
 Only one question remains open, and it is a **pricing** question that must not
 drive the architecture: the route-level realized cost gate.
 
-仅剩一个未决问题，且它属于**定价**问题，不得反向驱动架构。
-
 ---
 
-## Development · 开发方式
+## Development
 
 This repository is a standalone plugin source tree. Tests run the vendored DSH
 **sources** directly (the same source-level resolution the DSH monorepo uses), so
 no build of the plugin itself is needed to test it.
-
-本仓库是独立的插件源码树。测试直接运行 vendor 的 DSH **源码**，插件本身无需构建
-即可测试。
 
 Prerequisites: Node `^22.19 || >=24`, pnpm `11.7.x`, npm.
 
@@ -327,40 +267,32 @@ npm run typecheck:all               # src/ AND the browser client face
 ```
 
 **Two typecheck projects, on purpose.** `tsconfig.json` covers `src/` and `tests/`
-under full `strict`. `tsconfig.client.json` covers `client.js` — the browser face
-— which cannot join the first project because it `require`s React from the host
+under full `strict`. `tsconfig.client.json` covers `client.js` — the browser face —
+which cannot join the first project because it `require`s React from the host
 loader rather than depending on it. Both run in CI.
 
-**两个类型检查项目是刻意的**：`client.js` 从宿主 loader 借用 React，不能进入
-主项目的依赖图，所以它有独立项目。两者都在 CI 里跑。
-
 The suite grows every stage, so this file deliberately does **not** state a test
-count: a hardcoded number goes stale the moment a spec is added, and a stale
-count is read as an unfinished suite. `vitest run` prints the authoritative
-totals. The live tier is opt-in (`EF_LIVE=1`) and **skips** without a resolved
-route, so an unmeasured behavior is never reported as a passing one.
-
-本文件刻意不写死测试数量：写死的数字一经添加新用例即过期。Live 层为可选，没有可用
-路由时**跳过**，绝不把「未测量」报成「通过」。
+count: a hardcoded number goes stale the moment a spec is added, and a stale count
+is read as an unfinished suite. `vitest run` prints the authoritative totals. The
+live tier is opt-in (`EF_LIVE=1`) and **skips** without a resolved route, so an
+unmeasured behavior is never reported as a passing one.
 
 ### CI
 
-Two lanes on every push · 每次推送跑两条 lane：
+Two lanes on every push:
 
 - **pinned DSH baseline** (`477b4f42…`, the `0.1.7-rc.2` release) — mandatory.
 - **DSH master** — an allowed-to-fail compatibility probe.
 
 Both run the typechecks, the full suite, and the keyless evaluation tiers.
 
-> **On version numbers.** `0.1.7-rc.2` in this repository is the **test baseline
-> CI pins**, not a claim about what you have installed. EF's `engines.dsh` and
-> peer ranges are `>=0.1.7-rc.2`, and it is verified running on `0.2.0-rc.2`.
->
-> 本仓库中的 `0.1.7-rc.2` 是 **CI 固定的测试基线**，不是对你本机版本的断言。
+> **On version numbers.** `0.1.7-rc.2` in this repository is the **test baseline CI
+> pins**, not a claim about what you have installed. EF's `engines.dsh` and peer
+> ranges are `>=0.1.7-rc.2`, and it is verified running on `0.2.0-rc.2`.
 
 ---
 
-## Repository layout · 仓库结构
+## Repository layout
 
 ```
 src/
@@ -410,18 +342,14 @@ docs/                   design records and evaluation reports (see below)
 
 ---
 
-## Documentation · 文档
+## Documentation
 
 `docs/` holds **49 documents**. They are of three kinds, and the distinction
 matters when reading them: a **design record** states intent, an **evaluation
-report** states what was measured, and a **defect record** states what went
-wrong and what the correction was. Where a later document falsified an earlier
+report** states what was measured, and a **defect record** states what went wrong
+and what the correction was. Where a later document falsified an earlier
 conclusion, the earlier document says so in place rather than being rewritten —
 the audit trail is the point.
-
-`docs/` 有 **49 份文档**，分三类：设计记录陈述意图，评测报告陈述实测结果，缺陷
-记录陈述错在哪、如何更正。后文推翻前文结论时，前文**原地标注**而非被改写——
-审计链本身就是要保留的东西。
 
 ### Project entry & architecture
 
@@ -507,13 +435,9 @@ the audit trail is the point.
 [47](docs/47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md) for how the recent work is
 verified.
 
-**新读者从这里开始**：[00](docs/00_README_EF.md) 看模型，
-[42](docs/42_DEPLOYMENT_CHAIN.md) 看安装与运维，
-[47](docs/47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md) 看近期工作如何被验证。
-
 ---
 
-## License · 许可证
+## License
 
 [MIT](LICENSE)
 

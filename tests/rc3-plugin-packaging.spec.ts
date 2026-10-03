@@ -57,26 +57,46 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(pkg['files']).toContain('cordis.patch.yml')
   })
 
-  it('ships `docs`, so the README\'s own links are not dead on the registry', async () => {
+  it('ships `docs`, so the READMEs\' own links are not dead on the registry', async () => {
     // THE DEFECT THIS PINS: `files` omitted `docs`, so `npm pack` produced a
     // tarball with no documentation — while the README linked to 49 of them.
     // On the npm page every one of those links 404s, and a reader's first
     // impression of the project is a page of broken references.
     //
     // The check is the CONSEQUENCE rather than the declaration: it resolves
-    // every `docs/*.md` link in the README against the tracked files, so it
-    // fails for any cause — `files` losing `docs`, a link pointing at a file
-    // that was renamed, a doc deleted without updating the index.
+    // every `docs/*.md` link against the tracked files, so it fails for any
+    // cause — `files` losing `docs`, a link pointing at a file that was
+    // renamed, a doc deleted without updating the index.
+    //
+    // BOTH language editions are checked. A translation is the edition most
+    // likely to rot: it is edited separately, and a stale link in it is
+    // invisible to a reader of the other one.
     const pkg = await readJson('package.json')
     expect(pkg['files'], 'docs must be published with the package').toContain('docs')
 
-    const readme = await readFile(join(ROOT, 'README.md'), 'utf8')
-    const linked = [...new Set(
-      [...readme.matchAll(/\]\(docs\/([A-Za-z0-9_.-]+\.md)\)/gu)].map(match => match[1]!),
-    )]
-    expect(linked.length, 'the README must index the docs').toBeGreaterThan(40)
-    const missing = linked.filter(file => !existsSync(join(ROOT, 'docs', file)))
-    expect(missing, 'a README link to a doc that does not exist is a 404 on npm').toEqual([])
+    for (const name of ['README.md', 'README.zh.md']) {
+      const readme = await readFile(join(ROOT, name), 'utf8')
+      const linked = [...new Set(
+        [...readme.matchAll(/\]\(docs\/([A-Za-z0-9_.-]+\.md)\)/gu)].map(match => match[1]!),
+      )]
+      expect(linked.length, `${name} must index the docs`).toBeGreaterThan(40)
+      const missing = linked.filter(file => !existsSync(join(ROOT, 'docs', file)))
+      expect(missing, `${name} links a doc that does not exist, which is a 404 on npm`).toEqual([])
+    }
+  })
+
+  it('ships both language editions, and each links to the other', async () => {
+    // The pair is a contract: a reader who lands on one must be able to reach
+    // the other. A translated README that is not published, or that has no
+    // cross-link, is unreachable in practice even though it exists in the repo.
+    const pkg = await readJson('package.json')
+    const files = pkg['files'] as string[]
+
+    for (const [name, other] of [['README.md', 'README.zh.md'], ['README.zh.md', 'README.md']] as const) {
+      expect(files, `${name} must be published`).toContain(name)
+      const text = await readFile(join(ROOT, name), 'utf8')
+      expect(text, `${name} must link to ${other}`).toContain(`](${other})`)
+    }
   })
 
   it('ships every top-level directory the README documents', async () => {
@@ -97,16 +117,23 @@ describe('RC3: the package declares a real plugin entry', () => {
     // (see `.gitattributes`), and a `\n`-anchored fence pattern silently fails
     // to match `\r\n` — which reads as "the README has no layout block" rather
     // than as a line-ending mismatch.
-    const readme = (await readFile(join(ROOT, 'README.md'), 'utf8')).replace(/\r\n/gu, '\n')
-    // The heading, then prose is allowed, then the first fenced block under it.
-    const layout = readme.match(/^## Repository layout[^\n]*\n[\s\S]*?\n```\n([\s\S]*?)\n```/mu)
-    expect(layout, 'the README must document the repository layout').not.toBeNull()
+    const layoutOf = async (name: string): Promise<string[]> => {
+      const text = (await readFile(join(ROOT, name), 'utf8')).replace(/\r\n/gu, '\n')
+      // The heading, then prose is allowed, then the first fenced block under it.
+      const block = text.match(/^## (?:Repository layout|仓库结构)[^\n]*\n[\s\S]*?\n```\n([\s\S]*?)\n```/mu)
+      expect(block, `${name} must document the repository layout`).not.toBeNull()
+      // Top-level entries of the listing, e.g. `src/`, `docs/`, `eval/`.
+      return [...new Set([...block![1]!.matchAll(/^([a-z][a-z0-9_-]*)\//gmu)].map(m => m[1]!))]
+    }
 
-    // Top-level entries of the layout listing, e.g. `src/`, `docs/`, `eval/`.
-    const documented = [...new Set(
-      [...layout![1]!.matchAll(/^([a-z][a-z0-9_-]*)\//gmu)].map(match => match[1]!),
-    )]
+    const documented = await layoutOf('README.md')
     expect(documented.length, 'the layout must name some directories').toBeGreaterThan(3)
+
+    // The two editions must describe the SAME repository. A translation that
+    // lists a different set of directories is a documentation defect that no
+    // reader of either single file can see.
+    expect(await layoutOf('README.zh.md'), 'both editions must list the same directories')
+      .toEqual(documented)
 
     // The layout block documents the REPOSITORY, which is wider than the
     // published package: benchmark and test infrastructure lives in the repo

@@ -36,6 +36,7 @@
     "client.js",
     "cordis.patch.yml",
     "README.md",
+    "README.zh.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "scripts",
