@@ -4,12 +4,16 @@
  * ## Why this is a test and not a checklist
  *
  * The gate was run by hand before v0.1.0 and it **missed things**. The first
- * pass scanned for `C:\Users\...`-style paths with backslash patterns and
- * reported the tree clean; the real leak was forward-slash paths
- * (`D:/dsh/.credentials.yaml`, `F:/Codex_Work_Space/bench-workspace/`) in three
- * shipped scripts and five documents. A hand-run gate that reports "clean"
- * because its own pattern was wrong is worse than no gate, because it is
- * trusted.
+ * pass scanned for Windows-user-profile paths using backslash patterns and
+ * reported the tree clean; the real leak used FORWARD slashes — a DSH home and
+ * a personal bench workspace — in three shipped scripts and five documents. A
+ * hand-run gate that reports "clean" because its own pattern was wrong is worse
+ * than no gate, because it is trusted.
+ *
+ * (The literal strings are not repeated here on purpose: a comment naming them
+ * would put back the very content the test exists to keep out. The pattern below
+ * does not trip its own scan — it is a regex, not a literal path — so no
+ * exemption is needed and none is granted.)
  *
  * So the patterns live here, both slash styles, and CI runs them on every push.
  *
@@ -45,8 +49,18 @@ const ROOT = join(import.meta.dirname, '..')
  * Both separators, because the leak that prompted this test used `/` while the
  * first hand-run scan only looked for `\`. `~` and `<DSH_HOME>` are the
  * portable forms the repository uses instead.
+ *
+ * Deliberately GENERIC — it stores no personal identifier. An earlier version
+ * listed the actual usernames and directory names it was looking for, which put
+ * those very strings back into a public repository: a detector that names what
+ * it detects becomes an instance of the problem. These three shapes cover the
+ * real cases without that:
+ *
+ *   - a drive-absolute `Users/` or `home/` path (any username)
+ *   - a drive-absolute `dsh` directory (the DSH home on any machine)
+ *   - a single-letter drive mount in POSIX form, e.g. `/f/...` under Git Bash
  */
-const MACHINE_PATH = /(?:[A-Za-z]:[\\/](?:dsh|Codex_Work_Space|Users[\\/]66494)|F:[\\/]Codex_Work_Space|\/f\/Codex_Work_Space)/u
+const MACHINE_PATH = /(?:[A-Za-z]:[\\/](?:Users|home)[\\/](?!\.\.\.|<)[^\\/\s"']+|[A-Za-z]:[\\/]dsh\b|\/[a-z]\/[A-Za-z_][A-Za-z_0-9]{3,})/u
 
 /**
  * A credential VALUE rather than the name of the variable holding one.

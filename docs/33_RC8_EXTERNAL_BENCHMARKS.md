@@ -169,11 +169,12 @@ and cheap to reclaim, rather than scattered across `%TEMP%`.
 
 ### 5.2 The non-issue: Docker
 
-Docker's build cache is 23 GB and its VHDX is 28 GB, but the VHDX lives on
-**D:** (`/d/DockerData/...`), not C:. D: has 61 GB free. So Docker is not
-currently a C: risk — but note that Docker's *images* for a benchmark sweep
-(1.4 GB for `riscv-core-debug` alone) would still land there, and D: has 61 GB,
-not 146 GB.
+Docker's build cache is 23 GB and its VHDX is 28 GB, but the VHDX is configured
+onto the **second drive** (`<docker-data-root>`), not the system drive. That
+drive had 61 GB free against 146 GB on the system drive, so Docker was not a
+system-drive risk — but note that Docker's *images* for a benchmark sweep
+(1.4 GB for `riscv-core-debug` alone) still land there, and 61 GB is the binding
+number.
 
 ### 5.3 Dataset footprints
 
