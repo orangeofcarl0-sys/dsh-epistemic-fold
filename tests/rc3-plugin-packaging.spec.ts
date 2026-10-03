@@ -12,6 +12,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { readFile, access } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { createHarness } from './harness.ts'
 
@@ -54,6 +55,28 @@ describe('RC3: the package declares a real plugin entry', () => {
     const pkg = await readJson('package.json')
     expect(pkg['files']).toContain('lib')
     expect(pkg['files']).toContain('cordis.patch.yml')
+  })
+
+  it('ships `docs`, so the README\'s own links are not dead on the registry', async () => {
+    // THE DEFECT THIS PINS: `files` omitted `docs`, so `npm pack` produced a
+    // tarball with no documentation — while the README linked to 49 of them.
+    // On the npm page every one of those links 404s, and a reader's first
+    // impression of the project is a page of broken references.
+    //
+    // The check is the CONSEQUENCE rather than the declaration: it resolves
+    // every `docs/*.md` link in the README against the tracked files, so it
+    // fails for any cause — `files` losing `docs`, a link pointing at a file
+    // that was renamed, a doc deleted without updating the index.
+    const pkg = await readJson('package.json')
+    expect(pkg['files'], 'docs must be published with the package').toContain('docs')
+
+    const readme = await readFile(join(ROOT, 'README.md'), 'utf8')
+    const linked = [...new Set(
+      [...readme.matchAll(/\]\(docs\/([A-Za-z0-9_.-]+\.md)\)/gu)].map(match => match[1]!),
+    )]
+    expect(linked.length, 'the README must index the docs').toBeGreaterThan(40)
+    const missing = linked.filter(file => !existsSync(join(ROOT, 'docs', file)))
+    expect(missing, 'a README link to a doc that does not exist is a 404 on npm').toEqual([])
   })
 
   it('has a build script, so `lib/` can be produced', async () => {

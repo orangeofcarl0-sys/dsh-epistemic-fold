@@ -38,7 +38,8 @@
     "README.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
-    "scripts"
+    "scripts",
+    "docs"
   ],
   "scripts": {
     "test": "vitest run",
