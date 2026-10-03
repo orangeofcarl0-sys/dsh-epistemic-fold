@@ -33,15 +33,30 @@
 set -euo pipefail
 
 EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LHTB_ROOT="${LHTB_ROOT:-/f/Codex_Work_Space/bench-workspace/lhtb}"
+
+# The LHTB checkout lives OUTSIDE this repository (it is a separate project with
+# its own Python environment), so it has to be supplied. There is deliberately no
+# default: a path baked in here would only work on the machine it was written on,
+# and this file ships inside a published package.
+LHTB_ROOT="${LHTB_ROOT:-}"
+[ -n "$LHTB_ROOT" ] || {
+  echo "LHTB_ROOT is not set; point it at your LHTB checkout" >&2
+  echo "  e.g. LHTB_ROOT=/path/to/bench-workspace/lhtb $0" >&2
+  exit 1
+}
 HARBOR_PY="${LHTB_ROOT}/harbor/.venv/Scripts/python.exe"
 HARBOR_EXE="${LHTB_ROOT}/harbor/.venv/Scripts/harbor.exe"
 
 [ -x "$HARBOR_EXE" ] || { echo "harbor not installed at $HARBOR_EXE" >&2; exit 1; }
 
+# The credential store. Override with DSH_CREDENTIALS, or let it default to the
+# standard DSH home. Again no machine-specific fallback.
 CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
-[ -f "$CREDENTIALS" ] || CREDENTIALS="D:/dsh/.credentials.yaml"
-[ -f "$CREDENTIALS" ] || { echo "credential store not found" >&2; exit 1; }
+[ -f "$CREDENTIALS" ] || {
+  echo "credential store not found at $CREDENTIALS" >&2
+  echo "set DSH_CREDENTIALS to its path" >&2
+  exit 1
+}
 
 # Read ONE value out of the refs block. Never echoed.
 KEY=$("$HARBOR_PY" - "$CREDENTIALS" <<'PY'

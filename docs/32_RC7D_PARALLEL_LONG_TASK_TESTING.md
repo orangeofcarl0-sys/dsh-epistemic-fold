@@ -48,7 +48,7 @@ hand-rolled CONNECT tunnel was tried first and returned Cloudflare 403, because
 Cloudflare rejects the raw TLS fingerprint; Node's fetch does not.
 
 **The key is read at runtime and never copied.** It lives in DSH's own credential
-store (`D:/dsh/.credentials.yaml`, refs block). `scripts/run-live-parallel.sh`
+store (`<DSH_HOME>/.credentials.yaml`, refs block). `scripts/run-live-parallel.sh`
 reads that one value into the process environment, never echoes it, never writes
 it to a file, and never passes it as an argument.
 

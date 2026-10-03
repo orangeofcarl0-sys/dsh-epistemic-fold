@@ -52,8 +52,9 @@ would reach it.
 
 ## 2. RC7 installed and verified
 
-Replaced the installed copy with the repo build (backup at
-`D:/dsh/profiles/ef-web-backup-20261003-004626`), then verified the composed tree:
+Replaced the installed copy with the repo build (backup kept as a sibling of the
+profile, `<DSH_HOME>/profiles/ef-web-backup-<timestamp>`), then verified the
+composed tree:
 
 ```
 after:   dsh --profile ef-web --dump-config
@@ -206,6 +207,6 @@ dsh --profile ef-web --port 3099 --no-open
 ## 9. State at the end of this session
 
 - `ef-web` now carries **RC7** (4 in-place substitutions, no `presets/`).
-  Backup: `D:/dsh/profiles/ef-web-backup-20261003-004626`.
+  Backup: `<DSH_HOME>/profiles/ef-web-backup-<timestamp>`.
 - The test server on 3099 is **stopped**; the user's 3080 was never touched.
 - The user's real `web` profile was **never modified**.

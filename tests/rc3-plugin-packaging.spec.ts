@@ -79,6 +79,55 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(missing, 'a README link to a doc that does not exist is a 404 on npm').toEqual([])
   })
 
+  it('ships every top-level directory the README documents', async () => {
+    // THE DEFECT THIS PINS: the README's repository layout listed
+    // `profiles/economics/`, and `src/economics-profile.ts` calls those files
+    // "the auditable, user-overridable copies" that its built-in constants
+    // mirror — but `files` omitted `profiles`, so a consumer following the
+    // README to the auditable source found nothing there.
+    //
+    // The check reads the layout block out of the README and requires each
+    // directory it names to be in `files`, so the two cannot drift: adding a
+    // directory to the layout without shipping it fails here, and so does
+    // dropping one from `files` while the README still points at it.
+    const pkg = await readJson('package.json')
+    const files = pkg['files'] as string[]
+
+    // LF-normalized before matching: this repository checks out CRLF on Windows
+    // (see `.gitattributes`), and a `\n`-anchored fence pattern silently fails
+    // to match `\r\n` — which reads as "the README has no layout block" rather
+    // than as a line-ending mismatch.
+    const readme = (await readFile(join(ROOT, 'README.md'), 'utf8')).replace(/\r\n/gu, '\n')
+    // The heading, then prose is allowed, then the first fenced block under it.
+    const layout = readme.match(/^## Repository layout[^\n]*\n[\s\S]*?\n```\n([\s\S]*?)\n```/mu)
+    expect(layout, 'the README must document the repository layout').not.toBeNull()
+
+    // Top-level entries of the layout listing, e.g. `src/`, `docs/`, `eval/`.
+    const documented = [...new Set(
+      [...layout![1]!.matchAll(/^([a-z][a-z0-9_-]*)\//gmu)].map(match => match[1]!),
+    )]
+    expect(documented.length, 'the layout must name some directories').toBeGreaterThan(3)
+
+    // The layout block documents the REPOSITORY, which is wider than the
+    // published package: benchmark and test infrastructure lives in the repo
+    // and is deliberately not shipped. Each exclusion is named with its reason,
+    // so adding a directory to the layout forces a decision here rather than
+    // silently defaulting either way.
+    //
+    // The distinction that matters: `profiles/` is shipped because
+    // `src/economics-profile.ts` calls those files "the auditable,
+    // user-overridable copies" and a consumer follows that reference; `eval/`
+    // is not, because it CONSUMES `src/` (it is the evaluation harness) and no
+    // consumer-facing document points at it.
+    const developmentOnly = new Map([
+      ['tests', 'the suite; consumers install a build, not a test tree'],
+      ['bench', 'the paired-baseline harness; it imports src/ and is run from the repo'],
+      ['eval', 'the evaluation harness; it imports src/ and is run from the repo'],
+    ])
+    const unpublished = documented.filter(dir => !developmentOnly.has(dir) && !files.includes(dir))
+    expect(unpublished, 'a directory the README documents must be published, or named as development-only').toEqual([])
+  })
+
   it('has a build script, so `lib/` can be produced', async () => {
     const pkg = await readJson('package.json')
     const scripts = pkg['scripts'] as Record<string, string>
@@ -233,25 +282,36 @@ describe('RC16: the file: channel needs a built lib/, and says so', () => {
     expect(script).toContain('process.exit(1)')
   })
 
-  it('the preflight passes on this tree and fails on one without lib/', async () => {
+  // Spawns two Node processes and copies a tree, so it gets an explicit budget:
+  // the 5000ms default is for pure in-process tests, and this one crosses it
+  // under the full suite's parallel load. Same class as the `docs-manifest`
+  // timeout — a process-spawning test needs its own bound rather than a hope.
+  it('the preflight passes on this tree and fails on one without lib/', { timeout: 30_000 }, async () => {
     // Executed, not just read: a guard that cannot fail is not a guard. The
-    // healthy half runs in-process; the failing half runs the same script
-    // against a copy of the tree with `lib/` removed, which is exactly the state
-    // a fresh clone is in.
+    // healthy half runs the script in this tree; the failing half runs the same
+    // script against a scratch tree with no `lib/`, which is exactly the state
+    // `git clone` leaves behind.
     const { execFileSync } = await import('node:child_process')
     const healthy = execFileSync(process.execPath, ['scripts/preflight-lib.mjs'], {
       cwd: ROOT, encoding: 'utf8',
     })
     expect(healthy).toContain('installable')
 
-    const { mkdtempSync, cpSync, rmSync } = await import('node:fs')
+    const { mkdtempSync, mkdirSync, cpSync, rmSync } = await import('node:fs')
     const { tmpdir } = await import('node:os')
     const scratch = mkdtempSync(join(tmpdir(), 'ef-preflight-'))
     try {
-      cpSync(join(ROOT, 'scripts'), join(scratch, 'scripts'), { recursive: true })
-      cpSync(join(ROOT, 'src'), join(scratch, 'src'), { recursive: true })
+      // Only what the preflight actually reads: the script, `client.js`, and
+      // `src/` for its mtime comparison. Copying the whole tree would add
+      // seconds per run for files the check never opens.
+      //
+      // The script must stay at `scripts/`, because it derives the tree root as
+      // `dirname(itself)/..` — moved to the scratch root it would inspect the
+      // temp directory instead and pass for the wrong reason.
+      mkdirSync(join(scratch, 'scripts'), { recursive: true })
+      cpSync(join(ROOT, 'scripts', 'preflight-lib.mjs'), join(scratch, 'scripts', 'preflight-lib.mjs'))
       cpSync(join(ROOT, 'client.js'), join(scratch, 'client.js'))
-      cpSync(join(ROOT, 'package.json'), join(scratch, 'package.json'))
+      cpSync(join(ROOT, 'src'), join(scratch, 'src'), { recursive: true })
       // No `lib/` — the state `git clone` leaves behind.
       let failed = false
       try {

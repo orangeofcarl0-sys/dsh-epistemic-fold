@@ -40,9 +40,21 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
+import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { epistemicFoldStatusProjection, reduceStatusEvent } from '../src/status-projection.ts'
+
+/** Profile directory names under a DSH home, or none when it is not there. */
+function installedProfiles(home: string): string[] {
+  try {
+    return readdirSync(join(home, 'profiles'), { withFileTypes: true })
+      .filter(entry => entry.isDirectory())
+      .map(entry => entry.name)
+  } catch {
+    return [] // no DSH home on this machine
+  }
+}
 
 const ROOT = join(import.meta.dirname, '..')
 
@@ -303,16 +315,27 @@ describe('the sidebar panel renders under the REAL tab props', () => {
   it('the sidebar contract really has no useProjection, so this stays necessary', () => {
     // Pins the reason the fallback exists. If a future sidebar adds the prop,
     // this test failing is the signal to revisit — not a reason to delete it.
-    const sidebar = join(
-      process.env.DSH_HOME ?? 'D:/dsh',
-      'profiles', 'ef-web', 'node_modules', 'dsh-better-sidebar', 'lib', 'client.js',
-    )
-    let source: string
-    try {
-      source = readFileSync(sidebar, 'utf8')
-    } catch {
-      return // no installed sidebar on this machine: nothing to pin
+    //
+    // This reads a REAL installed sidebar, which only exists on a machine that
+    // has one. Both the DSH home and the profile are DISCOVERED rather than
+    // named: a hardcoded absolute home and a hardcoded profile name would make
+    // this test a no-op everywhere except the machine it was written on, and
+    // would put one developer's directory layout into a published package.
+    // `tests/release-hygiene.spec.ts` fails on such a path if one creeps back.
+    const home = process.env.DSH_HOME ?? join(homedir(), '.dsh')
+    let source: string | undefined
+    for (const profile of installedProfiles(home)) {
+      try {
+        source = readFileSync(
+          join(home, 'profiles', profile, 'node_modules', 'dsh-better-sidebar', 'lib', 'client.js'),
+          'utf8',
+        )
+        break
+      } catch {
+        // This profile has no sidebar; try the next.
+      }
     }
+    if (source === undefined) return // no installed sidebar anywhere: nothing to pin
     expect(source.includes('useProjection')).toBe(false)
     // But the ctx path the panel now uses IS the sidebar's own:
     expect(source.includes('projectionsBySession')).toBe(true)

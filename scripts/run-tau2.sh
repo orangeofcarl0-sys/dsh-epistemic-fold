@@ -31,14 +31,28 @@ MODE="${1:-selfcheck}"
 shift || true
 
 EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-TAU2_ROOT="${TAU2_ROOT:-/f/Codex_Work_Space/bench-workspace/tau2-verified}"
+
+# The τ²-Bench-Verified checkout lives OUTSIDE this repository, so it has to be
+# supplied. No default on purpose: a path baked in here would only work on the
+# machine it was written on, and this file ships inside a published package.
+TAU2_ROOT="${TAU2_ROOT:-}"
+[ -n "$TAU2_ROOT" ] || {
+  echo "TAU2_ROOT is not set; point it at your tau2-verified checkout" >&2
+  echo "  e.g. TAU2_ROOT=/path/to/bench-workspace/tau2-verified $0" >&2
+  exit 1
+}
 TAU2_PY="${TAU2_ROOT}/.venv/Scripts/python.exe"
 
 [ -x "$TAU2_PY" ] || { echo "tau2 venv not found at $TAU2_PY (run: uv sync)" >&2; exit 1; }
 
+# The credential store. Override with DSH_CREDENTIALS, or let it default to the
+# standard DSH home. Again no machine-specific fallback.
 CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
-[ -f "$CREDENTIALS" ] || CREDENTIALS="D:/dsh/.credentials.yaml"
-[ -f "$CREDENTIALS" ] || { echo "credential store not found" >&2; exit 1; }
+[ -f "$CREDENTIALS" ] || {
+  echo "credential store not found at $CREDENTIALS" >&2
+  echo "set DSH_CREDENTIALS to its path" >&2
+  exit 1
+}
 
 # Read ONE value out of the refs block. Never echoed.
 KEY=$("$TAU2_PY" - "$CREDENTIALS" <<'PY'

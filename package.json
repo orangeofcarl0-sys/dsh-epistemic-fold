@@ -39,7 +39,8 @@
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "scripts",
-    "docs"
+    "docs",
+    "profiles"
   ],
   "scripts": {
     "test": "vitest run",

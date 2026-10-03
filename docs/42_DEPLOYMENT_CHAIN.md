@@ -1,9 +1,12 @@
 # The deployment chain — GitHub to a running DSH
 
-Status: OPERATIONAL. Every command and path below was read off this machine's
-working install (`D:/dsh/profiles/ef-web`, DSH `0.2.0-rc.2`) rather than
-reconstructed from intent. Where a step has a failure mode, the failure mode is
-stated with the symptom you would actually see.
+Status: OPERATIONAL. Every command below was read off a working install (an
+`ef-web` profile on DSH `0.2.0-rc.2`) rather than reconstructed from intent.
+Where a step has a failure mode, the failure mode is stated with the symptom you
+would actually see.
+
+Paths are written as `<DSH_HOME>` throughout. That is your DSH home directory —
+`~/.dsh` on a default install, which may be a symlink to wherever you keep it.
 
 This document describes **how the code gets from the repository to a session**.
 It does not restate the design (`docs/31`), the history (`docs/26`), or the full
@@ -108,8 +111,8 @@ nothing errored, the panel simply was not there.
 
 ## 4. Wire it into a profile
 
-In `<DSH_HOME>/profiles/<name>/package.json` (here: `D:/dsh/profiles/ef-web`,
-and `~/.dsh` is a symlink to `D:/dsh`):
+In `<DSH_HOME>/profiles/<name>/package.json` — the profile directory you are
+installing into:
 
 ```jsonc
 {

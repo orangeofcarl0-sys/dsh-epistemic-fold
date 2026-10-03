@@ -136,8 +136,8 @@
   },
   {
     "file": "26_RC3_REAL_DSH_PLUGINIZATION.md",
-    "bytes": 9855,
-    "sha256": "8ec85207394845215303da797e7fd11e47300854ec3c1ad34b6b884b091e7b4f"
+    "bytes": 9839,
+    "sha256": "022e45856bfc871e161ac1595f276c7c62d702d0ab49033c749e8c346ffa9c3a"
   },
   {
     "file": "27_RC4_SIDEBAR_PANEL.md",
@@ -166,8 +166,8 @@
   },
   {
     "file": "32_RC7D_PARALLEL_LONG_TASK_TESTING.md",
-    "bytes": 18822,
-    "sha256": "f08baab9f96f07cc047a5ba938f5cb5a7b7c52f4fe5c415db062df85de7b3238"
+    "bytes": 18826,
+    "sha256": "9dd9062133b2407d46370cf067f6db4edbaf422d6df20d85abd3f9eae01674cc"
   },
   {
     "file": "33_RC8_EXTERNAL_BENCHMARKS.md",
@@ -186,13 +186,13 @@
   },
   {
     "file": "36_RC10_SESSION_PAUSE.md",
-    "bytes": 5607,
-    "sha256": "1aab74944be84647954b9a8910ca52d193efc30ecae514127ac262bc014addb2"
+    "bytes": 5744,
+    "sha256": "52afd499ba6d0d3fa29ff6fb69633799db51ea3e529cd84ac77fea06649bd0c9"
   },
   {
     "file": "37_RC11_BROWSER_VERIFICATION.md",
-    "bytes": 9123,
-    "sha256": "35b7471a735cb3a76c1f8f4d12c46bc5766661aa5f5a69a855aae00efe405d92"
+    "bytes": 9154,
+    "sha256": "e210d3a18787d3c6d6ab5eed80a369614a20cc0ef5befca39d5b1294b435a123"
   },
   {
     "file": "38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md",
@@ -216,8 +216,8 @@
   },
   {
     "file": "42_DEPLOYMENT_CHAIN.md",
-    "bytes": 16066,
-    "sha256": "4dfd14db918983b858e3d1186fcb2f852bbb6f199b5fe4b2ec219bd188544709"
+    "bytes": 16181,
+    "sha256": "23e8f3bcb912d5095dc7e02d619bed8aa43ee87ccfd326dfac20a4f88c90a2e1"
   },
   {
     "file": "43_RC17_SIDEBAR_ENTRY_DEDUPE.md",

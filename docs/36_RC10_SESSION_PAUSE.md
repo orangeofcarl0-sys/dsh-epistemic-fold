@@ -81,11 +81,14 @@ zero times), so the τ² results stand. It only manifests once folding starts.
 
 ## 4. Environment facts for the next session
 
-- **Harbor:** `F:/Codex_Work_Space/bench-workspace/lhtb/harbor/.venv` (Python 3.13,
+- **Harbor:** `$BENCH_WORKSPACE/lhtb/harbor/.venv` (Python 3.13,
   `uv pip install -e .`). The LHTB checkout is pristine — the EF agent is injected
-  via `import_path`, so nothing there was modified.
-- **tau2:** `F:/Codex_Work_Space/bench-workspace/tau2-verified/.venv` (Python 3.13).
-- **Benchmark checkouts are outside the repo** at `F:/Codex_Work_Space/bench-workspace/`.
+  via `import_path`, so nothing there was modified. Pass it as `LHTB_ROOT`.
+- **tau2:** `$BENCH_WORKSPACE/tau2-verified/.venv` (Python 3.13). Pass it as
+  `TAU2_ROOT`.
+- **Benchmark checkouts are outside the repo**, in a directory this document calls
+  `$BENCH_WORKSPACE` — which is why the runner scripts require `LHTB_ROOT` and
+  `TAU2_ROOT` rather than carrying a default path.
 - **Credential:** read at runtime from DSH's store; never printed, written, or
   passed as an argument.
 - **Memory is the binding constraint:** 16 GB host, 8 GB WSL cap, and one LHTB

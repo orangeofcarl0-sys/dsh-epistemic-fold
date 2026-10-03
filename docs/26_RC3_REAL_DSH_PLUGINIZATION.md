@@ -33,8 +33,8 @@ rather than rhetorical — see §3.
 
 ## 2. What a real DSH plugin needs
 
-Read off the machine's actual install (`D:/dsh`, reached as `~/.dsh`) and a real
-third-party plugin in it (`dsh-contextvm`):
+Read off a real install (`<DSH_HOME>`, i.e. `~/.dsh`) and a real third-party
+plugin in it (`dsh-contextvm`):
 
 | requirement | RC2.1 state | now |
 | --- | --- | --- |

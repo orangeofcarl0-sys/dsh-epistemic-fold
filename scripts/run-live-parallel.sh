@@ -33,9 +33,16 @@ if [ ${#SPECS[@]} -eq 0 ]; then
   SPECS=(tests/rc7d-parallel-long-tasks.spec.ts)
 fi
 
+# The credential store. Override with DSH_CREDENTIALS, or let it default to the
+# standard DSH home. Deliberately NO machine-specific fallback: a hardcoded path
+# would only work on the machine it was written on, and this file ships inside a
+# published package.
 CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
-[ -f "$CREDENTIALS" ] || CREDENTIALS="D:/dsh/.credentials.yaml"
-[ -f "$CREDENTIALS" ] || { echo "credential store not found" >&2; exit 1; }
+[ -f "$CREDENTIALS" ] || {
+  echo "credential store not found at $CREDENTIALS" >&2
+  echo "set DSH_CREDENTIALS to its path" >&2
+  exit 1
+}
 
 # Read ONE value out of the refs block. Never echoed.
 KEY=$(python3 - "$CREDENTIALS" <<'PY'
