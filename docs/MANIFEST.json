@@ -223,5 +223,10 @@
     "file": "43_RC17_SIDEBAR_ENTRY_DEDUPE.md",
     "bytes": 6269,
     "sha256": "5eed39dfd2e2b5653761d9abd8bfaa2118db26ca0df920f20ded45d6cc6b6a84"
+  },
+  {
+    "file": "44_RC18_HONEST_PRICING.md",
+    "bytes": 5529,
+    "sha256": "1262415170fefd6d151b6d1d2d573127bbef94b4926dc7deb7a40453677a8c62"
   }
 ]

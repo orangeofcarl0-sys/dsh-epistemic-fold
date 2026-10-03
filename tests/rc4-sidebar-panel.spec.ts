@@ -128,9 +128,13 @@ describe('RC4: the wire view carries how each figure was obtained', () => {
       cache: { mode: 'automatic', bestEffort: true },
       context: { windowTokens: 1_000 },
     })
-    const unit = epistemicFoldStatusProjection({ mode: 'economy', profile })
+    const unit = epistemicFoldStatusProjection({ mode: 'economy', profiles: [profile] })
+    // RC18: the state carries the routed model, folded from `request/header`.
+    // Pricing depends on it now, so a state without one is a session that has
+    // not made a request yet.
     const state = {
       ...unit.init(),
+      provider: 'test', model: 'test-model',
       uncachedInputTokens: 1_000, hasUsage: true,
     }
     const view = unit.wire.view(state)
@@ -144,12 +148,12 @@ describe('RC4: the wire view carries how each figure was obtained', () => {
     // mode is free".
     const unit = epistemicFoldStatusProjection({
       mode: 'economy',
-      profile: parseEconomicsProfile({
+      profiles: [parseEconomicsProfile({
         id: 'p', provider: 'test', modelPattern: '*', asOf: '2026-09-30',
         pricing: { inputMissPerM: 1, inputHitPerM: 0, outputPerM: 1 },
         cache: { mode: 'automatic', bestEffort: true },
         context: { windowTokens: 1_000 },
-      }),
+      })],
     })
     const view = unit.wire.view(unit.init())
     expect(view.cost).toBeNull()
@@ -160,6 +164,83 @@ describe('RC4: the wire view carries how each figure was obtained', () => {
     const unit = epistemicFoldStatusProjection({ mode: 'economy' })
     const state = { ...unit.init(), uncachedInputTokens: 5_000, hasUsage: true }
     expect(unit.wire.view(state).cost).toBeNull()
+  })
+
+  it('RC18: prices with the list for THIS session\'s model, not the first one', () => {
+    // THE DEFECT THIS PINS, seen in the real panel. The plugin passed
+    // `profiles[0]` — the first shipped list — so every session was priced with
+    // DeepSeek Flash's rates and the panel named that list beside the figure.
+    // A session on Space Bunny Free (a free route) showed `~0.0044` under
+    // `Priced with deepseek-flash-2026-09`: 15.9k tokens at 0.28/M, for a route
+    // with no prices of its own. The number was not merely mislabelled; it was
+    // computed from the wrong rate card.
+    const flash = parseEconomicsProfile({
+      id: 'deepseek-flash', provider: 'deepseek', modelPattern: 'deepseek-*flash*', asOf: '2026-09-30',
+      pricing: { inputMissPerM: 0.28, inputHitPerM: 0.0056, outputPerM: 0.42 },
+      cache: { mode: 'automatic', bestEffort: true }, context: { windowTokens: 131_072 },
+    })
+    const free = parseEconomicsProfile({
+      id: 'synthetic-no-cache', provider: 'synthetic', modelPattern: '*', asOf: '2026-09-30',
+      pricing: { inputMissPerM: 1, inputHitPerM: 1, outputPerM: 1 },
+      cache: { mode: 'none', bestEffort: false }, context: { windowTokens: 128_000 },
+    })
+    const unit = epistemicFoldStatusProjection({ mode: 'economy', profiles: [flash, free] })
+
+    // The session that produced the screenshot: a free OpenCode Zen route, for
+    // which this deployment has no price list at all.
+    const state = {
+      ...unit.init(),
+      provider: 'opencode-zen', model: 'space-bunny-free',
+      uncachedInputTokens: 15_900, hasUsage: true,
+    }
+    const view = unit.wire.view(state)
+    expect(view.costProfileId, 'a free route must not be priced as DeepSeek Flash').toBeNull()
+    // UNKNOWN, not a number: `synthetic-no-cache` is a synthetic card whose
+    // 1.0/M is made up, so pricing with it would report a confident `~0.0159`
+    // for a route that costs nothing. The panel renders `—` instead, and names
+    // the route it could not price.
+    expect(view.cost).toBeNull()
+    expect(view.pricedRoute).toBe('opencode-zen/space-bunny-free')
+
+    // A route the deployment DOES price still gets its own card — this is a
+    // lookup, not a blanket refusal to price.
+    const deepseek = unit.wire.view({
+      ...state, provider: 'deepseek', model: 'deepseek-flash',
+    })
+    expect(deepseek.costProfileId).toBe('deepseek-flash')
+    expect(deepseek.cost).toBeGreaterThan(0)
+  })
+
+  it('RC18: follows a mid-session model switch, because the header is folded', () => {
+    // The route is read from the event log rather than captured at
+    // registration, so a `change` header moves the price list with the model.
+    const a = parseEconomicsProfile({
+      id: 'list-a', provider: 'pa', modelPattern: 'ma', asOf: '2026-09-30',
+      pricing: { inputMissPerM: 1, inputHitPerM: 1, outputPerM: 1 },
+      cache: { mode: 'none', bestEffort: false }, context: { windowTokens: 1_000 },
+    })
+    const b = parseEconomicsProfile({
+      id: 'list-b', provider: 'pb', modelPattern: 'mb', asOf: '2026-09-30',
+      pricing: { inputMissPerM: 2, inputHitPerM: 2, outputPerM: 2 },
+      cache: { mode: 'none', bestEffort: false }, context: { windowTokens: 1_000 },
+    })
+    const unit = epistemicFoldStatusProjection({ mode: 'economy', profiles: [a, b] })
+    const header = (provider: string, model: string) => ({
+      type: 'request/header', seq: 1, time: 0,
+      data: { header: { config: { provider, model } }, reason: 'initial' },
+    }) as never
+
+    let state = reduceStatusEvent(unit.init(), header('pa', 'ma'))
+    state = { ...state, uncachedInputTokens: 1_000, hasUsage: true }
+    expect(unit.wire.view(state).costProfileId).toBe('list-a')
+
+    state = reduceStatusEvent(state, {
+      type: 'request/header', seq: 2, time: 0,
+      data: { header: { config: { provider: 'pb', model: 'mb' } }, reason: 'change' },
+    } as never)
+    expect(unit.wire.view(state).costProfileId, 'the switch must move the price list')
+      .toBe('list-b')
+    expect(unit.wire.view(state).cost).toBeCloseTo(0.002, 6)
   })
 
   it('reports the LIVE mode, so a runtime switch is not stale in the panel', () => {

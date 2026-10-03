@@ -31,7 +31,7 @@ import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { buildContextStatus, contextStatusToLine, contextStatusToText } from './status.ts'
 import type { ContextStatus } from './status.ts'
 import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from './policy.ts'
-import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from './economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES, selectProfile } from './economics-profile.ts'
 import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
 import type { FoldBundleStore } from './types.ts'
@@ -206,10 +206,17 @@ export async function gatherStatus(
   // Cost: the routed model's profile, priced against the provider's own usage.
   // Both halves must exist. Without a profile there are no prices, and without
   // reported usage there is no split to price.
+  //
+  // RC18: `selectProfile`, not `resolveProfile`. The resolver falls back to a
+  // synthetic no-cache card whose rates are made up, which is right for the
+  // ENGINE (a conservative upper bound on an unknown route) and wrong for a
+  // report. With it, a free route printed a confident cost figure derived from
+  // invented prices. A route with no card has an UNKNOWN cost, and this command
+  // already has the wording for that: "no priced calls in this session".
   const profiles = (raw.economicsProfiles as never) ?? BUILTIN_ECONOMICS_PROFILES
   const profile = target === undefined
     ? undefined
-    : resolveProfile(profiles, target.provider, target.model)
+    : selectProfile(profiles, target.provider, target.model)
   // DSH's OWN cumulative usage, read from the token meter's projection rather
   // than re-summed from the log. RC2 hand-rolled a scan over
   // `compaction/summary` events, which missed every ordinary assistant turn —

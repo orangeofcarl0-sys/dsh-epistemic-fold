@@ -556,9 +556,17 @@ export function contextStatusToText(status: ContextStatus): string {
   lines.push('')
   lines.push('cost:')
   if (status.cost === undefined) {
-    // Never `0.00`: a session with no priced calls has an UNKNOWN cost, and
-    // printing zero would read as "this mode is free".
-    lines.push('  unknown         (no priced calls in this session)')
+    // Never `0.00`: an unestablished cost has an UNKNOWN value, and printing
+    // zero would read as "this mode is free".
+    //
+    // RC18: two different unknowns, and conflating them sends the reader
+    // looking for the wrong thing. No usage means the session has not been
+    // billed yet; usage WITHOUT a price card means this deployment has no rates
+    // for the route. The second is newly reachable now that pricing no longer
+    // falls back to synthetic rates, so the command names it.
+    lines.push(status.usage === undefined
+      ? '  unknown         (no priced calls in this session)'
+      : '  unknown         (no price card for this route)')
   } else {
     lines.push(`  ${figure(status.cost.value, status.cost.basis)}`)
     if (status.costProfileId !== undefined) lines.push(`  priced with     ${status.costProfileId}`)

@@ -157,12 +157,16 @@ export class EpistemicFoldPlugin {
         // capturing the mode here would leave the panel reporting the startup
         // mode forever.
         mode: () => this.engine.currentMode,
-        // The panel prices with a shipped profile, because a pure fold cannot
-        // resolve the routed model. A deployment whose route is priced
-        // differently sets `economicsProfiles`; the figure is labelled as an
-        // estimate either way, and names the profile it used. With no profile
-        // at all the panel reports cost as UNKNOWN rather than guessing.
-        ...(profiles.length === 0 ? {} : { profile: profiles[0] }),
+        // RC18: hand over the WHOLE list, not one entry. The unit resolves the
+        // profile that governs the session's own routed model, which it reads
+        // from the `request/header` events it already folds. Passing
+        // `profiles[0]` — as this did — priced every session with the first
+        // shipped list and named it in the panel, so a free route reported a
+        // DeepSeek Flash cost. A deployment whose route is priced differently
+        // sets `economicsProfiles`; the figure is labelled as an estimate
+        // either way, and names the list it actually used. With no list at all
+        // the panel reports cost as UNKNOWN rather than guessing.
+        ...(profiles.length === 0 ? {} : { profiles }),
       })
       return () => dispose()
     }, 'epistemic-fold status projection')

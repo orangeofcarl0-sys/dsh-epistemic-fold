@@ -276,9 +276,17 @@ window.__ModuleLoader__.load({
             title: translate('session'),
             children: [
               jsx.jsx(Row, { label: translate('cost'), value: cost, muted: status.cost === null }),
+              // RC18: name what the figure was priced WITH, and when there is no
+              // price list for this route, say that instead of leaving a bare
+              // `—`. The old row always showed a profile id because the caller
+              // always supplied one — including the synthetic fallback, whose
+              // rates are made up. A route with no prices now reports that fact,
+              // and names the route it could not price.
               status.costProfileId !== null
                 ? jsx.jsx(Row, { label: translate('pricedWith'), value: status.costProfileId, muted: true })
-                : null,
+                : (status.usage !== null && status.pricedRoute !== ''
+                  ? jsx.jsx(Row, { label: translate('noPrices'), value: status.pricedRoute, muted: true })
+                  : null),
               status.usage !== null
                 ? jsx.jsx(Row, {
                   label: translate('providerTokens'),
@@ -322,6 +330,7 @@ window.__ModuleLoader__.load({
       session: 'Session',
       cost: 'Cost (estimated)',
       pricedWith: 'Priced with',
+      noPrices: 'No prices for',
       providerTokens: 'Provider tokens',
       resumed: 'Resumed',
       modelChanges: 'Model changes',

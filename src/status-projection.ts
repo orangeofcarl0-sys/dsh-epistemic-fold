@@ -46,7 +46,7 @@ import { z } from 'zod'
 import type { ZodType } from 'zod'
 import type { Context } from '@deepseek-ai/cordis'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
-import { costOf } from './economics-profile.ts'
+import { costOf, selectProfile } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
 import { isTierModeName } from './preset.ts'
@@ -99,6 +99,24 @@ export interface FoldStatusState {
   readonly outputTokens: number
   /** Whether any provider usage was reported at all. */
   readonly hasUsage: boolean
+  /**
+   * The routed provider/model, folded from `request/header`.
+   *
+   * RC18: the panel needs this to price the session with the RIGHT price list.
+   * Before it, the caller passed a single profile (`profiles[0]`), so a session
+   * on any other model was priced with the first shipped list — measured: a
+   * Space Bunny Free session (a free route) reported `~0.0044`, which is
+   * 15.9k tokens at DeepSeek Flash's miss rate, and named that list beside it.
+   *
+   * The event log is the only source available here, and it is the same one
+   * `routedTarget` uses on the host side (`session.requestHeader()?.config`),
+   * so the two renderers agree by construction rather than by convention.
+   *
+   * Empty strings mean "no header seen yet", which resolves to the no-cache
+   * fallback — the honest answer for a route with no known prices.
+   */
+  readonly provider: string
+  readonly model: string
   /** A resume boundary was recorded. */
   readonly resumed: boolean
   /** Mid-session model changes. */
@@ -131,6 +149,14 @@ export interface FoldStatusView {
   readonly cost: number | null
   /** The profile the cost was priced with, when there is one. */
   readonly costProfileId: string | null
+  /**
+   * The route the session actually ran on, as folded from `request/header`.
+   *
+   * RC18: carried so the panel can say WHICH route it could not price, rather
+   * than leaving a bare `—` that reads as a panel failure. Empty before the
+   * first request.
+   */
+  readonly pricedRoute: string
   /** Provider-reported cumulative usage, for a panel that shows the basis. */
   readonly usage: {
     readonly uncachedInputTokens: number
@@ -153,6 +179,8 @@ const stateSchema = z.looseObject({
   cacheWriteTokens: z.number(),
   outputTokens: z.number(),
   hasUsage: z.boolean(),
+  provider: z.string(),
+  model: z.string(),
   resumed: z.boolean(),
   modelChanges: z.number(),
   failedCompactions: z.number(),
@@ -172,6 +200,7 @@ const viewSchema = z.looseObject({
   failedCompactions: z.number(),
   cost: z.number().nullable(),
   costProfileId: z.string().nullable(),
+  pricedRoute: z.string(),
   usage: z.object({
     uncachedInputTokens: z.number(),
     cacheReadTokens: z.number(),
@@ -248,8 +277,21 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       }
     }
     case 'request/header': {
-      const reason = (event.data as { reason?: string } | undefined)?.reason
-      return reason === 'resume' ? { ...state, resumed: true } : state
+      const data = event.data as {
+        reason?: string
+        header?: { config?: { provider?: string; model?: string } }
+      } | undefined
+      // The routed route, kept current: a `change` header REPLACES it, which is
+      // what makes the price list follow a mid-session model switch.
+      const config = data?.header?.config
+      const provider = typeof config?.provider === 'string' ? config.provider : state.provider
+      const model = typeof config?.model === 'string' ? config.model : state.model
+      return {
+        ...state,
+        provider,
+        model,
+        ...(data?.reason === 'resume' ? { resumed: true } : {}),
+      }
     }
     case 'user/message': {
       // A model change is a durable user-role notice the model-selection
@@ -297,13 +339,21 @@ export interface StatusProjectionOptions {
    */
   readonly mode: FoldModeName | (() => FoldModeName)
   /**
-   * The profile to price with, or `undefined` to report cost as unknown.
+   * The price lists this deployment knows, in preference order.
    *
-   * Resolved by the CALLER, because the profile depends on the routed model and
-   * a pure fold cannot look one up. Absent means the panel shows `unknown`,
-   * which is the honest answer for a route this deployment has no prices for.
+   * RC18: the unit resolves the one that governs the session's OWN routed
+   * model, read from the `request/header` events it already folds. Passing a
+   * single profile here — which is what the plugin used to do with
+   * `profiles[0]` — prices every session with one list regardless of which
+   * model it actually ran on, and names that list in the panel. Measured: a
+   * Space Bunny Free session reported `~0.0044` under
+   * `Priced with deepseek-flash-2026-09`, which is 15.9k tokens at DeepSeek
+   * Flash's miss rate for a route that is free.
+   *
+   * Empty or absent means cost is reported as UNKNOWN, which is the honest
+   * answer for a deployment with no prices at all.
    */
-  readonly profile?: ContextEconomicsProfile
+  readonly profiles?: readonly ContextEconomicsProfile[]
 }
 
 /**
@@ -333,6 +383,8 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     cacheWriteTokens: 0,
     outputTokens: 0,
     hasUsage: false,
+    provider: '',
+    model: '',
     resumed: false,
     modelChanges: 0,
     failedCompactions: 0,
@@ -344,13 +396,30 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     stateSchema: stateSchema as unknown as ZodType<FoldStatusState>,
     // Bumped when the state fields or their fold semantics change, so persisted
     // rows from an older unit are discarded rather than forward-applied.
-    stateVersion: 1,
+    stateVersion: 2,
     init: empty,
     apply: reduceStatusEvent,
     wire: {
       viewSchema: viewSchema as unknown as ZodType<FoldStatusView>,
       view: state => {
-        const { cost, profileId } = priceState(state, options.profile)
+        // Price with the list that governs THIS session's route.
+        //
+        // `selectProfile`, NOT `resolveProfile`: the two differ exactly where
+        // this panel needs them to. `resolveProfile` falls back to a synthetic
+        // no-cache card when nothing matches, which is right for the ENGINE —
+        // it needs a conservative upper bound so it never over-credits a saving
+        // on an unknown route. It is wrong for an OBSERVATION panel: the
+        // fallback's 1.0/M is a made-up rate, so a free route would be shown a
+        // confident `~7.31`, which reads as "this session cost seven dollars".
+        //
+        // A route with no prices has an UNKNOWN cost, and this panel's rule is
+        // to render `—` rather than a number it cannot establish. That is the
+        // same distinction it already makes between an unestablished figure and
+        // a measured zero.
+        const profile = (options.profiles ?? []).length === 0
+          ? undefined
+          : selectProfile(options.profiles ?? [], state.provider, state.model)
+        const { cost, profileId } = priceState(state, profile)
         // The LIVE mode, not the folded one: the mode lives in configuration
         // rather than in the event log, so the state cannot carry a switch.
         const mode = modeNow()
@@ -368,6 +437,9 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
           failedCompactions: state.failedCompactions,
           cost,
           costProfileId: profileId,
+          pricedRoute: state.provider.length === 0
+            ? ''
+            : (state.model.length === 0 ? state.provider : `${state.provider}/${state.model}`),
           usage: state.hasUsage
             ? {
               uncachedInputTokens: state.uncachedInputTokens,
