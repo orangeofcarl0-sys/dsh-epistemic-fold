@@ -15,3 +15,6 @@ vendor/
 # Python bytecode (tau2 bridge adapter)
 __pycache__/
 *.pyc
+
+# Local instrumentation scratch (never committed)
+client-instr.js

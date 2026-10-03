@@ -1,7 +1,8 @@
 # RC14 — Dual Sidebar Adaptation: Native and better-sidebar
 
-**Status:** dual registration IMPLEMENTED; better-sidebar path verified live;
-**native-only path NOT working and not verified.**
+**Status:** dual registration IMPLEMENTED; better-sidebar path verified live.
+**Native-only path does NOT render.** The tab type registers successfully; the
+body registration never fires, narrowed to one `ctx.slots.inject` call.
 **Found by:** the user — *"对于 sidebar 的适配，要同时考虑原生 sidebar 以及 bettersidebar"*.
 
 ---
@@ -67,7 +68,7 @@ sidebar still booting.
 panel renders EF's real data (`economy`, Pressure 111k, Window 1000k, Cost,
 Provider tokens), no error banner. No regression.
 
-## 4. The native path does NOT work — root cause found
+## 4. The native path does not render — narrowed to one call
 
 Testing it required a profile with EF and **without** better-sidebar. Booting
 `ef-web` with `- id: better-sidebar / disabled: true` gives a configuration where:
@@ -80,72 +81,65 @@ Testing it required a profile with EF and **without** better-sidebar. Booting
 - and yet the native sidebar shows only its own guide entry ("开始") — **EF's tab
   is absent**.
 
-An instrumented build answered it: **`apply()` never runs.** Markers placed at
-the top of `applyNativeSidebar` and inside its `ctx.inject` callback were never
-set — not even the first one. So this was never a registration bug: the client
-module's factory is never materialized at all.
+An instrumented build answered it (see below): the native path **does run**, and
+the tab TYPE registers successfully. What fails is the BODY registration.
 
-### Why
+### Why — and how far the native path actually gets
 
-The client module graph materializes a row when something **requires** it
-(`materialize` is reached from the require path), and it stays connected through
-`inject` edges. Every working UI module is injected by another module:
-`dsh-client-ui-chat` injects `sidebar-right`, which injects `conversation`, and
-so on.
+Instrumenting the module (with markers anchored on exact whole lines, after two
+earlier attempts mistakenly landed them inside a doc comment) produced the real
+execution trace in the native-only configuration:
 
-**Nothing injects `dsh-epistemic-fold`** — verified across every
-`@deepseek-ai/dsh-client-*` package: zero declare it in their
-`dsh.client.inject`. EF injects `sidebar-right`; no edge points back at EF.
+```
+factory-called → apply → applyNativeSidebar → native-mount → tabs-resolved → type-registered
+```
 
-In the normal configuration this is masked: `dsh-better-sidebar` happens to sit
-in the same application batch (batch 2, 15 entries vs 14), and its own activity
-drags EF's factory in. Remove better-sidebar and EF has no inbound edge, so its
-factory is never materialized — the module is served to the browser and listed in
-the manifest, but never executed.
+So the native path **does run**, and `sidebarRightTabs.register()` **succeeds**.
+What never fires is the next step: `body-registered`. The tab type is registered
+and the body slot is not, which is exactly the state the native sidebar renders as
+an empty pane.
 
-### Hypotheses tested and disproven
+Two corrections to earlier conclusions in this document, both from my own
+instrumentation errors rather than from the platform:
 
-Each by a targeted experiment, before the instrumentation settled it:
+- An earlier run reported `apply()` never ran. That was wrong: the install had
+  `package.json`'s `exports['./client']` pointing at **`lib/client.js`**, and I
+  had been editing and copying only the root `client.js`. The served file was
+  never the one I changed. The build (`scripts/build-plugin.mjs`) copies root
+  `client.js` → `lib/client.js`, so both must be installed.
+- A later run appeared to show the file was never executed. That was also wrong:
+  the markers had been inserted into the module's doc comment, where they are
+  inert text.
 
-| hypothesis | how it was disproven |
-|---|---|
-| `slots` must be injected alongside `sidebarRightTabs` | removing it changed nothing |
-| the registration must run inside `ctx.effect` | wrapping it changed nothing |
-| the outer `ctx` lacks the `slots` face | the face is present; using `injected` changed nothing |
-| `ctx.slots` throws and is swallowed | an instrumented build captured no throw |
-| the tab type id or kind is wrong | the same id registers fine on the better-sidebar path |
-| the module fails to load | it is in the roster; the page logs zero errors |
+The lesson is narrow and worth keeping: **verify the served bytes before reading
+any instrumentation result.** Checking `__DSH_BOOT__.entries[id].rev` against the
+file's mtime, or fetching the entry URL and looking for the marker, would have
+caught both mistakes immediately.
 
-### The fix direction
+### What remains unknown
 
-EF needs an **inbound graph edge** so its factory materializes without
-better-sidebar. Tried and **disproven**:
+`body-registered` never fires and nothing is thrown (`__EF_ERR__` stays unset), so
+`ctx.slots.inject('sidebar.right.pane.tab', …)` either is not reached or returns
+without running its callback. `@deepseek-ai/dsh-client-ui-slots` — the package that
+provides `ctx.slots` — has since been added to EF's `dsh.client.inject` (it is
+present in `dsh-better-sidebar`'s list and was missing from EF's), which is the
+right dependency regardless, but it did not by itself make the tab appear.
 
-- **`dsh.client.immediately: true`** — a real, validated field. Adding it does
-  reach the boot manifest (the entry carries `immediately: true`, confirmed in the
-  page), but the runtime does not act on it for materialization: the tab still
-  does not appear. Reverted.
+Until the body registration is understood, the accurate statement is:
 
-So the remaining candidate is to give EF an inbound edge from a module that
-already materializes — e.g. a companion client entry that the sidebar or chat
-surface requires. That is a packaging decision, not a code fix, which is why it
-stops here.
+> EF's panel renders on any deployment that has `dsh-better-sidebar`. On a
+> native-only deployment the tab type registers successfully but its body does
+> not, so the pane stays empty. The cause is narrowed to the single
+> `ctx.slots.inject` call and is not yet identified.
 
-Until it is settled, the accurate statement is:
-
-> EF renders its panel on any deployment that has `dsh-better-sidebar`. On a
-> native-only deployment the panel does not appear, because EF's client module is
-> never materialized — nothing in the module graph requires it. The registration
-> code is correct and tested; the module it lives in is simply never executed.
-
-### What is genuinely uncertain
+### Honest state
 
 The dual registration is written to the documented native contract and covered by
 tests, but the native half has **never been observed rendering**. The better-half
 works; the native half is inert because its module never runs. Both facts are
 stated above rather than papered over.
 
-## 6. State at the end of this session
+## 5. State at the end of this session
 
 - `ef-web` is restored to its normal configuration (better-sidebar enabled); the
   panel works there.
