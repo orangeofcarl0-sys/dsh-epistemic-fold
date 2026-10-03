@@ -98,7 +98,7 @@ the project does not have.
 
 ## Verification at this tag
 
-- **762 tests pass, 23 skipped.** The skips are the opt-in live tier
+- **768 tests pass, 23 skipped.** The skips are the opt-in live tier
   (`EF_LIVE=1`), which **skips** without a resolved route rather than passing
   unmeasured.
 - **Two typecheck projects clean** — `src/` and `tests/` under full `strict`,
@@ -120,11 +120,29 @@ EF's own vendored copy of the Basic backend**, so EF mounts on any DSH build and
 needs no patch script. If that vendored copy is ever damaged, the engine refuses
 to start rather than silently running the costlier framing.
 
+## Release hygiene
+
+No machine-specific paths and no credential values, in the tree **or the
+history** — the history matters because a value removed from the working tree
+still lives in every clone. `tests/release-hygiene.spec.ts` enforces this on
+every push, covering both slash styles and distinguishing a credential *value*
+from the name of the variable holding one.
+
+The runner scripts require `LHTB_ROOT` / `TAU2_ROOT` and read the credential
+store from `DSH_CREDENTIALS` or `~/.dsh`, with an actionable error when either is
+missing. There is deliberately no default path: both benchmark checkouts live
+outside this repository, and a baked-in path could only be right on the machine
+it was written on.
+
 ## Distribution
 
 Git and tarball channels only. The package is `private` and **not published to
 the npm registry**, so `dsh plugin add dsh-epistemic-fold` (bare name) will not
 resolve.
+
+The tarball ships the built `lib/`, the `docs/`, and the auditable economics
+profiles under `profiles/economics/` — so a consumer following the README to any
+of those finds what it references.
 
 ## Documentation
 
