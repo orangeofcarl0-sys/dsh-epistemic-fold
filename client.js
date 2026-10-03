@@ -404,7 +404,7 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The native right sidebar's registration, when that plugin is mounted.
+     * The native right sidebar's registration — as a FALLBACK, not always.
      *
      * Two-stage, as the native contract requires: the TYPE goes into
      * `sidebarRightTabs`, and the BODY into the `sidebar.right.pane.tab` slot
@@ -414,9 +414,36 @@ window.__ModuleLoader__.load({
      * `{ hooks: { tabInfo } }` — no `ctx`, no `store`. That is the same technique
      * `dsh-better-sidebar` uses for its own native bodies, and it is why the
      * projection read cannot live in the props here.
+     *
+     * ## Why this is conditional (RC17)
+     *
+     * `dsh-better-sidebar` is a REPLACEMENT for the native sidebar that ALSO
+     * bridges its own tabs INTO the native registry, so DSH's own surface can
+     * show them. It does that unconditionally, for every registered descriptor,
+     * and it contributes a guide entry alongside each one.
+     *
+     * EF registers with better-sidebar under `epistemic-fold:status`, so that
+     * bridge already puts a native type of kind `epistemic-fold:status` — with a
+     * guide entry titled "Epistemic Fold" — into the registry. EF registering its
+     * OWN native type (`dsh-epistemic-fold`) on top produced TWO guide entries
+     * with the same title, the same icon and the same behaviour: measured in a
+     * real browser, indistinguishable to a user, and picking either opened a
+     * separate tab. The two kinds differ, so the registry's own duplicate guard
+     * never fired.
+     *
+     * So this half is now a fallback: it exists exactly when better-sidebar's
+     * bridge does not. The signal is read off the REGISTRY rather than from
+     * service presence, because the bridge is what creates the duplicate — a
+     * mounted better-sidebar whose bridge has not run, or failed, must still
+     * leave a working entry. `tabs.get(TAB_ID)` names a kind only that bridge can
+     * register, since `TAB_ID` is EF's own descriptor id.
+     *
+     * `subscribe` makes the decision order-independent: `ctx.inject` callbacks
+     * are asynchronous and either registration may land first, so whichever
+     * arrives second re-runs the reconcile through the registry change.
      */
     function applyNativeSidebar(ctx) {
-      const disposers = []
+      let teardown = null
       // Wait for the tab registry only. `slots` is not named here because the
       // module declares it in its own `inject` (see the export at the bottom):
       // this callback reads `ctx.slots` off the plugin's own context, and that
@@ -424,54 +451,105 @@ window.__ModuleLoader__.load({
       const mount = (injected) => {
         const tabs = injected.get('sidebarRightTabs')
         if (tabs === undefined) return () => {}
-        // Stage one: what this type IS. `priority: 'extension'` is the band for a
-        // type from outside the product, and `title` is the chip text captured at
-        // open time (the slot below can override it live, but a title here means
-        // the chip is correct even before the body mounts).
-        const disposeType = tabs.register({
-          id: NATIVE_ID,
-          kind: NATIVE_ID,
-          priority: 'extension',
-          title: () => STRINGS.tabTitle,
-          // `description` is THUNKED copy, like `title` beside it: the guide calls
-          // it as `entry.description?.()` on every render so a language change
-          // needs no re-registration. Passing the string itself throws
-          // `STRINGS.tabDesc is not a function`, and because the guide page is the
-          // doorway to this type, the throw takes out the whole guide body — the
-          // entry never appears and the tab cannot be opened at all.
-          guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: () => STRINGS.tabDesc }],
-        })
-        disposers.push(disposeType)
 
-        // Stage two: the body. `ctx.slots.inject` binds the contribution to this
-        // plugin's fiber, so it lives exactly as long as the plugin does.
-        const disposeBody = ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
-          name: 'sidebar.right.pane.tab',
-          key: NATIVE_ID,
-          inject: (sessionId) => ({ sessionId, efCtx: ctx }),
-        }, NativePanelBody))
-        disposers.push(disposeBody)
+        // Everything this half owns, so one reconcile can add or drop it whole.
+        let disposeType = null
+        let disposeBody = null
 
-        return () => {
-          for (const dispose of disposers.reverse()) {
+        const release = () => {
+          for (const dispose of [disposeBody, disposeType]) {
+            if (typeof dispose !== 'function') continue
             try {
               dispose()
             } catch {
-              // A disposal that throws must not strand the others.
+              // A disposal that throws must not strand the other.
             }
           }
+          disposeBody = null
+          disposeType = null
         }
+
+        // REENTRANCY GUARD, and it is load-bearing rather than defensive.
+        //
+        // `tabs.register` synchronously notifies subscribers: the registry calls
+        // its own `refresh()` inside the registering `ctx.effect`, and `refresh`
+        // publishes to every listener. So without this flag the sequence is
+        //
+        //   reconcile -> register -> notify -> reconcile -> register -> …
+        //
+        // which is an unbounded recursion, not a missed update. Measured as
+        // `RangeError: Maximum call stack size exceeded` from the first
+        // registration. The flag is safe because a registration made BY this
+        // function cannot change the answer to the question it asks: the only
+        // thing that flips the decision is `TAB_ID` appearing, and that comes
+        // from the bridge, not from here.
+        let reconciling = false
+
+        const reconcile = () => {
+          if (reconciling) return
+          reconciling = true
+          try {
+            reconcileOnce()
+          } finally {
+            reconciling = false
+          }
+        }
+
+        const reconcileOnce = () => {
+          const bridged = typeof tabs.get === 'function' ? tabs.get(TAB_ID) : undefined
+          if (bridged !== undefined) {
+            // better-sidebar already put this panel in the native registry, guide
+            // entry included. A second one is the duplicate this exists to avoid.
+            release()
+            return
+          }
+          if (disposeType !== null) return
+
+          // Stage one: what this type IS. `priority: 'extension'` is the band for
+          // a type from outside the product, and `title` is the chip text captured
+          // at open time (the slot below can override it live, but a title here
+          // means the chip is correct even before the body mounts).
+          disposeType = tabs.register({
+            id: NATIVE_ID,
+            kind: NATIVE_ID,
+            priority: 'extension',
+            title: () => STRINGS.tabTitle,
+            // `description` is THUNKED copy, like `title` beside it: the guide
+            // calls it as `entry.description?.()` on every render so a language
+            // change needs no re-registration. Passing the string itself throws
+            // `STRINGS.tabDesc is not a function`, and because the guide page is
+            // the doorway to this type, the throw takes out the whole guide body
+            // — the entry never appears and the tab cannot be opened at all.
+            guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: () => STRINGS.tabDesc }],
+          })
+
+          // Stage two: the body. `ctx.slots.inject` binds the contribution to
+          // this plugin's fiber, so it lives exactly as long as the plugin does.
+          disposeBody = ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
+            name: 'sidebar.right.pane.tab',
+            key: NATIVE_ID,
+            inject: (sessionId) => ({ sessionId, efCtx: ctx }),
+          }, NativePanelBody))
+        }
+
+        const unsubscribe = typeof tabs.subscribe === 'function' ? tabs.subscribe(reconcile) : () => {}
+        reconcile()
+
+        // Idempotent: cordis invokes the returned disposer on fiber disposal AND
+        // the caller's own disposer runs, so this is reachable twice.
+        let released = false
+        teardown = () => {
+          if (released) return
+          released = true
+          unsubscribe()
+          release()
+        }
+        return teardown
       }
       // `sidebarRightTabs` is the native registry; `slots` is the slot registry.
       ctx.inject(['sidebarRightTabs'], mount)
       return () => {
-        for (const dispose of disposers.reverse()) {
-          try {
-            dispose()
-          } catch {
-            // Same rule as above.
-          }
-        }
+        if (typeof teardown === 'function') teardown()
       }
     }
 

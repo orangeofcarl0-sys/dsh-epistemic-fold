@@ -376,6 +376,122 @@ describe('RC4: the client bundle satisfies the loader contract', () => {
   })
 })
 
+describe('RC17: the native half is a fallback, so the guide shows ONE entry', () => {
+  /**
+   * Load the client bundle the way the browser loader does and hand back its
+   * `apply`.
+   */
+  async function loadApply() {
+    const source = await readFile(join(ROOT, 'client.js'), 'utf8')
+    let captured: Record<string, unknown> | undefined
+    const jsxRuntime = { jsx: (t: unknown, p: unknown) => ({ t, p }), jsxs: (t: unknown, p: unknown) => ({ t, p }), Fragment: 'F' }
+    const previous = (globalThis as { window?: unknown }).window
+    ;(globalThis as { window?: unknown }).window = {
+      __ModuleLoader__: {
+        load: ({ factory }: { factory: (r: (n: string) => unknown) => Record<string, unknown> }) => {
+          captured = factory(name => (name === 'react/jsx-runtime'
+            ? jsxRuntime
+            : { createElement: () => ({}) }))
+        },
+      },
+    }
+    try {
+      // eslint-disable-next-line no-new-func
+      new Function(source)()
+    } finally {
+      ;(globalThis as { window?: unknown }).window = previous
+    }
+    return captured?.['apply'] as (c: unknown) => void
+  }
+
+  /** A registry stub with the real API surface this code relies on. */
+  function makeRegistry(initial: Record<string, unknown> = {}) {
+    const kinds = new Map(Object.entries(initial))
+    const listeners = new Set<() => void>()
+    const registered: string[] = []
+    return {
+      kinds,
+      registered,
+      register: (definition: { id: string; kind: string }) => {
+        registered.push(definition.id)
+        kinds.set(definition.kind, definition)
+        for (const listener of listeners) listener()
+        // Identity-based, like the real disposer: it removes ITS OWN entry, not
+        // whatever happens to be last.
+        return () => {
+          const at = registered.indexOf(definition.id)
+          if (at !== -1) registered.splice(at, 1)
+          kinds.delete(definition.kind)
+          for (const listener of listeners) listener()
+        }
+      },
+      get: (kind: string) => kinds.get(kind),
+      subscribe: (listener: () => void) => { listeners.add(listener); return () => listeners.delete(listener) },
+    }
+  }
+
+  it('registers NO native type when better-sidebar already bridged one', async () => {
+    // THE DEFECT THIS PINS, measured in a real browser: better-sidebar bridges
+    // every registered descriptor into the native registry, guide entry
+    // included, so EF's own native registration added a SECOND "Epistemic Fold"
+    // to the guide. Both entries had the same title, icon and behaviour, and the
+    // kinds differed (`epistemic-fold:status` vs `dsh-epistemic-fold`), so the
+    // registry's duplicate guard never fired. Picking either opened its own tab.
+    const apply = await loadApply()
+    // The bridge's output is already there, under EF's better-sidebar kind.
+    const tabs = makeRegistry({ 'epistemic-fold:status': { id: 'dsh-better-sidebar:epistemic-fold:status' } })
+    const slots = { inject: (_n: string, cb: () => unknown) => cb(), register: () => () => {} }
+    const ctx = {
+      slots,
+      inject: (names: readonly string[], cb: (c: unknown) => unknown) =>
+        (names.includes('betterSidebar') ? cb({ get: () => undefined }) : cb({ get: () => tabs })),
+    }
+    apply(ctx)
+    expect(tabs.registered, 'the native half must stand down').toEqual([])
+  })
+
+  it('registers the native type when nothing bridged it', async () => {
+    // The other side of the same rule: a native-only deployment has no bridge,
+    // so EF must supply the type itself or the panel is unreachable.
+    const apply = await loadApply()
+    const tabs = makeRegistry()
+    const slots = { inject: (_n: string, cb: () => unknown) => cb(), register: () => () => {} }
+    const ctx = {
+      slots,
+      inject: (names: readonly string[], cb: (c: unknown) => unknown) =>
+        (names.includes('betterSidebar') ? cb({ get: () => undefined }) : cb({ get: () => tabs })),
+    }
+    apply(ctx)
+    expect(tabs.registered).toEqual(['dsh-epistemic-fold'])
+    expect(tabs.get('dsh-epistemic-fold')).toBeDefined()
+  })
+
+  it('reconciles either arrival order through the registry subscription', async () => {
+    // `ctx.inject` callbacks are asynchronous and the bridge may land before or
+    // after EF's own mount. Subscribing is what makes the decision
+    // order-independent: whichever arrives second re-runs the reconcile.
+    const apply = await loadApply()
+    const tabs = makeRegistry() // bridge has NOT run yet
+    const slots = { inject: (_n: string, cb: () => unknown) => cb(), register: () => () => {} }
+    const ctx = {
+      slots,
+      inject: (names: readonly string[], cb: (c: unknown) => unknown) =>
+        (names.includes('betterSidebar') ? cb({ get: () => undefined }) : cb({ get: () => tabs })),
+    }
+    apply(ctx)
+    expect(tabs.registered, 'no bridge yet, so EF supplies the type').toEqual(['dsh-epistemic-fold'])
+
+    // Now the bridge arrives late and publishes its kind. Registering through
+    // the stub notifies subscribers, which is exactly what the real registry
+    // does on a registration change — so this also exercises the wake-up path
+    // rather than poking the map directly.
+    tabs.register({ id: 'dsh-better-sidebar:epistemic-fold:status', kind: 'epistemic-fold:status' })
+    expect(tabs.registered, 'the late bridge must retract EF\'s duplicate').toEqual([
+      'dsh-better-sidebar:epistemic-fold:status',
+    ])
+  })
+})
+
 describe('RC4-A: the audit findings, pinned so they cannot regress', () => {
   it('A3: a rejected tier is an ERROR result, not a success carrying bad news', async () => {
     // RC4-A found every failure path returning `kind: 'success'`, so a refused

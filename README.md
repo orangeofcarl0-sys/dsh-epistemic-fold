@@ -99,6 +99,9 @@ baseline `477b4f420553e8a52c2fbccc464d7561b239c443`) · 对照 DSH
 | **RC5** | EF as its own agent preset: three tier presets generated from the installed DSH, so a session that selects one gets EF and every other session is untouched native Basic · EF 独立 preset | ✅ **VERIFIED END TO END** — the presets appear in the real UI menu, and two sessions in one real context resolve `EpistemicFoldEngine` vs `BasicCompactionEngine` respectively · [report](docs/29_RC5_PRESET_DESIGN.md) |
 | **RC7** | Distribution-grade integration: EF substitutes into DSH's own presets in place (menu unchanged), vendors its own copy of the Basic backend so tiers mount on any DSH build, and gains `mode: basic` to stand aside entirely · 可分发集成 | ✅ **VERIFIED** — three presets run EF with the menu still at four items, `minimal` and every tool-result pruner untouched, all tiers mount on vanilla DSH, and a broken install is reported loudly instead of silently reverting to Basic · [plan](docs/31_RC7_TRANSFORMATION_PLAN.md) |
 | **RC4-A** | Interaction audit: every `/context` path exercised in a real host, the panel checked against the directive's UI spec, and three defects found and fixed · 交互审计 | ⚠️ **3 fixed, 1 BLOCKER open** — in the WEB profile sessions still use DSH Basic (preset-scoped compaction isolates EF out); failure-as-success and a mislabelled lifetime figure fixed · [report](docs/28_RC4A_INTERACTION_AUDIT.md) |
+| **RC15** | The native right sidebar's panel: two defects found by a browser-driven check after the earlier "type registers, body does not" conclusion was traced to a probe that did not parse · 原生侧边栏面板 | ✅ **RENDERS** — the guide entry's `description` must be a thunk, and `ctx.slots` must be declared in `inject`; both paths verified live · [report](docs/41_RC15_NATIVE_SIDEBAR_RENDERS.md) |
+| **RC16** | Install channels: the manifest fields DSH actually reads, and a preflight for the `file:` channel, where pnpm does not run `prepare` · 安装通道 | ✅ **git + file VERIFIED** — `engines.dsh` replaces an unread `dsh.compatibility`; `npm run preflight` fails loudly on a tree that cannot install · [report](docs/42_DEPLOYMENT_CHAIN.md) |
+| **RC17** | One guide entry, not two: the native half becomes a fallback, because better-sidebar bridges its own tabs into the native registry · 侧边栏条目去重 | ✅ **VERIFIED in both deployments** — one entry each; the fix's own test then found an unbounded recursion in `reconcile` · [report](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md) |
 
 M1 (verified ingress reduction), M3b (negative knowledge / uncertainty), M4
 (dependency graph) and beyond are **deliberately not implemented** — each
@@ -703,11 +706,28 @@ EF 还附带一个侧边栏**观测**面板（`client.js`），读取与 `/conte
 **结构上不可能进入模型上下文**：既不会撑大它所观测的上下文，也不会破坏 prefix cache。
 
 The panel is hand-authored in DSH's client-module format and copied verbatim into
-`lib/client.js` — no bundler was added. It registers through `ctx.betterSidebar`,
-so a deployment without that service simply has no panel rather than a broken
-client load · 面板直接以 DSH 客户端模块格式编写，原样拷贝到 `lib/client.js`，**未引入
-打包器**。它通过 `ctx.betterSidebar` 注册，因此没有该服务的部署只是没有面板，而不会导致
-客户端加载失败。
+`lib/client.js` — no bundler was added. It reaches **both** right sidebars, which
+keep separate tab registries, so a panel registered with only one is invisible in
+the other · 面板直接以 DSH 客户端模块格式编写，原样拷贝到 `lib/client.js`，**未引入
+打包器**。它同时接入**两套**右侧边栏——两者各自维护 tab 注册表，只注册一边会在另一边
+不可见。
+
+The two halves are **not** symmetric, and the asymmetry is the point ·
+两边**并不对称**，而这个不对称正是要点：
+
+- **better-sidebar** (`ctx.betterSidebar`) is the optional idiom: a deployment
+  without that service simply has no panel rather than a broken client load ·
+  走可选惯用法——没有该服务的部署只是没有面板，不会导致客户端加载失败。
+- **native** (`sidebarRightTabs` plus the `sidebar.right.pane.tab` slot) is a
+  **fallback**, registered only when better-sidebar's bridge has not already put
+  a panel there. better-sidebar is a replacement for the native sidebar that
+  also bridges its own tabs *into* the native registry, guide entry included, so
+  registering both unconditionally showed the user two identical "Epistemic
+  Fold" entries that opened separate tabs
+  ([docs/43](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md)) · 原生一侧是**回退**，仅当
+  better-sidebar 的桥接尚未把面板放进原生注册表时才注册——better-sidebar 会把自己的
+  tab 连同 guide 条目**桥接进**原生注册表，无条件双注册会让用户看到两条一模一样的
+  "Epistemic Fold" 并各自开出独立标签。
 
 > **The patch ships `mode: legacy`, deliberately.** Every tier selects
 > `framingMode: system-dedup`, which requires the `frameCheckpoint` seam — and
