@@ -469,11 +469,6 @@ window.__ModuleLoader__.load({
                 }),
               ],
             }),
-
-          jsx.jsx('div', {
-            style: { marginTop: '16px', fontSize: '11px', opacity: 0.5, lineHeight: 1.5 },
-            children: translate('observationNote'),
-          }),
         ],
       })
     }
@@ -520,8 +515,6 @@ window.__ModuleLoader__.load({
         cacheHit: 'Cache hit',
         resumed: 'Resumed',
         modelChanges: 'Model changes',
-        observationNote:
-          'Observation only — this panel reads a client projection and never enters the model context.',
       },
       zh: {
         tabTitle: 'Epistemic Fold',
@@ -555,8 +548,6 @@ window.__ModuleLoader__.load({
         cacheHit: '缓存命中',
         resumed: '已恢复',
         modelChanges: '模型切换',
-        observationNote:
-          '纯观测——本面板读取客户端投影，永不进入模型上下文。',
       },
     }
 
