@@ -228,5 +228,10 @@
     "file": "44_RC18_HONEST_PRICING.md",
     "bytes": 5529,
     "sha256": "1262415170fefd6d151b6d1d2d573127bbef94b4926dc7deb7a40453677a8c62"
+  },
+  {
+    "file": "45_RC19_PANEL_READABILITY.md",
+    "bytes": 5675,
+    "sha256": "1a599c4fecbdadea406f9b5bb4c86135f4c76eb2b90dbf45c0d1675c8af9e399"
   }
 ]

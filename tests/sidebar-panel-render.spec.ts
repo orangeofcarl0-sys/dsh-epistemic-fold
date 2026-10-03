@@ -239,6 +239,7 @@ function statusView(overrides: Record<string, unknown> = {}): Record<string, unk
     failedCompactions: 0,
     cost: null,
     costProfileId: null,
+    pricedRoute: '',
     usage: null,
     ...overrides,
   }
@@ -401,5 +402,114 @@ describe('the panel also registers with the NATIVE right sidebar', () => {
     const mod = loadClientModule()
     const ctx = { slots: {}, inject: () => {} }
     expect(() => mod.apply(ctx)).not.toThrow()
+  })
+})
+
+describe('RC19: the panel is readable at a glance', () => {
+  /** A usage block with a known cache-hit share. */
+  const usageOf = (uncached: number, cacheRead: number, output = 0) => ({
+    uncachedInputTokens: uncached,
+    cacheReadTokens: cacheRead,
+    cacheWriteTokens: 0,
+    outputTokens: output,
+  })
+
+  it('reads millions as millions, not as four-digit thousands', () => {
+    // `1049k` and `7258k` are what the old formatter produced for a 1,049,000
+    // window and a 7,258,000 total. The trailing digits carry no information a
+    // reader can act on, and four-digit groups are measurably slower to compare
+    // than `1.0M` against `7.3M`.
+    const text = renderPanel({
+      projections: {
+        [STATUS_KEY]: statusView({
+          archivedTokens: 133_254,
+          usage: usageOf(1_258_000, 6_000_000, 40_000),
+        }),
+      },
+    })
+    expect(text).toContain('1.3M') // uncached input
+    expect(text).toContain('6.0M') // cache reads
+    expect(text).not.toContain('7258k')
+    expect(text).not.toContain('1049k')
+    // Below 10k the decimal distinguishes magnitudes; above it, it is noise.
+    // 133,254 sits in the `k` band and keeps one: `133k`.
+    expect(text).toContain('133k')
+  })
+
+  it('shows the cache-hit share, which is what the whole design is for', () => {
+    // The panel reported one lumped `Provider tokens` row, which cannot show
+    // cache reuse — the single figure EF's argument turns on. 6,000,000 reads
+    // of a 7,258,000-token prompt side is 82.7%.
+    const text = renderPanel({
+      projections: {
+        [STATUS_KEY]: statusView({ usage: usageOf(1_258_000, 6_000_000, 40_000) }),
+      },
+    })
+    expect(text).toContain('82.7%')
+    // The split is shown, not just the share — a share alone cannot be checked.
+    expect(text).toContain('1.3M')
+    expect(text).toContain('6.0M')
+  })
+
+  it('reports the cache-hit share as UNKNOWN when there is no prompt side', () => {
+    // A session with only output tokens has no prompt to have been cached, and
+    // `0 / 0` must not be printed as `0%` — that would read as "caching is
+    // broken" rather than "there is nothing to cache yet".
+    const text = renderPanel({
+      projections: {
+        [STATUS_KEY]: statusView({ usage: usageOf(0, 0, 500) }),
+      },
+    })
+    expect(text).not.toContain('NaN')
+    expect(text).not.toContain('0%')
+  })
+
+  it('shows how full the context is, so the pressure figure has a reference', () => {
+    // `Pressure 68k / Window 1049k` is two numbers that must be divided before
+    // they mean anything. 65,536 / 1,048,576 = 6.3%.
+    const text = renderPanel({
+      projections: {
+        [STATUS_KEY]: statusView(),
+        contextPressure: { projectedTokens: 65_536, contextWindow: 1_048_576 },
+      },
+    })
+    expect(text).toContain('6.3%')
+  })
+
+  it('speaks the host\'s language when the locale service says so', () => {
+    // The panel was English-only while the host UI followed the user's locale
+    // preference, so a `zh` deployment showed a Chinese harness with an English
+    // panel. `zh-CN` and friends must match on the primary subtag.
+    const zhProps = realTabProps({ projections: { [STATUS_KEY]: statusView() } })
+    ;(zhProps['ctx'] as { get: (n: string) => unknown }).get = (name: string) => {
+      if (name === 'locale') return { getSnapshot: () => ({ active: 'zh-CN' }) }
+      if (name === 'sessions') {
+        return {
+          list: {
+            getSnapshot: () => ({
+              projectionsBySession: {
+                'session-test-1': { values: { [STATUS_KEY]: statusView() }, state: 'ready', error: null },
+              },
+            }),
+            subscribe: () => () => {},
+          },
+        }
+      }
+      return undefined
+    }
+    const component = registeredTab()['component'] as (props: unknown) => unknown
+    const text = textOf(component(zhProps))
+    expect(text).toContain('当前上下文')
+    expect(text).toContain('归档历史')
+    expect(text).not.toContain('Current context')
+  })
+
+  it('falls back to English when no locale service is mounted', () => {
+    // `realTabProps`'s `ctx.get` answers only `sessions`, so this is the
+    // no-locale deployment: it must render English rather than throw or show
+    // raw keys.
+    const text = renderPanel({ projections: { [STATUS_KEY]: statusView() } })
+    expect(text).toContain('Current context')
+    expect(text).not.toContain('currentContext')
   })
 })

@@ -56,8 +56,24 @@ window.__ModuleLoader__.load({
      */
     const NATIVE_ID = 'dsh-epistemic-fold'
 
-    /** Format a token count compactly: 47_000 -> "47k". */
-    const k = (n) => (n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : String(n))
+    /**
+     * Format a token count compactly, in the unit a reader thinks in.
+     *
+     * The old rule capped at `k`, so a 1_049_000-token window printed `1049k`
+     * and a 7_258_000-token total printed `7258k` — four digits of which the
+     * last three carry no decision-relevant information. Millions now read as
+     * millions. Below 10k the decimal is kept, because there it distinguishes
+     * real magnitudes.
+     */
+    const k = (n) => {
+      if (!Number.isFinite(n)) return '—'
+      if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`
+      if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}k`
+      return String(n)
+    }
+
+    /** The exact figure, for a row's tooltip: 1049000 -> "1,049,000". */
+    const exact = (n) => (Number.isFinite(n) ? n.toLocaleString('en-US') : '—')
 
     /**
      * One labelled figure row.
@@ -65,8 +81,12 @@ window.__ModuleLoader__.load({
      * `value` is `null` when the figure is unknown, and renders an em dash —
      * never a zero. An unestablished number and a measured zero mean opposite
      * things, which is the rule the whole status surface is built on.
+     *
+     * `raw` is the unrounded figure behind a compact `value`, exposed as the
+     * element's `title` so the exact number stays reachable without a second
+     * row spending width on it.
      */
-    const Row = ({ label, value, suffix, muted }) =>
+    const Row = ({ label, value, suffix, muted, raw, hint }) =>
       jsx.jsxs('div', {
         style: {
           display: 'flex', justifyContent: 'space-between', gap: '12px',
@@ -74,15 +94,72 @@ window.__ModuleLoader__.load({
           opacity: muted === true ? 0.6 : 1,
         },
         children: [
-          jsx.jsx('span', { style: { opacity: 0.7 }, children: label }),
+          jsx.jsx('span', {
+            style: { opacity: 0.7 },
+            title: hint === undefined ? undefined : hint,
+            children: label,
+          }),
           jsx.jsx('span', {
             style: { fontVariantNumeric: 'tabular-nums' },
+            title: raw === undefined ? undefined : exact(raw),
             children: value === null || value === undefined
               ? '—'
               : `${value}${suffix === undefined ? '' : ` ${suffix}`}`,
           }),
         ],
       })
+
+    /**
+     * A proportion bar: how full the context is, at a glance.
+     *
+     * This is the one figure the panel was missing that changes what a reader
+     * DOES. `Pressure 68k / Window 1049k` is two numbers that must be divided
+     * before they mean anything; EF folds well before the window is full, so
+     * the interesting question is "how close am I to a fold", not "how big is
+     * the window". The bar answers it without arithmetic.
+     *
+     * `ratio` is clamped for display only — the percentage text beside it is
+     * the real value, so a context that somehow exceeds its window reads as
+     * over 100% rather than silently pinning at full.
+     */
+    const Bar = ({ ratio, label }) => {
+      const pct = Number.isFinite(ratio) ? Math.max(0, ratio * 100) : null
+      const filled = pct === null ? 0 : Math.min(100, pct)
+      return jsx.jsxs('div', {
+        style: { marginTop: '6px' },
+        children: [
+          // Track and fill are SIBLINGS, not nested: `opacity` cascades to
+          // children, so a dimmed track would dim the fill with it and the bar
+          // would read as uniformly faint. Both inherit `currentColor`, so the
+          // bar follows the theme rather than hard-coding one.
+          jsx.jsxs('div', {
+            style: { position: 'relative', height: '4px', borderRadius: '2px' },
+            children: [
+              jsx.jsx('div', {
+                style: {
+                  position: 'absolute', inset: '0', borderRadius: '2px',
+                  backgroundColor: 'currentColor', opacity: 0.18,
+                },
+              }),
+              jsx.jsx('div', {
+                style: {
+                  position: 'absolute', top: '0', bottom: '0', left: '0',
+                  width: `${filled}%`, borderRadius: '2px',
+                  backgroundColor: 'currentColor',
+                  transition: 'width 200ms ease-out',
+                },
+              }),
+            ],
+          }),
+          label === undefined
+            ? null
+            : jsx.jsx('div', {
+              style: { marginTop: '4px', fontSize: '11px', opacity: 0.6 },
+              children: label,
+            }),
+        ],
+      })
+    }
 
     /** A section heading. */
     const Section = ({ title, children }) =>
@@ -186,7 +263,11 @@ window.__ModuleLoader__.load({
       const pressureRead = useProjectionValue(ctx, scope, useProjection, 'contextPressure')
       const status = statusRead === undefined ? undefined : statusRead.value
       const pressure = pressureRead === undefined ? undefined : pressureRead.value
-      const translate = typeof t === 'function' ? t : (key) => key
+      // The translator is built from the TAB's own context, not the one this
+      // module registered with. The registration ctx is the plugin's fiber and
+      // does NOT resolve `locale`; the tab ctx is the one the sidebar hands
+      // down and the one that can. A host that supplies its own `t` still wins.
+      const translate = typeof t === 'function' ? t : translatorFor(ctx)
 
       if (status === undefined || status === null) {
         return jsx.jsx('div', {
@@ -195,48 +276,79 @@ window.__ModuleLoader__.load({
         })
       }
 
-      const cost = status.cost === null
-        ? '—'
-        : `~${status.cost.toFixed(4)}`
+      const cost = status.cost === null ? '—' : `~${status.cost.toFixed(4)}`
       const modeLabel = status.isTier === true
         ? String(status.mode)
         : `${status.mode} (default)`
+
+      // `projectedTokens` is what the NEXT request would cost; it falls back to
+      // `pressureTokens`, the last provider-reported prompt size. Either may be
+      // absent before any provider call, in which case the row shows an em dash.
+      const pressureTokens = pressure === undefined || pressure === null
+        ? undefined
+        : (pressure.projectedTokens !== undefined ? pressure.projectedTokens : pressure.pressureTokens)
+      const windowTokens = pressure === undefined || pressure === null ? undefined : pressure.contextWindow
+
+      // How full the context is. This is the figure the panel was missing: EF
+      // folds well before the window is full, so `Pressure 68k / Window 1049k`
+      // is two numbers that must be divided before they mean anything.
+      const occupancy = pressureTokens !== undefined && windowTokens !== undefined && windowTokens > 0
+        ? pressureTokens / windowTokens
+        : undefined
+
+      // Cache reuse, from the provider's own cumulative split. This is the
+      // number EF's whole argument turns on — the savings come from the frozen
+      // prefix staying cached — and the panel previously reported only a single
+      // lumped "Provider tokens", which cannot show it.
+      //
+      // Denominator is the PROMPT side (uncached + cache reads), matching DSH's
+      // own `formatCacheHitPercent(cacheRead, total - output)` rather than
+      // inventing a second convention for the same quantity.
+      const usage = status.usage
+      const promptTokens = usage === null ? undefined : usage.uncachedInputTokens + usage.cacheReadTokens
+      const cacheHit = promptTokens === undefined || promptTokens === 0
+        ? undefined
+        : usage.cacheReadTokens / promptTokens
 
       return jsx.jsxs('div', {
         style: { padding: '14px 16px', fontFamily: 'inherit', overflowY: 'auto' },
         children: [
           jsx.jsxs('div', {
-            style: { display: 'flex', alignItems: 'baseline', gap: '8px' },
+            style: { display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' },
             children: [
-              jsx.jsx('div', { style: { fontSize: '13px', fontWeight: 600 }, children: 'Epistemic Fold' }),
-              jsx.jsx('div', {
-                style: { fontSize: '12px', opacity: 0.75 },
-                children: modeLabel,
-              }),
+              jsx.jsx('div', { style: { fontSize: '13px', fontWeight: 600 }, children: translate('tabTitle') }),
+              jsx.jsx('div', { style: { fontSize: '12px', opacity: 0.75 }, children: modeLabel }),
             ],
           }),
 
-          pressure !== undefined && pressure !== null
-            ? jsx.jsxs(Section, {
-              title: translate('currentContext'),
-              children: [
-                // `projectedTokens` is what the NEXT request would cost; it
-                // falls back to `pressureTokens`, the last provider-reported
-                // prompt size. Either may be absent before any provider call,
-                // in which case the row shows an em dash.
-                jsx.jsx(Row, {
-                  label: translate('pressure'),
-                  value: pressure.projectedTokens !== undefined
-                    ? k(pressure.projectedTokens)
-                    : (pressure.pressureTokens !== undefined ? k(pressure.pressureTokens) : null),
+          jsx.jsxs(Section, {
+            title: translate('currentContext'),
+            children: [
+              jsx.jsx(Row, {
+                label: translate('pressure'),
+                value: pressureTokens === undefined ? null : k(pressureTokens),
+                raw: pressureTokens,
+                suffix: 'tokens',
+                hint: 'What the next request\'s prompt would cost',
+              }),
+              windowTokens !== undefined
+                ? jsx.jsx(Row, {
+                  label: translate('window'),
+                  value: k(windowTokens),
+                  raw: windowTokens,
                   suffix: 'tokens',
+                })
+                : null,
+              // The bar carries the same fact as the rows above in the form a
+              // reader can act on, so it is worth a line of its own.
+              occupancy === undefined
+                ? null
+                : jsx.jsx(Bar, {
+                  ratio: occupancy,
+                  label: `${translate('occupancy')} ${(occupancy * 100).toFixed(1)}%`,
                 }),
-                pressure.contextWindow !== undefined
-                  ? jsx.jsx(Row, { label: translate('window'), value: k(pressure.contextWindow), suffix: 'tokens' })
-                  : null,
-              ],
-            })
-            : null,
+            ],
+          }),
 
           jsx.jsxs(Section, {
             title: translate('archived'),
@@ -244,7 +356,12 @@ window.__ModuleLoader__.load({
               // Measured, not estimated: this figure is the meter's own
               // `shadowedTokenCount` summed over the folds, which is a better
               // number than the command plane can produce from bundle text.
-              jsx.jsx(Row, { label: translate('archivedTokens'), value: k(status.archivedTokens) }),
+              jsx.jsx(Row, {
+                label: translate('archivedTokens'),
+                value: k(status.archivedTokens),
+                raw: status.archivedTokens,
+                hint: 'Tokens the folds moved off the surface; still recoverable by recall',
+              }),
               // CURRENT, not lifetime. RC4-A found this row rendering
               // `folds + roots` — a lifetime total — under a label that claims
               // the surface right now, which is the conflation RC2.1 corrected
@@ -258,6 +375,9 @@ window.__ModuleLoader__.load({
             children: [
               jsx.jsx(Row, { label: translate('leafFolds'), value: status.folds }),
               jsx.jsx(Row, { label: translate('rootRebases'), value: status.roots }),
+              // Shown only when non-zero: a permanent `Failed folds 0` trains a
+              // reader to ignore the row, which is exactly the row that must be
+              // noticed when it is not zero.
               status.failedCompactions > 0
                 ? jsx.jsx(Row, { label: translate('failed'), value: status.failedCompactions })
                 : null,
@@ -284,22 +404,61 @@ window.__ModuleLoader__.load({
               // and names the route it could not price.
               status.costProfileId !== null
                 ? jsx.jsx(Row, { label: translate('pricedWith'), value: status.costProfileId, muted: true })
-                : (status.usage !== null && status.pricedRoute !== ''
+                : (usage !== null && status.pricedRoute !== ''
                   ? jsx.jsx(Row, { label: translate('noPrices'), value: status.pricedRoute, muted: true })
                   : null),
-              status.usage !== null
-                ? jsx.jsx(Row, {
-                  label: translate('providerTokens'),
-                  value: k(status.usage.uncachedInputTokens + status.usage.cacheReadTokens),
-                  muted: true,
-                })
-                : null,
               status.resumed === true ? jsx.jsx(Row, { label: translate('resumed'), value: 'yes' }) : null,
               status.modelChanges > 0
                 ? jsx.jsx(Row, { label: translate('modelChanges'), value: status.modelChanges })
                 : null,
             ],
           }),
+
+          // The provider's own cumulative split, which the panel used to
+          // compress into one `Provider tokens` row. Shown as a nested block so
+          // the four buckets read as parts of one measured total rather than as
+          // four more independent figures — and the cache-hit share, the figure
+          // the whole design is aimed at, leads.
+          usage === null
+            ? null
+            : jsx.jsxs(Section, {
+              title: translate('usage'),
+              children: [
+                cacheHit === undefined
+                  ? null
+                  : jsx.jsx(Row, {
+                    label: translate('cacheHit'),
+                    value: `${(cacheHit * 100).toFixed(cacheHit >= 0.995 ? 0 : 1)}%`,
+                    hint: 'Cache reads as a share of the prompt side (uncached + cache reads)',
+                  }),
+                jsx.jsx(Row, {
+                  label: translate('uncachedInput'),
+                  value: k(usage.uncachedInputTokens),
+                  raw: usage.uncachedInputTokens,
+                  muted: true,
+                }),
+                jsx.jsx(Row, {
+                  label: translate('cacheReads'),
+                  value: k(usage.cacheReadTokens),
+                  raw: usage.cacheReadTokens,
+                  muted: true,
+                }),
+                usage.cacheWriteTokens > 0
+                  ? jsx.jsx(Row, {
+                    label: translate('cacheWrites'),
+                    value: k(usage.cacheWriteTokens),
+                    raw: usage.cacheWriteTokens,
+                    muted: true,
+                  })
+                  : null,
+                jsx.jsx(Row, {
+                  label: translate('output'),
+                  value: k(usage.outputTokens),
+                  raw: usage.outputTokens,
+                  muted: true,
+                }),
+              ],
+            }),
 
           jsx.jsx('div', {
             style: { marginTop: '16px', fontSize: '11px', opacity: 0.5, lineHeight: 1.5 },
@@ -309,33 +468,125 @@ window.__ModuleLoader__.load({
       })
     }
 
-    /** English strings; a host with a locale binding may override via `t`. */
+    /**
+     * Panel copy, in the two languages DSH ships.
+     *
+     * The panel used to be English-only while the host UI followed the user's
+     * locale preference, so a `zh` deployment showed a Chinese harness with an
+     * English panel. The active locale is read from the host at RENDER time
+     * (see `translatorFor`), not captured at registration, because a language
+     * change must not require re-registering the tab.
+     */
     const STRINGS = {
-      tabTitle: 'Epistemic Fold',
-      tabDesc: 'Context runtime status: archived history, folds, recall activity and estimated cost.',
-      noSession: 'No active session.',
-      currentContext: 'Current context',
-      pressure: 'Pressure',
-      window: 'Window',
-      archived: 'Archived history',
-      archivedTokens: 'Archived tokens',
-      checkpointsNow: 'Checkpoints now',
-      folds: 'Folds (lifetime)',
-      leafFolds: 'Leaf folds',
-      rootRebases: 'Root rebases',
-      failed: 'Failed folds',
-      retrieval: 'Retrieval',
-      recalls: 'Recalls',
-      searches: 'Searches',
-      session: 'Session',
-      cost: 'Cost (estimated)',
-      pricedWith: 'Priced with',
-      noPrices: 'No prices for',
-      providerTokens: 'Provider tokens',
-      resumed: 'Resumed',
-      modelChanges: 'Model changes',
-      observationNote:
-        'Observation only — this panel reads a client projection and never enters the model context.',
+      en: {
+        tabTitle: 'Epistemic Fold',
+        tabDesc: 'Context runtime status: archived history, folds, recall activity and estimated cost.',
+        noSession: 'No active session.',
+        currentContext: 'Current context',
+        pressure: 'Pressure',
+        window: 'Window',
+        occupancy: 'Of window',
+        archived: 'Archived history',
+        archivedTokens: 'Archived tokens',
+        checkpointsNow: 'Checkpoints now',
+        folds: 'Folds (lifetime)',
+        leafFolds: 'Leaf folds',
+        rootRebases: 'Root rebases',
+        failed: 'Failed folds',
+        retrieval: 'Retrieval',
+        recalls: 'Recalls',
+        searches: 'Searches',
+        session: 'Session',
+        model: 'Model',
+        cost: 'Cost (estimated)',
+        pricedWith: 'Priced with',
+        noPrices: 'No prices for',
+        usage: 'Provider usage (measured)',
+        uncachedInput: 'Uncached input',
+        cacheReads: 'Cache reads',
+        cacheWrites: 'Cache writes',
+        output: 'Output',
+        cacheHit: 'Cache hit',
+        resumed: 'Resumed',
+        modelChanges: 'Model changes',
+        observationNote:
+          'Observation only — this panel reads a client projection and never enters the model context.',
+      },
+      zh: {
+        tabTitle: 'Epistemic Fold',
+        tabDesc: '上下文运行时状态：归档历史、折叠次数、召回活动与成本估算。',
+        noSession: '当前没有活动会话。',
+        currentContext: '当前上下文',
+        pressure: '压力',
+        window: '窗口',
+        occupancy: '占窗口',
+        archived: '归档历史',
+        archivedTokens: '归档 token',
+        checkpointsNow: '当前检查点',
+        folds: '折叠（累计）',
+        leafFolds: '叶折叠',
+        rootRebases: '根重基',
+        failed: '失败折叠',
+        retrieval: '检索',
+        recalls: '召回',
+        searches: '搜索',
+        session: '会话',
+        model: '模型',
+        cost: '成本（估算）',
+        pricedWith: '计价表',
+        noPrices: '无价目',
+        usage: '供应商用量（实测）',
+        uncachedInput: '未命中输入',
+        cacheReads: '缓存读取',
+        cacheWrites: '缓存写入',
+        output: '输出',
+        cacheHit: '缓存命中',
+        resumed: '已恢复',
+        modelChanges: '模型切换',
+        observationNote:
+          '纯观测——本面板读取客户端投影，永不进入模型上下文。',
+      },
+    }
+
+    /**
+     * The active locale id from the host, or `''` when unavailable.
+     *
+     * `ctx.get` is cordis's NON-throwing accessor — the same one this module
+     * already uses for `sessions` — so a deployment without the locale service
+     * reads `undefined` rather than throwing out of the panel's render.
+     */
+    const activeLocale = (ctx) => {
+      if (ctx === undefined || ctx === null || typeof ctx.get !== 'function') return ''
+      let service
+      try {
+        service = ctx.get('locale')
+      } catch {
+        return ''
+      }
+      const snapshot = service === undefined || service === null || typeof service.getSnapshot !== 'function'
+        ? undefined
+        : service.getSnapshot()
+      const active = snapshot === undefined || snapshot === null ? undefined : snapshot.active
+      return typeof active === 'string' ? active.toLowerCase() : ''
+    }
+
+    /**
+     * A `t` bound to the HOST's locale, resolved on every call.
+     *
+     * Resolved per call rather than captured so a language switch is picked up
+     * on the next render. The panel re-renders when its projection publishes,
+     * so a switch without a subsequent event shows the old language until one
+     * arrives — stale for at most one event, never permanently wrong, which is
+     * the same bound the mode label already carries.
+     */
+    const translatorFor = (ctx) => {
+      const t = (key) => {
+        const active = activeLocale(ctx)
+        // `zh-CN` and friends: match on the primary subtag.
+        const table = active.startsWith('zh') ? STRINGS.zh : STRINGS.en
+        return table[key] ?? STRINGS.en[key] ?? key
+      }
+      return t
     }
 
     /**
@@ -393,16 +644,18 @@ window.__ModuleLoader__.load({
       ctx.inject(['betterSidebar'], (sidebarCtx) => {
         const service = sidebarCtx.get('betterSidebar')
         if (service === undefined) return () => {}
+        // The chip copy comes from the same locale resolver the panel uses, so
+        // the two cannot disagree about the language. The panel resolves its
+        // OWN translator from the tab props (see `EpistemicFoldPanel`), so no
+        // `t` is passed here — the chip and the body read one source.
+        const t = translatorFor(ctx)
         dispose = service.registerTab({
           id: TAB_ID,
-          title: () => STRINGS.tabTitle,
-          description: () => STRINGS.tabDesc,
+          title: () => t('tabTitle'),
+          description: () => t('tabDesc'),
           order: 60,
           single: true,
-          component: (props) => jsx.jsx(EpistemicFoldPanel, {
-            ...props,
-            t: (key) => STRINGS[key] ?? key,
-          }),
+          component: (props) => jsx.jsx(EpistemicFoldPanel, props),
         })
         // cordis auto-invokes a returned disposer on fiber disposal (HMR-safe).
         return dispose
@@ -518,18 +771,19 @@ window.__ModuleLoader__.load({
           // a type from outside the product, and `title` is the chip text captured
           // at open time (the slot below can override it live, but a title here
           // means the chip is correct even before the body mounts).
+          const t = translatorFor(ctx)
           disposeType = tabs.register({
             id: NATIVE_ID,
             kind: NATIVE_ID,
             priority: 'extension',
-            title: () => STRINGS.tabTitle,
+            title: () => t('tabTitle'),
             // `description` is THUNKED copy, like `title` beside it: the guide
             // calls it as `entry.description?.()` on every render so a language
             // change needs no re-registration. Passing the string itself throws
-            // `STRINGS.tabDesc is not a function`, and because the guide page is
-            // the doorway to this type, the throw takes out the whole guide body
-            // — the entry never appears and the tab cannot be opened at all.
-            guide: [{ id: NATIVE_ID, order: 60, title: () => STRINGS.tabTitle, description: () => STRINGS.tabDesc }],
+            // `... is not a function`, and because the guide page is the doorway
+            // to this type, the throw takes out the whole guide body — the entry
+            // never appears and the tab cannot be opened at all.
+            guide: [{ id: NATIVE_ID, order: 60, title: () => t('tabTitle'), description: () => t('tabDesc') }],
           })
 
           // Stage two: the body. `ctx.slots.inject` binds the contribution to
@@ -572,7 +826,6 @@ window.__ModuleLoader__.load({
     const NativePanelBody = (props) => jsx.jsx(EpistemicFoldPanel, {
       ctx: props.efCtx,
       scope: { sessionId: props.sessionId },
-      t: (key) => STRINGS[key] ?? key,
     })
 
     // `slots` is a REQUIRED cordis service for this module, and it has to be
