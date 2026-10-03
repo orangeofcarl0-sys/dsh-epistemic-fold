@@ -34,9 +34,12 @@
 
 window.__ModuleLoader__.load({
   id: 'dsh-epistemic-fold',
-  factory: (require) => {
-    const React = require('react')
-    const jsx = require('react/jsx-runtime')
+  // `_require` is unused: this module has no dynamic imports, and the loader
+  // hands it a `require` it does not need. Underscored so `noUnusedParameters`
+  // (the same rule the host sources compile under) stays satisfied.
+  factory: (_require) => {
+    const React = /** @type {typeof import('react')} */ (_require('react'))
+    const jsx = /** @type {typeof import('react/jsx-runtime')} */ (_require('react/jsx-runtime'))
 
     /** The projection key the host registers (mirrors src/status-projection.ts). */
     const STATUS_KEY = 'epistemicFold.status'
@@ -57,6 +60,105 @@ window.__ModuleLoader__.load({
     const NATIVE_ID = 'dsh-epistemic-fold'
 
     /**
+     * The shape of the host projection this panel renders.
+     *
+     * ## Why this is a local typedef rather than an import
+     *
+     * It MIRRORS `FoldStatusView` in `src/status-projection.ts`, and mirroring is
+     * the weak part: the host could rename a field, update its own interface, its
+     * Zod schema and its view function, and this panel would keep compiling —
+     * silently rendering `—` for the row, which is indistinguishable from a
+     * legitimately-unknown figure. Measured: a fully coordinated rename of one
+     * view field passes all 46 panel and registry tests.
+     *
+     * `tests/panel-contract.spec.ts` closes that hole the only way a JS file can:
+     * it asserts this typedef's key set equals the host's `FoldStatusView` key
+     * set, so a rename fails a test even though it cannot fail the compiler.
+     *
+     * @typedef {object} FoldStatusView
+     * @property {string} mode
+     * @property {boolean} isTier
+     * @property {number} archivedTokens
+     * @property {number} archivedItems
+     * @property {number} folds
+     * @property {number} roots
+     * @property {number} currentCheckpoints
+     * @property {number} recalls
+     * @property {number} searches
+     * @property {boolean} resumed
+     * @property {number} modelChanges
+     * @property {number} failedCompactions
+     * @property {number | null} cost
+     * @property {string | null} costProfileId
+     * @property {string} pricedRoute
+     * @property {FoldStatusUsage | null} usage
+     */
+
+    /**
+     * The provider's cumulative split, as the host publishes it.
+     *
+     * @typedef {object} FoldStatusUsage
+     * @property {number} uncachedInputTokens
+     * @property {number} cacheReadTokens
+     * @property {number} cacheWriteTokens
+     * @property {number} outputTokens
+     */
+
+    /**
+     * The token meter's own pressure reading, read from `contextPressure`.
+     *
+     * Every field is optional because the projection publishes each as a
+     * last-wins record of a different moment: before the first provider report
+     * there is no sample at all, and a route that advertises no capacity has no
+     * window. The panel renders `—` for each absent half rather than a zero.
+     *
+     * @typedef {object} ContextPressureView
+     * @property {number} [pressureTokens]
+     * @property {number} [projectedTokens]
+     * @property {number} [contextWindow]
+     */
+
+    /**
+     * A cordis context as this panel uses it.
+     *
+     * Deliberately structural and minimal: the panel needs `get`, and nothing
+     * else. `get` is the NON-throwing accessor, which is why every read below
+     * guards its result instead of assuming a service exists.
+     *
+     * `inject` is REQUIRED, not optional: `apply` is handed a real cordis
+     * context and calls it unconditionally. Marking it optional would let a
+     * future edit write `ctx.inject?.(...)` — which silently mounts nothing
+     * instead of failing, the exact silent-absence class this file keeps
+     * correcting.
+     *
+     * @typedef {object} PanelContext
+     * @property {(name: string) => any} [get]
+     * @property {any} [sessions] the direct property face, when a host exposes one
+     * @property {any} [slots]
+     * @property {(names: readonly string[], cb: (ctx: any) => any) => any} inject
+     */
+
+    /**
+     * The session scope the sidebar hands a tab body.
+     *
+     * @typedef {object} PanelScope
+     * @property {string} [sessionId]
+     */
+
+    /**
+     * The props this panel accepts from EITHER sidebar.
+     *
+     * `t` is optional: a host may supply its own translator, and the panel falls
+     * back to one built from its own context (see `translatorFor`).
+     *
+     * @typedef {object} PanelProps
+     * @property {PanelContext} [ctx]
+     * @property {PanelScope} [scope]
+     * @property {(key: string) => string} [t]
+     * @property {(key: string) => unknown} [useProjection]
+     */
+
+    /**
      * Format a token count compactly, in the unit a reader thinks in.
      *
      * The old rule capped at `k`, so a 1_049_000-token window printed `1049k`
@@ -64,6 +166,9 @@ window.__ModuleLoader__.load({
      * last three carry no decision-relevant information. Millions now read as
      * millions. Below 10k the decimal is kept, because there it distinguishes
      * real magnitudes.
+     *
+     * @param {number} n
+     * @returns {string}
      */
     const k = (n) => {
       if (!Number.isFinite(n)) return '—'
@@ -72,7 +177,12 @@ window.__ModuleLoader__.load({
       return String(n)
     }
 
-    /** The exact figure, for a row's tooltip: 1049000 -> "1,049,000". */
+    /**
+     * The exact figure, for a row's tooltip: 1049000 -> "1,049,000".
+     *
+     * @param {number} n
+     * @returns {string}
+     */
     const exact = (n) => (Number.isFinite(n) ? n.toLocaleString('en-US') : '—')
 
     /**
@@ -85,6 +195,15 @@ window.__ModuleLoader__.load({
      * `raw` is the unrounded figure behind a compact `value`, exposed as the
      * element's `title` so the exact number stays reachable without a second
      * row spending width on it.
+     *
+     * @param {object} props
+     * @param {string} props.label
+     * @param {string | number | null | undefined} props.value
+     * @param {string} [props.suffix]
+     * @param {boolean} [props.muted]
+     * @param {number} [props.raw]
+     * @param {string} [props.hint]
+     * @returns {unknown}
      */
     const Row = ({ label, value, suffix, muted, raw, hint }) =>
       jsx.jsxs('div', {
@@ -121,6 +240,11 @@ window.__ModuleLoader__.load({
      * `ratio` is clamped for display only — the percentage text beside it is
      * the real value, so a context that somehow exceeds its window reads as
      * over 100% rather than silently pinning at full.
+     *
+     * @param {object} props
+     * @param {number} props.ratio
+     * @param {string} [props.label]
+     * @returns {unknown}
      */
     const Bar = ({ ratio, label }) => {
       const pct = Number.isFinite(ratio) ? Math.max(0, ratio * 100) : null
@@ -161,7 +285,14 @@ window.__ModuleLoader__.load({
       })
     }
 
-    /** A section heading. */
+    /**
+     * A section heading.
+     *
+     * @param {object} props
+     * @param {string} props.title
+     * @param {unknown} [props.children]
+     * @returns {unknown}
+     */
     const Section = ({ title, children }) =>
       jsx.jsxs('div', {
         style: { marginTop: '14px' },
@@ -199,11 +330,11 @@ window.__ModuleLoader__.load({
      * (`projectionsBySession[id].values[key]`, the same shape its own subagent
      * catalogs use) and still prefers the prop when a host does provide one.
      *
-     * @param ctx - the tab's cordis context (always passed by the sidebar).
-     * @param scope - the tab's session scope; `scope.sessionId` names the session.
-     * @param useProjectionProp - the optional hook prop, when a host supplies it.
-     * @param key - projection key.
-     * @returns the value plus the store's state/error, or `undefined` when unknown.
+     * @param {PanelContext | undefined} ctx the tab's cordis context (always passed by the sidebar).
+     * @param {PanelScope | undefined} scope the tab's session scope; `scope.sessionId` names the session.
+     * @param {((key: string) => unknown) | undefined} useProjectionProp the optional hook prop, when a host supplies it.
+     * @param {string} key projection key.
+     * @returns {{ value: any, state: string, error: string | null } | undefined} the value plus the store's state/error, or `undefined` when unknown.
      */
     const useProjectionValue = (ctx, scope, useProjectionProp, key) => {
       // A host that hands the hook owns the subscription; prefer it.
@@ -253,6 +384,14 @@ window.__ModuleLoader__.load({
      *
      * Reads the host-computed projection rather than running `/context` and
      * parsing its text: the panel must show the facts, not a rendering of them.
+     *
+     * The two casts below are the panel's half of the contract with the host.
+     * They are unchecked assertions — a JS file cannot do better — so the KEY
+     * SET they assert is pinned separately by `tests/panel-contract.spec.ts`,
+     * which compares this file's `FoldStatusView` typedef against the host's.
+     *
+     * @param {PanelProps} props
+     * @returns {unknown}
      */
     const EpistemicFoldPanel = ({ useProjection, t, ctx, scope }) => {
       const statusRead = useProjectionValue(ctx, scope, useProjection, STATUS_KEY)
@@ -261,8 +400,12 @@ window.__ModuleLoader__.load({
       // carry a meter reading, so the join happens here rather than in the
       // host — the alternative would be a second source of the same fact.
       const pressureRead = useProjectionValue(ctx, scope, useProjection, 'contextPressure')
-      const status = statusRead === undefined ? undefined : statusRead.value
-      const pressure = pressureRead === undefined ? undefined : pressureRead.value
+      const status = /** @type {FoldStatusView | undefined} */ (
+        statusRead === undefined ? undefined : statusRead.value
+      )
+      const pressure = /** @type {ContextPressureView | undefined} */ (
+        pressureRead === undefined ? undefined : pressureRead.value
+      )
       // The translator is built from the TAB's own context, not the one this
       // module registered with. The registration ctx is the plugin's fiber and
       // does NOT resolve `locale`; the tab ctx is the one the sidebar hands
@@ -304,9 +447,15 @@ window.__ModuleLoader__.load({
       // Denominator is the PROMPT side (uncached + cache reads), matching DSH's
       // own `formatCacheHitPercent(cacheRead, total - output)` rather than
       // inventing a second convention for the same quantity.
+      // Bound to a const first so the narrowing below survives into the closure
+      // free arithmetic: `usage` is `FoldStatusUsage | null`, and the ratio line
+      // reads it twice. Checked on `usage` itself rather than on `promptTokens`,
+      // which is what the compiler wanted — deriving the guard from a value that
+      // HAPPENS to be undefined for the same reason is a coincidence, not a
+      // guarantee.
       const usage = status.usage
       const promptTokens = usage === null ? undefined : usage.uncachedInputTokens + usage.cacheReadTokens
-      const cacheHit = promptTokens === undefined || promptTokens === 0
+      const cacheHit = usage === null || promptTokens === undefined || promptTokens === 0
         ? undefined
         : usage.cacheReadTokens / promptTokens
 
@@ -557,9 +706,13 @@ window.__ModuleLoader__.load({
      * `ctx.get` is cordis's NON-throwing accessor — the same one this module
      * already uses for `sessions` — so a deployment without the locale service
      * reads `undefined` rather than throwing out of the panel's render.
+     *
+     * @param {PanelContext | undefined} ctx
+     * @returns {string}
      */
     const activeLocale = (ctx) => {
       if (ctx === undefined || ctx === null || typeof ctx.get !== 'function') return ''
+      /** @type {any} */
       let service
       try {
         service = ctx.get('locale')
@@ -581,13 +734,23 @@ window.__ModuleLoader__.load({
      * so a switch without a subsequent event shows the old language until one
      * arrives — stale for at most one event, never permanently wrong, which is
      * the same bound the mode label already carries.
+     *
+     * @param {PanelContext | undefined} ctx
+     * @returns {(key: string) => string}
      */
     const translatorFor = (ctx) => {
+      /**
+       * @param {string} key
+       * @returns {string}
+       */
       const t = (key) => {
         const active = activeLocale(ctx)
         // `zh-CN` and friends: match on the primary subtag.
+        /** @type {Record<string, string>} */
         const table = active.startsWith('zh') ? STRINGS.zh : STRINGS.en
-        return table[key] ?? STRINGS.en[key] ?? key
+        /** @type {Record<string, string>} */
+        const fallback = STRINGS.en
+        return table[key] ?? fallback[key] ?? key
       }
       return t
     }
@@ -631,6 +794,9 @@ window.__ModuleLoader__.load({
      * missing plugin takes the whole UI down. `ctx.inject` is cordis's idiom for
      * exactly this: run the callback once the service exists, and mount cleanly
      * when it never does.
+     *
+     * @param {PanelContext} ctx
+     * @returns {() => void}
      */
     function apply(ctx) {
       const disposeBetter = applyBetterSidebar(ctx)
@@ -641,10 +807,16 @@ window.__ModuleLoader__.load({
       }
     }
 
-    /** better-sidebar's registration, when that plugin is mounted. */
+    /**
+     * better-sidebar's registration, when that plugin is mounted.
+     *
+     * @param {PanelContext} ctx
+     * @returns {() => void}
+     */
     function applyBetterSidebar(ctx) {
+      /** @type {undefined | (() => void)} */
       let dispose
-      ctx.inject(['betterSidebar'], (sidebarCtx) => {
+      ctx.inject(['betterSidebar'], (/** @type {any} */ sidebarCtx) => {
         const service = sidebarCtx.get('betterSidebar')
         if (service === undefined) return () => {}
         // The chip copy comes from the same locale resolver the panel uses, so
@@ -658,7 +830,7 @@ window.__ModuleLoader__.load({
           description: () => t('tabDesc'),
           order: 60,
           single: true,
-          component: (props) => jsx.jsx(EpistemicFoldPanel, props),
+          component: (/** @type {PanelProps} */ props) => jsx.jsx(EpistemicFoldPanel, props),
         })
         // cordis auto-invokes a returned disposer on fiber disposal (HMR-safe).
         return dispose
@@ -706,19 +878,25 @@ window.__ModuleLoader__.load({
      * `subscribe` makes the decision order-independent: `ctx.inject` callbacks
      * are asynchronous and either registration may land first, so whichever
      * arrives second re-runs the reconcile through the registry change.
+     *
+     * @param {PanelContext} ctx
+     * @returns {() => void}
      */
     function applyNativeSidebar(ctx) {
+      /** @type {null | (() => void)} */
       let teardown = null
       // Wait for the tab registry only. `slots` is not named here because the
       // module declares it in its own `inject` (see the export at the bottom):
       // this callback reads `ctx.slots` off the plugin's own context, and that
       // access resolves only because the module-level inject put it there.
-      const mount = (injected) => {
+      const mount = (/** @type {any} */ injected) => {
         const tabs = injected.get('sidebarRightTabs')
         if (tabs === undefined) return () => {}
 
         // Everything this half owns, so one reconcile can add or drop it whole.
+        /** @type {null | (() => void)} */
         let disposeType = null
+        /** @type {null | (() => void)} */
         let disposeBody = null
 
         const release = () => {
@@ -794,7 +972,7 @@ window.__ModuleLoader__.load({
           disposeBody = ctx.slots.inject('sidebar.right.pane.tab', () => ctx.slots.register({
             name: 'sidebar.right.pane.tab',
             key: NATIVE_ID,
-            inject: (sessionId) => ({ sessionId, efCtx: ctx }),
+            inject: (/** @type {string} */ sessionId) => ({ sessionId, efCtx: ctx }),
           }, NativePanelBody))
         }
 
@@ -825,6 +1003,9 @@ window.__ModuleLoader__.load({
      * Receives the slot's injected props (`sessionId` plus the closed-over context)
      * and renders the SAME panel better-sidebar renders — one component, so the two
      * sidebars cannot drift apart in what they report.
+     *
+     * @param {{ sessionId?: string, efCtx?: PanelContext }} props
+     * @returns {unknown}
      */
     const NativePanelBody = (props) => jsx.jsx(EpistemicFoldPanel, {
       ctx: props.efCtx,

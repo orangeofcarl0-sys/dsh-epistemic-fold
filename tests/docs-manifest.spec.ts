@@ -59,15 +59,63 @@ function normalized(path: string): Buffer {
   return Buffer.from(readFileSync(path, 'utf8').replace(/\r\n/gu, '\n'), 'utf8')
 }
 
-/** The blob git stores for a path at HEAD, or undefined when git cannot answer. */
-function committedBlob(path: string): Buffer | undefined {
+/**
+ * Every `HEAD:<path>` blob named, read in ONE git invocation.
+ *
+ * ## Why batched, and not one `git cat-file` per path
+ *
+ * The manifest names ~48 files, so the per-path form spawned ~49 git processes
+ * per test. Measured: the file took 4.04s of test time in isolation against
+ * vitest's 5000ms default — passing alone, and timing out under the full
+ * suite's parallel load:
+ *
+ *     Error: Test timed out in 5000ms.
+ *     ❯ tests/docs-manifest.spec.ts:101
+ *
+ * That is not flakiness, it is 49 sequential process spawns. `--batch` answers
+ * every request over one pipe, so the cost stops scaling with the doc count —
+ * which matters because the count only grows.
+ *
+ * ## The protocol
+ *
+ * Each request line is `<object>`, each response is a header line
+ * `<sha> <type> <size>` followed by `size` bytes and a newline. A missing
+ * object answers `<name> missing` instead of a header. Reading by declared size
+ * rather than by scanning for newlines is what keeps binary-safe content — and
+ * a blob whose bytes contain a newline — from desynchronizing the stream.
+ *
+ * @param paths repo-relative paths, read as `HEAD:<path>`.
+ * @returns blob bytes per path; a path git could not answer is absent.
+ */
+function committedBlobs(paths: readonly string[]): Map<string, Buffer> {
+  const found = new Map<string, Buffer>()
+  if (paths.length === 0) return found
+  let out: Buffer
   try {
-    return execFileSync('git', ['cat-file', 'blob', `HEAD:${path}`], {
-      cwd: ROOT, maxBuffer: 64 * 1024 * 1024,
+    out = execFileSync('git', ['cat-file', '--batch'], {
+      cwd: ROOT,
+      input: `${paths.map(path => `HEAD:${path}`).join('\n')}\n`,
+      maxBuffer: 64 * 1024 * 1024,
     })
   } catch {
-    return undefined
+    return found // no git, or no HEAD: the callers treat absence as "cannot answer"
   }
+
+  let cursor = 0
+  for (const path of paths) {
+    const newline = out.indexOf(0x0a, cursor)
+    if (newline === -1) break
+    const header = out.toString('utf8', cursor, newline)
+    cursor = newline + 1
+    // `<name> missing`, `<name> ambiguous`, or anything else without a size.
+    const match = /^[0-9a-f]+ blob (\d+)$/u.exec(header)
+    if (match === null) continue
+    const size = Number(match[1])
+    if (!Number.isSafeInteger(size) || cursor + size > out.length) break
+    found.set(path, out.subarray(cursor, cursor + size))
+    cursor += size + 1 // the blob's trailing newline
+  }
+  return found
 }
 
 /**
@@ -113,7 +161,7 @@ describe('the docs manifest is checkout-independent', () => {
     // `docs/` is modified, and stay silent while a run is mid-regeneration.
     if (docsTreeIsDirty()) return
 
-    const manifestBlob = committedBlob('docs/MANIFEST.json')
+    const manifestBlob = committedBlobs(['docs/MANIFEST.json']).get('docs/MANIFEST.json')
     if (manifestBlob === undefined) return // no git, or no commit yet
     let committed: readonly Entry[]
     try {
@@ -121,9 +169,12 @@ describe('the docs manifest is checkout-independent', () => {
     } catch {
       return // the committed manifest is unreadable; not this test's subject
     }
+    // ONE git invocation for every doc, not one per doc — see `committedBlobs`.
+    const paths = committed.map(entry => `docs/${entry.file}`)
+    const blobs = committedBlobs(paths)
     const bad: string[] = []
     for (const entry of committed) {
-      const blob = committedBlob(`docs/${entry.file}`)
+      const blob = blobs.get(`docs/${entry.file}`)
       if (blob === undefined) { bad.push(`${entry.file}: absent from HEAD`); continue }
       if (createHash('sha256').update(blob).digest('hex') !== entry.sha256) bad.push(`${entry.file}: hash`)
     }

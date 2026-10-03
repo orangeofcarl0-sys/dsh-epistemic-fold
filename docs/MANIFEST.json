@@ -238,5 +238,10 @@
     "file": "46_RC20_ARCHIVED_ITEM_COUNT.md",
     "bytes": 3735,
     "sha256": "24ecd788856f613014bd59f11f89d4e7dcfe9c1000e8ac381a012543f58d860b"
+  },
+  {
+    "file": "47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md",
+    "bytes": 7082,
+    "sha256": "cf394b73fd2e637a88899e62bf2f5c8d0e0b984eb931519ce94da8bc513f74eb"
   }
 ]

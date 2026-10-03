@@ -51,6 +51,12 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit -p tsconfig.json
 
+      # The browser client face has its OWN project: it requires React from the
+      # host loader, so it cannot join the main graph. Excluding it meant nothing
+      # checked it, and it is the file every recent defect round touched.
+      - name: Type check the browser client face
+        run: npm run typecheck:client
+
       - name: Tests
         run: npx vitest run
 
@@ -116,6 +122,9 @@ jobs:
 
       - name: Type check
         run: npx tsc --noEmit -p tsconfig.json
+
+      - name: Type check the browser client face
+        run: npm run typecheck:client
 
       - name: Tests
         run: npx vitest run
