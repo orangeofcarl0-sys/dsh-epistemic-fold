@@ -1,5 +1,11 @@
 # Epistemic Fold
 
+[![CI](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/actions/workflows/ci.yml/badge.svg)](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/orangeofcarl0-sys/dsh-epistemic-fold?sort=semver)](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![DSH](https://img.shields.io/badge/DSH-%3E%3D0.1.7--rc.2-4b5563.svg)](#ci)
+[![docs](https://img.shields.io/badge/docs-49%20documents-4b5563.svg)](docs/)
+
 > **Epistemic Fold for DeepSeek Harness**
 > *A contract-preserving context runtime for long-horizon agents.*
 

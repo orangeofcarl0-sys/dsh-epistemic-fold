@@ -122,6 +122,50 @@ describe('RC3: the package declares a real plugin entry', () => {
     }
   })
 
+  it('the header badges point at things that exist, in both editions', async () => {
+    // A badge is a CLAIM rendered as an image, and a broken one is worse than no
+    // badge: a red CI badge reports a failing build, and a badge whose link goes
+    // nowhere reports a repository that is not maintained. Both editions carry
+    // the same five, so the check runs against each.
+    const anchors = new Map<string, RegExp>([
+      // `#ci` must resolve to a real heading in the file that uses it.
+      ['#ci', /^#{2,3} CI$/mu],
+    ])
+
+    for (const name of ['README.md', 'README.zh.md']) {
+      const text = await readFile(join(ROOT, name), 'utf8')
+
+      // Every badge image must be linked — an unlinked badge cannot be acted on.
+      const images = text.match(/!\[[^\]]*\]\(([^)]+)\)/gu) ?? []
+      expect(images.length, `${name} must carry the header badges`).toBe(5)
+
+      const links = [...text.matchAll(/\[!\[[^\]]*\]\([^)]*\)\]\(([^)]+)\)/gu)].map(m => m[1]!)
+      expect(links.length, `every badge in ${name} must be a link`).toBe(5)
+
+      for (const target of links) {
+        if (target.startsWith('#')) {
+          const pattern = anchors.get(target)
+          expect(pattern, `${name} links an anchor this test does not know: ${target}`).toBeDefined()
+          expect(text, `${name}: ${target} has no matching heading`).toMatch(pattern!)
+          continue
+        }
+        // A repository-relative target must exist on disk; an absolute one is a
+        // service URL and is not checked here (the CI badge's own status is the
+        // workflow's business, not this test's).
+        if (!/^https?:/u.test(target)) {
+          expect(existsSync(join(ROOT, target)), `${name}: ${target} does not exist`).toBe(true)
+        }
+      }
+
+      // The service names a reader recognizes, so the badges are not silently
+      // swapped for something that always reports green.
+      expect(text, `${name} must use the real CI workflow badge`)
+        .toContain('actions/workflows/ci.yml/badge.svg')
+      expect(text, `${name} must derive the release badge from the API, not a literal`)
+        .toContain('img.shields.io/github/v/release/orangeofcarl0-sys/dsh-epistemic-fold')
+    }
+  })
+
   it('ships every top-level directory the README documents', async () => {
     // THE DEFECT THIS PINS: the README's repository layout listed
     // `profiles/economics/`, and `src/economics-profile.ts` calls those files

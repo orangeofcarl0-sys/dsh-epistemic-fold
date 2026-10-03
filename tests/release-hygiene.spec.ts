@@ -59,8 +59,15 @@ const ROOT = join(import.meta.dirname, '..')
  *   - a drive-absolute `Users/` or `home/` path (any username)
  *   - a drive-absolute `dsh` directory (the DSH home on any machine)
  *   - a single-letter drive mount in POSIX form, e.g. `/f/...` under Git Bash
+ *
+ * The POSIX-mount branch carries a LOOKBEHIND, and it is load-bearing: without
+ * it, any URL with a two-segment path matched — `.../github/v/release/...` read
+ * as the mount `/g/` followed by `ithub/v/release`. That flagged the README's own
+ * badges, and a detector that reports false positives on the file it is guarding
+ * gets switched off. Requiring the mount not to follow a word character, a
+ * colon, or a slash keeps it to paths that really start a path.
  */
-const MACHINE_PATH = /(?:[A-Za-z]:[\\/](?:Users|home)[\\/](?!\.\.\.|<)[^\\/\s"']+|[A-Za-z]:[\\/]dsh\b|\/[a-z]\/[A-Za-z_][A-Za-z_0-9]{3,})/u
+const MACHINE_PATH = /(?:[A-Za-z]:[\\/](?:Users|home)[\\/](?!\.\.\.|<)[^\\/\s"']+|[A-Za-z]:[\\/]dsh\b|(?<![\w:/])\/[a-z]\/[A-Za-z_][A-Za-z_0-9]{3,})/u
 
 /**
  * A credential VALUE rather than the name of the variable holding one.
