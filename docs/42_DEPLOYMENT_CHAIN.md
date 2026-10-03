@@ -121,6 +121,59 @@ substitution patch overrides rows that `@deepseek-ai/dsh-web-app` declares. A
 bundle listed before it runs its patch before those rows exist, finds nothing,
 and the patch is skipped.
 
+### The three install channels, and what each requires
+
+`dsh plugin add` delegates to pnpm, and the channels behave differently in one
+way that matters. All three were measured against DSH `0.2.0-rc.2`:
+
+| channel | spec | runs `prepare`? | what it needs |
+| --- | --- | --- | --- |
+| git | `github:orangeofcarl0-sys/dsh-epistemic-fold` | **yes** | one `allowBuilds` entry, printed by dsh |
+| path | `file:/path/to/dsh-epistemic-fold` | **no** | the source tree already built (`npm install` there) |
+| registry | `dsh-epistemic-fold` | n/a | not available — the package is `private` and unpublished |
+
+**The git channel needs one manual step.** pnpm blocks build scripts by default,
+so the first `add` stops with:
+
+```
+ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED
+```
+
+dsh prints the exact `allowBuilds` key to paste into the profile's
+`pnpm-workspace.yaml`. Add it and re-run; `prepare` then builds `lib/` and
+generates the preset rows as part of the install. This is a guided one-liner,
+not a silent failure.
+
+**The file channel does not build.** Measured with a marker script placed in
+`prepare`: it never ran. pnpm copies the directory as it exists on disk, so a
+fresh `git clone` — which has no `lib/`, because `lib/` is gitignored — installs
+a package whose `main` (`lib/entry.js`) does not exist. The boot then reports:
+
+```
+dsh: warning: 4 entries did not activate
+epistemic-fold-doctor (dsh-epistemic-fold): failed to import
+```
+
+Note which entry fails: the **doctor**, the component whose job is to report
+install problems. It lives in `lib/`, so it cannot diagnose the one condition
+that stops it loading, and nothing else in the package can either. That is why
+the check runs from the source tree, before the install:
+
+```bash
+npm run preflight     # node scripts/preflight-lib.mjs
+```
+
+It fails with the remedy when `lib/` is absent or older than `src/`:
+
+```
+preflight-lib: this tree is not installable
+  - lib/ is absent or incomplete (missing: lib/entry.js, lib/plugin.js, …).
+    Fix: run `npm install` (or `npm run build`) in this directory first.
+```
+
+Run it after cloning, before pointing a `file:` dependency at the tree. On the
+git channel it is unnecessary — `prepare` covers it.
+
 ## 5. Boot
 
 ```bash
@@ -256,13 +309,46 @@ degraded one.
 | 1 | edit source | `src/**/*.ts`, `client.js` | — |
 | 2 | build | `npm run build` | browser serves the previous revision |
 | 3 | generate rows | `node scripts/generate-presets.mjs` | doctor raises `SUBSTITUTION DID NOT LAND` |
-| 4 | declare dependency | profile `package.json` → `dependencies` | package not resolvable |
-| 5 | order the bundle | profile `package.json` → `dsh.profile.bundles` | patch finds no rows; same doctor error |
-| 6 | install | `pnpm install` (in the profile) | stale `lib/` |
-| 7 | boot | `dsh --profile <name>` | — |
-| 8 | verify | `/context status`, Sidebar panel, `__DSH_BOOT__` rev | silent: Basic runs, or the panel is absent |
+| 4 | preflight (file: channel only) | `npm run preflight` | `did not activate` / `failed to import` at boot |
+| 5 | declare dependency | profile `package.json` → `dependencies` | package not resolvable |
+| 6 | order the bundle | profile `package.json` → `dsh.profile.bundles` | patch finds no rows; same doctor error |
+| 7 | install | `dsh plugin add <spec>` (or `pnpm install` in the profile) | stale `lib/`; on git, `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED` |
+| 8 | boot | `dsh --profile <name>` | — |
+| 9 | verify | `/context status`, Sidebar panel, `__DSH_BOOT__` rev | silent: Basic runs, or the panel is absent |
 
-Steps 3 and 5 fail the same way and produce the same message, so the message
-names both causes rather than guessing. Note that step 8's doctor message is
-**not** printed on a healthy web boot (§6) — the three surfaces are what you
-actually check.
+Steps 3 and 6 fail the same way and produce the same message, so the message
+names both causes rather than guessing. Step 4 is a no-op on the git channel,
+where `prepare` builds during install; it is the guard for the `file:` channel,
+where nothing builds. Note that step 9's doctor message is **not** printed on a
+healthy web boot (§6) — the three surfaces are what you actually check.
+
+## 10. Manifest fields: what DSH reads
+
+The package declares its DSH metadata under `package.json.dsh`. Only four keys
+are defined — `@deepseek-ai/dsh-package-manifest` fixes `DshManifest` as
+`{ manifestVersion, bundle, profile, client }` — and this package uses three of
+them:
+
+```jsonc
+"engines": { "node": "^22.19.0 || >=24.0.0", "dsh": ">=0.1.7-rc.2" },
+"dsh": {
+  "manifestVersion": 1,
+  "bundle": { "patch": "./cordis.patch.yml" },
+  "client": { "platform": "web", "inject": [ … ] }
+}
+```
+
+Two placement rules are easy to get wrong, and this package had both wrong:
+
+- **The DSH version range goes in `engines.dsh`**, beside `engines.node` — not
+  in a `dsh.compatibility` object. That object is not a DSH field; a tree-wide
+  grep finds no reader, so the range was inert. It also contradicted
+  `engines.node` (`>=22.5.0` vs `^22.19.0 || >=24.0.0`), the unread one being
+  the more permissive.
+- **`private: true` is deliberate.** It blocks `npm publish`, and this package
+  is not on the registry (distribution is git and file only). Adding a registry
+  channel means changing this flag *and* adding a publish path — not one
+  without the other.
+
+`tests/rc3-plugin-packaging.spec.ts` pins all of the above, including the
+preflight's negative case, so the manifest cannot drift back.

@@ -60,6 +60,7 @@
     "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts tests/rc11a-certification-semantics.spec.ts tests/rc11b-replay-correction.spec.ts tests/rc12a-recall-loop.spec.ts tests/rc12b-recall-mechanism.spec.ts",
     "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts",
     "build": "node scripts/build-plugin.mjs",
+    "preflight": "node scripts/preflight-lib.mjs",
     "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",
     "generate-presets": "node scripts/generate-presets.mjs",
     "sweep-temp": "node scripts/sweep-temp.mjs"
@@ -76,7 +77,8 @@
     "context-runtime"
   ],
   "engines": {
-    "node": "^22.19.0 || >=24.0.0"
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.1.7-rc.2"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": ">=4.0.0",
@@ -104,12 +106,9 @@
     "vitest": "^5.0.2"
   },
   "dsh": {
+    "manifestVersion": 1,
     "bundle": {
       "patch": "./cordis.patch.yml"
-    },
-    "compatibility": {
-      "node": ">=22.5.0",
-      "dsh": ">=0.1.7-rc.2"
     },
     "client": {
       "platform": "web",

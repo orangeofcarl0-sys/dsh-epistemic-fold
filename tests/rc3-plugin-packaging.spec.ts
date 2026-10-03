@@ -146,6 +146,106 @@ describe("RC7: the patch substitutes EF into DSH's own presets, in place", () =>
   })
 })
 
+describe('RC16: the manifest uses the fields DSH actually defines', () => {
+  it('declares the DSH range at engines.dsh, not in an invented dsh.compatibility', async () => {
+    // THE DEFECT THIS PINS: the manifest declared
+    //
+    //   "dsh": { "compatibility": { "node": ">=22.5.0", "dsh": ">=0.1.7-rc.2" } }
+    //
+    // `dsh.compatibility` is not a field DSH defines — `@deepseek-ai/dsh-package-manifest`
+    // declares `DshManifest` as exactly { manifestVersion, bundle, profile, client },
+    // and a tree-wide grep for `dsh.compatibility` finds no reader at all. The
+    // range was therefore inert, and it disagreed with `engines.node`
+    // (`>=22.5.0` vs `^22.19.0 || >=24.0.0`) — two contradicting statements, the
+    // unread one being the more permissive.
+    const pkg = await readJson('package.json')
+    const dsh = pkg['dsh'] as Record<string, unknown>
+    expect(dsh['compatibility'], 'dsh.compatibility is not a DSH field').toBeUndefined()
+    expect(Object.keys(dsh).sort()).toEqual(['bundle', 'client', 'manifestVersion'])
+    // The DSH range belongs beside engines.node, where the spec puts it.
+    const engines = pkg['engines'] as Record<string, string>
+    expect(engines['dsh']).toBe('>=0.1.7-rc.2')
+    expect(engines['node']).toBe('^22.19.0 || >=24.0.0')
+  })
+
+  it('declares manifestVersion 1', async () => {
+    // Optional per the spec, but declared by every published plugin on this
+    // machine (`dsh-better-sidebar`), and omitting it leaves the format version
+    // undeclared rather than defaulted.
+    const pkg = await readJson('package.json')
+    const dsh = pkg['dsh'] as Record<string, unknown>
+    expect(dsh['manifestVersion']).toBe(1)
+  })
+
+  it('stays private on purpose, because distribution is git and file only', async () => {
+    // `private: true` blocks `npm publish`. That is deliberate, not an
+    // oversight: this package is not on the registry (`npm view
+    // dsh-epistemic-fold` returns 404) and there is no publish workflow in
+    // .github/workflows. The two supported channels are `github:` and `file:`.
+    // If a registry channel is ever wanted, this test is the one to change —
+    // and it should change together with an actual publish path, not before.
+    const pkg = await readJson('package.json')
+    expect(pkg['private']).toBe(true)
+  })
+})
+
+describe('RC16: the file: channel needs a built lib/, and says so', () => {
+  it('ships a preflight that fails when lib/ cannot load', async () => {
+    // THE GAP THIS CLOSES: `main` is `lib/entry.js` and `lib/` is gitignored, so
+    // a clone that never built cannot install. Measured: pnpm runs `prepare` for
+    // a `github:` dependency but NOT for a `file:` one (a marker script in
+    // `prepare` never ran on the file channel). The resulting boot failure is
+    // loud but late, and the entry that fails to import IS the doctor — the one
+    // component that could explain it lives inside the directory that is
+    // missing. Nothing in the package can diagnose it, so the check must run
+    // from the source tree BEFORE the install.
+    const pkg = await readJson('package.json')
+    expect(pkg['scripts']).toMatchObject({ preflight: 'node scripts/preflight-lib.mjs' })
+    const script = await readFile(join(ROOT, 'scripts', 'preflight-lib.mjs'), 'utf8')
+    // It must name the real entry points and the real remedy.
+    for (const rel of ['lib/entry.js', 'lib/plugin.js', 'lib/client.js']) {
+      expect(script, `preflight must check ${rel}`).toContain(rel)
+    }
+    expect(script).toContain('npm run build')
+    expect(script).toContain('process.exit(1)')
+  })
+
+  it('the preflight passes on this tree and fails on one without lib/', async () => {
+    // Executed, not just read: a guard that cannot fail is not a guard. The
+    // healthy half runs in-process; the failing half runs the same script
+    // against a copy of the tree with `lib/` removed, which is exactly the state
+    // a fresh clone is in.
+    const { execFileSync } = await import('node:child_process')
+    const healthy = execFileSync(process.execPath, ['scripts/preflight-lib.mjs'], {
+      cwd: ROOT, encoding: 'utf8',
+    })
+    expect(healthy).toContain('installable')
+
+    const { mkdtempSync, cpSync, rmSync } = await import('node:fs')
+    const { tmpdir } = await import('node:os')
+    const scratch = mkdtempSync(join(tmpdir(), 'ef-preflight-'))
+    try {
+      cpSync(join(ROOT, 'scripts'), join(scratch, 'scripts'), { recursive: true })
+      cpSync(join(ROOT, 'src'), join(scratch, 'src'), { recursive: true })
+      cpSync(join(ROOT, 'client.js'), join(scratch, 'client.js'))
+      cpSync(join(ROOT, 'package.json'), join(scratch, 'package.json'))
+      // No `lib/` — the state `git clone` leaves behind.
+      let failed = false
+      try {
+        execFileSync(process.execPath, ['scripts/preflight-lib.mjs'], { cwd: scratch, encoding: 'utf8' })
+      } catch (error) {
+        failed = true
+        const out = String((error as { stderr?: string }).stderr ?? '')
+        expect(out).toContain('not installable')
+        expect(out).toContain('does NOT run `prepare`')
+      }
+      expect(failed, 'preflight must FAIL on a tree with no lib/').toBe(true)
+    } finally {
+      rmSync(scratch, { recursive: true, force: true })
+    }
+  })
+})
+
 describe('RC7: the bare-name entry mounts the doctor, not the plugin', () => {
   it('exports name, inject and a default mount function', async () => {
     const entry = await import('../src/entry.ts')
