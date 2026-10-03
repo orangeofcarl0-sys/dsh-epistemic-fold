@@ -362,6 +362,16 @@ window.__ModuleLoader__.load({
                 raw: status.archivedTokens,
                 hint: 'Tokens the folds moved off the surface; still recoverable by recall',
               }),
+              // How many ITEMS the folds took off the surface. The token figure
+              // says how much; this says how much STUFF, which is the other half
+              // of "what did folding do to my session". Not "messages": a folded
+              // region carries user messages, assistant messages and tool
+              // results, and a real session measured 48 + 82 + 81 = 211.
+              jsx.jsx(Row, {
+                label: translate('archivedItems'),
+                value: status.archivedItems,
+                hint: 'Messages and tool results the folds moved off the surface',
+              }),
               // CURRENT, not lifetime. RC4-A found this row rendering
               // `folds + roots` — a lifetime total — under a label that claims
               // the surface right now, which is the conflation RC2.1 corrected
@@ -488,6 +498,7 @@ window.__ModuleLoader__.load({
         occupancy: 'Of window',
         archived: 'Archived history',
         archivedTokens: 'Archived tokens',
+        archivedItems: 'Archived items',
         checkpointsNow: 'Checkpoints now',
         folds: 'Folds (lifetime)',
         leafFolds: 'Leaf folds',
@@ -522,6 +533,7 @@ window.__ModuleLoader__.load({
         occupancy: '占窗口',
         archived: '归档历史',
         archivedTokens: '归档 token',
+        archivedItems: '归档条目',
         checkpointsNow: '当前检查点',
         folds: '折叠（累计）',
         leafFolds: '叶折叠',

@@ -42,6 +42,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { epistemicFoldStatusProjection, reduceStatusEvent } from '../src/status-projection.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 
@@ -229,6 +230,7 @@ function statusView(overrides: Record<string, unknown> = {}): Record<string, unk
     mode: 'economy',
     isTier: true,
     archivedTokens: 0,
+    archivedItems: 0,
     folds: 0,
     roots: 0,
     currentCheckpoints: 0,
@@ -502,6 +504,48 @@ describe('RC19: the panel is readable at a glance', () => {
     expect(text).toContain('当前上下文')
     expect(text).toContain('归档历史')
     expect(text).not.toContain('Current context')
+  })
+
+  it('counts the archived items, from the event rather than the bundle store', () => {
+    // RC20: this row was believed unreachable — "the count only exists in the
+    // bundle store, which a pure fold cannot read" — and that was wrong. The
+    // `compaction/summary` event carries `shadowedSeqs`, and DSH's own UI
+    // derives its count the same way. 211 items on a real session were 48 user
+    // messages + 82 assistant messages + 81 tool results, which is why the label
+    // says ITEMS and not "messages".
+    const text = renderPanel({
+      projections: {
+        [STATUS_KEY]: statusView({ archivedTokens: 133_254, archivedItems: 211 }),
+      },
+    })
+    expect(text).toContain('Archived items')
+    expect(text).toContain('211')
+  })
+
+  it('does not count a malformed shadowedSeqs, and never renders NaN', () => {
+    // The fold applies DSH's own validity rule — every entry a non-negative safe
+    // integer — so a malformed array contributes NOTHING rather than a wrong
+    // number. A `length`-only implementation would report 2 for `['a','b']`.
+    const unit = epistemicFoldStatusProjection({ mode: 'economy' })
+    const summary = (shadowedSeqs: unknown) => ({
+      type: 'compaction/summary', seq: 1, time: 0,
+      data: { shadowedTokenCount: 10, shadowedSeqs, summary: [] },
+    }) as never
+
+    const good = reduceStatusEvent(unit.init(), summary([1, 2, 3]))
+    expect(good.archivedItems).toBe(3)
+
+    const bad = reduceStatusEvent(good, summary(['a', 'b']))
+    expect(bad.archivedItems, 'a malformed array must not inflate the count').toBe(3)
+
+    const negative = reduceStatusEvent(good, summary([1, -1]))
+    expect(negative.archivedItems).toBe(3)
+
+    const absent = reduceStatusEvent(good, summary(undefined))
+    expect(absent.archivedItems).toBe(3)
+    // The token figure still accumulates: the two are independent readings of
+    // the same event, and a bad seq list must not suppress a good token count.
+    expect(absent.archivedTokens).toBe(20)
   })
 
   it('falls back to English when no locale service is mounted', () => {

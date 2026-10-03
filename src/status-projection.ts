@@ -21,6 +21,7 @@
  *   ------                     ------------
  *   mode                       the config, seeded at init
  *   archivedTokens             Σ `compaction/summary`.shadowedTokenCount
+ *   archivedItems              Σ `compaction/summary`.shadowedSeqs.length
  *   folds / roots              `compaction/end` and `compaction/start` pairing
  *   recalls / searches         `tool/call` names
  *   cost                       Σ `assistant/message` usage, priced at view time
@@ -70,6 +71,14 @@ export interface FoldStatusState {
   readonly mode: FoldModeName
   /** Σ shadowedTokenCount over every fold — the meter's own number. */
   readonly archivedTokens: number
+  /**
+   * Σ `shadowedSeqs.length` over every fold: how many items left the surface.
+   *
+   * Not messages only — a folded region carries user messages, assistant
+   * messages and tool results, so the label must say ITEMS. Measured on a real
+   * session: 211 items = 48 user + 82 assistant + 81 tool results.
+   */
+  readonly archivedItems: number
   /** Leaf folds that have completed (LIFETIME). */
   readonly folds: number
   /** Root rebases that have completed (LIFETIME). */
@@ -131,6 +140,8 @@ export interface FoldStatusView {
   /** Whether the mode names a product tier (vs the engine default). */
   readonly isTier: boolean
   readonly archivedTokens: number
+  /** Items the folds took off the surface: messages and tool results together. */
+  readonly archivedItems: number
   readonly folds: number
   readonly roots: number
   readonly currentCheckpoints: number
@@ -169,6 +180,7 @@ export interface FoldStatusView {
 const stateSchema = z.looseObject({
   mode: z.string(),
   archivedTokens: z.number(),
+  archivedItems: z.number(),
   folds: z.number(),
   roots: z.number(),
   currentCheckpoints: z.number(),
@@ -190,6 +202,7 @@ const viewSchema = z.looseObject({
   mode: z.string(),
   isTier: z.boolean(),
   archivedTokens: z.number(),
+  archivedItems: z.number(),
   folds: z.number(),
   roots: z.number(),
   currentCheckpoints: z.number(),
@@ -223,6 +236,24 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       // rather than recomputed: the archive only grows, and re-deriving it
       // would need the bundle store, which a pure fold cannot read.
       const archivedTokens = state.archivedTokens + numberOf(event.data, 'shadowedTokenCount')
+      // RC20: how many ITEMS the fold took off the surface.
+      //
+      // This was believed unreachable — "the count only exists in the bundle
+      // store, which a pure fold cannot read" — and that was wrong. The event
+      // carries `shadowedSeqs`, the seq of every node in the folded region, and
+      // DSH's own UI derives its count the same way
+      // (`ui-chat/.../conversation-nodes/command.ts`: `data.shadowedSeqs.length`).
+      //
+      // Counted, not summed from a field, so a malformed array cannot inflate
+      // it: every entry must be a non-negative safe integer, exactly the
+      // validity rule DSH applies. A summary that fails the check contributes
+      // nothing rather than a wrong number.
+      const seqs = (event.data as { shadowedSeqs?: unknown }).shadowedSeqs
+      const archivedItems = state.archivedItems
+        + (Array.isArray(seqs)
+          && seqs.every(seq => Number.isSafeInteger(seq) && (seq as number) >= 0)
+          ? seqs.length
+          : 0)
       // Leaf vs root is read from EF's OWN marker inside the checkpoint body,
       // which is the same identity the frontier uses. Counting here rather than
       // at `compaction/end` keeps the classification with the text that carries
@@ -234,6 +265,7 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       return {
         ...state,
         archivedTokens,
+        archivedItems,
         folds: state.folds + (root ? 0 : 1),
         roots: state.roots + (root ? 1 : 0),
         // A leaf checkpoint JOINS the frozen prefix, so the surface gains one.
@@ -373,6 +405,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
   const empty = (): FoldStatusState => ({
     mode: modeNow(),
     archivedTokens: 0,
+    archivedItems: 0,
     folds: 0,
     roots: 0,
     currentCheckpoints: 0,
@@ -396,7 +429,9 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     stateSchema: stateSchema as unknown as ZodType<FoldStatusState>,
     // Bumped when the state fields or their fold semantics change, so persisted
     // rows from an older unit are discarded rather than forward-applied.
-    stateVersion: 2,
+    // 3: `archivedItems` joined the state, so a row persisted at 2 lacks it and
+    // would forward-apply as `undefined` rather than as a count.
+    stateVersion: 3,
     init: empty,
     apply: reduceStatusEvent,
     wire: {
@@ -427,6 +462,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
           mode,
           isTier: isTierModeName(mode),
           archivedTokens: state.archivedTokens,
+          archivedItems: state.archivedItems,
           folds: state.folds,
           roots: state.roots,
           currentCheckpoints: state.currentCheckpoints,

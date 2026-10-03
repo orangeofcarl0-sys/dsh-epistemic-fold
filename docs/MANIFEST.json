@@ -233,5 +233,10 @@
     "file": "45_RC19_PANEL_READABILITY.md",
     "bytes": 5675,
     "sha256": "1a599c4fecbdadea406f9b5bb4c86135f4c76eb2b90dbf45c0d1675c8af9e399"
+  },
+  {
+    "file": "46_RC20_ARCHIVED_ITEM_COUNT.md",
+    "bytes": 3735,
+    "sha256": "24ecd788856f613014bd59f11f89d4e7dcfe9c1000e8ac381a012543f58d860b"
   }
 ]
