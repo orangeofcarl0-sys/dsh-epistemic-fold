@@ -18,6 +18,10 @@
 
 [English](README.md) · [使用指南](docs/USER_GUIDE.md) · [架构](docs/ARCHITECTURE.md) · [研究归档](docs/README.md)
 
+![Epistemic Fold Sidebar 面板：模式、相对窗口的上下文压力、归档历史、累计折叠次数、检索活动与实测供应商用量](docs/assets/sidebar-panel.png)
+
+*来自真实会话的真实渲染。Sidebar 读取与 `/context status` 相同的 status projection，且不进入模型 prompt——未知值显示为 `—`，绝不伪造为 0。*
+
 ---
 
 ## 问题

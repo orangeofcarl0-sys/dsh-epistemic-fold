@@ -154,12 +154,29 @@ describe('RC3: the package declares a real plugin entry', () => {
     for (const name of ['README.md', 'README.zh.md']) {
       const text = await readFile(join(ROOT, name), 'utf8')
 
-      // Every badge image must be linked — an unlinked badge cannot be acted on.
-      const images = text.match(/!\[[^\]]*\]\(([^)]+)\)/gu) ?? []
-      expect(images.length, `${name} must carry the header badges`).toBe(5)
+      // Exactly five badges, each one linked, all of them in the HEADER.
+      //
+      // Scoped to the header rather than to the whole file because the README
+      // also carries a screenshot: counting every image made a product shot
+      // indistinguishable from a dropped badge. The fix is to assert where
+      // badges live, not to loosen the number — a `>= 5` would let one be
+      // deleted silently, which is the failure this check exists to catch.
+      const header = text.split(/\n## /u)[0] ?? ''
+      const badges = [...header.matchAll(/\[!\[[^\]]*\]\(([^)]*)\)\]\(([^)]+)\)/gu)]
+      expect(badges.length, `${name} must carry exactly five header badges`).toBe(5)
 
-      const links = [...text.matchAll(/\[!\[[^\]]*\]\([^)]*\)\]\(([^)]+)\)/gu)].map(m => m[1]!)
-      expect(links.length, `every badge in ${name} must be a link`).toBe(5)
+      // And they must stay ABOVE every other image. A badge demoted below the
+      // screenshot is no longer a header badge, and a count taken anywhere in
+      // the file would not notice the move. A badge is an image immediately
+      // preceded by `[` (it is wrapped in a link); the screenshot is not.
+      const images = [...text.matchAll(/(\[?)!\[[^\]]*\]\(([^)]+)\)/gu)]
+      const firstPlainImage = images.findIndex(match => match[1] !== '[')
+      expect(
+        firstPlainImage === -1 || firstPlainImage >= badges.length,
+        `${name} must keep its five badges above every other image`,
+      ).toBe(true)
+
+      const links = badges.map(match => match[2]!)
 
       for (const target of links) {
         if (target.startsWith('#')) {

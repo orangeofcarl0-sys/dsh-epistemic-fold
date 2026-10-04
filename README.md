@@ -20,6 +20,10 @@ observable.
 
 [中文](README.zh.md) · [User guide](docs/USER_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Research archive](docs/README.md)
 
+![The Epistemic Fold Sidebar panel: mode, context pressure against the window, archived history, lifetime fold counts, retrieval activity, and measured provider usage](docs/assets/sidebar-panel.png)
+
+*A real render from a live session. The Sidebar reads the same status projection as `/context status` and never enters the model prompt — unknown values show as `—`, never as a fabricated zero.*
+
 ---
 
 ## The problem
