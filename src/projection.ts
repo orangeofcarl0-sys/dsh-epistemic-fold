@@ -51,6 +51,10 @@ const currentStateSchema = z.looseObject({
   evidence: z.record(z.string(), anchorSchema),
   retiredCount: z.number(),
   objective: anchorSchema.optional(),
+  // The revision chain. Optional in the SCHEMA even though it is required in
+  // the type: a row written before this field existed must still validate, and
+  // `stateVersion` below is what decides whether such a row is reused at all.
+  superseded: z.record(z.string(), anchorSchema).optional(),
 })
 
 /**
@@ -61,7 +65,17 @@ const currentStateSchema = z.looseObject({
 export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.current', FoldCurrentState> = {
   key: EF_CURRENT_STATE_KEY,
   stateSchema: currentStateSchema as unknown as ZodType<FoldCurrentState>,
-  stateVersion: 1,
+  /**
+   * BUMPED 1 -> 2 when `superseded` was added.
+   *
+   * The projection contract is explicit: raise this whenever the serialized
+   * state fields or the fold semantics change, so a persisted row from an older
+   * unit is DISCARDED and re-folded rather than forward-applied. A version-1
+   * row has no `superseded` map, and reusing it would leave the chain silently
+   * empty — a state that looks valid and has quietly lost the thing this field
+   * was added to carry.
+   */
+  stateVersion: 2,
   init: () => emptyCurrentState(),
   apply: (state, event: SessionEvent) => reduceEvent(state, event),
 }

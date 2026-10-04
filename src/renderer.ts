@@ -13,10 +13,27 @@ import { canonicalHash } from './hash.ts'
 import { stateKeyText } from './state.ts'
 import type { Anchor, FoldCurrentState } from './state.ts'
 
+/**
+ * One state line: `- [<kind> <id> <stateKey>] <value> (<authority>)`.
+ *
+ * The ID is carried so the model can NAME an anchor it wants acted on — the
+ * same reason `failureLine` has always carried one, where recall and the
+ * evaluation oracles key on it. Before this, only failures were addressable: a
+ * model that wanted to revise or retire a constraint could describe it but not
+ * refer to it, so "confirm this change" had nothing to point at.
+ *
+ * The bracket order is kind → id → stateKey. The kind stays first so the line
+ * still reads as a classification at a glance, and the stateKey stays last
+ * before the closing bracket because it is the human-readable coordinate.
+ *
+ * `splitLeafCheckpointText` splits on SECTION headers (`\nCurrent\n`), never on
+ * bracket content, so this format is not a parsing contract — which is what
+ * lets the id be added without a reader change.
+ */
 function anchorLine(anchor: Anchor): string {
   const key = anchor.stateKey === undefined ? '' : ` ${stateKeyText(anchor.stateKey)}`
   const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
-  return `- [${anchor.kind}${key}] ${value} (${anchor.authority})`
+  return `- [${anchor.kind} ${anchor.id}${key}] ${value} (${anchor.authority})`
 }
 
 /**

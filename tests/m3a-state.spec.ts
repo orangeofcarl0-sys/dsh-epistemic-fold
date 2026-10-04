@@ -14,7 +14,7 @@ import {
 } from '../src/state.ts'
 import type { Anchor, EventRef, StateKey } from '../src/state.ts'
 import { registerEpistemicFoldProjection, currentFoldState } from '../src/projection.ts'
-import { renderStructuredCheckpoint } from '../src/renderer.ts'
+import { projectForCheckpoint, renderStructuredCheckpoint } from '../src/renderer.ts'
 import {
   conversation,
   createHarness,
@@ -34,10 +34,16 @@ function anchor(options: {
   authority: Anchor['authority']
   sourceRefs: readonly EventRef[]
   failureState?: Anchor['failureState']
+  /**
+   * Explicit identity, when a test needs to NAME an anchor (asserting a
+   * supersession chain, or that a rendered line is addressable). Generated
+   * otherwise, so unrelated tests stay unaffected by the counter.
+   */
+  id?: string
 }): Anchor {
   anchorCounter += 1
   return {
-    id: `anchor-${anchorCounter}`,
+    id: options.id ?? `anchor-${anchorCounter}`,
     kind: options.kind,
     ...(options.stateKey === undefined ? {} : { stateKey: options.stateKey }),
     value: options.value,
@@ -168,6 +174,129 @@ describe('S01–S03: constraint survival, poisoning, supersession', () => {
     // The old value remains recoverable from the session log (exact recall).
     const oldEvent = session.eventAt(seq30 as never)
     expect(JSON.stringify(oldEvent!.data)).toContain('30')
+  })
+
+  it('S03b: a supersession leaves a TRACEABLE chain, not just a count', async () => {
+    // THE GAP THIS PINS: the reducer removed the replaced anchor and raised
+    // `retiredCount`, so a consumer could learn that something changed but not
+    // WHAT changed or which anchor replaced it. `supersededBy` existed as a
+    // field and was never written. Without the chain there is no undo, no
+    // `(M_t-1, M_t)` comparison for a preservation check, and no way to answer
+    // "what did this rule used to say".
+    const { ctx } = await createHarness({}, MOUNT)
+    registerEpistemicFoldProjection(ctx)
+    const session = conversation(2)
+
+    const timeout: StateKey = { namespace: 'config', entity: 'server', property: 'timeout' }
+    const seq30 = appendUserText(session, 3, 'set timeout 30')
+    const first = anchor({
+      kind: 'value',
+      id: 'anchor-v1',
+      stateKey: timeout,
+      value: 30,
+      authority: 'normative',
+      sourceRefs: [{ seq: seq30 as never }],
+    })
+    declare(session, first)
+    const seq60 = appendUserText(session, 4, 'set timeout 60')
+    declare(session, anchor({
+      kind: 'value',
+      id: 'anchor-v2',
+      stateKey: timeout,
+      value: 60,
+      authority: 'normative',
+      sourceRefs: [{ seq: seq60 as never }],
+    }))
+
+    const state = currentFoldState(ctx, session)
+    // The head is the new value, and it is the only ACTIVE entry.
+    expect(state.stateHeads[stateKeyText(timeout)]!.id).toBe('anchor-v2')
+    expect(state.retiredCount).toBe(1)
+
+    // The chain: the displaced anchor is retained ONCE, marked superseded, and
+    // points at its replacement.
+    const displaced = state.superseded[stateKeyText(timeout)]
+    expect(displaced).toBeDefined()
+    expect(displaced!.id).toBe('anchor-v1')
+    expect(displaced!.value).toBe(30)
+    expect(displaced!.lifecycle).toBe('superseded')
+    expect(displaced!.supersededBy).toBe('anchor-v2')
+
+    // Bounded by COORDINATE, not by revision count: a third revision replaces
+    // the chain entry rather than growing it.
+    const seq90 = appendUserText(session, 5, 'set timeout 90')
+    declare(session, anchor({
+      kind: 'value',
+      id: 'anchor-v3',
+      stateKey: timeout,
+      value: 90,
+      authority: 'normative',
+      sourceRefs: [{ seq: seq90 as never }],
+    }))
+    const later = currentFoldState(ctx, session)
+    expect(Object.keys(later.superseded)).toEqual([stateKeyText(timeout)])
+    expect(later.superseded[stateKeyText(timeout)]!.id).toBe('anchor-v2')
+    expect(later.superseded[stateKeyText(timeout)]!.supersededBy).toBe('anchor-v3')
+    expect(later.retiredCount).toBe(2)
+  })
+
+  it('S03c: the chain is NOT rendered into any checkpoint body', async () => {
+    // The chain is metadata for programs. A model that sees the old AND the new
+    // value at one coordinate is the ghost-memory confusion this deliberately
+    // keeps out of the prompt — so the renderer must not reach `superseded`,
+    // and this test fails if a future change starts rendering it.
+    const { ctx } = await createHarness({}, MOUNT)
+    registerEpistemicFoldProjection(ctx)
+    const session = conversation(2)
+
+    const timeout: StateKey = { namespace: 'config', entity: 'server', property: 'timeout' }
+    const seq30 = appendUserText(session, 3, 'set timeout 30')
+    declare(session, anchor({
+      kind: 'value', stateKey: timeout, value: 30, authority: 'normative',
+      sourceRefs: [{ seq: seq30 as never }],
+    }))
+    const seq60 = appendUserText(session, 4, 'set timeout 60')
+    declare(session, anchor({
+      kind: 'value', stateKey: timeout, value: 60, authority: 'normative',
+      sourceRefs: [{ seq: seq60 as never }],
+    }))
+
+    const state = currentFoldState(ctx, session)
+    const presentation = projectForCheckpoint(state)
+    const rendered = [
+      ...presentation.current, ...presentation.evidence, ...presentation.open,
+    ].map(candidate => candidate.id)
+    // The displaced anchor appears in NO section.
+    expect(rendered).not.toContain('anchor-v1')
+    // And the body text carries the current value only.
+    const text = renderStructuredCheckpoint(state, 'cp-x')
+    expect(text).toContain('60')
+    expect(text).not.toContain('30')
+  })
+
+  it('S03d: the rendered state line is ADDRESSABLE by id', async () => {
+    // A model that wants to revise or retire an anchor must be able to NAME it.
+    // Failures always carried an id; state anchors did not, so "confirm this
+    // change" had nothing to point at.
+    const { ctx } = await createHarness({}, MOUNT)
+    registerEpistemicFoldProjection(ctx)
+    const session = conversation(2)
+    const seq = appendUserText(session, 3, 'Do not change public API.')
+    declare(session, anchor({
+      kind: 'constraint',
+      id: 'anchor-addressable',
+      stateKey: { namespace: 'scope', entity: 'work', property: 'public-api' },
+      value: 'Do not change public API.',
+      authority: 'normative',
+      sourceRefs: [{ seq: seq as never }],
+    }))
+
+    const text = renderStructuredCheckpoint(currentFoldState(ctx, session), 'cp-x')
+    const line = text.split('\n').find(row => row.includes('constraint'))
+    expect(line).toBeDefined()
+    expect(line, 'the id must be in the bracket, after the kind').toContain('[constraint anchor-addressable')
+    expect(line).toContain('scope/work/public-api')
+    expect(line).toContain('(normative)')
   })
 })
 

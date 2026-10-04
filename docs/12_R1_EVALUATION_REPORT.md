@@ -14,7 +14,7 @@ Baseline: R0-C at `12a5842`. This report covers R1-A (measurement), R1-B
 | Workload | EF folds | EF total | Basic folds | Basic total | Dominant source | Share |
 |---|---:|---:|---:|---:|---|---:|
 | W1-narrative-heavy | 47 | 183132 | 21 | 73689 | `checkpoint-framing` | 64.0% |
-| W2-state-rich | 7 | 102831 | 5 | 83396 | `raw-assistant` | 30.9% |
+| W2-state-rich | 8 | 106949 | 5 | 83396 | `raw-assistant` | 28.5% |
 | W3-tool-heavy | 63 | 322645 | 63 | 87340 | `checkpoint-framing` | 60.6% |
 | W4-recall-heavy | 12 | 100371 | 8 | 72696 | `checkpoint-framing` | 31.3% |
 | W5-multi-agent | 58 | 267286 | 32 | 89531 | `checkpoint-framing` | 62.6% |
@@ -43,13 +43,13 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| raw-assistant | 31735 | 30.9% |
-| raw-user | 26710 | 26.0% |
-| checkpoint-leaf-state | 23083 | 22.4% |
-| checkpoint-framing | 17209 | 16.7% |
-| checkpoint-identity | 2136 | 2.1% |
-| checkpoint-leaf-rationale | 1958 | 1.9% |
-| **total** | **102831** | 100% |
+| raw-assistant | 30490 | 28.5% |
+| checkpoint-leaf-state | 28716 | 26.9% |
+| raw-user | 25480 | 23.8% |
+| checkpoint-framing | 17985 | 16.8% |
+| checkpoint-identity | 2232 | 2.1% |
+| checkpoint-leaf-rationale | 2046 | 1.9% |
+| **total** | **106949** | 100% |
 
 #### W3-tool-heavy
 
@@ -101,7 +101,7 @@ number quoted without its regime would be a threshold artifact.
 | Workload | Aggressive folds | framing | raw history | Realistic folds | framing | raw history |
 |---|---:|---:|---:|---:|---:|---:|
 | W1-narrative-heavy | 47 | 64.0% | 20.8% | 4 | 3.8% | 95.3% |
-| W2-state-rich | 7 | 16.7% | 56.8% | 1 | 0.4% | 98.9% |
+| W2-state-rich | 8 | 16.8% | 52.3% | 1 | 0.4% | 98.8% |
 | W3-tool-heavy | 63 | 60.6% | 25.0% | 9 | 7.8% | 90.4% |
 | W4-recall-heavy | 12 | 31.3% | 30.7% | 2 | 1.0% | 54.7% |
 | W5-multi-agent | 58 | 62.6% | 22.5% | 6 | 5.4% | 93.3% |
@@ -124,11 +124,11 @@ idealization. These are UPPER BOUNDS, not achievements.
 
 | Candidate | W1 | W2 | W3 | W4 | W5 | Risk | Kind |
 |---|---:|---:|---:|---:|---:|---|---|
-| E-delta-oracle | 0.0% | 15.3% | 0.0% | 0.0% | 0.0% | medium | new-mechanism |
+| E-delta-oracle | 0.0% | 18.6% | 0.0% | 0.0% | 0.0% | medium | new-mechanism |
 | E-M1-oracle | 0.0% | 0.0% | 23.3% | 0.0% | 20.6% | high | new-mechanism |
-| E-M5-oracle | 53.3% | 28.6% | 50.6% | 25.5% | 52.2% | high | new-mechanism |
-| E-adaptive-root-oracle | 67.6% | 18.3% | 65.4% | 28.5% | 67.2% | low | policy-change |
-| E-framing-oracle | 60.7% | 11.4% | 58.7% | 25.5% | 60.4% | low | policy-change |
+| E-M5-oracle | 53.3% | 31.8% | 50.6% | 25.5% | 52.2% | high | new-mechanism |
+| E-adaptive-root-oracle | 67.6% | 21.6% | 65.4% | 28.5% | 67.2% | low | policy-change |
+| E-framing-oracle | 60.7% | 11.7% | 58.7% | 25.5% | 60.4% | low | policy-change |
 
 ### Idealization assumptions
 
@@ -194,7 +194,7 @@ Dominated (some frontier policy is at least as good everywhere):
 | Policy | Effective cost | Peak context | Task success |
 |---|---:|---:|---:|
 | W1-narrative-heavy EF | 183132.0000 | 5986 | 100.0% |
-| W2-state-rich EF | 102831.0000 | 2396 | 100.0% |
+| W2-state-rich EF | 106949.0000 | 2390 | 100.0% |
 | W3-tool-heavy EF | 322645.0000 | 8804 | 100.0% |
 | W4-recall-heavy EF | 100371.0000 | 2355 | 100.0% |
 | W5-multi-agent EF | 267286.0000 | 7817 | 100.0% |

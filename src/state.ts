@@ -7,8 +7,15 @@
  * Boundedness model: the state faces hold ONLY current entries. A superseded
  * head is replaced in place and its old anchor leaves every face it occupied;
  * `retiredCount` is the single counter for every anchor that left hot state
- * (by supersession, verification, or explicit retirement). History remains
- * recoverable from the session log and bundles, never from hot state.
+ * (by supersession, verification, or explicit retirement). Full history remains
+ * recoverable from the session log and bundles.
+ *
+ * The ONE bounded exception is `superseded`: the immediately-previous anchor at
+ * each state coordinate, so a revision is traceable rather than merely counted.
+ * It is bounded by the number of coordinates (one entry each), not by the
+ * number of revisions, and it is deliberately NOT rendered into any checkpoint
+ * — a model that sees both the old and the new value at one coordinate is
+ * exactly the ghost-memory confusion this keeps out of the prompt.
  *
  * @module dsh-epistemic-fold/state
  */
@@ -87,6 +94,24 @@ export interface FoldCurrentState {
   readonly evidence: Record<string, Anchor>
   /** Every anchor that has left hot state (superseded, verified, retired). */
   readonly retiredCount: number
+  /**
+   * The immediately-previous anchor at each state coordinate, keyed by
+   * `stateKeyText`.
+   *
+   * This is what makes a revision TRACEABLE rather than merely counted. Without
+   * it, a replaced anchor left hot state and `retiredCount` went up, so a
+   * consumer could learn that something changed but not what it was or which
+   * anchor replaced it — no undo, no `(M_t-1, M_t)` comparison for a
+   * preservation check, and no way to answer "what did this rule used to say".
+   *
+   * BOUNDED by coordinate, not by revision count: one entry per state key, the
+   * latest displacement. Unbounded history is what the session log is for.
+   *
+   * NOT RENDERED. Checkpoint bodies present only current state; showing a
+   * superseded value alongside its replacement is the failure the memory
+   * literature calls ghost memory.
+   */
+  readonly superseded: Record<string, Anchor>
 }
 
 /** The empty state for a fresh (or restored) session fold. */
@@ -99,6 +124,7 @@ export function emptyCurrentState(): FoldCurrentState {
     decisions: {},
     evidence: {},
     retiredCount: 0,
+    superseded: {},
   }
 }
 
@@ -197,13 +223,23 @@ function applyAnchorOp(state: FoldCurrentState, data: EfAnchorEventData): FoldCu
     }
     const key = stateKeyText(anchor.stateKey)
     const previous = state.stateHeads[key]
-    // The new head replaces the old in place; the old anchor leaves hot
-    // state entirely (faces included) — history stays in the session log.
+    // The new head replaces the old in place; the old anchor leaves hot state
+    // entirely (faces included) — full history stays in the session log.
+    //
+    // What is NOT lost is the LINK: the displaced anchor is kept once per
+    // coordinate with `supersededBy` set, so the revision is traceable. That is
+    // the difference between "something changed here" (a counter) and "C2
+    // replaced C1" (a chain), and it is what a preservation check or an undo
+    // needs. It is metadata only — no renderer reads it.
     const replaced = previous !== undefined && previous.id !== anchor.id
     let next = indexAnchor(state, anchor)
     if (replaced) {
       next = removeFace(next, previous)
-      next = { ...next, retiredCount: next.retiredCount + 1 }
+      next = {
+        ...next,
+        retiredCount: next.retiredCount + 1,
+        superseded: { ...next.superseded, [key]: { ...previous, lifecycle: 'superseded', supersededBy: anchor.id } },
+      }
     }
     return next
   }
