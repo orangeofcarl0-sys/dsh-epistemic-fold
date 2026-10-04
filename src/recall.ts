@@ -9,6 +9,8 @@
 
 import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionId } from '@deepseek-ai/dsh-session'
+import { describeRefFailure, resolveArchiveRefs, resolveArchiveRefsFromLog } from './archive-refs.ts'
+import type { EventSource, LogReader, ResolveResult } from './archive-refs.ts'
 import { normalizeCheckpointRef } from './checkpoint-marker.ts'
 import type { CheckpointBundleV1, FoldBundleStore, RecallPage } from './types.ts'
 
@@ -33,6 +35,12 @@ export interface RecallResult {
 /**
  * Serve one recall request from the bundle store. Every result is bounded;
  * corruption and absence are explicit statuses rather than crashes (D-015).
+ *
+ * `source` is needed only by REFERENTIAL bundles, whose archive is a ref list
+ * rather than stored bytes. A caller that has the session in hand passes
+ * `sessionEventSource(session)`; resolution then costs no I/O. Without it, a
+ * referential bundle reports `unavailable` instead of guessing — serving the
+ * wrong bytes under a checkpoint id would be worse than serving none.
  */
 export async function recall(options: {
   store: FoldBundleStore
@@ -42,6 +50,8 @@ export async function recall(options: {
   depth?: RecallDepth
   offset?: number
   limit?: number
+  /** Where to resolve referential archives from; see the note above. */
+  source?: EventSource
 }): Promise<RecallResult | null> {
   const { store, sessionId } = options
   const checkpointId = normalizeCheckpointRef(options.checkpointId)
@@ -77,7 +87,16 @@ export async function recall(options: {
     }
   }
   // exact: paginated over the archived messages.
-  const messages = bundle.archive.shadowedMessages
+  const resolved = archiveMessages(bundle, options.source)
+  if (resolved.status === 'unresolved') {
+    return {
+      checkpointId,
+      mode: bundle.mode,
+      depth: 'exact',
+      unavailable: describeRefFailure(resolved.failures),
+    }
+  }
+  const messages = resolved.messages
   const offset = Math.max(0, Math.min(options.offset ?? 0, messages.length))
   const limit = Math.min(Math.max(1, options.limit ?? EXACT_PAGE_LIMIT), EXACT_PAGE_LIMIT)
   const page: RecallPage = {
@@ -88,6 +107,119 @@ export async function recall(options: {
     ...(offset + limit < messages.length ? { nextOffset: offset + limit } : {}),
   }
   return { checkpointId, mode: bundle.mode, depth: 'exact', page }
+}
+
+/**
+ * Recall a checkpoint belonging to ANOTHER session, by opening its stored log.
+ *
+ * EXPERIMENTAL and gated (`allowCrossSessionRecall`, default off). Recall is
+ * session-scoped by construction — `FoldBundleStore.read` refuses a foreign
+ * session — so serving one needs two things the default path does not: an
+ * ownership lookup, and a log to resolve refs against.
+ *
+ * The ordering is deliberate: a checkpoint belonging to the CALLING session is
+ * never served through here, so enabling the experiment cannot change what an
+ * ordinary recall returns. It only adds an answer for refs that would otherwise
+ * be "not found".
+ *
+ * @param options.requesting - the session doing the recall; its own checkpoints
+ *   are refused here so the caller's normal path stays authoritative.
+ * @param options.logReader - the persistence service, when the host has one.
+ * @returns the result, or `null` when no session owns the checkpoint.
+ */
+export async function recallForeign(options: {
+  store: FoldBundleStore
+  requesting: SessionId
+  logReader: LogReader | undefined
+  checkpointId: string
+  depth?: RecallDepth
+  offset?: number
+  limit?: number
+  signal?: AbortSignal
+}): Promise<RecallResult | null> {
+  const checkpointId = normalizeCheckpointRef(options.checkpointId)
+  const owner = await options.store.findSessionOf?.(checkpointId)
+  if (owner === undefined) return null
+  if (owner === options.requesting) {
+    // The caller's own checkpoint: the ordinary path already handled it (or
+    // found it missing), and re-serving it here would let a store that answers
+    // inconsistently produce two different answers for one ref.
+    return null
+  }
+  const verification = await options.store.verify(owner, checkpointId)
+  if (verification.status === 'missing') return null
+  if (verification.status === 'corrupt') {
+    return {
+      checkpointId,
+      mode: 'unknown',
+      depth: options.depth ?? 'summary',
+      unavailable: `bundle corrupt: ${verification.reason}`,
+    }
+  }
+  const bundle = verification.bundle
+  const depth = options.depth ?? 'summary'
+  if (depth === 'summary') {
+    return { checkpointId, mode: bundle.mode, depth, text: bundle.rendered.text }
+  }
+  if (depth === 'detail') {
+    return {
+      checkpointId,
+      mode: bundle.mode,
+      depth,
+      text: bundle.semantic?.text ?? bundle.rendered.text,
+    }
+  }
+  // exact: an inline archive is already here; a referential one is resolved
+  // from the owner's stored log, range-read rather than replayed.
+  const resolved = bundle.archive.shadowedMessages !== undefined
+    ? { status: 'resolved' as const, messages: bundle.archive.shadowedMessages }
+    : await resolveArchiveRefsFromLog(
+      options.logReader,
+      owner,
+      bundle.archive.refs,
+      options.signal,
+    )
+  if (resolved.status === 'unresolved') {
+    return {
+      checkpointId,
+      mode: bundle.mode,
+      depth: 'exact',
+      unavailable: describeRefFailure(resolved.failures),
+    }
+  }
+  const messages = resolved.messages
+  const offset = Math.max(0, Math.min(options.offset ?? 0, messages.length))
+  const limit = Math.min(Math.max(1, options.limit ?? EXACT_PAGE_LIMIT), EXACT_PAGE_LIMIT)
+  return {
+    checkpointId,
+    mode: bundle.mode,
+    depth: 'exact',
+    page: {
+      checkpointId,
+      totalMessages: messages.length,
+      offset,
+      messages: messages.slice(offset, offset + limit),
+      ...(offset + limit < messages.length ? { nextOffset: offset + limit } : {}),
+    },
+  }
+}
+
+/**
+ * The archived messages of a bundle, from bytes or from refs.
+ *
+ * One place decides this so every reader agrees: an inline archive is its own
+ * answer, and a referential one is resolved (and digest-verified) or reported
+ * unresolved. Returns a result rather than a possibly-empty array, because an
+ * empty array is a legitimate archive and must not be confused with a failure
+ * to obtain one.
+ */
+export function archiveMessages(
+  bundle: CheckpointBundleV1,
+  source: EventSource | undefined,
+): ResolveResult {
+  const inline = bundle.archive.shadowedMessages
+  if (inline !== undefined) return { status: 'resolved', messages: inline }
+  return resolveArchiveRefs(bundle.archive.refs, source)
 }
 
 /**
@@ -254,6 +386,8 @@ export async function search(options: {
   sessionId: SessionId
   query: string
   limit?: number
+  /** Where to resolve referential archives from; see `recall`. */
+  source?: EventSource
 }): Promise<SearchHit[]> {
   const query = options.query.trim()
   if (query.length === 0) return []
@@ -266,7 +400,13 @@ export async function search(options: {
   for (const descriptor of bundles) {
     const bundle = await options.store.read(options.sessionId, descriptor.checkpointId)
     if (bundle === null) continue
-    const location = locate(bundle, query)
+    // A referential bundle needs its archive resolved before it can be
+    // searched: the bytes to match against are not in the file. An unresolvable
+    // one is skipped rather than reported as "no match", because those are
+    // different claims and only one of them is true.
+    const resolved = archiveMessages(bundle, options.source)
+    if (resolved.status === 'unresolved') continue
+    const location = locate(bundle, resolved.messages, query)
     if (location !== null) matched.push({ bundle, location })
   }
   // ORDER FIRST, THEN LIMIT (RC1.3.1). The store lists bundles in ascending
@@ -289,7 +429,7 @@ export async function search(options: {
         : { earliestMatchedMessageIndex: location.earliestMessageIndex }),
       matchCount: location.matchCount,
       ...(location.excerpt === undefined ? {} : { excerpt: location.excerpt }),
-      archiveMessages: bundle.archive.shadowedMessages.length,
+      archiveMessages: bundle.archive.messageCount,
       ...(range === undefined ? {} : { sourceRange: range }),
     }
   })
@@ -320,14 +460,15 @@ interface MatchLocation {
  *    excerpt, which reads as the current answer.
  */
 function locate(
-  bundle: { checkpointId: string; rendered: { text: string }; archive: { shadowedMessages: readonly Message[] } },
+  bundle: { checkpointId: string; rendered: { text: string } },
+  archiveMessages: readonly Message[],
   query: string,
 ): MatchLocation | null {
   if (bundle.checkpointId === normalizeCheckpointRef(query)) {
     return { kind: 'id', matchCount: 1 }
   }
   const needle = query.toLowerCase()
-  const archive = locateInArchive(bundle.archive.shadowedMessages, needle)
+  const archive = locateInArchive(archiveMessages, needle)
   if (archive !== null) return archive
   if (bundle.rendered.text.toLowerCase().includes(needle)) {
     return { kind: 'checkpoint-text', matchCount: 1, excerpt: excerptAround(bundle.rendered.text, needle) }

@@ -106,9 +106,27 @@ export class FileBundleStore implements FoldBundleStore {
     if (bundle.checkpointId !== checkpointId) {
       return { status: 'corrupt', reason: 'stored checkpointId does not match the requested id' }
     }
-    const logical = canonicalHash(bundle.archive.shadowedMessages)
-    if (logical !== bundle.archive.logicalHash) {
-      return { status: 'corrupt', reason: 'archive logical hash mismatch' }
+    // Structural integrity of the archive, in BOTH forms.
+    //
+    // Inline: the messages are here, so the logical hash is checkable directly.
+    // Referential: the messages are not here, so only the refs' SHAPE is
+    // checkable at this layer — their content is verified when they are
+    // resolved against a log (`resolveArchiveRefs`), because only there do the
+    // bytes exist. Claiming more than that here would be a check that cannot
+    // fail, which is worse than an honest limit.
+    const inline = bundle.archive.shadowedMessages
+    if (inline !== undefined) {
+      if (inline.length !== bundle.archive.messageCount) {
+        return { status: 'corrupt', reason: 'archive messageCount disagrees with the stored messages' }
+      }
+      if (canonicalHash(inline) !== bundle.archive.logicalHash) {
+        return { status: 'corrupt', reason: 'archive logical hash mismatch' }
+      }
+    } else if (bundle.archive.refs.length !== bundle.archive.messageCount) {
+      // The refs ARE the archive's identity here, so their count must match the
+      // declared span length. A referential bundle with no refs is not "empty",
+      // it is broken — and it would otherwise resolve to a silent empty page.
+      return { status: 'corrupt', reason: 'referential archive refs disagree with messageCount' }
     }
     const rendered = canonicalHash(bundle.rendered.text)
     if (rendered !== bundle.rendered.digest) {
@@ -162,6 +180,32 @@ export class FileBundleStore implements FoldBundleStore {
     } catch {
       return null
     }
+  }
+
+  /**
+   * Which session owns this checkpoint, or `undefined`.
+   *
+   * Scans the per-session directories rather than keeping an index: the store is
+   * a directory tree by design (R0-B), an index would be a second thing to keep
+   * consistent with it, and this path is experimental and off by default. A
+   * deployment with very many sessions should not enable the experiment.
+   */
+  async findSessionOf(checkpointId: string): Promise<SessionId | undefined> {
+    let names: string[]
+    try {
+      names = await readdir(this.root)
+    } catch {
+      return undefined
+    }
+    for (const name of names) {
+      try {
+        await stat(bundlePath(this.root, name, checkpointId))
+      } catch {
+        continue
+      }
+      return name as SessionId
+    }
+    return undefined
   }
 
   /** Read one bundle file; unreadable or undecodable files read as absent. */

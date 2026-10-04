@@ -71,6 +71,9 @@ describe('R2-B: config surface', () => {
     expect(keys).toContain('semanticMode')
     expect(keys).toContain('bundleRoot')
     expect(keys).toContain('frozenCheckpointTokenBudget')
+    // The two experimental switches are EF-owned too, and must not reach Basic.
+    expect(keys).toContain('referentialArchive')
+    expect(keys).toContain('allowCrossSessionRecall')
     // Constructing with every EF key set must not throw.
     expect(() => resolveEfConfig({
       leafAdmission: 'economic',
@@ -79,7 +82,36 @@ describe('R2-B: config surface', () => {
       semanticMode: 'none',
       bundleRoot: '/tmp/x',
       frozenCheckpointTokenBudget: 1_000,
+      referentialArchive: true,
+      allowCrossSessionRecall: true,
     })).not.toThrow()
+  })
+
+  it('both experimental switches default OFF', () => {
+    // Default-off is the whole safety story: enabling either one moves a
+    // failure mode, so an unconfigured deployment must not get it by accident.
+    const resolved = resolveEfConfig({})
+    expect(resolved.referentialArchive).toBe(false)
+    expect(resolved.allowCrossSessionRecall).toBe(false)
+  })
+
+  it('the experimental switches are strict booleans', () => {
+    // A typo like `referentialArchive: "true"` must fail loudly rather than
+    // silently reading as enabled.
+    expect(() => resolveEfConfig({ referentialArchive: 'true' as never }))
+      .toThrow(/referentialArchive must be a boolean/u)
+    expect(() => resolveEfConfig({ allowCrossSessionRecall: 1 as never }))
+      .toThrow(/allowCrossSessionRecall must be a boolean/u)
+  })
+
+  it('a preset tier does not turn the experiments on', () => {
+    // The tiers fill policy keys; they must never enable an experimental
+    // storage mode, or picking `economy` would change how bundles are written.
+    for (const mode of ['economy', 'balanced', 'quality', 'legacy'] as const) {
+      const resolved = resolveEfConfig({ mode })
+      expect(resolved.referentialArchive, `${mode} must not enable referentialArchive`).toBe(false)
+      expect(resolved.allowCrossSessionRecall, `${mode} must not enable cross-session`).toBe(false)
+    }
   })
 })
 

@@ -34,9 +34,22 @@ export interface FoldCandidate {
   readonly compactionId?: CompactionId
 }
 
+/**
+ * One archived message's identity: where it came from, and what it must be.
+ *
+ * `digest` is `canonicalHash` over the DERIVED message at `seq`, not over the
+ * raw event. The archive stores derived messages (that is what the model saw),
+ * so a ref that hashed the raw event would not detect a change in the
+ * derivation rule — the exact drift this field exists to catch.
+ */
+export interface ArchiveRef {
+  readonly seq: SessionSeq
+  /** `canonicalHash` of the derived message this position must still produce. */
+  readonly digest: string
+}
+
 /** Canonical checkpoint bundle: written once, never mutated, hash-verified. */
-export interface CheckpointBundleV1 {
-  readonly format: 'ef-checkpoint'
+export interface CheckpointBundleV1 {  readonly format: 'ef-checkpoint'
   readonly formatVersion: 1
 
   readonly checkpointId: string
@@ -53,10 +66,39 @@ export interface CheckpointBundleV1 {
   }
 
   readonly archive: {
-    /** Model-visible messages of the shadowed span (system head excluded). */
-    readonly shadowedMessages: readonly Message[]
-    /** SHA-256 over the canonical JSON of `shadowedMessages`. */
+    /**
+     * Model-visible messages of the shadowed span (system head excluded).
+     *
+     * ABSENT when the bundle was written in referential form
+     * (`referentialArchive`), where the exact history is identified by `refs`
+     * and recovered from the session log on demand. Absence is meaningful and
+     * never means "the fold covered nothing": `messageCount` and `logicalHash`
+     * are present either way.
+     */
+    readonly shadowedMessages?: readonly Message[]
+    /**
+     * How many messages the fold archived, whether or not their bytes are here.
+     * A referential bundle still knows its span's length, which is what a
+     * reader needs before deciding whether to resolve it.
+     */
+    readonly messageCount: number
+    /**
+     * SHA-256 over the canonical JSON of the archived messages. Present in both
+     * forms, and it is the authority in both: a resolved reference is accepted
+     * only when re-hashing the messages it produced reproduces this value.
+     */
     readonly logicalHash: string
+    /**
+     * Per-message identity refs: which log position, and what that position
+     * must hash to.
+     *
+     * The `digest` is the whole reason a ref can be trusted. A bare seq says
+     * "fetch from here"; `(seq, digest)` says "this position still holds what I
+     * referenced". Without it a later `deriveEventMessage` change, a rewritten
+     * surface, or a migrated log would silently resolve to different content —
+     * which is precisely the corruption a reference scheme must not introduce.
+     */
+    readonly refs: readonly ArchiveRef[]
   }
 
   /** Semantic digest when the summarizer call succeeded; absent on fallback. */
@@ -136,6 +178,19 @@ export interface FoldBundleStore {
   /** Persist the post-commit provenance record (R0-A). */
   recordCommit(record: FoldCommitRecordV1): Promise<void>
   readCommitRecord(sessionId: SessionId, checkpointId: string): Promise<FoldCommitRecordV1 | null>
+  /**
+   * EXPERIMENTAL: which session owns this checkpoint, or `undefined`.
+   *
+   * Exists only for the cross-session recall experiment, which is off by
+   * default. A checkpoint ref (`cp:<id>`) carries no session, and every other
+   * method here is session-scoped by design (R0-A isolation), so a foreign
+   * lookup needs one explicit way to resolve ownership rather than a relaxed
+   * `read`.
+   *
+   * OPTIONAL so a store implementation that does not support the experiment —
+   * including every test double — remains valid.
+   */
+  findSessionOf?(checkpointId: string): Promise<SessionId | undefined>
 }
 
 /**

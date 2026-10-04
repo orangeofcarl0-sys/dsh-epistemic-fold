@@ -71,7 +71,9 @@ function bundleOf(options: {
     },
     archive: {
       shadowedMessages: [...options.messages],
+      messageCount: options.messages.length,
       logicalHash: canonicalHash(options.messages),
+      refs: [],
     },
     rendered: {
       text: options.renderedText,

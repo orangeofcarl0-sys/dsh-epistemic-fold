@@ -178,10 +178,10 @@ describe('R4-A: W4R-NATIVE exercises the real Bundle-backed chain', () => {
     expect(bundles.length).toBeGreaterThan(0)
     const archived = await harness.engine.bundleStore.read(session.id, bundles[0]!.checkpointId)
     expect(archived).not.toBeNull()
-    const archivedText = JSON.stringify(archived!.archive.shadowedMessages)
+    const archivedText = JSON.stringify(archived!.archive.shadowedMessages ?? archived!.archive.refs)
     expect(archivedText).toContain(NATIVE_FACT.marker)
     console.log(
-      `W4R-NATIVE: archived ${archived!.archive.shadowedMessages.length} messages, `
+      `W4R-NATIVE: archived ${archived!.archive.messageCount} messages, `
       + `marker ${NATIVE_FACT.marker} recoverable = ${archivedText.includes(NATIVE_FACT.marker)}`,
     )
   }, 300_000)

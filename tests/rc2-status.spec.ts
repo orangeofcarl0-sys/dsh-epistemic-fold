@@ -60,7 +60,12 @@ describe('RC2: the status model reports every field the directive names', () => 
       measurement: { totalTokens: 12_345, surfaceTokens: 12_345 } as never,
       contextWindow: 131_072,
       foldThreshold: 19_660,
-      bundles: [{ archive: { shadowedMessages: [{ content: [{ type: 'text', text: 'x'.repeat(400) }] }] } }],
+      bundles: [{
+        archive: {
+          shadowedMessages: [{ content: [{ type: 'text', text: 'x'.repeat(400) }] }],
+          messageCount: 1,
+        },
+      }],
       profile: parseEconomicsProfile({
         id: 'p', provider: 'test', modelPattern: '*', asOf: '2026-09-30',
         pricing: { inputMissPerM: 1, inputHitPerM: 0.1, outputPerM: 2 },
@@ -175,7 +180,12 @@ describe('RC2.1: archived tokens are ESTIMATED, not measured', () => {
     const status = buildContextStatus({
       mode: 'economy',
       session: routedSession(),
-      bundles: [{ archive: { shadowedMessages: [{ content: [{ type: 'text', text: 'x'.repeat(400) }] }] } }],
+      bundles: [{
+        archive: {
+          shadowedMessages: [{ content: [{ type: 'text', text: 'x'.repeat(400) }] }],
+          messageCount: 1,
+        },
+      }],
     })
     expect(status.archivedTokens?.basis).toBe('estimated')
     // The count is a count, so it is measured.
@@ -205,10 +215,10 @@ describe('RC2.1: current checkpoints and lifetime folds are separate numbers', (
       session,
       // The store holds many folds...
       bundles: [
-        { mode: 'leaf', archive: { shadowedMessages: [] } },
-        { mode: 'leaf', archive: { shadowedMessages: [] } },
-        { mode: 'leaf', archive: { shadowedMessages: [] } },
-        { mode: 'root', archive: { shadowedMessages: [] } },
+        { mode: 'leaf', archive: { shadowedMessages: [], messageCount: 0 } },
+        { mode: 'leaf', archive: { shadowedMessages: [], messageCount: 0 } },
+        { mode: 'leaf', archive: { shadowedMessages: [], messageCount: 0 } },
+        { mode: 'root', archive: { shadowedMessages: [], messageCount: 0 } },
       ],
     })
     // ...while the surface carries none right now.
@@ -223,7 +233,7 @@ describe('RC2.1: current checkpoints and lifetime folds are separate numbers', (
     const status = buildContextStatus({
       mode: 'economy',
       session: routedSession(),
-      bundles: [{ mode: 'leaf', archive: { shadowedMessages: [] } }],
+      bundles: [{ mode: 'leaf', archive: { shadowedMessages: [], messageCount: 0 } }],
       foldCounts: { leaves: 12, roots: 2 },
     })
     expect(status.folds.leaves.value).toBe(12)

@@ -206,7 +206,11 @@ export interface ContextStatusInput {
    */
   readonly bundles?: readonly {
     readonly mode?: string
-    readonly archive: { readonly shadowedMessages: readonly { readonly content: readonly unknown[] }[] }
+    readonly archive: {
+      /** Absent on a referential bundle; the COUNT is present either way. */
+      readonly shadowedMessages?: readonly { readonly content: readonly unknown[] }[]
+      readonly messageCount: number
+    }
   }[]
   /**
    * The fold counts as the ENGINE reports them, when the caller has them.
@@ -317,8 +321,13 @@ function archiveFigures(bundles: ContextStatusInput['bundles']): {
   let messages = 0
   let characters = 0
   for (const bundle of bundles) {
-    for (const message of bundle.archive.shadowedMessages) {
-      messages += 1
+    // The COUNT is always available and is what the caller reports as
+    // `measured`. A referential bundle does not carry its message bytes, so the
+    // token ESTIMATE silently covers only the bundles that do — which is why
+    // that figure is `estimated` and why this loop must not treat a missing
+    // archive as an empty one.
+    messages += bundle.archive.messageCount
+    for (const message of bundle.archive.shadowedMessages ?? []) {
       for (const block of message.content) {
         const text = (block as { type?: string; text?: string })
         if (text.type === 'text' && typeof text.text === 'string') characters += text.text.length

@@ -11,9 +11,11 @@ import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { Context } from '@deepseek-ai/cordis'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import type { JsonValue } from '@deepseek-ai/dsh-util-values'
+import { sessionEventSource } from './archive-refs.ts'
+import type { LogReader } from './archive-refs.ts'
 import type { FoldBundleStore } from './types.ts'
 import { CHECKPOINT_MARKER_EXPLANATION } from './checkpoint-marker.ts'
-import { EXACT_PAGE_LIMIT, recall, search } from './recall.ts'
+import { EXACT_PAGE_LIMIT, recall, recallForeign, search } from './recall.ts'
 import type { RecallDepth } from './recall.ts'
 
 function textBlock(text: string): ContentBlock {
@@ -25,11 +27,27 @@ function asJsonValue(value: unknown): JsonValue {
   return JSON.parse(JSON.stringify(value)) as JsonValue
 }
 
+/** Optional wiring for the cross-session experiment. */
+export interface RecallToolOptions {
+  /**
+   * Reads another session's stored log, for a checkpoint whose session is not
+   * loaded. Only supplied when `allowCrossSessionRecall` is on.
+   */
+  readonly logReader?: LogReader
+}
+
 /**
  * Register the two recall tools against `ctx.tools` (the ToolRuntime service).
+ * @param ctx - the context carrying `tools`.
+ * @param store - the bundle store to serve from.
+ * @param options - cross-session wiring; omitted in a default deployment.
  * @returns the exact disposer that unregisters both tools.
  */
-export function registerRecallTools(ctx: Context, store: FoldBundleStore): () => void {
+export function registerRecallTools(
+  ctx: Context,
+  store: FoldBundleStore,
+  options: RecallToolOptions = {},
+): () => void {
   const contextSearch = defineTool({
     name: 'context_search',
     description:
@@ -61,6 +79,10 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
         sessionId: agent.session.id,
         query,
         ...(limit === undefined ? {} : { limit }),
+        // The live session resolves a REFERENTIAL archive without touching
+        // disk: `eventAt(seq)` is an in-memory index and `deriveEventMessage`
+        // is pure. Passing it costs nothing when archives are inline.
+        source: sessionEventSource(agent.session),
       })
       return asJsonValue({ hits })
     },
@@ -93,6 +115,10 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
       if (agent === undefined) {
         throw new Error('context_recall requires an executing agent session')
       }
+      // The store refuses a checkpoint belonging to another session, so a
+      // foreign ref can only be served when the cross-session experiment is on.
+      // The live session is tried first: it is the in-memory, zero-I/O path and
+      // is correct for this session's own checkpoints in every configuration.
       const result = await recall({
         store,
         sessionId: agent.session.id,
@@ -100,8 +126,23 @@ export function registerRecallTools(ctx: Context, store: FoldBundleStore): () =>
         ...(depth === undefined ? {} : { depth }),
         ...(offset === undefined ? {} : { offset }),
         ...(limit === undefined ? {} : { limit }),
+        source: sessionEventSource(agent.session),
       })
-      return asJsonValue(result ?? { checkpointId: ref, unavailable: 'bundle not found' })
+      if (result !== null) return asJsonValue(result)
+
+      if (options.logReader === undefined) {
+        return asJsonValue({ checkpointId: ref, unavailable: 'bundle not found' })
+      }
+      const foreign = await recallForeign({
+        store,
+        requesting: agent.session.id,
+        logReader: options.logReader,
+        checkpointId: ref,
+        ...(depth === undefined ? {} : { depth }),
+        ...(offset === undefined ? {} : { offset }),
+        ...(limit === undefined ? {} : { limit }),
+      })
+      return asJsonValue(foreign ?? { checkpointId: ref, unavailable: 'bundle not found' })
     },
     isConcurrencySafe: () => true,
   })

@@ -12,7 +12,7 @@ import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionSeq } from '@deepseek-ai/dsh-session'
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
-import type { CheckpointBundleV1, FoldCandidate } from './types.ts'
+import type { ArchiveRef, CheckpointBundleV1, FoldCandidate } from './types.ts'
 
 export interface SplitSummarizationInput {
   /** Leading `system` message retained ahead of the checkpoint, if present. */
@@ -70,6 +70,39 @@ export function frameCheckpoint(text: string): string {
   return `${CHECKPOINT_PREAMBLE}\n\n<compacted-summary>\n${text}\n</compacted-summary>`
 }
 
+/**
+ * Pair each archived message with the surface seq it came from.
+ *
+ * The pairing is positional and is VERIFIED rather than assumed. A ref list is
+ * only sound if `refs[i]` names the event whose derived message is
+ * `messages[i]`; if the two lists were ever misaligned the bundle would record
+ * a reference set that resolves to a different archive than the one it claims,
+ * and nothing downstream could tell which field was right.
+ *
+ * The caller therefore passes the messages already derived from those seqs
+ * (the engine derives both from the same fold), and a length disagreement is a
+ * programming error rather than a data condition: fail loud.
+ *
+ * @param seqs - surface seqs of the folded span, in order.
+ * @param messages - the derived messages of that span, in order.
+ * @returns one ref per message.
+ */
+export function buildArchiveRefs(
+  seqs: readonly SessionSeq[],
+  messages: readonly Message[],
+): readonly ArchiveRef[] {
+  if (seqs.length !== messages.length) {
+    throw new Error(
+      `epistemic-fold: cannot build archive refs — ${seqs.length} surface seq(s) against `
+      + `${messages.length} archived message(s); the refs would not identify this archive`,
+    )
+  }
+  return Object.freeze(seqs.map((seq, index) => Object.freeze({
+    seq,
+    digest: canonicalHash(messages[index]),
+  })))
+}
+
 /** Build the immutable bundle for one fold; the caller publishes it durably. */
 export function buildBundle(options: {
   candidate: FoldCandidate
@@ -84,9 +117,23 @@ export function buildBundle(options: {
    * still shows what the log derives; see `CheckpointBundleV1.state`.
    */
   renderedState?: { readonly digest: string; readonly anchors: number }
+  /**
+   * Store the archive as `(seq, digest)` refs instead of message bytes.
+   *
+   * The messages must be exactly the derived form of the events at
+   * `orderedSurfaceSeqs`, in order — that is what makes the refs able to
+   * reproduce them. The two are checked here rather than assumed, because a
+   * ref list that disagrees with the archive would resolve to a DIFFERENT
+   * archive later, and a bundle whose own two fields disagree cannot be
+   * trusted to describe either.
+   */
+  referentialArchive?: boolean
 }): CheckpointBundleV1 {
   const { candidate } = options
   const logicalHash = canonicalHash(options.shadowedMessages)
+  const refs: readonly ArchiveRef[] = options.referentialArchive === true
+    ? buildArchiveRefs(options.orderedSurfaceSeqs, options.shadowedMessages)
+    : []
   return Object.freeze({
     format: 'ef-checkpoint',
     formatVersion: 1,
@@ -103,8 +150,12 @@ export function buildBundle(options: {
       }),
     },
     archive: {
-      shadowedMessages: Object.freeze([...options.shadowedMessages]),
+      ...(options.referentialArchive === true
+        ? {}
+        : { shadowedMessages: Object.freeze([...options.shadowedMessages]) }),
+      messageCount: options.shadowedMessages.length,
       logicalHash,
+      refs,
     },
     ...(options.semanticText === undefined
       ? {}

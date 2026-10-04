@@ -62,7 +62,9 @@ function bundleOf(options: {
     },
     archive: {
       shadowedMessages: messages,
+      messageCount: messages.length,
       logicalHash: canonicalHash(messages),
+      refs: [],
     },
     rendered: {
       text: 'checkpoint body',
@@ -190,10 +192,15 @@ describe('the store writes compressed files and keeps its guarantees', () => {
       ...bundle,
       archive: {
         ...bundle.archive,
+        // `messageCount` is kept CONSISTENT with the rewritten messages on
+        // purpose: the count check would otherwise catch this first, and the
+        // point of the test is that the LOGICAL hash catches a payload whose
+        // shape is intact.
         shadowedMessages: [createUserMessage({
           content: [{ type: 'text', text: 'rewritten' }],
           source: { kind: 'user' },
         })],
+        messageCount: 1,
       },
     }
     // Re-encode with the honest encoder, so only the LOGICAL hash can catch it.

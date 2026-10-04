@@ -803,6 +803,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         shadowedMessages,
         renderedText,
         ...(semanticText === undefined ? {} : { semanticText }),
+        // EXPERIMENTAL, off by default: reference the archive instead of
+        // copying it. `buildArchiveRefs` verifies the seqs and messages are the
+        // same length, so the refs provably identify this archive.
+        ...(this.efConfig.referentialArchive ? { referentialArchive: true } : {}),
         // Bind the body to the state it projected. Only when a projection was
         // mounted, because only then is state in the body at all.
         ...(mountedState === undefined

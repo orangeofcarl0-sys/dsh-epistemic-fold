@@ -36,7 +36,25 @@ import { registerEpistemicFoldStatus } from './status-projection.ts'
 import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import { registerRecallTools } from './tools.ts'
 import { registerContextCommand } from './command.ts'
+import type { LogReader } from './archive-refs.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
+
+/**
+ * The persistence service as a log reader, or `undefined` when the host has
+ * none.
+ *
+ * `sessionPersistence` is an OPTIONAL sibling — a compaction-only deployment
+ * mounts no persistence plane — and cordis THROWS on `ctx.get` for a service
+ * that was not injected. So this probes rather than assumes, and the caller
+ * only reaches for it when the cross-session experiment is enabled.
+ */
+function logReaderFrom(ctx: Context): LogReader | undefined {
+  try {
+    return ctx.get('sessionPersistence') as LogReader | undefined
+  } catch {
+    return undefined
+  }
+}
 
 declare module '@deepseek-ai/cordis' {
   interface Context {
@@ -182,7 +200,15 @@ export class EpistemicFoldPlugin {
     }, 'epistemic-fold status projection')
 
     ctx.inject(['tools'], toolsCtx => {
-      const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore)
+      // The cross-session resolver is wired ONLY when the experiment is on, so a
+      // default deployment never even reaches for the persistence service. The
+      // flag is read once here rather than per call: it is a mount-time policy,
+      // and a tool that changed behavior mid-session would be a different tool.
+      const crossSession = this.engine.efConfig.allowCrossSessionRecall
+      const reader = crossSession ? logReaderFrom(toolsCtx) : undefined
+      const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore, {
+        ...(reader === undefined ? {} : { logReader: reader }),
+      })
       return () => dispose()
     })
 

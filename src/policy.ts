@@ -97,6 +97,32 @@ export interface ResolvedEpistemicFoldConfig {
    * absent rather than silently dropping the preamble.
    */
   readonly framingMode: FramingMode
+  /**
+   * EXPERIMENTAL: store the archive as `(seq, digest)` refs instead of message
+   * bytes, resolving them from the session log on demand.
+   *
+   * Default `false`. When on, a bundle no longer duplicates history the session
+   * log already owns — measured at 76% of a root fold's bundle bytes — and the
+   * `(seq, digest)` pair still proves the resolved content is what was
+   * archived. When off, behavior is byte-identical to before.
+   *
+   * Off by default because it moves a failure mode: an inline archive is
+   * self-sufficient, while a referential one needs a readable log. See
+   * `allowCrossSessionRecall` for the part of that which is separately gated.
+   */
+  readonly referentialArchive: boolean
+  /**
+   * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
+   * ANOTHER session by opening its stored log for reading.
+   *
+   * Default `false`, and it is a separate switch from `referentialArchive`
+   * because it is separately risky. Recall is currently session-scoped by
+   * construction (`FoldBundleStore.read` refuses a foreign session). Serving a
+   * foreign session means opening a log that may be concurrently written,
+   * archived, or migrated — so the failure is reported as `unavailable` rather
+   * than resolved to something plausible.
+   */
+  readonly allowCrossSessionRecall: boolean
 }
 
 /** Leaf admission policy mode (R2-B). */
@@ -202,6 +228,16 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * on the mode name.
    */
   mode?: FoldModeName
+  /**
+   * EXPERIMENTAL: reference the archive by `(seq, digest)` instead of copying
+   * the messages. Default `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  referentialArchive?: boolean
+  /**
+   * EXPERIMENTAL: allow recall of another session's checkpoints. Default
+   * `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  allowCrossSessionRecall?: boolean
 }
 
 /**
@@ -281,6 +317,16 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (framingMode !== 'legacy' && framingMode !== 'system-dedup') {
     throw new Error('epistemic-fold: framingMode must be "legacy" or "system-dedup"')
   }
+  // Both experimental switches default OFF, and are strict booleans: a typo
+  // like `referentialArchive: "true"` must not silently read as enabled.
+  const referentialArchive = expanded.referentialArchive ?? false
+  if (typeof referentialArchive !== 'boolean') {
+    throw new Error('epistemic-fold: referentialArchive must be a boolean')
+  }
+  const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
+  if (typeof allowCrossSessionRecall !== 'boolean') {
+    throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -294,6 +340,8 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     minReclaimTokens,
     minReclaimRatio,
     framingMode,
+    referentialArchive,
+    allowCrossSessionRecall,
     rootPolicy: {
       mode: rootPolicy,
       profiles: expanded.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
@@ -383,6 +431,8 @@ const EF_OWNED_CONFIG_KEYS = [
   'paybackHorizonRequests',
   'framingMode',
   'mode',
+  'referentialArchive',
+  'allowCrossSessionRecall',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */

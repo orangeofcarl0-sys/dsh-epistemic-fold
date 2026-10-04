@@ -243,7 +243,8 @@ describe('P05: manual compaction is a root fold', () => {
     const bundle = (await store.read(session.id, bundles[0]!.checkpointId))!
 
     // The three sources that must agree.
-    expect(bundle.source.orderedSurfaceSeqs).toHaveLength(bundle.archive.shadowedMessages.length)
+    const archived = bundle.archive.shadowedMessages!
+    expect(bundle.source.orderedSurfaceSeqs).toHaveLength(archived.length)
     expect(bundle.source.orderedSurfaceSeqs).toHaveLength(result!.shadowedSeqs.length)
     expect([...bundle.source.orderedSurfaceSeqs]).toEqual([...result!.shadowedSeqs])
 
@@ -251,8 +252,8 @@ describe('P05: manual compaction is a root fold', () => {
     const derived = bundle.source.orderedSurfaceSeqs
       .map(seq => session.deriveEventMessage(session.eventAt(seq)!))
       .filter(message => message !== null)
-    expect(derived).toHaveLength(bundle.archive.shadowedMessages.length)
-    expect(derived.map(canonicalJson)).toEqual(bundle.archive.shadowedMessages.map(canonicalJson))
+    expect(derived).toHaveLength(archived.length)
+    expect(derived.map(canonicalJson)).toEqual(archived.map(canonicalJson))
   })
 })
 
