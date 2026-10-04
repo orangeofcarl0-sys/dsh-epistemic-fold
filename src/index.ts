@@ -8,8 +8,16 @@
  */
 
 export { EpistemicFoldEngine, default } from './engine.ts'
-export type { EpistemicFoldOptions, LeafAdmissionVerdict } from './engine.ts'
-export { efOwnedConfigKeys } from './engine.ts'
+export type { EpistemicFoldOptions } from './engine.ts'
+export { efOwnedConfigKeys, stripEfConfigKeys } from './policy.ts'
+export {
+  FRAMING_FALLBACK_TOKENS,
+  ROOT_REBASE_COOLDOWN,
+  admitLeafEconomically,
+  evaluateEconomicRebase,
+  rootRebaseAdvice,
+} from './fold-economics.ts'
+export type { LeafAdmissionVerdict } from './fold-economics.ts'
 export { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
 export { FileBundleStore } from './bundle-store.ts'
 export {

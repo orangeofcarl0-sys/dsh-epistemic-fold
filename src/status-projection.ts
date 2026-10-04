@@ -50,6 +50,7 @@ import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { costOf, selectProfile } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
+import { compactionFailed, requestHeaderReason, requestHeaderRoute, toolCallName } from './event-data.ts'
 import { isTierModeName } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
 
@@ -275,14 +276,14 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       }
     }
     case 'compaction/end': {
-      const failed = (event.data as { error?: string } | undefined)?.error !== undefined
+      const failed = compactionFailed(event)
       // A failed transaction is COUNTED but is not a fold: `compaction/summary`
       // already counted the ones that produced a checkpoint, so counting here
       // too would double it.
       return failed ? { ...state, failedCompactions: state.failedCompactions + 1 } : state
     }
     case 'tool/call': {
-      const name = (event.data as { name?: string } | undefined)?.name
+      const name = toolCallName(event)
       if (name === 'context_recall') return { ...state, recalls: state.recalls + 1 }
       if (name === 'context_search') return { ...state, searches: state.searches + 1 }
       return state
@@ -309,20 +310,14 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       }
     }
     case 'request/header': {
-      const data = event.data as {
-        reason?: string
-        header?: { config?: { provider?: string; model?: string } }
-      } | undefined
       // The routed route, kept current: a `change` header REPLACES it, which is
       // what makes the price list follow a mid-session model switch.
-      const config = data?.header?.config
-      const provider = typeof config?.provider === 'string' ? config.provider : state.provider
-      const model = typeof config?.model === 'string' ? config.model : state.model
+      const route = requestHeaderRoute(event)
       return {
         ...state,
-        provider,
-        model,
-        ...(data?.reason === 'resume' ? { resumed: true } : {}),
+        provider: route.provider ?? state.provider,
+        model: route.model ?? state.model,
+        ...(requestHeaderReason(event) === 'resume' ? { resumed: true } : {}),
       }
     }
     case 'user/message': {

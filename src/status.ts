@@ -48,6 +48,7 @@ import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { locateFoldFrontier } from './frontier.ts'
+import { compactionFailed, requestHeaderReason, toolCallName } from './event-data.ts'
 import { costOf } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import { isTierModeName } from './preset.ts'
@@ -257,8 +258,7 @@ function readLifecycle(session: Session): ContextLifecycle {
     if (event === undefined) continue
     if (event.type === 'compaction/end') {
       compactions += 1
-      const data = event.data as { error?: string } | undefined
-      if (data?.error !== undefined) failedCompactions += 1
+      if (compactionFailed(event)) failedCompactions += 1
     }
     // A model change is a durable user-role notice the model-selection install
     // appends; the session header is the only other routing record.
@@ -275,8 +275,7 @@ function readLifecycle(session: Session): ContextLifecycle {
     // header rather than inferring it means the flag says what the runtime
     // recorded, not what a heuristic guessed.
     if (event.type === 'request/header') {
-      const reason = (event.data as { reason?: string } | undefined)?.reason
-      if (reason === 'resume') resumed = true
+      if (requestHeaderReason(event) === 'resume') resumed = true
     }
   }
 
@@ -296,7 +295,7 @@ function countRecallCalls(session: Session): { readonly searches: number; readon
   for (let raw = 0; raw < session.seq; raw += 1) {
     const event = session.eventAt(raw as never)
     if (event?.type !== 'tool/call') continue
-    const name = (event.data as { name?: string } | undefined)?.name
+    const name = toolCallName(event)
     if (name === 'context_search') searches += 1
     else if (name === 'context_recall') recalls += 1
   }

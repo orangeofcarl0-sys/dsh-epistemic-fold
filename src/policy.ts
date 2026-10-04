@@ -359,3 +359,40 @@ export function resolveEfCompactSpec(
     compactionRetries: config.compactionRetries,
   }
 }
+
+/**
+ * Every config key EF owns and resolves itself. Basic validates its config keys
+ * STRICTLY, so any EF key reaching the super constructor throws — this list is
+ * the single place that decides what "EF-owned" means, and `stripEfConfigKeys`
+ * is checked against it by a test so a newly added key cannot silently leak
+ * through (a real bug found in R0).
+ *
+ * It lives here rather than in the engine because it is config VOCABULARY: the
+ * same question `resolveEfConfig` answers, asked from the other side.
+ */
+const EF_OWNED_CONFIG_KEYS = [
+  'frozenCheckpointTokenBudget',
+  'semanticMode',
+  'bundleRoot',
+  'leafAdmission',
+  'minReclaimTokens',
+  'minReclaimRatio',
+  'rootPolicy',
+  'economicsProfiles',
+  'cacheRealizationRate',
+  'paybackHorizonRequests',
+  'framingMode',
+  'mode',
+] as const
+
+/** Drop the EF-owned config keys so Basic's strict key validation passes. */
+export function stripEfConfigKeys(config: EpistemicFoldConfig): EpistemicFoldConfig {
+  const basic: Record<string, unknown> = { ...config }
+  for (const key of EF_OWNED_CONFIG_KEYS) delete basic[key]
+  return basic as EpistemicFoldConfig
+}
+
+/** The EF-owned keys, exposed so a test can prove none is forgotten. */
+export function efOwnedConfigKeys(): readonly string[] {
+  return EF_OWNED_CONFIG_KEYS
+}

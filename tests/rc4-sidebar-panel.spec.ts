@@ -243,6 +243,40 @@ describe('RC4: the wire view carries how each figure was obtained', () => {
     expect(unit.wire.view(state).cost).toBeCloseTo(0.002, 6)
   })
 
+  it('updates only the half of the route a header names', () => {
+    // A `request/header` is folded field by field, not as an all-or-nothing
+    // route: a header naming only a model must move the model and leave the
+    // provider as it stands. Collapsing the pair into "a route" would silently
+    // discard the change and price the session against its previous route —
+    // which is why the reader returns each half independently, and why this is
+    // pinned rather than left to the all-or-nothing test above.
+    const profile = parseEconomicsProfile({
+      id: 'half', provider: 'pa', modelPattern: 'mb', asOf: '2026-09-30',
+      pricing: { inputMissPerM: 3, inputHitPerM: 3, outputPerM: 3 },
+      cache: { mode: 'none', bestEffort: false }, context: { windowTokens: 1_000 },
+    })
+    const unit = epistemicFoldStatusProjection({ mode: 'economy', profiles: [profile] })
+
+    let state = reduceStatusEvent(unit.init(), {
+      type: 'request/header', seq: 1, time: 0,
+      data: { header: { config: { provider: 'pa', model: 'ma' } }, reason: 'initial' },
+    } as never)
+    expect(state.provider).toBe('pa')
+    expect(state.model).toBe('ma')
+
+    state = reduceStatusEvent(state, {
+      type: 'request/header', seq: 2, time: 0,
+      data: { header: { config: { model: 'mb' } }, reason: 'change' },
+    } as never)
+    expect(state.model, 'the named half must move').toBe('mb')
+    expect(state.provider, 'the unnamed half must stand').toBe('pa')
+
+    // The move is only worth pinning because it is OBSERVABLE: it is what makes
+    // the price list follow the session onto the new model.
+    state = { ...state, uncachedInputTokens: 1_000, hasUsage: true }
+    expect(unit.wire.view(state).costProfileId).toBe('half')
+  })
+
   it('reports the LIVE mode, so a runtime switch is not stale in the panel', () => {
     // A `/context mode` switch of a RUNNING session must not leave the panel
     // showing the startup mode forever. The mode comes from a getter for that
