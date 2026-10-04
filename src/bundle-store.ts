@@ -10,6 +10,7 @@ import { mkdir, readdir, readFile, rm, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import type { SessionId } from '@deepseek-ai/dsh-session'
+import { decodeBundleFile, encodeBundleFile } from './bundle-codec.ts'
 import { canonicalHash, canonicalJson, sha256Hex } from './hash.ts'
 import type {
   BundleDescriptor,
@@ -36,12 +37,17 @@ function commitPath(root: string, sessionId: string, checkpointId: string): stri
  * One directory of bundle files, one subdirectory per session. Writes are
  * atomic and verified; readers detect corruption through the stored logical
  * hash instead of trusting file contents.
+ *
+ * Bundle files are zstd-compressed envelopes (`bundle-codec.ts`). The `fileHash`
+ * returned by `write` therefore covers the ENCODED file, which is what a
+ * verifier reading the file can reproduce; the archive's own identity is the
+ * separate `logicalHash`, which compression does not touch.
  */
 export class FileBundleStore implements FoldBundleStore {
   constructor(private readonly root: string) {}
 
   async write(bundle: CheckpointBundleV1): Promise<BundleWriteResult> {
-    const serialized = canonicalJson(bundle)
+    const serialized = encodeBundleFile(bundle)
     const fileHash = sha256Hex(serialized)
     const target = bundlePath(this.root, bundle.sessionId, bundle.checkpointId)
     await mkdir(dirname(target), { recursive: true, mode: BUNDLE_DIR_MODE })
@@ -51,8 +57,17 @@ export class FileBundleStore implements FoldBundleStore {
     if (sha256Hex(stored) !== fileHash) {
       throw new Error(`epistemic-fold: bundle write verification failed for ${bundle.checkpointId}`)
     }
-    const parsed = JSON.parse(stored) as CheckpointBundleV1
-    if (parsed.archive.logicalHash !== bundle.archive.logicalHash) {
+    // Decode rather than re-parse: the logical hash covers the archived
+    // messages, so only a successful decode proves the payload survived the
+    // round trip. A truncated base64 frame would otherwise look like a hash
+    // mismatch on the wrong field.
+    let readBack: CheckpointBundleV1
+    try {
+      readBack = decodeBundleFile(stored)
+    } catch {
+      throw new Error(`epistemic-fold: bundle read-back is not decodable for ${bundle.checkpointId}`)
+    }
+    if (readBack.archive.logicalHash !== bundle.archive.logicalHash) {
       throw new Error(`epistemic-fold: bundle read-back logical hash mismatch for ${bundle.checkpointId}`)
     }
     return {
@@ -78,11 +93,12 @@ export class FileBundleStore implements FoldBundleStore {
     }
     let bundle: CheckpointBundleV1
     try {
-      bundle = JSON.parse(raw) as CheckpointBundleV1
+      bundle = decodeBundleFile(raw)
     } catch {
       // A present but unparseable file is CORRUPTION, not absence — the two
-      // mean different things in an audit (R0-A).
-      return { status: 'corrupt', reason: 'bundle file is not valid JSON' }
+      // mean different things in an audit (R0-A). An undecodable envelope
+      // (truncated payload, bad frame) is corruption by the same rule.
+      return { status: 'corrupt', reason: 'bundle file is not decodable' }
     }
     if (bundle.sessionId !== sessionId) {
       return { status: 'corrupt', reason: 'wrong-session' }
@@ -148,7 +164,7 @@ export class FileBundleStore implements FoldBundleStore {
     }
   }
 
-  /** Read one bundle file; unreadable or unparseable files read as absent. */
+  /** Read one bundle file; unreadable or undecodable files read as absent. */
   private async readBundle(file: string): Promise<CheckpointBundleV1 | null> {
     let raw: string
     try {
@@ -157,7 +173,7 @@ export class FileBundleStore implements FoldBundleStore {
       return null
     }
     try {
-      return JSON.parse(raw) as CheckpointBundleV1
+      return decodeBundleFile(raw)
     } catch {
       return null
     }
