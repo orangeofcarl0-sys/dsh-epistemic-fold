@@ -76,13 +76,3 @@ export function canVerify(evidenceKinds: readonly AuthoritativeEventKind[]): boo
     return domains.includes('empirical') || domains.includes('procedural')
   })
 }
-
-/** Human-readable authority rule for diagnostics and checkpoint rendering. */
-export const AUTHORITY_RULES: ReadonlyArray<{ readonly domain: AuthorityDomain; readonly source: string }> = [
-  { domain: 'normative', source: 'user/system explicit constraint' },
-  { domain: 'empirical', source: 'tool/test/filesystem evidence' },
-  { domain: 'procedural', source: 'execution lifecycle' },
-  { domain: 'decision', source: 'adopted solution' },
-  { domain: 'narrative', source: 'semantic digest (never authoritative)' },
-  { domain: 'hypothesis', source: 'tentative model reasoning' },
-]

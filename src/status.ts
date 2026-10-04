@@ -52,8 +52,6 @@ import { costOf } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import { isTierModeName } from './preset.ts'
 import type { FoldModeName, TierModeName } from './preset.ts'
-import { parseCheckpointMarker } from './checkpoint-marker.ts'
-import { EXACT_PAGE_LIMIT } from './recall.ts'
 
 /** How a figure was obtained. Printed alongside it so it is never assumed. */
 export type FigureBasis = 'measured' | 'estimated'
@@ -604,9 +602,3 @@ export function contextStatusToLine(status: ContextStatus): string {
   ].filter((part): part is string => part !== undefined)
   return parts.join(' ')
 }
-
-/** The exact-page size recall uses, re-exported so a status surface can cite it. */
-export const STATUS_EXACT_PAGE_LIMIT = EXACT_PAGE_LIMIT
-
-/** Marker parse passthrough, so a status surface never regexes identity itself. */
-export const statusParseCheckpointMarker = parseCheckpointMarker

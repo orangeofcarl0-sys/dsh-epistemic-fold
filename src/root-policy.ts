@@ -10,7 +10,6 @@
 
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
-import { locateFoldFrontier } from './frontier.ts'
 import { frozenCheckpointLoad } from './leaf-policy.ts'
 
 /** Telemetry emitted when the frozen prefix grows past its budget. */
@@ -41,17 +40,4 @@ export function evaluateRootRebase(
     budget,
     frozenCount: load.count,
   }
-}
-
-/**
- * Expected reclaim of a root rebase: after one root fold, exactly ONE root
- * checkpoint remains frozen, so the frozen prefix cost collapses to that
- * single node's price. Callers use this to assert the rebase restored a
- * bounded frozen budget (P06).
- */
-export function expectedFrozenAfterRebase(session: Session, measurement: TokenMeasurement): number {
-  const frontier = locateFoldFrontier(session)
-  const last = frontier.frozen[frontier.frozen.length - 1]
-  if (last === undefined) return 0
-  return measurement.nodes[last.position]?.tokens ?? 0
 }

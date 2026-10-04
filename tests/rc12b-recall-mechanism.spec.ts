@@ -27,90 +27,24 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { Session as SessionType } from '@deepseek-ai/dsh-session'
-import { createHarness, SIGNAL } from './harness.ts'
+import { createHarness } from './harness.ts'
+import { growAndFold, seedNarrative, surfaceText } from './recall-loop.ts'
 import { recall, search } from '../src/recall.ts'
 import { resolvePreset } from '../src/preset.ts'
 
 const WINDOW = 6_000
 const RESERVED = 1_500
 
-/** The three facts, as ordinary prose with NO anchor declared. */
-const FACTS = {
-  constraint: 'Our batch size must never exceed 64 items.',
-  superseded: 'The parser timeout was 30 seconds.',
-  supersession: 'CORRECTION: the parser timeout is now 90 seconds, superseding the 30.',
-  exact: 'The failing error code we are chasing is PARSE-7741.',
-}
-
-/** Deterministic filler. */
-function filler(label: string, units: number): string {
-  return Array.from(
-    { length: units },
-    (_, index) => `${label} unit ${index} ${'payload '.repeat(12)}`,
-  ).join(' ')
-}
-
-/** A session whose early prose carries the facts, and which then grows. */
-function seedNarrative(): SessionType {
-  const session = Session.create(SessionId(`rc12b-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`))
-  session.append('turn/start', { turn: 1 })
-  session.append('request/header', {
-    header: { config: { provider: 'live', model: 'live' } },
-    reason: 'initial',
-  })
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text:
-      `Some context before we start. ${FACTS.constraint} ${FACTS.superseded} `
-      + `${FACTS.supersession} ${FACTS.exact} Please keep all of this in mind.` }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
-  session.append('user/message', createUserMessage({
-    content: [{ type: 'text', text: filler('background', 40) }],
-    source: { kind: 'user' },
-  }), { surfaceOp: 'append' })
-  session.append('turn/end', { turn: 1, reason: { kind: 'completed' } })
-  return session
-}
-
-/** The current surface as plain text. */
-function surfaceText(session: SessionType): string {
-  const parts: string[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null) continue
-    parts.push(message.content.map(block => (block.type === 'text' ? block.text : '')).join(''))
-  }
-  return parts.join('\n')
-}
-
-/** Fold the session repeatedly and return how many folds landed. */
-async function foldRepeatedly(
-  harness: Awaited<ReturnType<typeof createHarness>>,
-  session: SessionType,
-  steps: number,
-): Promise<number> {
-  const meter = harness.ctx.tokenMeter
-  let folds = 0
-  for (let step = 2; step <= steps + 1; step += 1) {
-    session.append('turn/start', { turn: step })
-    session.append('user/message', createUserMessage({
-      content: [{ type: 'text', text: filler(`step ${step}`, 250) }],
-      source: { kind: 'user' },
-    }), { surfaceOp: 'append' })
-    const before = meter.measure(session).totalTokens
-    try {
-      await (harness.engine as unknown as {
-        compactIfNeeded(a: unknown, t: string, s: AbortSignal): Promise<unknown>
-      }).compactIfNeeded({ session, options: { provider: 'live', model: 'live' } }, 'pressure', SIGNAL)
-    } catch { /* a refused fold is a decision */ }
-    if (meter.measure(session).totalTokens < before) folds += 1
-    session.append('turn/end', { turn: step, reason: { kind: 'completed' } })
-  }
-  return folds
-}
+/**
+ * The facts, the filler, the seeding and the growth loop all come from
+ * `recall-loop.ts`, and they must: this file used to declare its own copies,
+ * including a `filler` with a DECIMAL unit index. That index is not cosmetic —
+ * a 250-unit filler contains `unit 64`, `unit 90` and `unit 30`, which are
+ * exactly the tokens the fact matchers below look for. A local copy therefore
+ * reintroduced the leak that `recall-loop.ts` documents as fixed, letting a
+ * retained filler tail satisfy `/\b64\b/u` on the surface and making the
+ * premise check below pass for the wrong reason.
+ */
 
 describe('RC1.2-B: undeclared prose is recoverable through the product recall path', () => {
   it('folds the facts OFF the surface, then finds them in the bundle', async () => {
@@ -132,8 +66,8 @@ describe('RC1.2-B: undeclared prose is recoverable through the product recall pa
         maxTokens: RESERVED,
       },
     })
-    const session = seedNarrative()
-    const folds = await foldRepeatedly(harness, session, 14)
+    const session = seedNarrative('rc12b')
+    const folds = await growAndFold(harness, session, 14, 3_000)
 
     // Vacuity guard: without folds, the facts are simply still on the surface
     // and this test would prove nothing about recall.
@@ -245,8 +179,8 @@ describe('RC1.2-B: undeclared prose is recoverable through the product recall pa
           maxTokens: RESERVED,
         },
       })
-      const session = seedNarrative()
-      const folds = await foldRepeatedly(harness, session, 14)
+      const session = seedNarrative('rc12b')
+      const folds = await growAndFold(harness, session, 14, 3_000)
       const surface = surfaceText(session)
       const hits = await search({
         store: harness.engine.bundleStore,

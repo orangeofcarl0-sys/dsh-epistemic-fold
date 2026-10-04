@@ -202,6 +202,12 @@ export function compileContextPolicy(input: ContextPolicyInput): ContextPolicyDe
   // After a rebase exactly ONE root checkpoint stays frozen, so the removable
   // amount is the prefix minus a single checkpoint's share of it. With one
   // checkpoint there is nothing to remove and no rebase can pay back.
+  //
+  // The share is the AVERAGE (`frozenTokens / count`), deliberately, not the
+  // price of a specific surviving node: which checkpoint survives is not known
+  // before the rebase, and break-even only needs an expected reclaim. A precise
+  // post-rebase price exists (`frontier.frozen[last]`), but using it here would
+  // report the outcome of one particular rebase as if it were the estimate.
   const count = Math.max(0, Math.floor(telemetry.frozenCheckpointCount))
   const expectedFrozenAfter = count <= 1 ? telemetry.frozenTokens : telemetry.frozenTokens / count
   const breakEven = rootBreakEvenRequests({

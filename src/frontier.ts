@@ -12,7 +12,7 @@
 
 import { isCompactCheckpointSource } from '@deepseek-ai/dsh-compaction'
 import type { FoldMode } from './types.ts'
-import { SessionSeq, type Session, type SessionId } from '@deepseek-ai/dsh-session'
+import { SessionSeq, type Session } from '@deepseek-ai/dsh-session'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
 
 /** Persistent identity of the frontier (plan §10); re-locatable, not a position. */
@@ -122,17 +122,3 @@ export function hasActiveCompaction(session: Session): boolean {
   return false
 }
 
-/** Session identity passthrough for telemetry payloads. */
-export function frontierTelemetry(session: Session, frontier: FoldFrontier): {
-  sessionId: SessionId
-  frozenCount: number
-  latestFrozenCheckpointId?: string
-} {
-  return {
-    sessionId: session.id,
-    frozenCount: frontier.frozenCount,
-    ...frontier.ref.latestFrozenCheckpointId === undefined
-      ? {}
-      : { latestFrozenCheckpointId: frontier.ref.latestFrozenCheckpointId },
-  }
-}
