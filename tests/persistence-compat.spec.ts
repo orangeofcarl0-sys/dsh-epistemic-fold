@@ -6,16 +6,22 @@
  * never covered that seam: `tests/harness.ts` builds a bare `SessionStore` and
  * stubs `flush`, so no spec exercised a real write → close → reopen.
  *
- * What this pins:
+ * Two tiers, because the backend's POSIX write lease needs a native lock addon
+ * that the vendored checkout does not build (each
+ * `native/system/packages/<platform>` ships only a prebuild manifest, and the
+ * binary itself is fetched rather than compiled), so the full round-trip is
+ * unavailable in CI:
  *
- *   - a native event type round-trips (the control);
- *   - EF's custom `ef/anchor` is refused on reopen on a host that cannot mark
- *     it `ignorable` — written as a CAPABILITY PROBE, not as a permanent
- *     expectation, so a host that gains the seam flips the assertion rather
- *     than failing it;
- *   - the marker is the whole difference: a hand-marked unknown event reopens;
- *   - an ordinary EF session reconstructs the same projection after a reopen,
- *     which is the invariant its state producer actually depends on.
+ *   - the PORTABLE tier calls `validateStoredEvents`, which is the exact gate
+ *     the JSONL read path invokes at its three restore sites. It always runs,
+ *     and it is where the defect actually lives: the refusal happens on READ.
+ *   - the BACKEND tier drives a real write → flush → close → reopen and skips
+ *     LOUDLY where the write lease cannot load, mirroring the live tier's
+ *     "skips rather than silently passes" discipline.
+ *
+ * The `ef/anchor` cases are written as capability probes, not as permanent
+ * expectations: a host that gains a safe plugin-event seam flips the assertion
+ * instead of failing it.
  *
  * @module tests/persistence-compat
  */
@@ -24,13 +30,12 @@ import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import { SESSION_FORMAT_VERSION, SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 import type { SessionEvent, SessionHeader } from '@deepseek-ai/dsh-session'
-import { SessionFormatUnsupportedError } from '@deepseek-ai/dsh-session-persistence'
+import { SessionFormatUnsupportedError, validateStoredEvents } from '@deepseek-ai/dsh-session-persistence'
 import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { hostAdmitsPluginEvents } from '../src/anchor-service.ts'
-import { createAnchorService } from '../src/anchor-service.ts'
+import { createAnchorService, hostAdmitsPluginEvents } from '../src/anchor-service.ts'
 import { emptyCurrentState, reduceEvent } from '../src/state.ts'
 import { conversation, toolConversation } from './harness.ts'
 
@@ -49,6 +54,16 @@ const record = (
   data: unknown,
   extra: Record<string, unknown> = {},
 ): SessionEvent => ({ type, seq: SessionSeq(seq), time: 1000 + seq, data, ...extra }) as unknown as SessionEvent
+
+/** Run one case against a scratch root that is always reclaimed. */
+async function withRoot<T>(name: string, body: (root: string) => Promise<T>): Promise<T> {
+  const root = await mkdtemp(join(tmpdir(), `ef-pc-${name}-`))
+  try {
+    return await body(root)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+}
 
 /**
  * Write one log through a real JSONL handle, close it, then reopen it from a
@@ -84,17 +99,50 @@ async function roundTrip(
   }
 }
 
-/** Run one case against a scratch root that is always reclaimed. */
-async function withRoot<T>(name: string, body: (root: string) => Promise<T>): Promise<T> {
-  const root = await mkdtemp(join(tmpdir(), `ef-pc-${name}-`))
+/**
+ * Whether the full write → reopen path works here. The probe runs the same
+ * round-trip the tier below needs rather than only `create()`, so its answer
+ * cannot disagree with what the tier is about to attempt; probing beats
+ * guessing because the native lock binding's path depends on libc, and win32
+ * takes a different branch entirely.
+ */
+const backendCanWrite = await withRoot('probe', async (root) => {
   try {
-    return await body(root)
-  } finally {
-    await rm(root, { recursive: true, force: true })
+    await roundTrip(root, 'probe', [record('turn/start', 0, { turn: 1 })])
+    return true
+  } catch {
+    return false
   }
-}
+})
 
-describe('persistence compatibility', () => {
+describe('persistence read-path contract (portable)', () => {
+  it('accepts a known event type', () => {
+    const events = [record('turn/start', 0, { turn: 1 })]
+    expect(() => validateStoredEvents(header('portable-native'), events)).not.toThrow()
+  })
+
+  it('refuses ef/anchor exactly when the host cannot mark it ignorable', () => {
+    // `ef/anchor` is outside DSH's known vocabulary. Without the envelope's
+    // `ignorable` marker the read path fails closed, which is the whole reason
+    // the anchor service now refuses to write one.
+    const events = [record('ef/anchor', 0, { op: 'retire', anchorId: 'probe' })]
+    if (hostAdmitsPluginEvents()) {
+      expect(() => validateStoredEvents(header('portable-anchor'), events)).not.toThrow()
+    } else {
+      expect(() => validateStoredEvents(header('portable-anchor'), events))
+        .toThrow(SessionFormatUnsupportedError)
+    }
+  })
+
+  it('accepts the same unknown event once it carries the ignorable marker', () => {
+    // The marker is the entire difference from the previous case: the format
+    // admits an unknown event, and only the missing marker makes the read fail.
+    const events = [record('ef/anchor', 0, { op: 'retire', anchorId: 'probe' }, { ignorable: true })]
+    expect(() => validateStoredEvents(header('portable-ignorable'), events)).not.toThrow()
+  })
+})
+
+describe.skipIf(!backendCanWrite)('persistence round-trip (real backend)', () => {
   it('round-trips a native event type', async () => {
     await withRoot('native', async (root) => {
       const reopened = await roundTrip(root, 'pc-native', [record('turn/start', 0, { turn: 1 })])
@@ -103,12 +151,7 @@ describe('persistence compatibility', () => {
     })
   })
 
-  it('treats ef/anchor according to the host capability, not a fixed expectation', async () => {
-    // The assertion is deliberately conditional. `ef/anchor` is outside DSH's
-    // known vocabulary, so its durability depends on whether this host's
-    // `append` stamps the `ignorable` marker. Hardcoding "always refused" would
-    // make a future host improvement look like a regression; hardcoding
-    // "always accepted" would assert something the host cannot do today.
+  it('treats ef/anchor according to the host capability', async () => {
     await withRoot('anchor', async (root) => {
       const events = [record('ef/anchor', 0, { op: 'retire', anchorId: 'probe' })]
       const attempt = roundTrip(root, 'pc-anchor', events)
@@ -121,9 +164,6 @@ describe('persistence compatibility', () => {
   })
 
   it('reopens an unknown event that carries the ignorable marker', async () => {
-    // The marker is the entire difference between the previous case and this
-    // one: the session format admits an unknown event, and only the missing
-    // marker makes the read fail closed.
     await withRoot('ignorable', async (root) => {
       const reopened = await roundTrip(root, 'pc-ignorable', [
         record('ef/anchor', 0, { op: 'retire', anchorId: 'probe' }, { ignorable: true }),
@@ -194,8 +234,8 @@ describe('anchor service durability guard', () => {
   })
 
   it('gates on the same host capability the plugin wires', () => {
-    // The plugin passes `hostAdmitsPluginEvents`; this pins that the two
-    // halves agree, so the guard cannot be wired to the wrong predicate.
+    // The plugin passes `hostAdmitsPluginEvents`; this pins that the two halves
+    // agree, so the guard cannot be wired to the wrong predicate.
     const service = createAnchorService({ durableWritesAllowed: hostAdmitsPluginEvents })
     const { session, seq } = citable()
     if (hostAdmitsPluginEvents()) {
