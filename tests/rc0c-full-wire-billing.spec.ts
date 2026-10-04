@@ -20,17 +20,14 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { describe as describeValues, pairedBootstrapCi, summarizeFullBill, tallyPairs } from '../eval/live/billing.ts'
 import type { FullBillSummary } from '../eval/live/billing.ts'
 import { fullWireWorkloads, runFullWire } from '../eval/live/full-wire.ts'
 import type { FullWireRun } from '../eval/live/full-wire.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { flash } from './economics-fixture.ts'
 import { resolvePreset } from '../src/preset.ts'
+import { LIVE_ENABLED } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
 /** A real window, so the measured prefix behavior is the production one. */
 const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 131_072)
 /**
@@ -43,12 +40,6 @@ const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 131_072)
  */
 const TURNS = Number(process.env.EF_LIVE_TURNS ?? 24)
 const PAIRS = Number(process.env.EF_LIVE_PAIRS ?? 5)
-
-function flash(): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
 
 /** One paired observation: the same workload and policy, both arms. */
 interface Pair {

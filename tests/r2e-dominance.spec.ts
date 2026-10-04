@@ -22,8 +22,6 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
@@ -37,8 +35,8 @@ import {
   priceArm,
 } from '../eval/src/dominance.ts'
 import type { CacheRealizationAssumption, DominanceRow } from '../eval/src/dominance.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { profile } from './economics-fixture.ts'
 
 /**
  * What is known about cache realization, per profile. Only the DeepSeek live
@@ -60,12 +58,6 @@ const PROFILE_IDS = [
   'openai-gpt-5.6-2026-09',
   'synthetic-no-cache',
 ] as const
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
 
 interface PolicySpec {
   readonly label: string

@@ -33,15 +33,9 @@ import {
   tallyPairs,
 } from '../eval/live/billing.ts'
 import type { BillLog, RequestBill, RequestClass } from '../eval/live/billing.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { flash } from './economics-fixture.ts'
 import { createHarness, SIGNAL } from './harness.ts'
-
-function flash(): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
+import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
 /** A bill with defaults, so a test states only the field it is about. */
 function bill(overrides: Partial<RequestBill> & { requestClass?: RequestClass }): RequestBill {
@@ -239,13 +233,10 @@ describe('R4-D: the modeled path stays available but is not what RBCR uses', () 
  * Live tier (opt-in)                                                        *
  * ------------------------------------------------------------------------ */
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
 const POLICY_WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 8_000)
 const GROWTH_TURNS = Number(process.env.EF_LIVE_GROWTH ?? 12)
 const PAIRS = Number(process.env.EF_LIVE_PAIRS ?? 3)
 
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 
 /** One growth turn's deterministic payload. */
 function filler(step: number): string {

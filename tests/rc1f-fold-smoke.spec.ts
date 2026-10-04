@@ -39,15 +39,14 @@ import type { Session as SessionType } from '@deepseek-ai/dsh-session'
 import { createHarness, SIGNAL } from './harness.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
+import { anchorSourceSeqs } from './anchor-fixture.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
 import { resolveEfCompactSpec, resolveEfConfig } from '../src/policy.ts'
 import { resolvePreset } from '../src/preset.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 /** The real routed window, so the trigger arithmetic is the production one. */
 const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 131_072)
 const RESERVED = 512
@@ -143,13 +142,7 @@ function plantToolResult(session: SessionType, code: string): void {
  */
 function declareAnchors(session: SessionType): void {
   const service = createAnchorService()
-  const userSeqs: number[] = []
-  let toolResultSeq: number | undefined
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const type = session.eventAt(seq as never)?.type
-    if (type === 'user/message') userSeqs.push(seq)
-    if (type === 'tool/result') toolResultSeq = seq
-  }
+  const { userSeqs, toolResultSeq } = anchorSourceSeqs(session)
   const declarations = [
     { id: 'rc1f-constraint', kind: 'constraint' as const, authority: 'normative' as const,
       value: 64, stateKey: { namespace: 'batch', entity: 'size', property: 'limit' } },

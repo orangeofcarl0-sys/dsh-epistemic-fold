@@ -26,8 +26,8 @@ import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { flash } from './economics-fixture.ts'
 import { NATIVE_FACT, nativeFactRefs, realRecallCommon, realRecallNative } from '../eval/workloads/real-recall.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
 import { recall, search } from '../src/recall.ts'
@@ -38,12 +38,6 @@ const WORKLOAD_MODEL = 'workload-model'
 const STEPS = 64
 const WINDOW = 16_000
 const REALIZATION = 0.91
-
-function flash(): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
 
 function cost(result: BaselineResult, profile: ContextEconomicsProfile): number {
   return priceArm({

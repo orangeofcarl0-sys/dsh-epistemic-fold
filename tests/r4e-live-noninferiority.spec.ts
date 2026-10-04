@@ -25,6 +25,7 @@ import type { Session as SessionType } from '@deepseek-ai/dsh-session'
 import { createHarness, SIGNAL } from './harness.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
+import { anchorSourceSeqs } from './anchor-fixture.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import {
@@ -35,10 +36,8 @@ import {
   tallyScenarios,
 } from '../eval/live/scenarios.ts'
 import type { ScenarioReplicate } from '../eval/live/scenarios.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 6_000)
 const GROWTH = Number(process.env.EF_LIVE_GROWTH ?? 14)
 const REPLICATES = Number(process.env.EF_LIVE_REPLICATES ?? 5)
@@ -110,13 +109,7 @@ function seed(): SessionType {
 /** Declare each fact through the real authority gate. */
 function declareAnchors(session: SessionType): void {
   const service = createAnchorService()
-  const userSeqs: number[] = []
-  let toolResultSeq: number | undefined
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const type = session.eventAt(seq as never)?.type
-    if (type === 'user/message') userSeqs.push(seq)
-    if (type === 'tool/result') toolResultSeq = seq
-  }
+  const { userSeqs, toolResultSeq } = anchorSourceSeqs(session)
   for (const [index, fact] of SCENARIO_FACTS.entries()) {
     if (fact.needsToolResult === true) {
       service.declare(session, {

@@ -19,21 +19,12 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { LlmAdapter } from '@deepseek-ai/dsh-llm'
 import type { GenerateOptions, LlmResolvedModelInfo, StreamChunk } from '@deepseek-ai/dsh-llm'
 import { BillingRecorder, classifyPurpose, isBillable } from '../eval/live/recorder.ts'
 import { fullBillToMarkdown, fullTaskRbcr, summarizeFullBill } from '../eval/live/billing.ts'
 import type { RequestBill } from '../eval/live/billing.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
-
-function flash(): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
+import { flash } from './economics-fixture.ts'
 
 /** A scripted inner adapter, so the recorder is testable without a provider. */
 class ScriptedAdapter extends LlmAdapter {

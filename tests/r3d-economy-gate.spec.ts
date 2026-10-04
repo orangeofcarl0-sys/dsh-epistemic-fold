@@ -23,8 +23,6 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { realRecallCommon } from '../eval/workloads/real-recall.ts'
@@ -33,8 +31,8 @@ import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-ba
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { profile } from './economics-fixture.ts'
 
 const STEPS = 64
 const WINDOW = 16_000
@@ -56,12 +54,6 @@ const PROFILES = [
   'deepseek-pro-2026-09',
   'openai-gpt-5.6-2026-09',
 ] as const
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
 
 /**
  * One arm. `framing` selects the checkpoint framing strategy; the seam is what

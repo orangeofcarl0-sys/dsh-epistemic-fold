@@ -31,10 +31,10 @@ import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
+import { anchorSourceSeqs } from './anchor-fixture.ts'
 import type { Harness } from './harness.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
 const REPLICATES = Number(process.env.EF_LIVE_REPLICATES ?? 3)
 
 /**
@@ -223,13 +223,7 @@ function buildSession(caseId: string, planted: readonly string[]): SessionType {
  */
 function declareAnchors(harness: Harness, session: SessionType, caseId: string): void {
   const service = createAnchorService()
-  const userSeqs: number[] = []
-  let toolResultSeq: number | undefined
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const type = session.eventAt(seq as never)?.type
-    if (type === 'user/message') userSeqs.push(seq)
-    if (type === 'tool/result') toolResultSeq = seq
-  }
+  const { userSeqs, toolResultSeq } = anchorSourceSeqs(session)
   const cite = (index: number): { seq: number } => ({ seq: (userSeqs[index] ?? userSeqs[0] ?? 0) as never })
   void harness
   if (caseId === 'timeout-supersession') {

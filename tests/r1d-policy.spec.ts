@@ -8,18 +8,10 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { compileContextPolicy } from '../src/policy-compiler.ts'
 import type { ContextPolicyInput } from '../src/policy-compiler.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
+import { profile } from './economics-fixture.ts'
 
 const flash = profile('deepseek-flash-2026-09')
 const gpt = profile('openai-gpt-5.6-2026-09')

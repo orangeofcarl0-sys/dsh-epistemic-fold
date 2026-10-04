@@ -18,8 +18,6 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import {
   MEASURED_DEEPSEEK_REALIZATION,
   SCENARIO_REALIZATION_RATES,
@@ -34,14 +32,7 @@ import {
 import type { ArmCostInput, DominanceRow } from '../eval/src/dominance.ts'
 import { TOKEN_BUCKETS } from '../eval/src/token-attribution.ts'
 import type { TokenBucket } from '../eval/src/token-attribution.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
+import { profile } from './economics-fixture.ts'
 
 const FLASH = profile('deepseek-flash-2026-09')
 const OPENAI = profile('openai-gpt-5.6-2026-09')

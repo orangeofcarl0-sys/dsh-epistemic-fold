@@ -39,18 +39,17 @@ import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
+import { anchorSourceSeqs } from './anchor-fixture.ts'
 import { locateFoldFrontier } from '../src/frontier.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
 /** Turns of incremental growth. Each one is a candidate maintenance event. */
 const GROWTH_TURNS = Number(process.env.EF_LIVE_GROWTH ?? 24)
 /** Deliberately far below the model's real capacity: the point is to CHAIN. */
 const POLICY_WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 6_000)
 const REPLICATES = Number(process.env.EF_LIVE_REPLICATES ?? 2)
 
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 
 interface Fact {
   readonly id: string
@@ -178,13 +177,7 @@ function seedSession(): SessionType {
 /** Declare every fact's anchor through the real authority gate. */
 function declareAnchors(session: SessionType): void {
   const service = createAnchorService()
-  const userSeqs: number[] = []
-  let toolResultSeq: number | undefined
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const type = session.eventAt(seq as never)?.type
-    if (type === 'user/message') userSeqs.push(seq)
-    if (type === 'tool/result') toolResultSeq = seq
-  }
+  const { userSeqs, toolResultSeq } = anchorSourceSeqs(session)
   for (const [index, fact] of FACTS.entries()) {
     if (fact.anchor.kind === 'failure') {
       service.declare(session, {

@@ -31,8 +31,8 @@ import type { ArmRunResult, LifecycleScenario } from '../eval/real-task/driver.t
 import { CODING_TASK, REAL_TASKS, RESEARCH_TASK, TOOL_HEAVY_TASK } from '../eval/real-task/tasks.ts'
 import type { RealTask } from '../eval/real-task/tasks.ts'
 import { taskRunToText } from '../eval/real-task/metrics.ts'
+import { LIVE_ENABLED } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
 
 /** How many times to repeat each (task, arm) cell. Small by design. */
 const REPLICATES = Number(process.env.EF_TASK_REPLICATES ?? 1)

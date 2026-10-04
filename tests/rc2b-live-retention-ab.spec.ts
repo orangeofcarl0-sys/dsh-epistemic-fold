@@ -40,8 +40,8 @@ import type { ArmRunResult, ArmSpec } from '../eval/real-task/driver.ts'
 import { RETENTION_AB_TASKS } from '../eval/real-task/tasks.ts'
 import type { RealTask } from '../eval/real-task/tasks.ts'
 import { taskRunToText } from '../eval/real-task/metrics.ts'
+import { LIVE_ENABLED } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
 
 /** How many times to repeat each (task, arm) cell. */
 const REPLICATES = Number(process.env.EF_AB_REPLICATES ?? 3)

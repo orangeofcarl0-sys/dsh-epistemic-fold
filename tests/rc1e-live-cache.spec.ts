@@ -36,9 +36,8 @@ import {
   summarizeProbes,
 } from '../eval/cache/microbench.ts'
 import type { CacheProbeRequest, CacheProbeResult } from '../eval/cache/microbench.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
 const PREFIX_TOKENS = Number(process.env.EF_LIVE_CACHE_PREFIX ?? 6_000)
 const SUFFIX_TOKENS = Number(process.env.EF_LIVE_CACHE_SUFFIX ?? 400)
 

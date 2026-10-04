@@ -42,10 +42,8 @@ import type { MeterObservation } from '../eval/src/safety-reserve.ts'
 import { buildCorpus } from '../eval/policy-replay/corpus.ts'
 import { triggerBreakdown } from '../src/trigger.ts'
 import { resolveEfConfig } from '../src/policy.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
-const MODEL_OPTIONS = { provider: LIVE_PROVIDER, model: 'live' }
 const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 131_072)
 const RESERVED = 512
 const SHIPPED_HEADROOM = 65_536

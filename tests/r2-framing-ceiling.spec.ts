@@ -14,14 +14,13 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
+import { flash } from './economics-fixture.ts'
 import { parseCheckpointMarker } from '../src/checkpoint-marker.ts'
 
 const REALIZATION_RATE = 0.91
@@ -29,12 +28,6 @@ const STEPS = 64
 const WINDOW = 16_000
 const PREAMBLE =
   'This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context.'
-
-function flashProfile(): ReturnType<typeof parseEconomicsProfile> {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
 
 /** Price a run from its measured totals, with an optional framing discount. */
 function priced(
@@ -50,7 +43,7 @@ function priced(
 
 describe('R2: framing-free ceiling', () => {
   it('every workload would beat Basic if checkpoint framing were free', async () => {
-    const profile = flashProfile()
+    const profile = flash()
     const results: Array<{ id: string; now: number; free: number }> = []
 
     for (const workload of allWorkloads()) {
@@ -192,7 +185,7 @@ describe('R2: framing-free ceiling', () => {
     // test computes the removal each workload actually requires and compares
     // it against what is reachable, which is the difference between "framing
     // is the gap" and "framing is a fixable gap".
-    const profile = flashProfile()
+    const profile = flash()
 
     /** Solve for the framing-removal fraction that brings BCR to exactly 1. */
     const requiredRemoval = (

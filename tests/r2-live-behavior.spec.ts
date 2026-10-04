@@ -48,9 +48,9 @@ import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
+import { anchorSourceSeqs } from './anchor-fixture.ts'
+import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
 const REPLICATES = Number(process.env.EF_LIVE_REPLICATES ?? 3)
 /** Steps of conversation between planting the facts and probing for them. */
 const HORIZON = Number(process.env.EF_LIVE_HORIZON ?? 40)
@@ -221,13 +221,7 @@ function buildSession(factId: string, horizon: number): SessionType {
 /** Declare every fact's anchor through the real authority gate (EF arms only). */
 function declareAnchors(session: SessionType): void {
   const service = createAnchorService()
-  const userSeqs: number[] = []
-  let toolResultSeq: number | undefined
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const type = session.eventAt(seq as never)?.type
-    if (type === 'user/message') userSeqs.push(seq)
-    if (type === 'tool/result') toolResultSeq = seq
-  }
+  const { userSeqs, toolResultSeq } = anchorSourceSeqs(session)
   for (const [index, fact] of FACTS.entries()) {
     if (fact.anchor.kind === 'failure') {
       if (toolResultSeq === undefined) throw new Error('r2live fixture: no tool result to cite')

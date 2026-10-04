@@ -28,8 +28,7 @@ import {
 import type { OracleResult } from '../eval/src/counterfactual.ts'
 import { TOKEN_BUCKETS } from '../eval/src/token-attribution.ts'
 import { compileContextPolicy } from '../src/policy-compiler.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { profile } from './economics-fixture.ts'
 import { paretoFrontier, paretoToMarkdown } from '../eval/src/pareto.ts'
 import type { PolicyPoint } from '../eval/src/pareto.ts'
 
@@ -48,12 +47,6 @@ const RISK: Record<string, { risk: 'low' | 'medium' | 'high'; kind: 'new-mechani
   'E-M5-oracle': { risk: 'high', kind: 'new-mechanism' },
   'E-adaptive-root-oracle': { risk: 'low', kind: 'policy-change' },
   'E-framing-oracle': { risk: 'low', kind: 'policy-change' },
-}
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
 }
 
 async function run(

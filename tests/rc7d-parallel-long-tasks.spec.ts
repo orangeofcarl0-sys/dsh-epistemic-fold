@@ -39,9 +39,9 @@ import { REAL_TASKS } from '../eval/real-task/tasks.ts'
 import { runCellsParallel } from '../eval/real-task/parallel.ts'
 import { armReportsToText, reportArm, sampleCaveat } from '../eval/real-task/engagement.ts'
 import type { CellOutcome, CellSpec } from '../eval/real-task/parallel.ts'
+import { LIVE_ENABLED } from './live-gate.ts'
 
 /** Live runs are opt-in: they spend real provider quota. */
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
 
 /** Replicates per (task, arm). The whole point of this suite is that this can be > 1. */
 const REPLICATES = Number(process.env.EF_TASK_REPLICATES ?? 3)

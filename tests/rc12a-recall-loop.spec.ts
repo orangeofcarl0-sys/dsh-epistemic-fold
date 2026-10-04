@@ -41,20 +41,10 @@ import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
 import { summarizeFullBill } from '../eval/live/billing.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { flash } from './economics-fixture.ts'
 import { resolvePreset } from '../src/preset.ts'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-const LIVE_PROVIDER = 'live'
-
-function flash(): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', 'deepseek-flash-2026-09.json'), 'utf8'),
-  ))
-}
 
 /**
  * The HINTED probe RC1.2 used: it tells the model the tools exist and to use

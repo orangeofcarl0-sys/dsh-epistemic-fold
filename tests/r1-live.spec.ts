@@ -23,19 +23,10 @@
 import { describe, expect, it } from 'vitest'
 import { resolveLiveRoute, redactSecret } from '../eval/live/zcode-config.ts'
 import { mapUsage, OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
 import { compileContextPolicy } from '../src/policy-compiler.ts'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { profile } from './economics-fixture.ts'
+import { LIVE_ENABLED } from './live-gate.ts'
 
-const LIVE_ENABLED = process.env.EF_LIVE === '1'
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
 
 describe('R1 live: usage mapping is exact (no credentials needed)', () => {
   it('treats inputTokens as UNCACHED, subtracting cached input out', () => {

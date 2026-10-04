@@ -33,10 +33,7 @@ import {
 } from '../eval/src/counterfactual.ts'
 import type { OracleResult, RoutingRow } from '../eval/src/counterfactual.ts'
 import { TOKEN_BUCKETS } from '../eval/src/token-attribution.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { profile } from './economics-fixture.ts'
 
 const WINDOW = 16_000
 
@@ -57,12 +54,6 @@ const REGIMES = {
 } as const
 
 type RegimeName = keyof typeof REGIMES
-
-function profile(id: string): ContextEconomicsProfile {
-  return parseEconomicsProfile(JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'profiles', 'economics', `${id}.json`), 'utf8'),
-  ))
-}
 
 async function efHarness(regime: RegimeName): Promise<Harness> {
   return createHarness({ text: 'ef digest' }, {
