@@ -11,7 +11,7 @@ line format and the R1 report numbers it produces. The two new capabilities are
 
 ## 1. The measurement that started it
 
-`D:/dsh/.epistemic-fold` held **1.0 MB** across 4 sessions. Small. The
+`<DSH_HOME>/.epistemic-fold` held **1.0 MB** across 4 sessions. Small. The
 interesting part was the ratio, measured per session against the log holding the
 same content:
 
