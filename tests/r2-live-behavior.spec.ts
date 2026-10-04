@@ -49,6 +49,7 @@ import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
 import { anchorSourceSeqs } from './anchor-fixture.ts'
+import { ask, probePrompt, surfaceText } from './live-probe.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
 const REPLICATES = Number(process.env.EF_LIVE_REPLICATES ?? 3)
@@ -248,47 +249,6 @@ function declareAnchors(session: SessionType): void {
 }
 
 /** All model-visible surface text. */
-function surfaceText(session: SessionType): string {
-  const parts: string[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null) continue
-    parts.push(message.content.map(block => block.type === 'text' ? block.text : '').join('\n'))
-  }
-  return parts.join('\n')
-}
-
-/** Ask one probe through the live adapter. */
-async function ask(adapter: OpenAiCompatibleAdapter, prompt: string): Promise<string> {
-  const parts: string[] = []
-  for await (const chunk of adapter.stream({
-    provider: LIVE_PROVIDER,
-    model: 'live',
-    messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
-    maxTokens: 60,
-  } as never)) {
-    if (chunk.type === 'text-delta') parts.push(chunk.text)
-  }
-  return parts.join('').trim()
-}
-
-/** The post-fold surface plus one probe. */
-function probePrompt(session: SessionType, probe: string): string {
-  const lines: string[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null) continue
-    const text = message.content
-      .map(block => block.type === 'text' ? block.text : '')
-      .filter(part => part.length > 0)
-      .join('\n')
-    if (text.length === 0) continue
-    lines.push(`[${message.role}] ${text}`)
-  }
-  lines.push(`[user] ${probe}`)
-  return lines.join('\n\n')
-}
-
 /** One arm's configuration. */
 interface ArmSpec {
   readonly id: string

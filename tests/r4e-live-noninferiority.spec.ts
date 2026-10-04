@@ -26,6 +26,7 @@ import { createHarness, SIGNAL } from './harness.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
 import { anchorSourceSeqs } from './anchor-fixture.ts'
+import { probePrompt } from './live-probe.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import {
@@ -132,23 +133,6 @@ function declareAnchors(session: SessionType): void {
       sourceRefs: [{ seq: (userSeqs[index] ?? userSeqs[0] ?? 0) as never }],
     })
   }
-}
-
-/** The surface as the model sees it, plus one probe. */
-function probePrompt(session: SessionType, probe: string): string {
-  const lines: string[] = []
-  for (const seq of session.surface.nodes) {
-    const message = session.deriveEventMessage(session.eventAt(seq)!)
-    if (message === null) continue
-    const text = message.content
-      .map(block => block.type === 'text' ? block.text : '')
-      .filter(part => part.length > 0)
-      .join('\n')
-    if (text.length === 0) continue
-    lines.push(`[${message.role}] ${text}`)
-  }
-  lines.push(`[user] ${probe}`)
-  return lines.join('\n\n')
 }
 
 /**
