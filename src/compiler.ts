@@ -78,6 +78,12 @@ export function buildBundle(options: {
   renderedText: string
   semanticText?: string
   compactionId?: CompactionId
+  /**
+   * The state the rendered body was projected from, if a projection was
+   * mounted. Recorded as a digest so a later reader can prove the checkpoint
+   * still shows what the log derives; see `CheckpointBundleV1.state`.
+   */
+  renderedState?: { readonly digest: string; readonly anchors: number }
 }): CheckpointBundleV1 {
   const { candidate } = options
   const logicalHash = canonicalHash(options.shadowedMessages)
@@ -103,6 +109,9 @@ export function buildBundle(options: {
     ...(options.semanticText === undefined
       ? {}
       : { semantic: { text: options.semanticText } }),
+    ...(options.renderedState === undefined
+      ? {}
+      : { state: options.renderedState }),
     rendered: {
       text: options.renderedText,
       digest: canonicalHash(options.renderedText),

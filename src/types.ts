@@ -64,6 +64,34 @@ export interface CheckpointBundleV1 {
     readonly text: string
   }
 
+  /**
+   * The cognitive state this checkpoint was rendered from, bound by digest.
+   *
+   * ## Why this exists
+   *
+   * The checkpoint body shows a MODEL-FACING view of the deterministic state
+   * ("Current" / "Evidence" / "Open"). That view is a projection, and until this
+   * field existed nothing recorded WHICH state it projected — so a rendering or
+   * reducer defect would put a state snapshot in front of the model that no
+   * longer matched what the log derives, with nothing able to notice. That is
+   * the shape the memory literature calls ghost memory / governance decay: the
+   * displayed state silently diverges from the truth.
+   *
+   * `digest` is `canonicalHash(state)`. A reader can re-derive the state from
+   * the session log, hash it, and compare: equal means the checkpoint shows the
+   * state the log supports, unequal is detectable corruption rather than a
+   * plausible-looking lie.
+   *
+   * Absent when no projection was mounted, which is exactly when no state was
+   * rendered into the body — so absence is informative, not missing data.
+   */
+  readonly state?: {
+    /** `canonicalHash` over the `FoldCurrentState` that produced the body. */
+    readonly digest: string
+    /** Anchors visible in the rendered body, for a cheap sanity comparison. */
+    readonly anchors: number
+  }
+
   readonly rendered: {
     /** The checkpoint text as it appears (framed) on the surface. */
     readonly text: string

@@ -12,6 +12,7 @@ import {
   sha256Hex,
 } from '../src/hash.ts'
 import { locateFoldFrontier, readEfCheckpoint } from '../src/frontier.ts'
+import { canonicalJson } from '../src/hash.ts'
 import { frozenCheckpointLoad, selectLeafSpan } from '../src/leaf-policy.ts'
 import { evaluateRootRebase } from '../src/root-policy.ts'
 import {
@@ -218,6 +219,40 @@ describe('P05: manual compaction is a root fold', () => {
     if (verification.status === 'verified') {
       expect(verification.bundle.rendered.text).toContain('[EF1 R cp:')
     }
+  })
+
+  it('a root fold\'s seq refs identify exactly its archive, never the retained tail', async () => {
+    // THE DEFECT THIS PINS (measured on a real session, 212 seqs vs 211
+    // messages): a root fold has no candidate span, so the seq list was taken
+    // from "the whole current surface". But `selectCompactableRange` retains a
+    // tail — the folded span is a PREFIX of the surface — so one seq that was
+    // never folded got appended, and the last surface node is exactly what it
+    // was. `commit.shadowedSeqs` (Basic's own result) agreed with the archive,
+    // so the bundle was the side that was wrong.
+    //
+    // This matters beyond tidiness: a bundle whose seq refs over-count its
+    // archive cannot be turned into a reference-only manifest, because the refs
+    // would name content the fold never covered.
+    const { engine, store } = await createHarness({ text: 'root digest' })
+    const session = closedConversation(8)
+
+    const result = await engine.compactNow(idleAgent(session), SIGNAL)
+    expect(result).not.toBeNull()
+
+    const bundles = await store.list(session.id)
+    const bundle = (await store.read(session.id, bundles[0]!.checkpointId))!
+
+    // The three sources that must agree.
+    expect(bundle.source.orderedSurfaceSeqs).toHaveLength(bundle.archive.shadowedMessages.length)
+    expect(bundle.source.orderedSurfaceSeqs).toHaveLength(result!.shadowedSeqs.length)
+    expect([...bundle.source.orderedSurfaceSeqs]).toEqual([...result!.shadowedSeqs])
+
+    // And the refs must actually derive the archive, in order.
+    const derived = bundle.source.orderedSurfaceSeqs
+      .map(seq => session.deriveEventMessage(session.eventAt(seq)!))
+      .filter(message => message !== null)
+    expect(derived).toHaveLength(bundle.archive.shadowedMessages.length)
+    expect(derived.map(canonicalJson)).toEqual(bundle.archive.shadowedMessages.map(canonicalJson))
   })
 })
 

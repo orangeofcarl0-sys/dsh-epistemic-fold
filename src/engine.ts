@@ -57,7 +57,7 @@ import { createRebaseIntentRegistry } from './rebase-intent.ts'
 import type { PendingRebaseIntent, RebaseCause, RebaseIntentRegistry } from './rebase-intent.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
-import { renderStructuredCheckpoint } from './renderer.ts'
+import { describeRenderedState, renderStructuredCheckpoint } from './renderer.ts'
 import { rationaleOnly } from './rationale.ts'
 import {
   conversationTarget,
@@ -767,7 +767,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       throw new Error('epistemic-fold: summarize reached without a prepared fold candidate')
     }
     const { contextPrefix, shadowedMessages } = splitSummarizationInput(input)
-    const orderedSurfaceSeqs = this.currentSpanSeqs(agent, candidate, contextPrefix.length > 0)
+    // The archive is the authority for how many surface nodes this fold covers;
+    // see `currentSpanSeqs` for why the live surface alone cannot answer it.
+    const orderedSurfaceSeqs = this.currentSpanSeqs(
+      agent,
+      candidate,
+      contextPrefix.length > 0,
+      shadowedMessages.length,
+    )
 
     // The fallback SummaryResult that lands if the semantic call fails. The
     // transaction stays a success for Basic: the bundle is durable and the
@@ -796,6 +803,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         shadowedMessages,
         renderedText,
         ...(semanticText === undefined ? {} : { semanticText }),
+        // Bind the body to the state it projected. Only when a projection was
+        // mounted, because only then is state in the body at all.
+        ...(mountedState === undefined
+          ? {}
+          : { renderedState: describeRenderedState(mountedState) }),
       })
       await this.bundles.write(bundle)
       this.lastPublishedBundle = bundle
@@ -899,24 +911,52 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * The candidate's start/end name surface positions at prepare time; Basic
    * revalidated the span before the summarize call, so the current surface
    * still contains both boundaries.
+   *
+   * ## Why the archive length is the authority
+   *
+   * A ROOT fold has no candidate span, and the surface is NOT the same set of
+   * nodes the archive covers: `selectCompactableRange` deliberately retains a
+   * tail (`retainTokens`, and at least one node — see its `keepFromIdx` walk),
+   * so the folded span is a PREFIX of the surface. Deriving the seq list from
+   * "the whole current surface" therefore appended one seq that was never
+   * folded. Measured on a real session: bundle seqs 212 vs 211 archived
+   * messages, and `commit.shadowedSeqs` (Basic's own result) agreed with 211 —
+   * the extra seq was the retained tail.
+   *
+   * So the seq list is taken from the surface positions that correspond to the
+   * archived messages, and the archive length decides how many those are. That
+   * makes the two structurally unable to disagree, which is what a reference
+   * scheme needs before it can trust a seq list at all.
    */
   private currentSpanSeqs(
     agent: Agent,
     candidate: ReturnType<FoldCandidateRegistry['get']>,
     hasSystemHead: boolean,
+    archivedCount: number,
   ): readonly SessionSeq[] {
     const nodes = agent.session.surface.nodes
     if (candidate?.start !== undefined && candidate.end !== undefined) {
       const startIdx = nodes.indexOf(candidate.start)
       const endIdx = nodes.indexOf(candidate.end)
       if (startIdx !== -1 && endIdx !== -1 && startIdx <= endIdx) {
-        return nodes.slice(startIdx, endIdx + 1)
+        const span = nodes.slice(startIdx, endIdx + 1)
+        // The leaf span must already agree with the archive; a mismatch here is
+        // a real inconsistency rather than a root-fold shape, so it fails loud
+        // instead of being silently trimmed to fit.
+        if (span.length !== archivedCount) {
+          throw new Error(
+            `epistemic-fold: leaf fold span has ${span.length} surface node(s) but archived `
+            + `${archivedCount} message(s); the bundle's seq refs would not identify its archive`,
+          )
+        }
+        return span
       }
     }
-    // Implicit root fold: everything currently on the surface except the
-    // system head node, which the summarization input retains unshadowed.
-    if (hasSystemHead && nodes.length > 0) return nodes.slice(1)
-    return [...nodes]
+    // Implicit root fold: the folded span is the LEADING part of the surface,
+    // excluding the system head (which the summarization input retains
+    // unshadowed) and excluding the retained tail.
+    const headOffset = hasSystemHead && nodes.length > 0 ? 1 : 0
+    return nodes.slice(headOffset, headOffset + archivedCount)
   }
 }
 

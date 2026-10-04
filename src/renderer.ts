@@ -9,6 +9,7 @@
  */
 
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
+import { canonicalHash } from './hash.ts'
 import { stateKeyText } from './state.ts'
 import type { Anchor, FoldCurrentState } from './state.ts'
 
@@ -109,6 +110,34 @@ export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresent
  * @param rationale - semantic digest text; advisory only, never state.
  * @returns the structured checkpoint body (unframed).
  */
+/**
+ * Describe the state a rendered checkpoint body was projected from.
+ *
+ * The digest is what makes a checkpoint's displayed state CHECKABLE: a reader
+ * re-derives the state from the session log, hashes it the same way, and
+ * compares. Without it, a rendering or reducer defect shows the model a state
+ * snapshot that no longer matches the log and nothing can tell — the shape the
+ * memory literature calls ghost memory / governance decay.
+ *
+ * `anchors` counts the entries the body actually presents, giving a reader a
+ * cheap structural comparison alongside the cryptographic one: a digest
+ * mismatch with an equal count points at a changed value, an unequal count at a
+ * lost or duplicated anchor.
+ *
+ * @param state - the deterministic current state at fold time.
+ * @returns the digest and the visible anchor count.
+ */
+export function describeRenderedState(state: FoldCurrentState): {
+  readonly digest: string
+  readonly anchors: number
+} {
+  const presentation = projectForCheckpoint(state)
+  return {
+    digest: canonicalHash(state),
+    anchors: presentation.current.length + presentation.evidence.length + presentation.open.length,
+  }
+}
+
 export function renderStructuredCheckpoint(
   state: FoldCurrentState,
   checkpointId: string,
