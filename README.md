@@ -35,11 +35,14 @@ Concretely, when the runtime folds a span of conversation it:
 2. **never re-folds what is already frozen** — a monotonically advancing *Fold
    Frontier* separates frozen checkpoints from the open trajectory, so the cached
    prefix stays byte-stable across folds;
-3. **derives the current state deterministically from raw session events** —
-   objectives, constraints, decisions, values, evidence, failures, and
-   obligations, with full provenance and a hard rule that narrative summaries can
-   never verify state (`Raw Events → State` and `Raw Events → Summary` run in
-   parallel; `Raw → Summary → State` is forbidden);
+3. **maintains a deterministic current-state model** from provenance-grounded
+   state events and failed tool results. The reducer can represent objectives,
+   constraints, decisions, values, evidence, failures, and obligations, but
+   automatic production currently covers failed tool results only — see
+   [State ownership](#state-ownership). It carries full provenance and a hard
+   rule that narrative summaries can never verify state (`Raw Events → State`
+   and `Raw Events → Summary` run in parallel; `Raw → Summary → State` is
+   forbidden);
 4. **recovers exactly** — `context_search` / `context_recall` serve bounded,
    paginated, provenance-checked recall of anything that left the working set.
 
@@ -239,7 +242,9 @@ evidence status, and this file follows the same rule.
 
 | area | status |
 | --- | --- |
-| Exact archive / recall closure, bundle store, deterministic state | ✅ **MEASURED** — M0/M2/M3a gates closed |
+| Exact archive / recall closure, bundle store | ✅ **PRODUCTION-EXERCISED** — M0/M2 gates closed |
+| Deterministic state reducer, authority and supersession invariants | ✅ **MACHINE-VERIFIED** — M3a gates closed on fixtures and live-injected anchors |
+| Production state producers | ⚠️ **PARTIAL** — automatic failed-tool state only; no general anchor producer is wired into ordinary sessions |
 | Fold Frontier, leaf/root folds, prefix stability | ✅ **MEASURED** |
 | `economy` tier cost parity | ✅ **MEASURED** — RC1.3: parity with Basic at ~1/17 cost, reproduced |
 | Recall quality | ✅ **MEASURED** — 3.00/3 n=9, matching Basic |
@@ -256,6 +261,33 @@ evidence status, and this file follows the same rule.
 
 Only one question remains open, and it is a **pricing** question that must not
 drive the architecture: the route-level realized cost gate.
+
+### State ownership
+
+EF's `AnchorKind` set — `objective`, `constraint`, `decision`, `value`,
+`artifact`, `evidence`, `failure`, `obligation` — is a **normalized state
+vocabulary**: it says what EF can *represent* in a bounded working view. It is
+not a claim of domain ownership. Where a canonical owner already exists, that
+owner stays authoritative and EF does not duplicate it.
+
+| Domain | Canonical owner | EF's role |
+| --- | --- | --- |
+| Completion objective | DSH `dsh-goal` (`goal/change`) | none |
+| Current execution plan | DSH `dsh-tool-todo` (`todo/write`) | none |
+| Global / project guidance | `AGENTS.md`, loaded by `dsh-agent-instructions` | none — already durable, model-visible history |
+| Tool failures | raw `tool/result` | **EF derives state — its only automatic production producer** |
+| Session-local assertions, temporary constraints | no canonical owner | candidate only; no producer today |
+| Decisions, evidence, artifacts, obligations | no canonical owner | no producer, and none is planned |
+
+**Custom durable events are not persistence-safe on current DSH.** EF appends
+`ef/anchor` through `ctx.epistemicFold`, but that type is outside DSH's known
+event vocabulary and the current `Session.append` cannot stamp the envelope's
+`ignorable` marker, so the persistence read path refuses to reopen a log
+containing one (`SessionFormatUnsupportedError`). The reducer, authority gate,
+and supersession semantics are verified in memory; the durable write is not.
+`declare()` is therefore not a production-safe state write — see
+`tests/persistence-compat.spec.ts`, which pins the host capability as a probe
+rather than asserting a permanent failure.
 
 ---
 

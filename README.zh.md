@@ -31,10 +31,12 @@ Epistemic Fold (EF) 是 [DeepSeek Harness](https://github.com/deepseek-ai/deepse
    有损 surface 替换提交之前（`BundleDurable ≺ SurfaceLoss`）；
 2. **绝不重折叠已冻结的内容** —— 单调前进的 *Fold Frontier* 分隔冻结 checkpoint
    与开放轨迹，缓存的 prefix 在多次折叠间逐字节稳定；
-3. **当前状态由原始 session 事件确定性派生** —— objective、constraint、decision、
-   value、evidence、failure、obligation，全部携带完整 provenance；并且有一条硬
-   规则：语义摘要永远不能验证状态（`Raw Events → State` 与
-   `Raw Events → Summary` 并行；`Raw → Summary → State` 被禁止）；
+3. **维护一个确定性的当前状态模型** —— 来源是带 provenance 的状态事件与失败的
+   工具结果。reducer 能够表达 objective、constraint、decision、value、evidence、
+   failure、obligation，但当前的自动生产只覆盖失败的工具结果，详见
+   [状态归属](#状态归属)。它携带完整 provenance，并且有一条硬规则：语义摘要
+   永远不能验证状态（`Raw Events → State` 与 `Raw Events → Summary` 并行；
+   `Raw → Summary → State` 被禁止）；
 4. **精确恢复** —— `context_search` / `context_recall` 对任何离开工作集的内容提供
    有界、分页、经 provenance 校验的召回。
 
@@ -216,7 +218,9 @@ tab 桥接进原生注册表，无条件双注册会让用户看到两条一模�
 
 | 领域 | 状态 |
 | --- | --- |
-| 精确归档/召回闭环、bundle store、确定性状态 | ✅ **MEASURED** —— M0/M2/M3a 各 Gate 已闭合 |
+| 精确归档/召回闭环、bundle store | ✅ **PRODUCTION-EXERCISED** —— M0/M2 各 Gate 已闭合 |
+| 确定性 state reducer、authority 与 supersession 不变量 | ✅ **MACHINE-VERIFIED** —— M3a 各 Gate 在 fixture 与 live 注入 anchor 上闭合 |
+| 生产环境的状态生产者 | ⚠️ **PARTIAL** —— 目前只有失败工具结果的自动状态；普通 session 未接入通用 anchor producer |
 | Fold Frontier、leaf/root 折叠、prefix 稳定性 | ✅ **MEASURED** |
 | `economy` 档成本持平 | ✅ **MEASURED** —— RC1.3：与 Basic 持平且成本约 1/17，已复现 |
 | 召回质量 | ✅ **MEASURED** —— 3.00/3，n=9，与 Basic 持平 |
@@ -232,6 +236,30 @@ tab 桥接进原生注册表，无条件双注册会让用户看到两条一模�
 ROI）。
 
 仅剩一个未决问题，且它属于**定价**问题，不得反向驱动架构：路由级实测成本门。
+
+### 状态归属
+
+EF 的 `AnchorKind` 集合 —— `objective`、`constraint`、`decision`、`value`、
+`artifact`、`evidence`、`failure`、`obligation` —— 是一套**规范化状态词汇**：
+它描述 EF 在有界工作面里**能够表达什么**，而不是对领域所有权的声明。凡是已有
+canonical owner 的领域，owner 仍然是权威来源，EF 不重复拥有。
+
+| 领域 | Canonical owner | EF 的角色 |
+| --- | --- | --- |
+| 完成目标（objective） | DSH `dsh-goal`（`goal/change`） | 无 |
+| 当前执行计划 | DSH `dsh-tool-todo`（`todo/write`） | 无 |
+| 全局/项目指导规则 | `AGENTS.md`，由 `dsh-agent-instructions` 加载 | 无 —— 本身已是持久、模型可见的历史 |
+| 工具失败 | 原始 `tool/result` | **EF 派生状态 —— 目前唯一的自动生产者** |
+| session 内断言、临时约束 | 暂无 canonical owner | 仅为候选；当前无 producer |
+| decisions、evidence、artifacts、obligations | 暂无 canonical owner | 无 producer，且不计划增加 |
+
+**在当前 DSH 上，自定义持久事件并不安全。** EF 通过 `ctx.epistemicFold` 追加
+`ef/anchor`，但该类型不在 DSH 的已知事件词汇表中，且当前 `Session.append` 无法
+写入 envelope 的 `ignorable` 标记，因此 persistence 读取路径会拒绝重新打开含有该
+事件的日志（`SessionFormatUnsupportedError`）。reducer、authority gate 与
+supersession 语义在内存中已验证；持久化写入尚未验证。因此 `declare()` 不是
+production-safe 的状态写入 —— 见 `tests/persistence-compat.spec.ts`，它把宿主能力
+固定为探测，而不是断言永久失败。
 
 ---
 

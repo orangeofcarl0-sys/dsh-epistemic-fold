@@ -24,7 +24,7 @@ import z from '@deepseek-ai/schemastery'
 // Type-only: makes the optional sibling service available to `ctx.get()`.
 import type {} from '@deepseek-ai/dsh-system-prompt'
 import type { AnchorService } from './anchor-service.ts'
-import { createAnchorService } from './anchor-service.ts'
+import { createAnchorService, hostAdmitsPluginEvents } from './anchor-service.ts'
 import { EpistemicFoldEngine } from './engine.ts'
 import { registerIdleRebaseConsumer } from './idle-rebase.ts'
 import type { IdleRebaseAttempt, IdleRebaseRegistration } from './idle-rebase.ts'
@@ -121,7 +121,17 @@ export class EpistemicFoldPlugin {
 
     // Anchor service: the sanctioned `ef/anchor` producer, provided for the
     // plugin's fiber lifetime (cordis requires provide, not assignment).
-    this.anchors = createAnchorService()
+    //
+    // The capability probe is wired here rather than defaulted in the service:
+    // `ef/anchor` is outside DSH's known event vocabulary, and a host whose
+    // `append` drops the `ignorable` marker would persist a log it then refuses
+    // to reopen. Refusing the write is the only safe answer, and only the
+    // mounted plugin knows which host it is on. The answer cannot change within
+    // a process, so it is probed once rather than on every write.
+    let admitsPluginEvents: boolean | undefined
+    this.anchors = createAnchorService({
+      durableWritesAllowed: () => (admitsPluginEvents ??= hostAdmitsPluginEvents()),
+    })
     ctx.provide('epistemicFold', this.anchors)
 
     // Deterministic state projection + recall tools: registered for the

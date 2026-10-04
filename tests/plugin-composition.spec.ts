@@ -28,6 +28,7 @@ import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { ToolRuntime } from '@deepseek-ai/dsh-tools'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import { EpistemicFoldEngine } from '../src/engine.ts'
+import { createAnchorService } from '../src/anchor-service.ts'
 import { EF_CURRENT_STATE_KEY, currentFoldState } from '../src/projection.ts'
 import { recall } from '../src/recall.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
@@ -155,7 +156,12 @@ describe('R0-B: native plugin composition', () => {
     expect(recalled?.text).toContain(`cp:${checkpointId}`)
   })
 
-  it('anchor service declares authority-gated state through the plugin', async () => {
+  it('the plugin-provided anchor service refuses a write this host cannot persist', async () => {
+    // `ef/anchor` is outside DSH's known event vocabulary, and a host whose
+    // `append` drops the `ignorable` marker would persist a log it then refuses
+    // to reopen. The plugin wires the capability probe, so on such a host the
+    // refusal IS the contract — the round-trip establishing why lives in
+    // tests/persistence-compat.spec.ts.
     const { ctx } = await createContextWithPlugin()
     const session = conversation()
     session.append('user/message', createUserMessage({
@@ -163,18 +169,20 @@ describe('R0-B: native plugin composition', () => {
       source: { kind: 'user' },
     }), { surfaceOp: 'append' })
 
-    const anchor = ctx.epistemicFold.declare(session, {
+    const before = session.seq
+    expect(() => ctx.epistemicFold.declare(session, {
       kind: 'constraint',
       stateKey: { namespace: 'scope', entity: 'cli', property: 'flags' },
       value: 'keep the CLI flags stable',
       authority: 'normative',
       sourceRefs: [{ seq: (session.seq - 1) as never }],
-    })
-    const state = currentFoldState(ctx, session)
-    expect(Object.values(state.constraints)[0]!.id).toBe(anchor.id)
+    })).toThrow(/refusing to append `ef\/anchor`/u)
+    expect(session.seq, 'a refused write must not reach the log').toBe(before)
 
-    // The gate refuses laundering through the mounted service as well.
-    expect(() => ctx.epistemicFold.declare(session, {
+    // The authority gate itself is unchanged and still refuses laundering. It
+    // stays reachable on the in-memory face, where nothing persists the log.
+    const inMemory = createAnchorService()
+    expect(() => inMemory.declare(session, {
       kind: 'constraint',
       stateKey: { namespace: 'scope', entity: 'cli', property: 'flags' },
       value: 'claim from assistant prose',
