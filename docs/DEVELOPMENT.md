@@ -1,5 +1,7 @@
 # Epistemic Fold Development Guide
 
+[中文](DEVELOPMENT.zh.md)
+
 ## 1. Prerequisites
 
 - Node `^22.19 || >=24`

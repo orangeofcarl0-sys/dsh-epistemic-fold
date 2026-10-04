@@ -1,5 +1,7 @@
 # Epistemic Fold Documentation
 
+[中文](README.zh.md)
+
 This directory contains two different kinds of documentation:
 
 1. **stable product documentation** — what the software is and how to use it today;

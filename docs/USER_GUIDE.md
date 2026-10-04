@@ -1,5 +1,7 @@
 # Epistemic Fold User Guide
 
+[中文](USER_GUIDE.zh.md)
+
 This guide describes the current product surface. For research history, use [README.md](README.md).
 
 ## 1. Installation

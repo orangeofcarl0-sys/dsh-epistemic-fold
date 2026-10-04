@@ -118,6 +118,41 @@ describe('RC3: the package declares a real plugin entry', () => {
     }
   })
 
+  it('keeps every stable document bilingual, and cross-linked', async () => {
+    // The stable product documents are the ones a reader is expected to ACT on —
+    // install, configure, understand the contract. A reader who only reads
+    // Chinese was previously handed an English-only ARCHITECTURE/USER_GUIDE/
+    // DEVELOPMENT, which is the same as not shipping them.
+    //
+    // The pair is the contract, in both directions: a `.zh.md` that exists but
+    // cannot be reached from its English twin is unreachable in practice, and a
+    // stale translation is worse than none because it reads as current.
+    const STABLE = ['README', 'ARCHITECTURE', 'DEVELOPMENT', 'USER_GUIDE'] as const
+
+    for (const stem of STABLE) {
+      const en = `docs/${stem}.md`
+      const zh = `docs/${stem}.zh.md`
+      expect(existsSync(join(ROOT, en)), `${en} must exist`).toBe(true)
+      expect(existsSync(join(ROOT, zh)), `${zh} must exist`).toBe(true)
+
+      const enText = await readFile(join(ROOT, en), 'utf8')
+      const zhText = await readFile(join(ROOT, zh), 'utf8')
+
+      // Reachable from each side.
+      expect(enText, `${en} must link to ${stem}.zh.md`).toContain(`](${stem}.zh.md)`)
+      expect(zhText, `${zh} must link back to ${stem}.md`).toContain(`](${stem}.md)`)
+
+      // A translation, not a stub. Counting HEADINGS rather than characters:
+      // a placeholder file is usually long enough to pass a length check while
+      // having none of the structure the reader navigates by. The Chinese
+      // edition may merge or add a section, so the bar is a floor, not equality.
+      const headings = (text: string): number => (text.match(/^#{2,3} /gmu) ?? []).length
+      const enHeadings = headings(enText)
+      expect(headings(zhText), `${zh} must carry the same section structure as ${en}`)
+        .toBeGreaterThanOrEqual(Math.ceil(enHeadings * 0.8))
+    }
+  })
+
   it('documents that a bare git spec follows the branch, not the release', async () => {
     // MEASURED, and the reason this test exists: `dsh plugin` never queries the
     // GitHub Releases API. It hands the spec to pnpm, which resolves

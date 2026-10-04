@@ -1,5 +1,7 @@
 # Epistemic Fold Architecture
 
+[中文](ARCHITECTURE.zh.md)
+
 ## 1. Model
 
 Epistemic Fold treats long-agent context as a working set over a more durable record.

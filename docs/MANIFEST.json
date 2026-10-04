@@ -246,22 +246,42 @@
   },
   {
     "file": "ARCHITECTURE.md",
-    "bytes": 8229,
-    "sha256": "df73380cf0703d0d3d71c9c1b0986fff89818bc64c42072d8801eec06f2b2598"
+    "bytes": 8259,
+    "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
+  },
+  {
+    "file": "ARCHITECTURE.zh.md",
+    "bytes": 8012,
+    "sha256": "4d001159cd03aeedc3022ebbca8d48624daa78ded79e43ca7d8093b2092f9fa2"
   },
   {
     "file": "DEVELOPMENT.md",
-    "bytes": 5734,
-    "sha256": "cae084bdc19bf619236d798094aa0b891af1efe6497c10a0d0f5ed00d30d055b"
+    "bytes": 5763,
+    "sha256": "82d161213243e51b7d37b34c6e4d621ed0b634b8ffe3b0021044e125e16884f8"
+  },
+  {
+    "file": "DEVELOPMENT.zh.md",
+    "bytes": 5575,
+    "sha256": "47dc7a35e7973da9c38bd01e0c158fbd2d33f1caab61530bf21aa1b725af6ab6"
   },
   {
     "file": "README.md",
-    "bytes": 7838,
-    "sha256": "8369357a075f4de71cbaf47223bc048bc6b53c8a400326a877f90e11d5d81f99"
+    "bytes": 7862,
+    "sha256": "81f8cb96d83d75f1359c3162a39ac19e9c5a8ae53f1fee66a338708ae7f5c870"
+  },
+  {
+    "file": "README.zh.md",
+    "bytes": 7608,
+    "sha256": "57e1bfaab5c8855f663ea9e986d8ea50673ded53830e926d121f8bfe0a259204"
   },
   {
     "file": "USER_GUIDE.md",
-    "bytes": 7392,
-    "sha256": "0f64f8e177c957767d8eadb93b52ff33e9e74e5b67a058bb7dda00b236e94882"
+    "bytes": 7420,
+    "sha256": "84d5d87380b95f61358261368e21002059a3006ffb8c44abfa0370f2f061b4ca"
+  },
+  {
+    "file": "USER_GUIDE.zh.md",
+    "bytes": 6963,
+    "sha256": "0553c00ae10541aa1068c65b8f6a6279e2704b24f521449dfe7c0d87a65d9279"
   }
 ]

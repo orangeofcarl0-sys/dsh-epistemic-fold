@@ -16,7 +16,7 @@
 **旧轨迹离开热上下文。**
 **Agent 继续工作，而不必把有损摘要当成事实来源。**
 
-[English](README.md) · [使用指南](docs/USER_GUIDE.md) · [架构](docs/ARCHITECTURE.md) · [研究归档](docs/README.md)
+[English](README.md) · [使用指南](docs/USER_GUIDE.zh.md) · [架构](docs/ARCHITECTURE.zh.md) · [研究归档](docs/README.zh.md)
 
 ![Epistemic Fold Sidebar 面板：模式、相对窗口的上下文压力、归档历史、累计折叠次数、检索活动与实测供应商用量](docs/assets/sidebar-panel.png)
 
@@ -255,7 +255,7 @@ EF 替换 DSH `standard`、`ptc`、`cordis` preset 内的 compaction backend；
 ```
 
 安装渠道、pnpm `allowBuilds`、preset 校验、浏览器检查和升级行为见
-[使用指南](docs/USER_GUIDE.md) 与详细的 [部署链](docs/42_DEPLOYMENT_CHAIN.md)。
+[使用指南](docs/USER_GUIDE.zh.md) 与详细的 [部署链](docs/42_DEPLOYMENT_CHAIN.md)。
 
 ---
 
@@ -282,7 +282,7 @@ EF 刻意把“已测量的行为”和“产品假设”分开。
 这个区分是刻意的。EF 多次通过真实运行发现 instrumentation bug，项目选择保留这些更正，
 而不是把一次 null result 包装成营销结论。
 
-完整证据链在 [docs/README.md](docs/README.md)。
+完整证据链在 [docs/README.zh.md](docs/README.zh.md)。
 
 ---
 
@@ -346,7 +346,7 @@ Epistemic Fold 不是：
 EF 拥有的是 **folding contract**。已有的 DSH 子系统继续拥有它们本来就拥有的状态。
 
 状态归属与自定义 `ef/anchor` 事件当前的持久化限制见
-[Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations)。
+[Architecture](docs/ARCHITECTURE.zh.md#7-state-归属与当前限制)。
 
 ---
 
@@ -474,13 +474,13 @@ docs/                   设计记录与评测报告（见下）
 
 推荐阅读顺序：
 
-- [使用指南](docs/USER_GUIDE.md) —— 安装、模式、命令、Sidebar、排错。
-- [架构](docs/ARCHITECTURE.md) —— contract、fold 生命周期、state 与 recall。
-- [开发指南](docs/DEVELOPMENT.md) —— 本地环境、测试、评测约定。
-- [研究与证据导航](docs/README.md) —— 稳定文档 + 完整归档。
+- [使用指南](docs/USER_GUIDE.zh.md) —— 安装、模式、命令、Sidebar、排错。
+- [架构](docs/ARCHITECTURE.zh.md) —— contract、fold 生命周期、state 与 recall。
+- [开发指南](docs/DEVELOPMENT.zh.md) —— 本地环境、测试、评测约定。
+- [研究与证据导航](docs/README.zh.md) —— 稳定文档 + 完整归档。
 - [部署链](docs/42_DEPLOYMENT_CHAIN.md) —— DSH preset 与浏览器部署的详细路径。
 
-完整索引在 [docs/README.md](docs/README.md)。
+完整索引在 [docs/README.zh.md](docs/README.zh.md)。
 
 ## License
 

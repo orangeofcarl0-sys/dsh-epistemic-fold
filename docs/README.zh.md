@@ -1,0 +1,150 @@
+# Epistemic Fold 文档导航
+
+[English](README.md)
+
+本目录包含两类不同的文档：
+
+1. **稳定产品文档** —— 软件现在是什么、今天该怎么用；
+2. **研究 / 验证记录** —— 导向当前设计的时序证据链。
+
+不要把编号的 RC 文档当作用户手册来读。它们刻意保留了已被取代的假设、失败的实验、缺陷调查，以及后来的更正。
+
+## 从这里开始
+
+| 文档 | 用途 |
+| --- | --- |
+| [../README.zh.md](../README.zh.md) / [../README.md](../README.md) | 项目概览与当前状态 |
+| [USER_GUIDE.zh.md](USER_GUIDE.zh.md) | 安装、配置、切换模式、查看状态、排错 |
+| [ARCHITECTURE.zh.md](ARCHITECTURE.zh.md) | 当前架构与契约 |
+| [DEVELOPMENT.zh.md](DEVELOPMENT.zh.md) | 本地开发、测试、评测纪律 |
+| [42_DEPLOYMENT_CHAIN.md](42_DEPLOYMENT_CHAIN.md) | DSH preset / 浏览器部署的详细路径 |
+
+## 当前产品模型
+
+Epistemic Fold 把这几件事分开：
+
+```text
+canonical history
+      ↓
+exact archive + deterministic state
+      ↓
+compact active context
+      ↕
+bounded search / recall
+```
+
+面向用户的模式：
+
+- **Economy** —— 成本优先；压缩热上下文，旧内容按需召回。
+- **Balanced** —— 保留更长的 verbatim recent tail。
+- **Quality** —— Balanced 加上 semantic rationale checkpoint。
+- **Legacy** —— EF 的冻结兼容基线。
+- **Basic** —— EF 退场。
+
+只有 Economy 的当前主张背后有针对性端到端测量。Balanced 与 Quality 被有意标注为假设，直到真实长周期任务显示出可靠的稳态收益为止。
+
+## 证据地图
+
+如果你想走最短路径穿过研究记录：
+
+| 问题 | 读 |
+| --- | --- |
+| 最初的设计是什么？ | [00](00_README_EF.md)、[01](01_EF_RFC_001_ARCHITECTURE.md) |
+| compaction 的正确性怎么测？ | [08](08_BOUNDARY_CORPUS_PROTOCOL.md)、[09](09_EVALUATION_METRICS_SPEC.md) |
+| 为什么成本依赖 provider/cache？ | [12](12_R1_EVALUATION_REPORT.md)、[19](19_RC1_POLICY_NORMALIZATION.md) |
+| Delta Leaf 为什么被否决？ | [12](12_R1_EVALUATION_REPORT.md) |
+| framing / 重复 checkpoint 成本是怎么修的？ | [14](14_R2_EVALUATION_REPORT.md)、[16](16_R3_EVALUATION_REPORT.md) |
+| 真实召回是怎么闭环的？ | [21](21_RC1_2_RECALL_CLOSURE.md)、[22](22_RC1_3_RETRIEVAL_ERGONOMICS.md)、[23](23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) |
+| 三档模式是怎么来的？ | [24](24_RC2_PRODUCT_INTEGRATION.md)、[25](25_RC2_1_STATUS_AND_RETENTION_AB.md)、[29](29_RC5_PRESET_DESIGN.md) |
+| EF 是怎么挂进真实 DSH 的？ | [26](26_RC3_REAL_DSH_PLUGINIZATION.md)、[31](31_RC7_TRANSFORMATION_PLAN.md)、[42](42_DEPLOYMENT_CHAIN.md) |
+| Sidebar 是怎么验证的？ | [27](27_RC4_SIDEBAR_PANEL.md)、[37](37_RC11_BROWSER_VERIFICATION.md)、[39](39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md)–[47](47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md) |
+| 外部 benchmark 目前说明了什么？ | [33](33_RC8_EXTERNAL_BENCHMARKS.md)、[34](34_RC9_TAU2_INTEGRATION.md)、[35](35_RC10_LHTB_INTEGRATION.md)、[36](36_RC10_SESSION_PAUSE.md) |
+
+## 研究归档
+
+### 基础与首次实现 —— 00–10
+
+这批文档定义了最初的模型、实现计划、不变量、语料与评测规则。
+
+- [00_README_EF.md](00_README_EF.md)
+- [01_EF_RFC_001_ARCHITECTURE.md](01_EF_RFC_001_ARCHITECTURE.md)
+- [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](02_EF_IMPLEMENTATION_PLAN_M0_M3.md)
+- [03_EF_TEST_BENCHMARK_SPEC.md](03_EF_TEST_BENCHMARK_SPEC.md)
+- [04_EF_LOCAL_AGENT_WORK_ORDER.md](04_EF_LOCAL_AGENT_WORK_ORDER.md)
+- [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](05_EF_DECISIONS_AND_OPEN_QUESTIONS.md)
+- [06_FINAL_REPORT.md](06_FINAL_REPORT.md)
+- [07_R0C_EVALUATION_CLOSURE.md](07_R0C_EVALUATION_CLOSURE.md)
+- [07_R0C_EVALUATION_REPORT.md](07_R0C_EVALUATION_REPORT.md)
+- [08_BOUNDARY_CORPUS_PROTOCOL.md](08_BOUNDARY_CORPUS_PROTOCOL.md)
+- [09_EVALUATION_METRICS_SPEC.md](09_EVALUATION_METRICS_SPEC.md)
+- [10_LOCAL_AGENT_WORK_ORDER_R0C.md](10_LOCAL_AGENT_WORK_ORDER_R0C.md)
+
+### 经济性与架构选择 —— 11–17
+
+这一阶段引入了来源归因、provider-aware cache 经济性、ROI 门，以及让 EF 在受控 workload 下具备经济竞争力的 framing / rebase 工作。
+
+- [11_R1B_ROUTE_SELECTION_GATE.md](11_R1B_ROUTE_SELECTION_GATE.md)
+- [12_R1_EVALUATION_REPORT.md](12_R1_EVALUATION_REPORT.md)
+- [13_R1_LIVE_BEHAVIORAL_RESULTS.md](13_R1_LIVE_BEHAVIORAL_RESULTS.md)
+- [14_R2_EVALUATION_REPORT.md](14_R2_EVALUATION_REPORT.md)
+- [15_R2_FRAMING_CEILING.md](15_R2_FRAMING_CEILING.md)
+- [16_R3_EVALUATION_REPORT.md](16_R3_EVALUATION_REPORT.md)
+- [17_R4_EVALUATION_REPORT.md](17_R4_EVALUATION_REPORT.md)
+
+### 证据对齐与召回闭环 —— 18–25
+
+这批记录很重要，因为若干个原本很有吸引力的早期结论，在更好的 instrumentation 下被显式撤回。
+
+- [18_RC0_RELEASE_HARDENING.md](18_RC0_RELEASE_HARDENING.md)
+- [19_RC1_POLICY_NORMALIZATION.md](19_RC1_POLICY_NORMALIZATION.md)
+- [20_RC1_1_EVIDENCE_RECONCILIATION.md](20_RC1_1_EVIDENCE_RECONCILIATION.md)
+- [21_RC1_2_RECALL_CLOSURE.md](21_RC1_2_RECALL_CLOSURE.md)
+- [22_RC1_3_RETRIEVAL_ERGONOMICS.md](22_RC1_3_RETRIEVAL_ERGONOMICS.md)
+- [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md)
+- [24_RC2_PRODUCT_INTEGRATION.md](24_RC2_PRODUCT_INTEGRATION.md)
+- [25_RC2_1_STATUS_AND_RETENTION_AB.md](25_RC2_1_STATUS_AND_RETENTION_AB.md)
+
+### 产品集成与 preset 设计 —— 26–31
+
+- [26_RC3_REAL_DSH_PLUGINIZATION.md](26_RC3_REAL_DSH_PLUGINIZATION.md)
+- [27_RC4_SIDEBAR_PANEL.md](27_RC4_SIDEBAR_PANEL.md)
+- [28_RC4A_INTERACTION_AUDIT.md](28_RC4A_INTERACTION_AUDIT.md)
+- [29_RC5_PRESET_DESIGN.md](29_RC5_PRESET_DESIGN.md)
+- [30_RC6_PRIOR_ART_SURVEY.md](30_RC6_PRIOR_ART_SURVEY.md)
+- [31_RC7_TRANSFORMATION_PLAN.md](31_RC7_TRANSFORMATION_PLAN.md)
+
+### 长任务与外部 benchmark —— 32–36
+
+- [32_RC7D_PARALLEL_LONG_TASK_TESTING.md](32_RC7D_PARALLEL_LONG_TASK_TESTING.md)
+- [33_RC8_EXTERNAL_BENCHMARKS.md](33_RC8_EXTERNAL_BENCHMARKS.md)
+- [34_RC9_TAU2_INTEGRATION.md](34_RC9_TAU2_INTEGRATION.md)
+- [35_RC10_LHTB_INTEGRATION.md](35_RC10_LHTB_INTEGRATION.md)
+- [36_RC10_SESSION_PAUSE.md](36_RC10_SESSION_PAUSE.md)
+
+### 浏览器、部署与 UX 加固
+
+这批记录的是真实宿主上的缺陷与浏览器/部署集成。调试具体部署时有用，但不是概念上的前置阅读。
+
+- [37_RC11_BROWSER_VERIFICATION.md](37_RC11_BROWSER_VERIFICATION.md)
+- [38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md](38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md)
+- [39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md](39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md)
+- [40_RC14_DUAL_SIDEBAR_ADAPTER.md](40_RC14_DUAL_SIDEBAR_ADAPTER.md)
+- [41_RC15_NATIVE_SIDEBAR_RENDERS.md](41_RC15_NATIVE_SIDEBAR_RENDERS.md)
+- [42_DEPLOYMENT_CHAIN.md](42_DEPLOYMENT_CHAIN.md)
+- [43_RC17_SIDEBAR_ENTRY_DEDUPE.md](43_RC17_SIDEBAR_ENTRY_DEDUPE.md)
+- [44_RC18_HONEST_PRICING.md](44_RC18_HONEST_PRICING.md)
+- [45_RC19_PANEL_READABILITY.md](45_RC19_PANEL_READABILITY.md)
+- [46_RC20_ARCHIVED_ITEM_COUNT.md](46_RC20_ARCHIVED_ITEM_COUNT.md)
+- [47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md](47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md)
+
+## 怎么读旧结论
+
+一份编号文档是**那个阶段已知内容**的记录。它可能包含被后续报告证伪的主张。这是刻意的。
+
+当历史主张与当前稳定文档冲突时：
+
+1. 以当前的 README / USER_GUIDE / ARCHITECTURE 作为产品契约；
+2. 读更晚的编号报告获取更正；
+3. 保留更早的报告，作为项目为何转向的 provenance。
+
+`MANIFEST.json` 记录历史文档清单与哈希。它是审计产物，不是导航面。
