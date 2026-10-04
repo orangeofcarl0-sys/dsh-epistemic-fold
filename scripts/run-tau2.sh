@@ -24,6 +24,8 @@
 # Environment overrides:
 #   EF_TAU2_ARM        arm for a single-run invocation (default: basic)
 #   EF_TAU2_THRESHOLD  fold threshold ratio (default: 0.5)
+#   EF_TAU2_OUT        where gate/sweep archive their JSON (default:
+#                      eval/tau2/results/<preset>-<UTC timestamp>.json)
 
 set -euo pipefail
 
@@ -75,6 +77,18 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
 export NODE_USE_ENV_PROXY=1
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
 
+# NO_PROXY is scrubbed here, and scrubbing it from the calling shell is NOT
+# enough. The value this machine inherits ends in a bracketed IPv6 literal, and
+# httpx reads that as a port: every model call dies with
+# `InvalidURL: Invalid port: ':1]'`, which reads like a route or credential
+# fault rather than a proxy one. Windows environment blocks are case-insensitive
+# yet can still carry both spellings, and which one wins is not predictable, so
+# both are dropped and a single bracket-free value is set instead.
+unset NO_PROXY
+unset no_proxy
+export NO_PROXY="localhost,127.0.0.1,::1"
+export no_proxy="localhost,127.0.0.1,::1"
+
 # Scratch for EF bundles. Kept under the managed temp root so the sweep owns it.
 export EF_TAU2_BUNDLE_ROOT="${EF_TAU2_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/tau2-bundles}"
 
@@ -86,7 +100,10 @@ case "$MODE" in
     exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/ef_tau2_adapter.py"
     ;;
   gate|sweep)
-    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/run_tau2.py" --preset "$MODE" "$@"
+    # Archive the run with its provenance, so a number can always be traced back
+    # to the revisions that produced it. Override the path with EF_TAU2_OUT.
+    OUT="${EF_TAU2_OUT:-${EF_ROOT}/eval/tau2/results/${MODE}-$(date -u +%Y%m%dT%H%M%SZ).json}"
+    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/run_tau2.py" --preset "$MODE" --out "$OUT" "$@"
     ;;
   *)
     echo "unknown mode: $MODE (expected selfcheck|gate|sweep)" >&2
