@@ -6,60 +6,204 @@
 [![DSH](https://img.shields.io/badge/DSH-%3E%3D0.1.7--rc.2-4b5563.svg)](#ci)
 [![docs](https://img.shields.io/badge/docs-guide-4b5563.svg)](docs/README.md)
 
-> 面向 DeepSeek Harness 长周期 Agent 的 contract-preserving context runtime。
+> **Compaction 应该让上下文更小，而不是让 Agent 忘掉它已经学到的东西。**
 
-[English](README.md) · [文档导航](docs/README.md) · [使用指南](docs/USER_GUIDE.md) · [架构](docs/ARCHITECTURE.md)
+**Epistemic Fold** 是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
+上的一个 context runtime，面向长周期 Agent。它把旧轨迹折叠出模型的 active context，
+同时保证原始历史仍可恢复、frozen prefix 保持稳定、整个过程可观察。
 
-## Epistemic Fold 是什么？
+**精确历史始终可恢复。**
+**旧轨迹离开热上下文。**
+**Agent 继续工作，而不必把有损摘要当成事实来源。**
 
-长周期 Agent 最终都会遇到工作上下文膨胀。普通 compaction 通常把旧历史摘要成一段新文本，但摘要是有损表示：事实可能漂移、旧值可能重新看起来像当前值、很晚以后才需要的细节也可能已经消失。
+[English](README.md) · [使用指南](docs/USER_GUIDE.md) · [架构](docs/ARCHITECTURE.md) · [研究归档](docs/README.md)
 
-Epistemic Fold（EF）把三件事分开：
+---
+
+## 问题
+
+长周期 Agent 会积累大量有用的历史：
+
+- 需求以及后来的修订；
+- 失败的尝试，以及它们为什么失败；
+- 工具输出；
+- 实现决策；
+- 临时约束；
+- 可能几百轮之后才再次用到的事实。
+
+最终这些历史必须离开 active prompt。
+
+通常的做法是把它摘要掉。
+
+这对上下文体积有帮助，但会带来第二个问题：
 
 ```text
-History ≠ Memory ≠ Context
+原始历史
+      ↓
+   摘要
+      ↓
+摘要的摘要
+      ↓
+现在到底还有哪些是成立的？
 ```
 
-一次 fold 只是把历史移出**模型当前工作 surface**，而不是删除 canonical record。EF 在有损 surface replacement 提交之前，先把原始 model-visible messages 写入持久、带哈希校验的 bundle；prompt 中只保留压缩后的 checkpoint，需要精确历史时再做有界 search / recall。
+压缩后的叙述可能有用，但它是很差的 canonical record。细节会消失，旧值可能重新看起来
+像当前值，而后来的 Agent 可能完全没有办法找回那段被折叠掉的精确来源。
+
+**Epistemic Fold 改的是这个契约。**
 
 ```text
-DSH Session / tool results
-          │
-          ▼
-   精确 Fold Archive ───────────────┐
-          │                         │
-          ▼                         │
- 确定性 Current State              │
- + Compact Checkpoint              │
-          │                         │
-          ▼                         │
-     Active Context                │
-          │                         │
-          └── context_search / context_recall
+                     ┌──────────────────────┐
+旧 model-visible ───►│ exact Fold Bundle    │─────┐
+history              │ immutable + hashed   │     │
+                     └──────────────────────┘     │
+                                │                 │
+                                ▼                 │
+                     ┌──────────────────────┐     │
+                     │ compact checkpoint   │     │
+                     │ + bounded state      │     │
+                     └──────────────────────┘     │
+                                │                 │
+                                ▼                 │
+                          active context          │
+                                │                 │
+                         需要旧细节？             │
+                                └──── search / recall ───► 精确归档
 ```
 
-EF 的目标不是“把 token 压得最短”，而是在保住长期 Agent 所依赖的 contract 以后，再优化上下文体积、prefix cache 局部性和实际成本。
+active prompt 变小了。原始历史没有消失。
 
-## 当前实现提供什么？
+---
 
-- **先归档、后有损替换**：folded messages 在 surface replacement 前落入 bundle store。
-- **Fold Frontier**：普通折叠只推进单调边界，已经冻结的历史不会被反复摘要。
-- **确定性状态表示**：constraint、value、failure、obligation 等可与 narrative summary 分离。
-- **精确有界召回**：`context_search` 定位历史，`context_recall` 返回带 provenance 的分页原文。
-- **Leaf / Root Fold**：高频增量维护 + 低频经济性 rebase。
-- **Economy / Balanced / Quality 三档**：同一个 engine 的三个成本—稳态 operating point。
-- **用户可见状态面**：`/context status` 与 Sidebar 显示 context pressure、archive、fold、recall 和成本，并且不进入模型上下文。
-- **Basic fallback**：`mode: basic` 时 EF 完全退场，compaction 委托给逐字节兼容的 vendored Basic backend。
+## 这和“直接摘要一下”有什么不同
 
-## 安装
+| | 普通的 lossy compaction | Epistemic Fold |
+| --- | --- | --- |
+| **事实来源** | 压缩叙述往往成为唯一可见的表示 | DSH session + exact Fold Bundle 仍是 canonical |
+| **旧细节** | 可能无法恢复 | archived messages 精确、可搜索、可分页 |
+| **反复压缩** | 可能反复重写之前的摘要 | 普通 fold 只推进单调的 **Fold Frontier** |
+| **当前状态** | 基本隐含在叙述里 | 确定性状态可以与叙述分离表示 |
+| **cache 行为** | 重写早期上下文会扰动 prefix | leaf fold 保持 frozen prefix 稳定；root rebase 很少 |
+| **可观察性** | 通常不透明 | `/context status` + Sidebar 展示 pressure、fold、archive、recall 与用量 |
 
-最推荐使用 Release 中的 tarball，因为它已经包含构建好的 `lib/`——不会触发 `prepare`，不需要 `allowBuilds`，拿到的就是 release notes 描述的那份代码：
+EF 不打算造世界上最聪明的摘要器。
+
+它要做的是让 **有损摘要不再具有权威性**。
+
+---
+
+## 30 秒导览
+
+### 1. 选择你要的取舍
+
+```text
+/context mode economy
+/context mode balanced
+/context mode quality
+```
+
+| 档位 | 思路 |
+| --- | --- |
+| **Economy** | 热上下文尽量精简；旧细节按需召回 |
+| **Balanced** | 保留更长的 verbatim recent tail |
+| **Quality** | Balanced + semantic rationale checkpoint |
+
+三档共用同一个 engine。每上一档只增加一个明确的 retention / redundancy 杠杆，
+所以取舍是可检视的，而不是藏在三套互不相关的实现里。
+
+`legacy` 是 EF 的冻结兼容基线。
+`basic` 让 EF 退场，把 compaction 委托给 vendored Basic backend。
+
+### 2. 观察运行时在做什么
+
+```text
+/context status
+```
+
+典型字段：
+
+```text
+context mode: economy
+
+current context:
+  pressure        42819 tokens
+  window          131072 tokens
+  occupancy       32.7%
+
+archived history:
+  archived tokens ~286000 (estimated)
+  checkpoints now 6
+
+retrieval:
+  searches        12
+  recalls         8
+
+folds (lifetime):
+  leaf folds      27
+  root rebases    3
+```
+
+浏览器 Sidebar 读取同一个 status model。
+
+**状态 UI 在模型历史之外。** 查看压缩状态不会消耗它正在报告的那部分上下文。
+
+### 3. 让 Agent 找回已经离开 prompt 的内容
+
+当 DSH 提供 ToolRuntime 时，EF 注册两个工具：
+
+- `context_search` —— 定位相关的已折叠历史和有界原文 excerpt；
+- `context_recall` —— 读取 checkpoint 视图或精确 archived messages。
+
+所以“当前不在 prompt 里”不等于“没了”。
+
+---
+
+## Fold 是怎样工作的
+
+普通 **Leaf Fold** 只处理 Fold Frontier 之后的 open trajectory：
+
+```text
+[frozen checkpoint][frozen checkpoint] | frontier | [open trajectory........]
+                                                     └────── leaf fold ──────┘
+```
+
+事务顺序是刻意固定的：
+
+```text
+选择合法 span
+      ↓
+归档精确的 model-visible messages
+      ↓
+构建 checkpoint / state 表示
+      ↓
+提交 DSH surface replacement
+      ↓
+推进 Fold Frontier
+```
+
+归档必须**先于**有损替换提交。
+
+这给出 EF 的核心不变量：
+
+> **Bundle durable before surface loss.**
+
+**Root Fold** 不同：当长期 carry cost 确实值得这次 cache 扰动时，它会重整更大的 frozen
+surface。Root fold 故意保持低频。
+
+---
+
+## 快速开始
+
+### 从 release tarball 安装
+
+release tarball 是最省事的固定版本安装方式，因为它已经包含构建好的 `lib/`——
+不会触发 `prepare`，不需要 `allowBuilds`，拿到的就是 release notes 描述的那份代码。
 
 ```bash
 dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
 ```
 
-也可以固定到 git tag：
+### 或者固定到 git tag
 
 ```bash
 dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0
@@ -70,24 +214,12 @@ dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1
 > TIP，只有带 `#<tag-or-commit>` 时才真正 pin——实测表现为 `codeload.github.com` 的 tarball URL，
 > 末尾是解析出的 commit sha。想跟未发布代码就显式去掉 `#v0.1.0`，不要靠意外。
 
-本地 checkout：
+### Profile bundle 顺序
 
-```bash
-npm install
-npm run preflight
-```
-
-然后以 `file:` dependency 加入 DSH profile。`file:` 渠道**不会**替你构建——实测 pnpm 会跳过 path
-dependency 的 `prepare`——所以必须先 `npm install`，否则装进去的目录里 `main` 并不存在；
-`npm run preflight` 会在安装之前拦住这种情况。
-
-EF 会原位替换 DSH `standard`、`ptc`、`cordis` preset 中的 compaction backend；`minimal` 保持 DSH 原样。Bundle 顺序有意义：`dsh-epistemic-fold` 必须放在 `@deepseek-ai/dsh-web-app` 之后。
+EF 会原位 patch DSH 自带的 preset，所以它必须排在 `dsh-web-app` 之后：
 
 ```jsonc
 {
-  "dependencies": {
-    "dsh-epistemic-fold": "file:/path/to/dsh-epistemic-fold"
-  },
   "dsh": {
     "profile": {
       "bundles": [
@@ -100,23 +232,10 @@ EF 会原位替换 DSH `standard`、`ptc`、`cordis` preset 中的 compaction ba
 }
 ```
 
-安装渠道、校验方法和升级排错见 [使用指南](docs/USER_GUIDE.md)；完整部署链见 [docs/42_DEPLOYMENT_CHAIN.md](docs/42_DEPLOYMENT_CHAIN.md)。
+EF 替换 DSH `standard`、`ptc`、`cordis` preset 内的 compaction backend；
+`minimal` 保持 DSH 原样。
 
-## 使用
-
-### 三档模式
-
-`economy`、`balanced`、`quality` 是用户档位；`legacy`、`basic` 是兼容模式。
-
-| mode | 行为 | 当前证据 |
-| --- | --- | --- |
-| `economy` | 默认 retention，不做每次 fold 的 rationale 调用；旧历史按需召回 | 已在 targeted retrieval / integration tests 中测量 |
-| `balanced` | Economy + 更大的 verbatim recent tail | 机制成立；稳态收益尚未建立 |
-| `quality` | Balanced + narrative rationale checkpoint | 机制成立；成本最高，收益尚未建立 |
-| `legacy` | EF engine 的冻结兼容基线 | compatibility |
-| `basic` | EF 退场，使用 Basic 行为且不暴露 EF surface | compatibility |
-
-启动配置：
+配置默认档位：
 
 ```yaml
 - name: dsh-epistemic-fold
@@ -125,120 +244,158 @@ EF 会原位替换 DSH `standard`、`ptc`、`cordis` preset 中的 compaction ba
     mode: economy
 ```
 
-运行中的三档切换：
+然后在会话里验证：
 
 ```text
-/context mode economy
-/context mode balanced
-/context mode quality
+/context status
 ```
 
-`legacy` / `basic` 通过配置选择，不属于运行时三档切换。
+安装渠道、pnpm `allowBuilds`、preset 校验、浏览器检查和升级行为见
+[使用指南](docs/USER_GUIDE.md) 与详细的 [部署链](docs/42_DEPLOYMENT_CHAIN.md)。
 
-### 查看压缩状态
+---
+
+## 今天到底验证了什么？
+
+EF 刻意把“已测量的行为”和“产品假设”分开。
+
+**在当前实现上已确立**
+
+- 先归档后有损替换，且 Fold Bundle 带哈希校验；
+- 对已折叠历史的精确有界召回；
+- 单调的 Fold Frontier 行为；
+- 生产路径上的 Leaf / Root fold 事务；
+- 召回排序与时间上 supersession 的保护；
+- 真实的 DSH plugin 挂载、preset substitution、运行时命令与 Sidebar；
+- 一条不需要每次 fold 都调用语义模型的 Economy 路径。
+
+**仍未确定**
+
+- **Balanced** 或 **Quality** 相对 Economy 是否能带来可靠的长周期稳态优势；
+- 在计入真实 provider cache 行为、重试、工具调用和路由定价之后，是否有一个档位普遍更便宜；
+- 跨档位的完整外部 benchmark 排名。
+
+这个区分是刻意的。EF 多次通过真实运行发现 instrumentation bug，项目选择保留这些更正，
+而不是把一次 null result 包装成营销结论。
+
+完整证据链在 [docs/README.md](docs/README.md)。
+
+---
+
+## 产品界面
+
+### 运行时命令
 
 ```text
 /context status
 /context line
+/context mode economy|balanced|quality
 ```
 
-状态面区分 **measured / estimated / unknown**。没有数据时不会伪造 `0`。
+### Sidebar
 
-Sidebar 与 `/context status` 读取同一个结构化 projection。它只是 observation surface，不会进入 prompt。
+Sidebar 展示：
 
-### 召回 Folded History
+- context occupancy；
+- archived history；
+- 当前 checkpoint 数量；
+- 累计 leaf / root fold；
+- search / recall 活动；
+- provider 用量；
+- 命中价格 profile 时的成本估算。
 
-当 ToolRuntime 存在时，EF 注册：
+未知值显示为 unknown —— 绝不伪造为 0。
 
-- `context_search`：在已折叠历史中查找相关 checkpoint 和有界原文 excerpt；
-- `context_recall`：读取 checkpoint 的摘要或精确 archived messages。
+### Basic fallback
 
-Search 按会话逻辑时序排序，而不是按墙钟时间；exact recall 带 provenance。
+设置：
 
-## Fold 是怎样工作的？
+```yaml
+mode: basic
+```
 
-普通 **Leaf Fold** 只处理 Fold Frontier 后面的 open trajectory：
+EF 就会刻意从 session surface 上消失：
+
+- 不注册 EF projection；
+- 不注册 Sidebar 面板；
+- 不注册 `/context`；
+- 不注册 recall 工具；
+- compaction 委托给 vendored Basic backend。
+
+你可以在不卸载插件的前提下做对比测试或回滚。
+
+---
+
+## EF 不打算成为什么
+
+Epistemic Fold 不是：
+
+- 向量数据库；
+- 通用 embedding memory 层；
+- 学习式压缩规划器；
+- 语义依赖图；
+- 多级“摘要的摘要”层级；
+- DSH goals、plans、todos 或项目指令的替代品。
+
+这些边界是刻意的。
+
+EF 拥有的是 **folding contract**。已有的 DSH 子系统继续拥有它们本来就拥有的状态。
+
+状态归属与自定义 `ef/anchor` 事件当前的持久化限制见
+[Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations)。
+
+---
+
+## 一行架构
 
 ```text
-[frozen checkpoints] | frontier | [open trajectory]
-                                      │
-                                      └── leaf fold
+不可变历史
+      → 精确归档
+      → 紧凑工作投影
+      → 稳定 frozen surface
+      ↔ 有界精确召回
 ```
 
-一次 fold：
+或者更简单：
 
-1. 找到合法且闭合的 span；
-2. 把原始 messages 写入 bundle store；
-3. 生成 checkpoint / current-state representation；
-4. 提交 surface replacement；
-5. 推进 frontier。
+```text
+History ≠ Memory ≠ Context
+```
 
-**Root Fold** 用于在长期 carry cost 确实值得时重整 frozen surface，因此故意保持低频。
+这就是整个项目。
 
-任何离开 active surface 的内容仍然可以从 bundle store 精确恢复。
-
-## 当前证据状态
-
-EF 把“已经测量”与“产品假设”分开：
-
-| 项目 | 状态 |
-| --- | --- |
-| bundle durability、exact archive / recall | **CLOSED / 已机器验证并在生产路径执行** |
-| Fold Frontier、Leaf / Root 事务 | **CLOSED / measured** |
-| retrieval ergonomics 与时间顺序 | **CLOSED on current contract** |
-| 真实 DSH plugin、preset substitution、commands、Sidebar | **verified** |
-| Economy targeted retrieval quality | **measured** |
-| Balanced / Quality 的额外 steadiness 收益 | **尚未建立** |
-| route-level realized cost superiority | **OPEN，依赖 provider/cache** |
-| τ²-Bench | **已接入；首次 fold 前未观察到 tier separation** |
-| LHTB | **环境/bridge 已验证；arm comparison 尚未完成** |
-
-研究过程保留了完整 audit trail。后续文档如果推翻前序结论，会保留旧记录并显式纠正，而不是重写历史。导航见 [docs/README.md](docs/README.md)。
-
-## 当前重要边界：State Ownership
-
-EF 有一套 normalized state vocabulary，但并不宣称拥有所有 Agent state：
-
-- goal 仍由 DSH goal state 管理；
-- plan 仍由 todo/planning 管理；
-- 项目级 guidance 仍来自 `AGENTS.md` / instruction loader；
-- 当前自动生产的 EF state 主要来自 failed tool result；
-- 其他 anchor kind 可以表示，但没有通用 production producer。
-
-当前 DSH 下自定义 `ef/anchor` durable write 也不是一个可以普遍依赖的 persistence API。详见 [Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations)。
+---
 
 ## 开发
 
-本仓库是一个独立的 plugin source tree。测试直接跑 vendored DSH **source**（与 DSH monorepo 相同的
-source-level resolution），所以测试 plugin 本身不需要先构建。
+本仓库是一个独立的 plugin source tree。测试直接跑 vendored DSH **source**（与 DSH
+monorepo 相同的 source-level resolution），所以测试 plugin 本身不需要先构建。
 
 前置条件：Node `^22.19 || >=24`、pnpm `11.7.x`、npm。
 
 ```bash
-# 1. 在已验证基线上 vendor DSH monorepo
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
 git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
 pnpm install
 
-# 2. 构建 EF 依赖的包的 declaration 输出
 node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b \
-  packages/compaction/compaction-basic packages/core/tools packages/util/atomic-write
+  packages/compaction/compaction-basic \
+  packages/core/tools \
+  packages/util/atomic-write
 
-# 3. 回到 plugin 仓库：安装工具链并重新生成 resolution maps
 cd ../..
 npm install
 node scripts/generate-maps.cjs
 
-# 4. 全部跑一遍
 npm test
 npm run typecheck:all
 npm run build
 ```
 
-测试直接使用 vendored DSH source。`vendor/` 被 gitignore，但它是本地开发环境的一部分，不是可以随手清掉的 test output。
-
-live tier 是 opt-in（`EF_LIVE=1`），没有可用 route 时会 **skip**，因此未测量的行为不会被报告成通过。
+`vendor/` 被 gitignore，但它是本地开发环境的一部分，不是可以随手清掉的 test output。
+live tier 是 opt-in（`EF_LIVE=1`），没有可用 route 时会 **skip**，因此未测量的行为不会被
+报告成通过。
 
 ### CI
 
@@ -252,7 +409,7 @@ live tier 是 opt-in（`EF_LIVE=1`），没有可用 route 时会 **skip**，因
 > **关于版本号。** 本仓库里的 `0.1.7-rc.2` 是 **CI 钉住的测试基线**，不是对你本机安装版本的声明。
 > EF 的 `engines.dsh` 与 peer range 是 `>=0.1.7-rc.2`，并且已在 `0.2.0-rc.2` 上验证运行。
 
-评测矩阵、live tier、外部 benchmark 和临时目录约定见 [Development](docs/DEVELOPMENT.md)。
+---
 
 ## 仓库结构
 
@@ -305,17 +462,21 @@ scripts/                构建、preset 生成、vendoring、seam 应用、prefl
 docs/                   设计记录与评测报告（见下）
 ```
 
+---
+
 ## 文档
+
+`docs/` 下的编号 R/RC 文档是**研究与验证归档**，不是用户手册。
 
 推荐阅读顺序：
 
 - [使用指南](docs/USER_GUIDE.md) —— 安装、模式、命令、Sidebar、排错。
 - [架构](docs/ARCHITECTURE.md) —— contract、fold 生命周期、state 与 recall。
 - [开发指南](docs/DEVELOPMENT.md) —— 本地环境、测试、评测约定。
-- [完整文档导航](docs/README.md) —— 稳定文档 + 完整研究/审计归档。
+- [研究与证据导航](docs/README.md) —— 稳定文档 + 完整归档。
 - [部署链](docs/42_DEPLOYMENT_CHAIN.md) —— DSH preset 与浏览器部署的详细路径。
 
-编号的 R/RC 文档是**研究与验证记录**，普通使用不需要按时间线阅读。完整索引在 [docs/README.md](docs/README.md)。
+完整索引在 [docs/README.md](docs/README.md)。
 
 ## License
 

@@ -6,60 +6,210 @@
 [![DSH](https://img.shields.io/badge/DSH-%3E%3D0.1.7--rc.2-4b5563.svg)](#ci)
 [![docs](https://img.shields.io/badge/docs-guide-4b5563.svg)](docs/README.md)
 
-> A contract-preserving context runtime for long-horizon agents on the DeepSeek Harness.
+> **Compaction should make context smaller — not make the agent forget what it already learned.**
 
-[中文](README.zh.md) · [Documentation](docs/README.md) · [User guide](docs/USER_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md)
+**Epistemic Fold** is a context runtime for long-horizon agents on the
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
+It folds old trajectory out of the model's active context while keeping the
+original history recoverable, the frozen prefix stable, and the whole process
+observable.
 
-## Why Epistemic Fold?
+**Exact history stays recoverable.**
+**Old trajectory leaves the hot context.**
+**The agent can keep working without treating a lossy summary as the source of truth.**
 
-Long-running agents eventually need to make room in their working context. A normal compactor can summarize old turns, but a summary is a lossy representation: facts can drift, old values can look current, and details needed much later may disappear.
+[中文](README.zh.md) · [User guide](docs/USER_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Research archive](docs/README.md)
 
-Epistemic Fold (EF) treats three things as different objects:
+---
+
+## The problem
+
+Long-running agents accumulate a lot of useful history:
+
+- requirements and later revisions;
+- failed approaches and why they failed;
+- tool outputs;
+- implementation decisions;
+- temporary constraints;
+- facts that may not matter again for hundreds of turns.
+
+Eventually that history has to leave the active prompt.
+
+The usual answer is to summarize it.
+
+That helps with context size, but it creates a second problem:
 
 ```text
-History ≠ Memory ≠ Context
+original history
+      ↓
+   summary
+      ↓
+summary of summary
+      ↓
+what exactly is still true?
 ```
 
-A fold removes history from the **active model surface**, not from the canonical record. Before a lossy surface replacement commits, EF stores the exact model-visible messages in a durable, hash-verified bundle. It then keeps a compact checkpoint in the prompt and exposes bounded search/recall when exact history is needed.
+A compressed narrative can be useful, but it is a poor canonical record. Details
+can disappear, an old value can look current again, and a later agent may have no
+way to recover the exact source that was folded away.
+
+**Epistemic Fold changes the contract.**
 
 ```text
-DSH Session / tool results
-          │
-          ▼
-   exact fold archive ───────────────┐
-          │                          │
-          ▼                          │
- deterministic state                │
- + compact checkpoint               │
-          │                          │
-          ▼                          │
-    active context                  │
-          │                          │
-          └──── context_search / context_recall
+                     ┌──────────────────────┐
+old model-visible ──►│ exact Fold Bundle    │─────┐
+history              │ immutable + hashed   │     │
+                     └──────────────────────┘     │
+                                │                 │
+                                ▼                 │
+                     ┌──────────────────────┐     │
+                     │ compact checkpoint   │     │
+                     │ + bounded state      │     │
+                     └──────────────────────┘     │
+                                │                 │
+                                ▼                 │
+                          active context          │
+                                │                 │
+                         need old detail?         │
+                                └──── search / recall ───► exact archive
 ```
 
-The goal is not the highest possible compression ratio. The goal is to preserve the contracts a long-running agent depends on, then optimize context size, cache locality, and cost.
+The active prompt gets smaller. The original history does not vanish.
 
-## What EF provides
+---
 
-- **Exact archive before loss** — folded messages are persisted before the working surface is replaced.
-- **Fold Frontier** — normal folds advance a monotonic boundary; already-frozen history is not repeatedly summarized.
-- **Deterministic state** — current constraints, values, failures, obligations, and related state can be represented separately from narrative summaries.
-- **Bounded exact recall** — `context_search` locates folded history; `context_recall` returns provenance-backed pages.
-- **Leaf and root folds** — cheap incremental maintenance plus occasional rebasing when justified.
-- **Three operating tiers** — Economy, Balanced, and Quality use the same engine with different cost/steadiness trade-offs.
-- **Human-facing observability** — `/context status` and the Sidebar panel report context pressure, archive size, folds, recall activity, and measured/estimated cost without entering model context.
-- **Native Basic fallback** — `mode: basic` makes EF stand aside and delegates compaction to a byte-identical vendored Basic backend.
+## Why this is different from "just summarize it"
 
-## Install
+| | ordinary lossy compaction | Epistemic Fold |
+| --- | --- | --- |
+| **source of truth** | compressed narrative often becomes the only visible representation | DSH session + exact Fold Bundle remain canonical |
+| **old detail** | may be unrecoverable | exact archived messages are searchable and pageable |
+| **repeated compaction** | can repeatedly rewrite previous summaries | normal folds advance a monotonic **Fold Frontier** |
+| **current state** | mostly implicit in prose | deterministic state can be represented separately from narrative |
+| **cache behavior** | rewriting early context can churn the prefix | leaf folds keep the frozen prefix stable; root rebases are rare |
+| **observability** | usually opaque | `/context status` + Sidebar show pressure, folds, archive, recall and usage |
 
-The release tarball is the simplest pinned installation because it already contains the built `lib/` — nothing runs `prepare`, no `allowBuilds` entry is needed, and you get exactly the code the release notes describe.
+EF is not trying to build the world's smartest summarizer.
+
+It is trying to make **lossy summarization non-authoritative**.
+
+---
+
+## A 30-second tour
+
+### 1. Pick the trade-off you want
+
+```text
+/context mode economy
+/context mode balanced
+/context mode quality
+```
+
+| mode | idea |
+| --- | --- |
+| **Economy** | keep the hot context lean; recover older detail on demand |
+| **Balanced** | keep a larger verbatim recent tail |
+| **Quality** | Balanced + semantic rationale checkpoints |
+
+The tiers use the same engine. Each rung adds one explicit retention / redundancy
+lever, so the trade-off is inspectable rather than hidden behind three unrelated
+implementations.
+
+`legacy` remains the frozen EF compatibility baseline.
+`basic` makes EF stand aside and delegates to the vendored Basic backend.
+
+### 2. Watch what the runtime is doing
+
+```text
+/context status
+```
+
+Typical fields:
+
+```text
+context mode: economy
+
+current context:
+  pressure        42819 tokens
+  window          131072 tokens
+  occupancy       32.7%
+
+archived history:
+  archived tokens ~286000 (estimated)
+  checkpoints now 6
+
+retrieval:
+  searches        12
+  recalls         8
+
+folds (lifetime):
+  leaf folds      27
+  root rebases    3
+```
+
+The browser Sidebar reads the same status model.
+
+**The status UI is outside model history.** Looking at your compression state
+does not consume the context it is reporting on.
+
+### 3. Let the agent recover what left the prompt
+
+When DSH provides a ToolRuntime, EF registers:
+
+- `context_search` — locate relevant folded history and bounded verbatim excerpts;
+- `context_recall` — retrieve a checkpoint view or exact archived messages.
+
+So "not currently in the prompt" does not mean "gone".
+
+---
+
+## How folding works
+
+A normal **Leaf Fold** only touches the open trajectory after the Fold Frontier:
+
+```text
+[frozen checkpoint][frozen checkpoint] | frontier | [open trajectory........]
+                                                     └────── leaf fold ──────┘
+```
+
+The transaction is deliberately ordered:
+
+```text
+select legal span
+      ↓
+archive exact model-visible messages
+      ↓
+build checkpoint / state representation
+      ↓
+commit DSH surface replacement
+      ↓
+advance Fold Frontier
+```
+
+The archive must exist **before** the lossy replacement commits.
+
+That gives EF its central invariant:
+
+> **Bundle durable before surface loss.**
+
+A **Root Fold** is different: it rebases a larger frozen surface when the recurring
+carry cost is worth the cache disruption. Root folds are intentionally rare.
+
+---
+
+## Quick start
+
+### Install from a release tarball
+
+The release tarball is the simplest pinned install because it already contains the
+built `lib/` — nothing runs `prepare`, no `allowBuilds` entry is needed, and you get
+exactly the code the release notes describe.
 
 ```bash
 dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
 ```
 
-A pinned git tag also works:
+### Or pin a git tag
 
 ```bash
 dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0
@@ -72,24 +222,12 @@ dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1
 > URL ending in the resolved commit sha. Drop the `#v0.1.0` deliberately if you
 > want unreleased work, never by accident.
 
-For a local checkout:
+### Profile bundle order
 
-```bash
-npm install
-npm run preflight
-```
-
-Then add the checkout to the DSH profile as a `file:` dependency. The `file:` channel does **not** run the build — measured, pnpm skips `prepare` for path dependencies — so `npm install` first, or the install copies a directory whose `main` does not exist. `npm run preflight` catches that before you install.
-
-EF substitutes itself into DSH's `standard`, `ptc`, and `cordis` presets. `minimal` is left unchanged. Bundle order matters: `dsh-epistemic-fold` must come **after** `@deepseek-ai/dsh-web-app` so the preset substitution has something to patch.
-
-A minimal profile shape is:
+EF patches DSH's own presets in place, so it must load after `dsh-web-app`:
 
 ```jsonc
 {
-  "dependencies": {
-    "dsh-epistemic-fold": "file:/path/to/dsh-epistemic-fold"
-  },
   "dsh": {
     "profile": {
       "bundles": [
@@ -102,23 +240,10 @@ A minimal profile shape is:
 }
 ```
 
-See the [user guide](docs/USER_GUIDE.md) for install channels, verification, troubleshooting, and upgrade details. The low-level deployment matrix is kept in [docs/42_DEPLOYMENT_CHAIN.md](docs/42_DEPLOYMENT_CHAIN.md).
+EF substitutes the compaction backend inside DSH's `standard`, `ptc`, and
+`cordis` presets. `minimal` stays untouched.
 
-## Use
-
-### Modes
-
-EF exposes three user-facing tiers. `legacy` and `basic` are compatibility modes, not tiers.
-
-| mode | behavior | evidence |
-| --- | --- | --- |
-| `economy` | default retention, no per-fold rationale call; older history is recovered on demand | measured on targeted retrieval and integration tests |
-| `balanced` | Economy + a larger verbatim recent tail | mechanism-backed; steadiness benefit not yet established |
-| `quality` | Balanced + narrative rationale checkpoints | mechanism-backed; highest cost, benefit not yet established |
-| `legacy` | EF engine defaults; frozen compatibility baseline | compatibility |
-| `basic` | EF stands aside; native Basic behavior and no EF surface | compatibility |
-
-Configure a startup mode:
+Configure a default tier:
 
 ```yaml
 - name: dsh-epistemic-fold
@@ -127,119 +252,166 @@ Configure a startup mode:
     mode: economy
 ```
 
-Switch a running EF tier:
+Then verify from a session:
 
 ```text
-/context mode economy
-/context mode balanced
-/context mode quality
+/context status
 ```
 
-`legacy` and `basic` are selected by configuration rather than the runtime tier switch.
+For install channels, pnpm `allowBuilds`, preset verification, browser checks and
+upgrade behavior, see the [User guide](docs/USER_GUIDE.md) and the detailed
+[deployment chain](docs/42_DEPLOYMENT_CHAIN.md).
 
-### Inspect a session
+---
+
+## What is actually proven today?
+
+EF deliberately separates measured behavior from product hypotheses.
+
+**Established on the current implementation**
+
+- exact archive-before-loss and hash-verified Fold Bundles;
+- exact bounded recall of folded history;
+- monotonic Fold Frontier behavior;
+- production Leaf / Root fold transaction paths;
+- retrieval ordering and temporal supersession safeguards;
+- real DSH plugin mounting, preset substitution, runtime commands and Sidebar;
+- an Economy path that works without a per-fold semantic-model call.
+
+**Still open**
+
+- whether **Balanced** or **Quality** produces a reliable long-horizon steadiness
+  advantage over Economy;
+- whether one mode is universally cheaper after real provider cache behavior,
+  retries, tool use and route pricing are included;
+- full external-benchmark ranking across modes.
+
+That distinction is intentional. EF has repeatedly found instrumentation bugs by
+running the system for real, and the project keeps those corrections instead of
+turning a null result into a marketing claim.
+
+The full evidence trail lives in [docs/README.md](docs/README.md).
+
+---
+
+## Product surfaces
+
+### Runtime command
 
 ```text
 /context status
 /context line
+/context mode economy|balanced|quality
 ```
 
-The status surface distinguishes **measured**, **estimated**, and **unknown** values. Unknown is never rendered as a fabricated zero.
+### Sidebar
 
-The Sidebar panel reads the same structured status projection as `/context status`; it is an observation surface only and never enters the model prompt.
+The Sidebar visualizes:
 
-### Recall folded history
+- context occupancy;
+- archived history;
+- current checkpoints;
+- lifetime leaf/root folds;
+- search / recall activity;
+- provider usage;
+- estimated cost when a matching price profile exists.
 
-EF registers two model tools when a DSH ToolRuntime is present:
+Unknown values are shown as unknown — never fabricated as zero.
 
-- `context_search` — find relevant folded checkpoints and bounded verbatim excerpts.
-- `context_recall` — recover summary or exact archived messages from a checkpoint.
+### Basic fallback
 
-Search results are ordered by conversation chronology rather than wall-clock time, and exact recall is provenance-backed.
+Set:
 
-## How folding works
+```yaml
+mode: basic
+```
 
-A normal **Leaf Fold** compacts only the open trajectory after the current Fold Frontier:
+and EF deliberately disappears from the session surface:
+
+- no EF projection;
+- no Sidebar panel;
+- no `/context`;
+- no recall tools;
+- compaction delegates to the vendored Basic backend.
+
+You can benchmark or roll back without uninstalling the plugin.
+
+---
+
+## What EF does *not* try to be
+
+Epistemic Fold is not:
+
+- a vector database;
+- a generic embedding memory layer;
+- a learned compression planner;
+- a semantic dependency graph;
+- a multi-level "summary of summaries" hierarchy;
+- a replacement for DSH goals, plans, todos, or project instructions.
+
+Those boundaries are deliberate.
+
+EF owns the **folding contract**. Existing DSH subsystems keep owning the state
+they already own.
+
+See [Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations)
+for state ownership and the current persistence limitations around custom
+`ef/anchor` events.
+
+---
+
+## Architecture in one line
 
 ```text
-[frozen checkpoints] | frontier | [open trajectory]
-                                      │
-                                      └── leaf fold
+immutable history
+      → exact archive
+      → compact working projection
+      → stable frozen surface
+      ↔ bounded exact recall
 ```
 
-The fold transaction:
+Or, more simply:
 
-1. selects a legal closed span;
-2. writes its exact messages to the bundle store;
-3. derives the checkpoint/state representation;
-4. commits the surface replacement;
-5. advances the frontier.
+```text
+History ≠ Memory ≠ Context
+```
 
-A **Root Fold** rebases a larger frozen surface when policy says the recurring carry cost justifies the cache disruption. Root folding is intentionally rare.
+That is the whole project.
 
-Anything removed from the active surface remains recoverable from the bundle store.
-
-## Current evidence
-
-EF keeps product claims separate from research hypotheses.
-
-| area | status |
-| --- | --- |
-| bundle durability, exact archive and recall | **closed / machine verified and production exercised** |
-| Fold Frontier and leaf/root transaction behavior | **closed / measured** |
-| retrieval ergonomics and temporal ordering | **closed on the current contract** |
-| real DSH plugin mounting, preset substitution, commands, Sidebar | **verified** |
-| `economy` retrieval quality on targeted probes | **measured** |
-| `balanced` / `quality` steadiness advantage | **not established** |
-| route-level realized cost superiority | **open; provider/cache dependent** |
-| τ²-Bench integration | **complete; no tier separation observed before folding** |
-| LHTB integration | **environment/bridge verified; arm comparison pending** |
-
-The research archive is intentionally preserved. Later reports often correct earlier ones instead of rewriting history. See [docs/README.md](docs/README.md) for the map.
-
-## Important current limitation: state ownership
-
-EF has a normalized state vocabulary, but it does **not** claim to own every source of agent state.
-
-- goals remain owned by DSH goal state;
-- plans remain owned by the todo/planning system;
-- project guidance remains in `AGENTS.md` and the instruction loader;
-- failed tool results are the only automatic production state producer currently derived by EF;
-- the other anchor kinds are representable, but there is no general production producer for them.
-
-Custom `ef/anchor` durable writes also depend on host persistence support and must not be treated as a universal persistence API on current DSH. See [Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations).
+---
 
 ## Development
 
-This repository is a standalone plugin source tree. Tests run the vendored DSH **sources** directly (the same source-level resolution the DSH monorepo uses), so no build of the plugin itself is needed to test it.
+This repository is a standalone plugin source tree. Tests run the vendored DSH
+**sources** directly (the same source-level resolution the DSH monorepo uses), so
+no build of the plugin itself is needed to test it.
 
 Prerequisites: Node `^22.19 || >=24`, pnpm `11.7.x`, npm.
 
 ```bash
-# 1. Vendor the DSH monorepo at the verified baseline
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
 git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
 pnpm install
 
-# 2. Build declaration output for the packages EF consumes
 node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b \
-  packages/compaction/compaction-basic packages/core/tools packages/util/atomic-write
+  packages/compaction/compaction-basic \
+  packages/core/tools \
+  packages/util/atomic-write
 
-# 3. Back in the plugin repo: install tooling and regenerate the resolution maps
 cd ../..
 npm install
 node scripts/generate-maps.cjs
 
-# 4. Run everything
 npm test
 npm run typecheck:all
 npm run build
 ```
 
-Tests use the vendored DSH sources. `vendor/` is intentionally gitignored and is part of the local development environment; do not treat it as disposable test output.
-
-The live tier is opt-in (`EF_LIVE=1`) and **skips** without a resolved route, so an unmeasured behavior is never reported as a passing one.
+`vendor/` is intentionally gitignored and is part of the local development
+environment; do not treat it as disposable test output. The live tier is opt-in
+(`EF_LIVE=1`) and **skips** without a resolved route, so an unmeasured behavior is
+never reported as a passing one.
 
 ### CI
 
@@ -254,7 +426,7 @@ Both run the typechecks, the full suite, and the keyless evaluation tiers.
 > pins**, not a claim about what you have installed. EF's `engines.dsh` and peer
 > ranges are `>=0.1.7-rc.2`, and it is verified running on `0.2.0-rc.2`.
 
-For the evaluation matrix, live tiers, external benchmarks, and temporary-directory discipline, see [Development](docs/DEVELOPMENT.md).
+---
 
 ## Repository layout
 
@@ -307,17 +479,22 @@ scripts/                build, preset generation, vendoring, seam application, p
 docs/                   design records and evaluation reports (see below)
 ```
 
+---
+
 ## Documentation
+
+The numbered R/RC documents under `docs/` are the **research and verification
+archive**, not the user manual.
 
 Start with:
 
 - [User guide](docs/USER_GUIDE.md) — install, modes, commands, Sidebar, troubleshooting.
 - [Architecture](docs/ARCHITECTURE.md) — contracts, fold lifecycle, state and recall.
-- [Development](docs/DEVELOPMENT.md) — local setup, tests, evaluation conventions.
-- [Documentation map](docs/README.md) — stable docs plus the complete research/audit archive.
-- [Deployment chain](docs/42_DEPLOYMENT_CHAIN.md) — detailed DSH preset and browser deployment path.
+- [Development guide](docs/DEVELOPMENT.md) — local setup, tests, evaluation conventions.
+- [Research / evidence map](docs/README.md) — stable docs plus the complete archive.
+- [Deployment chain](docs/42_DEPLOYMENT_CHAIN.md) — the detailed DSH preset and browser path.
 
-The numbered R/RC documents are **evidence records**, not required reading for normal use. The complete index lives in [docs/README.md](docs/README.md).
+The complete index lives in [docs/README.md](docs/README.md).
 
 ## License
 
