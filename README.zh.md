@@ -4,460 +4,319 @@
 [![Release](https://img.shields.io/github/v/release/orangeofcarl0-sys/dsh-epistemic-fold?sort=semver)](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![DSH](https://img.shields.io/badge/DSH-%3E%3D0.1.7--rc.2-4b5563.svg)](#ci)
-[![docs](https://img.shields.io/badge/docs-49%20documents-4b5563.svg)](docs/)
+[![docs](https://img.shields.io/badge/docs-guide-4b5563.svg)](docs/README.md)
 
-> **Epistemic Fold for DeepSeek Harness**
-> *面向长周期 Agent 的、保持契约的上下文运行时。*
+> 面向 DeepSeek Harness 长周期 Agent 的 contract-preserving context runtime。
 
-[English](README.md)
+[English](README.md) · [文档导航](docs/README.md) · [使用指南](docs/USER_GUIDE.md) · [架构](docs/ARCHITECTURE.md)
 
-## 这是什么？
+## Epistemic Fold 是什么？
 
-Epistemic Fold (EF) 是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
-的一个 compaction backend 插件。它把会话历史、记忆与工作上下文当作三件不同的事：
+长周期 Agent 最终都会遇到工作上下文膨胀。普通 compaction 通常把旧历史摘要成一段新文本，但摘要是有损表示：事实可能漂移、旧值可能重新看起来像当前值、很晚以后才需要的细节也可能已经消失。
 
+Epistemic Fold（EF）把三件事分开：
+
+```text
+History ≠ Memory ≠ Context
 ```
-历史 ≠ 记忆 ≠ 上下文
+
+一次 fold 只是把历史移出**模型当前工作 surface**，而不是删除 canonical record。EF 在有损 surface replacement 提交之前，先把原始 model-visible messages 写入持久、带哈希校验的 bundle；prompt 中只保留压缩后的 checkpoint，需要精确历史时再做有界 search / recall。
+
+```text
+DSH Session / tool results
+          │
+          ▼
+   精确 Fold Archive ───────────────┐
+          │                         │
+          ▼                         │
+ 确定性 Current State              │
+ + Compact Checkpoint              │
+          │                         │
+          ▼                         │
+     Active Context                │
+          │                         │
+          └── context_search / context_recall
 ```
 
-核心命题：
+EF 的目标不是“把 token 压得最短”，而是在保住长期 Agent 所依赖的 contract 以后，再优化上下文体积、prefix cache 局部性和实际成本。
 
-> **只有当一段轨迹对未来仍有意义的知识效应已经被稳定对象吸收、关键状态与边界
-> 得到保留、且原始证据可以恢复时，该轨迹才有资格被折叠出工作上下文。**
+## 当前实现提供什么？
 
-具体来说，运行时折叠一段会话时会：
-
-1. **先归档精确的模型可见消息**到不可变、哈希校验的 `CheckpointBundle`，在任何
-   有损 surface 替换提交之前（`BundleDurable ≺ SurfaceLoss`）；
-2. **绝不重折叠已冻结的内容** —— 单调前进的 *Fold Frontier* 分隔冻结 checkpoint
-   与开放轨迹，缓存的 prefix 在多次折叠间逐字节稳定；
-3. **维护一个确定性的当前状态模型** —— 来源是带 provenance 的状态事件与失败的
-   工具结果。reducer 能够表达 objective、constraint、decision、value、evidence、
-   failure、obligation，但当前的自动生产只覆盖失败的工具结果，详见
-   [状态归属](#状态归属)。它携带完整 provenance，并且有一条硬规则：语义摘要
-   永远不能验证状态（`Raw Events → State` 与 `Raw Events → Summary` 并行；
-   `Raw → Summary → State` 被禁止）；
-4. **精确恢复** —— `context_search` / `context_recall` 对任何离开工作集的内容提供
-   有界、分页、经 provenance 校验的召回。
-
-优化目标不是最大压缩率，而是 correctness first —— 在硬正确性约束下提高信息密度、
-prefix cache 局部性、长期状态一致性与闭环延续稳定性。
-
----
+- **先归档、后有损替换**：folded messages 在 surface replacement 前落入 bundle store。
+- **Fold Frontier**：普通折叠只推进单调边界，已经冻结的历史不会被反复摘要。
+- **确定性状态表示**：constraint、value、failure、obligation 等可与 narrative summary 分离。
+- **精确有界召回**：`context_search` 定位历史，`context_recall` 返回带 provenance 的分页原文。
+- **Leaf / Root Fold**：高频增量维护 + 低频经济性 rebase。
+- **Economy / Balanced / Quality 三档**：同一个 engine 的三个成本—稳态 operating point。
+- **用户可见状态面**：`/context status` 与 Sidebar 显示 context pressure、archive、fold、recall 和成本，并且不进入模型上下文。
+- **Basic fallback**：`mode: basic` 时 EF 完全退场，compaction 委托给逐字节兼容的 vendored Basic backend。
 
 ## 安装
 
-EF 是真正的 DSH 插件：构建为可加载 JS，并附带把自己替换进 DSH 自带 preset 的
-bundle patch。
-
-| 通道 | 写法 | 是否固定版本 | 会跑构建吗 | 需要什么 |
-| --- | --- | --- | --- | --- |
-| **tarball**（推荐） | [Releases](https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/releases) 里的 `.tgz` | **是** | 不会 | 什么都不需要，`lib/` 已预构建 |
-| **git，固定 tag** | `github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0` | **是** | 会 | 一行 `allowBuilds`，dsh 会替你打印出来 |
-| **git，跟随 main** | `github:orangeofcarl0-sys/dsh-epistemic-fold` | 否 | 会 | 同一行，但每次推送都会跟随 |
-| **path** | `file:/path/to/dsh-epistemic-fold` | 不适用 | 不会 | 先在源码树里跑 `npm install` |
-| **registry** | `dsh-epistemic-fold` | 不适用 | 不适用 | 不可用——包是 `private` 且未发布 |
-
-> **Release 不是安装通道，只有它的附件是。** 实测：`dsh plugin` 从不查询 GitHub
-> Releases API。它把 spec 交给 pnpm，由 pnpm 把 git spec 解析成
-> **commit tarball**（来自 `codeload.github.com`）。`github:owner/repo` 解析为
-> 默认分支的最新提交；只有显式写 `#<tag 或 commit>` 才真正固定版本。所以裸 git
-> spec 会跟随 `main` 的每一次推送，包括尚未发布的提交。
-
-### 从 release tarball 安装（推荐）
+最推荐使用 Release 中的 tarball，因为它已经包含构建好的 `lib/`——不会触发 `prepare`，不需要 `allowBuilds`，拿到的就是 release notes 描述的那份代码：
 
 ```bash
 dsh plugin --profile <name> add file:/path/to/dsh-epistemic-fold-0.1.0.tgz
 ```
 
-tarball 里已含构建好的 `lib/`，所以不会跑 `prepare`，也不需要 `allowBuilds`，
-拿到的就是 release notes 描述的那份代码。
-
-### 从 git 安装，固定到某个 tag
+也可以固定到 git tag：
 
 ```bash
 dsh plugin --profile <name> add github:orangeofcarl0-sys/dsh-epistemic-fold#v0.1.0
 ```
 
-首次运行会以 `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED` 停止。这是 pnpm 拦截构建
-脚本，不是缺陷：**dsh 会打印出要粘贴到 profile `pnpm-workspace.yaml` 的
-`allowBuilds` 行**。加上后重跑即可；安装过程会在 `prepare` 里构建 `lib/` 并生成
-preset 替换行。
+> **裸写 `github:owner/repo` 跟的是默认分支，不是 release。**
+> `dsh plugin` 从不查询 GitHub Releases API：它把 spec 交给 pnpm，裸写形式会被解析到默认分支的
+> TIP，只有带 `#<tag-or-commit>` 时才真正 pin——实测表现为 `codeload.github.com` 的 tarball URL，
+> 末尾是解析出的 commit sha。想跟未发布代码就显式去掉 `#v0.1.0`，不要靠意外。
 
-`allowBuilds` 的键里嵌的是解析后的 commit，所以固定 tag 同时也固定了这条允许项。
-
-### 从 git 安装，跟随 `main`
-
-去掉 `#v0.1.0` 即跟随默认分支。想要未发布的工作就用这个——但如果你想要的是
-release notes 描述的那份，这就是错的选择，因为一旦有新提交落地，两者就分叉了。
-
-### 从本地检出安装
+本地 checkout：
 
 ```bash
-cd /path/to/dsh-epistemic-fold
-npm install          # 构建 lib/ —— file: 通道不会替你构建
-npm run preflight    # 校验这棵树是否可安装
+npm install
+npm run preflight
 ```
 
-然后把它作为 `file:` 依赖加入。**`file:` 通道不会跑构建** —— 实测 pnpm 对路径
-依赖跳过 `prepare`。不先 `npm install`，装入的就是一个 `main`（`lib/entry.js`）
-指向不存在文件的目录，loader 会为一个**本身就是安装 doctor** 的条目报告
-`failed to import`。`npm run preflight` 会在安装前拦住这种情况。
+然后以 `file:` dependency 加入 DSH profile。`file:` 渠道**不会**替你构建——实测 pnpm 会跳过 path
+dependency 的 `prepare`——所以必须先 `npm install`，否则装进去的目录里 `main` 并不存在；
+`npm run preflight` 会在安装之前拦住这种情况。
 
-### 配置 profile
+EF 会原位替换 DSH `standard`、`ptc`、`cordis` preset 中的 compaction backend；`minimal` 保持 DSH 原样。Bundle 顺序有意义：`dsh-epistemic-fold` 必须放在 `@deepseek-ai/dsh-web-app` 之后。
 
 ```jsonc
-// <DSH_HOME>/profiles/<name>/package.json
 {
-  "dependencies": { "dsh-epistemic-fold": "file:/path/to/dsh-epistemic-fold" },
+  "dependencies": {
+    "dsh-epistemic-fold": "file:/path/to/dsh-epistemic-fold"
+  },
   "dsh": {
     "profile": {
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "dsh-epistemic-fold"        // ← 必须排在 dsh-web-app 之后
+        "dsh-epistemic-fold"
       ]
     }
   }
 }
 ```
 
-然后在 profile 目录执行 `pnpm install`，用 `dsh --profile <name>` 启动。
-
-**bundle 顺序是正确性要求。** 替换 patch 覆盖的是 `@deepseek-ai/dsh-web-app`
-声明的行；排在它前面，patch 什么也找不到——EF 自带的 doctor 会大声报告，而不是
-静默把你留在原生 Basic 上。
-
-**preset 菜单不会改变。** EF 把自己替换进 DSH 自带的 `standard`、`ptc`、
-`cordis` 三个 preset，因此没有新东西要选。`minimal` 保持 DSH 原样——它本身不声明
-compaction 组，没有可替换的东西。
-
-### 验证安装
-
-```bash
-# 1. 替换确实发生了 —— 三行，每个被替换的 preset 一行
-grep -c "name: dsh-epistemic-fold/plugin" cordis.patch.yml
-
-# 2. 会话真的在跑 EF —— 在 standard/ptc/cordis 下的会话里
-/context status
-
-# 3. 浏览器拿到的是你构建的那份
-#    （在页面控制台）
-__DSH_BOOT__.entries.find(r => r.id === 'dsh-epistemic-fold').rev
-```
-
-doctor 的成功日志在正常 web 启动时**不会**打印——cordis 的 logger 只缓冲在内存，
-而 `dsh-app-boot` 只捕获 warn/error。上面三个表面才是实际要看的。完整矩阵见
-[部署链路](docs/42_DEPLOYMENT_CHAIN.md)。
-
----
+安装渠道、校验方法和升级排错见 [使用指南](docs/USER_GUIDE.md)；完整部署链见 [docs/42_DEPLOYMENT_CHAIN.md](docs/42_DEPLOYMENT_CHAIN.md)。
 
 ## 使用
 
-### 模式
+### 三档模式
 
-三档模式，另有 `legacy`（引擎自身默认值）与 `basic`（完全让位）：
+`economy`、`balanced`、`quality` 是用户档位；`legacy`、`basic` 是兼容模式。
+
+| mode | 行为 | 当前证据 |
+| --- | --- | --- |
+| `economy` | 默认 retention，不做每次 fold 的 rationale 调用；旧历史按需召回 | 已在 targeted retrieval / integration tests 中测量 |
+| `balanced` | Economy + 更大的 verbatim recent tail | 机制成立；稳态收益尚未建立 |
+| `quality` | Balanced + narrative rationale checkpoint | 机制成立；成本最高，收益尚未建立 |
+| `legacy` | EF engine 的冻结兼容基线 | compatibility |
+| `basic` | EF 退场，使用 Basic 行为且不暴露 EF surface | compatibility |
+
+启动配置：
 
 ```yaml
 - name: dsh-epistemic-fold
   config:
-    bundleRoot: <profile 持久化根目录>/epistemic-fold
-    mode: economy     # economy | balanced | quality | legacy | basic
+    bundleRoot: <profile persistence root>/epistemic-fold
+    mode: economy
 ```
 
-| 模式 | 它增加了什么 | 证据状态 |
-| --- | --- | --- |
-| `economy` | —（默认保留量，无 per-checkpoint LLM 调用） | **MEASURED** —— RC1.3：与 Basic 质量持平，成本约 1/17 |
-| `balanced` | 更大的逐字保留尾部（保留比例 0.16 → 0.24） | **HYPOTHESIS** —— RC2.1 的 A/B 未测出收益 |
-| `quality` | 外加叙述性 checkpoint（`semanticMode: rationale`） | **HYPOTHESIS** —— 未测量 |
-| `legacy` | 引擎自身默认值；不套用任何档位取值 | — |
-| `basic` | 不增加任何东西——fold 委派给逐字节一致的 Basic 后端 | — |
+运行中的三档切换：
 
-阶梯每上一档只变动**一个**杠杆——先保留比例、再语义面——其余保持不变，因此相邻
-两档之间的差异是可归因的。每一档都是「一组具名取值」而非分支：展开在解析之前
-完成，因此引擎无法区分 preset 与手写配置，且**显式设置始终覆盖 preset**。
+```text
+/context mode economy
+/context mode balanced
+/context mode quality
+```
 
-`reliability` 刻意**不提供**：尚无实测证据确定最优 reliability 配置，命名它等于
-断言一个项目尚未得到的结论。
+`legacy` / `basic` 通过配置选择，不属于运行时三档切换。
 
-档位用 `/context mode economy|balanced|quality` 选择，而不是用 preset——因为
-preset 在会话开始前就要选定，而 DSH 拒绝重组运行中的会话。
+### 查看压缩状态
 
-### `frameCheckpoint` seam
+```text
+/context status
+/context line
+```
 
-`framingMode: system-dedup`（每一档都选用它）需要 compaction 引擎上的
-`frameCheckpoint` hook。**EF 把这个 seam 内联进自己 vendor 的 Basic 副本**
-（`src/basic/`），因此在**任何** DSH 构建上都能挂载，无需打补丁脚本。若该副本
-损坏，引擎**拒绝启动**，而不是静默退回更贵的 per-checkpoint framing——那会报告
-一个该部署实际并未获得的节省。
+状态面区分 **measured / estimated / unknown**。没有数据时不会伪造 `0`。
 
-### 侧边栏面板
+Sidebar 与 `/context status` 读取同一个结构化 projection。它只是 observation surface，不会进入 prompt。
 
-EF 附带一个侧边栏**观测**面板（`client.js`）。它读取与 `/context status` 同一套
-状态模型，而不是解析命令的输出文本；显示上下文占比与供应商侧的缓存命中率；无法
-确立的数值显示 `—`，绝不为 0。它读取客户端投影，因此**结构上不可能进入模型
-上下文**。
+### 召回 Folded History
 
-它同时接入**两套**右侧边栏，而两者各自维护 tab 注册表。这两半**并不对称**：
-better-sidebar 走可选惯用法，原生一侧是**回退**——因为 better-sidebar 会把自己的
-tab 桥接进原生注册表，无条件双注册会让用户看到两条一模一样的条目
-（[docs/43](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md)）。
+当 ToolRuntime 存在时，EF 注册：
 
-### 完全让位
+- `context_search`：在已折叠历史中查找相关 checkpoint 和有界原文 excerpt；
+- `context_recall`：读取 checkpoint 的摘要或精确 archived messages。
 
-设 `mode: basic` 即可在不卸载的情况下拿回原生 Basic。EF 会把 fold 委派给逐字节
-一致的 Basic 后端，且**不注册任何** EF 表面——没有投影、没有面板、没有
-`/context`、没有召回工具。这是受支持的配置，不是降级。
+Search 按会话逻辑时序排序，而不是按墙钟时间；exact recall 带 provenance。
 
----
+## Fold 是怎样工作的？
 
-## 状态
+普通 **Leaf Fold** 只处理 Fold Frontier 后面的 open trajectory：
 
-**哪些是已测量的，哪些不是。** EF 的纪律是每个主张都标注证据状态，本文件同样
-如此。
+```text
+[frozen checkpoints] | frontier | [open trajectory]
+                                      │
+                                      └── leaf fold
+```
 
-| 领域 | 状态 |
+一次 fold：
+
+1. 找到合法且闭合的 span；
+2. 把原始 messages 写入 bundle store；
+3. 生成 checkpoint / current-state representation；
+4. 提交 surface replacement；
+5. 推进 frontier。
+
+**Root Fold** 用于在长期 carry cost 确实值得时重整 frozen surface，因此故意保持低频。
+
+任何离开 active surface 的内容仍然可以从 bundle store 精确恢复。
+
+## 当前证据状态
+
+EF 把“已经测量”与“产品假设”分开：
+
+| 项目 | 状态 |
 | --- | --- |
-| 精确归档/召回闭环、bundle store | ✅ **PRODUCTION-EXERCISED** —— M0/M2 各 Gate 已闭合 |
-| 确定性 state reducer、authority 与 supersession 不变量 | ✅ **MACHINE-VERIFIED** —— M3a 各 Gate 在 fixture 与 live 注入 anchor 上闭合 |
-| 生产环境的状态生产者 | ⚠️ **PARTIAL** —— 目前只有失败工具结果的自动状态；普通 session 未接入通用 anchor producer |
-| Fold Frontier、leaf/root 折叠、prefix 稳定性 | ✅ **MEASURED** |
-| `economy` 档成本持平 | ✅ **MEASURED** —— RC1.3：与 Basic 持平且成本约 1/17，已复现 |
-| 召回质量 | ✅ **MEASURED** —— 3.00/3，n=9，与 Basic 持平 |
-| 真实 DSH 插件化、presets、`mode: basic` | ✅ **VERIFIED** —— 在真实宿主中 |
-| 侧边栏面板（两套边栏） | ✅ **VERIFIED** —— 在真实浏览器中 |
-| 路由级实测成本门 | ⚠️ **OPEN** —— n=8 时离散度不足；不得反向驱动架构 |
-| `balanced` / `quality` 稳定性收益 | ⚠️ **HYPOTHESIS** —— RC2.1 的 A/B 未测出收益 |
-| Live 行为层（可选，`EF_LIVE=1`） | ⚠️ **NULL RESULT** —— 任务样本未能区分各模式 |
-| 外部基准（τ²-Bench、LHTB） | ⚠️ **PARTIAL** —— 已接入；见 docs 33–36 |
+| bundle durability、exact archive / recall | **CLOSED / 已机器验证并在生产路径执行** |
+| Fold Frontier、Leaf / Root 事务 | **CLOSED / measured** |
+| retrieval ergonomics 与时间顺序 | **CLOSED on current contract** |
+| 真实 DSH plugin、preset substitution、commands、Sidebar | **verified** |
+| Economy targeted retrieval quality | **measured** |
+| Balanced / Quality 的额外 steadiness 收益 | **尚未建立** |
+| route-level realized cost superiority | **OPEN，依赖 provider/cache** |
+| τ²-Bench | **已接入；首次 fold 前未观察到 tier separation** |
+| LHTB | **环境/bridge 已验证；arm comparison 尚未完成** |
 
-**已冻结阶段**——已关闭，除非有新的故障证据否则不再讨论：`M1`、`M3b`、`M4`、
-`M5`、`RecallPrune`（因证据不足而搁置）；`DeltaLeaf`（**已否决**，依据 R1-B 实测
-ROI）。
+研究过程保留了完整 audit trail。后续文档如果推翻前序结论，会保留旧记录并显式纠正，而不是重写历史。导航见 [docs/README.md](docs/README.md)。
 
-仅剩一个未决问题，且它属于**定价**问题，不得反向驱动架构：路由级实测成本门。
+## 当前重要边界：State Ownership
 
-### 状态归属
+EF 有一套 normalized state vocabulary，但并不宣称拥有所有 Agent state：
 
-EF 的 `AnchorKind` 集合 —— `objective`、`constraint`、`decision`、`value`、
-`artifact`、`evidence`、`failure`、`obligation` —— 是一套**规范化状态词汇**：
-它描述 EF 在有界工作面里**能够表达什么**，而不是对领域所有权的声明。凡是已有
-canonical owner 的领域，owner 仍然是权威来源，EF 不重复拥有。
+- goal 仍由 DSH goal state 管理；
+- plan 仍由 todo/planning 管理；
+- 项目级 guidance 仍来自 `AGENTS.md` / instruction loader；
+- 当前自动生产的 EF state 主要来自 failed tool result；
+- 其他 anchor kind 可以表示，但没有通用 production producer。
 
-| 领域 | Canonical owner | EF 的角色 |
-| --- | --- | --- |
-| 完成目标（objective） | DSH `dsh-goal`（`goal/change`） | 无 |
-| 当前执行计划 | DSH `dsh-tool-todo`（`todo/write`） | 无 |
-| 全局/项目指导规则 | `AGENTS.md`，由 `dsh-agent-instructions` 加载 | 无 —— 本身已是持久、模型可见的历史 |
-| 工具失败 | 原始 `tool/result` | **EF 派生状态 —— 目前唯一的自动生产者** |
-| session 内断言、临时约束 | 暂无 canonical owner | 仅为候选；当前无 producer |
-| decisions、evidence、artifacts、obligations | 暂无 canonical owner | 无 producer，且不计划增加 |
+当前 DSH 下自定义 `ef/anchor` durable write 也不是一个可以普遍依赖的 persistence API。详见 [Architecture](docs/ARCHITECTURE.md#7-state-ownership-and-current-limitations)。
 
-**在当前 DSH 上，自定义持久事件并不安全。** EF 通过 `ctx.epistemicFold` 追加
-`ef/anchor`，但该类型不在 DSH 的已知事件词汇表中，且当前 `Session.append` 无法
-写入 envelope 的 `ignorable` 标记，因此 persistence 读取路径会拒绝重新打开含有该
-事件的日志（`SessionFormatUnsupportedError`）。reducer、authority gate 与
-supersession 语义在内存中已验证；持久化写入尚未验证。因此 `declare()` 不是
-production-safe 的状态写入 —— 见 `tests/persistence-compat.spec.ts`，它把宿主能力
-固定为探测，而不是断言永久失败。
+## 开发
 
----
+本仓库是一个独立的 plugin source tree。测试直接跑 vendored DSH **source**（与 DSH monorepo 相同的
+source-level resolution），所以测试 plugin 本身不需要先构建。
 
-## 开发方式
-
-本仓库是独立的插件源码树。测试直接运行 vendor 的 DSH **源码**（与 DSH monorepo
-相同的源码级解析方式），因此插件本身无需构建即可测试。
-
-前置要求：Node `^22.19 || >=24`、pnpm `11.7.x`、npm。
+前置条件：Node `^22.19 || >=24`、pnpm `11.7.x`、npm。
 
 ```bash
-# 1. 在核验基线上 vendor DSH monorepo
+# 1. 在已验证基线上 vendor DSH monorepo
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
 git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
 pnpm install
 
-# 2. 构建 EF 所消费包的声明输出
+# 2. 构建 EF 依赖的包的 declaration 输出
 node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b \
   packages/compaction/compaction-basic packages/core/tools packages/util/atomic-write
 
-# 3. 回到插件仓库：安装工具链并重新生成解析表
+# 3. 回到 plugin 仓库：安装工具链并重新生成 resolution maps
 cd ../..
 npm install
 node scripts/generate-maps.cjs
 
-# 4. 全量运行
-npx vitest run                      # 全量测试套件
-npm run typecheck:all               # src/ 与浏览器客户端面
+# 4. 全部跑一遍
+npm test
+npm run typecheck:all
+npm run build
 ```
 
-**两个类型检查项目是刻意的。** `tsconfig.json` 以完整 `strict` 覆盖 `src/` 与
-`tests/`；`tsconfig.client.json` 覆盖 `client.js`（浏览器面）——后者无法进入前者的
-依赖图，因为它从宿主 loader 借用 React 而非依赖它。两者都在 CI 里跑。
+测试直接使用 vendored DSH source。`vendor/` 被 gitignore，但它是本地开发环境的一部分，不是可以随手清掉的 test output。
 
-本文件刻意**不写死**测试数量：写死的数字一经添加新用例即过期，而过期的数字会被
-误读为套件不完整。权威数字以 `vitest run` 的输出为准。Live 层为可选
-（`EF_LIVE=1`），没有可用路由时**跳过**，绝不把「未测量」报成「通过」。
+live tier 是 opt-in（`EF_LIVE=1`），没有可用 route 时会 **skip**，因此未测量的行为不会被报告成通过。
 
 ### CI
 
-每次推送跑两条 lane：
+每次 push 跑两个 lane：
 
-- **pinned DSH 基线**（`477b4f42…`，即 `0.1.7-rc.2` release）——必过。
-- **DSH master**——allowed-to-fail 兼容性探测。
+- **pinned DSH baseline**（`477b4f42…`，即 `0.1.7-rc.2` release）——必须通过。
+- **DSH master**——允许失败的兼容性探针。
 
-两条都跑类型检查、全量测试与 keyless 评测层。
+两个 lane 都跑 typecheck、全量测试和 keyless evaluation tier。
 
-> **关于版本号。** 本仓库中的 `0.1.7-rc.2` 是 **CI 固定的测试基线**，不是对你
-> 本机已安装版本的断言。EF 的 `engines.dsh` 与 peer 范围是 `>=0.1.7-rc.2`，
-> 并已在 `0.2.0-rc.2` 上验证运行。
+> **关于版本号。** 本仓库里的 `0.1.7-rc.2` 是 **CI 钉住的测试基线**，不是对你本机安装版本的声明。
+> EF 的 `engines.dsh` 与 peer range 是 `>=0.1.7-rc.2`，并且已在 `0.2.0-rc.2` 上验证运行。
 
----
+评测矩阵、live tier、外部 benchmark 和临时目录约定见 [Development](docs/DEVELOPMENT.md)。
 
 ## 仓库结构
 
 ```
 src/
   engine.ts             EpistemicFoldEngine —— Basic 事务 + EF compile hook
-  policy.ts             插件配置解析 + 路由模型的压力数学
-  policy-compiler.ts    摊销式 rebase 策略：盈亏平衡视界、硬覆盖
-  economics-profile.ts  版本化成本模型：ρ、ρ_eff、缓存实现率、盈亏平衡
-  candidate.ts          待定 fold candidate 身份（每 session 单槽）
-  bundle-store.ts       FileBundleStore —— 原子写、哈希校验、0600 权限
-  compiler.ts           输入切分、canonical bundle 构建、checkpoint 渲染
-  frontier.ts           Fold Frontier：从当前 surface 定位/重推导
-  leaf-policy.ts        [frontier+1, bestEnd] span 选择 + 冻结预算加载
+  fold-economics.ts     经济性 leaf admission 与 rebase 决策（R2-B、R2-C）
+  policy.ts             plugin 配置解析 + routed-model pressure 计算
+  policy-compiler.ts    amortized rebase policy：break-even horizon、硬 override
+  economics-profile.ts  版本化成本模型：ρ、ρ_eff、cache realization、break-even
+  candidate.ts          待提交 fold candidate 的身份（每 session 单槽）
+  bundle-store.ts       FileBundleStore —— 原子、哈希校验、0600 权限
+  compiler.ts           input 切分、canonical bundle 构建、checkpoint 渲染
+  frontier.ts           Fold Frontier：从 CURRENT surface 定位/重建
+  leaf-policy.ts        [frontier+1, bestEnd] span 选择 + frozen budget 载入
   root-policy.ts        root rebase 建议（手动 /compact = Root Fold）
-  state.ts              确定性 StateReducer：anchors、supersession、生命周期
-  authority.ts          哪些事件类型可以支撑哪些 authority 域
-  anchor-service.ts     authority 门控的 anchor 写入通道（ctx.epistemicFold）
+  state.ts              确定性 StateReducer：anchor、supersession、lifecycle
+  authority.ts          哪些 event kind 可以支撑哪些 authority domain
+  anchor-service.ts     authority-gated anchor 写入通道（ctx.epistemicFold）
   projection.ts         把 reducer 接入 ctx.sessionProjections
   renderer.ts           结构化 checkpoint：Current/Evidence/Open/Rationale/Recall
   recall.ts             context_search + context_recall（有界、分页、精确）
-  tools.ts              向 ctx.tools 注册召回工具
-  hash.ts               canonical JSON + SHA-256 摘要
-  checkpoint-marker.ts  checkpoint 体内的 EF1 标记协议
-  pressure.ts           冻结/开放压力归因
-  trigger.ts            trigger 拆解报告
-  rebase-intent.ts      rebase intent 注册表
-  idle-rebase.ts        空闲期 rebase 消费者
-  effective-config.ts   解析后配置的报告
+  tools.ts              向 ctx.tools 注册 recall 工具
+  hash.ts               canonical JSON + SHA-256
+  checkpoint-marker.ts  checkpoint body 内的 EF1 marker 协议
+  pressure.ts           frozen/open pressure 归因
+  trigger.ts            trigger-breakdown 计算
+  trigger-diagnostics.ts 按 target 的 trigger 分解，输出到 log
+  event-data.ts         EF 读取的 session event payload 的类型化 reader
+  rebase-intent.ts      rebase-intent registry
+  idle-rebase.ts        idle 时段的 rebase consumer
+  effective-config.ts   已解析配置的报告
   preset.ts             档位阶梯及其证据状态
   status.ts             /context status 模型（对调用方数据的纯函数）
-  status-projection.ts  面向客户端的投影（侧边栏的数据源）
+  status-projection.ts  面向 client 的 status projection（Sidebar 的数据源）
   command.ts            /context 命令面
-  plugin.ts             复合插件：持有 ctx.compaction，串联以上各件
-  entry.ts              裸名入口（挂载 doctor，不是 plugin）
-  doctor.ts             常驻的替换 doctor（纯观测）
-  preset-self-check.ts  把漏掉的 preset 替换变成响亮的错误
-  compat.ts             frameCheckpoint seam 探测 + 失败即大声报错
-  basic/                vendor 的 DSH Basic 副本（内联 seam）
-  index.ts, types.ts    库入口与共享类型
-client.js               浏览器侧边栏面板（手写，无打包器）
-eval/                   评测 harness：负载、ROI 实验台、Pareto、配对 runner
-profiles/economics/     版本化供应商价格（含 asOf 与来源）
+  plugin.ts             组合 plugin：拥有 ctx.compaction，串联以上模块
+  entry.ts              裸名入口（挂载 DOCTOR，而不是 plugin）
+  doctor.ts             常驻的 substitution doctor（只观察）
+  preset-self-check.ts  把未生效的 preset substitution 变成显式报错
+  compat.ts             frameCheckpoint seam 探测 + fail-loud 断言
+  basic/                DSH Basic backend 的 vendored 副本，内联了 seam
+  index.ts, types.ts    library 面与共享类型
+client.js               浏览器 Sidebar panel（手写，无 bundler）
+eval/                   评测 harness：workload、ROI lab、Pareto、paired runner
+profiles/economics/     版本化 provider 定价（asOf + source）
 tests/                  测试套件，以及带受控 LLM adapter 的共享 harness
-bench/                  配对基线 harness（Basic vs EF 的 prefix 经济性）
+bench/                  paired-baseline harness（Basic vs EF prefix 经济性）
 scripts/                构建、preset 生成、vendoring、seam 应用、preflight
 docs/                   设计记录与评测报告（见下）
 ```
 
----
-
 ## 文档
 
-`docs/` 有 **49 份文档**，分三类，读的时候这个区分很重要：**设计记录**陈述意图，
-**评测报告**陈述实测结果，**缺陷记录**陈述错在哪、如何更正。后文推翻前文结论时，
-前文**原地标注**而非被改写——审计链本身就是要保留的东西。
+推荐阅读顺序：
 
-### 项目入口与架构
+- [使用指南](docs/USER_GUIDE.md) —— 安装、模式、命令、Sidebar、排错。
+- [架构](docs/ARCHITECTURE.md) —— contract、fold 生命周期、state 与 recall。
+- [开发指南](docs/DEVELOPMENT.md) —— 本地环境、测试、评测约定。
+- [完整文档导航](docs/README.md) —— 稳定文档 + 完整研究/审计归档。
+- [部署链](docs/42_DEPLOYMENT_CHAIN.md) —— DSH preset 与浏览器部署的详细路径。
 
-| 文档 | 内容 |
-|---|---|
-| [00_README_EF.md](docs/00_README_EF.md) | 项目入口：命名、目标、九条核心不变量、术语表 |
-| [01_EF_RFC_001_ARCHITECTURE.md](docs/01_EF_RFC_001_ARCHITECTURE.md) | 架构规范：真相模型、数据结构、折叠事务 |
-| [02_EF_IMPLEMENTATION_PLAN_M0_M3.md](docs/02_EF_IMPLEMENTATION_PLAN_M0_M3.md) | 工程 DAG、阶段 Gate、停止条件 |
-| [03_EF_TEST_BENCHMARK_SPEC.md](docs/03_EF_TEST_BENCHMARK_SPEC.md) | 指标（ALR/SSR/DWR/CR/PMA）、测试套件、benchmark 分组 |
-| [04_EF_LOCAL_AGENT_WORK_ORDER.md](docs/04_EF_LOCAL_AGENT_WORK_ORDER.md) | 实现 Agent 的执行顺序与禁令 |
-| [05_EF_DECISIONS_AND_OPEN_QUESTIONS.md](docs/05_EF_DECISIONS_AND_OPEN_QUESTIONS.md) | 冻结决定、假设、开放问题 |
-| [06_FINAL_REPORT.md](docs/06_FINAL_REPORT.md) | M0/M2/M3a 最终实现报告：Gate、证据、偏差 |
+编号的 R/RC 文档是**研究与验证记录**，普通使用不需要按时间线阅读。完整索引在 [docs/README.md](docs/README.md)。
 
-### 评测
+## License
 
-| 文档 | 内容 |
-|---|---|
-| [07_R0C_EVALUATION_REPORT.md](docs/07_R0C_EVALUATION_REPORT.md) | R0-C 评测：测量完整性、语料、配对续跑、长程经济学 |
-| [07_R0C_EVALUATION_CLOSURE.md](docs/07_R0C_EVALUATION_CLOSURE.md) | R0-C 闭合记录 |
-| [08_BOUNDARY_CORPUS_PROTOCOL.md](docs/08_BOUNDARY_CORPUS_PROTOCOL.md) | 边界语料协议：sidecar 格式、oracle 并集、action 签名 |
-| [09_EVALUATION_METRICS_SPEC.md](docs/09_EVALUATION_METRICS_SPEC.md) | 指标的精确定义（SPN/SPT/IST/PMA/DWR/CR/ρ） |
-| [10_LOCAL_AGENT_WORK_ORDER_R0C.md](docs/10_LOCAL_AGENT_WORK_ORDER_R0C.md) | R0-C 执行工单 |
-| [11_R1B_ROUTE_SELECTION_GATE.md](docs/11_R1B_ROUTE_SELECTION_GATE.md) | R1-B 路线选择 Gate：各候选实测 ROI，以及否决生产化 Delta Leaf |
-| [12_R1_EVALUATION_REPORT.md](docs/12_R1_EVALUATION_REPORT.md) | R1 报告（由 `npm run eval:r1-report` **生成**）：归因、regime 敏感性、ROI 上界、策略、Pareto |
-| [13_R1_LIVE_BEHAVIORAL_RESULTS.md](docs/13_R1_LIVE_BEHAVIORAL_RESULTS.md) | Live 行为子集：零结果、实测缓存实现率，以及它发现的缺陷 |
-| [14_R2_EVALUATION_REPORT.md](docs/14_R2_EVALUATION_REPORT.md) | R2 价格支配报告：BCR 1.276 → 1.149，为何未达标 |
-| [15_R2_FRAMING_CEILING.md](docs/15_R2_FRAMING_CEILING.md) | R2 framing 天花板分析：重复前导是 checkpoint 成本的主项 |
-| [16_R3_EVALUATION_REPORT.md](docs/16_R3_EVALUATION_REPORT.md) | R3 冻结面经济闭合：定价正确性、空闲 rebase、framing seam |
-| [17_R4_EVALUATION_REPORT.md](docs/17_R4_EVALUATION_REPORT.md) | R4 经济默认闭合：真实召回负载、实测计费、窗口安全、presets |
-
-### 发布加固（RC0–RC2.1）
-
-| 文档 | 内容 |
-|---|---|
-| [18_RC0_RELEASE_HARDENING.md](docs/18_RC0_RELEASE_HARDENING.md) | RC0：配置契约、成对非劣性、全调用计费记录器，以及让成本门保持开放的离散度 |
-| [19_RC1_POLICY_NORMALIZATION.md](docs/19_RC1_POLICY_NORMALIZATION.md) | RC1：trigger 拆解、实测安全 reserve、重放模拟器、缓存微基准、认证经济档 |
-| [20_RC1_1_EVIDENCE_RECONCILIATION.md](docs/20_RC1_1_EVIDENCE_RECONCILIATION.md) | RC1.1：逐组件认证、reserve 降级为限定范围的估计、两个重放 confound 移除、撤回 RC1-H 结论 |
-| [21_RC1_2_RECALL_CLOSURE.md](docs/21_RC1_2_RECALL_CLOSURE.md) | RC1.2：真实 agent-loop 召回 smoke、确定性机制证明、rationale 税按其实测规模计价 |
-| [22_RC1_3_RETRIEVAL_ERGONOMICS.md](docs/22_RC1_3_RETRIEVAL_ERGONOMICS.md) | RC1.3：无提示基线、逐事实失败分类、自描述搜索命中，以及把 economy 拉到持平的规则 |
-| [23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md](docs/23_RC1_3_1_TEMPORAL_RETRIEVAL_GUARD.md) | RC1.3.1：以 source span 为准的由新到旧时序、latest-match supersession、`matchedMessageIndex`——冻结检索层 |
-| [24_RC2_PRODUCT_INTEGRATION.md](docs/24_RC2_PRODUCT_INTEGRATION.md) | RC2：带证据状态标注的三档阶梯、真实命令面上的 `/context status`，以及为何真实任务对比未能区分各模式 |
-| [25_RC2_1_STATUS_AND_RETENTION_AB.md](docs/25_RC2_1_STATUS_AND_RETENTION_AB.md) | RC2.1：四个 `/context status` 缺陷、EF-legacy-vs-Basic 基线更正、保留量优先的重排，以及未测出稳定性收益的 A/B |
-
-### 产品集成（RC3–RC7）
-
-| 文档 | 内容 |
-|---|---|
-| [26_RC3_REAL_DSH_PLUGINIZATION.md](docs/26_RC3_REAL_DSH_PLUGINIZATION.md) | RC3：构建步骤、bundle patch、只有真实宿主才能发现的 `ctx.inject` 缺陷，以及更正 RC2 的「在 DSH 中」说法 |
-| [27_RC4_SIDEBAR_PANEL.md](docs/27_RC4_SIDEBAR_PANEL.md) | RC4：同一状态模型上的「命令=控制 / 侧边栏=观测」分工，以及手写客户端 bundle |
-| [28_RC4A_INTERACTION_AUDIT.md](docs/28_RC4A_INTERACTION_AUDIT.md) | RC4-A：逐例走查命令面、web profile 的 `isolate` 发现、failure-as-success 缺陷 |
-| [29_RC5_PRESET_DESIGN.md](docs/29_RC5_PRESET_DESIGN.md) | RC5：EF 独立 preset——为何声明优于覆盖、确切的替换、重述成本 |
-| [30_RC6_PRIOR_ART_SURVEY.md](docs/30_RC6_PRIOR_ART_SURVEY.md) | RC6：其他 DSH context/compaction 插件实际是怎么做的 |
-| [31_RC7_TRANSFORMATION_PLAN.md](docs/31_RC7_TRANSFORMATION_PLAN.md) | RC7：原地替换 + vendor 的 Basic 副本；为何是这个形态而非其他 |
-| [32_RC7D_PARALLEL_LONG_TASK_TESTING.md](docs/32_RC7D_PARALLEL_LONG_TASK_TESTING.md) | RC7-D：并行长任务测试 |
-
-### 外部基准（RC8–RC10）
-
-| 文档 | 内容 |
-|---|---|
-| [33_RC8_EXTERNAL_BENCHMARKS.md](docs/33_RC8_EXTERNAL_BENCHMARKS.md) | RC8：外部基准接入——哪些是真的、哪些被阻塞 |
-| [34_RC9_TAU2_INTEGRATION.md](docs/34_RC9_TAU2_INTEGRATION.md) | RC9：τ²-Bench-Verified 接入（Interaction-State 线） |
-| [35_RC10_LHTB_INTEGRATION.md](docs/35_RC10_LHTB_INTEGRATION.md) | RC10：LHTB 接入（LongWork 线） |
-| [36_RC10_SESSION_PAUSE.md](docs/36_RC10_SESSION_PAUSE.md) | RC10：会话状态，已暂停 |
-
-### 交互表面（RC11–RC21）
-
-| 文档 | 内容 |
-|---|---|
-| [37_RC11_BROWSER_VERIFICATION.md](docs/37_RC11_BROWSER_VERIFICATION.md) | RC11：交互表面的真实浏览器验证 |
-| [38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md](docs/38_RC12_PRESET_BACKEND_DOCTOR_DEFECT.md) | RC12：preset 后端挂载了 **doctor**——每个会话都在静默跑 Basic |
-| [39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md](docs/39_RC13_SIDEBAR_PANEL_RENDER_DEFECT.md) | RC13：面板调用了一个侧边栏从不传入的 hook |
-| [40_RC14_DUAL_SIDEBAR_ADAPTER.md](docs/40_RC14_DUAL_SIDEBAR_ADAPTER.md) | RC14：双侧边栏适配——以及被证伪的「类型注册了、body 没有」追踪结论 |
-| [41_RC15_NATIVE_SIDEBAR_RENDERS.md](docs/41_RC15_NATIVE_SIDEBAR_RENDERS.md) | RC15：原生面板渲染成功——thunk 化的 `description`，以及 `inject: ['slots']` |
-| [42_DEPLOYMENT_CHAIN.md](docs/42_DEPLOYMENT_CHAIN.md) | **部署链路：从 GitHub 到运行中的 DSH**——运维文档 |
-| [43_RC17_SIDEBAR_ENTRY_DEDUPE.md](docs/43_RC17_SIDEBAR_ENTRY_DEDUPE.md) | RC17：一条指南条目而非两条——以及修复自身的测试发现的无限递归 |
-| [44_RC18_HONEST_PRICING.md](docs/44_RC18_HONEST_PRICING.md) | RC18：面板用错了价目表给每个会话计价 |
-| [45_RC19_PANEL_READABILITY.md](docs/45_RC19_PANEL_READABILITY.md) | RC19：让面板可读——单位、占比、缓存命中率、语言 |
-| [46_RC20_ARCHIVED_ITEM_COUNT.md](docs/46_RC20_ARCHIVED_ITEM_COUNT.md) | RC20：归档条目数其实一直读得到 |
-| [47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md](docs/47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md) | RC21：给客户端面加类型检查，并把它与宿主的契约钉死 |
-
-**新读者从这里开始**：[00](docs/00_README_EF.md) 看模型，
-[42](docs/42_DEPLOYMENT_CHAIN.md) 看安装与运维，
-[47](docs/47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md) 看近期工作如何被验证。
-
----
-
-## 许可证
-
-[MIT](LICENSE)
-
-`src/basic/` 是从 DeepSeek Harness (MIT) vendor 而来，并内联了 `frameCheckpoint`
-seam。见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+MIT。见 [LICENSE](LICENSE) 与 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

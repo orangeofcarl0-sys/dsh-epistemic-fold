@@ -243,5 +243,25 @@
     "file": "47_RC21_CLIENT_TYPECHECK_AND_CONTRACT.md",
     "bytes": 7082,
     "sha256": "cf394b73fd2e637a88899e62bf2f5c8d0e0b984eb931519ce94da8bc513f74eb"
+  },
+  {
+    "file": "ARCHITECTURE.md",
+    "bytes": 8229,
+    "sha256": "df73380cf0703d0d3d71c9c1b0986fff89818bc64c42072d8801eec06f2b2598"
+  },
+  {
+    "file": "DEVELOPMENT.md",
+    "bytes": 5734,
+    "sha256": "cae084bdc19bf619236d798094aa0b891af1efe6497c10a0d0f5ed00d30d055b"
+  },
+  {
+    "file": "README.md",
+    "bytes": 7838,
+    "sha256": "8369357a075f4de71cbaf47223bc048bc6b53c8a400326a877f90e11d5d81f99"
+  },
+  {
+    "file": "USER_GUIDE.md",
+    "bytes": 7392,
+    "sha256": "0f64f8e177c957767d8eadb93b52ff33e9e74e5b67a058bb7dda00b236e94882"
   }
 ]

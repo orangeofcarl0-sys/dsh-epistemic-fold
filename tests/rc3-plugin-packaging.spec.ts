@@ -57,7 +57,7 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(pkg['files']).toContain('cordis.patch.yml')
   })
 
-  it('ships `docs`, so the READMEs\' own links are not dead on the registry', async () => {
+  it('ships `docs`, so the doc links are not dead on the registry', async () => {
     // THE DEFECT THIS PINS: `files` omitted `docs`, so `npm pack` produced a
     // tarball with no documentation — while the README linked to 49 of them.
     // On the npm page every one of those links 404s, and a reader's first
@@ -68,19 +68,38 @@ describe('RC3: the package declares a real plugin entry', () => {
     // cause — `files` losing `docs`, a link pointing at a file that was
     // renamed, a doc deleted without updating the index.
     //
-    // BOTH language editions are checked. A translation is the edition most
-    // likely to rot: it is edited separately, and a stale link in it is
-    // invisible to a reader of the other one.
+    // ## Where the index lives
+    //
+    // The README used to BE the index, linking all 49 numbered documents, and
+    // this test required >40 such links in each edition. The docs rewrite makes
+    // the README a product entry and moves the map to `docs/README.md`, so the
+    // index requirement follows the index: the COUNT is asserted against the
+    // map, and each README is held to what it actually carries — every link it
+    // makes must resolve. That keeps the original defect pinned (a dead link on
+    // npm) without forcing the README back into being a research-log index.
     const pkg = await readJson('package.json')
     expect(pkg['files'], 'docs must be published with the package').toContain('docs')
 
+    // The map is the index, and it must be complete.
+    const map = await readFile(join(ROOT, 'docs', 'README.md'), 'utf8')
+    const indexed = [...new Set(
+      [...map.matchAll(/\]\(([0-9]{2}_[A-Za-z0-9_.-]+\.md)\)/gu)].map(match => match[1]!),
+    )]
+    expect(indexed.length, 'docs/README.md must index the numbered documents').toBeGreaterThan(40)
+    const unindexed = indexed.filter(file => !existsSync(join(ROOT, 'docs', file)))
+    expect(unindexed, 'docs/README.md indexes a document that does not exist').toEqual([])
+
+    // Each edition carries the entry points a reader follows, and every link it
+    // makes must resolve. BOTH are checked because a translation is the edition
+    // most likely to rot: it is edited separately, and a stale link in it is
+    // invisible to a reader of the other one.
     for (const name of ['README.md', 'README.zh.md']) {
       const readme = await readFile(join(ROOT, name), 'utf8')
       const linked = [...new Set(
-        [...readme.matchAll(/\]\(docs\/([A-Za-z0-9_.-]+\.md)\)/gu)].map(match => match[1]!),
+        [...readme.matchAll(/\]\((docs\/[A-Za-z0-9_./-]+\.md)\)/gu)].map(match => match[1]!),
       )]
-      expect(linked.length, `${name} must index the docs`).toBeGreaterThan(40)
-      const missing = linked.filter(file => !existsSync(join(ROOT, 'docs', file)))
+      expect(linked.length, `${name} must link the documentation`).toBeGreaterThan(3)
+      const missing = linked.filter(file => !existsSync(join(ROOT, file)))
       expect(missing, `${name} links a doc that does not exist, which is a 404 on npm`).toEqual([])
     }
   })
