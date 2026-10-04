@@ -1,0 +1,922 @@
+{
+  "schema": "ef-tau2-run/1",
+  "preset": "sweep",
+  "purpose": "quality",
+  "concurrency": null,
+  "seed": 20261001,
+  "maxSteps": 100,
+  "arms": [
+    "basic",
+    "economy",
+    "balanced",
+    "quality"
+  ],
+  "replicates": 4,
+  "route": {
+    "agentModel": "space-bunny-free",
+    "baseUrl": "https://opencode.ai/zen/v1",
+    "userSimulatorLlm": "openai/space-bunny-free"
+  },
+  "recovered": {
+    "from": "bench-workspace/sweep-new.log",
+    "note": "The log lives outside this repository, so it is named relative to the benchmark workspace rather than by an absolute path.",
+    "sha256": "8d8da7d774d0370e6bb96550cc237a6b25bb4d2a26b1a4e94e206921707d97dd",
+    "bytes": 4694586,
+    "cellsParsed": 96,
+    "provenance": "NONE. The run predates the ef-tau2-run/1 provenance block (commit 6dad4fe), which is exactly why this record had to be recovered from text.",
+    "limitation": "Only reward, termination kind and wall-clock survive the run's console log. db_pass, communicate_pass, steps, messages, per-cell telemetry and the per-cell arm shuffle order are unrecoverable, so the fields below are absent rather than inferred. reportedHeadline was recomputed from the recovered cells and agrees with the log's printed table exactly.",
+    "classifier": "The log's failure-attribution line was printed by the pre-6dad4fe taxonomy, where premature-stop equalled the failure count. Every termination in this run was USER_STOP, so the correct premature-stop count is 0 for every arm."
+  },
+  "reportedHeadline": {
+    "basic": {
+      "pass1": 0.75,
+      "pass2": 0.61,
+      "pass4": 0.5,
+      "meanR": 0.75
+    },
+    "economy": {
+      "pass1": 0.71,
+      "pass2": 0.61,
+      "pass4": 0.5,
+      "meanR": 0.708
+    },
+    "balanced": {
+      "pass1": 0.71,
+      "pass2": 0.5,
+      "pass4": 0.17,
+      "meanR": 0.708
+    },
+    "quality": {
+      "pass1": 0.58,
+      "pass2": 0.5,
+      "pass4": 0.5,
+      "meanR": 0.583
+    }
+  },
+  "cells": [
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 58
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 58
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 62
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 70
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 71
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 97
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 46
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 73
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 76
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 101
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 80
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 114
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 61
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 91
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 54
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 49
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 68
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "quality",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 42
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 127
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 90
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 122
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 73
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 70
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "balanced",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 131
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 56
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 99
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 184
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 63
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "basic",
+      "replicate": 0,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 251
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 85
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 205
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 201
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 281
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 206
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 227
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "economy",
+      "replicate": 0,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 519
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 104
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 84
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 136
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 69
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 82
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 177
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 95
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 85
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "balanced",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 77
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 49
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "basic",
+      "replicate": 1,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 99
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 65
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "economy",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 105
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 56
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 67
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 71
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 73
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 58
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "quality",
+      "replicate": 1,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 225
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 97
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 121
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 243
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 88
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 109
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 70
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 100
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 76
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 230
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 259
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 20
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 109
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 81
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "balanced",
+      "replicate": 2,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 116
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 100
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 87
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 116
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 53
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "basic",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 247
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 98
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "quality",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 264
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "economy",
+      "replicate": 2,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 307
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 119
+    },
+    {
+      "domain": "retail",
+      "task_id": "5",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 180
+    },
+    {
+      "domain": "retail",
+      "task_id": "18",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 121
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 115
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 84
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 85
+    },
+    {
+      "domain": "retail",
+      "task_id": "22",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 80
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 247
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 236
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 260
+    },
+    {
+      "domain": "retail",
+      "task_id": "21",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 287
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 65
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 107
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 105
+    },
+    {
+      "domain": "airline",
+      "task_id": "11",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 149
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "economy",
+      "replicate": 3,
+      "reward": 1,
+      "termination": "user_stop",
+      "seconds": 99
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "balanced",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 89
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "quality",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 161
+    },
+    {
+      "domain": "airline",
+      "task_id": "42",
+      "arm": "basic",
+      "replicate": 3,
+      "reward": 0,
+      "termination": "user_stop",
+      "seconds": 159
+    }
+  ]
+}

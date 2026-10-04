@@ -1,7 +1,8 @@
 # RC9 — τ²-Bench-Verified Integration
 
-**Status:** adapter gate passed (4/4 cells); 96-episode sweep executed.
-**Headline result: no arm separation.** See §6.
+**Status:** adapter gate passed (4/4 cells); two 96-episode sweeps executed.
+**Headline result: no arm separation, and the arm ordering is not reproducible
+between the two runs.** See §6 and §6.1.
 **Position:** the **Interaction-State / reliability** verification line. It does
 NOT replace the LHTB LongWork line, which remains serial and single-cell on this
 host.
@@ -232,6 +233,72 @@ context pressure, which is not evidence of equivalence in general.
 
 Nothing about the tiers' long-context value. That is the LHTB lane's question,
 and it remains open and serial on this host.
+
+### 6.1 A second replication: the ordering reverses
+
+The tool projection was fixed at 20:23 and the identical 96-cell sweep was
+re-run at 20:38. It left **no archive** — `--out` was accepted by the runner but
+never passed by the wrapper — so the record below was recovered from the run's
+console log and committed as
+`eval/tau2/results/sweep-20261004T123804Z.recovered.json`. That file carries the
+log's SHA-256, names the fields that did not survive the log, and records that it
+has **no provenance at all**, because it predates the provenance block.
+
+| arm | run 1 pass^1 | run 2 pass^1 | run 1 pass^4 | run 2 pass^4 | run 1 meanR | run 2 meanR |
+|---|---:|---:|---:|---:|---:|---:|
+| basic | 0.62 | **0.75** | 0.50 | 0.50 | 0.625 | 0.750 |
+| economy | **0.75** | 0.71 | 0.50 | 0.50 | 0.750 | 0.708 |
+| balanced | 0.58 | 0.71 | 0.33 | 0.17 | 0.583 | 0.708 |
+| quality | 0.62 | 0.58 | 0.17 | 0.50 | 0.625 | 0.583 |
+
+The finding is not run 2's ranking. It is that the ranking **reversed**:
+`economy` led `basic` by +0.125 in run 1 and trailed it by -0.042 in run 2 —
+same six tasks, same seed (20261001), same four arms, same grader. §6 reports the
+first run's p = 0.164; that figure is one-sided, and re-running the test as
+described below reproduces 0.162. Run 2's one-sided p is 0.655, and pooling both
+runs leaves +0.042 at p = 0.336. An effect that changes sign between two
+replications of one configuration is smaller than the noise the sample carries,
+which is what §6 already concluded — now with a second run rather than a single
+p-value.
+
+**Method**, so the number can be re-run rather than believed: shuffle arm labels
+within each `(task, replicate)` block; 20,000 resamples; seed 20261001;
+statistic `pass^1(economy) - pass^1(basic)`. This is the only place the method is
+written down; there is no in-repo implementation of it yet.
+
+**The bands do not survive either.** Pooled per-task success (all four arms,
+n = 16) against what the frozen manifest records:
+
+| task | run 1 | run 2 | manifest | shift |
+|---|---:|---:|---:|---:|
+| `retail/5` | 0.56 | 0.38 | 0.56 | -0.19 |
+| `retail/18` | 0.44 | 0.63 | 0.44 | +0.19 |
+| `retail/21` | 1.00 | 0.94 | 1.00 | -0.06 |
+| `retail/22` | 0.88 | 1.00 | 0.88 | +0.12 |
+| `airline/11` | 0.94 | 0.94 | 0.94 | 0.00 |
+| `airline/42` | 0.06 | 0.25 | 0.06 | +0.19 |
+
+The manifest's figures are exactly run 1, as its `measuredOn` field says. Three of
+the six cells move by 0.19, and the two the manifest calls **discriminators swap
+places**: `retail/5` (0.56 to 0.38) and `retail/18` (0.44 to 0.63) exchange which
+of them is the stronger separator, while `airline/42` — excluded as floored at
+0.06 — is 0.25 in run 2: still below the band, no longer floored. `airline/11` is
+the only cell identical in both runs.
+
+The honest reading is that one n = 16 sweep cannot fix a per-task band to within
+±0.2, so the *roles* of `retail/5`, `retail/18` and `airline/42` are directional
+rather than settled. The manifest is deliberately **left frozen**: re-ranking it
+from a second single run would repeat the error it was written to avoid. Settling
+it needs a wider sample — more tasks, or more replicates per task — not a
+re-reading of these two.
+
+**One more defect the second run exposed.** All 96 terminations in both runs were
+`USER_STOP` and no cell errored, yet run 2's failure-attribution line reads
+`premature-stop=6`, `=7`, `=7`, `=10` — equal to the failure count in every arm.
+That column compared `str(TerminationReason.USER_STOP)`, which is
+`"TerminationReason.USER_STOP"`, against `("agent_stop", "user_stop")`, so it was
+never true. Fixed in `6dad4fe`; the corrected count is 0 premature stops in every
+arm, and the whole failure channel is `DB`, as §6 says.
 
 ---
 
