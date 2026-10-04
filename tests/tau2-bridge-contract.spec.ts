@@ -112,6 +112,16 @@ describe('the tau2 launch seam', () => {
     expect(execLine!.text, 'the wrapper must pass --out; the runner accepts it but does not default it').toContain('--out')
   })
 
+  it('keeps machine paths out of the run record', () => {
+    const runner = read('eval/tau2/run_tau2.py')
+    // The archives under eval/tau2/results are tracked files, and
+    // release-hygiene scans every tracked text file for a user-profile path.
+    expect(runner, 'a checkout is identified by locator + rev, never by its absolute root').toContain(
+      '"locator": locator',
+    )
+    expect(runner, 'provenance must not embed a resolved absolute root').not.toMatch(/"root":\s*str\(/u)
+  })
+
   it('sets a NO_PROXY an HTTP client can parse', () => {
     const assignments = code('scripts/run-tau2.sh').filter(entry => /^export (NO_PROXY|no_proxy)=/u.test(entry.text.trim()))
     expect(assignments.length, 'both spellings must be set, since Windows may carry either').toBeGreaterThanOrEqual(2)

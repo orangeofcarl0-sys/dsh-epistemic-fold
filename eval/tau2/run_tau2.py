@@ -410,8 +410,19 @@ def _git_dirty(path: Path) -> Optional[bool]:
     return bool(out.stdout.strip())
 
 
-def _checkout(path: Path) -> dict[str, Any]:
-    return {"root": str(path), "rev": _git_rev(path), "dirty": _git_dirty(path)}
+def _checkout(path: Optional[Path], locator: str) -> Optional[dict[str, Any]]:
+    """Identify a checkout by what a reader elsewhere can use, not by where it sits.
+
+    The absolute root is deliberately NOT recorded. These archives are tracked
+    files, and `tests/release-hygiene.spec.ts` scans every tracked text file for
+    a Windows user-profile path: writing `D:\\Users\\<someone>\\...` into a run
+    record would fail the release gate and publish a machine's directory layout.
+    The revision is the actual anchor — two checkouts of the same commit run the
+    same experiment — and `locator` names where to find it without naming a disk.
+    """
+    if path is None:
+        return None
+    return {"locator": locator, "rev": _git_rev(path), "dirty": _git_dirty(path)}
 
 
 def provenance(
@@ -440,8 +451,8 @@ def provenance(
             "baseUrl": os.environ.get("EF_LIVE_BASE_URL", "https://opencode.ai/zen/v1"),
             "userSimulatorLlm": USER_LLM,
         },
-        "ef": _checkout(ef_root),
-        "tau2": _checkout(Path(tau2_root).resolve()) if tau2_root else None,
+        "ef": _checkout(ef_root, "."),
+        "tau2": _checkout(Path(tau2_root).resolve(), "$TAU2_ROOT") if tau2_root else None,
     }
 
 

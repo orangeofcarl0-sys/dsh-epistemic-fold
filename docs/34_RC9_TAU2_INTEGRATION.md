@@ -1,8 +1,8 @@
 # RC9 — τ²-Bench-Verified Integration
 
 **Status:** adapter gate passed (4/4 cells); two 96-episode sweeps executed.
-**Headline result: no arm separation, and the arm ordering is not reproducible
-between the two runs.** See §6 and §6.1.
+**Headline result: no arm separation, and the ordering is not reproducible across
+three runs — three different leaders.** See §6, §6.1 and §6.2.
 **Position:** the **Interaction-State / reliability** verification line. It does
 NOT replace the LHTB LongWork line, which remains serial and single-cell on this
 host.
@@ -299,6 +299,55 @@ That column compared `str(TerminationReason.USER_STOP)`, which is
 `"TerminationReason.USER_STOP"`, against `("agent_stop", "user_stop")`, so it was
 never true. Fixed in `6dad4fe`; the corrected count is 0 premature stops in every
 arm, and the whole failure channel is `DB`, as §6 says.
+
+### 6.2 A third run, and the shape of the instability
+
+The provenance fix made a third run self-describing rather than hand-assembled:
+this one records its own EF revision, its tau2 revision, whether either tree was
+dirty, the route and the seed in the archive it writes. It is
+`eval/tau2/results/sweep-20261004T153829Z.json` — 96/96 cells, zero errors, all 96
+terminations `user_stop`, one `COMMUNICATE` failure.
+
+**Three runs, three different winners.**
+
+| arm | run 1 pass^1 | run 2 | run 3 | led in |
+|---|---:|---:|---:|---|
+| basic | 0.625 | **0.750** | 0.542 | run 2 |
+| economy | **0.750** | 0.708 | 0.667 | run 1 |
+| balanced | 0.583 | 0.708 | 0.458 | — |
+| quality | 0.625 | 0.583 | **0.708** | run 3 |
+
+The statistic §6 singled out, `economy - basic`, reads +0.125, -0.042, +0.125 —
+and none of it is significant (p = 0.162, 0.655, 0.171; pooled over all 288
+episodes, +0.069 at p = 0.111). One configuration, one seed, three runs, three
+orderings and three leaders. Any single-run ranking of these four arms — including
+the one this section first reported — is a sample of the provider's day.
+
+**Which parts of the frozen selection survive.** Pooled per-task success, all four
+arms, 16 episodes per run:
+
+| task | manifest | run 1 | run 2 | run 3 | range | verdict |
+|---|---:|---:|---:|---:|---:|---|
+| `retail/5` | 0.56 | 0.56 | 0.38 | 0.44 | 0.19 | **stable discriminator** — in band every run |
+| `retail/18` | 0.44 | 0.44 | 0.63 | 0.31 | **0.31** | **stable discriminator** — in band every run |
+| `retail/21` | 1.00 | 1.00 | 0.94 | 0.94 | 0.06 | stable saturated anchor |
+| `retail/22` | 0.88 | 0.88 | 1.00 | 0.75 | 0.25 | **unstable** — crosses the 0.85 edge |
+| `airline/11` | 0.94 | 0.94 | 0.94 | 1.00 | 0.06 | stable saturated anchor |
+| `airline/42` | 0.06 | 0.06 | 0.25 | 0.13 | 0.19 | **unstable** — crosses the 0.15 edge |
+
+The route-conditioned rule survives where it matters: both cells the manifest
+calls **discriminators** sit inside the 0.15–0.85 band in all three runs, and both
+saturated anchors stay saturated. What does not survive is the precision — 
+`retail/18` moves 0.31 across three runs of 16 episodes — nor the two boundary
+cells, which cross the band edge rather than sitting inside or outside it. Those
+two are recorded as unstable and not re-ranked; the manifest stays frozen, and the
+honest reading of this lane is a **non-regression result with a ±0.2 band, not an
+ordering**.
+
+**What did not change.** `folds = 0` in every arm of every run: episodes peak at
+3.0–3.3K tokens against a 16K fold threshold, so no arm ever folded. This lane
+still measures interaction reliability at zero context pressure — which is exactly
+why it cannot speak to the fold, and why the LHTB lane remains the one that could.
 
 ---
 
