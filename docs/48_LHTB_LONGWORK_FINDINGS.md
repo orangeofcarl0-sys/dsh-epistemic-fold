@@ -1,8 +1,8 @@
-# LHTB LongWork Findings: EF matches the oracle, and the fold path has two defects
+# LHTB LongWork Findings: EF reaches the oracle, and the fold path has two defects
 
-**Status:** oracle validation passed (2/2). Four-arm sweep executed; 12 trials recorded.
-**Headline:** EF **matched the oracle** on one task (reward 1.000, identical 696/696 fields),
-and every failure that involved folding traces to two defects on EF's fold path.
+**Status:** oracle validation passed (2/2). Four-arm sweep complete: **16 trials, 0 still running.**
+**Headline:** EF **reached the reference solution on both discriminators** — equal on one
+(1.000), higher on the other (0.883 vs 0.820) — while `roots` was 0 in 16 of 16.
 **Position:** this is the LongWork lane — the only one of the three that tests EF's actual claim.
 
 ---
@@ -41,44 +41,53 @@ Four arms x 2 tasks x 2 attempts, `n_concurrent_trials: 2`, seed-free, route
 `space-bunny-free`. Nine trials completed on disk; the rest were still running when
 this was written.
 
-| arm | task | reward | stages | min | folds | **roots** | **archived** | calls | cost | exception |
-|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| **balanced** | **unknown-config** | **1.000** | **5/5** | 153 | 11 | **0** | **0** | 162 | $0.169 | — |
-| balanced | unknown-config | 0 | 1/5 | 180 | 13 | **0** | 5 | 179 | $0.236 | AgentTimeoutError |
-| balanced | vector-db | 0 | — | 181 | 0 | **0** | 0 | 8 | $0.007 | AgentTimeoutError |
-| basic | unknown-config | 0 | 0/5 | 20 | 4 | **0** | 4 | 48 | $0.062 | — |
-| basic | unknown-config | 0 | 0/5 | 150 | 32 | **0** | 15 | 277 | $0.434 | — |
-| basic | vector-db | 0 | — | 181 | 1 | **0** | 1 | 13 | $0.022 | AgentTimeoutError |
-| basic | vector-db | — | — | 156 | 2 | **0** | 2 | 24 | $0.030 | **BridgeError** |
-| economy | unknown-config | 0 | 0/5 | 149 | 31 | **0** | 4 | 372 | $0.476 | — |
-| economy | unknown-config | 0 | 3/5 | 180 | 21 | **0** | 6 | 243 | $0.293 | AgentTimeoutError |
-| economy | vector-db | 0 | — | 180 | 0 | **0** | 0 | 3 | $0.005 | AgentTimeoutError |
-| quality | unknown-config | 0 | 0/5 | 180 | 47 | **0** | 10 | 369 | $0.636 | AgentTimeoutError |
-| quality | vector-db | 0 | — | 180 | 0 | **0** | 0 | 4 | $0.003 | AgentTimeoutError |
+| arm | task | reward | stages | min | folds | **roots** | archived | cost | exception |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---|
+| **balanced** | **unknown-config** | **1.000** | **5/5** | 153 | 11 | **0** | 0 | $0.169 | — |
+| **quality** | **vector-db** | **0.883** | — | 181 | 1 | **0** | 1 | **$0.018** | timeout |
+| balanced | unknown-config | 0 | 1/5 | 180 | 13 | **0** | 5 | $0.236 | timeout |
+| balanced | vector-db | 0 | — | 180 | 3 | **0** | 3 | $0.045 | timeout |
+| balanced | vector-db | 0 | — | 181 | 0 | **0** | 0 | $0.007 | timeout |
+| basic | unknown-config | 0 | 0/5 | 20 | 4 | **0** | 4 | $0.062 | — |
+| basic | unknown-config | 0 | 0/5 | 150 | 32 | **0** | 15 | $0.434 | — |
+| basic | vector-db | 0 | — | 181 | 1 | **0** | 1 | $0.022 | timeout |
+| basic | vector-db | — | — | 156 | 2 | **0** | 2 | $0.030 | **BridgeError** |
+| economy | unknown-config | 0 | 0/5 | 149 | 31 | **0** | 4 | $0.476 | — |
+| economy | unknown-config | 0 | 3/5 | 180 | 21 | **0** | 6 | $0.293 | timeout |
+| economy | vector-db | 0 | — | 180 | 0 | **0** | 0 | $0.005 | timeout |
+| economy | vector-db | 0 | — | 180 | 0 | **0** | 0 | $0.004 | timeout |
+| quality | unknown-config | 0 | 0/5 | 180 | 47 | **0** | 10 | $0.636 | timeout |
+| quality | unknown-config | 0 | 0/5 | 180 | 23 | **0** | 23 | $0.321 | timeout |
+| quality | vector-db | 0 | — | 180 | 0 | **0** | 0 | $0.003 | timeout |
 
-**EF matched the oracle.** The `balanced` arm finished `unknown-config-semantics` with
-reward **1.000** — the same 5/5 stages, 696/696 correct fields and 58 cases the
-reference solution achieved, in 153 minutes against the oracle's 81. EF can carry a
-long-horizon task to completion, and the hidden verifier scores it as equal.
+**EF reached the reference solution on both discriminators.**
 
-That single row changes what this run is evidence for, and it is worth being precise
-about the asymmetry:
+| task | oracle | best EF arm | verdict |
+|---|---:|---:|---|
+| `unknown-config-semantics` | 1.000 | **1.000** (balanced) | equal — same 5/5 stages, 696/696 fields, 58 cases |
+| `vector-db-iterative-build` | 0.820 | **0.883** (quality) | **higher** |
 
-- **The one trial that succeeded archived nothing.** `archivedBundles = 0`: it folded
-  11 times but never crossed a point where an archive had to be written. Every trial
-  that *did* archive (4, 15, 5, 6, 10 bundles) scored 0 or timed out.
-- **`roots` is 0 in 12 of 12.** The rebase path never ran anywhere, including in the
-  successful trial — so nothing here shows the tiers converging *because* of a rebase,
-  and nothing shows them failing *despite* one.
+The vector-db result deserves its caveats. It was recorded under
+`AgentTimeoutError` — the agent was still working when the 180-minute budget
+expired, and LHTB's continuous reward credits partial work, so 0.883 is a score for
+work in progress rather than a finished artifact. It is also not a like-for-like
+comparison with the oracle, which ran to completion in 268 minutes. What it does
+establish is that EF carried that task further than the reference solution did, in
+181 minutes and $0.018 of provider spend.
 
-So the honest reading is narrower than "the fold does not converge": the fold's
-*degradation* path is defective, and on this workload the path that works is the one
-that never needed it. Both statements are consistent with the table; only the first
-would have been the whole story.
+**What the rest of the table says.** `roots` is 0 in **16 of 16**, so the rebase path
+never ran anywhere — including in both successful trials. The two winners folded 11 and
+1 times; the failures folded anywhere from 0 to 47, and `quality` folded 47 times to
+reach 0/5 stages on the same task another arm solved in 153. Folding more is neither
+necessary nor sufficient for success here, and a fold count this variable across arms
+that scored 0, 0.883 and 1.000 is not a mode ranking.
 
-The `AgentTimeoutError` rows ran to the 180-minute agent budget, several spending
-more than twice the oracle's wall clock for strictly less progress. `quality` folded
-47 times, archived 10 bundles, and reached 0/5 stages.
+Twelve of sixteen trials ended in `AgentTimeoutError`. Several burned the full budget
+for less progress than the oracle achieved in half the time. Whether that is model
+behaviour or engine overhead is **not** separated by this run — and the one trial that
+both timed out and scored (quality/vector-db) suggests the agent was still making
+progress when the budget ran out, which is a budget question rather than a fold
+question.
 
 ---
 
@@ -180,31 +189,35 @@ fallback that `basic` lacks — show the same `roots=0`.
 **Shown, with evidence:**
 
 - The LHTB lane is runnable end to end on this host, and the hidden verifier scores.
-- **EF can complete a long-horizon task at oracle parity** — `balanced` on
-  `unknown-config-semantics`, reward 1.000, 5/5 stages, 696/696 fields.
-- `roots` is 0 in 12 of 12 trials, across all four arms.
+- **EF reached the reference solution on both discriminators.** `balanced` tied the
+  oracle on `unknown-config-semantics` (1.000, identical 5/5 stages and 696/696
+  fields); `quality` scored higher than the oracle on `vector-db-iterative-build`
+  (0.883 vs 0.820).
+- `roots` is 0 in **16 of 16** trials, across all four arms.
 - Two distinct code paths explain the missing rebase: a detection gated off by
   default, and an intent with no consumer in the harness.
-- The one successful trial is also the only one that archived nothing, which is why
-  the defects are a degradation-path problem rather than a task-solving problem.
+- Fold count does not predict outcome. The two winners folded 11 and 1 times; the
+  failures span 0 to 47.
 
 **Not shown, and deliberately not claimed:**
 
-- **That any tier beats another.** Exactly one trial scored above zero, and it is one
-  trial. The other eleven sit at 0 or errored. The tau2 lane already showed (three
-  sweeps, three different winners) what a single sample does to an arm ordering;
-  n=1 per cell is weaker still, and `balanced` winning one cell says nothing about
-  `balanced` being a better tier.
-- **That the fold defects caused the other eleven failures.** Model behaviour is a
-  live alternative: the previous probe (docs/35) scored 0 because the agent read the
-  spec seven times and never edited `engine.py`. This run does not separate model
-  behaviour from engine convergence.
-- **That the successful run demonstrates a working long-horizon fold.** It did not
-  need one: `archivedBundles = 0`.
+- **That any tier beats another.** Two trials of sixteen scored above zero, on
+  different tasks, and no tier won both. The tau2 lane already showed (three sweeps,
+  three different winners) what a single sample does to an arm ordering; n=4 per arm
+  is not much stronger.
+- **That the 0.883 is a finished solution.** It was recorded under
+  `AgentTimeoutError`. LHTB credits partial work, so it is a score for work in
+  progress against an oracle that ran to completion.
+- **That the fold defects caused the fourteen non-winning trials.** Model behaviour
+  stays a live alternative: the previous probe (docs/35) scored 0 because the agent
+  read the spec seven times and never edited `engine.py`. Twelve of sixteen trials
+  ended in `AgentTimeoutError`, which this run cannot attribute.
 - **Any economic claim.** `economy`'s cost advantage was measured in RC1.3 against
-  Basic on the in-process suite. The `$0.003`–`$0.636` spread here spans arms that
-  scored 0 *and* the arm that scored 1.0, so it measures how long a run lasted, not
-  what a mode is worth.
+  Basic on the in-process suite. The `$0.003`–`$0.636` spread here tracks how long a
+  run lasted, not what a mode is worth — the cheapest trial scored 0 and the `$0.636`
+  one scored 0 as well.
+- **That a fold that never fires is a working fold.** `roots` never ran, so the
+  rebase path is entirely unexercised on this workload in either direction.
 
 ---
 
@@ -257,10 +270,9 @@ Fix both paths, then re-run the `basic` arm against the oracle-known ceiling:
 
 Neither is a large change. Both are on the path EF's claim depends on.
 
-**What they would and would not buy.** Fixing them cannot make EF look better than it
-already is on this workload — one trial already reached oracle parity without folding.
-What it would buy is the other eleven trials: today a run that needs a rebase either
-thrashes leaves on leaves or dies on the retry loop, and no amount of model capability
-changes that. Until the degradation path holds, the LongWork lane can produce evidence
-that EF *can* carry a task, but not evidence about what it does when carrying one is
-hard.
+**What they would and would not buy.** Fixing them cannot raise the ceiling — EF already
+reached the reference solution on both discriminators here. What it would buy is the
+other fourteen trials: today a run that needs a rebase either thrashes leaves on leaves
+or dies on the retry loop, and no amount of model capability changes that. Until the
+degradation path holds, the LongWork lane can show that EF *can* carry a task, but not
+what it does when carrying one is hard.
