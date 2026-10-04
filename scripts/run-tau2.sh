@@ -77,17 +77,9 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
 export NODE_USE_ENV_PROXY=1
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
 
-# NO_PROXY is scrubbed here, and scrubbing it from the calling shell is NOT
-# enough. The value this machine inherits ends in a bracketed IPv6 literal, and
-# httpx reads that as a port: every model call dies with
-# `InvalidURL: Invalid port: ':1]'`, which reads like a route or credential
-# fault rather than a proxy one. Windows environment blocks are case-insensitive
-# yet can still carry both spellings, and which one wins is not predictable, so
-# both are dropped and a single bracket-free value is set instead.
-unset NO_PROXY
-unset no_proxy
-export NO_PROXY="localhost,127.0.0.1,::1"
-export no_proxy="localhost,127.0.0.1,::1"
+# The bracketed-IPv6 NO_PROXY defect, scrubbed once for every runner.
+# See scripts/proxy-env.sh for why the calling shell cannot fix it.
+. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
 
 # Scratch for EF bundles. Kept under the managed temp root so the sweep owns it.
 export EF_TAU2_BUNDLE_ROOT="${EF_TAU2_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/tau2-bundles}"

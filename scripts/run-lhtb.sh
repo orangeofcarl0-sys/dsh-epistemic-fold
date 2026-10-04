@@ -107,13 +107,24 @@ export NODE_USE_ENV_PROXY=1
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
 export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:10808}"
 
+# The bracketed-IPv6 NO_PROXY defect. Harbor's embedded LiteLLM hit it too and
+# only survived because it falls back to a bundled cost map, so the failure was
+# invisible here rather than absent. See scripts/proxy-env.sh.
+. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
+
 # Many LHTB images are amd64-only.
 export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"
 
 # The EF adapter modules and the shared bridge client.
 export PYTHONPATH="${EF_ROOT}/eval/lhtb:${EF_ROOT}/eval/tau2:${PYTHONPATH:-}"
 
-export EF_LHTB_MODE="${EF_LHTB_MODE:-probe}"
+# The mode is the first positional argument (`run-lhtb.sh sweep`), and the
+# environment variable is the override. Reading the argument HERE rather than
+# defaulting it to "probe" matters: a script that silently ignores `sweep` and
+# runs a one-task probe looks exactly like a sweep that found nothing.
+MODE="${1:-probe}"
+shift || true
+export EF_LHTB_MODE="${EF_LHTB_MODE:-$MODE}"
 export EF_LHTB_ARM="${EF_LHTB_ARM:-basic}"
 export EF_LHTB_BUNDLE_ROOT="${EF_LHTB_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/lhtb-bundles}"
 

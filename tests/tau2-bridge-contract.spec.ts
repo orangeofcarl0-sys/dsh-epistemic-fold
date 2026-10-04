@@ -122,13 +122,23 @@ describe('the tau2 launch seam', () => {
     expect(runner, 'provenance must not embed a resolved absolute root').not.toMatch(/"root":\s*str\(/u)
   })
 
-  it('sets a NO_PROXY an HTTP client can parse', () => {
-    const assignments = code('scripts/run-tau2.sh').filter(entry => /^export (NO_PROXY|no_proxy)=/u.test(entry.text.trim()))
+  it('sources the shared NO_PROXY scrub rather than carrying its own copy', () => {
+    // The scrub moved to scripts/proxy-env.sh because four runs needed it and four
+    // copies of a proxy string drift. Asserting it HERE is what keeps the runners
+    // pointing at the shared file: deleting the source line breaks this test
+    // instead of silently restoring a broken NO_PROXY on the next machine.
+    expect(read('scripts/run-tau2.sh')).toMatch(/\. "\$\{BASH_SOURCE\[0\]%\/\*\}\/proxy-env\.sh"/u)
+
+    const assignments = code('scripts/proxy-env.sh').filter(entry => /^export (NO_PROXY|no_proxy)=/u.test(entry.text.trim()))
     expect(assignments.length, 'both spellings must be set, since Windows may carry either').toBeGreaterThanOrEqual(2)
     for (const entry of assignments) {
       // A bracketed IPv6 literal reads as a port to httpx: Invalid port: ':1]'.
       expect(entry.text, `${entry.text.trim()} carries a bracket httpx reads as a port`).not.toContain(']')
       expect(entry.text).not.toContain('[')
     }
+    // Both must be dropped first: Windows environment blocks are case-insensitive
+    // yet can carry both, and which one wins is not predictable.
+    expect(read('scripts/proxy-env.sh')).toMatch(/^unset NO_PROXY$/mu)
+    expect(read('scripts/proxy-env.sh')).toMatch(/^unset no_proxy$/mu)
   })
 })
