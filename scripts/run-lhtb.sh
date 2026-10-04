@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the LHTB x EF serial probe against the space-bunny-free route.
+# Run the LHTB x EF lane against the space-bunny-free route.
 #
 # ## Why a script
 #
@@ -16,18 +16,43 @@
 # written to a file, never passed as an argument. `set -x` is deliberately NOT
 # used.
 #
-# ## Serial by necessity
+# ## Modes
 #
-# Every LHTB task requests 4-8 GB of RAM and this host's WSL VM is capped at
-# 8 GB, so at most one trial runs at a time. A parallel LHTB run is not possible
-# here, which is exactly why the tau2 lane carries the statistical work.
+#   probe   one task, one arm, one attempt (the integration check)
+#   sweep   both discriminators x N attempts, one arm per invocation
+#   oracle  the tasks' own reference solutions; no API key, so it validates the
+#           environment and the hidden verifier without spending anything
+#
+# ## Parallelism, corrected
+#
+# An earlier revision said a parallel run was impossible: "every LHTB task
+# requests 4-8 GB of RAM and this host's WSL VM is capped at 8 GB". Measured on
+# this host, both halves of that were wrong:
+#
+#   - the WSL cap is 24 GB (~/.wslconfig), not 8 GB;
+#   - `memory_mb` is the container's LIMIT, not a reservation. With both
+#     discriminators running, vector-db held 108 MiB of its 8 GiB and
+#     unknown-config 16 MiB of its 4 GiB.
+#
+# The binding constraint is the build and verifier phases, which is why
+# `n_concurrent_trials` is set from measurement in the config rather than from
+# the declared per-task limit.
+#
+# ## One arm per invocation
+#
+# `EF_LHTB_ARM` is read by the adapter from the environment, so one process is
+# one arm. That is deliberate: four separate invocations are four separate
+# provider windows, and the tau2 lane already showed - three sweeps, three
+# different winners - that a per-arm window can masquerade as a mode effect.
 #
 # Usage:
 #   bash scripts/run-lhtb.sh probe
-#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh probe
+#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh sweep
+#   EF_LHTB_ATTEMPTS=4 bash scripts/run-lhtb.sh sweep
 #
 # Environment overrides:
 #   EF_LHTB_ARM        context runtime (default: basic)
+#   EF_LHTB_ATTEMPTS   replicates in sweep mode (default: the config's value)
 #   EF_LHTB_BUNDLE_ROOT  where EF bundles are written
 
 set -euo pipefail
@@ -88,6 +113,7 @@ export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"
 # The EF adapter modules and the shared bridge client.
 export PYTHONPATH="${EF_ROOT}/eval/lhtb:${EF_ROOT}/eval/tau2:${PYTHONPATH:-}"
 
+export EF_LHTB_MODE="${EF_LHTB_MODE:-probe}"
 export EF_LHTB_ARM="${EF_LHTB_ARM:-basic}"
 export EF_LHTB_BUNDLE_ROOT="${EF_LHTB_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/lhtb-bundles}"
 
@@ -99,8 +125,6 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # multi-line scripts; a reply truncated at 900 tokens arrives as `max-tokens`
 # carrying nothing usable.
 export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-4096}"
-
-echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
 
 # The config's dataset path is relative to the WORKING DIRECTORY, and Harbor
 # resolves it there. Running from the EF repo would make `./tasks` resolve to a
@@ -115,8 +139,37 @@ cd "$LHTB_ROOT"
 # failure mode available here, so each run gets its own directory.
 JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${EF_LHTB_ARM}"
 CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
-sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
-  "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml" > "$CONFIG_TMP"
 
-echo "job: lhtb-ef-${JOB_SUFFIX}"
+case "${EF_LHTB_MODE}" in
+  sweep)
+    # Both discriminators, N attempts. `n_attempts` is overridden only when the
+    # caller asks, because Harbor reads it from the config otherwise and the
+    # config is the thing worth reviewing.
+    if [ -n "${EF_LHTB_ATTEMPTS:-}" ]; then
+      sed -e "s/^job_name: .*/job_name: lhtb-ef-sweep-${JOB_SUFFIX}/" \
+          -e "s/^n_attempts: .*/n_attempts: ${EF_LHTB_ATTEMPTS}/" \
+          "${EF_ROOT}/eval/lhtb/lhtb-ef-sweep.yaml" > "$CONFIG_TMP"
+    else
+      sed -e "s/^job_name: .*/job_name: lhtb-ef-sweep-${JOB_SUFFIX}/" \
+          "${EF_ROOT}/eval/lhtb/lhtb-ef-sweep.yaml" > "$CONFIG_TMP"
+    fi
+    echo "LHTB sweep: arm=${EF_LHTB_ARM} tasks=unknown-config-semantics,vector-db-iterative-build"
+    ;;
+  oracle)
+    # The benchmark's own reference solutions. `oracle` is a built-in Harbor
+    # agent, so the EF adapter is not referenced at all and no key is needed.
+    # This is what proves the images pull, the containers start and the HIDDEN
+    # verifier scores, before any of it is spent against the provider.
+    sed "s/^job_name: .*/job_name: lhtb-oracle-${JOB_SUFFIX}/" \
+      "${EF_ROOT}/eval/lhtb/lhtb-ef-oracle.yaml" > "$CONFIG_TMP"
+    echo "LHTB oracle: reference solutions, no API key (environment + verifier check)"
+    ;;
+  *)
+    echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
+    sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
+      "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml" > "$CONFIG_TMP"
+    ;;
+esac
+
+echo "job: ${CONFIG_TMP##*/lhtb-}"
 exec "$HARBOR_EXE" run -c "$CONFIG_TMP"

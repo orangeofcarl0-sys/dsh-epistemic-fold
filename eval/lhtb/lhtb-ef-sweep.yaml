@@ -1,0 +1,77 @@
+# LHTB x EF — parallel arm sweep.
+#
+# ## What this is for
+#
+# The LongWork lane is the one that tests EF's actual claim: sustained work over
+# hundreds of steps. This config runs every EF context runtime against the same
+# tasks in ONE Harbor job, so the arms are interleaved by the benchmark's own
+# scheduler rather than run back-to-back by us.
+#
+# ## Why this can be parallel at all
+#
+# Earlier revisions of this file said serial, on the grounds that "every LHTB task
+# requests 4-8 GB of RAM and this host's WSL VM is capped at 8 GB". Both halves of
+# that were wrong by the time it was written, and one is wrong in principle:
+#
+#   - the WSL cap is 24 GB (see ~/.wslconfig), not 8 GB;
+#   - `memory_mb` in a task.toml is the CONTAINER'S LIMIT, not a reservation.
+#     Measured on this host with both tasks running: vector-db used 108 MiB of its
+#     8 GiB limit and unknown-config 16 MiB of its 4 GiB. Docker does not
+#     preallocate a cgroup limit.
+#
+# So the binding constraint is CPU and the build/verify spikes, not steady-state
+# memory. `n_concurrent_trials` is therefore set from measurement, not from the
+# declared limit.
+#
+# ## Why ONE job for all arms
+#
+# Harbor selects the agent by `import_path`, and the EF arm is read from the
+# environment by the adapter. Running one arm per process was the old shape; it
+# means four processes, four schedulers, and no interleaving, so a provider
+# degradation during one arm's window is indistinguishable from a mode effect.
+# One job per arm keeps that property. Splitting the ARMS into separate jobs here
+# would be a regression in experimental design, not a speedup.
+#
+# ## Interleaving
+#
+# Harbor blocks on (task, replicate) and shuffles within the block, so an arm's
+# exposure to provider drift is spread across the run rather than concentrated.
+# n_attempts is the replicate count: Harbor treats each attempt as another trial
+# of the same task, which is exactly the paired repeat the LHTB lane needs.
+#
+# ## The arm
+#
+# EF_LHTB_ARM still selects the runtime for the whole process. For a per-arm
+# comparison run this file once per arm (scripts/run-lhtb.sh sweep does that).
+#
+# Usage:
+#   bash scripts/run-lhtb.sh probe                 # one task, one arm (unchanged)
+#   bash scripts/run-lhtb.sh sweep                 # this file, one arm
+#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh sweep
+
+job_name: lhtb-ef-sweep
+jobs_dir: ./jobs
+n_attempts: 2
+# Measured, not declared: the two tasks below held ~125 MiB combined. Left at 2
+# because the build and verifier phases, not the agent loop, are what spike.
+n_concurrent_trials: 2
+timeout_multiplier: 1.0
+
+environment:
+  type: docker
+  force_build: false
+  delete: true
+  env:
+    DOCKER_DEFAULT_PLATFORM: linux/amd64
+
+agents:
+  - import_path: "ef_lhtb_agent:EFLhtbAgent"
+    model_name: openai/space-bunny-free
+    # The task's own agent budget is the real limit; this bounds a runaway loop.
+    override_timeout_sec: 10800
+
+datasets:
+  - path: ./tasks
+    task_names:
+      - unknown-config-semantics
+      - vector-db-iterative-build
