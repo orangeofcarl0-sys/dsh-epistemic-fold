@@ -57,6 +57,15 @@ jobs:
       - name: Type check the browser client face
         run: npm run typecheck:client
 
+      # The benchmark harness (`eval/`, `bench/`) had its own project for the
+      # same reason: no tsconfig covered it, so it was never compiled. Adding
+      # the project surfaced eleven errors, including an invalid
+      # `CompactionTrigger` that would have thrown from Basic's `assertNever`
+      # the moment the `basic` arm was fixed, and `lib/*.js` imports that
+      # resolved to `any` and silenced the file.
+      - name: Type check the benchmark harness
+        run: npm run typecheck:eval
+
       - name: Tests
         run: npx vitest run
 
@@ -125,6 +134,15 @@ jobs:
 
       - name: Type check the browser client face
         run: npm run typecheck:client
+
+      # The benchmark harness (`eval/`, `bench/`) had its own project for the
+      # same reason: no tsconfig covered it, so it was never compiled. Adding
+      # the project surfaced eleven errors, including an invalid
+      # `CompactionTrigger` that would have thrown from Basic's `assertNever`
+      # the moment the `basic` arm was fixed, and `lib/*.js` imports that
+      # resolved to `any` and silenced the file.
+      - name: Type check the benchmark harness
+        run: npm run typecheck:eval
 
       - name: Tests
         run: npx vitest run

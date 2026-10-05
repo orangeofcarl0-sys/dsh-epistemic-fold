@@ -300,16 +300,23 @@ def summarize(cells: list[Cell], arms: list[str]) -> str:
 
     lines.append("")
     lines.append("DIAGNOSTIC — EF telemetry and failure attribution (never the score)")
-    lines.append(f"{'arm':10s}{'folds':>7s}{'roots':>7s}{'calls':>7s}{'ctxTok':>9s}{'surfNodes':>11s}{'cost':>10s}")
-    lines.append("-" * 61)
+    lines.append(
+        f"{'arm':10s}{'folds':>7s}{'roots':>7s}{'emerg':>7s}{'writes':>8s}"
+        f"{'intents':>9s}{'calls':>7s}{'ctxTok':>9s}{'surfNodes':>11s}{'cost':>10s}"
+    )
+    lines.append("-" * 85)
     for arm in arms:
         rows = [c for c in cells if c.arm == arm and c.error == ""]
         if not rows:
             continue
         tel = [c.telemetry for c in rows if c.telemetry]
         mean = lambda key: statistics.mean([t.get(key, 0) or 0 for t in tel]) if tel else 0.0  # noqa: E731
+        # `pendingIntents` is a MEAN at episode end, not a total: a non-zero mean
+        # means intents were still outstanding when the episode finished, which
+        # is a leak (a producer with no consumer), not work done.
         lines.append(
-            f"{arm:10s}{mean('folds'):>7.1f}{mean('roots'):>7.1f}{mean('modelCalls'):>7.1f}"
+            f"{arm:10s}{mean('folds'):>7.1f}{mean('roots'):>7.1f}{mean('emergencies'):>7.1f}"
+            f"{mean('bundleWrites'):>8.1f}{mean('pendingIntents'):>9.1f}{mean('modelCalls'):>7.1f}"
             f"{mean('promptTokensLast'):>9.0f}{mean('surfaceNodesLast'):>11.1f}{mean('costTotal'):>10.4f}"
         )
 

@@ -37,6 +37,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Optional
@@ -63,6 +64,63 @@ MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
 # The placeholder the bridge substitutes when the model produced nothing. Kept in
 # sync with `EMPTY_TURN_PLACEHOLDER` in bridge-host.ts.
 EMPTY_PLACEHOLDER = "(no response)"
+
+
+def provenance(arm: str) -> dict[str, Any]:
+    """
+    Identify what produced a run, using only facts a reader elsewhere can use.
+
+    ## Why this exists
+
+    The LHTB numbers were the headline of a findings document and had NO
+    machine-readable record: the trials existed only as a table typed into
+    Markdown. The tau2 lane records provenance with every sweep, and this is the
+    same discipline applied here — a number that cannot be traced to a revision
+    is an anecdote.
+
+    ## Why it carries no filesystem path
+
+    An earlier provenance block in the tau2 lane wrote each checkout's ABSOLUTE
+    ROOT into a tracked archive, which fails `tests/release-hygiene.spec.ts` (it
+    scans every tracked file for a Windows user-profile path) and publishes one
+    machine's directory layout. A checkout is therefore identified by what a
+    reader elsewhere can act on: the LOCATOR names where to find it without
+    naming a disk, and the REVISION is the actual anchor, because two checkouts
+    of the same commit run the same experiment.
+
+    A dirty tree is recorded rather than hidden: a run from modified sources is
+    not reproducible from the revision alone, and a reader is entitled to know
+    that before comparing it against another.
+
+    @param arm - the context runtime the run used.
+    @returns the provenance block for the transcript.
+    """
+    def git(*args: str) -> str:
+        try:
+            out = subprocess.run(
+                ["git", *args],
+                cwd=str(Path(__file__).resolve().parents[2]),
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+            return out.stdout.strip() if out.returncode == 0 else ""
+        except Exception:  # noqa: BLE001 - provenance must never fail a run
+            return ""
+
+    return {
+        # A relative locator: the EF checkout this module lives in.
+        "ef": {
+            "locator": ".",
+            "rev": git("rev-parse", "--short", "HEAD") or "unknown",
+            "dirty": bool(git("status", "--porcelain")),
+        },
+        # The benchmark is a SEPARATE project and is supplied by the caller, so
+        # it is named by the variable that locates it rather than by a path.
+        "lhtb": {"locator": "$LHTB_ROOT"},
+        "arm": arm,
+    }
 
 SYSTEM_TEMPLATE = """\
 You are working in a stateful Linux container on a long-horizon task. You act by
@@ -237,12 +295,29 @@ class EFLhtbAgent(BaseAgent):
                         arguments = json.loads(arguments) if arguments.strip() else {}
                     except json.JSONDecodeError:
                         arguments = {}
-                command = str(arguments.get("command", ""))
-                total_calls += 1
-                output = await self._exec(environment, command)
-                self._transcript.append(
-                    {"turn": turn, "command": command[:500], "output": output[:1000]}
-                )
+                name = str(call.get("name") or SHELL_TOOL)
+                # ROUTE BY NAME, not "everything is a shell command".
+                #
+                # EF's recall tools are executed by the DSH ToolRuntime inside the
+                # bridge process; only `run_shell` runs in the task container.
+                # Treating every call as a shell command meant a `context_search`
+                # was sent to the container as a command named after its
+                # arguments — the model got an error and no retrieval, which is
+                # why the earlier runs never exercised recall at all.
+                if name == SHELL_TOOL:
+                    command = str(arguments.get("command", ""))
+                    total_calls += 1
+                    output = await self._exec(environment, command)
+                    self._transcript.append(
+                        {"turn": turn, "tool": name, "command": command[:500], "output": output[:1000]}
+                    )
+                else:
+                    # An EF tool: the bridge dispatches it against the ToolRuntime
+                    # and returns the JSON it produced.
+                    output = self._bridge.call_tool(name, arguments, call.get("id") or "")
+                    self._transcript.append(
+                        {"turn": turn, "tool": name, "arguments": arguments, "output": str(output)[:1000]}
+                    )
                 self._bridge.append(
                     {
                         "role": "tool",
@@ -281,6 +356,8 @@ class EFLhtbAgent(BaseAgent):
         try:
             self.logs_dir.mkdir(parents=True, exist_ok=True)
             payload = {
+                "schema": "ef-lhtb-transcript/1",
+                "provenance": provenance(self.arm),
                 "arm": self.arm,
                 "shell_calls": total_calls,
                 "telemetry": telemetry,

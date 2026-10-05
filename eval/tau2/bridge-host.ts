@@ -49,20 +49,28 @@ import {
   LlmRuntime,
   ToolCallId,
 } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
+import type { Message } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId, SessionStore } from '@deepseek-ai/dsh-session'
 import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
-import { EpistemicFoldEngine } from '../../lib/engine.js'
-import { resolvePreset } from '../../lib/preset.js'
-import type { FoldModeName } from '../../lib/preset.js'
+import { ToolRuntime } from '@deepseek-ai/dsh-tools'
+// Imported from SOURCE, like every other module under `eval/` — not from
+// `lib/*.js`. The build deliberately ships no `.d.ts` ("emitting declarations
+// would create a SECOND artifact"), so a `lib/` import resolves to `any` and
+// silently escapes typechecking: this file's `'auto'` trigger and a dead local
+// both survived that way. `--experimental-transform-types` runs the `.ts`
+// sources directly, so source imports are also what the process actually loads.
+import { EpistemicFoldEngine } from '../../src/engine.ts'
+import { EpistemicFoldPlugin } from '../../src/plugin.ts'
+import { resolvePreset } from '../../src/preset.ts'
+import type { FoldModeName } from '../../src/preset.ts'
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost } from '../live/billing.ts'
 import { resolveLiveRoute } from '../live/zcode-config.ts'
-import { parseEconomicsProfile } from '../../lib/economics-profile.js'
-import type { ContextEconomicsProfile } from '../../lib/economics-profile.js'
+import { parseEconomicsProfile } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -132,14 +140,56 @@ interface TauMultiTool {
   readonly tool_messages?: readonly TauMessage[]
 }
 
+/**
+ * Whether an incoming message is a BATCH of tool results rather than one message.
+ *
+ * A type predicate rather than a bare `.role === 'tool'` test, because both
+ * shapes declare `role: string` and a multi-tool carries no `content`. Without
+ * the predicate the union does not narrow, so every later `message.content` /
+ * `message.id` read is a compile error — which is exactly what an unchecked
+ * `lib/*.js` import was hiding.
+ *
+ * @param message - one line's decoded message.
+ * @returns true when the message is the batch shape.
+ */
+function isMultiTool(message: TauMessage | TauMultiTool): message is TauMultiTool {
+  return Array.isArray((message as TauMultiTool).tool_messages)
+}
+
 /** Telemetry the EF side reports back; never part of the benchmark score. */
 interface Telemetry {
   readonly folds: number
   readonly roots: number
+  /**
+   * Emergency rebases (provider-overflow recovery). Counted separately from
+   * `roots` because the two are different events with the same surface effect:
+   * a root is deferred maintenance at idle, an emergency rebase happens inside
+   * a live turn because the provider already refused the request.
+   */
+  readonly emergencies: number
   readonly modelCalls: number
   readonly promptTokensLast: number
   readonly surfaceNodesLast: number
-  readonly archivedBundles: number
+  /**
+   * Bundles this engine has successfully written — a MONOTONIC engine counter,
+   * not `bundleStore.list().length`.
+   *
+   * `list()` reports files still present, so a removed bundle, a cleaned
+   * session directory and a never-folded session all read the same, and an
+   * unreadable store root reads as `0` if the caller swallows the error. That
+   * conflation is what made a 11-fold trial report `archived=0`.
+   */
+  readonly bundleWrites: number
+  /**
+   * Bundles currently present in the store, or `null` when the store could not
+   * be read. `null` is deliberately distinct from `0`: "the store is
+   * unreadable" is not "there are no bundles".
+   */
+  readonly bundlesPresent: number | null
+  /** Outstanding pending-rebase intents (a non-zero value at episode end is a leak). */
+  readonly pendingIntents: number
+  /** The pressure regime the last automatic fold decision resolved. */
+  readonly pressureRegime: string
   readonly costTotal: number
   /**
    * How the most recent model call finished.
@@ -153,6 +203,8 @@ interface Telemetry {
 
 let ctx: Context | undefined
 let engine: EpistemicFoldEngine | undefined
+/** The mounted plugin, kept so its idle consumer can be driven and awaited. */
+let plugin: EpistemicFoldPlugin | undefined
 let session: Session | undefined
 let recorder: BillingRecorder | undefined
 let systemText: string | undefined
@@ -163,6 +215,7 @@ let stepCounter = 0
 let turnHasContent = false
 let folds = 0
 let roots = 0
+let emergencies = 0
 let modelCalls = 0
 /** How the last model call finished, so an empty reply can be attributed. */
 let lastFinishReason = 'unknown'
@@ -222,8 +275,8 @@ function appendIncoming(message: TauMessage | TauMultiTool): void {
   // tau2 bundles several tool results into one message when the model issued
   // parallel calls. Each result is a separate DSH event, so they are expanded
   // rather than collapsed — the fold frontier reasons per event.
-  if (message.role === 'tool' && Array.isArray((message as TauMultiTool).tool_messages)) {
-    for (const inner of (message as TauMultiTool).tool_messages ?? []) appendIncoming(inner)
+  if (isMultiTool(message)) {
+    for (const inner of message.tool_messages ?? []) appendIncoming(inner)
     return
   }
   if (message.role === 'user') {
@@ -302,6 +355,16 @@ function surface(): readonly Message[] {
  * Called BEFORE every model call, which is the only placement that makes the
  * measurement meaningful: the fold must be able to change what this very request
  * contains.
+ *
+ * The fold counts come from the ENGINE's own lifetime counters, read as deltas
+ * around the call. This host used to classify the returned `CompactionResult` by
+ * substring-matching its JSON for `"kind":"root"`, which could never fire:
+ * `CompactionResult` has no `kind` field (its shape is `compactionId`,
+ * `startSeq`, `summarySeq`, `endSeq`, `summary`, `shadowedRange`,
+ * `shadowedSeqs`, `shadowedTokenCount`), and the summary block it does carry is
+ * tagged `type`, not `kind`. A real root fold therefore read as `roots=0` while
+ * the engine's counter said otherwise, and any checkpoint body that happened to
+ * contain the literal text `rootFold` would have counted as a root.
  */
 async function foldIfNeeded(): Promise<void> {
   const active = engine!
@@ -311,22 +374,243 @@ async function foldIfNeeded(): Promise<void> {
     runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> =>
       task(new AbortController().signal),
   } as never
-  const result = await active.compactIfNeeded(agent, 'auto', new AbortController().signal)
-  if (result !== null) {
-    folds += 1
-    const text = JSON.stringify(result)
-    if (text.includes('"kind":"root"') || text.includes('rootFold')) roots += 1
-  }
+  // The counters are LIFETIME totals on the engine, so they are read absolutely
+  // rather than as deltas around the call. That is deliberate: a delta would be
+  // lost if `compactIfNeeded` threw after a partial fold, whereas the engine's
+  // own totals survive the throw and still report what actually committed.
+  // `'pressure'`, which is the trigger production DSH actually passes at the
+  // step boundary (`src/basic/index.ts` registers it on `agent/pre-step`).
+  //
+  // This used to be the literal `'auto'`, which is NOT a `CompactionTrigger` —
+  // the union is `'pressure' | 'context-overflow'`. It went unnoticed because
+  // this host is outside every tsconfig and the agent object is cast `as never`,
+  // so no compiler ever checked the argument. The EF arm absorbed it (an
+  // unrecognised trigger simply falls through to the pressure path), but Basic
+  // has an `assertNever` on the same switch, so the moment the `basic` arm was
+  // fixed to construct a real Basic engine it would have thrown
+  // `unreachable variant in compaction trigger: "auto"` on its first fold.
+  await active.compactIfNeeded(agent, 'pressure', new AbortController().signal)
+  const counters = foldCounters(active)
+  folds = counters.leaves + counters.roots + counters.emergencies
+  roots = counters.roots
+  emergencies = counters.emergencies
   surfaceNodesLast = session!.surface.nodes.length
 }
 
+/**
+ * Drive the production idle-maintenance edge, so a pending rebase is DRAINED.
+ *
+ * ## Why this exists
+ *
+ * The pressure path hands a frozen-bound surface off as a pending intent rather
+ * than rebasing inline, because a rebase needs an idle agent and the pressure
+ * turn runs inside an open turn. The plugin's consumer drains that intent on
+ * `agent/status = idle`. A harness that never emits the transition therefore
+ * never drains it: the surface stops folding and never converges, which is not a
+ * configuration that can ship — it is the I3 violation, and it is what the old
+ * `roots = 0` column was really reporting.
+ *
+ * ## The turn must be CLOSED first
+ *
+ * This is the part that is easy to get wrong and silent when you do. An idle
+ * root is a MANUAL compaction (`owner: null`), and `compactSurfaceRegion`
+ * refuses one while a turn is open — "manual compaction: the session already has
+ * an open turn". This host keeps a turn open across model calls, so emitting
+ * idle without closing it first makes every rebase attempt FAIL while the
+ * telemetry still shows the intent being recorded and consumed.
+ *
+ * The failure is invisible in the counters: `pendingRebaseIntentCount` returns
+ * to 0 (the intent IS consumed), `roots` stays 0, and the run looks like a
+ * rebase that was never justified. Measured: 50 consecutive frozen-bound rounds,
+ * every one reporting `outcome: "failed"` for exactly this reason.
+ *
+ * In the real loop the order is: turn ends → `agent/status = idle` → consumer.
+ * The close/emit/reopen below reproduces that ordering, which is what makes the
+ * benchmark path the production path rather than an approximation of it.
+ */
+async function drainIdleRebase(): Promise<void> {
+  const mounted = plugin
+  if (mounted === undefined || session === undefined) return
+  // `mode: basic` returns early from the plugin, so there is no consumer and no
+  // rebase concept to drain. Skipping keeps the Basic arm's event log identical
+  // to a deployment where EF is not installed.
+  if (mounted.engine.basicMode) return
+
+  // Close the turn so the manual (idle) transaction is admissible. `openTurn`
+  // below restores the enclosing turn the automatic fold path requires.
+  const wasOpen = turnHasContent
+  if (wasOpen) closeTurn()
+
+  let busy = false
+  const idleAgent = {
+    session,
+    options: { provider: LIVE_PROVIDER, model: 'live' },
+    get status(): string {
+      return busy ? 'running' : 'idle'
+    },
+    runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T> {
+      if (busy) throw new Error(`agent "${String(session!.id)}" already has active work`)
+      busy = true
+      return (async () => {
+        try {
+          return await task(new AbortController().signal)
+        } finally {
+          busy = false
+        }
+      })()
+    },
+  } as never
+
+  ctx!.emit('agent/status', { agent: idleAgent, status: 'idle' })
+  // Await the consumer's own settle handle rather than polling: the listener is
+  // deliberately non-blocking, so this is the only race-free way to know the
+  // drain finished before the next model call measures the surface.
+  await mounted.idleRebase?.settled()
+
+  if (wasOpen) openTurn()
+
+  const counters = foldCounters(engine!)
+  folds = counters.leaves + counters.roots + counters.emergencies
+  roots = counters.roots
+  emergencies = counters.emergencies
+  surfaceNodesLast = session.surface.nodes.length
+}
+
+/** The engine's lifetime fold counters, as one snapshot. */
+function foldCounters(target: EpistemicFoldEngine): { leaves: number; roots: number; emergencies: number } {
+  return {
+    leaves: target.leafFoldCount,
+    roots: target.rootFoldCount,
+    emergencies: target.emergencyRebaseCount,
+  }
+}
+
+/**
+ * Dispatch one EF tool call against the mounted ToolRuntime.
+ *
+ * The recall tools live on `ctx.tools`, registered by the plugin. Calling
+ * through the runtime — rather than invoking `registerRecallTools`' internals —
+ * means the benchmark exercises the same dispatch path a real agent loop uses:
+ * the same argument validation, the same wrappers, the same rendering.
+ *
+ * A failure is returned as TEXT rather than thrown, because that is what the
+ * model must see: a tool error is data for the next turn, not a reason to abort
+ * a multi-hour episode. Throwing here would end the run on a malformed query.
+ *
+ * @param name - the tool name the model called.
+ * @param args - the parsed arguments.
+ * @param callId - the originating call id.
+ * @returns the tool's rendered text.
+ */
+async function callEfTool(name: string, args: unknown, callId: string): Promise<string> {
+  const runtime = toolsRuntime()
+  if (runtime === undefined) {
+    return JSON.stringify({ error: `no ToolRuntime mounted; cannot run ${name}` })
+  }
+  try {
+    const result = await runtime.execute({
+      callId: ToolCallId(callId === '' ? `ef-${Date.now()}` : callId),
+      name,
+      arguments: args ?? {},
+      ...(session === undefined ? {} : { agent: { session } as never }),
+      signal: new AbortController().signal,
+    })
+    const text = result.content
+      .map(block => (block.type === 'text' ? block.text ?? '' : ''))
+      .join('')
+    if (result.isError) {
+      // The tool reported a structured failure: surface it as content so the
+      // model can correct its query rather than aborting the episode.
+      return text === '' ? JSON.stringify({ error: 'tool failed', tool: name }) : text
+    }
+    return text
+  } catch (error) {
+    return JSON.stringify({
+      error: error instanceof Error ? error.message : String(error),
+      tool: name,
+    })
+  }
+}
+
 /** Render the tool schemas in the shape the live adapter sends upstream. */
+/**
+ * The tool schemas the provider receives: the benchmark's own, plus EF's recall.
+ *
+ * ## Why EF's tools are added here
+ *
+ * `registerRecallTools` puts `context_search` and `context_recall` on
+ * `ctx.tools`, but nothing automatically forwards them to a provider — this host
+ * owns the tool list it sends. Before this, the model saw only `run_shell`, so
+ * LHTB measured checkpoint-surface continuation and never once exercised exact
+ * recall of folded history. That is half of EF's claim: the tiers are supposed
+ * to buy retrievability, and a run that cannot call the retrieval tool cannot
+ * show it.
+ *
+ * ## The schema is the tool's own, not a hand-copy
+ *
+ * `ctx.tools.schemas()` is the runtime's published list, so the description and
+ * JSON schema are exactly what a real DSH host would send. A hand-written copy
+ * here would drift from the tool it describes, and the drift would be invisible
+ * — the model would be told about parameters that no longer exist.
+ */
 function toolSchemas(): readonly { name: string; description: string; parameters: Record<string, unknown> }[] {
-  return tools.map(tool => ({
+  const benchmarkTools = tools.map(tool => ({
     name: tool.name,
     description: tool.description ?? '',
     parameters: tool.parameters ?? { type: 'object', properties: {} },
   }))
+  const runtime = toolsRuntime()
+  const efTools = (runtime?.schemas() ?? []).map(schema => ({
+    name: schema.name,
+    description: schema.description ?? '',
+    parameters: schema.parameters ?? { type: 'object', properties: {} },
+  }))
+  return [...benchmarkTools, ...efTools]
+}
+
+/**
+ * The mounted ToolRuntime, or `undefined` when none is present.
+ *
+ * `ctx.get('tools')` THROWS unless `tools` is in the context's `inject` list —
+ * RC3 found that the hard way ("cannot get property \"tools\" without inject"),
+ * and every test harness had pre-mounted a runtime so the broken probe was never
+ * exercised. The sanctioned accessor is the callback form
+ * `ctx.inject(['tools'], cb)`, which runs `cb` only once the service exists.
+ *
+ * The reference is cached because the injection callback is the only way to
+ * reach it and it fires once per context: the tool list is needed on every model
+ * call, and re-injecting per call would be both wasteful and racy.
+ */
+let toolsRuntimeRef: ToolRuntime | undefined
+
+/**
+ * Capture the ToolRuntime once it is available.
+ *
+ * `ctx.inject` returns a FIBER that must be awaited: the callback does not run
+ * synchronously, so reading the captured reference immediately after the call
+ * yields `undefined`. `init` awaits this before the first model call, which is
+ * why the tool list is complete by the time `toolSchemas()` reads it.
+ *
+ * @returns a promise that settles once the runtime is captured (or immediately
+ *   when no runtime is mounted, which is a supported configuration).
+ */
+async function captureToolsRuntime(): Promise<void> {
+  if (ctx === undefined) return
+  await ctx.inject(['tools'], toolsCtx => {
+    toolsRuntimeRef = toolsCtx.tools
+    return () => {
+      toolsRuntimeRef = undefined
+    }
+  })
+}
+
+/**
+ * The captured runtime, or `undefined` for a compaction-only deployment.
+ *
+ * @returns the runtime, or undefined.
+ */
+function toolsRuntime(): ToolRuntime | undefined {
+  return toolsRuntimeRef
 }
 
 /** One assistant message, as tau2 expects to receive it. */
@@ -344,6 +628,13 @@ interface TauAssistant {
  */
 async function modelTurn(): Promise<TauAssistant> {
   await foldIfNeeded()
+  // Immediately after the fold, and BEFORE the request is measured and sent.
+  //
+  // The placement is load-bearing: a rebase handed off by the pressure fold can
+  // only affect this request if it runs before the surface is read. Draining it
+  // later would leave the model looking at the pre-rebase surface while the
+  // telemetry claimed a rebase had landed.
+  await drainIdleRebase()
 
   const messages = surface()
   promptTokensLast = ctx!.tokenMeter.measure(session!).totalTokens
@@ -448,6 +739,7 @@ async function init(request: {
   turnHasContent = false
   folds = 0
   roots = 0
+  emergencies = 0
   modelCalls = 0
   promptTokensLast = 0
   surfaceNodesLast = 0
@@ -462,6 +754,22 @@ async function init(request: {
   new SessionProjectionRegistry(ctx)
   void new TokenMeter(ctx)
   void new SystemPrompt(ctx, {})
+  // The ToolRuntime is what makes the EF recall tools REGISTER.
+  //
+  // `registerRecallTools` runs only when `ctx.tools` exists — a compaction-only
+  // deployment mounts cleanly without it — so a harness that omits the runtime
+  // gets an EF whose `context_search` / `context_recall` are absent from the
+  // model's tool list. LHTB would then measure checkpoint-surface continuation
+  // alone, which is half of what EF claims: exact recall of folded history is
+  // the mechanism the tiers are supposed to buy.
+  //
+  // Mounted BEFORE the plugin, because the plugin registers its tools against
+  // this service during construction.
+  void new ToolRuntime(ctx)
+  // Capture the runtime through the sanctioned `inject` callback: `ctx.get`
+  // throws for a service outside `inject`, and `tools` is optional here. Awaited
+  // because the callback does not run synchronously.
+  await captureToolsRuntime()
 
   const adapter = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl,
@@ -495,19 +803,64 @@ async function init(request: {
   // The tier presets carry `retainRatio`, and Basic rejects a config supplying
   // both ("retainRatio and retainTokens are mutually exclusive"), so omitting
   // the field is the only setting that leaves each engine on its own default.
+  //
+  // ## `maxTokens` is the SUMMARIZATION budget, and 2000 was too small
+  //
+  // This field is not the agent's reply budget (that is `EF_BRIDGE_MAX_TOKENS`);
+  // it is what the engine passes to its own checkpoint call — `summarize()` uses
+  // `config.maxTokens`, and Basic's full-checkpoint format is far larger than
+  // EF's marker-only body. At 2000 the summary hit the cap and Basic failed the
+  // fold closed:
+  //
+  //   summarization truncated at the token cap (incomplete checkpoint)
+  //
+  // That error ended a real LHTB trial (BridgeError, reward 0) — the agent had
+  // done nine substantive shell calls against the task and died on a budget, not
+  // on the task. It surfaced only once the `basic` arm was fixed to construct a
+  // real Basic engine: the EF arms use marker-only checkpoints that fit in 2000,
+  // so the too-small budget was invisible for as long as every arm was EF.
+  //
+  // 8192 is a deliberate headroom multiple rather than a measured minimum: the
+  // cost is paid once per fold on the summarization call, and a truncated
+  // summary is a FAILED fold, which is far more expensive than the tokens.
   const common = {
     auto: true,
     thresholdRatio: Number(process.env.EF_TAU2_THRESHOLD ?? 0.5),
     headroomTokens: 0,
-    maxTokens: 2_000,
+    maxTokens: Number(process.env.EF_TAU2_SUMMARY_MAX_TOKENS ?? 8_192),
     bundleRoot,
   }
-  engine = new EpistemicFoldEngine(ctx, request.arm.engine === 'basic'
-    ? common
-    : {
-      ...common,
-      ...(request.arm.mode === 'legacy' ? {} : resolvePreset(request.arm.mode)),
-    })
+  // ## Mounted through the PLUGIN, not constructed directly
+  //
+  // Phase 1 made this mandatory rather than tidier. A frozen-bound surface now
+  // hands off to a rebase instead of folding a leaf, and the rebase is performed
+  // by the PRODUCTION idle consumer — which the plugin registers on
+  // `agent/status = idle`. A directly-constructed engine has no consumer, so its
+  // pending intents are never drained: the surface stops folding and never
+  // converges, and the run measures a configuration that cannot ship. (Measured
+  // on the in-process R1 generator, which had the same defect: W3-tool-heavy's
+  // EF token total went from 322K to 1.4M once the loop closed, purely because
+  // nothing drained the handoff.)
+  //
+  // Mounting the plugin also gives the harness the production capability set
+  // rather than an approximation of it: the same engine configuration, the same
+  // consumer, the same lifecycle events, and — when a ToolRuntime is present —
+  // the same recall tools. Under `mode: 'basic'` the plugin returns early after
+  // providing `ctx.compaction`, so the Basic arm still mounts nothing of EF.
+  //
+  // `common` carries no `mode`, and the engine defaults to `legacy`; passing it
+  // alone produced an EF-legacy engine wearing a `basic` label. It folded with
+  // EF's frontier invariants, wrote EF bundles — the LHTB table's `archived`
+  // column read 3 and 4 for the `basic` arm, which real Basic cannot be, since
+  // it has no bundle store at all — and stamped EF checkpoints. Every "basic"
+  // number in those reports described EF-legacy.
+  plugin = new EpistemicFoldPlugin(ctx, {
+    ...common,
+    ...(request.arm.engine === 'basic'
+      ? { mode: 'basic' as const }
+      : request.arm.mode === 'legacy' ? {} : resolvePreset(request.arm.mode)),
+  })
+  engine = plugin.engine
 
   // tau2's opening move is the agent greeting the user, so the first turn opens
   // here and stays open until the episode closes.
@@ -520,11 +873,14 @@ async function init(request: {
 
 /** Collect the telemetry block for one response. */
 async function telemetry(): Promise<Telemetry> {
-  let archived = 0
+  // `null` means the store could not be read. It must not collapse to 0: "the
+  // store is unreadable" and "there are no bundles" are different facts, and
+  // conflating them is what made an 11-fold trial report `archived=0`.
+  let bundlesPresent: number | null = null
   try {
-    archived = (await engine!.bundleStore.list(session!.id)).length
+    bundlesPresent = (await engine!.bundleStore.list(session!.id)).length
   } catch {
-    archived = 0
+    bundlesPresent = null
   }
   // Priced from the full bill, so the figure is the episode's realized cost
   // rather than a per-turn increment that would double-count.
@@ -534,10 +890,14 @@ async function telemetry(): Promise<Telemetry> {
   return {
     folds,
     roots,
+    emergencies,
     modelCalls,
     promptTokensLast,
     surfaceNodesLast,
-    archivedBundles: archived,
+    bundleWrites: engine!.bundleWriteCount,
+    bundlesPresent,
+    pendingIntents: engine!.pendingRebaseIntentCount,
+    pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     lastFinishReason,
   }
@@ -589,6 +949,20 @@ async function main(): Promise<void> {
           appendIncoming(request.message as TauMessage)
           const assistant = await modelTurn()
           emit({ ok: true, assistant, telemetry: await telemetry() })
+        } else if (op === 'tool') {
+          // One EF tool call, dispatched against the host's own ToolRuntime.
+          //
+          // The recall tools read the bundle store, which lives in this process,
+          // so the Python side cannot answer them. Routing through the SAME
+          // runtime a real DSH agent loop uses is what keeps the benchmark's
+          // tool path identical to production — reimplementing the search in
+          // Python would measure a different implementation.
+          const content = await callEfTool(
+            String(request.name),
+            request.arguments,
+            String(request.callId ?? ''),
+          )
+          emit({ ok: true, content, telemetry: await telemetry() })
         } else if (op === 'close') {
           closeTurn()
           emit({ ok: true, telemetry: await telemetry() })

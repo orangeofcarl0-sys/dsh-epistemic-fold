@@ -77,10 +77,33 @@ export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
 export EF_LIVE_API_KEY="$KEY"
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
 
-# Node (the EF bridge host) reaches the provider only through the local proxy.
-export NODE_USE_ENV_PROXY=1
-export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
-export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:10808}"
+# ## The proxy is OPT-IN, because forcing it broke every model call
+#
+# This block used to hardcode `NODE_USE_ENV_PROXY=1` with
+# `HTTPS_PROXY=http://127.0.0.1:10808`, on the stated premise that "Node (the EF
+# bridge host) reaches the provider only through the local proxy". Measured on
+# this host, that premise is false in BOTH directions:
+#
+#   direct  https://opencode.ai/zen/v1/models   200, repeatedly
+#   proxied via 127.0.0.1:10808                 000, repeatedly
+#
+# A Node fetch through that proxy dies with a bare `fetch failed`, which the
+# bridge reports as `error:fetch failed` — a message naming neither the proxy nor
+# the port, so it reads like a credential or route fault. It cost a debugging
+# round here for exactly that reason.
+#
+# The proxy is therefore supplied only when asked for. Set `EF_USE_PROXY=1` (and
+# optionally `HTTPS_PROXY`) on a network that needs one; otherwise the bridge
+# talks to the provider directly, which is what works here.
+if [ "${EF_USE_PROXY:-0}" = "1" ]; then
+  export NODE_USE_ENV_PROXY=1
+  export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
+  export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:10808}"
+  echo "proxy: enabled (${HTTPS_PROXY})"
+else
+  unset NODE_USE_ENV_PROXY HTTPS_PROXY HTTP_PROXY ALL_PROXY
+  echo "proxy: disabled (direct); set EF_USE_PROXY=1 to route through one"
+fi
 
 # Many LHTB images are amd64-only.
 export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"

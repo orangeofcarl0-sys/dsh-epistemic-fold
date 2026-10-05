@@ -184,6 +184,32 @@ class EpistemicFoldBridge:
         response = self._send({"op": "step"})
         return response["assistant"]
 
+    def call_tool(self, name: str, arguments: dict[str, Any], call_id: str) -> str:
+        """
+        Execute one EF tool call against the host's ToolRuntime and return its text.
+
+        ## Why the bridge owns this
+
+        `context_search` and `context_recall` read the EF bundle store, which
+        lives in the Node process — the Python side cannot answer them. So the
+        call is relayed and the host dispatches it against the same ToolRuntime a
+        real DSH agent loop would use, which keeps the benchmark's tool path
+        identical to production instead of reimplementing the search here.
+
+        The result is returned as TEXT because that is what a tool message
+        carries on the wire, and the model must see the same rendering it would
+        in production.
+
+        @param name - the tool name the model called.
+        @param arguments - parsed arguments.
+        @param call_id - the originating call id, echoed back for correlation.
+        @returns the tool's rendered output, or a JSON error object.
+        """
+        response = self._send(
+            {"op": "tool", "name": name, "arguments": arguments, "callId": call_id}
+        )
+        return str(response.get("content", ""))
+
     def close(self) -> None:
         """Tell the host the episode is over, then stop it."""
         if self._closed:
