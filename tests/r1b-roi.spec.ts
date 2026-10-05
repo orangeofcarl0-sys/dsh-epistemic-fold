@@ -20,7 +20,7 @@ import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import type { Workload } from '../eval/workloads/index.ts'
-import { runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
@@ -56,9 +56,16 @@ const REGIMES = {
 type RegimeName = keyof typeof REGIMES
 
 async function efHarness(regime: RegimeName): Promise<Harness> {
+  // Mounted as the PRODUCTION plugin and driven by its own idle consumer.
+  //
+  // Phase 1 made this mandatory rather than optional: a frozen-bound surface no
+  // longer folds a leaf, so a harness with no consumer would stop folding and
+  // never converge — measuring a configuration that cannot exist in production.
+  // `runWorkload` attaches the consumer; the numbers below therefore describe
+  // the shipped path.
   return createHarness({ text: 'ef digest' }, {
     contextWindow: WINDOW,
-    projection: true,
+    plugin: true,
     workloadModel: WORKLOAD_MODEL,
     efConfig: { ...REGIMES[regime] },
   })
@@ -90,6 +97,9 @@ async function runWorkload(
       workload.grow(session, step)
       workload.declareState?.(session, step)
     },
+    // The EF arm carries the PRODUCTION idle consumer. Basic has no rebase
+    // concept, so attaching one to it would be meaningless.
+    ...(arm === 'ef' ? { rebase: createIdleMaintenanceHook(harness) } : {}),
     signal: SIGNAL,
   })
 }
@@ -168,9 +178,15 @@ describe('R1-B: the dominant cost is regime-dependent, not a constant', () => {
       + `framing=${(realistic.attribution.shares['checkpoint-framing'] * 100).toFixed(1)}% raw=${(rawShare(realistic) * 100).toFixed(1)}%`,
     )
 
-    // Aggressive folding: per-checkpoint overhead dominates.
+    // Aggressive folding: per-checkpoint overhead is a much larger share than
+    // under sparse folding. Phase 1 bounded the fold count (a frozen-bound
+    // surface hands off to a rebase instead of folding), so framing is no
+    // longer the outright TOP bucket — raw history now edges it out even in
+    // the aggressive regime. The regime SENSITIVITY is what this test is for,
+    // and it survives: framing is ~11x its realistic share.
     expect(aggressive.leafFoldCount).toBeGreaterThan(realistic.leafFoldCount)
-    expect(aggressive.attribution.shares['checkpoint-framing']).toBeGreaterThan(rawShare(aggressive))
+    expect(aggressive.attribution.shares['checkpoint-framing'])
+      .toBeGreaterThan(realistic.attribution.shares['checkpoint-framing'] * 5)
     // Realistic folding: the recurring overhead is small and raw history leads.
     expect(rawShare(realistic)).toBeGreaterThan(realistic.attribution.shares['checkpoint-framing'])
 
@@ -185,14 +201,30 @@ describe('R1-B: the dominant cost is regime-dependent, not a constant', () => {
   }, 300_000)
 })
 
-describe('R1-B: the frozen-prefix feedback loop (a structural finding)', () => {
-  it('when the frozen prefix alone exceeds the threshold, every step folds and the prefix only grows', async () => {
-    // This is the mechanism behind the workload matrix's numbers, and it is
-    // NOT a threshold artifact: EF may never re-fold frozen checkpoints
-    // (plan §13), so the frozen prefix is monotonically non-decreasing. Once
-    // it alone crosses the pressure threshold, every later step is over
-    // threshold, each fold can only compact the NEW tail, and the result is
-    // one checkpoint per step — each paying the full framing preamble.
+describe('R1-B: the frozen-prefix feedback loop (CLOSED by Phase 1)', () => {
+  it('the frozen prefix no longer runs away: a rebase collapses it before the loop sustains', async () => {
+    // ## What this test used to record
+    //
+    // R1 measured a structural feedback loop: EF may never re-fold frozen
+    // checkpoints (plan §13), so the frozen prefix is monotonically
+    // non-decreasing. Once it alone crossed the pressure threshold every later
+    // step was over threshold, each fold could only compact the NEW tail, and
+    // the result was one checkpoint per step — each paying the full framing
+    // preamble. Measured then: 51 EF folds against Basic's 21, with the frozen
+    // load growing without bound past the threshold.
+    //
+    // ## What changed
+    //
+    // Phase 1 makes `frozen-bound ⇒ ¬leaf` a convergence invariant and hands
+    // the surface off to a rebase, which is the only mechanism that can shrink
+    // the prefix. So this test now asserts the OPPOSITE of its original claim:
+    // the loop must NOT sustain. It is kept, rather than deleted, because the
+    // mechanism it describes is still latent — remove the handoff and the old
+    // behaviour returns — so this is the regression test for that.
+    //
+    // The measurement is taken with the PRODUCTION consumer attached, which is
+    // now mandatory: without it the surface stops folding and never converges,
+    // which is not a configuration that can ship.
     const workload = allWorkloads()[0]!
     const steps = 64
     const window = 16_000
@@ -200,38 +232,51 @@ describe('R1-B: the frozen-prefix feedback loop (a structural finding)', () => {
     const run = await runWorkload(workload, steps, 'ef', 'aggressive')
     const thresholdTokens = Math.floor(window * thresholdRatio)
 
-    const finalLoad = run.samples[run.samples.length - 1]!.checkpointLoad
-    // The frozen prefix grew past the pressure threshold...
-    expect(finalLoad).toBeGreaterThan(thresholdTokens)
-    // ...and kept growing, which is what makes the loop self-sustaining.
-    expect(finalLoad).toBeGreaterThan(run.samples[0]!.checkpointLoad)
-    // One checkpoint per fold, with folds approaching the step count.
-    const finalCounts = run.attribution.steps[run.attribution.steps.length - 1]!.checkpoints
-    expect(finalCounts.leaf).toBe(run.leafFoldCount)
-    expect(run.leafFoldCount).toBeGreaterThan(steps * 0.5)
+    const loads = run.samples.map(sample => sample.checkpointLoad)
+    const peakLoad = Math.max(...loads)
+    const finalLoad = loads[loads.length - 1]!
 
-    // The same workload under a realistic threshold does NOT enter the loop:
-    // folds become rare and the frozen prefix stays a small share.
+    // The prefix still approaches the threshold — that is what triggers the
+    // handoff — but it must not EXCEED it, because exceeding it is precisely
+    // the state a leaf cannot fix.
+    expect(peakLoad).toBeLessThanOrEqual(thresholdTokens)
+    // And the run must END below the threshold, which is only possible if a
+    // rebase actually collapsed the prefix.
+    expect(finalLoad).toBeLessThan(thresholdTokens)
+    // The rebase is the reason, and it must be observable as one.
+    expect(run.rootFoldCount).toBeGreaterThan(0)
+
+    // The loop's own signature — many consecutive frozen-bound samples — is
+    // gone. Before Phase 1 this count was 28 on the same workload and regime.
+    expect(run.pressure.frozenBoundCount).toBeLessThan(5)
+
+    // The same workload under a realistic threshold never approaches either.
     const realistic = await runWorkload(workload, steps, 'ef', 'realistic')
-    expect(realistic.leafFoldCount).toBeLessThan(run.leafFoldCount / 5)
+    expect(realistic.leafFoldCount).toBeLessThan(run.leafFoldCount)
 
     console.log(
-      `frozen-prefix loop: aggressive leaf=${run.leafFoldCount} finalFrozen=${finalLoad} `
-      + `threshold=${thresholdTokens} | realistic leaf=${realistic.leafFoldCount} `
+      `frozen-prefix loop (closed): aggressive leaf=${run.leafFoldCount} roots=${run.rootFoldCount} `
+      + `peakFrozen=${peakLoad} finalFrozen=${finalLoad} threshold=${thresholdTokens} `
+      + `frozenBoundSamples=${run.pressure.frozenBoundCount} | realistic leaf=${realistic.leafFoldCount} `
       + `finalFrozen=${realistic.samples[realistic.samples.length - 1]!.checkpointLoad}`,
     )
   }, 300_000)
 
-  it('EF folds strictly more often than Basic on an identical workload and digest', async () => {
+  it('EF still folds more often than Basic, but the gap is now bounded', async () => {
     // With the digest text held identical, a fold-count gap cannot be a
-    // narrative-length artifact — it is architectural. This is the reason
-    // per-checkpoint overhead matters more for EF than for Basic: EF pays it
-    // more times.
+    // narrative-length artifact — it is architectural. EF pays the
+    // per-checkpoint overhead more times than Basic, and Phase 1 does not
+    // change that: EF does more, smaller folds.
+    //
+    // What Phase 1 DOES change is the runaway: the gap used to widen without
+    // bound because a frozen-bound surface kept folding. It is now bounded by
+    // the handoff, and the run carries at least one rebase that Basic has no
+    // concept of.
     const workload = allWorkloads()[0]!
     const steps = 64
     const harnesses = {
       ef: await createHarness({ text: 'IDENTICAL digest text' }, {
-        contextWindow: WINDOW, projection: true, workloadModel: WORKLOAD_MODEL,
+        contextWindow: WINDOW, plugin: true, workloadModel: WORKLOAD_MODEL,
         efConfig: { ...REGIMES.aggressive },
       }),
       basic: await createHarness({ text: 'IDENTICAL digest text' }, {
@@ -242,7 +287,8 @@ describe('R1-B: the frozen-prefix feedback loop (a structural finding)', () => {
     const runs = {
       ef: await runPairedBaseline({
         arm: 'ef', harness: harnesses.ef, createSession: workload.createSession, steps,
-        grow: (session, step) => workload.grow(session, step), signal: SIGNAL,
+        grow: (session, step) => workload.grow(session, step),
+        rebase: createIdleMaintenanceHook(harnesses.ef), signal: SIGNAL,
       }),
       basic: await runPairedBaseline({
         arm: 'basic', harness: harnesses.basic, createSession: workload.createSession, steps,
@@ -250,9 +296,14 @@ describe('R1-B: the frozen-prefix feedback loop (a structural finding)', () => {
       }),
     }
     expect(runs.ef.leafFoldCount).toBeGreaterThan(runs.basic.leafFoldCount)
+    // The architectural difference Phase 1 adds: EF rebases, Basic has no such
+    // concept. This is what keeps EF's larger fold count from running away.
+    expect(runs.ef.rootFoldCount).toBeGreaterThan(0)
+    expect(runs.basic.rootFoldCount).toBe(0)
     console.log(
-      `identical-digest fold counts: EF=${runs.ef.leafFoldCount} (${runs.ef.attribution.grandTotal} tokens) `
-      + `vs Basic=${runs.basic.leafFoldCount} (${runs.basic.attribution.grandTotal} tokens)`,
+      `identical-digest fold counts: EF=${runs.ef.leafFoldCount} leaf + ${runs.ef.rootFoldCount} root `
+      + `(${runs.ef.attribution.grandTotal} tokens) `
+      + `vs Basic=${runs.basic.leafFoldCount} leaf (${runs.basic.attribution.grandTotal} tokens)`,
     )
   }, 300_000)
 })

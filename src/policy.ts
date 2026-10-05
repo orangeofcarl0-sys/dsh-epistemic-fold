@@ -355,7 +355,24 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
 /** Concrete pressure and retention budgets for one routed model capacity. */
 export interface EfCompactSpec {
   readonly contextWindow: number
+  /**
+   * The SOFT pressure threshold: the headroom we proactively maintain before a
+   * request. `totalTokens >= thresholdTokens` is what triggers a pressure fold.
+   */
   readonly thresholdTokens: number
+  /**
+   * The HARD capacity: `contextWindow - reservedCompletionTokens`, the largest
+   * request this provider will accept. At or above it the request is refused
+   * outright, so the distinction from `thresholdTokens` is the difference
+   * between "we would like more headroom" and "this cannot be sent at all".
+   *
+   * The two coincide whenever `thresholdRatio` is high enough (or
+   * `headroomTokens` is 0) that the soft threshold is clamped by
+   * `messageBudgetTokens`. Callers must therefore treat
+   * `thresholdTokens === hardCapacityTokens` as "hard semantics apply", not as
+   * a soft-only situation.
+   */
+  readonly hardCapacityTokens: number
   readonly retainTokens: number
   readonly compactionRetries: number
 }
@@ -402,7 +419,13 @@ export function resolveEfCompactSpec(
   }
   return {
     contextWindow,
+    // The soft threshold is clamped by `pressureBudgetTokens`, which is itself
+    // `messageBudgetTokens - headroomTokens`. So the invariant is
+    // `thresholdTokens <= hardCapacityTokens` — and it is an EQUALITY whenever
+    // the ratio term wins the `min` or headroom is 0, which is exactly when a
+    // soft-only reaction would be too late.
     thresholdTokens,
+    hardCapacityTokens: messageBudgetTokens,
     retainTokens,
     compactionRetries: config.compactionRetries,
   }

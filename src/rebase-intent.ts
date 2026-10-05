@@ -26,20 +26,66 @@
 
 import type { SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 
-/** Why a rebase was requested. Kept narrow so the consumer can log the cause. */
+/**
+ * Why a rebase was requested, in two classes that carry DIFFERENT authority.
+ *
+ * The split is the whole point, and it is expressed in the type rather than in
+ * a comment so that "economics cannot veto safety" is enforced by the compiler
+ * instead of remembered by a reader.
+ *
+ * - A **safety** cause is structural: a leaf fold has been shown incapable of
+ *   restoring headroom, so a rebase is the only remaining mechanism. Economic
+ *   policy has no vote — refusing here would mean choosing non-convergence.
+ * - An **economic** cause is an optimization: the rebase is repayable over its
+ *   payback horizon, which the policy compiler is entitled to judge.
+ */
 export type RebaseCause =
-  /** The frozen prefix alone exceeded the threshold; no leaf can help. */
-  | 'frozen_prefix_over_threshold'
+  /** The frozen prefix alone exceeded the SOFT threshold; no leaf can help. */
+  | 'frozen_bound_safety'
+  /** The frozen prefix alone exceeded the HARD capacity, or the provider refused. */
+  | 'hard_overflow_safety'
   /** A leaf was refused as uneconomic and the history stayed raw. */
   | 'economic_leaf_refusal'
   /** The configured frozen-checkpoint token budget was exceeded. */
   | 'frozen_budget'
+
+/** The safety causes: economics may not veto a rebase requested for these. */
+export const SAFETY_REBASE_CAUSES = [
+  'frozen_bound_safety',
+  'hard_overflow_safety',
+] as const
+
+/** One safety cause. */
+export type SafetyRebaseCause = (typeof SAFETY_REBASE_CAUSES)[number]
+
+/** The economic causes: the policy compiler decides whether they are worth it. */
+export type EconomicRebaseCause = Exclude<RebaseCause, SafetyRebaseCause>
+
+/**
+ * Whether a cause is structural rather than economic.
+ *
+ * The consumer branches on this: a safety intent skips the economics compiler
+ * (but never the re-measurement — see {@link PendingRebaseIntent}).
+ *
+ * @param cause - the recorded cause.
+ * @returns true when economics may not veto the rebase.
+ */
+export function isSafetyRebaseCause(cause: RebaseCause): cause is SafetyRebaseCause {
+  return (SAFETY_REBASE_CAUSES as readonly string[]).includes(cause)
+}
 
 /**
  * One outstanding rebase request for one session.
  *
  * Note what is NOT here: no measurement, no cost, no span. Those are all
  * re-derived at idle, because the surface they described is gone by then.
+ *
+ * That rule applies to safety causes too. A safety intent says "a leaf could
+ * not fix this when the intent was written", which is a claim about a surface
+ * that no longer exists — the tail may have grown, or a later fold may have
+ * changed the prefix. So the consumer RE-MEASURES and RE-CLASSIFIES before
+ * acting, and drops the intent if the condition has passed. Safety bypasses the
+ * economics, never the revalidation.
  */
 export interface PendingRebaseIntent {
   readonly sessionId: SessionId

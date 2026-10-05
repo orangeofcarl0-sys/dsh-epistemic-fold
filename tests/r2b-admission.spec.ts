@@ -15,15 +15,18 @@ import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { efOwnedConfigKeys, resolveEfConfig } from '../src/policy.ts'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
-import { runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 
 async function harnessFor(admission: 'legacy' | 'economic', thresholdRatio: number): Promise<Harness> {
+  // `plugin: true` so the production idle consumer exists. Phase 1 hands a
+  // frozen-bound surface off to a rebase for EVERY mode including `legacy`, so
+  // without a consumer the run would stop folding and never converge.
   return createHarness({ text: 'ef digest' }, {
     contextWindow: 16_000,
-    projection: true,
+    plugin: true,
     workloadModel: WORKLOAD_MODEL,
     efConfig: {
       thresholdRatio,
@@ -31,6 +34,9 @@ async function harnessFor(admission: 'legacy' | 'economic', thresholdRatio: numb
       retainTokens: 0,
       maxTokens: 3_000,
       leafAdmission: admission,
+      // Economics for the rebase path, so the economic arm's handoff is
+      // actually exercised rather than declined by a `legacy` root policy.
+      ...(admission === 'economic' ? { rootPolicy: 'economics' as const } : {}),
     },
   })
 }
@@ -43,6 +49,7 @@ async function runW1(harness: Harness, steps: number): Promise<BaselineResult> {
     createSession: workload.createSession,
     steps,
     grow: (session: Session, step: number) => workload.grow(session, step),
+    rebase: createIdleMaintenanceHook(harness),
     signal: SIGNAL,
   })
 }
@@ -135,20 +142,26 @@ describe('R2-B: economic admission breaks the fold-every-step loop', () => {
     expect(economic.leafFoldCount).toBeLessThan(legacy.leafFoldCount)
   }, 300_000)
 
-  it('admission ALONE regresses token totals — refusing to fold leaves raw history', async () => {
-    // A measured negative result, recorded deliberately because it is the
+  it('admission alone no longer regresses — the refusal hands off instead of stopping', async () => {
+    // ## The finding this test used to record
+    //
+    // R2-B measured a NEGATIVE result: economic admission cut folds 50 -> 16,
+    // removing most of the framing tax, but the history that was no longer
+    // folded stayed on the surface as RAW tokens which cost far more. The net
+    // was a 1.8x regression, and it was recorded deliberately because it is the
     // reason R2-C exists.
     //
-    // Economic admission cuts folds 50 -> 16, which removes most of the
-    // framing tax (175K -> 94K tokens). But the history that is no longer
-    // folded stays on the surface as RAW tokens, which cost far more
-    // (35K -> 320K). The net is a large regression.
+    // ## Why it reads differently now
     //
-    // So "stop folding pointlessly" is NOT a fix by itself: when a leaf is
-    // refused because the frozen prefix is over threshold, the correct
-    // follow-up is a REBASE (which actually shrinks that prefix), not
-    // inaction. R2-C wires exactly that handoff; this test pins the baseline
-    // that R2-C must beat.
+    // The regression was an artifact of measuring admission with NO CONSUMER.
+    // A refused leaf recorded an intent and nothing drained it, so the surface
+    // simply carried the unfolded history. Phase 1 makes the handoff mandatory
+    // and the harness now mounts the production consumer, so the refusal is
+    // followed by the rebase it was always meant to trigger.
+    //
+    // The framing tax still falls and raw history still rises — both remain
+    // true, and both are asserted, because they are the mechanism. What changed
+    // is the TOTAL: the rebase recovers more than the extra raw history costs.
     const legacy = await runW1(await harnessFor('legacy', 0.15), 64)
     const economic = await runW1(await harnessFor('economic', 0.15), 64)
 
@@ -158,15 +171,23 @@ describe('R2-B: economic admission breaks the fold-every-step loop', () => {
       `admission alone: folds ${legacy.leafFoldCount}->${economic.leafFoldCount}, `
       + `framing ${legacy.attribution.totals['checkpoint-framing']}->${economic.attribution.totals['checkpoint-framing']}, `
       + `raw ${legacyRaw}->${economicRaw}, `
-      + `total ${legacy.attribution.grandTotal}->${economic.attribution.grandTotal}`,
+      + `total ${legacy.attribution.grandTotal}->${economic.attribution.grandTotal}, `
+      + `roots ${legacy.rootFoldCount}->${economic.rootFoldCount}`,
     )
 
     // The framing tax really does fall...
     expect(economic.attribution.totals['checkpoint-framing'])
       .toBeLessThan(legacy.attribution.totals['checkpoint-framing'])
-    // ...but raw history rises by more, so the total regresses.
+    // ...and raw history really does rise, which is why stopping at the refusal
+    // was a regression. Both are the mechanism, and both must still hold.
     expect(economicRaw).toBeGreaterThan(legacyRaw)
-    expect(economic.attribution.grandTotal).toBeGreaterThan(legacy.attribution.grandTotal)
+    // The handoff is what turns it around: the run now carries a rebase that
+    // collapses the frozen prefix the raw history was competing with.
+    expect(economic.rootFoldCount).toBeGreaterThan(0)
+    // Net: no longer a regression. (Measured 106,443 -> 100,331 at the time of
+    // writing; the assertion is directional so a re-measurement need not
+    // re-tune a constant.)
+    expect(economic.attribution.grandTotal).toBeLessThan(legacy.attribution.grandTotal)
   }, 300_000)
 
   it('does not change behavior at a realistic threshold, where no loop exists', async () => {

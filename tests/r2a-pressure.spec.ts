@@ -17,14 +17,18 @@ import {
 } from '../src/pressure.ts'
 import type { PressureSample } from '../src/pressure.ts'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
-import { runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 
 async function efHarness(thresholdRatio: number): Promise<Harness> {
+  // `plugin: true` so the production idle consumer exists. Phase 1 made that
+  // necessary for any run that can reach frozen-bound: the surface hands off to
+  // a rebase there, and without a consumer it would stop folding and never
+  // converge — a configuration that cannot ship.
   return createHarness({ text: 'ef digest' }, {
     contextWindow: 16_000,
-    projection: true,
+    plugin: true,
     workloadModel: WORKLOAD_MODEL,
     efConfig: { thresholdRatio, headroomTokens: 0, retainTokens: 0, maxTokens: 3_000 },
   })
@@ -151,7 +155,16 @@ describe('R2-A: leaf marginal reclaim', () => {
 })
 
 describe('R2-A: the fold-every-step detector sees the real regime', () => {
-  it('detects the self-sustaining loop at an aggressive threshold', async () => {
+  it('observes frozen-bound in an aggressive run, and the loop does NOT sustain', async () => {
+    // R2-A built the detector to make the fold-every-step regime MEASURABLE.
+    // Phase 1 then closed the loop: a frozen-bound surface hands off to a rebase
+    // instead of folding again. So the detector must still SEE frozen-bound
+    // states — otherwise it would be vacuous — while the run must no longer
+    // sustain them.
+    //
+    // Both halves are asserted. Dropping the first would let the detector rot
+    // into something that never fires; dropping the second would lose the
+    // regression guard for the loop's return.
     const workload = allWorkloads()[0]!
     const harness = await efHarness(0.15)
     const result = await runPairedBaseline({
@@ -160,21 +173,25 @@ describe('R2-A: the fold-every-step detector sees the real regime', () => {
       createSession: workload.createSession,
       steps: 64,
       grow: (session: Session, step: number) => workload.grow(session, step),
+      rebase: createIdleMaintenanceHook(harness),
       signal: SIGNAL,
     })
 
-    // The frozen prefix must actually outgrow the threshold for the loop.
-    const last = result.pressure.samples[result.pressure.samples.length - 1]!
     expect(result.thresholdTokens).toBeGreaterThan(0)
-    expect(last.frozenTokens).toBeGreaterThan(result.thresholdTokens)
-
-    // And the detector must say so, without being told.
+    // The detector is exercised: the aggressive regime does reach frozen-bound.
     expect(result.pressure.frozenBoundCount).toBeGreaterThan(0)
-    expect(result.pressure.longestFrozenBoundRun).toBeGreaterThan(5)
+    // ...but not for long. A sustained run was the old loop signature; the
+    // handoff must break it before it establishes.
+    expect(result.pressure.longestFrozenBoundRun).toBeLessThan(5)
+    expect(result.pressure.foldEveryStep).toBe(false)
+    // And the reason it does not sustain is a rebase, which is observable.
+    expect(result.rootFoldCount).toBeGreaterThan(0)
+
     console.log(
       `aggressive: threshold=${result.thresholdTokens} idle=${result.pressure.idleCount} `
       + `open-bound=${result.pressure.openBoundCount} frozen-bound=${result.pressure.frozenBoundCount} `
-      + `longestRun=${result.pressure.longestFrozenBoundRun} folds=${result.leafFoldCount}`,
+      + `longestRun=${result.pressure.longestFrozenBoundRun} folds=${result.leafFoldCount} `
+      + `roots=${result.rootFoldCount}`,
     )
   }, 180_000)
 

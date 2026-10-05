@@ -13,6 +13,27 @@ import type { SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 export type FoldMode = 'leaf' | 'root' | 'emergency'
 
 /**
+ * Whether a fold RESETS the frozen prefix to a single checkpoint.
+ *
+ * This is the structural question, deliberately separate from the audit
+ * question ("which kind of fold was this?"). `root` and `emergency` share the
+ * structural behavior — both collapse the prefix, so both set the checkpoint
+ * count to 1 — but they are different events: a root is deferred maintenance at
+ * idle, an emergency rebase happens inside a live turn because the provider has
+ * already refused the request. Telemetry counts them apart; every surface-shape
+ * rule must treat them alike.
+ *
+ * A new rebase-like mode must be added HERE, so the surface rules cannot
+ * silently miss it while only the audit classification learns about it.
+ *
+ * @param mode - the fold mode.
+ * @returns true when the mode rebases rather than appending to the prefix.
+ */
+export function isRebaseMode(mode: FoldMode): boolean {
+  return mode === 'root' || mode === 'emergency'
+}
+
+/**
  * The EF intent prepared BEFORE a compaction transaction starts. Candidates
  * are immutable; the registry holds at most one pending candidate per session
  * so concurrent transactions fail closed instead of mixing identities.

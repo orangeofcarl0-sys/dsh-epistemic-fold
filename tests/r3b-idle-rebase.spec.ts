@@ -103,12 +103,12 @@ describe('R3-0b: rebase intent is tiny and per-session', () => {
       sessionId: 'a' as SessionId, preparedGeneration: 1, cause: 'frozen_budget', createdAtSeq: 1 as never,
     })
     const replaced = registry.set(agent, {
-      sessionId: 'a' as SessionId, preparedGeneration: 2, cause: 'frozen_prefix_over_threshold', createdAtSeq: 2 as never,
+      sessionId: 'a' as SessionId, preparedGeneration: 2, cause: 'frozen_bound_safety', createdAtSeq: 2 as never,
     })
     expect(replaced).toBe(true)
     expect(registry.size).toBe(1)
     // Two reasons to rebase once are still one rebase.
-    expect(registry.peek(agent)!.cause).toBe('frozen_prefix_over_threshold')
+    expect(registry.peek(agent)!.cause).toBe('frozen_bound_safety')
   })
 
   it('consume is one-shot: it clears, and a second consume finds nothing', () => {

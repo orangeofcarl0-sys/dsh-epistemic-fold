@@ -176,6 +176,50 @@ export function classifyPressureRegime(breakdown: PressureBreakdown): PressureRe
   return 'open-bound'
 }
 
+/** Whether the surface can still be sent to the provider at all. */
+export type CapacityRegime =
+  /** Comfortably inside the hard capacity. */
+  | 'fits'
+  /** The frozen prefix ALONE is at or above the hard capacity: no leaf can help. */
+  | 'frozen-bound'
+  /** Over the hard capacity, but the open trajectory is what pushed it there. */
+  | 'open-bound'
+
+/**
+ * Classify pressure against the HARD capacity rather than the soft threshold.
+ *
+ * This is the sibling of {@link classifyPressureRegime}, and the two must not be
+ * conflated. The soft threshold asks "do we want more headroom?"; the hard
+ * capacity asks "will the provider accept this request?" — a request between the
+ * two is foldable at leisure, a request at or above the hard capacity is not
+ * sendable at all.
+ *
+ * The distinction is load-bearing because the soft threshold is CLAMPED by the
+ * hard capacity (`resolveEfCompactSpec` takes the `min` of the ratio term and
+ * the message budget), so `thresholdTokens === hardCapacityTokens` is reachable
+ * whenever `headroomTokens` is 0 or the ratio is high. In that configuration a
+ * soft-only reaction is already too late, and a caller that waits for a
+ * provider overflow before acting has lost the chance to act deliberately.
+ *
+ * @param breakdown - the decomposed pressure.
+ * @param hardCapacityTokens - `contextWindow - reservedCompletionTokens`.
+ * @returns the capacity regime.
+ */
+export function classifyCapacityRegime(
+  breakdown: PressureBreakdown,
+  hardCapacityTokens: number,
+): CapacityRegime {
+  if (breakdown.totalTokens < hardCapacityTokens) return 'fits'
+  // Same shape as the soft test, but against the hard budget: a leaf fold
+  // replaces open history with a checkpoint that JOINS the frozen prefix, so
+  // once that prefix alone exceeds the capacity the next request is over it
+  // again no matter how many leaves run.
+  if (breakdown.frozenCount > 0 && breakdown.frozenTokens >= hardCapacityTokens) {
+    return 'frozen-bound'
+  }
+  return 'open-bound'
+}
+
 /** One step's pressure observation, for fold-cadence analysis. */
 export interface PressureSample {
   readonly step: number

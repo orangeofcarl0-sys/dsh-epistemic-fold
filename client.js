@@ -82,6 +82,7 @@ window.__ModuleLoader__.load({
      * @property {number} archivedItems
      * @property {number} folds
      * @property {number} roots
+     * @property {number} emergencies
      * @property {number} currentCheckpoints
      * @property {number} recalls
      * @property {number} searches
@@ -534,6 +535,13 @@ window.__ModuleLoader__.load({
             children: [
               jsx.jsx(Row, { label: translate('leafFolds'), value: status.folds }),
               jsx.jsx(Row, { label: translate('rootRebases'), value: status.roots }),
+              // Shown only when non-zero, for the same reason as `failed` below:
+              // an emergency rebase is an EXCEPTION (the provider refused a
+              // request), so a permanent `Emergency rebases 0` would train a
+              // reader to skip the row that matters when it fires.
+              status.emergencies > 0
+                ? jsx.jsx(Row, { label: translate('emergencyRebases'), value: status.emergencies })
+                : null,
               // Shown only when non-zero: a permanent `Failed folds 0` trains a
               // reader to ignore the row, which is exactly the row that must be
               // noticed when it is not zero.
@@ -647,6 +655,7 @@ window.__ModuleLoader__.load({
         folds: 'Folds (lifetime)',
         leafFolds: 'Leaf folds',
         rootRebases: 'Root rebases',
+        emergencyRebases: 'Emergency rebases',
         failed: 'Failed folds',
         retrieval: 'Retrieval',
         recalls: 'Recalls',
@@ -680,6 +689,7 @@ window.__ModuleLoader__.load({
         folds: '折叠（累计）',
         leafFolds: '叶折叠',
         rootRebases: '根重基',
+        emergencyRebases: '应急重基',
         failed: '失败折叠',
         retrieval: '检索',
         recalls: '召回',

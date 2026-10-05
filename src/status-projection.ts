@@ -50,6 +50,7 @@ import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { costOf, selectProfile } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
+import { isRebaseMode } from './types.ts'
 import { compactionFailed, requestHeaderReason, requestHeaderRoute, toolCallName } from './event-data.ts'
 import { isTierModeName } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
@@ -84,6 +85,16 @@ export interface FoldStatusState {
   readonly folds: number
   /** Root rebases that have completed (LIFETIME). */
   readonly roots: number
+  /**
+   * Emergency rebases that have completed (LIFETIME).
+   *
+   * Separate from `roots` because the two are different events with the same
+   * surface effect: a root is deferred maintenance at idle, an emergency rebase
+   * happens inside a live turn because the provider already refused the request.
+   * Both collapse the prefix (see `currentCheckpoints`), so only the COUNTER
+   * distinguishes them.
+   */
+  readonly emergencies: number
   /**
    * EF checkpoints frozen on the surface RIGHT NOW.
    *
@@ -145,6 +156,8 @@ export interface FoldStatusView {
   readonly archivedItems: number
   readonly folds: number
   readonly roots: number
+  /** Emergency rebases (overflow recovery inside a live turn), counted apart from `roots`. */
+  readonly emergencies: number
   readonly currentCheckpoints: number
   readonly recalls: number
   readonly searches: number
@@ -184,6 +197,7 @@ const stateSchema = z.looseObject({
   archivedItems: z.number(),
   folds: z.number(),
   roots: z.number(),
+  emergencies: z.number(),
   currentCheckpoints: z.number(),
   recalls: z.number(),
   searches: z.number(),
@@ -206,6 +220,7 @@ const viewSchema = z.looseObject({
   archivedItems: z.number(),
   folds: z.number(),
   roots: z.number(),
+  emergencies: z.number(),
   currentCheckpoints: z.number(),
   recalls: z.number(),
   searches: z.number(),
@@ -262,17 +277,23 @@ export function reduceStatusEvent(state: FoldStatusState, event: SessionEvent): 
       const summary = (event.data as { summary?: readonly { type?: string; text?: string }[] }).summary
       const text = (summary ?? []).map(block => (block.type === 'text' ? block.text ?? '' : '')).join('')
       const marker = parseCheckpointMarker(text)
-      const root = marker?.mode === 'root'
+      const mode = marker?.mode
+      // The STRUCTURAL question is asked through `isRebaseMode`, not by
+      // comparing against 'root': an emergency rebase collapses the prefix
+      // exactly as a root does, so a mode-by-mode check here is how the
+      // checkpoint count would drift the moment a rebase-like mode was added.
+      const rebases = mode !== undefined && isRebaseMode(mode)
       return {
         ...state,
         archivedTokens,
         archivedItems,
-        folds: state.folds + (root ? 0 : 1),
-        roots: state.roots + (root ? 1 : 0),
+        folds: state.folds + (rebases ? 0 : 1),
+        roots: state.roots + (mode === 'root' ? 1 : 0),
+        emergencies: state.emergencies + (mode === 'emergency' ? 1 : 0),
         // A leaf checkpoint JOINS the frozen prefix, so the surface gains one.
-        // A root REBASES: the prefix collapses to the single new checkpoint, so
-        // the count becomes one rather than growing.
-        currentCheckpoints: root ? 1 : state.currentCheckpoints + 1,
+        // A rebase COLLAPSES it to the single new checkpoint, so the count
+        // becomes one rather than growing.
+        currentCheckpoints: rebases ? 1 : state.currentCheckpoints + 1,
       }
     }
     case 'compaction/end': {
@@ -403,6 +424,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     archivedItems: 0,
     folds: 0,
     roots: 0,
+    emergencies: 0,
     currentCheckpoints: 0,
     recalls: 0,
     searches: 0,
@@ -426,7 +448,11 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
     // rows from an older unit are discarded rather than forward-applied.
     // 3: `archivedItems` joined the state, so a row persisted at 2 lacks it and
     // would forward-apply as `undefined` rather than as a count.
-    stateVersion: 3,
+    // 4: `emergencies` joined the state, and `currentCheckpoints` changed
+    // semantics — an emergency rebase now collapses the prefix like a root does
+    // instead of being counted as a leaf. A row persisted at 3 would carry both
+    // the missing field and the wrong checkpoint count.
+    stateVersion: 4,
     init: empty,
     apply: reduceStatusEvent,
     wire: {
@@ -460,6 +486,7 @@ export function epistemicFoldStatusProjection(options: StatusProjectionOptions):
           archivedItems: state.archivedItems,
           folds: state.folds,
           roots: state.roots,
+          emergencies: state.emergencies,
           currentCheckpoints: state.currentCheckpoints,
           recalls: state.recalls,
           searches: state.searches,

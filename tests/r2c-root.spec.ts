@@ -90,7 +90,7 @@ describe('R2-C: config surface', () => {
   })
 })
 
-describe('R2-C: the handoff is what fixes R2-B regression', () => {
+describe('R2-C: the handoff is what fixes the R2-B regression', () => {
   it('admission + handoff beats both legacy and admission-alone', async () => {
     const legacy = await runArm(LEGACY, 64)
     const leafOnly = await runArm(ECON_LEAF, 64)
@@ -101,11 +101,19 @@ describe('R2-C: the handoff is what fixes R2-B regression', () => {
       + `econ+root=${withRoot.attribution.grandTotal} (roots=${withRoot.rootFoldCount})`,
     )
 
-    // Admission alone regresses (the R2-B finding, restated here as the
-    // baseline this stage must beat).
-    expect(leafOnly.attribution.grandTotal).toBeGreaterThan(legacy.attribution.grandTotal)
-    // The handoff turns it into a large win.
-    expect(withRoot.attribution.grandTotal).toBeLessThan(legacy.attribution.grandTotal)
+    // ## Why the first assertion changed
+    //
+    // R2-B recorded that admission ALONE regressed: the surface stopped folding
+    // and carried the unfolded history as raw tokens. That was measured with no
+    // consumer, so the refusal's intent was never drained.
+    //
+    // Phase 1 makes the handoff unconditional for a frozen-bound surface and the
+    // harness mounts the production consumer, so admission-alone no longer
+    // regresses — it is a smaller win than admission+handoff, not a loss. The
+    // ordering that matters is preserved and now asserted directly: the handoff
+    // is strictly better than refusing without it, and both beat legacy.
+    expect(withRoot.attribution.grandTotal).toBeLessThan(leafOnly.attribution.grandTotal)
+    expect(leafOnly.attribution.grandTotal).toBeLessThan(legacy.attribution.grandTotal)
     // And the rebase actually ran — the gain is not an accounting artifact.
     expect(withRoot.rootFoldCount).toBeGreaterThan(0)
   }, 300_000)

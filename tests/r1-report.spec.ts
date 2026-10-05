@@ -17,7 +17,7 @@ import { join } from 'node:path'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import type { Workload } from '../eval/workloads/index.ts'
-import { runPairedBaseline } from '../bench/paired-baseline.ts'
+import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import {
@@ -54,9 +54,15 @@ async function run(
   arm: 'ef' | 'basic',
   regime: RegimeName,
 ): Promise<BaselineResult> {
+  // The EF arm is mounted as the PRODUCTION plugin and driven by its own idle
+  // consumer. Phase 1 made that mandatory: a frozen-bound surface now hands off
+  // to a rebase instead of folding, so an EF harness with no consumer stops
+  // folding and never converges — its raw history grows without bound and the
+  // numbers would describe a configuration that cannot ship. Basic has no
+  // rebase concept, so it carries no hook.
   const harness = await createHarness({ text: `${arm} digest` }, {
     contextWindow: WINDOW,
-    ...(arm === 'basic' ? { engine: 'basic' as const } : { projection: true }),
+    ...(arm === 'basic' ? { engine: 'basic' as const } : { plugin: true }),
     workloadModel: WORKLOAD_MODEL,
     efConfig: { ...REGIMES[regime] },
   })
@@ -69,6 +75,7 @@ async function run(
       workload.grow(session, step)
       workload.declareState?.(session, step)
     },
+    ...(arm === 'basic' ? {} : { rebase: createIdleMaintenanceHook(harness) }),
     signal: SIGNAL,
   })
 }

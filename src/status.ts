@@ -96,6 +96,16 @@ export interface FoldLifetimeCounts {
   readonly leaves: Figure
   readonly roots: Figure
   /**
+   * Emergency rebases: overflow recovery inside a live turn.
+   *
+   * Counted apart from `roots` because the two are different EVENTS that happen
+   * to share a surface effect. A root is deferred maintenance chosen at idle; an
+   * emergency rebase is forced because the provider already refused the request.
+   * Folding them into one number would erase exactly the distinction a reader
+   * needs to tell "maintenance ran" from "recovery ran".
+   */
+  readonly emergencies: Figure
+  /**
    * Whether the counts are complete.
    *
    * `false` when the store could not be read, in which case the counts are
@@ -218,7 +228,18 @@ export interface ContextStatusInput {
    * Preferred over deriving them from bundles, because the engine knows what it
    * actually committed rather than what is still on disk.
    */
-  readonly foldCounts?: { readonly leaves: number; readonly roots: number }
+  readonly foldCounts?: {
+    readonly leaves: number
+    readonly roots: number
+    /**
+     * Emergency rebases, when the engine reports them.
+     *
+     * Optional because an older caller may not supply it; `undefined` means
+     * "not reported" and the bundle-derived fallback is used instead, rather
+     * than reporting a zero that would claim none happened.
+     */
+    readonly emergencies?: number
+  }
   /** The priced profile for the routed model, for the cost estimate. */
   readonly profile?: ContextEconomicsProfile
   /**
@@ -357,14 +378,27 @@ function foldCountsFrom(bundles: ContextStatusInput['bundles']): FoldLifetimeCou
     return {
       leaves: { value: 0, basis: 'measured', note: 'store not consulted — count unavailable' },
       roots: { value: 0, basis: 'measured', note: 'store not consulted — count unavailable' },
+      emergencies: { value: 0, basis: 'measured', note: 'store not consulted — count unavailable' },
       complete: false,
     }
   }
   let leaves = 0
   let roots = 0
+  let emergencies = 0
   for (const bundle of bundles) {
-    if (bundle.mode === 'root') roots += 1
-    else leaves += 1
+    // Classified by mode, not by `isRebaseMode`: the STRUCTURAL question and the
+    // AUDIT question are different, and this function answers the audit one.
+    // `isRebaseMode` is what the surface-shape rules use.
+    switch (bundle.mode) {
+      case 'leaf': leaves += 1; break
+      case 'root': roots += 1; break
+      case 'emergency': emergencies += 1; break
+      // A bundle with no readable mode is a leaf by EF's own convention: only
+      // `leaf` grows the prefix, and an unreadable marker is not evidence of a
+      // rebase. Counting it as a leaf keeps the total honest instead of
+      // dropping it from every column.
+      default: leaves += 1; break
+    }
   }
   return {
     leaves: {
@@ -376,6 +410,11 @@ function foldCountsFrom(bundles: ContextStatusInput['bundles']): FoldLifetimeCou
       value: roots,
       basis: 'measured',
       note: 'root rebases this session has ever committed (lifetime)',
+    },
+    emergencies: {
+      value: emergencies,
+      basis: 'measured',
+      note: 'emergency rebases this session has ever committed (provider-overflow recovery)',
     },
     complete: true,
   }
@@ -394,7 +433,7 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
   const calls = countRecallCalls(session)
   const frontier = locateFoldFrontier(session)
   const archive = archiveFigures(input.bundles)
-  const folds = input.foldCounts !== undefined
+  const folds: FoldLifetimeCounts = input.foldCounts !== undefined
     ? {
       leaves: {
         value: input.foldCounts.leaves,
@@ -406,6 +445,15 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
         basis: 'measured' as const,
         note: 'root rebases this session has ever committed (lifetime)',
       },
+      // A caller that does not report emergencies gets the bundle-derived count
+      // rather than a fabricated zero, so "not reported" never reads as "none".
+      emergencies: input.foldCounts.emergencies === undefined
+        ? foldCountsFrom(input.bundles).emergencies
+        : {
+          value: input.foldCounts.emergencies,
+          basis: 'measured' as const,
+          note: 'emergency rebases this session has ever committed (overflow recovery)',
+        },
       complete: true,
     }
     : foldCountsFrom(input.bundles)

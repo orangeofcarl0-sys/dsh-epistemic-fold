@@ -35,7 +35,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { EpistemicFoldEngine } from './engine.ts'
-import { intentMatchesSession } from './rebase-intent.ts'
+import { intentMatchesSession, isSafetyRebaseCause } from './rebase-intent.ts'
 import type { PendingRebaseIntent, RebaseIntentRegistry } from './rebase-intent.ts'
 
 /** Why an idle rebase attempt ended the way it did. */
@@ -102,9 +102,20 @@ export async function runIdleRebase(
     return record({ outcome: 'session_changed', intent })
   }
 
+  // Safety and economic intents are decided by DIFFERENT authorities, but both
+  // are re-measured against the surface as it stands NOW.
+  //
+  // A safety intent bypasses the economics compiler — a frozen prefix that
+  // defeats every leaf is a structural fact, not a price to be weighed, and
+  // refusing it would mean choosing non-convergence. It does NOT bypass
+  // revalidation: the intent was written against a surface that no longer
+  // exists, so the condition is re-derived and the intent dropped if it has
+  // passed. "Recommendation is not authority" applies with full force here.
   let decision
   try {
-    decision = await engine.rebaseDecisionAtIdle(agent)
+    decision = isSafetyRebaseCause(intent.cause)
+      ? await engine.safetyRebaseDecisionAtIdle(agent)
+      : await engine.rebaseDecisionAtIdle(agent)
   } catch (error: unknown) {
     // A re-decision failure is not a reason to fold blindly.
     return record({
