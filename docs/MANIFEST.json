@@ -255,6 +255,11 @@
     "sha256": "4d572198f60b78be558f71c183a6035e8bc8a21c335b73e8f147af8559b6a1c0"
   },
   {
+    "file": "50_PHASE7_HANDOFF.md",
+    "bytes": 7299,
+    "sha256": "6d7aa2e69bf2f20e9d2b7fe936a0f024a0dc07f07a96a9eebcf9071cbf48f196"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -276,8 +281,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8036,
-    "sha256": "6534bff9007582edba8463fa874b19ee89cd04a23b62984310ee4a8533bb8ea8"
+    "bytes": 8083,
+    "sha256": "16029deb8ff57015c6c6159744a8d64df9c128c66d094ff225beff9d55941961"
   },
   {
     "file": "README.zh.md",
