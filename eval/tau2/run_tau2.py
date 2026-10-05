@@ -35,11 +35,13 @@ import json
 import os
 import random
 import statistics
+import subprocess
 import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -122,6 +124,115 @@ class Cell:
         return f"{self.domain}/{self.task_id}"
 
 
+def _termination_kind(reason: Any) -> str:
+    """
+    The canonical lower-case name of a tau2 termination reason.
+
+    ## The defect this exists to prevent
+
+    `TerminationReason` is a `str` enum without a `__str__` override, so
+    `str(TerminationReason.USER_STOP)` is `"TerminationReason.USER_STOP"` — not
+    `"user_stop"`. The taxonomy compared that string against
+    `("agent_stop", "user_stop")`, which is therefore never true, so
+    `premature-stop` silently equalled the number of failed cells: every failure
+    was reported as a premature stop even when every termination was `USER_STOP`.
+    A column that is a constant multiple of another column carries no
+    information while looking like it does.
+
+    Measured: `str(TerminationReason.USER_STOP)` is
+    `'TerminationReason.USER_STOP'`, which is not in `('agent_stop','user_stop')`
+    — so the old test was true for every cell. `.value` is the lower-case form.
+
+    Normalising at BOTH the store site and the compare site means an archive
+    written before this fix still classifies correctly.
+    """
+    value = getattr(reason, "value", reason)
+    text = str(value)
+    if "." in text:
+        text = text.rsplit(".", 1)[-1]
+    return text.lower()
+
+
+def _git_rev(path: Path) -> Optional[str]:
+    """The `HEAD` of the checkout at `path`, or None when it is not a git tree."""
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(path), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out.stdout.strip() or None
+
+
+def _git_dirty(path: Path) -> Optional[bool]:
+    """Whether the checkout at `path` has uncommitted changes; None if unknown."""
+    try:
+        out = subprocess.run(
+            # Untracked files are excluded on purpose: a run leaves `__pycache__`
+            # behind, so counting them would make `dirty` permanently true and
+            # therefore carry no information. Tracked modifications are the signal
+            # that matters — they mean the source under test was edited.
+            ["git", "-C", str(path), "status", "--porcelain", "--untracked-files=no"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return bool(out.stdout.strip())
+
+
+def _checkout(path: Optional[Path], locator: str) -> Optional[dict[str, Any]]:
+    """Identify a checkout by what a reader elsewhere can use, not by where it sits.
+
+    The absolute root is deliberately NOT recorded. These archives are tracked
+    files, and `tests/release-hygiene.spec.ts` scans every tracked text file for a
+    Windows user-profile path: writing an absolute path into a run record would
+    fail the release gate and publish one machine's directory layout. The revision
+    is the actual anchor — two checkouts of the same commit run the same
+    experiment — and `locator` names where to find it without naming a disk.
+    """
+    if path is None:
+        return None
+    return {"locator": locator, "rev": _git_rev(path), "dirty": _git_dirty(path)}
+
+
+def provenance(
+    preset: str, arms: list[str], replicates: int, concurrency: int, purpose: str
+) -> dict[str, Any]:
+    """Everything a later reader needs to re-run this exact experiment.
+
+    `dirty` matters as much as `rev`: a sweep run against a patched adapter is not
+    the same experiment as one run against the tag, and the difference is
+    invisible from the numbers alone.
+    """
+    ef_root = Path(__file__).resolve().parents[2]
+    tau2_root = os.environ.get("TAU2_ROOT")
+    return {
+        "schema": "ef-tau2-run/1",
+        "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "preset": preset,
+        "purpose": purpose,
+        "concurrency": concurrency,
+        "seed": SEED,
+        "maxSteps": MAX_STEPS,
+        "arms": arms,
+        "replicates": replicates,
+        "route": {
+            "agentModel": os.environ.get("EF_LIVE_MODEL", "space-bunny-free"),
+            "baseUrl": os.environ.get("EF_LIVE_BASE_URL", "https://opencode.ai/zen/v1"),
+            "userSimulatorLlm": USER_LLM,
+        },
+        "ef": _checkout(ef_root, "."),
+        "tau2": _checkout(Path(tau2_root).resolve(), "$TAU2_ROOT") if tau2_root else None,
+    }
+
+
 def _load_task(domain: str, task_id: str):
     """Fetch one task by id through the benchmark's own loader."""
     tasks = load_tasks(domain, "base")
@@ -188,7 +299,7 @@ def run_cell(domain: str, task_id: str, arm: str, replicate: int) -> Cell:
         )
 
         cell.reward = reward_info.reward
-        cell.termination = str(simulation.termination_reason)
+        cell.termination = _termination_kind(simulation.termination_reason)
         cell.messages = len(simulation.messages)
 
         # The breakdown is reported so a failure can be attributed, never to
@@ -331,7 +442,13 @@ def summarize(cells: list[Cell], arms: list[str]) -> str:
         if not bad:
             lines.append(f"  {arm:10s} no failures in this sample")
             continue
-        premature = sum(1 for c in bad if c.termination not in ("agent_stop", "user_stop"))
+        # Normalised HERE as well as at the store site: an archive written before
+        # `_termination_kind` existed carries the `"TerminationReason.X"` form,
+        # and re-reading it through the same function keeps it classifying
+        # correctly instead of silently counting as premature.
+        premature = sum(
+            1 for c in bad if _termination_kind(c.termination) not in ("agent_stop", "user_stop")
+        )
         db_only = sum(1 for c in bad if c.db_pass is False and c.communicate_pass is not False)
         comm_only = sum(1 for c in bad if c.communicate_pass is False and c.db_pass is not False)
         lines.append(
@@ -435,7 +552,12 @@ def main() -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(
             json.dumps(
-                {"purpose": args.purpose, "concurrency": concurrency, "seed": SEED, "cells": [c.__dict__ for c in results]},
+                {
+                    # Provenance FIRST, so a reader sees what produced the numbers
+                    # before the numbers. It names revisions rather than paths.
+                    **provenance(args.preset, arms, replicates, concurrency, args.purpose),
+                    "cells": [c.__dict__ for c in results],
+                },
                 indent=2,
                 ensure_ascii=False,
             ),

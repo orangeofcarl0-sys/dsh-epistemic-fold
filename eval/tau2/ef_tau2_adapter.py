@@ -99,6 +99,40 @@ def _from_wire(assistant: dict[str, Any]) -> AssistantMessage:
     return AssistantMessage(role="assistant", content=assistant.get("content") or "")
 
 
+def _tool_schemas(tools: list[Any]) -> list[dict[str, Any]]:
+    """Reduce tau2 `Tool` objects to the `{name, description, parameters}` dicts
+    the bridge wire format carries.
+
+    tau2 injects `list[Tool]` (pydantic models), but the bridge is a JSON pipe:
+    `json.dumps` refuses a `Tool`, and `LocalAgent` keeps them verbatim in
+    `self.tools`. The projection tau2 itself uses to reach a provider is
+    `Tool.openai_schema`, so we unwrap that rather than invent a shape: it keeps
+    the description tau2 would have sent and the JSON schema it derives from
+    `Tool.params`. Dicts pass through unchanged, so a caller that already
+    serialised them is unaffected.
+    """
+    schemas: list[dict[str, Any]] = []
+    for tool in tools:
+        if isinstance(tool, dict):
+            schemas.append(tool)
+            continue
+        function = (getattr(tool, "openai_schema", None) or {}).get("function")
+        if function is None:
+            raise TypeError(
+                f"cannot project tool {tool!r} onto the bridge wire format: "
+                "expected a dict or a tau2 Tool carrying openai_schema"
+            )
+        schemas.append(
+            {
+                "name": function.get("name", ""),
+                "description": function.get("description", "") or "",
+                "parameters": function.get("parameters")
+                or {"type": "object", "properties": {}},
+            }
+        )
+    return schemas
+
+
 class EFTau2Agent(LocalAgent[dict]):
     """
     A tau2 agent whose context runtime is the Epistemic Fold.
@@ -147,7 +181,7 @@ class EFTau2Agent(LocalAgent[dict]):
                 domain=self.domain,
                 task_id=self.task_id,
             )
-            self._bridge.init(self.domain_policy, self.tools)
+            self._bridge.init(self.domain_policy, _tool_schemas(self.tools))
             # Printed rather than logged through loguru: this module is shared
             # with the LHTB lane, whose Harbor venv has no loguru. A bridge
             # client that imports cleanly under both frameworks is worth more
@@ -166,7 +200,7 @@ class EFTau2Agent(LocalAgent[dict]):
         self, message: ValidAgentInputMessage, state: dict
     ) -> tuple[AssistantMessage, dict]:
         """Forward one turn to the EF bridge and return its reply."""
-        return self.bridge.turn(message), state
+        return _from_wire(self.bridge.turn_raw(_to_wire(message))), state
 
     def stop(
         self,

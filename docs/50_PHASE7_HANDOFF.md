@@ -63,30 +63,39 @@ If that reproduces, it is a resource decision, not a code defect. Raising a task
 declared memory changes the benchmark's own envelope, which is the benchmark's
 call. Record it as a constraint rather than editing `task.toml`.
 
-### 2.3 Do not re-impose a 180-minute cap
+### 2.3 The 180-minute cap — FIXED, do not reintroduce it
 
-PR #1's `lhtb-ef-sweep.yaml` sets `override_timeout_sec: 10800` (180 min). The
-task's native budget is `agentTimeoutSec: 14400` (**240 min**), and the yaml's own
-comment calls 10800 "a bound on a runaway loop" — which the arithmetic
-contradicts. In the Phase 6 probe, **every timeout row sat at 180/181 minutes**,
-so that cap, not the task, was the binding limit.
+PR #1's `lhtb-ef-sweep.yaml` set `override_timeout_sec: 10800` (180 min) with the
+comment "the task's own agent budget is the real limit; this bounds a runaway
+loop". The task declares `timeout_sec = 14400` (**240 min**), so 10800 was not a
+bound above that budget — it was 25% *below* it. Measured consequence in the Phase
+6 probe: **every timeout row sat at 180/181 minutes**, so that cap, not the task,
+is what ended those trials.
 
-Set it to the task's native budget, or state explicitly that it is a
-self-imposed constraint.
+Both configs on `main` now use `14400`. If a future revision lowers it, say
+explicitly that it is a self-imposed constraint rather than claiming it defers to
+the task.
 
 ---
 
 ## 3. What to run
 
-The sweep and oracle configs exist **only on the `lhtb-longwork-findings`
-branch** (PR #1), not on `main`:
+The sweep and oracle configs are now **on `main`**, brought forward from PR #1
+(docs/51):
 
 ```bash
-git show origin/lhtb-longwork-findings:eval/lhtb/lhtb-ef-sweep.yaml
-git show origin/lhtb-longwork-findings:eval/lhtb/lhtb-ef-oracle.yaml
+ls eval/lhtb/            # lhtb-ef-probe.yaml, lhtb-ef-sweep.yaml, lhtb-ef-oracle.yaml
 ```
 
-Bring them forward deliberately — read them first, and fix §2.3 while you do.
+**The 180-minute cap has already been fixed** — both configs now use
+`override_timeout_sec: 14400`, matching the task's own `timeout_sec`. See §2.3 for
+why that mattered.
+
+One thing to know before sweeping: `n_concurrent_trials: 2` in the sweep config is
+set from the **measured** steady state (193 MiB and 16 MiB held, against limits of
+8 GiB and 4 GiB), not from the declared limits. The host's WSL cap is 8 GB
+(verified: `~/.wslconfig`, `docker info` MemTotal 7.75 GiB), so two cells fit with
+room for the build and verifier spikes. A spec in the repo pins those figures.
 
 Then, per the Phase 6 gate:
 

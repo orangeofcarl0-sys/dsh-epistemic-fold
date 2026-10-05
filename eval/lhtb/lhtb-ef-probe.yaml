@@ -4,11 +4,26 @@
 # that the DSH adapter can enter an LHTB container, act through the official
 # environment, and be graded by the official hidden verifier.
 #
-# ## Why serial
+# ## Why serial — a CHOICE for this config, not a hardware limit
 #
-# Every LHTB task requests 4-8 GB of RAM and this host's WSL VM is capped at
-# 8 GB total, so at most one trial can run at a time. `n_concurrent_trials: 1` is
-# a hardware limit, not a choice.
+# This config stays at `n_concurrent_trials: 1` so a probe produces one clean cell
+# whose log is easy to read, not because the host cannot do more.
+#
+# It used to say the opposite: "Every LHTB task requests 4-8 GB of RAM and this
+# host's WSL VM is capped at 8 GB total, so at most one trial can run at a time.
+# `n_concurrent_trials: 1` is a hardware limit, not a choice." Both halves were
+# wrong in kind:
+#
+#   - `memory_mb` in a task.toml is the CONTAINER LIMIT, not a reservation.
+#     Docker does not preallocate a cgroup limit, so two cells declared at 8 GiB
+#     and 4 GiB do not consume 12 GiB.
+#   - measured with both discriminators running, the two tasks held 193 MiB and
+#     16 MiB against limits of 8 GiB and 4 GiB — roughly 200x under.
+#
+# The cap IS 8 GB (verified in `~/.wslconfig`, in that file's own comment
+# recording a 2026-09-24 reduction from 12 GB, and via `docker info` MemTotal =
+# 7.75 GiB), and two cells fit inside it with room for the build and verifier
+# phases. The sweep config runs at 2; this one stays at 1 by choice.
 #
 # ## Why this task
 #
@@ -40,8 +55,18 @@ environment:
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
     model_name: openai/space-bunny-free
-    # The task's own agent budget is the real limit; this bounds a runaway loop.
-    override_timeout_sec: 10800
+    # ## Matches the task's OWN agent budget, deliberately
+    #
+    # The task declares `timeout_sec = 14400` (240 min) for its agent phase, so
+    # this value is set to the same number rather than below it.
+    #
+    # It used to be 10800 (180 min), with the comment "the task's own agent
+    # budget is the real limit; this bounds a runaway loop" — which contradicted
+    # its own arithmetic, since 10800 < 14400 makes it TIGHTER than the budget it
+    # claimed to defer to. The consequence was measured: in the Phase 6 probe
+    # every timeout row sat at 180/181 minutes, so this cap, not the task, was
+    # what ended those trials.
+    override_timeout_sec: 14400
 
 datasets:
   - path: ./tasks

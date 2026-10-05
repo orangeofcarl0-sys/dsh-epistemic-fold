@@ -70,10 +70,33 @@ export EF_LIVE=1
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
 export EF_LIVE_API_KEY="$KEY"
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
-# Node reaches the provider only through the local proxy. NODE_USE_ENV_PROXY
-# makes Node's own fetch honour HTTPS_PROXY, so no adapter change is needed.
-export NODE_USE_ENV_PROXY=1
-export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
+# ## The proxy is OPT-IN, because forcing it broke every model call
+#
+# This used to hardcode `NODE_USE_ENV_PROXY=1` with
+# `HTTPS_PROXY=http://127.0.0.1:10808`, on the premise that Node "reaches the
+# provider only through the local proxy". Measured on the LHTB lane, where the
+# same block lived, that premise is false in BOTH directions:
+#
+#   direct  https://opencode.ai/zen/v1/models   200, repeatedly
+#   proxied via 127.0.0.1:10808                 000, repeatedly
+#
+# A Node fetch through it dies with a bare `fetch failed`, which the bridge
+# reports as `error:fetch failed` — naming neither proxy nor port, so it reads
+# like a credential or route fault. Set `EF_USE_PROXY=1` on a network that needs
+# one; otherwise the bridge talks to the provider directly.
+if [ "${EF_USE_PROXY:-0}" = "1" ]; then
+  export NODE_USE_ENV_PROXY=1
+  export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
+  export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:10808}"
+else
+  unset NODE_USE_ENV_PROXY HTTPS_PROXY HTTP_PROXY ALL_PROXY
+fi
+
+# The bracketed-IPv6 NO_PROXY defect, scrubbed once for every runner. This is a
+# DIFFERENT defect from the HTTPS_PROXY one above: httpx reads a bracketed IPv6
+# literal as `host:port` and fails with `Invalid port: ':1]'` before any request
+# is sent. See scripts/proxy-env.sh for why the calling shell cannot fix it.
+. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
 
 # Scratch for EF bundles. Kept under the managed temp root so the sweep owns it.
 export EF_TAU2_BUNDLE_ROOT="${EF_TAU2_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/tau2-bundles}"
@@ -86,7 +109,19 @@ case "$MODE" in
     exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/ef_tau2_adapter.py"
     ;;
   gate|sweep)
-    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/run_tau2.py" --preset "$MODE" "$@"
+    # ## Pass `--out`, or the run leaves no machine-readable record
+    #
+    # `run_tau2.py` has always accepted `--out` (it writes the cell records as
+    # JSON), but this wrapper never passed it — so a sweep produced no archive at
+    # all and its numbers survived only as console text. One 96-cell sweep had to
+    # be recovered from a log for exactly this reason.
+    #
+    # The filename is stamped in UTC so two runs cannot collide, and the path is
+    # overridable with `EF_TAU2_OUT`.
+    OUT="${EF_TAU2_OUT:-${EF_ROOT}/eval/tau2/results/${MODE}-$(date -u +%Y%m%dT%H%M%SZ).json}"
+    mkdir -p "$(dirname "$OUT")"
+    echo "archive: $OUT"
+    exec "$TAU2_PY" "${EF_ROOT}/eval/tau2/run_tau2.py" --preset "$MODE" --out "$OUT" "$@"
     ;;
   *)
     echo "unknown mode: $MODE (expected selfcheck|gate|sweep)" >&2

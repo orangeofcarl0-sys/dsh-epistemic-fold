@@ -1,0 +1,40 @@
+# LHTB oracle — the tasks' own reference solutions.
+#
+# No API key. `oracle` is a Harbor built-in agent, so this never touches the EF
+# adapter and never calls a model. It exists to answer three questions before any
+# provider spend: do the images pull, do the containers start, and does the
+# HIDDEN verifier score a completed run?
+#
+# A reward of 0 here is not a task failure. It is the environment failing, and
+# the distinction matters: docs/33 lists LHTB as blocked, so this is the run that
+# unblocks it or proves it is still blocked.
+#
+# The earlier revision of this file said a parallel run was impossible because
+# "every LHTB task requests 4-8 GB of RAM and the WSL VM is capped at 8 GB". With
+# both tasks running the measured usage was 108 MiB and 16 MiB against limits of
+# 8 GiB and 4 GiB, so `memory_mb` is a limit and not a reservation, and the WSL
+# cap is 24 GB. Two tasks therefore run here at once.
+#
+# Usage:
+#   bash scripts/run-lhtb.sh oracle
+job_name: lhtb-oracle
+jobs_dir: ./jobs
+n_attempts: 1
+n_concurrent_trials: 2
+timeout_multiplier: 1.0
+
+environment:
+  type: docker
+  force_build: false
+  delete: true
+  env:
+    DOCKER_DEFAULT_PLATFORM: linux/amd64
+
+agents:
+  - name: oracle
+
+datasets:
+  - path: ./tasks
+    task_names:
+      - unknown-config-semantics
+      - vector-db-iterative-build

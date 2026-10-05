@@ -16,11 +16,26 @@
 # written to a file, never passed as an argument. `set -x` is deliberately NOT
 # used.
 #
-# ## Serial by necessity
+# ## Concurrency: measured, not assumed
 #
-# Every LHTB task requests 4-8 GB of RAM and this host's WSL VM is capped at
-# 8 GB, so at most one trial runs at a time. A parallel LHTB run is not possible
-# here, which is exactly why the tau2 lane carries the statistical work.
+# This section used to say the lane was serial "by necessity", because "every
+# LHTB task requests 4-8 GB of RAM and this host's WSL VM is capped at 8 GB". The
+# first half was wrong in kind and the conclusion was wrong with it:
+#
+#   - `memory_mb` in a task.toml is the CONTAINER LIMIT, not a reservation.
+#     Docker does not preallocate a cgroup limit, so two cells declared at 8 GiB
+#     and 4 GiB do not consume 12 GiB.
+#   - Measured with both discriminators running: `vector-db-iterative-build` held
+#     193 MiB of its 8 GiB limit, `unknown-config-semantics` 16 MiB of its 4 GiB.
+#
+# The cap IS 8 GB, verified three ways: `~/.wslconfig` says `memory=8GB`, its own
+# comment records a deliberate 2026-09-24 reduction from 12 GB to 8 GB on a
+# 15.2 GB host, and `docker info` reports MemTotal 8,326,361,088 bytes = 7.75 GiB.
+# (A first version of this note claimed 24 GB. That was wrong, and it mattered —
+# see the correction in tests/lhtb-parallelism.spec.ts.)
+#
+# So two cells fit with room for the build and verifier phases, which are what
+# actually spike. `n_concurrent_trials` is set from measurement and left at 2.
 #
 # Usage:
 #   bash scripts/run-lhtb.sh probe
@@ -104,6 +119,14 @@ else
   unset NODE_USE_ENV_PROXY HTTPS_PROXY HTTP_PROXY ALL_PROXY
   echo "proxy: disabled (direct); set EF_USE_PROXY=1 to route through one"
 fi
+
+# The bracketed-IPv6 NO_PROXY defect, scrubbed once for every runner. A DIFFERENT
+# defect from the HTTPS_PROXY one above: httpx reads a bracketed IPv6 literal as
+# `host:port` and fails with `Invalid port: ':1]'` before any request is sent, so
+# it breaks Harbor's embedded LiteLLM and the judge endpoint rather than Node.
+# Sourced AFTER the opt-in block, because that block unsets the proxy variables
+# and this file sets only NO_PROXY. See scripts/proxy-env.sh.
+. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
 
 # Many LHTB images are amd64-only.
 export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"
