@@ -66,8 +66,8 @@
   },
   {
     "file": "12_R1_EVALUATION_REPORT.md",
-    "bytes": 12967,
-    "sha256": "1ce27d2db4e9faa129d0046402bd40f81e1ec6ff9160b73cc72b98899995dd7b"
+    "bytes": 12954,
+    "sha256": "3d128d073a0e4aca323a280f1f42a6b8a18c68a07465e892394b6575b0235e21"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -250,6 +250,11 @@
     "sha256": "00b971511a744f51cdbfb891dee928814a74ee9d86ba378ae5ce205445207506"
   },
   {
+    "file": "49_RC23_LONGWORK_HARNESS_AND_GATE.md",
+    "bytes": 6732,
+    "sha256": "4d572198f60b78be558f71c183a6035e8bc8a21c335b73e8f147af8559b6a1c0"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -271,8 +276,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 7957,
-    "sha256": "1e30c8c315f0b82245bbb83d48520fc625f5a0913e25d07aae03ecc81498cb0c"
+    "bytes": 8036,
+    "sha256": "6534bff9007582edba8463fa874b19ee89cd04a23b62984310ee4a8533bb8ea8"
   },
   {
     "file": "README.zh.md",
