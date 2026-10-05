@@ -160,7 +160,9 @@ open turn. The comment says who is supposed to drain it:
 
 > R3-0b replaces that with an intent the PRODUCTION idle consumer drains
 
-That consumer is `plugin.ts:213`:
+That consumer is `plugin.ts:240` (line numbers in this document are against the
+RC22 head `94ecab6`; every other citation was re-verified against it and is
+unchanged):
 
 ```ts
 ctx.effect(() => {

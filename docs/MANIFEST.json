@@ -67,7 +67,7 @@
   {
     "file": "12_R1_EVALUATION_REPORT.md",
     "bytes": 12967,
-    "sha256": "1b7191a05fa6db524ba42e24cbfd767bbcfc8486785ed0e89f741b97708c82eb"
+    "sha256": "1ce27d2db4e9faa129d0046402bd40f81e1ec6ff9160b73cc72b98899995dd7b"
   },
   {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
@@ -246,7 +246,52 @@
   },
   {
     "file": "48_LHTB_LONGWORK_FINDINGS.md",
-    "bytes": 12614,
-    "sha256": "b24bb0e7ef354f1b9f2b435f820f4cee498982dc900b8a07fec54d2fae9df153"
+    "bytes": 12748,
+    "sha256": "9d2d1a60cb9987c8ad581e5ee2535c5e30986e684b666a3fd16105af80a87de6"
+  },
+  {
+    "file": "48_RC22_STORAGE_AND_REVISION_TRACEABILITY.md",
+    "bytes": 12259,
+    "sha256": "00b971511a744f51cdbfb891dee928814a74ee9d86ba378ae5ce205445207506"
+  },
+  {
+    "file": "ARCHITECTURE.md",
+    "bytes": 8259,
+    "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
+  },
+  {
+    "file": "ARCHITECTURE.zh.md",
+    "bytes": 8012,
+    "sha256": "4d001159cd03aeedc3022ebbca8d48624daa78ded79e43ca7d8093b2092f9fa2"
+  },
+  {
+    "file": "DEVELOPMENT.md",
+    "bytes": 5763,
+    "sha256": "82d161213243e51b7d37b34c6e4d621ed0b634b8ffe3b0021044e125e16884f8"
+  },
+  {
+    "file": "DEVELOPMENT.zh.md",
+    "bytes": 5575,
+    "sha256": "47dc7a35e7973da9c38bd01e0c158fbd2d33f1caab61530bf21aa1b725af6ab6"
+  },
+  {
+    "file": "README.md",
+    "bytes": 7957,
+    "sha256": "1e30c8c315f0b82245bbb83d48520fc625f5a0913e25d07aae03ecc81498cb0c"
+  },
+  {
+    "file": "README.zh.md",
+    "bytes": 7703,
+    "sha256": "6c045a61e15f5d16a1d8bc3d25e78af3baf9eeaa644a3f8b0eb263f7944ea667"
+  },
+  {
+    "file": "USER_GUIDE.md",
+    "bytes": 7420,
+    "sha256": "84d5d87380b95f61358261368e21002059a3006ffb8c44abfa0370f2f061b4ca"
+  },
+  {
+    "file": "USER_GUIDE.zh.md",
+    "bytes": 6963,
+    "sha256": "0553c00ae10541aa1068c65b8f6a6279e2704b24f521449dfe7c0d87a65d9279"
   }
 ]
