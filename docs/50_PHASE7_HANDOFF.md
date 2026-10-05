@@ -16,7 +16,7 @@ the two cells died in Harbor's teardown. Phase 7 is what would produce evidence.
 |---|---|---|
 | Docker daemon up | `docker version --format '{{.Server.Version}}'` | Harbor needs it |
 | LHTB checkout + Harbor venv | `$LHTB_ROOT/harbor/.venv/Scripts/harbor.exe` exists | the lane lives outside this repo |
-| Credential store | `D:/dsh/.credentials.yaml` has `OPENCODE_GO_API_KEY` | read at runtime, never printed |
+| Credential store | `$DSH_HOME/.credentials.yaml` has `OPENCODE_GO_API_KEY` | read at runtime, never printed |
 | Route reachable **directly** | `curl -s -o /dev/null -w '%{http_code}' https://opencode.ai/zen/v1/models` | see the proxy trap below |
 | **Container memory** | task images at 4 GiB, and one run was pinned at 4 GiB / 4 GiB for an hour | see the memory trap below |
 | Disk | two task images are ~420 MB each | `vector-db-iterative-build` is **not** cached here |
