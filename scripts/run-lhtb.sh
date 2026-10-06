@@ -96,7 +96,11 @@ sys.stdout.write(m.group(1) if m else '')
 PY
 )
 [ -n "$KEY" ] || { echo "OPENCODE_GO_API_KEY not present in the credential store" >&2; exit 1; }
-echo "live route: opencode.ai/zen/v1 model=space-bunny-free (key len ${#KEY})"
+# Names the credential, not the route. This line used to assert a hardcoded
+# "opencode.ai/zen/v1 model=space-bunny-free" as fact, and kept asserting it after
+# the route moved to `/zen/go/v1` — a claim printed before `EF_LIVE_BASE_URL` was
+# even read. The route is reported below, from the variables that decide it.
+echo "credential: OPENCODE_GO_API_KEY read from the store (len ${#KEY})"
 
 export EF_ROOT
 # Harbor agents reach the model through litellm, which reads these.
@@ -105,6 +109,29 @@ export OPENAI_API_BASE="${OPENAI_API_BASE:-https://opencode.ai/zen/v1}"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
 export EF_LIVE_API_KEY="$KEY"
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
+
+# ## `/zen/go/v1` requires a session id on every request
+#
+# That route answers `400 MissingSessionID` ("cannot be routed efficiently") on
+# every call without an `x-opencode-session` header, where the sibling `/zen/v1`
+# route does not ask for one. It is a property of the ROUTE rather than of any
+# model, so it is supplied here and travels with the route through
+# `EF_LIVE_HEADERS` (read by `eval/live/zcode-config.ts`).
+#
+# A per-run id is enough: the endpoint uses it to route, not to authenticate — the
+# credential is still the bearer token. Override `EF_LIVE_HEADERS` directly to
+# replace it.
+if [ -z "${EF_LIVE_HEADERS:-}" ]; then
+  case "$EF_LIVE_BASE_URL" in
+    */zen/go/*)
+      export EF_LIVE_HEADERS="{\"x-opencode-session\":\"ef-lhtb-$(date +%s)-$$\"}"
+      ;;
+  esac
+fi
+# Print the NAMES only: a route may carry values that do not belong in a log.
+if [ -n "${EF_LIVE_HEADERS:-}" ]; then
+  echo "route: ${EF_LIVE_BASE_URL} model=${EF_LIVE_MODEL} headers=$(printf '%s' "$EF_LIVE_HEADERS" | grep -o '"[^"]*"[[:space:]]*:' | tr -d '":' | tr '\n' ',' | sed 's/,$//')"
+fi
 
 # ## The proxy is OPT-IN, because forcing it broke every model call
 #

@@ -190,6 +190,7 @@ export async function runTaskArm(options: {
 
   const adapter = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl, apiKey: route.apiKey, model: route.model, contextWindow: TASK_WINDOW,
+    ...(route.headers === undefined ? {} : { headers: route.headers }),
   })
   const recorder = new BillingRecorder(adapter, `${arm.label}-${task.id}-${replicate}`)
 

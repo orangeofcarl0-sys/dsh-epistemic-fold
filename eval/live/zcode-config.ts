@@ -29,6 +29,20 @@ export interface LiveRoute {
   readonly apiKey: string
   /** Where the route came from, for the report (never includes the key). */
   readonly origin: string
+  /**
+   * Extra request headers this route requires, from `EF_LIVE_HEADERS`.
+   *
+   * A property of the ROUTE rather than of any one model, so it travels with the
+   * route instead of being rebuilt at each call site. `https://opencode.ai/zen/go/v1`
+   * is why this exists: without an `x-opencode-session` header it answers
+   * `400 MissingSessionID` ("cannot be routed efficiently") on every call, while
+   * the sibling `/zen/v1` route does not ask for one.
+   *
+   * Deliberately not a place for credentials: the key has its own field and is
+   * redacted on the error paths, whereas these values are printed in the route
+   * report.
+   */
+  readonly headers?: Readonly<Record<string, string>>
 }
 
 /** The default model: this workspace's ZCode session model. */
@@ -135,17 +149,52 @@ function providerForModel(model: string): string | undefined {
  *   endpoint, or no such model) — an absent live route is a normal condition
  *   that skips the tier, never an error.
  */
+/**
+ * Parse `EF_LIVE_HEADERS`: a JSON object of extra request headers for the route.
+ *
+ * A malformed value is an ERROR rather than a silently ignored one. A route that
+ * needs a header and does not receive it answers 400 on *every* call, and a run
+ * whose every model call fails reads as a provider fault rather than as a typo —
+ * which is the same shape as the `error:fetch failed` trap documented in
+ * `docs/50_PHASE7_HANDOFF.md` §2.1. The failure mode is identical whether the
+ * header is missing or misspelled, so the value is checked once, here.
+ */
+function resolveHeaders(): Readonly<Record<string, string>> | undefined {
+  const raw = process.env.EF_LIVE_HEADERS
+  if (raw === undefined || raw.trim().length === 0) return undefined
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch (error) {
+    throw new Error(`EF_LIVE_HEADERS is not valid JSON: ${error instanceof Error ? error.message : String(error)}`)
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('EF_LIVE_HEADERS must be a JSON object of header names to values')
+  }
+  const headers: Record<string, string> = {}
+  for (const [name, value] of Object.entries(parsed as Record<string, unknown>)) {
+    if (typeof value !== 'string') {
+      throw new Error(`EF_LIVE_HEADERS entry "${name}" must be a string`)
+    }
+    headers[name] = value
+  }
+  return Object.keys(headers).length === 0 ? undefined : headers
+}
+
 export function resolveLiveRoute(options: {
   readonly model?: string
   readonly configPath?: string
 } = {}): LiveRoute | undefined {
   const model = options.model ?? process.env.EF_LIVE_MODEL ?? DEFAULT_MODEL
+  const headers = resolveHeaders()
 
   // 1. Explicit environment overrides.
   const envBase = process.env.EF_LIVE_BASE_URL
   const envKey = process.env.EF_LIVE_API_KEY
   if (envBase !== undefined && envBase.length > 0 && envKey !== undefined && envKey.length > 0) {
-    return { baseUrl: envBase, model, apiKey: envKey, origin: 'environment' }
+    return headers === undefined
+      ? { baseUrl: envBase, model, apiKey: envKey, origin: 'environment' }
+      : { baseUrl: envBase, model, apiKey: envKey, origin: 'environment', headers }
   }
 
   // 2. ZCode provider config (first readable candidate that yields a route).
@@ -170,12 +219,9 @@ export function resolveLiveRoute(options: {
       const apiKey = entry?.options?.apiKey
       if (baseUrl === undefined || baseUrl.length === 0) continue
       if (apiKey === undefined || apiKey.length === 0) continue
-      return {
-        baseUrl,
-        model,
-        apiKey,
-        origin: `zcode config ${path} (provider ${id})`,
-      }
+      return headers === undefined
+        ? { baseUrl, model, apiKey, origin: `zcode config ${path} (provider ${id})` }
+        : { baseUrl, model, apiKey, origin: `zcode config ${path} (provider ${id})`, headers }
     }
   }
   return undefined

@@ -144,6 +144,14 @@ export interface LiveAdapterOptions {
   readonly apiKey: string
   readonly model: string
   readonly contextWindow?: number
+  /**
+   * Extra request headers, carried by the route.
+   *
+   * `https://opencode.ai/zen/go/v1` answers `400 MissingSessionID` on every call
+   * without an `x-opencode-session` header. Sent on every request; the adapter
+   * neither invents nor validates them.
+   */
+  readonly headers?: Readonly<Record<string, string>>
   /** Injected for tests; defaults to global fetch. */
   readonly fetchImpl?: typeof fetch
 }
@@ -156,6 +164,7 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
   private readonly apiKey: string
   private readonly model: string
   private readonly contextWindow: number
+  private readonly headers: Readonly<Record<string, string>>
   private readonly fetchImpl: typeof fetch
 
   constructor(options: LiveAdapterOptions) {
@@ -164,6 +173,7 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
     this.apiKey = options.apiKey
     this.model = options.model
     this.contextWindow = options.contextWindow ?? 131_072
+    this.headers = options.headers ?? {}
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch
   }
 
@@ -213,6 +223,11 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
       response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
+          // Route-required extras (e.g. `x-opencode-session` on `/zen/go/v1`).
+          // Spread FIRST, so the two headers below always win: a route may add a
+          // requirement, but it must not be able to replace the credential or the
+          // content type by naming them. Pinned by tests/live-route-headers.spec.ts.
+          ...this.headers,
           'content-type': 'application/json',
           authorization: `Bearer ${this.apiKey}`,
         },

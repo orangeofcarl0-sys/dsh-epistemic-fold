@@ -874,6 +874,9 @@ async function init(request: {
     apiKey: route.apiKey,
     model: route.model,
     contextWindow: TAU2_WINDOW,
+    // Carried by the route. `/zen/go/v1` needs `x-opencode-session` on every
+    // call; without it every request is a 400 that reads like a route fault.
+    ...(route.headers === undefined ? {} : { headers: route.headers }),
   })
   recorder = new BillingRecorder(adapter, `${request.arm.label}-${request.domain}-${request.taskId}`)
   ctx.llm.registerAdapter([LIVE_PROVIDER], recorder)

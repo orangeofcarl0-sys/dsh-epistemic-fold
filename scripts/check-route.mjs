@@ -54,6 +54,30 @@ const KEY = process.env.EF_LIVE_API_KEY ?? ''
 const URL_UNDER_TEST = `${BASE}/chat/completions`
 
 /**
+ * Route-required headers, from `EF_LIVE_HEADERS`.
+ *
+ * The probe must send what the adapter sends, or it measures a different request
+ * than the one that will run. `/zen/go/v1` answers `400 MissingSessionID` without
+ * an `x-opencode-session` header, so a check that omits it reports 400 on a route
+ * that is in fact healthy — noise that reads like a fault. Malformed JSON is
+ * ignored here rather than thrown: this is a preflight, and
+ * `eval/live/zcode-config.ts` is where the same value is validated for the run.
+ */
+function routeHeaders() {
+  const raw = process.env.EF_LIVE_HEADERS
+  if (raw === undefined || raw.trim().length === 0) return {}
+  try {
+    const parsed = JSON.parse(raw)
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+    const out = {}
+    for (const [name, value] of Object.entries(parsed)) if (typeof value === 'string') out[name] = value
+    return out
+  } catch {
+    return {}
+  }
+}
+
+/**
  * The failure CLASS, not the whole message.
  *
  * Node reports a failed `fetch` as `TypeError: fetch failed` with the real
@@ -87,6 +111,8 @@ async function attempt() {
     const response = await fetch(URL_UNDER_TEST, {
       method: 'POST',
       headers: {
+        // Route requirements first, so the credential cannot be replaced by one.
+        ...routeHeaders(),
         'content-type': 'application/json',
         ...(KEY.length === 0 ? {} : { authorization: `Bearer ${KEY}` }),
       },

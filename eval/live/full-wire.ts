@@ -266,6 +266,7 @@ export async function runFullWire(options: {
   const provider = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl, apiKey: route.apiKey, model: route.model,
     contextWindow: options.window,
+    ...(route.headers === undefined ? {} : { headers: route.headers }),
   })
   const recorder = new BillingRecorder(provider, options.arm)
 
