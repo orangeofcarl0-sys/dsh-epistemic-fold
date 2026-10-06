@@ -75,11 +75,19 @@ def cell(path: Path) -> dict[str, Any]:
     provenance = payload.get("provenance") or {}
     arm = payload.get("arm")
 
+    # The revision lives under the checkout it belongs to: provenance is
+    # {"ef": {"locator", "rev", "dirty"}, "lhtb": {...}, "arm": ...}, so reading a
+    # top-level "revision" reported None while the archive named the commit two
+    # levels down. A report that cannot say which revision produced a number is
+    # the thing the provenance block exists to prevent. The flat form is kept as a
+    # fallback for any older archive.
+    ef_provenance = provenance.get("ef") or {}
     row: dict[str, Any] = {
         "path": str(path),
         "schema": schema,
         "arm": arm,
-        "revision": provenance.get("revision"),
+        "revision": ef_provenance.get("rev", provenance.get("revision")),
+        "dirty": ef_provenance.get("dirty"),
         "telemetry": telemetry,
         "checks": {},
         "skipped": [],
@@ -178,7 +186,8 @@ def main() -> int:
             print(f"  ERROR: {row['error']}")
             failed += 1
             continue
-        print(f"  arm={row['arm']} revision={row['revision']} schema={row['schema']}")
+        dirty = "" if row.get("dirty") is None else (" dirty" if row["dirty"] else " clean")
+        print(f"  arm={row['arm']} revision={row['revision']}{dirty} schema={row['schema']}")
         for name, check in row["checks"].items():
             mark = "PASS" if check["pass"] else "FAIL"
             if not check["pass"]:

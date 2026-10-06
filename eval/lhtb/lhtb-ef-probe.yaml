@@ -60,6 +60,10 @@ environment:
 
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
+    # A LABEL, not the route: run-lhtb.sh rewrites this line from
+    # EF_LIVE_MODEL on every invocation, because Harbor prints it and a run
+    # whose record names the wrong model describes something other than what
+    # it measured. Do not read the value below as the route used.
     model_name: openai/space-bunny-free
     # ## Matches the task's OWN agent budget, deliberately
     #

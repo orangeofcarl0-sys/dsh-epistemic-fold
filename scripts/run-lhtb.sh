@@ -257,7 +257,21 @@ cd "$LHTB_ROOT"
 # must not collide on it.
 JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${MODE}-${EF_LHTB_ARM}"
 CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
-sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
+
+# ## The config's model_name must name the model the run actually used
+#
+# The adapter takes its model from EF_LIVE_MODEL, so the config's model_name is
+# a LABEL -- but Harbor prints it, and the Phase 7 summary line read
+# "tasks | ef-lhtb | space-bunny-free" while every call was going to
+# longcat-2.5-preview-free. A record that names the wrong model is the same class
+# of defect as a report that cannot name its revision: the archive looks complete
+# and is describing something else.
+#
+# Substituted here rather than edited into the config, for the reason the runner
+# already has no default LHTB_ROOT: a tracked file naming one machine's route is
+# wrong on every other one.
+sed -e "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
+  -e "s|^    model_name: .*|    model_name: openai/${EF_LIVE_MODEL}|" \
   "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" > "$CONFIG_TMP"
 
 echo "job: lhtb-ef-${JOB_SUFFIX}"

@@ -220,6 +220,20 @@ describe.skipIf(!HAS_BASH)('the LHTB runner dispatches on its mode argument', ()
     })
   })
 
+  it('labels the config with the model the run actually uses', () => {
+    withFixture((f) => {
+      // Harbor PRINTS model_name. The Phase 7 summary line read
+      // "tasks | ef-lhtb | space-bunny-free" while every call was going to
+      // longcat-2.5-preview-free, so the run's own record named a model it never
+      // contacted -- the same class of defect as a report that cannot name its
+      // revision. The adapter takes its model from EF_LIVE_MODEL, so the config's
+      // value is a label and has to be written from the same source.
+      const r = run(f, 'sweep', { EF_LIVE_MODEL: 'longcat-2.5-preview-free' })
+      expect(r.stdout).toContain('model_name: openai/longcat-2.5-preview-free')
+      expect(r.stdout, 'the stale tracked label must not survive').not.toContain('space-bunny-free')
+    })
+  })
+
   it('is syntactically valid', () => {
     // `bash -n` needs no fixture, and it is the check CI can run everywhere.
     expect(() => execFileSync('bash', ['-n', RUNNER], { stdio: 'pipe' })).not.toThrow()
