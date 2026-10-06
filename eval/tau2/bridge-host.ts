@@ -432,16 +432,22 @@ async function foldIfNeeded(): Promise<void> {
   const agent = {
     session: session!,
     options: { provider: LIVE_PROVIDER, model: 'live' },
-    // The signal is a REAL deadline now, not an un-aborted controller.
+    // The signal is a REAL deadline, and there is no second controller.
     //
-    // It used to be `new AbortController().signal` — created and never aborted,
-    // so nothing bounded the summarization call. The adapter forwards
+    // This used to be `new AbortController().signal` — created and never
+    // aborted — so nothing bounded the summarization call. The adapter forwards
     // `options.signal` to `fetch` but sets no timeout of its own, which is how a
     // single fold stalled for 16 minutes with Harbor and the container both
     // alive and no error anywhere. A bound is what turns that stall into a
     // recorded fold failure the episode survives.
+    //
+    // The first fix left the dead controller in place inside `AbortSignal.any`,
+    // which is harmless at runtime but wrong to read: it kept the exact
+    // expression being fixed on the exact line being fixed, so grepping for the
+    // defect hit the fix. Passed directly, so what the code says and what it
+    // does are the same thing.
     runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> =>
-      task(AbortSignal.any([deadline.signal, new AbortController().signal])),
+      task(deadline.signal),
   } as never
   // The counters are LIFETIME totals on the engine, so they are read absolutely
   // rather than as deltas around the call. That is deliberate: a delta would be
@@ -531,10 +537,20 @@ async function drainIdleRebase(): Promise<void> {
     runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T> {
       if (busy) throw new Error(`agent "${String(session!.id)}" already has active work`)
       busy = true
+      // The idle rebase SUMMARIZES, so it needs the same bound the pressure fold
+      // has. Without it this path was unbounded even after the fold was fixed:
+      // `compactNow` builds `AbortSignal.any([agentSignal, signal])` from the
+      // signal handed to it here, so bounding this one bounds the operation.
+      //
+      // Leaving it open would have made "each fold is bounded" false — the
+      // rebase is a fold, and a stalled one is what the Phase 7 run hit.
+      const deadline = new AbortController()
+      const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
       return (async () => {
         try {
-          return await task(new AbortController().signal)
+          return await task(deadline.signal)
         } finally {
+          if (timer !== undefined) clearTimeout(timer)
           busy = false
         }
       })()

@@ -33,6 +33,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 import { join } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '..')
@@ -199,5 +200,47 @@ describe('the LongWork lane can run in parallel, and the reason is on the record
     expect(runner, 'and it must be skippable for a deliberate down-route run').toContain(
       'EF_SKIP_ROUTE_CHECK',
     )
+  })
+
+  it('the proxy label describes the TRANSPORT, not the environment', () => {
+    // The label used to be `NODE_USE_ENV_PROXY === '1' || HTTPS_PROXY !== undefined`,
+    // so a bare `HTTPS_PROXY` printed "proxy: enabled" while Node ignored it and
+    // connected directly — measured: the request reached the origin (HTTP 200)
+    // with the proxy pointed at a dead port. That is an ironic failure for a tool
+    // whose purpose is to stop a check describing the environment instead of the
+    // transport, which is precisely what `curl` did.
+    //
+    // Node honours the proxy environment only with NODE_USE_ENV_PROXY=1, so the
+    // label has to say which of the three states holds. Run for real, because the
+    // whole point is that the environment does not tell you.
+    const run = (env: Record<string, string>): string => {
+      const result = spawnSync(process.execPath, [join(ROOT, 'scripts', 'check-route.mjs'), '--attempts', '1'], {
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          // A dead port, so "in effect" is observable as a failure.
+          HTTPS_PROXY: '', https_proxy: '', HTTP_PROXY: '', http_proxy: '',
+          ALL_PROXY: '', all_proxy: '', NODE_USE_ENV_PROXY: '',
+          EF_LIVE_BASE_URL: 'https://127.0.0.1:1/v1',
+          ...env,
+        },
+      })
+      return `${result.stdout}${result.stderr}`
+    }
+
+    // No proxy configured: reported as direct, not as "enabled".
+    expect(run({}), 'no proxy variables means direct').toMatch(/proxy: not in effect/u)
+
+    // The trap: a proxy IS configured but Node will ignore it. This must NOT
+    // read as enabled, and it must be called out before the generic advice.
+    const trap = run({ HTTPS_PROXY: 'http://127.0.0.1:9' })
+    expect(trap, 'a set-but-ignored proxy must not read as enabled').toMatch(/proxy: NOT in effect/u)
+    expect(trap).toMatch(/NODE_USE_ENV_PROXY=1/u)
+    expect(trap, 'the trap is the most likely cause and must be named').toMatch(/NOTE:/u)
+
+    // Genuinely in effect: the flag is set, so Node routes through it.
+    const live = run({ HTTPS_PROXY: 'http://127.0.0.1:9', NODE_USE_ENV_PROXY: '1' })
+    expect(live, 'with the flag set the proxy is really used').toMatch(/proxy: in effect/u)
+    expect(live, 'and a dead proxy then fails, which is the observable difference').toMatch(/0\/1 reached/u)
   })
 })

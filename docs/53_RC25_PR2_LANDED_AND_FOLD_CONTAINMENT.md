@@ -4,10 +4,111 @@ This records bringing PR #2's real work onto `main`, and correcting the one
 conclusion in it that would have sent Phase 7 in the wrong direction.
 
 Starting point: `main` at RC24 (`7745dff`), **897 passed / 23 skipped / 0 failed**.
-Ending point: **916 passed / 23 skipped / 0 failed**, three typecheck projects clean.
+Ending point: **921 passed / 23 skipped / 0 failed**, three typecheck projects clean.
 
 Nothing here is an EF result. No arm has completed a trial; there is still no
 sample, and no arm ranking is claimed or implied.
+
+---
+
+## 0. Independent re-measurement found four defects in this work
+
+The RC25 changes were re-tested on a second machine, which reported **0 failed and
+green CI** but a different count: **911 passed / 28 skipped**, against the 916/23
+claimed here. Five tests had moved from passing to skipped, all in
+`tests/ef-collect.spec.ts`. Four defects were found in this work and all four are
+fixed below: three came from that re-measurement, and the fourth (§0.4) surfaced
+while re-checking this document's own claim about bounding folds.
+
+Worth stating plainly, because it is the pattern this repository keeps hitting:
+**the gate was green, and three of these were only visible from the count.** A
+suite that reports 0 failed while silently skipping the checks that would have
+failed is the `roots=0` mistake in a different costume — a number that could not
+mean what it claimed, read as if it did.
+
+### 0.1 The new collector gate silently degraded to skipped
+
+The spec probed only `python3` / `python` on `PATH` and put its **entire** suite
+behind `describe.skipIf`. On a machine whose `PATH` carries the Microsoft Store
+execution-alias stubs, both names exist but exit **9009**, so the probe correctly
+found no interpreter — and the whole gate became five skipped tests, including the
+one whose only job is to assert the collector is in the repository and needs no
+Python at all.
+
+That is the exact gap the file was written to close, reproduced inside the fix for
+it: a check nobody can run is not a check. Two changes:
+
+1. The Python-free assertions moved to their own always-running `describe`, so
+   "the collector is tracked and correctly referenced" is gated on every machine.
+2. The probe searches harder (`EF_PYTHON`, `python3`, `python`, `py -3`, and the
+   LHTB venv's interpreter) and requires the candidate to **execute** code rather
+   than merely answer `--version`, which is what a Store stub can fake.
+
+A skipped behavioural check is still a real limitation, so it now prints a warning
+naming the interpreter options rather than passing quietly. Verified destructively:
+with the interpreter forced unavailable, 3 checks still run and pass and the
+degradation announces itself, where previously all 5 vanished.
+
+The collector itself was never defective — the second machine ran all 15 assertions
+against a real interpreter and they held. This was gate wiring.
+
+### 0.2 The fold fix left the defect it was fixing on the line it fixed
+
+`bridge-host.ts` passed the deadline through:
+
+```ts
+task(AbortSignal.any([deadline.signal, new AbortController().signal]))
+```
+
+Harmless at runtime — an `any()` with a never-aborting member is the deadline — but
+it kept the **exact expression being fixed** on the **exact line being fixed**, so
+grepping for `new AbortController().signal` hit the fix. A later reader could not
+tell whether the fix had landed. It now passes `deadline.signal` directly.
+
+`tests/harness-fold-containment.spec.ts` gained a detector for the real invariant:
+not "no controller" (the deadline *is* one), but that every controller on the path
+is one something actually aborts. Verified destructively by reintroducing the
+leftover verbatim.
+
+### 0.3 The route check described the environment, not the transport
+
+`check-route.mjs` printed `proxy: enabled` whenever `HTTPS_PROXY` was set. Node
+honours the proxy environment **only** with `NODE_USE_ENV_PROXY=1`, so with a bare
+`HTTPS_PROXY` it printed "enabled" while connecting directly — measured: the
+request reached the origin (HTTP 200) with the proxy pointed at a dead port.
+
+An ironic failure for a tool built to stop a check from describing the environment
+instead of the transport, which is what `curl` did. The label now reports three
+states and names the trap explicitly:
+
+```
+proxy: not in effect — direct connection
+proxy: NOT in effect — HTTPS_PROXY is set but Node ignores the proxy environment
+       without NODE_USE_ENV_PROXY=1
+proxy: in effect — Node will route via http://…
+```
+
+Each state is verified against real transport behaviour, not against the
+environment: with the flag unset the request reaches the origin; with it set
+against a dead port it fails `ECONNREFUSED`.
+
+### 0.4 The idle rebase was still unbounded, so "each fold is bounded" was false
+
+Found while re-checking this document's own claim. §3.2 says each fold is bounded;
+that was true of the automatic pressure fold and **false of the idle rebase**,
+which is also a fold — `compactNow` summarizes, and it builds its operation signal
+as `AbortSignal.any([agentSignal, signal])` from the signal handed to it by
+`runMaintenance`. The harness passed an un-aborted controller there, so the Phase 7
+stall was still reachable through the other door.
+
+Both paths now carry the same `FOLD_TIMEOUT_MS` deadline, and
+`tests/harness-fold-containment.spec.ts` asserts each separately — verified
+destructively by reverting only the idle-rebase bound, which fails that test and
+leaves the pressure-fold test passing.
+
+The remaining un-aborted controller in the harness is the EF recall tool call. It
+is left as-is deliberately: it reads the local bundle store and makes no model
+call, so there is nothing to bound and a deadline would be cargo cult.
 
 ---
 
@@ -92,6 +193,10 @@ credential problem the check cannot fix.
 Verified on this host: 5/5 reached, HTTP 401, exit 0. Against an unreachable route:
 0/2, `bad port`, exit 1, and the runner refuses to start.
 
+The `proxy:` line reports what Node will actually DO, not what the environment
+contains — see §0.3. Node ignores the proxy environment without
+`NODE_USE_ENV_PROXY=1`, so a bare `HTTPS_PROXY` must not read as enabled.
+
 ## 3. Blocker 2 — CORRECTED: the harness killed the episode
 
 PR #2 reported this as a budget problem:
@@ -142,6 +247,15 @@ measurement rather than taste: a legitimate 16384-token summary returned in 204s
 the transport failed at 32768 after 305s — so 600s is ~3x the observed legitimate
 worst case and still an order of magnitude under the episode budget.
 
+**"Each fold" means both fold paths.** The first version of this fix bounded only
+the automatic pressure fold and left the idle rebase open, which made the sentence
+above false — see §0.4. The rebase summarizes too, so it carries the same deadline
+now, and a test asserts each path separately.
+
+(The first version of this fix passed the deadline through an `AbortSignal.any()`
+alongside a second, never-aborted controller, which read as if the old defect were
+still present. See §0.2.)
+
 ### 3.3 What is still open
 
 Whether Basic's full-checkpoint body is genuinely too large for this model at 8192 is
@@ -189,7 +303,10 @@ counter displayed as 0 is the old `roots=0` mistake again.
 
 `tests/ef-collect.spec.ts` pins pass, skip and fail against three synthetic
 transcripts, including a basic arm with non-zero bundles — the exact shape that made
-every pre-RC23 "basic" row describe EF-legacy.
+every pre-RC23 "basic" row describe EF-legacy. Its structural assertions (the script
+exists, is a Python program, and is named correctly by the documents that cite it)
+run unconditionally, per §0.1: the first version of this gate skipped all of them on
+a machine without a usable `PATH` Python, which reproduced the gap it was closing.
 
 ## 6. What is not claimed
 

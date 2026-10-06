@@ -112,9 +112,48 @@ const failures = results.filter(r => !r.ok)
 const classes = {}
 for (const f of failures) classes[f.error] = (classes[f.error] ?? 0) + 1
 
-const proxyOn = process.env.NODE_USE_ENV_PROXY === '1' || process.env.HTTPS_PROXY !== undefined
+/**
+ * What Node will ACTUALLY do with the proxy environment, not what it contains.
+ *
+ * ## The defect this replaced
+ *
+ * The label was `NODE_USE_ENV_PROXY === '1' || HTTPS_PROXY !== undefined`, so a
+ * bare `HTTPS_PROXY` printed `proxy: enabled` — while Node ignored it and
+ * connected directly. Measured: with `HTTPS_PROXY` set to a dead port and
+ * `NODE_USE_ENV_PROXY` unset, a request still reached the origin (HTTP 200);
+ * with the flag set, the same request died `ECONNREFUSED`. That is an ironic
+ * failure for a tool whose whole purpose is to stop a check from describing the
+ * environment instead of the transport — which is exactly what `curl` did.
+ *
+ * Node honours `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY` only when
+ * `NODE_USE_ENV_PROXY=1` (or `--use-env-proxy`). So the honest label has three
+ * states, and the middle one is a trap worth naming out loud.
+ */
+function proxyState() {
+  const set = ['HTTPS_PROXY', 'https_proxy', 'HTTP_PROXY', 'http_proxy', 'ALL_PROXY', 'all_proxy']
+    .filter(name => (process.env[name] ?? '').length > 0)
+  const flag = process.env.NODE_USE_ENV_PROXY
+  const honoured = flag === '1' || flag === 'true'
+  if (honoured && set.length > 0) {
+    const primary = process.env.HTTPS_PROXY ?? process.env.https_proxy ?? process.env.HTTP_PROXY
+    return { label: `in effect — Node will route via ${primary}`, trap: false }
+  }
+  if (honoured) return { label: 'in effect, but NO proxy variable is set (Node routes direct)', trap: false }
+  if (set.length > 0) {
+    // The misleading case, and the one this function exists to stop reporting
+    // as "enabled".
+    return {
+      label: `NOT in effect — ${set.join(', ')} ${set.length === 1 ? 'is' : 'are'} set but Node `
+        + 'ignores the proxy environment without NODE_USE_ENV_PROXY=1',
+      trap: true,
+    }
+  }
+  return { label: 'not in effect — direct connection', trap: false }
+}
+
+const proxy = proxyState()
 console.log(`route: ${URL_UNDER_TEST}`)
-console.log(`proxy: ${proxyOn ? `enabled (${process.env.HTTPS_PROXY ?? 'NODE_USE_ENV_PROXY'})` : 'disabled (direct)'}`)
+console.log(`proxy: ${proxy.label}`)
 console.log(`node fetch: ${reached.length}/${ATTEMPTS} reached`)
 if (reached.length > 0) {
   const statuses = [...new Set(reached.map(r => r.status))].sort((a, b) => a - b)
@@ -122,6 +161,18 @@ if (reached.length > 0) {
 }
 if (failures.length > 0) {
   console.log(`  failures: ${Object.entries(classes).map(([k, n]) => `${n} x ${k}`).join(', ')}`)
+}
+
+// A proxy that is set but NOT in effect is the most likely cause of a failure
+// here, and the least likely to be suspected — the environment says a proxy is
+// configured. Say it before the generic advice.
+if (proxy.trap) {
+  console.error(
+    '\nNOTE: a proxy is configured in the environment but Node is NOT using it.\n'
+    + 'Node ignores HTTPS_PROXY/HTTP_PROXY/NO_PROXY unless NODE_USE_ENV_PROXY=1.\n'
+    + 'Set that flag (scripts/run-lhtb.sh does, under EF_USE_PROXY=1) if the\n'
+    + 'route needs the proxy.\n',
+  )
 }
 
 if (reached.length === 0) {

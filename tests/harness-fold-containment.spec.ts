@@ -110,6 +110,64 @@ describe('a fold failure is contained in the harness', () => {
       /EF_TAU2_FOLD_TIMEOUT_MS/u,
     )
   })
+
+  it('bounds BOTH fold paths, since the idle rebase summarizes too', () => {
+    // The automatic pressure fold was bounded first, and the idle rebase was
+    // left open — which made "each fold is bounded" false, because the rebase IS
+    // a fold: `compactNow` summarizes, and it builds its operation signal from
+    // the one handed to it by `runMaintenance`. A stalled rebase is exactly what
+    // the Phase 7 run hit, so leaving this path unbounded would have left the
+    // defect reachable through the other door.
+    const start = source.indexOf('async function drainIdleRebase()')
+    expect(start, 'drainIdleRebase must exist').toBeGreaterThan(-1)
+    const rest = source.slice(start)
+    const end = rest.indexOf('\nasync function ', 1)
+    const body = rest.slice(0, end > 0 ? end : rest.length)
+
+    expect(body, 'the idle consumer must construct a deadline').toMatch(/const deadline = new AbortController\(\)/u)
+    expect(body, 'and it must actually abort it').toMatch(/deadline\.abort\(/u)
+    expect(body, 'the task must receive that deadline').toMatch(/task\(deadline\.signal\)/u)
+    expect(body, 'and the timer must be cleared on the way out').toMatch(/clearTimeout\(/u)
+  })
+
+  it('leaves no un-aborted controller on the fold path', () => {
+    // The first version of this fix passed the deadline through
+    // `AbortSignal.any([deadline.signal, new AbortController().signal])` — which
+    // is harmless at runtime (an `any()` with a never-aborting member is the
+    // deadline) but kept the EXACT expression being fixed on the EXACT line
+    // being fixed. Grepping for the defect hit the fix, so a later reader could
+    // not tell whether the fix had landed.
+    //
+    // The invariant is not "no controller" — the deadline IS one. It is that
+    // every controller on this path is a controller something actually aborts.
+    // Comments are stripped first, since this function's own doc comment quotes
+    // the old expression to explain it.
+    const code = foldBody()
+      .split('\n')
+      .filter(line => !/^\s*(\/\/|\*|\/\*)/u.test(line))
+      .join('\n')
+
+    // Every `new AbortController()` must be bound to a name…
+    const constructed = [...code.matchAll(/const\s+(\w+)\s*=\s*new AbortController\(\)/gu)]
+      .map(match => match[1]!)
+    expect(constructed.length, 'the deadline controller must exist').toBeGreaterThan(0)
+
+    // …and every such name must be aborted, or handed to `AbortSignal.timeout`.
+    for (const name of constructed) {
+      expect(
+        code,
+        `${name} is constructed but never aborted — that is the unbounded-signal defect`,
+      ).toMatch(new RegExp(`${name}\\.abort\\(`, 'u'))
+    }
+
+    // And no controller may be constructed inline, where it cannot be aborted
+    // and cannot be named. This is the exact shape the first fix left behind.
+    expect(
+      code,
+      'a controller built inline in the task call cannot be aborted — pass the deadline itself',
+    ).not.toMatch(/task\([^)]*new AbortController\(\)/u)
+    expect(code, 'the deadline must be passed directly').toMatch(/task\(deadline\.signal\)/u)
+  })
 })
 
 describe('the engine really does throw on a truncated fold', () => {

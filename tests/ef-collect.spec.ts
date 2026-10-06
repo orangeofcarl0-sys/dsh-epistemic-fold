@@ -19,11 +19,33 @@
  * cell passes, a pre-RC23 cell SKIPS rather than passes, and a violating cell
  * fails with a non-zero exit.
  *
+ * ## Why the interpreter probe is fussy, and why some checks are outside it
+ *
+ * The first version of this spec probed only `python3` / `python` on PATH and put
+ * the ENTIRE suite behind `describe.skipIf`. On a machine whose PATH carries the
+ * Microsoft Store execution-alias stubs, both names exist but exit **9009**, so
+ * the probe correctly found no interpreter — and the whole gate silently became
+ * five skipped tests, including the one whose only job is to assert that the
+ * collector is in the repository and needs no Python at all.
+ *
+ * That reproduces the exact gap this file was written to close: a check nobody
+ * can run is not a check. Two things follow, and both are load-bearing:
+ *
+ *   1. The Python-free assertions live in their own always-running describe, so
+ *      the "the collector is tracked and correctly referenced" property is gated
+ *      on every machine, interpreter or not.
+ *   2. The probe searches harder (an explicit `EF_PYTHON`, the LHTB venv, and
+ *      `py -3`) and requires the candidate to actually EXECUTE code rather than
+ *      merely answer `--version`, which is what a Store stub can fake.
+ *
+ * A skipped behavioural check is still a real limitation, so it announces itself
+ * rather than passing quietly.
+ *
  * @module tests/ef-collect
  */
 
 import { describe, expect, it } from 'vitest'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -31,16 +53,62 @@ import { join } from 'node:path'
 const ROOT = join(import.meta.dirname, '..')
 const COLLECTOR = join(ROOT, 'scripts', 'ef-collect.py')
 
-/** Whether a usable Python 3 exists. */
-function python(): string | undefined {
-  for (const candidate of ['python3', 'python']) {
-    const probe = spawnSync(candidate, ['--version'], { stdio: 'ignore' })
-    if (probe.status === 0) return candidate
+/** Candidate argv prefixes for a Python 3 interpreter, best first. */
+function candidates(): readonly (readonly string[])[] {
+  const list: string[][] = []
+  if (process.env.EF_PYTHON !== undefined && process.env.EF_PYTHON.length > 0) {
+    list.push([process.env.EF_PYTHON])
+  }
+  list.push(['python3'], ['python'], ['py', '-3'])
+  // The venv this project's own benchmark lane uses. Harbor requires Python
+  // >=3.12, so on the machine that runs LHTB this is the interpreter that
+  // certainly exists — and it is the one the Phase 7 operator actually used.
+  const roots = [process.env.LHTB_ROOT, ROOT].filter(
+    (value): value is string => value !== undefined && value.length > 0,
+  )
+  for (const root of roots) {
+    for (const rel of [
+      ['harbor', '.venv', 'Scripts', 'python.exe'],
+      ['harbor', '.venv', 'bin', 'python3'],
+      ['.venv', 'Scripts', 'python.exe'],
+      ['.venv', 'bin', 'python3'],
+    ]) {
+      const path = join(root, ...rel)
+      if (existsSync(path)) list.push([path])
+    }
+  }
+  return list
+}
+
+/**
+ * The first candidate that can actually RUN Python.
+ *
+ * `--version` is not sufficient: a Store execution-alias stub is a real file on
+ * PATH that exits non-zero, and an interpreter that reports a version but cannot
+ * execute is no use to a spec that runs a script with it. So the probe executes
+ * a trivial program and checks for its output.
+ */
+function python(): string[] | undefined {
+  for (const argv of candidates()) {
+    const probe = spawnSync(argv[0]!, [...argv.slice(1), '-c', 'print("ef-python-ok")'], {
+      encoding: 'utf8',
+    })
+    if (probe.status === 0 && (probe.stdout ?? '').includes('ef-python-ok')) return [...argv]
   }
   return undefined
 }
 
 const PYTHON = python()
+
+if (PYTHON === undefined) {
+  // Loud on purpose. A gate that degrades to silence is the defect this file
+  // documents, so the degradation is stated rather than inferred from a count.
+  console.warn(
+    '[ef-collect] no runnable Python 3 found (tried EF_PYTHON, python3, python, py -3, and the '
+    + 'LHTB venv). The collector BEHAVIOUR checks will be skipped; the "collector is tracked" '
+    + 'checks still run. Set EF_PYTHON to an interpreter to exercise the rest.',
+  )
+}
 
 interface Cell {
   readonly arm: string
@@ -61,12 +129,46 @@ function collect(cells: readonly Cell[]): { status: number | null; stdout: strin
         telemetry: c.telemetry,
       }), 'utf8')
     })
-    const result = spawnSync(PYTHON!, [COLLECTOR, root], { encoding: 'utf8' })
+    const argv = PYTHON!
+    const result = spawnSync(argv[0]!, [...argv.slice(1), COLLECTOR, root], { encoding: 'utf8' })
     return { status: result.status, stdout: `${result.stdout}${result.stderr}` }
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
 }
+
+describe('the collector is in the repository, which is the point', () => {
+  // NO Python required, so this runs everywhere — including on a machine whose
+  // PATH python is a Store stub, which is exactly where the old skipIf turned
+  // the whole gate off.
+  it('exists as a tracked script rather than an untracked local file', () => {
+    // The original was `ef-collect.sh`, untracked, so the verification step the
+    // handoff documents could not be run by anyone else.
+    expect(existsSync(COLLECTOR), 'scripts/ef-collect.py must exist in the repository').toBe(true)
+    expect(existsSync(join(ROOT, 'scripts', 'ef-collect.sh')), 'the untracked shell version is not the collector').toBe(false)
+  })
+
+  it('is a Python program, and says so in a way a reader can act on', () => {
+    const source = readFileSync(COLLECTOR, 'utf8')
+    expect(source.startsWith('#!/usr/bin/env python3'), 'a shebang makes it runnable directly').toBe(true)
+    expect(source, 'it must document the MISSING semantics it exists for').toMatch(/MISSING/u)
+    expect(source, 'and it must distinguish an unverified check from a pass').toMatch(/skip/iu)
+    expect(source, 'it must expose a main entry point').toMatch(/^def main\(/mu)
+  })
+
+  it('is named by the documents that tell an operator to run it', () => {
+    // The handoff and the Phase 7 write-up both cite it; a rename that misses
+    // one of them leaves an instruction pointing at a file that is not there.
+    for (const doc of ['docs/50_PHASE7_HANDOFF.md', 'docs/52_PHASE7_ORACLE_GATE_AND_BLOCKERS.md']) {
+      const text = readFileSync(join(ROOT, doc), 'utf8')
+      if (!/ef-collect/u.test(text)) continue
+      expect(text, `${doc} must name the tracked path, not the untracked shell file`).not.toMatch(
+        /ef-collect\.sh/u,
+      )
+      expect(text, `${doc} names the collector`).toMatch(/ef-collect\.py|ef-collect/u)
+    }
+  })
+})
 
 describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
   it('passes a clean cell and reports its fold failures as a reading', () => {
@@ -133,11 +235,11 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout).toMatch(/FAIL I3/u)
   })
 
-  it('is present in the repository, which is the point', () => {
-    // The original was untracked, so the handoff's own verification step could
-    // not be run by anyone else. This asserts the script exists and is a Python
-    // file the collector's own docstring describes.
+  it('runs end to end against a real cell without a Python error', () => {
+    // The structural checks that need no interpreter live in their own describe
+    // above. This one confirms the script actually executes under the
+    // interpreter the probe found.
     const { stdout } = collect([{ arm: 'economy', telemetry: { folds: 0, roots: 0, emergencies: 0, bundleWrites: 0, pendingIntents: 0 } }])
-    expect(stdout, 'the collector must run at all').not.toMatch(/can't open file|No such file/u)
+    expect(stdout, 'the collector must run at all').not.toMatch(/can't open file|No such file|Traceback/u)
   })
 })
