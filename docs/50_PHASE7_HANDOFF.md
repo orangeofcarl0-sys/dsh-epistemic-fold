@@ -20,6 +20,7 @@ the two cells died in Harbor's teardown. Phase 7 is what would produce evidence.
 | Route reachable **by the bridge's own transport** | `node scripts/check-route.mjs` | **not** a `curl` — see §2.1 |
 | **Container memory** | task images at 4 GiB, and one run was pinned at 4 GiB / 4 GiB for an hour | see the memory trap below |
 | Disk | two task images are ~420 MB each | `vector-db-iterative-build` is **not** cached here |
+| **A runnable Python 3** | `LHTB_ROOT=<checkout> npm test` — green reads **922 passed / 23 skipped**; **28 skipped** means no interpreter was found | the `ef-collect` behaviour checks skip *silently* without one, and a Windows Store `python3` stub is not an interpreter — see `docs/53` |
 
 Run the oracle first. It uses the tasks' own reference solutions, needs no API
 key, and answers "does the environment work" rather than "did the model do well":
