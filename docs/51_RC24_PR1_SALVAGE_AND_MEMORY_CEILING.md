@@ -69,13 +69,21 @@ unconditionally.
 ## 3. The memory ceiling was wrong — in the PR and in the spec
 
 The PR's `lhtb-parallelism.spec.ts` asserted `WSL_CAP_GB = 24` and stated the
-WSL VM is capped at 24 GB. Verified three ways on this host:
+WSL VM is capped at 24 GB. RC24 replaced that with 8 GB, "verified three ways on
+this host":
 
-| source | value |
+| source | value RC24 recorded |
 |---|---|
 | `~/.wslconfig` | `memory=8GB` |
 | that file's own comment | records a deliberate 2026-09-24 reduction **from 12 GB to 8 GB** on a 15.2 GB host |
 | `docker info` `MemTotal` | 8,326,361,088 bytes = **7.75 GiB** |
+
+> **Correction (RC26).** That table was a measurement of a different machine, and
+> this section is retained as the record of what RC24 did rather than as guidance.
+> On the host that ran Phase 7, `~/.wslconfig` says `memory=24GB`, the machine has
+> 31.2 GB of RAM rather than the 15.2 GB named above, and `docker info` reports
+> `MemTotal` 25,197,441,024 bytes = **23.47 GiB**. The value RC24 called "false" was
+> true there. See `docs/54`.
 
 The error was load-bearing. The spec's arithmetic was
 `declaredTwoGiB (12) <= WSL_CAP_GB`; at 24 this **passed**, and at the true 8 it

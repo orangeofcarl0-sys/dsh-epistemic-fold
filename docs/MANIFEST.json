@@ -256,13 +256,13 @@
   },
   {
     "file": "50_PHASE7_HANDOFF.md",
-    "bytes": 11217,
-    "sha256": "367ed25ba9a28eeb2520501fa746c7af7073887aaad2dc1a0322869f257a7191"
+    "bytes": 11799,
+    "sha256": "7bfabdd782a3d402db0d535ea7694d5e411b07755f07c50a410bd98b3e2b8c85"
   },
   {
     "file": "51_RC24_PR1_SALVAGE_AND_MEMORY_CEILING.md",
-    "bytes": 6200,
-    "sha256": "e06c4bd58798d9049ab4f0b9fd940500cdba8552b68d126deeb62c30edfcd850"
+    "bytes": 6689,
+    "sha256": "5fcd4d21e741153662b18a00b0b6dd366a9b6ba5e9df524e1a29bc28f5db387e"
   },
   {
     "file": "52_PHASE7_ORACLE_GATE_AND_BLOCKERS.md",
@@ -271,8 +271,13 @@
   },
   {
     "file": "53_RC25_PR2_LANDED_AND_FOLD_CONTAINMENT.md",
-    "bytes": 17852,
-    "sha256": "5b3ca55633d9f7b831a4a784552bdf750311099f7999980f59ec5e09b905669e"
+    "bytes": 18630,
+    "sha256": "9eb59afa580835ab2ff43a3fd9468a0411267ef122cda42dd87650558d1624ab"
+  },
+  {
+    "file": "54_RC26_MEMORY_CAP_IS_A_HOST_PROPERTY.md",
+    "bytes": 4698,
+    "sha256": "4d3e75e6cddf69cf936e1d7a9cc44da29e541c7f1b5391109720c5854bc44896"
   },
   {
     "file": "ARCHITECTURE.md",
@@ -296,8 +301,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8344,
-    "sha256": "cc570ef734e4bd5ab20d8f95f0b4303f9a09bdde5f50e4344b5ab5e69c74f0cf"
+    "bytes": 8431,
+    "sha256": "decad0e4d48932e262c45743b39bbbd2a438c108b5504505e0f62217446a70ed"
   },
   {
     "file": "README.zh.md",

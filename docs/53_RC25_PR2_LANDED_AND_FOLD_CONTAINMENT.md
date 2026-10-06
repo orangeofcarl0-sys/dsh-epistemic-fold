@@ -285,6 +285,17 @@ gained two gates: no config may repeat the 24 GB claim, and no config may quote 
 superseded 108 MiB figure. Nothing read the yaml prose before, so nothing could fail
 — which is why a wrong cap survived a correction that was already written down.
 
+> **Correction (RC26) — the cap fix had the defect it was fixing.** The 8 GB was
+> itself a measurement of a different machine: the Phase 7 host's `~/.wslconfig`
+> says `memory=24GB` and `docker info` reports 23.47 GiB. And the gate added here
+> did not merely permit that error, it *enforced* it — it required the configs to say
+> 8 GB and rejected 24, so correcting them to match the machine turned the suite red.
+> A committed number cannot answer a question about the host it runs on. RC26 makes
+> the spec ask the machine, forbids a numeric cap in any committed file (configs and
+> runner), and skips rather than passes where the host cannot be asked. See
+> `docs/54`. The measured-cell part of this section — 108 vs 193 vs 192.8 MiB — is
+> unaffected and stands.
+
 ## 5. Two gaps in what Phase 7 could verify
 
 **`docs/52` was not indexed.** The packaging gate checked `> 40` entries and that

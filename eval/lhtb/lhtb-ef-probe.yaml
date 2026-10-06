@@ -20,10 +20,16 @@
 #   - measured with both discriminators running, the two tasks held 193 MiB and
 #     16 MiB against limits of 8 GiB and 4 GiB — roughly 200x under.
 #
-# The cap IS 8 GB (verified in `~/.wslconfig`, in that file's own comment
-# recording a 2026-09-24 reduction from 12 GB, and via `docker info` MemTotal =
-# 7.75 GiB), and two cells fit inside it with room for the build and verifier
-# phases. The sweep config runs at 2; this one stays at 1 by choice.
+# The cap itself is a property of the HOST, not of this file, so no number for it
+# appears here. Two revisions named one and each was a measurement of a different
+# machine, and the second was wrong on the host that ran Phase 7 — that host grants
+# more memory than the file claimed, which is why the number is now asked of the
+# machine rather than written down. What is true of every host is the part that
+# decides the question: a `memory_mb` is a limit and not a reservation, and the
+# measured cells sit ~200x under their declared limits. Ask the host
+# (`docker info --format '{{.MemTotal}}'`, or `~/.wslconfig`) when the figure
+# matters; `tests/lhtb-parallelism.spec.ts` does, and skips rather than guesses on
+# a host it cannot ask. The sweep config runs at 2; this one stays at 1 by choice.
 #
 # ## Why this task
 #

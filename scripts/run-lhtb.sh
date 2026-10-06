@@ -28,11 +28,15 @@
 #   - Measured with both discriminators running: `vector-db-iterative-build` held
 #     193 MiB of its 8 GiB limit, `unknown-config-semantics` 16 MiB of its 4 GiB.
 #
-# The cap IS 8 GB, verified three ways: `~/.wslconfig` says `memory=8GB`, its own
-# comment records a deliberate 2026-09-24 reduction from 12 GB to 8 GB on a
-# 15.2 GB host, and `docker info` reports MemTotal 8,326,361,088 bytes = 7.75 GiB.
-# (A first version of this note claimed 24 GB. That was wrong, and it mattered —
-# see the correction in tests/lhtb-parallelism.spec.ts.)
+# The cap is a property of the HOST, so no number for it is written here. This
+# note has named two and both were measurements of a different machine: 24, then
+# 8, and the 8 was wrong on the host that ran Phase 7 — that host grants more
+# memory than the note claimed. Ask the machine when the figure matters
+# (`docker info --format '{{.MemTotal}}'`, or `~/.wslconfig`);
+# tests/lhtb-parallelism.spec.ts does, and skips rather than guessing on a host it
+# cannot ask. What is true of every host is the part that decides the question: a
+# `memory_mb` is a limit and not a reservation, and the measured cells are two
+# orders of magnitude under their declared ones.
 #
 # So two cells fit with room for the build and verifier phases, which are what
 # actually spike. `n_concurrent_trials` is set from measurement and left at 2.

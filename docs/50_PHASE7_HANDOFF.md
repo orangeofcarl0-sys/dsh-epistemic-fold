@@ -124,9 +124,22 @@ why that mattered.
 
 One thing to know before sweeping: `n_concurrent_trials: 2` in the sweep config is
 set from the **measured** steady state (193 MiB and 16 MiB held, against limits of
-8 GiB and 4 GiB), not from the declared limits. The host's WSL cap is 8 GB
-(verified: `~/.wslconfig`, `docker info` MemTotal 7.75 GiB), so two cells fit with
-room for the build and verifier spikes. A spec in the repo pins those figures.
+8 GiB and 4 GiB), not from the declared limits. That reasoning is host-independent,
+because a `memory_mb` is a cgroup limit and not a reservation.
+
+**The cap itself is a property of the host, so check it rather than trusting a
+number here or in a config.** This document named one — 8 GB, "verified three
+ways" — and it was a measurement of a different machine; the Phase 7 host grants
+substantially more. Ask the machine:
+
+```bash
+docker info --format '{{.MemTotal}}'     # bytes the runtime will actually hand out
+```
+
+`tests/lhtb-parallelism.spec.ts` now reads that value, compares the measured cells
+against it, and **skips rather than passes** where the host cannot be asked. It also
+forbids a numeric cap in any committed config or in the runner, because a file that
+ships to other machines cannot state one.
 
 Then, per the Phase 6 gate:
 
