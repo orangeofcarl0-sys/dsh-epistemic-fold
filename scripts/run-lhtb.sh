@@ -38,10 +38,12 @@
 # actually spike. `n_concurrent_trials` is set from measurement and left at 2.
 #
 # Usage:
-#   bash scripts/run-lhtb.sh probe
-#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh probe
+#   bash scripts/run-lhtb.sh probe    # one task, one arm, one attempt
+#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh sweep   # both discriminators, one arm
+#   bash scripts/run-lhtb.sh oracle   # the tasks' own reference solutions, no API key
 #
 # Environment overrides:
+#   EF_LHTB_MODE       mode when no positional argument is given (default: probe)
 #   EF_LHTB_ARM        context runtime (default: basic)
 #   EF_LHTB_BUNDLE_ROOT  where EF bundles are written
 
@@ -146,23 +148,57 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # carrying nothing usable.
 export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-4096}"
 
-echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
+# ## The mode selects the config, and it is read HERE on purpose
+#
+# The mode is the FIRST POSITIONAL argument (`run-lhtb.sh sweep`); EF_LHTB_MODE
+# supplies it when no argument is given, so a caller driving the arms from the
+# environment (as the sweep loop does) need not build an argv. This block did not
+# exist at all: the runner ignored its
+# argument entirely and always passed `lhtb-ef-probe.yaml`, so `sweep` and
+# `oracle` both ran a one-task, one-attempt probe while printing a normal-looking
+# run. That is the worst failure mode available here — it is indistinguishable
+# from a sweep that legitimately found nothing — and the Phase 7 handoff invokes
+# both of those modes. An unrecognised mode is a hard error rather than a default,
+# so a typo cannot silently degrade to a probe either.
+MODE="${1:-${EF_LHTB_MODE:-probe}}"
+shift || true
+case "$MODE" in
+  probe)  CONFIG_SRC="lhtb-ef-probe.yaml" ;;
+  sweep)  CONFIG_SRC="lhtb-ef-sweep.yaml" ;;
+  oracle) CONFIG_SRC="lhtb-ef-oracle.yaml" ;;
+  *)
+    echo "unknown mode: ${MODE} (expected probe | sweep | oracle)" >&2
+    exit 1
+    ;;
+esac
+export EF_LHTB_MODE="$MODE"
+
+echo "LHTB ${MODE}: arm=${EF_LHTB_ARM} config=${CONFIG_SRC}"
 
 # The config's dataset path is relative to the WORKING DIRECTORY, and Harbor
 # resolves it there. Running from the EF repo would make `./tasks` resolve to a
 # path that does not exist, so the run happens from the benchmark checkout.
 cd "$LHTB_ROOT"
 
+# Fail loudly if the selected config is absent, rather than letting Harbor read a
+# path that does not exist and report something that looks like a task failure.
+[ -f "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" ] || {
+  echo "config not found: ${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" >&2
+  exit 1
+}
+
 # A UNIQUE job name per invocation.
 #
 # Harbor keys its output on `job_name` and, finding one already present, exits
 # immediately while still reporting the previous run's runtime and reward. An
 # invocation that measures nothing while appearing to succeed is the worst
-# failure mode available here, so each run gets its own directory.
-JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${EF_LHTB_ARM}"
+# failure mode available here, so each run gets its own directory. The mode AND
+# the arm are both in the suffix, because the four sweep arms share a mode and
+# must not collide on it.
+JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${MODE}-${EF_LHTB_ARM}"
 CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
 sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
-  "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml" > "$CONFIG_TMP"
+  "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" > "$CONFIG_TMP"
 
 echo "job: lhtb-ef-${JOB_SUFFIX}"
 exec "$HARBOR_EXE" run -c "$CONFIG_TMP"
