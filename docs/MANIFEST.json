@@ -265,6 +265,11 @@
     "sha256": "e06c4bd58798d9049ab4f0b9fd940500cdba8552b68d126deeb62c30edfcd850"
   },
   {
+    "file": "52_PHASE7_ORACLE_GATE_AND_BLOCKERS.md",
+    "bytes": 10180,
+    "sha256": "fe6d5506e9081cd8ccece9060213e7ef6dfa7a1d7172025115323cd1f988a4f1"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
