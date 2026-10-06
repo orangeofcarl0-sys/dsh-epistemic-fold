@@ -13,9 +13,14 @@
 # requests 4-8 GB of RAM and this host's WSL VM is capped at 8 GB". Both halves of
 # that were wrong by the time it was written, and one is wrong in principle:
 #
-#   - the WSL cap is 24 GB (see ~/.wslconfig), not 8 GB;
+#   - the WSL cap IS 8 GB, not 24. Verified three ways: `~/.wslconfig` says
+#     `memory=8GB`, its own comment records a deliberate 2026-09-24 reduction from
+#     12 GB to 8 GB on a 15.2 GB host, and `docker info` reports MemTotal
+#     8,326,361,088 bytes = 7.75 GiB. An earlier revision of THIS comment claimed
+#     24 GB, which was wrong; the assertion it justified stayed green only
+#     because the cap was overstated. See tests/lhtb-parallelism.spec.ts.
 #   - `memory_mb` in a task.toml is the CONTAINER'S LIMIT, not a reservation.
-#     Measured on this host with both tasks running: vector-db used 108 MiB of its
+#     Measured on this host with both tasks running: vector-db held 193 MiB of its
 #     8 GiB limit and unknown-config 16 MiB of its 4 GiB. Docker does not
 #     preallocate a cgroup limit.
 #
@@ -52,7 +57,8 @@
 job_name: lhtb-ef-sweep
 jobs_dir: ./jobs
 n_attempts: 2
-# Measured, not declared: the two tasks below held ~125 MiB combined. Left at 2
+# Measured, not declared: the two tasks below held 209 MiB combined (193 + 16).
+# Left at 2
 # because the build and verifier phases, not the agent loop, are what spike.
 n_concurrent_trials: 2
 timeout_multiplier: 1.0

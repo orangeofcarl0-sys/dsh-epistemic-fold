@@ -11,9 +11,12 @@
 #
 # The earlier revision of this file said a parallel run was impossible because
 # "every LHTB task requests 4-8 GB of RAM and the WSL VM is capped at 8 GB". With
-# both tasks running the measured usage was 108 MiB and 16 MiB against limits of
-# 8 GiB and 4 GiB, so `memory_mb` is a limit and not a reservation, and the WSL
-# cap is 24 GB. Two tasks therefore run here at once.
+# both tasks running the measured usage was 193 MiB and 16 MiB against limits of
+# 8 GiB and 4 GiB, so `memory_mb` is a limit and not a reservation. The WSL cap is
+# 8 GB, not 24: `~/.wslconfig` says `memory=8GB`, its own comment records a
+# 2026-09-24 reduction from 12 GB to 8 GB on a 15.2 GB host, and `docker info`
+# reports MemTotal 8,326,361,088 bytes = 7.75 GiB. Two tasks run here at once
+# inside that cap with room for the build and verifier spikes.
 #
 # Usage:
 #   bash scripts/run-lhtb.sh oracle

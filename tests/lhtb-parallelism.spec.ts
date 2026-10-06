@@ -125,4 +125,79 @@ describe('the LongWork lane can run in parallel, and the reason is on the record
       }
     }
   })
+
+  it('no config repeats the 24 GB cap that this spec exists to correct', () => {
+    // The correction above reached the spec and the runner but NOT the two
+    // configs the Phase 7 sweep actually invokes, so both still told the reader
+    // the cap was 24 GB — while asserting a parallelism claim that only holds at
+    // 8. The spec's own measured figures are the source of truth, and the prose
+    // in every config must agree with them.
+    //
+    // This is the same failure shape the file documents: a number that could not
+    // mean what it claimed, read as if it did. Nothing read the yaml prose, so
+    // nothing could fail.
+    for (const config of ['eval/lhtb/lhtb-ef-probe.yaml', 'eval/lhtb/lhtb-ef-sweep.yaml', 'eval/lhtb/lhtb-ef-oracle.yaml']) {
+      const text = read(config)
+      expect(
+        text,
+        `${config} claims a 24 GB cap; the measured cap is ${WSL_CAP_GB} GB`,
+      ).not.toMatch(/cap is 24 GB|cap had already been raised to 24/u)
+      // And a config that discusses the cap must state the measured value.
+      if (/WSL (VM is |)cap|wslconfig/u.test(text)) {
+        expect(text, `${config} must state the measured cap`).toMatch(
+          new RegExp(`cap IS ${WSL_CAP_GB} GB|cap is ${WSL_CAP_GB} GB|memory=${WSL_CAP_GB}GB`, 'u'),
+        )
+      }
+    }
+  })
+
+  it('the configs quote the measured memory, not a third number', () => {
+    // Three different figures for one measurement were in circulation: 108 MiB
+    // (oracle, sweep), 193 MiB (probe, runner, handoff) and "~125 MiB combined".
+    // Only one can be the measurement the spec records, and a report that quotes
+    // any other is quoting a number nothing measured.
+    const vectorDb = MEASURED['vector-db-iterative-build'].observedMiB
+    const unknownConfig = MEASURED['unknown-config-semantics'].observedMiB
+    for (const config of ['eval/lhtb/lhtb-ef-sweep.yaml', 'eval/lhtb/lhtb-ef-oracle.yaml']) {
+      const text = read(config)
+      expect(text, `${config} still quotes the superseded 108 MiB figure`).not.toMatch(/108 MiB/u)
+      expect(text, `${config} must quote the measured vector-db figure`).toContain('193 MiB')
+    }
+    // The combined figure, wherever it appears, must be the sum.
+    const sweep = read('eval/lhtb/lhtb-ef-sweep.yaml')
+    const combined = Math.round(vectorDb + unknownConfig)
+    if (/combined/u.test(sweep)) {
+      expect(sweep, `the combined figure must be the sum (${combined} MiB)`).toContain(`${combined} MiB`)
+    }
+  })
+
+  it('the route precondition uses the bridge transport, not curl', () => {
+    // `curl` falls back across the address set and Node's fetch does not, so a
+    // curl-based precondition passes on hosts where every model call fails. The
+    // handoff told the operator to use curl, and that cost a full probe.
+    const handoff = read('docs/50_PHASE7_HANDOFF.md')
+    expect(handoff, 'the precondition must name the bridge-transport check').toContain(
+      'node scripts/check-route.mjs',
+    )
+    expect(
+      handoff,
+      'the curl-based precondition is the defect and must not be recommended',
+    ).not.toMatch(/`curl -s -o \/dev\/null -w '%\{http_code\}'/u)
+
+    // The check must use Node's fetch against the adapter's own endpoint shape,
+    // or it measures a different transport than the one that will fail.
+    const check = read('scripts/check-route.mjs')
+    expect(check, 'the check must use the bridge transport').toContain('await fetch(')
+    expect(check, 'it must hit the endpoint the adapter posts to').toContain('/chat/completions')
+    // And it must classify the failure, since "fetch failed" names no cause.
+    expect(check).toMatch(/ECONNREFUSED|classify/u)
+
+    // The runner must invoke it before Harbor, so a transport fault costs
+    // seconds rather than an episode budget.
+    const runner = read('scripts/run-lhtb.sh')
+    expect(runner, 'the runner must run the preflight').toContain('check-route.mjs')
+    expect(runner, 'and it must be skippable for a deliberate down-route run').toContain(
+      'EF_SKIP_ROUTE_CHECK',
+    )
+  })
 })

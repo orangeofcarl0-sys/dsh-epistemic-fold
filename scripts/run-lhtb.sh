@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Run the LHTB x EF serial probe against the space-bunny-free route.
+# Run the LHTB x EF lane against the space-bunny-free route.
 #
 # ## Why a script
 #
 # Four environment facts must all be right or the run fails in ways that look
-# like benchmark failures: the proxy (this machine reaches the provider only
-# through a local HTTP proxy), the route (space-bunny-free is served by OpenCode
-# Zen), the credential (read from DSH's own store so no key is copied anywhere),
-# and the Python interpreter (Harbor requires >=3.12; this machine's default is
-# 3.11).
+# like benchmark failures: the proxy (OPT-IN, because whether this host needs one
+# is a property of the host — see the note on the opt-in block below), the route
+# (space-bunny-free is served by OpenCode Zen), the credential (read from DSH's
+# own store so no key is copied anywhere), and the Python interpreter (Harbor
+# requires >=3.12; this machine's default is 3.11).
 #
 # ## The key
 #
@@ -38,16 +38,26 @@
 # actually spike. `n_concurrent_trials` is set from measurement and left at 2.
 #
 # Usage:
-#   bash scripts/run-lhtb.sh probe
-#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh probe
+#   bash scripts/run-lhtb.sh probe    # one task, one arm, one attempt
+#   EF_LHTB_ARM=economy bash scripts/run-lhtb.sh sweep   # both discriminators, one arm
+#   bash scripts/run-lhtb.sh oracle   # the tasks' own reference solutions, no API key
 #
 # Environment overrides:
+#   EF_LHTB_MODE       mode when no positional argument is given (default: probe)
 #   EF_LHTB_ARM        context runtime (default: basic)
 #   EF_LHTB_BUNDLE_ROOT  where EF bundles are written
 
 set -euo pipefail
 
 EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# This script's own directory, derived with `dirname` rather than
+# `${BASH_SOURCE[0]%/*}`. The parameter expansion cannot strip a BACKSLASH path,
+# so on Windows `bash 'C:\...\scripts\run-lhtb.sh' oracle` resolved the
+# proxy-env source below to `...\run-lhtb.sh/proxy-env.sh` and died with
+# "Not a directory" before doing anything. `dirname` handles both separators;
+# the documented relative invocation never exercised the difference.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # The LHTB checkout lives OUTSIDE this repository (it is a separate project with
 # its own Python environment), so it has to be supplied. There is deliberately no
@@ -126,7 +136,7 @@ fi
 # it breaks Harbor's embedded LiteLLM and the judge endpoint rather than Node.
 # Sourced AFTER the opt-in block, because that block unsets the proxy variables
 # and this file sets only NO_PROXY. See scripts/proxy-env.sh.
-. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
+. "${SCRIPT_DIR}/proxy-env.sh"
 
 # Many LHTB images are amd64-only.
 export DOCKER_DEFAULT_PLATFORM="${DOCKER_DEFAULT_PLATFORM:-linux/amd64}"
@@ -146,23 +156,78 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # carrying nothing usable.
 export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-4096}"
 
-echo "LHTB probe: task=unknown-config-semantics arm=${EF_LHTB_ARM} (serial)"
+# ## Verify the route in the transport that will actually use it
+#
+# This is the precondition the handoff used to state as a `curl`. That check is
+# wrong in kind and it cost a full probe: `opencode.ai` resolves to nine A
+# records, four of which refuse TCP 443, and curl falls back across the set while
+# Node's fetch — which the bridge is — does not. So curl reported 200 while every
+# model call in the run died as `error:fetch failed`.
+#
+# The probe below asks the question with the bridge's own transport. It costs one
+# request and it runs BEFORE Harbor pulls images, so a transport fault is found in
+# seconds instead of after the episode budget. Skip with EF_SKIP_ROUTE_CHECK=1
+# when a run is deliberately being made against a route that is down.
+if [ "${EF_SKIP_ROUTE_CHECK:-0}" != "1" ]; then
+  if ! node "${SCRIPT_DIR}/check-route.mjs"; then
+    echo "route preflight failed; a run would fail every model call." >&2
+    echo "Fix the route (or set EF_USE_PROXY=1 if it needs a proxy), or set" >&2
+    echo "EF_SKIP_ROUTE_CHECK=1 to run anyway." >&2
+    exit 1
+  fi
+fi
+
+# ## The mode selects the config, and it is read HERE on purpose
+#
+# The mode is the FIRST POSITIONAL argument (`run-lhtb.sh sweep`); EF_LHTB_MODE
+# supplies it when no argument is given, so a caller driving the arms from the
+# environment (as the sweep loop does) need not build an argv. This block did not
+# exist at all: the runner ignored its
+# argument entirely and always passed `lhtb-ef-probe.yaml`, so `sweep` and
+# `oracle` both ran a one-task, one-attempt probe while printing a normal-looking
+# run. That is the worst failure mode available here — it is indistinguishable
+# from a sweep that legitimately found nothing — and the Phase 7 handoff invokes
+# both of those modes. An unrecognised mode is a hard error rather than a default,
+# so a typo cannot silently degrade to a probe either.
+MODE="${1:-${EF_LHTB_MODE:-probe}}"
+shift || true
+case "$MODE" in
+  probe)  CONFIG_SRC="lhtb-ef-probe.yaml" ;;
+  sweep)  CONFIG_SRC="lhtb-ef-sweep.yaml" ;;
+  oracle) CONFIG_SRC="lhtb-ef-oracle.yaml" ;;
+  *)
+    echo "unknown mode: ${MODE} (expected probe | sweep | oracle)" >&2
+    exit 1
+    ;;
+esac
+export EF_LHTB_MODE="$MODE"
+
+echo "LHTB ${MODE}: arm=${EF_LHTB_ARM} config=${CONFIG_SRC}"
 
 # The config's dataset path is relative to the WORKING DIRECTORY, and Harbor
 # resolves it there. Running from the EF repo would make `./tasks` resolve to a
 # path that does not exist, so the run happens from the benchmark checkout.
 cd "$LHTB_ROOT"
 
+# Fail loudly if the selected config is absent, rather than letting Harbor read a
+# path that does not exist and report something that looks like a task failure.
+[ -f "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" ] || {
+  echo "config not found: ${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" >&2
+  exit 1
+}
+
 # A UNIQUE job name per invocation.
 #
 # Harbor keys its output on `job_name` and, finding one already present, exits
 # immediately while still reporting the previous run's runtime and reward. An
 # invocation that measures nothing while appearing to succeed is the worst
-# failure mode available here, so each run gets its own directory.
-JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${EF_LHTB_ARM}"
+# failure mode available here, so each run gets its own directory. The mode AND
+# the arm are both in the suffix, because the four sweep arms share a mode and
+# must not collide on it.
+JOB_SUFFIX="$(date +%Y%m%d-%H%M%S)-${MODE}-${EF_LHTB_ARM}"
 CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
 sed "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
-  "${EF_ROOT}/eval/lhtb/lhtb-ef-probe.yaml" > "$CONFIG_TMP"
+  "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" > "$CONFIG_TMP"
 
 echo "job: lhtb-ef-${JOB_SUFFIX}"
 exec "$HARBOR_EXE" run -c "$CONFIG_TMP"

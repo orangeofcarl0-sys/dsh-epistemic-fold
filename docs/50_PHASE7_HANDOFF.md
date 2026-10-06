@@ -17,7 +17,7 @@ the two cells died in Harbor's teardown. Phase 7 is what would produce evidence.
 | Docker daemon up | `docker version --format '{{.Server.Version}}'` | Harbor needs it |
 | LHTB checkout + Harbor venv | `$LHTB_ROOT/harbor/.venv/Scripts/harbor.exe` exists | the lane lives outside this repo |
 | Credential store | `$DSH_HOME/.credentials.yaml` has `OPENCODE_GO_API_KEY` | read at runtime, never printed |
-| Route reachable **directly** | `curl -s -o /dev/null -w '%{http_code}' https://opencode.ai/zen/v1/models` | see the proxy trap below |
+| Route reachable **by the bridge's own transport** | `node scripts/check-route.mjs` | **not** a `curl` — see §2.1 |
 | **Container memory** | task images at 4 GiB, and one run was pinned at 4 GiB / 4 GiB for an hour | see the memory trap below |
 | Disk | two task images are ~420 MB each | `vector-db-iterative-build` is **not** cached here |
 
@@ -35,7 +35,7 @@ past it.
 
 ## 2. Three traps that cost real time in Phase 6
 
-### 2.1 The proxy must stay OFF
+### 2.1 The proxy is a property of the HOST, and `curl` cannot tell you which
 
 `scripts/run-lhtb.sh` used to hardcode `NODE_USE_ENV_PROXY=1` with
 `127.0.0.1:10808`. Measured on the Phase 6 host:
@@ -47,9 +47,39 @@ proxied via 127.0.0.1:10808                 000, repeatedly
 
 A Node fetch through it dies with a bare `fetch failed`, which the bridge reports
 as `error:fetch failed` — naming neither proxy nor port, so it reads like a
-credential or route fault. The runner now leaves it off unless `EF_USE_PROXY=1`
-is set. **Do not set that unless the route genuinely requires a proxy, and if it
-does, verify the proxy answers `curl` before running.**
+credential or route fault. The runner therefore leaves the proxy off unless
+`EF_USE_PROXY=1` is set. **The opt-in default is right; the value is per host.**
+
+The Phase 7 host measured the opposite, and the way it was missed matters:
+
+```
+Node, direct               0/10   (9 x ECONNREFUSED, 1 x ETIMEDOUT)
+Node, via 127.0.0.1:10808  5/5    HTTP 200
+curl, direct               200
+```
+
+`opencode.ai` publishes nine A records and **four refuse TCP 443**. `curl` walks
+the address set and falls back, so it reports 200 and looks healthy. Node's
+`fetch` does not fall back — and the EF bridge is Node. So the old precondition
+("route reachable directly, checked with curl") passed on a host where every
+model call failed.
+
+**Check the route with the bridge's own transport, not with curl:**
+
+```bash
+node scripts/check-route.mjs
+```
+
+It POSTs to the same endpoint the adapter does, over the same Node `fetch`, with
+the proxy environment the runner exports, and reports the failure classes
+(`ECONNREFUSED`, `ETIMEDOUT`, …). `scripts/run-lhtb.sh` now runs it before Harbor
+pulls anything, so a transport fault is found in seconds rather than after the
+episode budget — override with `EF_SKIP_ROUTE_CHECK=1` if you deliberately want
+to run against a down route.
+
+Set `EF_USE_PROXY=1` when that check fails directly but succeeds through a proxy.
+Verify the proxy answers the same check first; a proxy that answers `curl` and
+not this is the same trap one layer down.
 
 ### 2.2 Container memory is the binding constraint
 
@@ -132,6 +162,8 @@ Read these fields, and treat an inconsistency as a finding rather than noise:
 | `bundlesPresent` | bundles on disk; `null` if the store was unreadable |
 | `pendingIntents` | **must be 0 at episode end**; non-zero means a producer with no consumer |
 | `pressureRegime` | the regime the last automatic decision resolved |
+| `foldFailures` | folds that THREW; **must be reported**, and a non-zero value needs reading |
+| `lastFoldError` | the most recent fold failure's message, or `null` |
 
 Two invariants to check on every cell:
 
@@ -140,9 +172,41 @@ Two invariants to check on every cell:
 2. **`pendingIntents == 0`** at the end. Non-zero is the I3 violation made
    visible.
 
+A third reading, not an invariant: **`foldFailures` must be quoted whenever it is
+non-zero.** A failed fold no longer ends the episode (see below), so an arm that
+folded 15 times while failing 12 of them would otherwise look identical to one
+that folded 15 times cleanly.
+
 For a `basic` arm, **`bundleWrites` and `bundlesPresent` must both be 0**. Real
 DSH Basic has no bundle store. A non-zero count there means the arm is not Basic —
 which is exactly what every pre-RC23 run reported (3, 4, 15).
+
+### A failed fold used to be reported as a failed TASK
+
+The Phase 7 `basic` arm died at turn 62 with:
+
+```
+ef_bridge_client.BridgeError: summarization truncated at the token cap
+(incomplete checkpoint)
+```
+
+That is a FAILED FOLD. It ended the trial at reward 0 because `bridge-host.ts`
+called `compactIfNeeded` with no try/catch, so the error propagated out of the
+step loop. Production does not behave that way: `src/basic/index.ts` registers
+`agent/pre-step` and wraps its own call in a catch that logs
+`step compaction failed: …; continuing the turn`.
+
+The harness now contains the failure and records it as `foldFailures` /
+`lastFoldError`, and bounds each fold with a wall-clock deadline
+(`EF_TAU2_FOLD_TIMEOUT_MS`, default 600s) — previously the fold's signal was an
+`AbortController` that was created and never aborted, which is how one fold
+stalled for 16 minutes with no error and both processes alive.
+
+**Consequence for reading the Phase 7 numbers.** The "62 model calls then died"
+row is evidence about the harness, not about Basic's summarization quality, and
+it should not be cited as either. Whether Basic's checkpoint body is genuinely
+too large for this model is still open — it now surfaces as a `foldFailures`
+count with the run continuing, which is the measurement that can answer it.
 
 ---
 

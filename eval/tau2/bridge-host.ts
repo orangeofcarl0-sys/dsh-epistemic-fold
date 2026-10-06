@@ -97,6 +97,25 @@ const STEP_MAX_TOKENS = Number(
 const TAU2_WINDOW = Number(process.env.EF_TAU2_WINDOW ?? 32_000)
 
 /**
+ * Wall-clock bound on ONE fold, including its summarization call.
+ *
+ * There was no bound at all before this: the fold's signal was an
+ * `AbortController` that was created and never aborted, and the adapter forwards
+ * the signal to `fetch` without setting a timeout of its own. A single
+ * summarization therefore had no upper limit, which is how the Phase 7 run
+ * stalled — 16 minutes with no progress, no error, and both Harbor and the
+ * container still alive.
+ *
+ * 600s is chosen from measurement, not taste. At the 16384 budget the provider
+ * returned a full 16384-token completion in 204s, so a legitimate large summary
+ * has to fit; at 32768 the transport failed after 305s. 600s is roughly 3x the
+ * observed legitimate worst case and still an order of magnitude below the
+ * episode budget, so a genuine summary completes and a hang is cut. Override
+ * with `EF_TAU2_FOLD_TIMEOUT_MS`; a value of 0 disables the bound.
+ */
+const FOLD_TIMEOUT_MS = Number(process.env.EF_TAU2_FOLD_TIMEOUT_MS ?? 600_000)
+
+/**
  * What the bridge sends when the model produced neither text nor tool calls.
  *
  * tau2 rejects an empty assistant message, so the episode would abort on a turn
@@ -188,6 +207,23 @@ interface Telemetry {
   readonly bundlesPresent: number | null
   /** Outstanding pending-rebase intents (a non-zero value at episode end is a leak). */
   readonly pendingIntents: number
+  /**
+   * Folds that THREW, counted for the whole episode.
+   *
+   * A failed fold no longer ends the episode (see `foldIfNeeded`), so without a
+   * counter it would be invisible — and an arm that folded 15 times while
+   * failing 12 of them would look identical to one that folded 15 times
+   * cleanly. Monotonic, like the engine's own fold counters.
+   */
+  readonly foldFailures: number
+  /**
+   * The most recent fold failure's message, or `null` when none has occurred.
+   *
+   * Kept separate from the count so a report can say WHAT failed rather than
+   * only how often. Redacted like every other error path, because a provider
+   * failure can echo a request that carries the credential.
+   */
+  readonly lastFoldError: string | null
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
@@ -216,6 +252,9 @@ let turnHasContent = false
 let folds = 0
 let roots = 0
 let emergencies = 0
+/** Folds that threw, and the last message. See the `Telemetry` note. */
+let foldFailures = 0
+let lastFoldError: string | null = null
 let modelCalls = 0
 /** How the last model call finished, so an empty reply can be attributed. */
 let lastFinishReason = 'unknown'
@@ -368,11 +407,41 @@ function surface(): readonly Message[] {
  */
 async function foldIfNeeded(): Promise<void> {
   const active = engine!
+  // ## A fold that fails must not end the episode
+  //
+  // This call used to be unguarded, and that made the harness report a failed
+  // FOLD as a failed TASK. Production does not behave that way: Basic registers
+  // `agent/pre-step` and wraps its own `compactIfNeeded` in a try/catch that logs
+  // `step compaction failed: …; continuing the turn` and calls `next()`. A
+  // truncated summary in a real DSH session is a missed fold the agent works
+  // through.
+  //
+  // In this harness the error instead propagated out of `modelTurn`, became
+  // `{ok:false}`, raised `BridgeError` in the Python client, and left
+  // `ef_lhtb_agent.run()` — killing the trial at reward 0. The Phase 7 basic arm
+  // died exactly that way at turn 62, after 62 real model calls, and the report
+  // read it as evidence about Basic's summarization quality. It was evidence
+  // about this file.
+  //
+  // So the failure is CONTAINED and RECORDED rather than swallowed or rethrown.
+  // `foldFailures` is monotonic and `lastFoldError` carries the message, because
+  // an invisible degradation would be worse than the crash it replaces: a report
+  // must be able to say "this arm folded 15 times and failed twice".
+  const deadline = new AbortController()
+  const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
   const agent = {
     session: session!,
     options: { provider: LIVE_PROVIDER, model: 'live' },
+    // The signal is a REAL deadline now, not an un-aborted controller.
+    //
+    // It used to be `new AbortController().signal` — created and never aborted,
+    // so nothing bounded the summarization call. The adapter forwards
+    // `options.signal` to `fetch` but sets no timeout of its own, which is how a
+    // single fold stalled for 16 minutes with Harbor and the container both
+    // alive and no error anywhere. A bound is what turns that stall into a
+    // recorded fold failure the episode survives.
     runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> =>
-      task(new AbortController().signal),
+      task(AbortSignal.any([deadline.signal, new AbortController().signal])),
   } as never
   // The counters are LIFETIME totals on the engine, so they are read absolutely
   // rather than as deltas around the call. That is deliberate: a delta would be
@@ -389,7 +458,18 @@ async function foldIfNeeded(): Promise<void> {
   // has an `assertNever` on the same switch, so the moment the `basic` arm was
   // fixed to construct a real Basic engine it would have thrown
   // `unreachable variant in compaction trigger: "auto"` on its first fold.
-  await active.compactIfNeeded(agent, 'pressure', new AbortController().signal)
+  try {
+    await active.compactIfNeeded(agent, 'pressure', deadline.signal)
+  } catch (error: unknown) {
+    foldFailures += 1
+    const raw = error instanceof Error ? error.message : String(error)
+    // The same redaction every other error path uses: a provider failure can
+    // echo the request, and the request carries the credential.
+    lastFoldError = raw.replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]').slice(0, 300)
+    if (deadline.signal.aborted) lastFoldError = `fold exceeded ${FOLD_TIMEOUT_MS}ms: ${lastFoldError}`
+  } finally {
+    if (timer !== undefined) clearTimeout(timer)
+  }
   const counters = foldCounters(active)
   folds = counters.leaves + counters.roots + counters.emergencies
   roots = counters.roots
@@ -740,6 +820,8 @@ async function init(request: {
   folds = 0
   roots = 0
   emergencies = 0
+  foldFailures = 0
+  lastFoldError = null
   modelCalls = 0
   promptTokensLast = 0
   surfaceNodesLast = 0
@@ -897,6 +979,8 @@ async function telemetry(): Promise<Telemetry> {
     bundleWrites: engine!.bundleWriteCount,
     bundlesPresent,
     pendingIntents: engine!.pendingRebaseIntentCount,
+    foldFailures,
+    lastFoldError,
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     lastFinishReason,

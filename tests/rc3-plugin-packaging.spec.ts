@@ -12,7 +12,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { readFile, access } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { createHarness } from './harness.ts'
 
@@ -88,6 +88,21 @@ describe('RC3: the package declares a real plugin entry', () => {
     expect(indexed.length, 'docs/README.md must index the numbered documents').toBeGreaterThan(40)
     const unindexed = indexed.filter(file => !existsSync(join(ROOT, 'docs', file)))
     expect(unindexed, 'docs/README.md indexes a document that does not exist').toEqual([])
+
+    // ...and the OTHER direction, which is the one that was missing.
+    //
+    // The check above is satisfied by a count and by dead links, so a new
+    // numbered document could be added and never indexed: `docs/52` was
+    // committed in exactly that state. A reader following the map would not find
+    // it, and nothing failed. A count of `> 40` cannot notice a 54th file.
+    const onDisk = readdirSync(join(ROOT, 'docs'))
+      .filter(name => /^[0-9]{2}_[A-Za-z0-9_.-]+\.md$/u.test(name))
+      .sort()
+    const missingFromIndex = onDisk.filter(file => !indexed.includes(file))
+    expect(
+      missingFromIndex,
+      'every numbered document must appear in docs/README.md, or a reader following the map will not find it',
+    ).toEqual([])
 
     // Each edition carries the entry points a reader follows, and every link it
     // makes must resolve. BOTH are checked because a translation is the edition

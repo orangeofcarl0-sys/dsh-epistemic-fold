@@ -256,13 +256,23 @@
   },
   {
     "file": "50_PHASE7_HANDOFF.md",
-    "bytes": 7894,
-    "sha256": "8c4884313bc4b11a5e8a84ffec9489191a4621117ef76c51bce5dfb94add93c1"
+    "bytes": 10924,
+    "sha256": "9e55a6aab4402e06cbe4c2ddebc8d3514aad88dedd97c85cb35d90330884bea4"
   },
   {
     "file": "51_RC24_PR1_SALVAGE_AND_MEMORY_CEILING.md",
     "bytes": 6200,
     "sha256": "e06c4bd58798d9049ab4f0b9fd940500cdba8552b68d126deeb62c30edfcd850"
+  },
+  {
+    "file": "52_PHASE7_ORACLE_GATE_AND_BLOCKERS.md",
+    "bytes": 13707,
+    "sha256": "4c7b7c00aa3f7c4b7682331245a1c5761c35d1cc165848c5aeec506d0f0606c3"
+  },
+  {
+    "file": "53_RC25_PR2_LANDED_AND_FOLD_CONTAINMENT.md",
+    "bytes": 11631,
+    "sha256": "de86ed123a2f0c97dab7757d1bd8b245cf43b62839d440e0d7df9781da6bda11"
   },
   {
     "file": "ARCHITECTURE.md",
@@ -286,8 +296,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8172,
-    "sha256": "693fe3463ce78a203e744dc6380585279a7589747eec439e81635bc9c42d4136"
+    "bytes": 8344,
+    "sha256": "cc570ef734e4bd5ab20d8f95f0b4303f9a09bdde5f50e4344b5ab5e69c74f0cf"
   },
   {
     "file": "README.zh.md",

@@ -32,6 +32,12 @@ shift || true
 
 EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# This script's own directory, via `dirname` rather than `${BASH_SOURCE[0]%/*}`:
+# the parameter expansion cannot strip a backslash path, so an absolute Windows
+# invocation resolved the proxy-env source below to a non-existent
+# `...\run-tau2.sh/proxy-env.sh`. See the same fix in run-lhtb.sh.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # The τ²-Bench-Verified checkout lives OUTSIDE this repository, so it has to be
 # supplied. No default on purpose: a path baked in here would only work on the
 # machine it was written on, and this file ships inside a published package.
@@ -96,7 +102,7 @@ fi
 # DIFFERENT defect from the HTTPS_PROXY one above: httpx reads a bracketed IPv6
 # literal as `host:port` and fails with `Invalid port: ':1]'` before any request
 # is sent. See scripts/proxy-env.sh for why the calling shell cannot fix it.
-. "${BASH_SOURCE[0]%/*}/proxy-env.sh"
+. "${SCRIPT_DIR}/proxy-env.sh"
 
 # Scratch for EF bundles. Kept under the managed temp root so the sweep owns it.
 export EF_TAU2_BUNDLE_ROOT="${EF_TAU2_BUNDLE_ROOT:-${TEMP:-/tmp}/ef-tmp/tau2-bundles}"

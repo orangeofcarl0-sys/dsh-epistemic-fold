@@ -127,7 +127,29 @@ describe('the tau2 launch seam', () => {
     // copies of a proxy string drift. Asserting it HERE is what keeps the runners
     // pointing at the shared file: deleting the source line breaks this test
     // instead of silently restoring a broken NO_PROXY on the next machine.
-    expect(read('scripts/run-tau2.sh')).toMatch(/\. "\$\{BASH_SOURCE\[0\]%\/\*\}\/proxy-env\.sh"/u)
+    //
+    // The assertion is on the SOURCE TARGET, not on the expansion that builds the
+    // path. It used to require `${BASH_SOURCE[0]%/*}` literally, which cannot
+    // strip a BACKSLASH path — so the form it pinned was the one that broke under
+    // `bash 'C:\...\run-tau2.sh'`. Both runners now use a `dirname`-derived
+    // SCRIPT_DIR, and this test holds them to sourcing the shared file rather
+    // than to the way they spell its directory.
+    const source = read('scripts/run-tau2.sh')
+    expect(source, 'the runner must source the shared scrub').toMatch(/^\s*\.\s+"[^"]*proxy-env\.sh"\s*$/mu)
+    expect(source, 'and it must not carry its own copy of the scrub').not.toMatch(
+      /^export (NO_PROXY|no_proxy)=/mu,
+    )
+    // The directory it sources from must be derived portably. Comments are
+    // stripped first: both runners EXPLAIN the old expansion in a comment, and
+    // the prohibition is on executing it.
+    const executable = source
+      .split('\n')
+      .filter(line => !/^\s*#/u.test(line))
+      .join('\n')
+    expect(
+      executable,
+      'a `${BASH_SOURCE[0]%/*}` expansion cannot strip a backslash path, so an absolute Windows invocation resolved proxy-env.sh to a non-existent ".../run-tau2.sh/proxy-env.sh"',
+    ).not.toMatch(/BASH_SOURCE\[0\]%\//u)
 
     const assignments = code('scripts/proxy-env.sh').filter(entry => /^export (NO_PROXY|no_proxy)=/u.test(entry.text.trim()))
     expect(assignments.length, 'both spellings must be set, since Windows may carry either').toBeGreaterThanOrEqual(2)
