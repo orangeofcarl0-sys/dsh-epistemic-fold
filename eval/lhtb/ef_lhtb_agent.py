@@ -356,7 +356,11 @@ class EFLhtbAgent(BaseAgent):
         try:
             self.logs_dir.mkdir(parents=True, exist_ok=True)
             payload = {
-                "schema": "ef-lhtb-transcript/1",
+                # /2 renamed the fold-failure fields to their compaction names and
+                # added the kind breakdown. A reader that keys on /1 and looks for
+                # the old names finds them absent and SKIPS -- which is the right
+                # degradation, and better than reading a renamed field as zero.
+                "schema": "ef-lhtb-transcript/2",
                 "provenance": provenance(self.arm),
                 "arm": self.arm,
                 "shell_calls": total_calls,

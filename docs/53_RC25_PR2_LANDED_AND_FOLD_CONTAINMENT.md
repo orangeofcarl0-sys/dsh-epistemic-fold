@@ -230,6 +230,18 @@ therefore in the `ef-lhtb-transcript/1` archive. `foldFailures` is a **reading, 
 an invariant** — an arm that folded 15 times while failing 12 would otherwise look
 identical to one that folded cleanly.
 
+> **Correction.** Those two names were wrong in one direction and too coarse in
+> the other, and both were fixed after a re-measurement. The call they count is
+> `compactIfNeeded`, which on the `basic` arm is Basic's own summarization rather
+> than an EF fold — so a basic cell legitimately reported `folds: 0` beside a
+> non-zero count, which read as a contradiction. And a single count merged a
+> summarization budget error with a provider HTTP 500, keeping only the last
+> message, so the mix was unrecoverable. They are now
+> `compactionFailures` / `compactionFailureKinds` / `lastCompactionError` in
+> `ef-lhtb-transcript/2`. The containment this section describes is unchanged, and
+> the reader is unchanged in shape: it still skips a field it cannot find rather
+> than reading it as zero. See `docs/50` §4.
+
 Containment is only safe if a failed fold leaves nothing half-applied. The engine
 prepares a candidate and replaces the surface only after the summary lands, and the
 test pins that: the surface is byte-identical after the throw, `bundleWriteCount`

@@ -208,22 +208,38 @@ interface Telemetry {
   /** Outstanding pending-rebase intents (a non-zero value at episode end is a leak). */
   readonly pendingIntents: number
   /**
-   * Folds that THREW, counted for the whole episode.
+   * Maintenance calls that THREW, counted for the whole episode.
    *
-   * A failed fold no longer ends the episode (see `foldIfNeeded`), so without a
-   * counter it would be invisible — and an arm that folded 15 times while
-   * failing 12 of them would look identical to one that folded 15 times
-   * cleanly. Monotonic, like the engine's own fold counters.
+   * NOT "folds that threw", which is what this was called and what made it
+   * unreadable. The call it counts is `compactIfNeeded`, which each mode
+   * implements differently: on an EF arm it is a fold, and on the `basic` arm it
+   * is Basic's own summarization. So a basic cell legitimately reports
+   * `folds: 0` alongside a non-zero count here — the two fields measure
+   * different subsystems and only the LABEL suggested otherwise.
+   *
+   * A failed call no longer ends the episode (see `foldIfNeeded`), so without a
+   * counter it would be invisible. Monotonic, like the engine's own counters.
    */
-  readonly foldFailures: number
+  readonly compactionFailures: number
   /**
-   * The most recent fold failure's message, or `null` when none has occurred.
+   * Those failures split by KIND, so the mix survives the run.
+   *
+   * A count alone was not enough to read a result from: the first Phase 7 basic
+   * arm showed 8 failures on one cell from a summarization budget error and 2 on
+   * another from a provider HTTP 500, and because only the LAST message was kept,
+   * the two were indistinguishable after the fact. Keys are
+   * `truncated` | `provider-http` | `provider-transport` |
+   * `unsupported-content` | `timeout` | `other`.
+   */
+  readonly compactionFailureKinds: Readonly<Record<string, number>>
+  /**
+   * The most recent failure's message, or `null` when none has occurred.
    *
    * Kept separate from the count so a report can say WHAT failed rather than
    * only how often. Redacted like every other error path, because a provider
    * failure can echo a request that carries the credential.
    */
-  readonly lastFoldError: string | null
+  readonly lastCompactionError: string | null
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
@@ -252,9 +268,10 @@ let turnHasContent = false
 let folds = 0
 let roots = 0
 let emergencies = 0
-/** Folds that threw, and the last message. See the `Telemetry` note. */
-let foldFailures = 0
-let lastFoldError: string | null = null
+/** Failed maintenance calls, split by kind, and the last message. See `Telemetry`. */
+let compactionFailures = 0
+let compactionFailureKinds: Record<string, number> = {}
+let lastCompactionError: string | null = null
 let modelCalls = 0
 /** How the last model call finished, so an empty reply can be attributed. */
 let lastFinishReason = 'unknown'
@@ -405,6 +422,32 @@ function surface(): readonly Message[] {
  * the engine's counter said otherwise, and any checkpoint body that happened to
  * contain the literal text `rootFold` would have counted as a root.
  */
+/**
+ * Classify a failed maintenance call, so the KIND survives the run.
+ *
+ * Structured detection first. Basic tags a truncated summary `MAX_TOKENS` and the
+ * adapter tags its own failures on the `LlmError`, so neither has to be
+ * recognised from prose. Message matching is only a fallback, because the message
+ * is redacted and clipped before it is stored — and a class read off a message
+ * that has already been rewritten is exactly the kind of number that cannot mean
+ * what it claims.
+ *
+ * `aborted` wins: the deadline fired, and whatever the underlying error was, the
+ * bound is what ended the call.
+ */
+function classifyCompactionFailure(error: unknown, aborted: boolean): string {
+  if (aborted) return 'timeout'
+  const code = (error as { code?: unknown } | null | undefined)?.code
+  if (code === 'MAX_TOKENS') return 'truncated'
+  if (code === 'LIVE_HTTP') return 'provider-http'
+  if (code === 'LIVE_TRANSPORT') return 'provider-transport'
+  if (code === 'UNSUPPORTED_CONTENT') return 'unsupported-content'
+  const message = error instanceof Error ? error.message : String(error)
+  if (/truncated at the token cap/u.test(message)) return 'truncated'
+  if (/HTTP [0-9]{3}/u.test(message)) return 'provider-http'
+  return 'other'
+}
+
 async function foldIfNeeded(): Promise<void> {
   const active = engine!
   // ## A fold that fails must not end the episode
@@ -424,9 +467,11 @@ async function foldIfNeeded(): Promise<void> {
   // about this file.
   //
   // So the failure is CONTAINED and RECORDED rather than swallowed or rethrown.
-  // `foldFailures` is monotonic and `lastFoldError` carries the message, because
-  // an invisible degradation would be worse than the crash it replaces: a report
-  // must be able to say "this arm folded 15 times and failed twice".
+  // `compactionFailures` is monotonic, `compactionFailureKinds` splits it, and
+  // `lastCompactionError` carries the message, because an invisible degradation
+  // would be worse than the crash it replaces: a report must be able to say
+  // "this arm folded 15 times, failed twice, and both were provider 5xx" rather
+  // than quote one number that means two different things.
   const deadline = new AbortController()
   const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
   const agent = {
@@ -467,12 +512,16 @@ async function foldIfNeeded(): Promise<void> {
   try {
     await active.compactIfNeeded(agent, 'pressure', deadline.signal)
   } catch (error: unknown) {
-    foldFailures += 1
+    compactionFailures += 1
+    const kind = classifyCompactionFailure(error, deadline.signal.aborted)
+    compactionFailureKinds[kind] = (compactionFailureKinds[kind] ?? 0) + 1
     const raw = error instanceof Error ? error.message : String(error)
     // The same redaction every other error path uses: a provider failure can
     // echo the request, and the request carries the credential.
-    lastFoldError = raw.replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]').slice(0, 300)
-    if (deadline.signal.aborted) lastFoldError = `fold exceeded ${FOLD_TIMEOUT_MS}ms: ${lastFoldError}`
+    lastCompactionError = raw.replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]').slice(0, 300)
+    if (deadline.signal.aborted) {
+      lastCompactionError = `exceeded ${FOLD_TIMEOUT_MS}ms: ${lastCompactionError}`
+    }
   } finally {
     if (timer !== undefined) clearTimeout(timer)
   }
@@ -836,8 +885,9 @@ async function init(request: {
   folds = 0
   roots = 0
   emergencies = 0
-  foldFailures = 0
-  lastFoldError = null
+  compactionFailures = 0
+  compactionFailureKinds = {}
+  lastCompactionError = null
   modelCalls = 0
   promptTokensLast = 0
   surfaceNodesLast = 0
@@ -998,8 +1048,9 @@ async function telemetry(): Promise<Telemetry> {
     bundleWrites: engine!.bundleWriteCount,
     bundlesPresent,
     pendingIntents: engine!.pendingRebaseIntentCount,
-    foldFailures,
-    lastFoldError,
+    compactionFailures,
+    compactionFailureKinds,
+    lastCompactionError,
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     lastFinishReason,

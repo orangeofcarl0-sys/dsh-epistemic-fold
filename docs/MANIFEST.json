@@ -256,8 +256,8 @@
   },
   {
     "file": "50_PHASE7_HANDOFF.md",
-    "bytes": 11799,
-    "sha256": "7bfabdd782a3d402db0d535ea7694d5e411b07755f07c50a410bd98b3e2b8c85"
+    "bytes": 14552,
+    "sha256": "ae0aff8f5664c724c18d63d35898d0aab127e9bf8c8eae31731cf34b0c8cec53"
   },
   {
     "file": "51_RC24_PR1_SALVAGE_AND_MEMORY_CEILING.md",
@@ -271,8 +271,8 @@
   },
   {
     "file": "53_RC25_PR2_LANDED_AND_FOLD_CONTAINMENT.md",
-    "bytes": 18630,
-    "sha256": "9eb59afa580835ab2ff43a3fd9468a0411267ef122cda42dd87650558d1624ab"
+    "bytes": 19448,
+    "sha256": "fea4929e4b3a933d1ed0b3651ca19dc68f5d562c332ff4f9972007ba75e9f953"
   },
   {
     "file": "54_RC26_MEMORY_CAP_IS_A_HOST_PROPERTY.md",

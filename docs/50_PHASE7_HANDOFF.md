@@ -162,10 +162,12 @@ report, because it is a real limitation on attribution.
 
 ## 4. What to record
 
-Every run now writes `ef-lhtb-transcript/1` beside Harbor's logs, with a
+Every run now writes `ef-lhtb-transcript/2` beside Harbor's logs, with a
 provenance block (relative locator + revision + dirty flag — deliberately **no
 filesystem path**, because a tracked archive naming one machine's layout fails
-the release gate).
+the release gate). `/2` renamed the failure fields and added a kind breakdown;
+a `/1` reader finds the old names absent and should skip them rather than read a
+renamed field as zero.
 
 Read these fields, and treat an inconsistency as a finding rather than noise:
 
@@ -176,8 +178,9 @@ Read these fields, and treat an inconsistency as a finding rather than noise:
 | `bundlesPresent` | bundles on disk; `null` if the store was unreadable |
 | `pendingIntents` | **must be 0 at episode end**; non-zero means a producer with no consumer |
 | `pressureRegime` | the regime the last automatic decision resolved |
-| `foldFailures` | folds that THREW; **must be reported**, and a non-zero value needs reading |
-| `lastFoldError` | the most recent fold failure's message, or `null` |
+| `compactionFailures` | maintenance calls that THREW; **must be reported, with its kinds** |
+| `compactionFailureKinds` | those failures split by kind — the field that makes the count readable |
+| `lastCompactionError` | the most recent failure's message, or `null` |
 
 Two invariants to check on every cell:
 
@@ -186,10 +189,25 @@ Two invariants to check on every cell:
 2. **`pendingIntents == 0`** at the end. Non-zero is the I3 violation made
    visible.
 
-A third reading, not an invariant: **`foldFailures` must be quoted whenever it is
-non-zero.** A failed fold no longer ends the episode (see below), so an arm that
-folded 15 times while failing 12 of them would otherwise look identical to one
-that folded 15 times cleanly.
+A third reading, not an invariant: **`compactionFailures` must be quoted with its
+`compactionFailureKinds` whenever it is non-zero.** A failed maintenance call no
+longer ends the episode (see below), so an arm that folded 15 times while failing
+12 of them would otherwise look identical to one that folded 15 times cleanly.
+
+**The count is not the finding; the split is.** Two Phase 7 cells reported 8 and 2
+failures whose `lastCompactionError` values were a summarization budget error and
+a provider HTTP 500 respectively — one number describing two unrelated faults. The
+harness now classifies each failure as it happens
+(`truncated` | `provider-http` | `provider-transport` | `unsupported-content` |
+`timeout` | `other`), because a kind reconstructed from prose after the fact is a
+guess, and only the last message used to survive.
+
+**This field is not called `foldFailures` any more, and the old name was false on
+a `basic` arm.** The call it counts is `compactIfNeeded`, which each mode
+implements differently: on an EF arm it is a fold, and on `basic` it is Basic's own
+summarization. A basic cell therefore reports `folds: 0` beside a non-zero
+`compactionFailures` — correct data that read as a contradiction under the old
+label.
 
 For a `basic` arm, **`bundleWrites` and `bundlesPresent` must both be 0**. Real
 DSH Basic has no bundle store. A non-zero count there means the arm is not Basic —
@@ -210,17 +228,40 @@ step loop. Production does not behave that way: `src/basic/index.ts` registers
 `agent/pre-step` and wraps its own call in a catch that logs
 `step compaction failed: …; continuing the turn`.
 
-The harness now contains the failure and records it as `foldFailures` /
-`lastFoldError`, and bounds each fold with a wall-clock deadline
-(`EF_TAU2_FOLD_TIMEOUT_MS`, default 600s) — previously the fold's signal was an
-`AbortController` that was created and never aborted, which is how one fold
-stalled for 16 minutes with no error and both processes alive.
+The harness now contains the failure and records it as `compactionFailures` /
+`compactionFailureKinds` / `lastCompactionError`, and bounds each call with a
+wall-clock deadline (`EF_TAU2_FOLD_TIMEOUT_MS`, default 600s) — previously the
+signal was an `AbortController` that was created and never aborted, which is how
+one call stalled for 16 minutes with no error and both processes alive.
 
 **Consequence for reading the Phase 7 numbers.** The "62 model calls then died"
 row is evidence about the harness, not about Basic's summarization quality, and
-it should not be cited as either. Whether Basic's checkpoint body is genuinely
-too large for this model is still open — it now surfaces as a `foldFailures`
-count with the run continuing, which is the measurement that can answer it.
+it should not be cited as either.
+
+**"Is Basic's checkpoint body too large for this model?" is answered: no, and the
+count was never the measurement that could answer it.** The earlier claim here was
+that it "surfaces as a `foldFailures` count", which was wrong twice over.
+
+  - *Wrong in method.* That count mixed kinds. Two cells in one arm reported 8 and
+    2 failures whose last errors were a summarization truncation and a provider
+    HTTP 500; the count could not separate them, and only the last message
+    survived, so the mix was unrecoverable afterwards.
+  - *Wrong in substance.* Measured directly, against the real model through the
+    repo's own harness with the real adapter: a **17,821-token** compaction input
+    produced a **203-token** summary and finished `stop`. Synthetic inputs from
+    3K to 43K tokens produced 145–590 token summaries, all `stop`. The 8192
+    budget is 14–40x more than the summary needs, so "the checkpoint body is too
+    large" is refuted. Tools do not change it; a provider outage raises a
+    *different* error (`LIVE_HTTP`), not the truncation.
+
+What remains open is narrower and differently shaped: the truncation is
+**intermittent** — it appeared 8 times in one 4-hour cell and could not be
+reproduced in a controlled loop — and the leading untested candidate is that a
+reasoning model's reasoning tokens are charged to the same `maxTokens` budget,
+so a sufficiently tangled transcript could spend 8192 before emitting any summary.
+The synthetic inputs here were too clean to provoke it. Note that if that is the
+cause, the remedy is the same lever (`EF_TAU2_SUMMARY_MAX_TOKENS`) for a
+completely different reason, which is exactly why the reason matters.
 
 ---
 

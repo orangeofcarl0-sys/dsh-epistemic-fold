@@ -171,20 +171,57 @@ describe('the collector is in the repository, which is the point', () => {
 })
 
 describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
-  it('passes a clean cell and reports its fold failures as a reading', () => {
+  it('passes a clean cell and reports its compaction failures as a reading', () => {
     const { status, stdout } = collect([{
       arm: 'economy',
       telemetry: {
         folds: 15, roots: 2, emergencies: 1,
         bundleWrites: 18, bundlesPresent: 18, pendingIntents: 0,
-        pressureRegime: 'fits', foldFailures: 0, lastFoldError: null,
+        pressureRegime: 'fits', compactionFailures: 0, lastCompactionError: null,
       },
     }])
     expect(status, stdout).toBe(0)
     expect(stdout).toMatch(/PASS I1/u)
     expect(stdout).toMatch(/PASS I2/u)
-    // A zero fold-failure count is a reading, not something to shout about.
-    expect(stdout).not.toMatch(/READ foldFailures/u)
+    // A zero failure count is a reading, not something to shout about.
+    expect(stdout).not.toMatch(/READ compactionFailures/u)
+  })
+
+  it('reads the KIND mix, because a bare count cannot be attributed', () => {
+    // The defect this replaces: one number merged a summarization budget error
+    // with a provider HTTP 500, and only the last message was kept, so the mix
+    // was unrecoverable afterwards. A report has to be able to separate them.
+    const { stdout } = collect([{
+      arm: 'basic',
+      telemetry: {
+        folds: 0, roots: 0, emergencies: 0,
+        bundleWrites: 0, bundlesPresent: 0, pendingIntents: 0,
+        compactionFailures: 8,
+        compactionFailureKinds: { truncated: 6, 'provider-http': 2 },
+        lastCompactionError: 'summarization truncated at the token cap',
+      },
+    }])
+    expect(stdout).toMatch(/READ compactionFailures=8/u)
+    expect(stdout).toMatch(/'truncated': 6/u)
+    expect(stdout).toMatch(/'provider-http': 2/u)
+  })
+
+  it('reads the PRE-RENAME field but refuses to invent its kind mix', () => {
+    // Archives written before the rename carry foldFailures and no breakdown.
+    // Dropping a real measurement would be as wrong as defaulting one, so it is
+    // read and labelled: the kinds do not exist and cannot be reconstructed.
+    const { stdout } = collect([{
+      arm: 'basic',
+      telemetry: {
+        folds: 0, roots: 0, emergencies: 0,
+        bundleWrites: 0, bundlesPresent: 0, pendingIntents: 0,
+        foldFailures: 5,
+        lastFoldError: 'live provider HTTP 500: Unknown Error',
+      },
+    }])
+    expect(stdout).toMatch(/READ compactionFailures=5/u)
+    expect(stdout, 'the missing breakdown must be stated').toMatch(/NO kind breakdown/u)
+    expect(stdout, 'and never shown as a fabricated mix').not.toMatch(/'truncated'/u)
   })
 
   it('SKIPS rather than passes when a field is absent — the roots=0 mistake', () => {
@@ -209,15 +246,16 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
         // And a producer with no consumer.
         pendingIntents: 2,
         pressureRegime: 'open-bound',
-        foldFailures: 3,
-        lastFoldError: 'summarization truncated at the token cap',
+        compactionFailures: 3,
+        compactionFailureKinds: { truncated: 3 },
+        lastCompactionError: 'summarization truncated at the token cap',
       },
     }])
     expect(status, 'a violation must be a non-zero exit').toBe(1)
     expect(stdout).toMatch(/FAIL I1/u)
     expect(stdout).toMatch(/FAIL I2/u)
-    // A non-zero fold-failure count is surfaced, with its cause.
-    expect(stdout).toMatch(/READ foldFailures=3/u)
+    // A non-zero failure count is surfaced, with its cause.
+    expect(stdout).toMatch(/READ compactionFailures=3/u)
     expect(stdout).toContain('summarization truncated at the token cap')
   })
 

@@ -47,9 +47,9 @@ COUNTERS = (
     "emergencies",
     "bundleWrites",
     "pendingIntents",
-    "foldFailures",
+    "compactionFailures",
 )
-OPTIONAL = ("bundlesPresent", "pressureRegime", "lastFoldError")
+OPTIONAL = ("bundlesPresent", "pressureRegime", "lastCompactionError", "compactionFailureKinds")
 
 
 def find_transcripts(roots: list[Path]) -> list[Path]:
@@ -127,9 +127,29 @@ def cell(path: Path) -> dict[str, Any]:
             }
 
     # --- R1: a READING, not an invariant -------------------------------------
-    failures = number("foldFailures")
-    row["foldFailures"] = "MISSING" if failures is None else failures
-    row["lastFoldError"] = telemetry.get("lastFoldError", "MISSING")
+    #
+    # Read with its KIND breakdown, because the count alone cannot be attributed.
+    # It used to be called foldFailures and to keep only the LAST message, which
+    # merged a summarization budget error on one cell with a provider HTTP 500 on
+    # another into a single number that meant two different things. A missing
+    # breakdown is reported as MISSING rather than defaulted, for the same reason
+    # a missing counter is: an absent field is not a zero.
+    failures = number("compactionFailures")
+    legacy = False
+    if failures is None:
+        # The field was called foldFailures before the rename and kept only the
+        # last message. Read it rather than dropping a real measurement, but mark
+        # it: its KIND breakdown does not exist, so it cannot be attributed, and
+        # that is the whole reason the rename happened.
+        failures = number("foldFailures")
+        legacy = failures is not None
+    row["compactionFailures"] = "MISSING" if failures is None else failures
+    row["compactionFailuresLegacy"] = legacy
+    kinds = telemetry.get("compactionFailureKinds")
+    row["compactionFailureKinds"] = kinds if isinstance(kinds, dict) else "MISSING"
+    row["lastCompactionError"] = telemetry.get(
+        "lastCompactionError", telemetry.get("lastFoldError", "MISSING")
+    )
 
     return row
 
@@ -167,8 +187,16 @@ def main() -> int:
         for name in row["skipped"]:
             skipped_total += 1
             print(f"  SKIP {name} — a missing field is not a passing zero")
-        if row.get("foldFailures") not in (0, "MISSING"):
-            print(f"  READ foldFailures={row['foldFailures']} lastFoldError={row.get('lastFoldError')!r}")
+        if row.get("compactionFailures") not in (0, "MISSING"):
+            legacy = (
+                " (read from the pre-rename foldFailures: NO kind breakdown)"
+                if row.get("compactionFailuresLegacy") else ""
+            )
+            print(
+                f"  READ compactionFailures={row['compactionFailures']}"
+                f" kinds={row.get('compactionFailureKinds')}{legacy}"
+                f" lastCompactionError={row.get('lastCompactionError')!r}"
+            )
 
     print(f"\n{len(rows)} cell(s): {failed} failed, {skipped_total} unverified check(s)")
     if skipped_total:

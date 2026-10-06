@@ -79,23 +79,49 @@ describe('a fold failure is contained in the harness', () => {
   it('records the failure instead of swallowing it', () => {
     const body = foldBody()
     // A silent catch would be worse than the crash it replaces: an arm that
-    // failed every fold would be indistinguishable from one that folded cleanly.
-    expect(body, 'failures must be counted').toMatch(/foldFailures\s*\+=\s*1/u)
-    expect(body, 'the message must be kept').toMatch(/lastFoldError\s*=/u)
+    // failed every call would be indistinguishable from one that folded cleanly.
+    expect(body, 'failures must be counted').toMatch(/compactionFailures\s*\+=\s*1/u)
+    expect(body, 'the message must be kept').toMatch(/lastCompactionError\s*=/u)
     // And the credential redaction every other error path uses.
-    expect(body, 'a fold error can echo the request, which carries the key').toContain('[redacted]')
+    expect(body, 'a maintenance error can echo the request, which carries the key').toContain('[redacted]')
   })
 
-  it('surfaces both counters in the telemetry it reports', () => {
+  it('splits the count by KIND, so the mix is readable after the fact', () => {
+    // The count alone merged two different faults: a summarization budget error
+    // and a provider HTTP 500 both incremented one number, and only the LAST
+    // message was kept. A run had to be comparable to itself, so the kind has to
+    // be recorded as it happens rather than reconstructed from prose later.
+    const body = foldBody()
+    expect(body, 'the kind must be recorded per failure').toMatch(/compactionFailureKinds\[/u)
+    expect(body, 'and classified by structure before prose').toMatch(/classifyCompactionFailure\(/u)
+    // Structured codes first: Basic tags a truncated summary, the adapter tags
+    // its own failures. Message matching is the fallback, not the method.
+    expect(source).toContain("code === 'MAX_TOKENS'")
+    expect(source).toContain("code === 'LIVE_HTTP'")
+  })
+
+  it('surfaces the counters in the telemetry it reports', () => {
     // A counter nobody reads is not a record. The telemetry block is what the
     // LHTB transcript persists.
-    expect(source).toMatch(/readonly foldFailures: number/u)
-    expect(source).toMatch(/readonly lastFoldError: string \| null/u)
-    expect(source).toMatch(/^\s*foldFailures,$/mu)
-    expect(source).toMatch(/^\s*lastFoldError,$/mu)
+    expect(source).toMatch(/readonly compactionFailures: number/u)
+    expect(source).toMatch(/readonly compactionFailureKinds: Readonly<Record<string, number>>/u)
+    expect(source).toMatch(/readonly lastCompactionError: string \| null/u)
+    expect(source).toMatch(/^\s*compactionFailures,$/mu)
+    expect(source).toMatch(/^\s*compactionFailureKinds,$/mu)
+    expect(source).toMatch(/^\s*lastCompactionError,$/mu)
     // Reset per episode: the bridge process is long-lived across init calls.
-    expect(source).toMatch(/foldFailures = 0/u)
-    expect(source).toMatch(/lastFoldError = null/u)
+    expect(source).toMatch(/compactionFailures = 0/u)
+    expect(source).toMatch(/compactionFailureKinds = \{\}/u)
+    expect(source).toMatch(/lastCompactionError = null/u)
+  })
+
+  it('no longer calls a compaction failure a FOLD failure', () => {
+    // On the basic arm the call this counts is Basic's own summarization, so
+    // "folds that THREW" was false there by construction -- a basic cell
+    // legitimately reports folds: 0 beside a non-zero failure count. The old
+    // names must not come back, because the misreading they caused is the whole
+    // reason this file has a rename in it.
+    expect(source, 'the EF word for it must not come back').not.toMatch(/foldFailures|lastFoldError/u)
   })
 
   it('bounds the fold with a real deadline, not an un-aborted controller', () => {
