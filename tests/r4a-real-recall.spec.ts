@@ -286,9 +286,10 @@ describe('R4-A: the synthetic W4 is documented as NOT testing recall', () => {
   it('W4R-COMMON materializes from a shared archive instead', () => {
     const workload = realRecallCommon()
     // One archive, owned by the workload, materialized into every arm.
+    // (`typeof workload.grow === 'function'` was also asserted here, but it
+    // checked the shape of a locally-built fixture — no code under test could
+    // have made it fail.)
     expect(workload.archive.messages.length).toBeGreaterThan(0)
-    const first = workload.grow
-    expect(typeof first).toBe('function')
     // The ref is the SHARED archive's, distinct from W4's fake `cp:earlier`.
     expect(workload.archive.messages[0]).toContain('archived message 0')
   })

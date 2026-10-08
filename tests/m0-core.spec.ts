@@ -302,10 +302,30 @@ describe('D. lifecycle tests', () => {
   })
 
   it('T15: EF missing — session still opens and Basic semantics survive', async () => {
-    // Without the engine, sessions assemble and compact through plain Basic.
+    // ASSERTED AGAINST CODE, not against the fixture.
+    //
+    // This test used to be `conversation(4)` plus
+    // `expect(session.surface.nodes.length).toBeGreaterThan(0)` — it called no
+    // harness at all, so it asserted a property of a locally-built fixture and
+    // would have passed if every line of EF were deleted. That is the shape the
+    // benchmark spec's T15 is meant to rule out: "EF 缺失时 Session 仍可打开".
+    //
+    // The real claim is that a deployment WITHOUT EF's machinery still folds
+    // through plain Basic, so the test now mounts Basic and drives a fold.
+    const { engine } = await createHarness({ text: 'basic-only digest' }, {
+      contextWindow: 8_000,
+      efConfig: { auto: true, thresholdRatio: 0.5, headroomTokens: 0, maxTokens: 2_000, mode: 'basic' },
+    })
     const session = conversation(4)
-    expect(session.surface.nodes.length).toBeGreaterThan(0)
-    expect(session.seq).toBeGreaterThan(0)
+    expect(session.surface.nodes.length, 'the session assembles without EF').toBeGreaterThan(0)
+
+    const nodes = [...session.surface.nodes]
+    const result = await engine.compactRegion(
+      nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL,
+    )
+    // Basic's own transaction ran, and it left no EF artifact behind.
+    expect(result.shadowedSeqs, 'Basic compacted the span').toHaveLength(4)
+    expect(engine.bundleWriteCount, 'and wrote no EF bundle').toBe(0)
   })
 
   it('T16: legacy Basic checkpoint before EF install is tolerated', async () => {

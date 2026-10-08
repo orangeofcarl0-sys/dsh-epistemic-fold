@@ -137,7 +137,10 @@ describe('R0-C3: long-horizon deterministic economics', () => {
       // Every window keeps the run structurally valid; pressure at the
       // largest window may legitimately stay under threshold for 32 steps.
       expect(result.promptSummary.totalPromptTokens).toBeGreaterThan(0)
-      expect(result.leafFoldCount + result.rootFoldCount).toBeGreaterThanOrEqual(0)
+      // NOT asserted: `leafFoldCount + rootFoldCount >= 0`. Both are monotonic
+      // counters that only increment, so the sum cannot be negative and the
+      // assertion could not fail. The fold-cadence claim is the one below, which
+      // compares the smallest window against the largest and does have content.
     }
     for (const row of rows) console.log(row)
     // Smaller windows fold MORE often (pressure arrives earlier).

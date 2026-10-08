@@ -291,14 +291,10 @@ describe('RC2.1: usage comes from the DSH projection', () => {
 })
 
 describe('RC2: an unknown figure is UNKNOWN, never zero', () => {
-  it('omits the cost entirely when no profile was supplied', () => {
-    // A session with no priced calls has an UNKNOWN cost. Reporting 0 would read
-    // as "this mode is free", which is the opposite of the truth.
-    const status = buildContextStatus({ mode: 'economy', session: routedSession() })
-    expect(status.cost).toBeUndefined()
-    expect(contextStatusToText(status)).toContain('unknown')
-    expect(contextStatusToText(status)).not.toContain('0.000000')
-  })
+  // The "cost is absent when no profile was supplied" case is NOT repeated here:
+  // it is asserted in the RC2.1 block above, which is the corrected successor of
+  // this one and carries the same body verbatim. Two byte-identical tests in two
+  // parallel describes meant a failure reported twice and a fix needed twice.
 
   it('omits the archive figures when the store was not consulted', () => {
     // `bundles: undefined` means "we did not look", which is NOT "nothing is

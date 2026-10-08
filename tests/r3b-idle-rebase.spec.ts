@@ -23,7 +23,7 @@ import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, driveIdleMaintenance, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { createRebaseIntentRegistry, intentMatchesSession } from '../src/rebase-intent.ts'
+import { createRebaseIntentRegistry } from '../src/rebase-intent.ts'
 import { runIdleRebase, registerIdleRebaseConsumer } from '../src/idle-rebase.ts'
 import type { IdleRebaseAttempt } from '../src/idle-rebase.ts'
 import type { SessionId } from '@deepseek-ai/dsh-session'
@@ -133,13 +133,11 @@ describe('R3-0b: rebase intent is tiny and per-session', () => {
     expect(registry.size).toBe(1)
   })
 
-  it('an intent for another session does not match', () => {
-    const intent = {
-      sessionId: 'sess-a' as SessionId, preparedGeneration: 1, cause: 'frozen_budget' as const, createdAtSeq: 1 as never,
-    }
-    expect(intentMatchesSession(intent, 'sess-a' as SessionId)).toBe(true)
-    expect(intentMatchesSession(intent, 'sess-b' as SessionId)).toBe(false)
-  })
+  // "an intent for another session does not match" is NOT repeated here. It is
+  // asserted in `r4a-baseline-closure.spec.ts` as "the recorded sessionId is
+  // re-verified before acting (fail-closed audit)" — the same body, with the
+  // reasoning written down. R4-0a is the later, documented version of this
+  // contract, so the copy that lived here was superseded rather than additive.
 })
 
 describe('R3-0b: consumer discipline', () => {

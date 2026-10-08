@@ -374,8 +374,11 @@ describe('R1-B: counterfactual ROI lab (upper bounds, not achievements)', () => 
       freshTokens: run.absolutePrefixInvalidation,
       steps,
     })
+    // The ORDERING is the claim: with no cache the same removal is worth more.
+    // A `warm.savedCost >= 0` check used to sit beside it, but the value is a
+    // clamped difference (`Math.min(removedTotal, warmTokens)` in the saving
+    // calculation), so it could not be negative and could not fail.
     expect(cold.savedCost).toBeGreaterThan(warm.savedCost)
-    expect(warm.savedCost).toBeGreaterThanOrEqual(0)
   }, 120_000)
 
   it('ranks candidates by saving and risk, not by milestone number', () => {

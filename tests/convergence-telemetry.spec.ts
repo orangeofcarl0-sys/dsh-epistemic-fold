@@ -178,7 +178,10 @@ describe('Phase 0: the engine counts its own folds', () => {
       }
     }
     // The accessor must be a valid count whether or not a consumer ever ran.
+    // `Number.isInteger` is the assertion with content: the accessor reads a Map
+    // size, so a `NaN` or a float would be a real defect. A `>= 0` check beside it
+    // was tautological — a Map's size cannot be negative — and has been removed
+    // rather than left as an assertion that cannot fail.
     expect(Number.isInteger(engine.pendingRebaseIntentCount)).toBe(true)
-    expect(engine.pendingRebaseIntentCount).toBeGreaterThanOrEqual(0)
   })
 })

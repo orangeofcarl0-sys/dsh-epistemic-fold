@@ -205,9 +205,12 @@ describe('R2-E: price-dominance matrix', () => {
     // Structural invariants: the matrix must be well-formed whatever it says.
     expect(rows.length).toBe(workloads.length * PROFILE_IDS.length * 2)
     for (const row of rows) {
+      // `bcr > 0` is the assertion with content — a ratio of two positive costs
+      // cannot be zero, so a zero here means the ratio was never computed. A
+      // `policyCost >= 0` check sat beside it, but that value is a sum of
+      // non-negative terms and could not fail.
       expect(Number.isFinite(row.bcr)).toBe(true)
       expect(row.bcr).toBeGreaterThan(0)
-      expect(row.policyCost).toBeGreaterThanOrEqual(0)
     }
     // Cost must never be negative or zero for a non-empty run.
     expect(matrix.rows.every(row => row.basicCost > 0)).toBe(true)

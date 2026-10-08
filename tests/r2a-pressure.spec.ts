@@ -49,9 +49,12 @@ describe('R2-A: pressure decomposes into frozen and open', () => {
 
     expect(result.pressure.samples.length).toBe(32)
     for (const sample of result.pressure.samples) {
+      // The DECOMPOSITION is the claim: the two parts account for the whole, so a
+      // sample that attributed the surface to the wrong part would fail here.
+      // `frozenTokens >= 0` and `openTokens >= 0` were also asserted, but both are
+      // clamped non-negative by construction (`Math.min` / `Math.max` in
+      // `pressureBreakdown`), so they could not fail and have been removed.
       expect(sample.frozenTokens + sample.openTokens).toBe(sample.totalTokens)
-      expect(sample.frozenTokens).toBeGreaterThanOrEqual(0)
-      expect(sample.openTokens).toBeGreaterThanOrEqual(0)
     }
   }, 120_000)
 

@@ -171,14 +171,20 @@ describe('Phase 1: provider-overflow recovery', () => {
     } catch {
       // Designed outcome.
     }
-    if (engine.emergencyRebaseCount > 0) {
-      expect(engine.rootFoldCount).toBe(rootsBefore)
-      // The audit identity survives into the durable bundle, which is what the
-      // status surfaces read.
-      const bundles = await engine.bundleStore.list(session.id)
-      expect(bundles.map(bundle => bundle.mode)).toContain('emergency')
-    }
-    expect(engine.emergencyRebaseCount).toBeGreaterThanOrEqual(0)
+    // ASSERTED, not guarded. This used to be `if (engine.emergencyRebaseCount > 0)`
+    // followed by `expect(engine.emergencyRebaseCount).toBeGreaterThanOrEqual(0)`
+    // — so the test's only unconditional assertion was one that cannot fail, and
+    // the two meaningful ones were skipped whenever the fixture failed to produce
+    // a rebase. Measured on this fixture: 1 emergency rebase, 0 roots, in 3 of 3
+    // runs, so the state is deterministic and the guard was hiding it. The
+    // non-vacuity gate above ("the fixture reaches hard-frozen-bound") is what
+    // makes asserting this safe.
+    expect(engine.emergencyRebaseCount, 'the fixture must produce exactly one emergency rebase').toBe(1)
+    expect(engine.rootFoldCount, 'and it must not be counted as a root').toBe(rootsBefore)
+    // The audit identity survives into the durable bundle, which is what the
+    // status surfaces read.
+    const bundles = await engine.bundleStore.list(session.id)
+    expect(bundles.map(bundle => bundle.mode)).toContain('emergency')
   }, 300_000)
 
   it('every committed fold published a bundle, and publishes can exceed commits', async () => {

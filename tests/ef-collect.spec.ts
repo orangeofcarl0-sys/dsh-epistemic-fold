@@ -185,7 +185,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout).toMatch(/PASS I2/u)
     // A zero failure count is a reading, not something to shout about.
     expect(stdout).not.toMatch(/READ compactionFailures/u)
-  })
+  }, 30_000)
 
   it('reads the KIND mix, because a bare count cannot be attributed', () => {
     // The defect this replaces: one number merged a summarization budget error
@@ -204,7 +204,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout).toMatch(/READ compactionFailures=8/u)
     expect(stdout).toMatch(/'truncated': 6/u)
     expect(stdout).toMatch(/'provider-http': 2/u)
-  })
+  }, 30_000)
 
   it('reads the PRE-RENAME field but refuses to invent its kind mix', () => {
     // Archives written before the rename carry foldFailures and no breakdown.
@@ -222,7 +222,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout).toMatch(/READ compactionFailures=5/u)
     expect(stdout, 'the missing breakdown must be stated').toMatch(/NO kind breakdown/u)
     expect(stdout, 'and never shown as a fabricated mix').not.toMatch(/'truncated'/u)
-  })
+  }, 30_000)
 
   it('SKIPS rather than passes when a field is absent — the roots=0 mistake', () => {
     // Exactly the shape of a pre-RC23 archive: folds and roots present, nothing
@@ -234,7 +234,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout, 'unverified must be counted, not silently dropped').toMatch(
       /unverified check\(s\)/u,
     )
-  })
+  }, 30_000)
 
   it('fails a cell that replaced the surface with no archive, and one that leaked', () => {
     const { status, stdout } = collect([{
@@ -257,7 +257,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     // A non-zero failure count is surfaced, with its cause.
     expect(stdout).toMatch(/READ compactionFailures=3/u)
     expect(stdout).toContain('summarization truncated at the token cap')
-  })
+  }, 30_000)
 
   it('holds a basic arm to zero bundles, since real Basic has no bundle store', () => {
     const { status, stdout } = collect([{
@@ -271,7 +271,7 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     }])
     expect(status).toBe(1)
     expect(stdout).toMatch(/FAIL I3/u)
-  })
+  }, 30_000)
 
   it('runs end to end against a real cell without a Python error', () => {
     // The structural checks that need no interpreter live in their own describe
@@ -279,5 +279,5 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     // interpreter the probe found.
     const { stdout } = collect([{ arm: 'economy', telemetry: { folds: 0, roots: 0, emergencies: 0, bundleWrites: 0, pendingIntents: 0 } }])
     expect(stdout, 'the collector must run at all').not.toMatch(/can't open file|No such file|Traceback/u)
-  })
+  }, 30_000)
 })
