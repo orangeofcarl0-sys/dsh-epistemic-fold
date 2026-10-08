@@ -282,4 +282,32 @@ describe('the failure count in the message is real', () => {
     expect(source, 'and it must count what committed').toMatch(/committed \+= 1/u)
     expect(source).toMatch(/after \$\{committed\} committed leaf fold/u)
   })
+
+  it('every code the engine raises is recognized by the harness classifier', () => {
+    // ## The defect this pins
+    //
+    // The engine tagged `PRESSURE_UNRESOLVED`, but the harness classifier never
+    // learned the code — so the failure fell into `other`, which is precisely the
+    // conflation the kind split exists to end. The engine's code was added in the
+    // same change and still did not reach the classifier, because the two files
+    // are edited independently and nothing compared them.
+    //
+    // The check is deliberately mechanical: read every `code = '...'` the engine
+    // assigns, and require the classifier to branch on each one. A new code with
+    // no branch is the bug, and this fails before a run can produce an
+    // unattributable `other`.
+    const engine = readFileSync(join(ROOT, 'src', 'engine.ts'), 'utf8')
+    const classifier = readFileSync(join(ROOT, 'eval', 'tau2', 'bridge-host.ts'), 'utf8')
+    const raised = [...new Set(
+      [...engine.matchAll(/\.code = '([A-Z_]+)'/gu)].map(match => match[1]!),
+    )]
+    expect(raised.length, 'the engine must raise at least one tagged failure').toBeGreaterThan(0)
+    for (const code of raised) {
+      expect(
+        classifier,
+        `the harness classifier must recognize '${code}', or it lands in 'other' `
+        + 'beside genuinely unknown faults',
+      ).toContain(`code === '${code}'`)
+    }
+  })
 })

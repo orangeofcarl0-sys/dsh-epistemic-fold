@@ -465,11 +465,26 @@ function classifyCompactionFailure(error: unknown, aborted: boolean): string {
   if (aborted) return 'timeout'
   const code = (error as { code?: unknown } | null | undefined)?.code
   if (code === 'MAX_TOKENS') return 'truncated'
+  // The engine's own code for "a fold committed and the surface is still over
+  // threshold". Tagged structurally rather than matched on prose, because the
+  // message is redacted and clipped before it is stored.
+  //
+  // This branch was MISSING from the first version of the reachability work: the
+  // engine set the code, but the classifier here never learned it, so the failure
+  // fell into `other` — the exact conflation this classifier exists to end, and
+  // the reason PR #3 split the kind out in the first place. Caught by re-reading
+  // this function against the engine rather than by a test, so a test now pins it.
+  if (code === 'PRESSURE_UNRESOLVED') return 'pressure-unresolved'
+  if (code === 'PRESSURE_UNREACHABLE') return 'pressure-unreachable'
   if (code === 'LIVE_HTTP') return 'provider-http'
   if (code === 'LIVE_TRANSPORT') return 'provider-transport'
   if (code === 'UNSUPPORTED_CONTENT') return 'unsupported-content'
   const message = error instanceof Error ? error.message : String(error)
   if (/truncated at the token cap/u.test(message)) return 'truncated'
+  // Prose fallback, for the vendored `src/basic/index.ts` wording, which cannot be
+  // tagged: that tree is a byte-identical copy of the upstream package.
+  if (/still above threshold after/u.test(message)) return 'pressure-unresolved'
+  if (/no fold can reach the threshold/u.test(message)) return 'pressure-unreachable'
   if (/HTTP [0-9]{3}/u.test(message)) return 'provider-http'
   return 'other'
 }
