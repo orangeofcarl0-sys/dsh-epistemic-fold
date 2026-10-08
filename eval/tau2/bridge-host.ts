@@ -55,9 +55,9 @@ import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { ToolRuntime } from '@deepseek-ai/dsh-tools'
-// Production mounts this in `dsh-base`; see the mount site in `init` for why the
-// harness must too. Imported from SOURCE like every other vendored module here.
-import { ToolResultPruner } from '@deepseek-ai/dsh-compaction-tool-result-pruner'
+// The tool-result pruner is imported LAZILY at its mount site in `init`, because
+// a static import of a package that is not installed is a bridge that cannot
+// start. See that site.
 // Imported from SOURCE, like every other module under `eval/` — not from
 // `lib/*.js`. The build deliberately ships no `.d.ts` ("emitting declarations
 // would create a SECOND artifact"), so a `lib/` import resolves to `any` and
@@ -255,6 +255,15 @@ interface Telemetry {
    */
   readonly providerFailures: number
   readonly lastProviderError: string | null
+  /**
+   * Whether the tool-result pruner mounted, and why not when it did not.
+   *
+   * Production mounts it and EF reads it, so a run without it is measuring a
+   * configuration that cannot ship -- the defect RC28 removed. `null` means the
+   * episode never reached the mount, which is not the same as "it was absent".
+   */
+  readonly prunerMounted: boolean | null
+  readonly prunerError: string | null
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
@@ -314,6 +323,9 @@ let emergencies = 0
 let compactionFailures = 0
 let compactionFailureKinds: Record<string, number> = {}
 let lastCompactionError: string | null = null
+/** Whether the tool-result pruner mounted, and why not when it did not. */
+let prunerMounted: boolean | null = null
+let prunerError: string | null = null
 let modelCalls = 0
 /**
  * Model calls that FAILED at the provider, and the last failure message.
@@ -993,6 +1005,8 @@ async function init(request: {
   compactionFailures = 0
   compactionFailureKinds = {}
   lastCompactionError = null
+  prunerMounted = null
+  prunerError = null
   providerFailures = 0
   lastProviderError = null
   modelCalls = 0
@@ -1038,7 +1052,37 @@ async function init(request: {
   // 'tool/result'`. An oversized USER or ASSISTANT message is not prunable and
   // the retention walk still protects it, which is why the engine also gained a
   // pre-flight (see `compactIfNeeded`).
-  new ToolResultPruner(ctx, { thresholdChars: 8_192, headChars: 4_096, tailChars: 1_024 })
+  //
+  // ## Mounted LAZILY, and its absence is recorded rather than fatal
+  //
+  // This was a static import, and a static import of a package that is in neither
+  // package.json nor node_modules is not a degradation -- it is a bridge that
+  // cannot start. Every LHTB run died with
+  // `BridgeError: bridge host closed the stream ... ERR_MODULE_NOT_FOUND` in about
+  // twenty seconds, and nothing in the suite noticed, because no test imports the
+  // bridge's module graph. A gate that cannot see the entry point is not a gate.
+  //
+  // The pruner still matters -- it is what makes an oversized tool result
+  // foldable, and LHTB's oversized node IS shell output -- so when it is absent
+  // that fact goes into the telemetry. A run that measured a configuration
+  // without it must be identifiable from its own archive rather than inferred
+  // from a failure mode.
+  try {
+    const { ToolResultPruner } = await import('@deepseek-ai/dsh-compaction-tool-result-pruner')
+    new ToolResultPruner(ctx, { thresholdChars: 8_192, headChars: 4_096, tailChars: 1_024 })
+    prunerMounted = true
+    prunerError = null
+  } catch (error: unknown) {
+    prunerMounted = false
+    prunerError = error instanceof Error ? error.message : String(error)
+    // Loud, because the run is now measuring a configuration production does not
+    // have, and that is exactly the defect RC28 set out to remove.
+    process.stderr.write(
+      `[bridge] tool-result pruner NOT mounted: ${prunerError}\n`
+      + '[bridge] oversized tool results will be un-foldable; this run measures a '
+      + 'configuration production does not ship\n',
+    )
+  }
   // The ToolRuntime is what makes the EF recall tools REGISTER.
   //
   // `registerRecallTools` runs only when `ctx.tools` exists — a compaction-only
@@ -1197,6 +1241,8 @@ async function telemetry(): Promise<Telemetry> {
     lastCompactionError,
     providerFailures,
     lastProviderError,
+    prunerMounted,
+    prunerError,
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     tokensPrompt: bill?.promptTokens ?? null,
