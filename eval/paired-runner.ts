@@ -290,7 +290,7 @@ export async function runPairedCase(scenario: ScenarioDefinition, replicate = 0)
       arm,
       replicate,
       efCommit: process.env.EF_COMMIT ?? 'dev',
-      dshCommit: '477b4f420553e8a52c2fbccc464d7561b239c443',
+      dshCommit: '639ed015397290b3745d163aafe02ffee4aa3f84',
       model: MODEL,
       success: evaluation.passed,
       correctness: { criticalViolations: evaluation.failures.filter(failure => failure.includes('forbidden-path-unchanged')) },

@@ -395,7 +395,7 @@ Prerequisites: Node `^22.19 || >=24`, pnpm `11.7.x`, npm.
 ```bash
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
-git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
+git checkout 639ed015397290b3745d163aafe02ffee4aa3f84
 pnpm install
 
 node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b \
@@ -421,14 +421,23 @@ never reported as a passing one.
 
 Two lanes on every push:
 
-- **pinned DSH baseline** (`477b4f42…`, the `0.1.7-rc.2` release) — mandatory.
+- **pinned DSH baseline** (`639ed015…`, the `0.2.0-rc.2` release) — mandatory.
 - **DSH master** — an allowed-to-fail compatibility probe.
 
 Both run the typechecks, the full suite, and the keyless evaluation tiers.
 
-> **On version numbers.** `0.1.7-rc.2` in this repository is the **test baseline CI
-> pins**, not a claim about what you have installed. EF's `engines.dsh` and peer
-> ranges are `>=0.1.7-rc.2`, and it is verified running on `0.2.0-rc.2`.
+> **On version numbers.** `0.2.0-rc.2` is the **test baseline CI pins**, and it is
+> also the line this repository installs: `engines.dsh` and every peer range name it,
+> and the vendored checkout is that same release.
+>
+> That last part is load-bearing. Typecheck resolves `@deepseek-ai/*` to the
+> **vendored SOURCE** through `tsconfig` paths, while runtime resolves the same
+> specifiers to the **npm binaries** in `node_modules`. When those were different
+> lines -- vendored `0.2.0-rc.2`, installed `0.1.7-rc.2` -- the compiler checked one
+> API and Node executed another, and any difference between them was invisible to
+> both. A bridge importing a package missing from the installed line passed
+> `typecheck:all` and died at runtime with `ERR_MODULE_NOT_FOUND`. The two are
+> pinned to one line now, and a test derives that rather than restating it.
 
 ---
 

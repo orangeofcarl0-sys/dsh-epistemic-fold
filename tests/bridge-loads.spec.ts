@@ -78,6 +78,42 @@ describe('the LHTB bridge entry point loads', () => {
     expect(imported).toContain('@' + 'deepseek-ai/dsh-llm')
   })
 
+  it('can actually MOUNT the tool-result pruner, not merely load without it', async () => {
+    // The mount is lazy and fail-open, so "the bridge loads" is now an
+    // INSUFFICIENT check: it passes whether or not the pruner is installed, and a
+    // run without the pruner measures a configuration production does not ship --
+    // the defect RC28 set out to remove. The package must resolve and export the
+    // class, or the telemetry will say prunerMounted: false on every cell.
+    const module = await import('@deepseek-ai/dsh-compaction-tool-result-pruner')
+    expect(typeof module.ToolResultPruner, 'the bridge constructs this at init').toBe('function')
+  })
+
+  it('runs on the SAME DSH line it typechecks against', () => {
+    // ## The defect this pins
+    //
+    // Typecheck resolves @deepseek-ai/* to the VENDORED SOURCE via tsconfig paths
+    // and vendor-paths.json. Runtime resolves the same specifiers to the npm
+    // binaries in node_modules. For a while those were different lines -- the
+    // vendored tree was 0.2.0-rc.2 and node_modules was 0.1.7-rc.2 -- so the
+    // compiler checked the code against one API and Node executed it against
+    // another, and any difference between them was invisible to both.
+    //
+    // That is how a bridge importing a package missing from the installed line
+    // passed `typecheck:all` and died at runtime with ERR_MODULE_NOT_FOUND.
+    const vendored = JSON.parse(
+      readFileSync(join(ROOT, 'vendor', 'deepseek-harness', 'package.json'), 'utf8'),
+    ) as { version?: string }
+    const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) as {
+      peerDependencies?: Record<string, string>
+    }
+    const specs = Object.entries(pkg.peerDependencies ?? {})
+      .filter(([name]) => name.startsWith('@deepseek-ai/dsh-'))
+      .map(([, spec]) => spec.replace(/^[\^~>=<]+/u, '').replace(/[<>=].*$/u, ''))
+    const lines = [...new Set(specs)]
+    expect(lines, 'every DSH package must be on ONE line, not a mixture').toHaveLength(1)
+    expect(lines[0], 'and that line is the vendored baseline').toBe(vendored.version)
+  })
+
   it('does not depend on an undeclared package at load time', () => {
     // Every bare DSH specifier in the bridge must be DECLARED, or the import
     // only works by accident of a checkout that happens to have the package.

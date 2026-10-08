@@ -415,8 +415,16 @@ describe('RC16: the manifest uses the fields DSH actually defines', () => {
     expect(dsh['compatibility'], 'dsh.compatibility is not a DSH field').toBeUndefined()
     expect(Object.keys(dsh).sort()).toEqual(['bundle', 'client', 'manifestVersion'])
     // The DSH range belongs beside engines.node, where the spec puts it.
+    //
+    // It must name the line this repository actually TESTS and RUNS on, and that is
+    // DERIVED here rather than written down twice. It used to say >=0.1.7-rc.2
+    // while the vendored baseline was 0.2.0-rc.2 and the runtime resolved to
+    // 0.1.7-rc.2 -- a claim, a compile target, and an execution target that were
+    // three different things. That is how a bridge importing a package absent from
+    // the installed line passed typecheck and died at runtime.
     const engines = pkg['engines'] as Record<string, string>
-    expect(engines['dsh']).toBe('>=0.1.7-rc.2')
+    const vendored = await readJson('vendor/deepseek-harness/package.json')
+    expect(engines['dsh']).toBe('>=' + String(vendored['version']))
     expect(engines['node']).toBe('^22.19.0 || >=24.0.0')
   })
 

@@ -380,7 +380,7 @@ monorepo 相同的 source-level resolution），所以测试 plugin 本身不需
 ```bash
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
-git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
+git checkout 639ed015397290b3745d163aafe02ffee4aa3f84
 pnpm install
 
 node --max-old-space-size=8192 ./node_modules/typescript/bin/tsc -b \
@@ -405,13 +405,21 @@ live tier 是 opt-in（`EF_LIVE=1`），没有可用 route 时会 **skip**，因
 
 每次 push 跑两个 lane：
 
-- **pinned DSH baseline**（`477b4f42…`，即 `0.1.7-rc.2` release）——必须通过。
+- **pinned DSH baseline**（`639ed015…`，即 `0.2.0-rc.2` release）——必须通过。
 - **DSH master**——允许失败的兼容性探针。
 
 两个 lane 都跑 typecheck、全量测试和 keyless evaluation tier。
 
-> **关于版本号。** 本仓库里的 `0.1.7-rc.2` 是 **CI 钉住的测试基线**，不是对你本机安装版本的声明。
-> EF 的 `engines.dsh` 与 peer range 是 `>=0.1.7-rc.2`，并且已在 `0.2.0-rc.2` 上验证运行。
+> **关于版本号。** `0.2.0-rc.2` 是 **CI 钉住的测试基线**，同时也是本仓库实际安装的版本线：
+> `engines.dsh` 与全部 peer range 都指向它，vendored checkout 也是同一个 release。
+>
+> 最后这点是关键。typecheck 通过 `tsconfig` paths 把 `@deepseek-ai/*` 解析到 **vendored 源码**，
+> 而 runtime 把同样的 specifier 解析到 `node_modules` 里的 **npm 二进制**。
+> 当两者处在不同版本线时（vendored `0.2.0-rc.2`、已安装 `0.1.7-rc.2`），
+> 编译器检查的是一套 API，Node 执行的是另一套，二者之间的任何差异对双方都不可见。
+> 一个 import 了「已安装版本线里不存在」的包的 bridge，就是这样通过了 `typecheck:all`、
+> 却在运行时以 `ERR_MODULE_NOT_FOUND` 死掉的。现在两者钉在同一条线上，
+> 并且有测试**推导**这一点而不是把它重写一遍。
 
 ---
 

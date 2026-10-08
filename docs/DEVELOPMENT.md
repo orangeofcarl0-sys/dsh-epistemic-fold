@@ -16,7 +16,7 @@ The repository intentionally does not commit the DSH vendor tree.
 ```bash
 git clone https://github.com/deepseek-ai/deepseek-harness.git vendor/deepseek-harness
 cd vendor/deepseek-harness
-git checkout 477b4f420553e8a52c2fbccc464d7561b239c443
+git checkout 639ed015397290b3745d163aafe02ffee4aa3f84
 pnpm install
 ```
 

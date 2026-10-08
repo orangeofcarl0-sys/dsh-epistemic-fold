@@ -8,7 +8,7 @@ on:
 
 jobs:
   pinned-dsh:
-    name: DSH 0.1.7-rc.2 (pinned)
+    name: DSH 0.2.0-rc.2 (pinned)
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: deepseek-ai/deepseek-harness
-          ref: 477b4f420553e8a52c2fbccc464d7561b239c443
+          ref: 639ed015397290b3745d163aafe02ffee4aa3f84
           path: vendor/deepseek-harness
 
       - name: Setup Node
