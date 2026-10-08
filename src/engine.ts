@@ -850,11 +850,20 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       previousTokens = measurement.totalTokens
     }
 
-    throw new Error(
+    // Tagged so the harness can name the KIND without matching prose. This is a
+    // distinct failure from a truncated summary: the summary SUCCEEDED, twice,
+    // and the surface was still over threshold -- which is what a tiny foldable
+    // prefix produces (measured: frozen prefix 180 and 40 tokens against a
+    // 53-68K live surface). It recurred in both economy passes, so unlike the
+    // truncation it is reproducible, and it does not belong in a bucket called
+    // 'other' beside genuinely unknown faults.
+    const unresolved = new Error(
       `epistemic-fold: still above threshold after ${spec.compactionRetries + 1} leaf fold attempts `
       + `(${measurement.totalTokens} estimated tokens >= threshold ${spec.thresholdTokens}, `
       + `frozen prefix ${pressureBreakdown(agent.session, measurement, spec.thresholdTokens).frozenTokens})`,
-    )
+    ) as Error & { code?: string }
+    unresolved.code = 'PRESSURE_UNRESOLVED'
+    throw unresolved
   }
 
   /**

@@ -100,6 +100,31 @@ describe('a fold failure is contained in the harness', () => {
     expect(source).toContain("code === 'LIVE_HTTP'")
   })
 
+  it('names a failed fold that is neither truncated nor the provider', () => {
+    // "still above threshold after N leaf fold attempts" is a THIRD thing: the
+    // summary succeeded and the surface is still over the threshold. It was the
+    // only non-truncated failure in the two-pass run and it recurred in both
+    // economy passes, so it is reproducible rather than noise. Left as 'other' it
+    // would share a bucket with genuinely unknown faults -- the conflation this
+    // classifier exists to end.
+    expect(source, 'the harness must name the kind').toContain("'pressure-unresolved'")
+    expect(source, 'and must not rely on prose alone').toContain("code === 'PRESSURE_UNRESOLVED'")
+    // The code has to be attached where the error is RAISED, or the structural
+    // branch above can never fire. It goes on EF's own engine, which is ours.
+    //
+    // NOT on src/basic/index.ts, which raises the same failure in Basic's
+    // wording: that tree is a byte-identical vendored copy of
+    // @deepseek-ai/dsh-compaction-basic (tests/rc7-vendored-basic.spec.ts), so a
+    // tag there would rot the fork. Both messages are covered by the fallback
+    // above, which is why the tag is an optimisation and not the only path.
+    const raiser = readFileSync(join(ROOT, 'src', 'engine.ts'), 'utf8')
+    expect(raiser, 'the engine must tag it').toContain("unresolved.code = 'PRESSURE_UNRESOLVED'")
+    expect(raiser, 'and must keep the message').toMatch(/still above threshold after/u)
+    const vendored = readFileSync(join(ROOT, 'src', 'basic', 'index.ts'), 'utf8')
+    expect(vendored, 'the vendored copy must stay untouched').not.toContain('PRESSURE_UNRESOLVED')
+    expect(vendored, 'and keep its own wording').toMatch(/compaction still above threshold after/u)
+  })
+
   it('surfaces the counters in the telemetry it reports', () => {
     // A counter nobody reads is not a record. The telemetry block is what the
     // LHTB transcript persists.

@@ -228,8 +228,8 @@ interface Telemetry {
    * arm showed 8 failures on one cell from a summarization budget error and 2 on
    * another from a provider HTTP 500, and because only the LAST message was kept,
    * the two were indistinguishable after the fact. Keys are
-   * `truncated` | `provider-http` | `provider-transport` |
-   * `unsupported-content` | `timeout` | `other`.
+   * `truncated` | `pressure-unresolved` | `provider-http` |
+   * `provider-transport` | `unsupported-content` | `timeout` | `other`.
    */
   readonly compactionFailureKinds: Readonly<Record<string, number>>
   /**
@@ -439,11 +439,19 @@ function classifyCompactionFailure(error: unknown, aborted: boolean): string {
   if (aborted) return 'timeout'
   const code = (error as { code?: unknown } | null | undefined)?.code
   if (code === 'MAX_TOKENS') return 'truncated'
+  // The summary SUCCEEDED and the surface is still over threshold -- a different
+  // fault from a truncated one, and a REPRODUCIBLE one: it appeared in both
+  // economy passes (frozen prefix 180 and 40 tokens against a 53-68K live
+  // surface). Named rather than left in 'other', because a bucket holding this
+  // and a genuinely unknown fault is the conflation this classifier exists to
+  // end.
+  if (code === 'PRESSURE_UNRESOLVED') return 'pressure-unresolved'
   if (code === 'LIVE_HTTP') return 'provider-http'
   if (code === 'LIVE_TRANSPORT') return 'provider-transport'
   if (code === 'UNSUPPORTED_CONTENT') return 'unsupported-content'
   const message = error instanceof Error ? error.message : String(error)
   if (/truncated at the token cap/u.test(message)) return 'truncated'
+  if (/still above threshold after/u.test(message)) return 'pressure-unresolved'
   if (/HTTP [0-9]{3}/u.test(message)) return 'provider-http'
   return 'other'
 }
