@@ -30,6 +30,7 @@ import { FileBundleStore } from '../src/bundle-store.ts'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { ToolRuntime } from '@deepseek-ai/dsh-tools'
 import { CommandRuntime } from '@deepseek-ai/dsh-commands'
+import { ToolResultPruner } from '@deepseek-ai/dsh-compaction-tool-result-pruner'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 import type { EpistemicFoldConfig } from '../src/policy.ts'
@@ -188,6 +189,16 @@ export async function createHarness(
      * WITHOUT one simply omits this.
      */
     commands?: boolean
+    /**
+     * Mount the production `ToolResultPruner` (RC28).
+     *
+     * `dsh-base` mounts it, and EF's pressure path reads `ctx.get('toolResultPruner')`
+     * to prune before deciding on a fold — so without it the harness measures a
+     * configuration that cannot ship. It is the only mechanism that can shrink a
+     * single tool result larger than the fold threshold, which the retention walk
+     * makes un-foldable by construction.
+     */
+    pruner?: boolean
   } = {},
 ): Promise<Harness> {
   // FAIL LOUD on a mutually exclusive mount (RC1.2.1).
@@ -224,6 +235,11 @@ export async function createHarness(
   // The recall tools register only when a ToolRuntime is present, so a test
   // that wants a real agent loop must ask for one.
   if (options.tools === true) new ToolRuntime(ctx)
+  // Production mounts the tool-result pruner in `dsh-base`, and EF's pressure path
+  // READS it (`ctx.get('toolResultPruner')`) before deciding on a fold. Opt in
+  // where the prune step is under test; the default stays off so a test about
+  // something else is not silently handed a second compaction mechanism.
+  if (options.pruner === true) new ToolResultPruner(ctx, {})
   // The `/context` command registers only when a command registry is present,
   // for the same reason: a compaction-only deployment mounts cleanly without it.
   if (options.commands === true) new CommandRuntime(ctx)

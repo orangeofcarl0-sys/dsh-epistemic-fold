@@ -139,6 +139,29 @@ function mapFinish(reason: string | undefined, sawToolCall: boolean): FinishReas
   return { kind: 'stop' }
 }
 
+/**
+ * How many times a rate-limited call is retried before the failure is reported.
+ *
+ * Three attempts is chosen against the measured shape of the fault: the Phase 7
+ * two-pass run saw 2-14% of calls throttled, so a burst is short and a couple of
+ * retries clears it — while an outage that survives three attempts is a real
+ * outage, and reporting it is more useful than continuing to sleep through the
+ * episode budget.
+ */
+const MAX_RATE_LIMIT_RETRIES = 3
+
+/** First backoff step when the provider sends no `Retry-After`. */
+const RATE_LIMIT_BASE_DELAY_MS = 1_000
+
+/**
+ * Ceiling on one wait, whether it came from `Retry-After` or from the backoff.
+ *
+ * A provider may ask for minutes. Sleeping that long inside a measured episode
+ * spends the budget being timed rather than doing work, so the wait is clamped
+ * and the retry that follows is allowed to fail normally.
+ */
+const MAX_RETRY_AFTER_MS = 30_000
+
 export interface LiveAdapterOptions {
   readonly baseUrl: string
   readonly apiKey: string
@@ -166,6 +189,9 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
   private readonly contextWindow: number
   private readonly headers: Readonly<Record<string, string>>
   private readonly fetchImpl: typeof fetch
+  /** Rate-limit retries performed, and rate limits given up on. See the getter. */
+  private rateLimitRetries = 0
+  private rateLimitExhausted = 0
 
   constructor(options: LiveAdapterOptions) {
     super()
@@ -184,6 +210,114 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
       name: model,
       context: { contextWindow: this.contextWindow },
     })
+  }
+
+  /**
+   * POST one request, retrying a rate limit a bounded number of times.
+   *
+   * ## Why a 429 must be retried rather than reported
+   *
+   * Before this, the adapter was single-shot: a 429 became a `LIVE_HTTP` finish
+   * with no content, which the bridge turned into an empty reply and the LHTB
+   * agent counted toward its empty-reply streak — so a rate limit could append a
+   * fabricated turn to the conversation and end the episode. The Phase 7 two-pass
+   * run measured 2%, 5%, 7% and 14% upstream 429 rates across four passes, which
+   * is exactly the confound that makes arm comparison impossible: a cell's reward
+   * would depend on provider load rather than on the mode.
+   *
+   * ## Why the retry is bounded and honours Retry-After
+   *
+   * A rate limit is transient, so retrying is the correct response — but an
+   * unbounded retry turns a provider outage into a hung benchmark, and the
+   * episode budget is the thing being measured. So: at most `MAX_RATE_LIMIT_RETRIES`
+   * attempts, each waiting the provider's own `Retry-After` when it sends one
+   * (capped, because a provider may ask for minutes), otherwise an exponential
+   * backoff. Anything else — 5xx, 4xx, transport — is NOT retried here: a 500 is
+   * a different fault with different handling, and silently retrying it would
+   * hide the outages the run needs to record.
+   *
+   * The abort signal is honoured between attempts, so a cancelled turn does not
+   * keep sleeping.
+   *
+   * @param body - the request body, serialized per attempt.
+   * @param signal - the caller's cancellation signal.
+   * @returns the response, once it is not a rate limit or the budget is spent.
+   * @throws when the transport fails, exactly as a single-shot call would.
+   */
+  private async requestWithRetry(
+    body: Record<string, unknown>,
+    signal: AbortSignal | undefined,
+  ): Promise<Response> {
+    let attempt = 0
+    for (;;) {
+      signal?.throwIfAborted()
+      const response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          // Route-required extras (e.g. `x-opencode-session` on `/zen/go/v1`).
+          // Spread FIRST, so the two headers below always win: a route may add a
+          // requirement, but it must not be able to replace the credential or the
+          // content type by naming them. Pinned by tests/live-route-headers.spec.ts.
+          ...this.headers,
+          'content-type': 'application/json',
+          authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify(body),
+        ...(signal === undefined ? {} : { signal }),
+      })
+      if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
+        if (response.status === 429) this.rateLimitExhausted += 1
+        return response
+      }
+      attempt += 1
+      this.rateLimitRetries += 1
+      await this.sleep(this.retryDelayMs(response, attempt), signal)
+    }
+  }
+
+  /**
+   * How long to wait before attempt `attempt + 1`.
+   *
+   * `Retry-After` is honoured in its delta-seconds form — the form this endpoint
+   * uses — and clamped: a provider asking for longer than the cap would otherwise
+   * spend the whole episode budget asleep, which is worse than failing the call.
+   */
+  private retryDelayMs(response: Response, attempt: number): number {
+    const header = response.headers.get('retry-after')
+    if (header !== null) {
+      const seconds = Number(header.trim())
+      if (Number.isFinite(seconds) && seconds >= 0) {
+        return Math.min(seconds * 1_000, MAX_RETRY_AFTER_MS)
+      }
+    }
+    return Math.min(RATE_LIMIT_BASE_DELAY_MS * 2 ** (attempt - 1), MAX_RETRY_AFTER_MS)
+  }
+
+  /** Sleep, aborting early if the caller cancels. */
+  private sleep(ms: number, signal: AbortSignal | undefined): Promise<void> {
+    if (ms <= 0) return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        signal?.removeEventListener('abort', onAbort)
+        resolve()
+      }, ms)
+      const onAbort = (): void => {
+        clearTimeout(timer)
+        reject(new Error('live provider retry aborted'))
+      }
+      signal?.addEventListener('abort', onAbort, { once: true })
+    })
+  }
+
+  /**
+   * Rate-limit retries this adapter has performed, and rate limits it gave up on.
+   *
+   * Exposed so a run can report how much of its wall clock was provider
+   * throttling rather than work — the confound the two-pass measurement could not
+   * separate.
+   */
+  get rateLimitTelemetry(): { readonly retries: number; readonly exhausted: number } {
+    return { retries: this.rateLimitRetries, exhausted: this.rateLimitExhausted }
   }
 
   override async *stream(options: GenerateOptions): AsyncIterable<StreamChunk> {
@@ -220,20 +354,7 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
 
     let response: Response
     try {
-      response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          // Route-required extras (e.g. `x-opencode-session` on `/zen/go/v1`).
-          // Spread FIRST, so the two headers below always win: a route may add a
-          // requirement, but it must not be able to replace the credential or the
-          // content type by naming them. Pinned by tests/live-route-headers.spec.ts.
-          ...this.headers,
-          'content-type': 'application/json',
-          authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify(body),
-        ...(options.signal === undefined ? {} : { signal: options.signal }),
-      })
+      response = await this.requestWithRetry(body, options.signal)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
       yield {

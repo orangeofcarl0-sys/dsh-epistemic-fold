@@ -55,6 +55,52 @@ export const FRAMING_FALLBACK_TOKENS = 530
 export const ROOT_REBASE_COOLDOWN = 5
 
 /**
+ * Whether any fold could bring the surface under the threshold, and the
+ * arithmetic behind that answer.
+ *
+ * `retainedTokens` is the point of the structure: it is what would be LEFT after
+ * the most generous fold available, so a reader can check the conclusion instead
+ * of trusting it.
+ */
+export interface FoldReachability {
+  /** False when no legal fold can reach the threshold — stop rather than retry. */
+  readonly canReachThreshold: boolean
+  readonly totalTokens: number
+  readonly thresholdTokens: number
+  /** Tokens in the widest legal span (an upper bound on what any fold could take). */
+  readonly spanTokens: number
+  /** The checkpoint that span would leave behind, which is why reclaim < span. */
+  readonly checkpointTokens: number
+  /** What the surface would hold after that fold — the number that decides it. */
+  readonly retainedTokens: number
+  readonly frozenTokens: number
+  readonly frozenCount: number
+  /** The retention the caller's selector will apply, recorded for the diagnosis. */
+  readonly retainTokens: number
+  readonly reason: 'reachable' | 'retained_tail_over_threshold' | 'no_legal_span'
+}
+
+/** One line naming every term, so a report can carry the reasoning. */
+export function describeFoldReachability(assessment: FoldReachability): string {
+  const base = `${assessment.totalTokens} estimated tokens >= threshold ${assessment.thresholdTokens}; `
+    + `widest legal span ${assessment.spanTokens} tokens (retain ${assessment.retainTokens}), `
+    + `checkpoint ${assessment.checkpointTokens.toFixed(0)}, `
+    + `retained after folding it ${assessment.retainedTokens.toFixed(0)}; `
+    + `frozen prefix ${assessment.frozenTokens} across ${assessment.frozenCount} checkpoint(s)`
+  switch (assessment.reason) {
+    case 'no_legal_span':
+      return `no structurally legal span past the frontier (${base})`
+    case 'retained_tail_over_threshold':
+      return `folding the widest legal span cannot reach the threshold (${base})`
+    case 'reachable':
+      return `a fold can reach the threshold (${base})`
+    /* v8 ignore next -- closed-union exhaustiveness guard */
+    default:
+      return base
+  }
+}
+
+/**
  * Decide whether a leaf fold is economically admissible (R2-B).
  *
  * Two independent refusals:
@@ -140,6 +186,110 @@ export function admitLeafEconomically(options: {
     detail:
       `reclaim ${reclaim.reclaimTokens.toFixed(0)} tokens, MRR ${(reclaim.reclaimRatio * 100).toFixed(1)}%`,
     reclaim,
+  }
+}
+
+/**
+ * Whether a fold can reach the threshold AT ALL, computed before attempting one.
+ *
+ * ## The defect this exists for
+ *
+ * The leaf retry loop measured its progress only AFTER a fold had committed, and
+ * when it ran out of attempts it threw. Two failures followed from that:
+ *
+ *   1. A surface where no legal span can reach the threshold retried anyway. The
+ *      Phase 7 two-pass run hit this twice, reproducibly, at 53K and 68K against
+ *      a 16K threshold, and reported it as `pressure-unresolved`.
+ *   2. The error's "after N leaf fold attempts" was `compactionRetries + 1` — a
+ *      CONSTANT, not a count. The loop can also `break` on a null span, so the
+ *      message could claim two attempts after one committed fold. It also printed
+ *      only `frozenTokens`, never `frozenCount` or the span, so a reader could not
+ *      tell "nothing was foldable" from "the fold did not help".
+ *
+ * ## Why a rebase is not the answer either
+ *
+ * The obvious escalation — hand a non-converging surface to the root/emergency
+ * rebase — does not work, and this is the part that is easy to get wrong. Both
+ * `selectCompactableRange` and `selectLeafSpan` walk the surface from the tail and
+ * `break` as soon as `retainTokens` is met. At `retainTokens = 0` that break fires
+ * on the FIRST iteration, so the last node is retained at every setting, and a
+ * single node larger than the threshold is un-foldable by construction. Measured
+ * on a 66K surface whose last node was a 60K tool result:
+ *
+ *     leaf    (retain 5120)  foldable 6096   retained 60020
+ *     rebase  (retain 0)     foldable 6096   retained 60020
+ *     emergency rebase committed            -> 60136, still over threshold
+ *
+ * So escalating converts a loud throw into a SILENT non-convergence. The honest
+ * response is to say so before spending a summarization call.
+ *
+ * ## What this computes
+ *
+ * The best case, not a prediction: fold the ENTIRE legal span (the most generous
+ * range either selector would take), and ask whether the retained remainder could
+ * reach the threshold. If it cannot, no sequence of folds can, and the caller
+ * should stop with the arithmetic rather than retry.
+ *
+ * The checkpoint the fold leaves behind is charged, because a leaf replaces its
+ * span with a checkpoint that stays on the surface — so the reclaim is
+ * `span - checkpoint`, not `span`.
+ *
+ * @param options.session - session whose surface is measured.
+ * @param options.measurement - token-meter measurement matching the surface.
+ * @param options.thresholdTokens - the pressure threshold in force.
+ * @param options.retainTokens - the retention the caller's selector will use.
+ * @returns the arithmetic, and whether any fold could reach the threshold.
+ */
+export function assessFoldReachability(options: {
+  readonly session: Session
+  readonly measurement: TokenMeasurement
+  readonly thresholdTokens: number
+  readonly retainTokens: number
+}): FoldReachability {
+  const { session, measurement, thresholdTokens, retainTokens } = options
+  const breakdown = pressureBreakdown(session, measurement, thresholdTokens)
+
+  // The widest legal span, taken with retain 0 so it is an UPPER bound on what
+  // any selector could fold. `selectLeafSpan` with the caller's own retention
+  // can only be narrower, which is why the bound is computed this way.
+  const widest = selectLeafSpan(session, measurement, 0)
+  if (widest === null) {
+    return {
+      canReachThreshold: false,
+      totalTokens: breakdown.totalTokens,
+      thresholdTokens,
+      spanTokens: 0,
+      checkpointTokens: 0,
+      retainedTokens: breakdown.totalTokens,
+      frozenTokens: breakdown.frozenTokens,
+      frozenCount: breakdown.frozenCount,
+      retainTokens,
+      reason: 'no_legal_span',
+    }
+  }
+
+  const spanTokens = measurement.nodes
+    .slice(widest.startIdx, widest.endIdx + 1)
+    .reduce((total, node) => total + node.tokens, 0)
+  // A fold replaces the span with a checkpoint that JOINS the frozen prefix, so
+  // the reclaim is the difference. A first fold has no prefix to average, so the
+  // measured framing constant is used.
+  const checkpointTokens = breakdown.frozenCount > 0
+    ? breakdown.frozenTokens / breakdown.frozenCount
+    : FRAMING_FALLBACK_TOKENS
+  const retainedTokens = breakdown.totalTokens - Math.max(0, spanTokens - checkpointTokens)
+
+  return {
+    canReachThreshold: retainedTokens < thresholdTokens,
+    totalTokens: breakdown.totalTokens,
+    thresholdTokens,
+    spanTokens,
+    checkpointTokens,
+    retainedTokens,
+    frozenTokens: breakdown.frozenTokens,
+    frozenCount: breakdown.frozenCount,
+    retainTokens,
+    reason: retainedTokens < thresholdTokens ? 'reachable' : 'retained_tail_over_threshold',
   }
 }
 

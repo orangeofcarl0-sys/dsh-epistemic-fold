@@ -50,10 +50,12 @@ import { TriggerDiagnostics } from './trigger-diagnostics.ts'
 import {
   ROOT_REBASE_COOLDOWN,
   admitLeafEconomically,
+  assessFoldReachability,
+  describeFoldReachability,
   evaluateEconomicRebase,
   rootRebaseAdvice,
 } from './fold-economics.ts'
-import type { LeafAdmissionVerdict } from './fold-economics.ts'
+import type { FoldReachability, LeafAdmissionVerdict } from './fold-economics.ts'
 import { classifyRegime, resolveProfile, rhoOf } from './economics-profile.ts'
 import type { ContextPolicyDecision } from './policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
@@ -236,6 +238,16 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * overflow leaf from an illegal frozen-bound one.
    */
   private lastCapacityRegimeValue: CapacityRegime | undefined
+  /**
+   * The reachability arithmetic from the last automatic fold decision.
+   *
+   * Recorded because the failure it explains was previously unreadable: a
+   * `pressure-unresolved` error named only `frozenTokens`, so a reader could not
+   * tell "nothing was foldable" from "the fold did not help" — and Phase 7's
+   * report concluded the wrong one. This carries the span, the checkpoint and the
+   * retained remainder, which is what decides it.
+   */
+  private lastFoldReachabilityValue: FoldReachability | undefined
   /** Framing mode in force, resolved once against the mounted context. */
   private framingModeResolved: FramingMode | undefined
   /** The per-target trigger decomposition reported to the log (RC1-A). */
@@ -428,6 +440,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   get lastCapacityRegime(): CapacityRegime | undefined {
     return this.lastCapacityRegimeValue
+  }
+
+  /**
+   * The reachability arithmetic from the most recent automatic fold decision.
+   *
+   * `canReachThreshold === false` means no legal fold could have brought this
+   * surface under the threshold, so the engine stopped instead of retrying — and
+   * a rebase would not have helped either, because it retains the same tail.
+   */
+  get lastFoldReachability(): FoldReachability | undefined {
+    return this.lastFoldReachabilityValue
   }
 
   /** The pending-rebase registry the idle consumer drives (R3-0b). */
@@ -803,8 +826,41 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       return this.rebaseAfterLeafRefusal(agent, measurement, spec)
     }
 
+    // ## Reachability pre-flight — before spending a SECOND summarization call
+    //
+    // Computed here, before the loop, so its verdict is recorded even when the
+    // first fold converges. What it gates is the RETRY, not the first fold: a
+    // single fold is legitimate even when it cannot reach the threshold, because
+    // it still reduces pressure and — load-bearing — it grows the frozen prefix,
+    // which is the only mechanism that eventually hands off to a rebase. Gating
+    // the first fold instead would freeze the prefix and make `frozen-bound`
+    // unreachable, which is a worse bug than the one being fixed.
+    //
+    // What it prevents is the observed thrash: folding, failing to reach, folding
+    // again, and throwing a message that named none of the arithmetic. The Phase 7
+    // two-pass run hit that reproducibly at 53K and 68K against a 16K threshold.
+    //
+    // Escalating to a rebase does not rescue it, which is why the fix is "stop and
+    // say why" rather than "try the other mechanism": `selectCompactableRange`
+    // walks from the tail and breaks on the first iteration at `retainTokens = 0`,
+    // so the last node is retained at every setting and a single node larger than
+    // the threshold is un-foldable by construction. Measured on a 66K surface
+    // whose last node was a 60K tool result: leaf and rebase both folded 6096
+    // tokens and both retained 60020; an emergency rebase committed and left 60136.
+    const reach = assessFoldReachability({
+      session: agent.session,
+      measurement,
+      thresholdTokens: spec.thresholdTokens,
+      retainTokens: spec.retainTokens,
+    })
+    this.lastFoldReachabilityValue = reach
+
     let result: CompactionResult | null = null
     let previousTokens = measurement.totalTokens
+    // Counted rather than derived: the message below used to report
+    // `spec.compactionRetries + 1`, a CONSTANT, so it claimed two attempts after
+    // one committed fold and a reader could not tell how much work was done.
+    let committed = 0
     for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
       const span = selectLeafSpan(agent.session, measurement, spec.retainTokens)
       if (span === null) {
@@ -812,6 +868,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         break
       }
       result = await this.compactRegion(span.start, span.end, agent, signal)
+      committed += 1
       measurement = meter.measure(agent.session)
       if (measurement.totalTokens < spec.thresholdTokens) {
         this.recordRootRebaseAdvice(agent.session, measurement, agent)
@@ -848,13 +905,62 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         return result
       }
       previousTokens = measurement.totalTokens
+
+      // ## The reachability guard — a retry that cannot reach the threshold
+      //
+      // Checked AFTER a fold and BEFORE the next one, which is the only placement
+      // that is both correct and useful. A first fold is always legitimate: it
+      // reduces pressure, and it grows the frozen prefix, which is what eventually
+      // makes `frozen-bound` reachable and hands the surface to a rebase. Gating
+      // the FIRST fold instead would freeze the prefix and make that handoff
+      // unreachable — a worse bug than the thrash being prevented (measured: a
+      // 14-step workload stopped folding at step 8 and never reached
+      // frozen-bound, so the I1 gates became untestable).
+      //
+      // Recomputed from the CURRENT measurement, not the pre-loop one: the fold
+      // just committed changed both the total and the span, and a stale reading
+      // would answer a question about a surface that no longer exists.
+      //
+      // What must not happen is the retry: the observed failure folded, did not
+      // reach the threshold, folded again, and threw a message naming none of the
+      // arithmetic. If the widest legal span cannot reach the threshold, the
+      // second fold cannot either — the surface is a fixpoint of this action.
+      const afterFold = assessFoldReachability({
+        session: agent.session,
+        measurement,
+        thresholdTokens: spec.thresholdTokens,
+        retainTokens: spec.retainTokens,
+      })
+      this.lastFoldReachabilityValue = afterFold
+      if (!afterFold.canReachThreshold) {
+        this.ctx.logger.warn(
+          `[epistemic-fold] after ${committed} committed leaf fold(s), no further fold can reach `
+          + `the threshold — ${describeFoldReachability(afterFold)}. Stopping rather than retrying; `
+          + 'a rebase cannot help either, because it retains the same tail.',
+        )
+        return result
+      }
     }
 
-    throw new Error(
-      `epistemic-fold: still above threshold after ${spec.compactionRetries + 1} leaf fold attempts `
-      + `(${measurement.totalTokens} estimated tokens >= threshold ${spec.thresholdTokens}, `
-      + `frozen prefix ${pressureBreakdown(agent.session, measurement, spec.thresholdTokens).frozenTokens})`,
-    )
+    // The count is REAL, and the arithmetic is included.
+    //
+    // This message used to say "after ${spec.compactionRetries + 1} leaf fold
+    // attempts" — a constant, so it read as "the summary succeeded, twice" even
+    // when the loop had `break`-ed on a null span after a single committed fold.
+    // Phase 7's report cited that sentence as evidence; it could not support it.
+    // `committed` is what actually landed, and the reachability line lets a reader
+    // check whether the remaining pressure was ever foldable.
+    const stalled = new Error(
+      `epistemic-fold: still above threshold after ${committed} committed leaf fold(s) `
+      + `(${describeFoldReachability(assessFoldReachability({
+        session: agent.session,
+        measurement,
+        thresholdTokens: spec.thresholdTokens,
+        retainTokens: spec.retainTokens,
+      }))})`,
+    ) as Error & { code?: string }
+    stalled.code = 'PRESSURE_UNRESOLVED'
+    throw stalled
   }
 
   /**

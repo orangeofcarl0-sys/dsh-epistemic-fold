@@ -55,6 +55,9 @@ import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
 import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
 import { ToolRuntime } from '@deepseek-ai/dsh-tools'
+// Production mounts this in `dsh-base`; see the mount site in `init` for why the
+// harness must too. Imported from SOURCE like every other vendored module here.
+import { ToolResultPruner } from '@deepseek-ai/dsh-compaction-tool-result-pruner'
 // Imported from SOURCE, like every other module under `eval/` — not from
 // `lib/*.js`. The build deliberately ships no `.d.ts` ("emitting declarations
 // would create a SECOND artifact"), so a `lib/` import resolves to `any` and
@@ -240,6 +243,18 @@ interface Telemetry {
    * failure can echo a request that carries the credential.
    */
   readonly lastCompactionError: string | null
+  /**
+   * Model calls that failed AT THE PROVIDER (429, 5xx, transport), and the last
+   * message.
+   *
+   * Separate from `modelCalls` because such a call is not a model turn: it
+   * produces no text, no tool calls, and no surface node. Reported so a report
+   * can subtract provider load from mode quality — the two were previously
+   * indistinguishable, because a failed call reached the agent as an ordinary
+   * empty reply and was attributed to the model.
+   */
+  readonly providerFailures: number
+  readonly lastProviderError: string | null
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
@@ -273,6 +288,17 @@ let compactionFailures = 0
 let compactionFailureKinds: Record<string, number> = {}
 let lastCompactionError: string | null = null
 let modelCalls = 0
+/**
+ * Model calls that FAILED at the provider, and the last failure message.
+ *
+ * Counted separately from `modelCalls` because a provider failure is not a model
+ * turn: it produces no text, no tool calls, and no surface node. Without this the
+ * only trace of a 429 was the agent's own "empty response" anomaly, which reads
+ * as the model declining to act — the misattribution that made provider load
+ * indistinguishable from mode quality.
+ */
+let providerFailures = 0
+let lastProviderError: string | null = null
 /** How the last model call finished, so an empty reply can be attributed. */
 let lastFinishReason = 'unknown'
 let promptTokensLast = 0
@@ -763,6 +789,17 @@ interface TauAssistant {
   readonly role: 'assistant'
   readonly content: string | null
   readonly tool_calls?: readonly { readonly id: string; readonly name: string; readonly arguments: string }[]
+  /**
+   * Set when the provider call FAILED, so the caller can tell a failed call from
+   * a model that produced nothing.
+   *
+   * This is the distinction the LHTB agent needs and did not have: without it,
+   * `content: null` from an HTTP 429 and `content: null` from a genuinely silent
+   * model are the same message, and the agent treated both as an empty reply to
+   * be nudged — which counted a provider failure as the agent's own fault and
+   * could end the episode after `MAX_EMPTY_STREAK`.
+   */
+  readonly error?: string
 }
 
 /**
@@ -815,6 +852,32 @@ async function modelTurn(): Promise<TauAssistant> {
   // per turn: `realizedCost` prices the full log, so adding its result each turn
   // would count every earlier call again.
 
+  // ## A FAILED call must not write a turn into the durable surface
+  //
+  // This used to append the assistant message unconditionally, before knowing
+  // whether the call had succeeded. So an HTTP 429 wrote an EMPTY assistant turn
+  // into the session — which is not a cosmetic artifact: that node is metered,
+  // foldable, and read back to the model as its own prior output, and the agent
+  // separately counted it toward its empty-reply streak. The provider's rate
+  // limit therefore changed the conversation history and could end the episode,
+  // which makes any arm comparison uninterpretable: a cell's reward would depend
+  // on provider load rather than on the mode.
+  //
+  // `error:` is set by the adapter for `LIVE_HTTP` and `LIVE_TRANSPORT`, so the
+  // finish reason is the signal. On failure the turn is closed EMPTY and nothing
+  // is appended — the transcript keeps the failure in telemetry, and the model is
+  // never shown a turn it did not produce.
+  if (finishReason.startsWith('error:')) {
+    providerFailures += 1
+    lastProviderError = finishReason.slice('error:'.length)
+    // Close the turn that `rotateTurn` opened, so the lifecycle stays balanced.
+    // An empty turn is legal; an unclosed one is not.
+    if (turnHasContent) {
+      closeTurn()
+      turnHasContent = false
+    }
+    return { role: 'assistant', content: null, error: lastProviderError }
+  }
 
   // Record what the model said, so the next turn's surface includes it. The
   // engine folds THIS history, so it must be appended exactly as it happened.
@@ -888,6 +951,8 @@ async function init(request: {
   compactionFailures = 0
   compactionFailureKinds = {}
   lastCompactionError = null
+  providerFailures = 0
+  lastProviderError = null
   modelCalls = 0
   promptTokensLast = 0
   surfaceNodesLast = 0
@@ -902,6 +967,36 @@ async function init(request: {
   new SessionProjectionRegistry(ctx)
   void new TokenMeter(ctx)
   void new SystemPrompt(ctx, {})
+  // ## The tool-result pruner, which production mounts and this harness did not
+  //
+  // `dsh-base`'s own preset mounts `@deepseek-ai/dsh-compaction-tool-result-pruner`
+  // with `{ thresholdChars: 8192, headChars: 4096, tailChars: 1024 }`, and the EF
+  // engine READS it (`ctx.get('toolResultPruner')` in `compactIfNeeded`) to prune
+  // before deciding on a fold. This harness mounted nothing, so the pruner was
+  // `undefined` on every run and the prune step was skipped entirely.
+  //
+  // That omission is not cosmetic. A single tool result larger than the fold
+  // threshold is UN-FOLDABLE by construction: the retention walk in
+  // `selectCompactableRange` accumulates from the tail and breaks on the first
+  // iteration at `retainTokens = 0`, so the last node is retained whatever the
+  // setting — and `selectLeafSpan` has the identical walk. Measured on a
+  // 66K-token surface whose last node was a 60K tool result:
+  //
+  //   without the pruner  before=66116 after=60136  leaves=1  THREW
+  //                       ("still above threshold after 2 leaf fold attempts")
+  //   with the pruner     before=66116 after=7406   leaves=0  converged
+  //
+  // So the `pressure-unresolved` failures the Phase 7 two-pass run reported were
+  // measured on a configuration that cannot ship: LHTB's oversized node IS shell
+  // output, which is exactly what the pruner targets, and the mechanism that
+  // handles it was absent. The config is production's, deliberately — a different
+  // threshold would be a different experiment.
+  //
+  // Note what this does NOT fix: the pruner only collects `event.type ===
+  // 'tool/result'`. An oversized USER or ASSISTANT message is not prunable and
+  // the retention walk still protects it, which is why the engine also gained a
+  // pre-flight (see `compactIfNeeded`).
+  new ToolResultPruner(ctx, { thresholdChars: 8_192, headChars: 4_096, tailChars: 1_024 })
   // The ToolRuntime is what makes the EF recall tools REGISTER.
   //
   // `registerRecallTools` runs only when `ctx.tools` exists — a compaction-only
@@ -1051,6 +1146,8 @@ async function telemetry(): Promise<Telemetry> {
     compactionFailures,
     compactionFailureKinds,
     lastCompactionError,
+    providerFailures,
+    lastProviderError,
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     lastFinishReason,

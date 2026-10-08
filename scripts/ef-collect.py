@@ -159,6 +159,19 @@ def cell(path: Path) -> dict[str, Any]:
         "lastCompactionError", telemetry.get("lastFoldError", "MISSING")
     )
 
+    # --- WHY the episode ended, and how much of it was provider trouble ------
+    #
+    # Readings, not invariants. These are the fields whose absence made a cell's
+    # death unattributable: a reward of 0 from an exhausted empty streak, from a
+    # truncated reply read as completion, and from a provider outage were three
+    # different facts that looked identical in the table. `/3` archives carry
+    # them; a `/2` archive reports MISSING rather than inventing a reason.
+    row["termination"] = payload.get("termination", "MISSING")
+    provider = payload.get("provider_failures")
+    if provider is None:
+        provider = telemetry.get("providerFailures")
+    row["providerFailures"] = "MISSING" if provider is None else provider
+
     return row
 
 
@@ -206,6 +219,10 @@ def main() -> int:
                 f" kinds={row.get('compactionFailureKinds')}{legacy}"
                 f" lastCompactionError={row.get('lastCompactionError')!r}"
             )
+        # Always shown, even when zero: the termination reason is the field that
+        # makes a reward attributable, and a zero provider-failure count is
+        # itself a finding (the run was not throttled).
+        print(f"  READ termination={row.get('termination')!r} providerFailures={row.get('providerFailures')}")
 
     print(f"\n{len(rows)} cell(s): {failed} failed, {skipped_total} unverified check(s)")
     if skipped_total:

@@ -61,6 +61,16 @@ MAX_TURNS = int(os.environ.get("EF_LHTB_MAX_TURNS", "400"))
 # an anomaly to nudge past, not a reason to abandon a multi-hour task.
 MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
 
+# How many PROVIDER failures are tolerated before the episode is abandoned.
+#
+# Separate from MAX_EMPTY_STREAK, and deliberately larger, because the two are
+# different events: an empty response is the model declining to act (the agent's
+# problem), while a provider failure is infrastructure (nobody's problem, and
+# usually transient). Conflating them is what let provider load be mistaken for
+# mode quality. The adapter already retried a rate limit before reporting one, so
+# reaching this ceiling means the route is genuinely down.
+MAX_PROVIDER_FAILURES = int(os.environ.get("EF_LHTB_MAX_PROVIDER_FAILURES", "12"))
+
 # The placeholder the bridge substitutes when the model produced nothing. Kept in
 # sync with `EMPTY_TURN_PLACEHOLDER` in bridge-host.ts.
 EMPTY_PLACEHOLDER = "(no response)"
@@ -233,6 +243,14 @@ class EFLhtbAgent(BaseAgent):
 
         total_calls = 0
         empty_streak = 0
+        # Provider failures are counted across the WHOLE episode, not per streak:
+        # a rate limit that clears and returns must not reset the ledger, or an
+        # intermittently-throttled run would look healthy.
+        provider_failures = 0
+        # Why the loop ended. Recorded because a cell's reward says nothing about
+        # it, and the container is deleted afterwards — so "died after 7 calls"
+        # was previously unattributable from the archive alone.
+        termination = "turn-budget-exhausted"
         # The first step carries no incoming message: the instruction is already
         # in the session.
         reply = self._bridge.step()
@@ -240,8 +258,47 @@ class EFLhtbAgent(BaseAgent):
         for turn in range(1, MAX_TURNS + 1):
             calls = reply.get("tool_calls") or []
 
+            # ## A provider failure is not a model turn
+            #
+            # The bridge sets `error` when the call failed at the provider (429,
+            # 5xx, transport), and appends NOTHING to the session for it. This
+            # branch must therefore not nudge the model: the model never saw the
+            # request, so there is nothing for it to answer, and a nudge would
+            # append a turn to the conversation because the PROVIDER was busy.
+            #
+            # Before this, a 429 arrived as an ordinary empty reply: it counted
+            # toward `empty_streak`, a fabricated "your last reply was empty"
+            # message entered the history, and five in a row ended the episode.
+            # That is how provider load became indistinguishable from mode quality
+            # — the two-pass run measured 2/5/7/14% 429 rates across four passes.
+            #
+            # Retrying is still correct, because a rate limit is transient; what
+            # changes is that the retry is counted separately and the failure is
+            # recorded as infrastructure rather than as the model declining to act.
+            error = reply.get("error")
+            if error:
+                provider_failures += 1
+                self._transcript.append(
+                    {
+                        "turn": turn,
+                        "anomaly": "provider failure",
+                        "error": str(error)[:300],
+                        "providerFailures": provider_failures,
+                    }
+                )
+                # Bounded, so an outage cannot spin the episode budget away. The
+                # allowance is deliberately generous next to MAX_EMPTY_STREAK: a
+                # provider recovering is worth waiting for, and the adapter has
+                # already retried the rate limit before reporting this.
+                if provider_failures > MAX_PROVIDER_FAILURES:
+                    termination = f"provider-failures-exceeded ({provider_failures})"
+                    break
+                reply = self._bridge.step()
+                continue
+
             if not calls:
                 content = (reply.get("content") or "").strip()
+                finish = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
                 # An EMPTY response is an anomaly, not a completion. Treating it
                 # as "done" ended the first diagnostic run after 14 shell calls:
                 # one blank completion silently terminated a task budgeted in
@@ -250,7 +307,6 @@ class EFLhtbAgent(BaseAgent):
                 # sustained streak of blanks ends the loop.
                 if content == "" or content == EMPTY_PLACEHOLDER:
                     empty_streak += 1
-                    finish = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
                     self._transcript.append(
                         {
                             "turn": turn,
@@ -260,6 +316,7 @@ class EFLhtbAgent(BaseAgent):
                         }
                     )
                     if empty_streak >= MAX_EMPTY_STREAK:
+                        termination = f"empty-streak ({empty_streak}, last finish {finish})"
                         break
                     # A transport failure is retried with a plain nudge; the model
                     # never saw the request, so nothing about the task changed.
@@ -276,7 +333,46 @@ class EFLhtbAgent(BaseAgent):
                     )
                     reply = self._bridge.step()
                     continue
-                # Prose with content: the model is reporting it is finished.
+                # ## Prose with content is NOT necessarily a completion
+                #
+                # This branch used to end the task on any non-empty text, ignoring
+                # the finish reason. A reply truncated at the token cap arrives as
+                # `max-tokens` WITH partial text, so a cut-off answer was read as
+                # the model declaring itself finished — the quieter and more
+                # dangerous of the two misreadings, because it ends a task with no
+                # anomaly recorded anywhere.
+                #
+                # `max-tokens` with no tool calls is an incomplete turn: the model
+                # was still writing. Continuing it is what a human reader would do,
+                # and it keeps the distinction the measurement needed.
+                if finish.endswith("max-tokens"):
+                    empty_streak += 1
+                    self._transcript.append(
+                        {
+                            "turn": turn,
+                            "anomaly": "truncated response",
+                            "streak": empty_streak,
+                            "finishReason": finish,
+                            "chars": len(content),
+                        }
+                    )
+                    if empty_streak >= MAX_EMPTY_STREAK:
+                        termination = f"truncated-streak ({empty_streak})"
+                        break
+                    self._bridge.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                "Your last reply was cut off at the output limit. Continue "
+                                "from where it stopped, or run a command with run_shell."
+                            ),
+                        }
+                    )
+                    reply = self._bridge.step()
+                    continue
+                # Prose with content and a normal finish: the model is reporting
+                # it is finished.
+                termination = "model-reported-completion"
                 self._transcript.append({"turn": turn, "assistant": content})
                 break
 
@@ -335,11 +431,22 @@ class EFLhtbAgent(BaseAgent):
             "ef_arm": self.arm,
             "ef_telemetry": telemetry,
             "ef_shell_calls": total_calls,
+            "ef_termination": termination,
+            "ef_provider_failures": provider_failures,
         }
         self._bridge.close()
-        self._write_transcript(telemetry, total_calls)
+        self._write_transcript(
+            telemetry, total_calls, termination=termination, provider_failures=provider_failures
+        )
 
-    def _write_transcript(self, telemetry: dict[str, Any], total_calls: int) -> None:
+    def _write_transcript(
+        self,
+        telemetry: dict[str, Any],
+        total_calls: int,
+        *,
+        termination: str = "in-progress",
+        provider_failures: int = 0,
+    ) -> None:
         """
         Persist the run's transcript next to Harbor's other agent logs.
 
@@ -356,14 +463,18 @@ class EFLhtbAgent(BaseAgent):
         try:
             self.logs_dir.mkdir(parents=True, exist_ok=True)
             payload = {
-                # /2 renamed the fold-failure fields to their compaction names and
-                # added the kind breakdown. A reader that keys on /1 and looks for
-                # the old names finds them absent and SKIPS -- which is the right
-                # degradation, and better than reading a renamed field as zero.
-                "schema": "ef-lhtb-transcript/2",
+                # /3 adds `termination` and `provider_failures`. Both were missing
+                # from every earlier archive, which is why "the cell died after 7
+                # model calls" could not be attributed: the reward says nothing
+                # about WHY, and the container is deleted afterwards. A /2 reader
+                # that looks for these finds them absent and skips, which is the
+                # right degradation.
+                "schema": "ef-lhtb-transcript/3",
                 "provenance": provenance(self.arm),
                 "arm": self.arm,
                 "shell_calls": total_calls,
+                "termination": termination,
+                "provider_failures": provider_failures,
                 "telemetry": telemetry,
                 "transcript": self._transcript,
             }

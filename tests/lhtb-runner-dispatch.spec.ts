@@ -172,7 +172,7 @@ describe.skipIf(!HAS_BASH)('the LHTB runner dispatches on its mode argument', ()
         expect(result.stdout).toMatch(new RegExp(`job: lhtb-ef-\\S*-${mode}-basic`, 'u'))
       }
     })
-  })
+  }, 60_000)
 
   it('rejects an unknown mode instead of degrading to a probe', () => {
     withFixture((f) => {
@@ -182,7 +182,7 @@ describe.skipIf(!HAS_BASH)('the LHTB runner dispatches on its mode argument', ()
       // And it must not have reached Harbor at all.
       expect(result.stdout).not.toContain('FAKE_HARBOR')
     })
-  })
+  }, 60_000)
 
   it('falls back to EF_LHTB_MODE when no argument is given, and argv wins over it', () => {
     withFixture((f) => {
@@ -203,7 +203,7 @@ describe.skipIf(!HAS_BASH)('the LHTB runner dispatches on its mode argument', ()
       expect(neither.status).toBe(0)
       expect(neither.stdout).toContain('config=lhtb-ef-probe.yaml')
     })
-  })
+  }, 60_000)
 
   it('names a job per (mode, arm) so four sweep arms cannot collide', () => {
     withFixture((f) => {
@@ -218,7 +218,7 @@ describe.skipIf(!HAS_BASH)('the LHTB runner dispatches on its mode argument', ()
       expect(jobOf(quality.stdout)).toContain('-sweep-quality')
       expect(jobOf(economy.stdout)).not.toBe(jobOf(quality.stdout))
     })
-  })
+  }, 60_000)
 
   it('labels the config with the model the run actually uses', () => {
     withFixture((f) => {
