@@ -27,6 +27,7 @@ import BasicCompactionEngine from './basic/index.ts'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
@@ -64,6 +65,7 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
+import { observeWorkingSet } from './working-set-observer.ts'
 import { describeRenderedState, renderStructuredCheckpoint } from './renderer.ts'
 import { rationaleOnly } from './rationale.ts'
 import {
@@ -758,13 +760,32 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       log: line => this.ctx.logger.info(line),
     })
     this.lastThresholdTokensValue = spec.thresholdTokens
-    if (measurement.totalTokens < spec.thresholdTokens) return null
+
+    // RC29: the Thermal Working-Set Observer. The ONLY call site, and the ONLY
+    // reader of `efConfig.workingSet` outside the resolver.
+    //
+    // It runs on the under-threshold path too, and that is the point rather than
+    // an oversight: "the current policy is NOT compacting — is there an
+    // executable early action with a net benefit?" is precisely the question the
+    // shadow policy exists to answer, and it cannot be answered from a surface
+    // the engine already decided to fold. The stage label says which case it was.
+    if (measurement.totalTokens < spec.thresholdTokens) {
+      this.observeWorkingSet(agent, measurement, spec, target, 'idle')
+      return null
+    }
 
     if (prune !== undefined) {
       prune.pruneSession(agent.session)
       measurement = meter.measure(agent.session)
     }
-    if (measurement.totalTokens < spec.thresholdTokens) return null
+    if (measurement.totalTokens < spec.thresholdTokens) {
+      // The pruner ALONE relieved the pressure — no fold will run. Observing
+      // here is what makes the RC28 finding visible per request: the mechanism
+      // that relieved the surface was the pruner, not a fold.
+      this.observeWorkingSet(agent, measurement, spec, target, 'pruned')
+      return null
+    }
+    this.observeWorkingSet(agent, measurement, spec, target, 'pressure')
 
     // R2-B: the economic admission gate. Structurally legal is not the same as
     // worth doing: a fold whose span barely exceeds the checkpoint it produces
@@ -961,6 +982,63 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     ) as Error & { code?: string }
     stalled.code = 'PRESSURE_UNRESOLVED'
     throw stalled
+  }
+
+  /**
+   * Run the Thermal Working-Set Observer for one decision point (RC29).
+   *
+   * ## The one thing this method must guarantee
+   *
+   * It must be unable to change what the engine does. That is why it returns
+   * `void` and why its result is discarded at every call site: there is no value
+   * for a caller to branch on. The flag check lives HERE rather than at each call
+   * site, so `efConfig.workingSet` is read in exactly one place and a test can
+   * assert that mechanically.
+   *
+   * ## What it never does
+   *
+   * It does not create a candidate, does not record a rebase intent, does not
+   * call `compactNow` or `compactRegion`, does not append a session event, and
+   * does not issue an LLM call. Everything it computes comes from the session
+   * surface, the token measurement, and policy values already resolved — all of
+   * which it receives as arguments.
+   *
+   * @param agent - agent whose session is observed.
+   * @param measurement - the measurement the decisions below act on.
+   * @param spec - the resolved compact spec in force.
+   * @param target - the routed provider/model, for profile selection.
+   * @param stage - which decision point this is, for the log line.
+   */
+  private observeWorkingSet(
+    agent: Agent,
+    measurement: TokenMeasurement,
+    spec: EfCompactSpec,
+    target: { provider: string; model: string },
+    stage: 'idle' | 'pruned' | 'pressure',
+  ): void {
+    if (this.efConfig.workingSet !== 'observe') return
+    const state = this.mountedState(agent.session)
+    observeWorkingSet({
+      session: agent.session,
+      measurement,
+      spec,
+      config: this.efConfig,
+      provider: target.provider,
+      model: target.model,
+      stepsSinceRootRebase: this.stepsSinceRootRebase,
+      ...(state === undefined ? {} : { state }),
+      // Price a hypothetical checkpoint the way a REAL one is priced: as a user
+      // message carrying the rendered body. Basic's own shrink check prices its
+      // checkpoint with `meter.estimateMessage`, which reads only `role` and
+      // `content` — so the source is immaterial to the price and a plain user
+      // source is used rather than fabricating a compaction id.
+      estimateText: text => this.ctx.tokenMeter.estimateMessage(createUserMessage({
+        content: [{ type: 'text', text }],
+        source: { kind: 'user' },
+      })),
+      log: line => this.ctx.logger.info(line),
+      stage,
+    })
   }
 
   /**

@@ -49,7 +49,32 @@ export type {
   EpistemicFoldConfig,
   LeafAdmissionMode,
   ResolvedEpistemicFoldConfig,
+  WorkingSetMode,
 } from './policy.ts'
+export { assessWorkingSet, describeWorkingSet } from './working-set.ts'
+export type {
+  AssessWorkingSetOptions,
+  ReclaimBasis,
+  WorkingSetBasis,
+  WorkingSetPressure,
+} from './working-set.ts'
+export {
+  DEFAULT_DEMAND_WINDOW_EVENTS,
+  assessThermalResidency,
+  describeThermal,
+  residencyCounts,
+} from './thermal.ts'
+export type {
+  AssessThermalOptions,
+  Residency,
+  ResidencyVerdict,
+  ThermalReport,
+  ThermalUnavailable,
+} from './thermal.ts'
+export { decideShadowFolding, describeShadowDecision, shadowProfileId } from './shadow-policy.ts'
+export type { ShadowFoldingDecision, ShadowPolicyOptions } from './shadow-policy.ts'
+export { observeWorkingSet } from './working-set-observer.ts'
+export type { ObserveWorkingSetOptions, WorkingSetObservation } from './working-set-observer.ts'
 export {
   BALANCED_RETAIN_RATIO,
   FOLD_MODE_NAMES,

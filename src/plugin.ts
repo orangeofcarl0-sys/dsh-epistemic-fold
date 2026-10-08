@@ -89,6 +89,9 @@ export class EpistemicFoldPlugin {
     frozenCheckpointTokenBudget: z.number(),
     semanticMode: z.union(['none', 'rationale'] as const),
     bundleRoot: z.string(),
+    // RC29: the working-set observer. Declared here or the loader's schema
+    // validation would reject a deployment that set it.
+    workingSet: z.union(['off', 'observe'] as const),
   })
 
   /** The engine instance this plugin mounts (owns `ctx.compaction`). */

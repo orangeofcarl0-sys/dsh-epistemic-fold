@@ -285,6 +285,11 @@
     "sha256": "449d039b9034fb86f5f1dde95ed9c84391d9e009c070a00f9dc2f83b789e22f2"
   },
   {
+    "file": "57_RC29_WORKING_SET_OBSERVER.md",
+    "bytes": 16220,
+    "sha256": "0ce9cd5b649054afa3c9e485e856e3e9e765cc62ba8f05103660f83305220729"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -306,8 +311,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8536,
-    "sha256": "d8b3361313cce2dae360c8f800a8832f24373153b2d1e9d3e547e7b0701e131e"
+    "bytes": 8605,
+    "sha256": "f699a39316f2e47f8e2f4ace40de1955037a7ab52d53695d5f181ebd6147fdc2"
   },
   {
     "file": "README.zh.md",
