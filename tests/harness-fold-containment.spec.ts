@@ -115,6 +115,23 @@ describe('a fold failure is contained in the harness', () => {
     expect(source).toMatch(/lastCompactionError = null/u)
   })
 
+  it('records TOKENS, because seconds are a property of the host', () => {
+    // The efficiency measure has to be machine-independent or it is not a
+    // measure. Wall clock moves with load, contention, provider latency and how
+    // many runs are on the box; tokens are a property of the episode alone. They
+    // are also the quantity EF's claim is about, so they are the denominator an
+    // efficiency figure needs.
+    for (const field of ['tokensPrompt', 'tokensUncachedInput', 'tokensCacheRead',
+      'tokensOutput', 'tokensTotal', 'billedCalls']) {
+      expect(source, field + ' must be in the telemetry').toMatch(
+        new RegExp('readonly ' + field + ': number \\| null', 'u'))
+      expect(source, field + ' must be emitted').toMatch(new RegExp('^\\s*' + field + ': .*,$', 'mu'))
+    }
+    // From the all-call bill, so an arm cannot look cheap by hiding its
+    // auxiliary work -- compaction and rationale calls are in the same sum.
+    expect(source, 'the sum must come from the all-call bill').toContain('summarizeBill(recorder.bill')
+  })
+
   it('no longer calls a compaction failure a FOLD failure', () => {
     // On the basic arm the call this counts is Basic's own summarization, so
     // "folds that THREW" was false there by construction -- a basic cell

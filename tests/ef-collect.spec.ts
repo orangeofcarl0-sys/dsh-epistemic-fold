@@ -113,6 +113,11 @@ if (PYTHON === undefined) {
 interface Cell {
   readonly arm: string
   readonly telemetry: Record<string, unknown>
+  /** The HARD score the verifier wrote. */
+  readonly reward?: number
+  /** The official score and the time-floored progression: SOFT records. */
+  readonly officialReward?: number
+  readonly passedStages?: readonly string[]
 }
 
 /** Write one synthetic cell into a temp tree and run the collector over it. */
@@ -121,13 +126,30 @@ function collect(cells: readonly Cell[]): { status: number | null; stdout: strin
   try {
     cells.forEach((c, index) => {
       const dir = join(root, `cell-${index}`)
-      mkdirSync(dir, { recursive: true })
-      writeFileSync(join(dir, 'ef-transcript.json'), JSON.stringify({
+      // The REAL layout is <job>/<cell>/agent/ef-transcript.json, with the
+      // verifier's files beside it in <job>/<cell>/verifier. This fixture used to
+      // write the transcript one level shallower, so the collector's sibling lookup
+      // resolved to a directory that does not exist in production and the fixture
+      // could not tell. It does now.
+      const agentDir = join(dir, 'agent')
+      mkdirSync(agentDir, { recursive: true })
+      writeFileSync(join(agentDir, 'ef-transcript.json'), JSON.stringify({
         schema: 'ef-lhtb-transcript/1',
         provenance: { revision: 'deadbee' },
         arm: c.arm,
         telemetry: c.telemetry,
       }), 'utf8')
+      if (c.reward !== undefined || c.officialReward !== undefined || c.passedStages !== undefined) {
+        const verifier = join(dir, 'verifier')
+        mkdirSync(verifier, { recursive: true })
+        if (c.reward !== undefined) writeFileSync(join(verifier, 'reward.txt'), String(c.reward), 'utf8')
+        if (c.officialReward !== undefined) {
+          writeFileSync(join(verifier, 'reward.json'), JSON.stringify({ official_reward: c.officialReward }), 'utf8')
+        }
+        if (c.passedStages !== undefined) {
+          writeFileSync(join(verifier, 'scorecard.json'), JSON.stringify({ passed_stages: c.passedStages }), 'utf8')
+        }
+      }
     })
     const argv = PYTHON!
     const result = spawnSync(argv[0]!, [...argv.slice(1), COLLECTOR, root], { encoding: 'utf8' })
@@ -205,6 +227,58 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     expect(stdout).toMatch(/'truncated': 6/u)
     expect(stdout).toMatch(/'provider-http': 2/u)
   }, 30_000)
+
+  it('turns tokens into an EFFICIENCY, and keeps wall clock as a soft record', () => {
+    // Wall clock is a property of the host as much as of the agent, so it is
+    // recorded and not gated on. Tokens are a property of the episode, so they
+    // are what makes correctness into an efficiency: tokens per point of score.
+    const { stdout } = collect([{
+      arm: 'economy',
+      telemetry: {
+        folds: 3, roots: 0, emergencies: 0,
+        bundleWrites: 3, bundlesPresent: 3, pendingIntents: 0,
+        tokensTotal: 2_000_000,
+      },
+      reward: 0.8,
+      officialReward: 0.8045,
+      passedStages: ['A', 'B', 'C'],
+    }])
+    expect(stdout, 'the hard score is reported').toMatch(/HARD reward=0\.8/u)
+    expect(stdout, 'tokens are reported').toMatch(/tokens=2000000/u)
+    expect(stdout, 'and turned into tokens per point').toMatch(/tokens\/point=2500000\.0/u)
+    // The time-floored progression survives as a record, explicitly not a gate.
+    expect(stdout, 'the stage record is kept').toMatch(/soft \(recorded, not gated\): stages A,B,C/u)
+    expect(stdout, 'and the official score with it').toMatch(/official 0\.8045/u)
+  })
+
+  it('refuses to divide by a zero score, rather than reporting infinity', () => {
+    // A run that scored nothing has no rate. "No points" is not "infinitely
+    // expensive per point", and printing one would be a fabricated number.
+    const { stdout } = collect([{
+      arm: 'basic',
+      telemetry: {
+        folds: 0, roots: 0, emergencies: 0,
+        bundleWrites: 0, bundlesPresent: 0, pendingIntents: 0,
+        tokensTotal: 500_000,
+      },
+      reward: 0,
+    }])
+    expect(stdout).toMatch(/tokens\/point=n\/a \(score 0\)/u)
+    expect(stdout, 'no fabricated rate').not.toMatch(/tokens\/point=inf/u)
+  })
+
+  it('reports tokens as MISSING, never as zero, on a pre-token archive', () => {
+    const { stdout } = collect([{
+      arm: 'basic',
+      telemetry: {
+        folds: 0, roots: 0, emergencies: 0,
+        bundleWrites: 0, bundlesPresent: 0, pendingIntents: 0,
+      },
+      reward: 0.5,
+    }])
+    expect(stdout).toMatch(/tokens=MISSING/u)
+    expect(stdout).toMatch(/tokens\/point=MISSING/u)
+  })
 
   it('reads the PRE-RENAME field but refuses to invent its kind mix', () => {
     // Archives written before the rename carry foldFailures and no breakdown.

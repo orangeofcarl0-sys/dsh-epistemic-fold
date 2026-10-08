@@ -93,6 +93,50 @@ def cell(path: Path) -> dict[str, Any]:
         "skipped": [],
     }
 
+    # ## The score, and what it cost in TOKENS
+    #
+    # The verifier's reward.txt is the HARD score (see the task verifiers): exact
+    # correctness with no wall clock in it. The official score and the stage
+    # progression are read too, but as SOFT records -- "how far did it get in the
+    # time it was allowed" is worth knowing and is not worth gating on, because
+    # wall clock is a property of the host as much as of the agent.
+    #
+    # Tokens are the machine-independent measure of work, and they are what turns
+    # a correctness number into an EFFICIENCY one: tokens per point of score.
+    # Lower is better, and it says nothing about how busy the machine was.
+    verifier_dir = path.parent.parent / "verifier"
+    reward: float | None = None
+    try:
+        reward = float((verifier_dir / "reward.txt").read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        reward = None
+    row["reward"] = reward
+
+    soft: dict[str, Any] = {}
+    try:
+        reward_json = json.loads((verifier_dir / "reward.json").read_text(encoding="utf-8"))
+        if isinstance(reward_json.get("official_reward"), (int, float)):
+            soft["officialReward"] = reward_json["official_reward"]
+    except (OSError, json.JSONDecodeError):
+        pass
+    try:
+        scorecard = json.loads((verifier_dir / "scorecard.json").read_text(encoding="utf-8"))
+        # The time-floored progression, kept as a record rather than a gate.
+        if isinstance(scorecard.get("passed_stages"), list):
+            soft["passedStages"] = scorecard["passed_stages"]
+    except (OSError, json.JSONDecodeError):
+        pass
+    row["soft"] = soft
+
+    tokens = telemetry.get("tokensTotal")
+    row["tokensTotal"] = tokens if isinstance(tokens, int) else "MISSING"
+    if isinstance(tokens, int) and reward is not None and reward > 0:
+        # Tokens per one point of hard score. Undefined rather than infinite when
+        # the score is 0: "no points" is not "infinitely expensive per point".
+        row["tokensPerPoint"] = round(tokens / reward, 1)
+    else:
+        row["tokensPerPoint"] = "MISSING" if not isinstance(tokens, int) else "n/a (score 0)"
+
     def number(field: str) -> int | None:
         value = telemetry.get(field)
         return value if isinstance(value, int) else None
@@ -201,6 +245,16 @@ def main() -> int:
             continue
         dirty = "" if row.get("dirty") is None else (" dirty" if row["dirty"] else " clean")
         print(f"  arm={row['arm']} revision={row['revision']}{dirty} schema={row['schema']}")
+        soft = row.get("soft") or {}
+        soft_bits = []
+        if "passedStages" in soft:
+            soft_bits.append("stages " + (",".join(soft["passedStages"]) or "none"))
+        if "officialReward" in soft:
+            soft_bits.append(f"official {soft['officialReward']:.4f}")
+        if soft_bits:
+            print(f"  soft (recorded, not gated): {' | '.join(soft_bits)}")
+        print(f"  HARD reward={row.get('reward')}  tokens={row.get('tokensTotal')}"
+              f"  tokens/point={row.get('tokensPerPoint')}")
         for name, check in row["checks"].items():
             mark = "PASS" if check["pass"] else "FAIL"
             if not check["pass"]:

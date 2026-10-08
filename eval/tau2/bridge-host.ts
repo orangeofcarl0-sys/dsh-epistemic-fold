@@ -70,7 +70,7 @@ import { resolvePreset } from '../../src/preset.ts'
 import type { FoldModeName } from '../../src/preset.ts'
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
-import { realizedCost } from '../live/billing.ts'
+import { realizedCost, summarizeBill } from '../live/billing.ts'
 import { resolveLiveRoute } from '../live/zcode-config.ts'
 import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
@@ -258,6 +258,33 @@ interface Telemetry {
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
+  /**
+   * Tokens the whole episode spent, from the all-call bill.
+   *
+   * ## Why tokens and not seconds
+   *
+   * Wall clock is not a measure of work. It moves with machine load, container
+   * contention, provider latency, and how many other runs are on the host, so
+   * the same episode scores differently on the same code. A token count is a
+   * property of the episode alone, and it is the quantity EF's entire claim is
+   * about, which is what makes an efficiency figure possible at all:
+   * correctness per token rather than correctness per hour.
+   *
+   * These are the provider's own counters, summed over every call by the
+   * all-call recorder -- main turns, compaction, and rationale alike -- so an
+   * arm cannot look cheap by hiding its auxiliary work.
+   *
+   * `null` when no bill was recorded, never 0: "nothing was measured" and
+   * "nothing was spent" are different facts.
+   */
+  readonly tokensPrompt: number | null
+  readonly tokensUncachedInput: number | null
+  readonly tokensCacheRead: number | null
+  readonly tokensOutput: number | null
+  /** prompt + output. The denominator of every efficiency figure. */
+  readonly tokensTotal: number | null
+  /** Provider calls the bill saw, including failed ones. */
+  readonly billedCalls: number | null
   /**
    * How the most recent model call finished.
    *
@@ -1148,6 +1175,13 @@ async function telemetry(): Promise<Telemetry> {
   costTotal = recorder === undefined || profile === undefined
     ? 0
     : realizedCost(recorder.bill, profile)
+  // The same bill, kept as TOKENS rather than priced into dollars. The price
+  // depends on a profile that is a modelling choice; the token count is what the
+  // provider actually charged for, and it is comparable across routes in a way a
+  // dollar figure on a free route is not.
+  const bill = recorder === undefined || profile === undefined
+    ? undefined
+    : summarizeBill(recorder.bill, profile)
   return {
     folds,
     roots,
@@ -1165,6 +1199,12 @@ async function telemetry(): Promise<Telemetry> {
     lastProviderError,
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
+    tokensPrompt: bill?.promptTokens ?? null,
+    tokensUncachedInput: bill?.uncachedInputTokens ?? null,
+    tokensCacheRead: bill?.cacheReadTokens ?? null,
+    tokensOutput: bill?.outputTokens ?? null,
+    tokensTotal: bill === undefined ? null : bill.promptTokens + bill.outputTokens,
+    billedCalls: bill?.requestCount ?? null,
     lastFinishReason,
   }
 }
