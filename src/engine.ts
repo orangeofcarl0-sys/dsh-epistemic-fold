@@ -79,6 +79,15 @@ import {
 } from './policy.ts'
 import { isBasicMode } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
+import { resolveTargetPolicy } from './basic/config.ts'
+import { summarizeWithLlm } from './basic/summarizer.ts'
+import {
+  isTruncationFailure,
+  summaryRetryBudget,
+  summaryRetryPolicy,
+  summaryRetryStats,
+} from './summary-retry.ts'
+import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'
 import type { FoldCurrentState } from './state.ts'
 import type {
   CheckpointBundleV1,
@@ -1308,7 +1317,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // `mode: basic` — Basic's own summarizer, and crucially NO bundle: the fold
     // never becomes an EF checkpoint, so no `[EF1 …]` marker is stamped and
     // there is nothing for the fold frontier to misread. See `compactIfNeeded`.
-    if (this.isBasic()) return super.summarize(input, agent, signal)
+    if (this.isBasic()) return await this.summarizeWithTruncationRetry(input, agent, signal)
     const session = agent.session
     const candidate = this.candidates.get(session)
     if (candidate === undefined) {
@@ -1419,7 +1428,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       // Legacy (no projection mounted): Basic's own full-checkpoint summary
       // IS the checkpoint body — the correct prompt for that shape.
       try {
-        const semantic = await super.summarize(input, agent, signal)
+        const semantic = await this.summarizeWithTruncationRetry(input, agent, signal)
         const text = semantic.summary
           .map(block => block.type === 'text' ? block.text : '')
           .join('\n')
@@ -1435,6 +1444,77 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
 
     return await publish(semanticText, semanticMeta)
+  }
+
+  /**
+   * Summarize, retrying when the provider truncated the checkpoint at the token cap.
+   *
+   * ## The first attempt is `super.summarize`, unmodified
+   *
+   * The success path must stay byte-identical to native Basic — that is what
+   * `mode: basic` is for — and the common case IS the success path. So attempt zero is
+   * Basic's own call. Only a RETRY goes through EF's own invocation of
+   * `summarizeWithLlm`, because a raised budget is the one thing Basic's own call
+   * cannot express: it asks for the same budget again.
+   *
+   * ## Every arm gets this, deliberately
+   *
+   * A truncation is a property of the provider/model interaction, not of a compaction
+   * strategy, so `mode: basic` reaching this method means the `basic` arm of a
+   * comparison retries exactly as an EF arm does. The alternative — retrying only the
+   * EF arms — would credit them for surviving a provider artefact. The cost is that
+   * `mode: basic` is no longer indistinguishable from native Basic on this one failure
+   * path; the checkpoint it produces when it succeeds is unchanged, and
+   * `tests/rc7-basic-parity.spec.ts` pins that.
+   *
+   * ## Failure stays fail-closed
+   *
+   * Every attempt truncating still throws, so a half-written checkpoint never lands as
+   * if it were complete. `summaryRetryStats` records how often a retry is what saved
+   * the fold, which is what distinguishes \"no truncation happened\" from \"retries
+   * absorbed it\" after the run.
+   * @param input - replayed conversation prefix to condense.
+   * @param agent - supplies the routed target whose policy sets the base budget.
+   * @param signal - live turn cancellation; an aborted call is never retried.
+   * @returns the first attempt's summary, or a retry's.
+   */
+  private async summarizeWithTruncationRetry(
+    input: SummarizationInput,
+    agent: Agent,
+    signal?: AbortSignal,
+  ): Promise<SummaryResult> {
+    // Resolved the way Basic's own `summarize` resolves it, so a per-target
+    // `maxTokens` override escalates from the override rather than from the service
+    // default. EF's `conversationTarget` is byte-equivalent to the vendored one.
+    const target = conversationTarget(agent)
+    const policy: ResolvedConfig | ResolvedTargetPolicy = target === undefined
+      ? this.config
+      : resolveTargetPolicy(this.config, target)
+    const { extraAttempts, ceiling } = summaryRetryPolicy()
+
+    for (let attempt = 0; ; attempt += 1) {
+      const budget = summaryRetryBudget(policy.maxTokens, attempt, ceiling)
+      summaryRetryStats.attempts += 1
+      try {
+        return attempt === 0
+          ? await super.summarize(input, agent, signal)
+          : await summarizeWithLlm(this.ctx, { ...policy, maxTokens: budget }, input, agent, signal)
+      } catch (error: unknown) {
+        // A cancelled fold is not a provider fault and must not be retried: the
+        // deadline that aborted it is still running, so a retry would spend the
+        // remaining budget on a call nobody is waiting for.
+        if (signal?.aborted === true) throw error
+        if (!isTruncationFailure(error)) throw error
+        summaryRetryStats.lastError = error instanceof Error ? error.message : String(error)
+        if (attempt >= extraAttempts) {
+          summaryRetryStats.exhausted += 1
+          throw error
+        }
+        const next = summaryRetryBudget(policy.maxTokens, attempt + 1, ceiling)
+        summaryRetryStats.retries += 1
+        if (next > policy.maxTokens) summaryRetryStats.escalations += 1
+      }
+    }
   }
 
   /**

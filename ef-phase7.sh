@@ -2,7 +2,8 @@
 # Phase 7 driver (temporary, untracked).
 #
 # Why a file and not `bash -c`: PowerShell splits a native-command argument on
-# spaces, so LHTB_ROOT="/d/Data and code/..." loses everything after /d/Data.
+# spaces, so a root that contains one cannot be passed inline there. LHTB_ROOT is
+# taken from the environment, defaulting to the LHTB checkout beside this repo.
 #
 # Usage: EF_HOME=<repo> [EF_LHTB_ARM=<arm>] bash ef-phase7.sh <probe|sweep|oracle>
 #
@@ -26,7 +27,7 @@ set -uo pipefail
 
 MODE="${1:?usage: ef-phase7.sh <probe|sweep|oracle>}"
 EF_HOME="${EF_HOME:?set EF_HOME to the EF repo}"
-export LHTB_ROOT="/d/Data and code/xuchengjian/workplace/bench-workspace/lhtb"
+export LHTB_ROOT="${LHTB_ROOT:-$EF_HOME/../bench-workspace/lhtb}"
 export EF_USE_PROXY="${EF_USE_PROXY:-1}"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 # The name was read off the route's own model list rather than guessed: /zen/go/v1
@@ -34,7 +35,7 @@ export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 # here fails loudly instead of silently measuring something else.
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 
-[ -d "$LHTB_ROOT" ] || { echo "driver: LHTB_ROOT missing" >&2; exit 1; }
+[ -d "$LHTB_ROOT" ] || { echo "driver: LHTB_ROOT=$LHTB_ROOT is not a directory; set LHTB_ROOT to the LHTB checkout" >&2; exit 1; }
 cd "$EF_HOME" || exit 1
 
 LOG_DIR="$EF_HOME/ef-phase7-logs"

@@ -68,6 +68,7 @@ import { EpistemicFoldEngine } from '../../src/engine.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/preset.ts'
 import type { FoldModeName } from '../../src/preset.ts'
+import { resetSummaryRetryStats, summaryRetryStats } from '../../src/summary-retry.ts'
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
@@ -243,6 +244,17 @@ interface Telemetry {
    * failure can echo a request that carries the credential.
    */
   readonly lastCompactionError: string | null
+  /**
+   * Summarization attempts a truncation forced to be retried, the attempts made in
+   * total, and the attempts that truncated on EVERY try.
+   *
+   * A zero `truncated` count means one of two different things: nothing truncated at
+   * all, or the retry absorbed what did. Those are different facts about the provider,
+   * and without these counters they read identically after the run.
+   */
+  readonly summarizationAttempts: number
+  readonly summarizationRetries: number
+  readonly summarizationRetryExhausted: number
   /**
    * Model calls that failed AT THE PROVIDER (429, 5xx, transport), and the last
    * message.
@@ -1013,6 +1025,9 @@ async function init(request: {
   promptTokensLast = 0
   surfaceNodesLast = 0
   costTotal = 0
+  // Process-lifetime totals in EF's own module, so zeroed per episode like the rest:
+  // the bridge process outlives one episode only by accident of how Harbor runs it.
+  resetSummaryRetryStats()
 
   const bundleRoot = process.env.EF_TAU2_BUNDLE_ROOT
   if (bundleRoot === undefined) throw new Error('bridge: EF_TAU2_BUNDLE_ROOT is not set')
@@ -1258,6 +1273,9 @@ async function telemetry(): Promise<Telemetry> {
     compactionFailures,
     compactionFailureKinds,
     lastCompactionError,
+    summarizationAttempts: summaryRetryStats.attempts,
+    summarizationRetries: summaryRetryStats.retries,
+    summarizationRetryExhausted: summaryRetryStats.exhausted,
     providerFailures,
     lastProviderError,
     prunerMounted,
