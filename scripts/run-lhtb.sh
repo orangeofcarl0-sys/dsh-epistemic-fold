@@ -185,7 +185,27 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # A larger completion budget than tau2's 900. LHTB agents write heredocs and
 # multi-line scripts; a reply truncated at 900 tokens arrives as `max-tokens`
 # carrying nothing usable.
-export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-4096}"
+#
+# ## Raised to 8192 because the route now serves REASONING models
+#
+# `max_tokens` caps reasoning AND content together, and these models spend much
+# of it reasoning. Measured on step-5-preview-free, asking only for a one-line
+# reply:
+#
+#     max_tokens=16   finish=length  reasoning=16  contentLen=0
+#     max_tokens=64   finish=length  reasoning=64  contentLen=0
+#     max_tokens=256  finish=stop    reasoning=78  contentLen=76
+#
+# At 16 and 64 the reasoning consumed the entire budget and the reply was EMPTY,
+# which is exactly the `max-tokens`-carrying-nothing failure this comment already
+# describes -- reached at a much higher number than 4096 was chosen against. The
+# measured reasoning share ranged from 47% to 82% of the completion, so a budget
+# sized for a non-reasoning model leaves under half of itself for the answer.
+#
+# Reasoning length does NOT track the cap: 47 tokens at cap 1024 against 82 at
+# cap 4096 on the same prompt. Raising this therefore does not invite rambling;
+# it stops the reasoning from eating the reply.
+export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-8192}"
 
 # ## Verify the route in the transport that will actually use it
 #

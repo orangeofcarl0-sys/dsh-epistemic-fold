@@ -1152,14 +1152,33 @@ async function init(request: {
   // real Basic engine: the EF arms use marker-only checkpoints that fit in 2000,
   // so the too-small budget was invisible for as long as every arm was EF.
   //
-  // 8192 is a deliberate headroom multiple rather than a measured minimum: the
-  // cost is paid once per fold on the summarization call, and a truncated
-  // summary is a FAILED fold, which is far more expensive than the tokens.
+  // 8192 was a deliberate headroom multiple rather than a measured minimum, and it
+  // is now known to be TOO SMALL -- not as a multiple, but because the budget it
+  // multiplies is spent differently by a reasoning model.
+  //
+  // `max_tokens` caps reasoning AND content together. Measured on step-5-preview-free
+  // summarising a 127K-token transcript:
+  //
+  //     cap= 2048  finish=length  reasoning=1467  contentLen= 1539
+  //     cap= 4096  finish=length  reasoning=3920  contentLen=  666
+  //     cap= 8192  finish=length  reasoning=1639  contentLen=19131   <- still truncated
+  //     cap=32768  finish=stop    reasoning=1928  contentLen= 3631
+  //
+  // At 8192 the model produced nineteen thousand characters and still hit the cap,
+  // which Basic reports as `summarization truncated at the token cap` and fails the
+  // fold closed. That is the failure this value was raised to 8192 to prevent; it
+  // prevented it only for the OUTPUT sizes a non-reasoning model produced.
+  //
+  // The model is also wildly variable, and that is the honest reason no value is
+  // guaranteed: the SAME input at cap 16384 returned a 46,034-character summary and
+  // truncated at 16384, while cap 8192 and 32768 both stopped early. A larger budget
+  // lowers the probability rather than removing it, and 32768 is chosen for the same
+  // asymmetry 8192 was -- a truncated summary is a FAILED fold.
   const common = {
     auto: true,
     thresholdRatio: Number(process.env.EF_TAU2_THRESHOLD ?? 0.5),
     headroomTokens: 0,
-    maxTokens: Number(process.env.EF_TAU2_SUMMARY_MAX_TOKENS ?? 8_192),
+    maxTokens: Number(process.env.EF_TAU2_SUMMARY_MAX_TOKENS ?? 32_768),
     bundleRoot,
   }
   // ## Mounted through the PLUGIN, not constructed directly

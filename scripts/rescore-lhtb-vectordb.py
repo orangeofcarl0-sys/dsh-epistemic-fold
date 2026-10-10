@@ -136,11 +136,20 @@ def rescore(cell: Path, task_tests: Path) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    # ## LHTB_ROOT is REQUIRED, and the first version defaulted it to a path
+    #
+    # This file shipped with the author's checkout baked in as the fallback, which
+    # is a path that resolves on exactly one machine -- and tests/release-hygiene
+    # caught it, correctly. A default nobody else can use is not a default; the
+    # environment variable is the whole interface, as the sibling runner scripts
+    # already do it.
+    root = os.environ.get("LHTB_ROOT")
+    if not root:
+        parser.error("set LHTB_ROOT to the LHTB checkout (the directory holding jobs/ and tasks/)")
     parser.add_argument("--jobs", type=Path,
-                        default=Path(os.environ.get("LHTB_ROOT", "/d/Data and code/xuchengjian/workplace/bench-workspace/lhtb")) / "jobs")
+                        default=Path(root) / "jobs")
     parser.add_argument("--task", type=Path,
-                        default=Path(os.environ.get("LHTB_ROOT", "/d/Data and code/xuchengjian/workplace/bench-workspace/lhtb"))
-                        / "tasks" / "vector-db-iterative-build")
+                        default=Path(root) / "tasks" / "vector-db-iterative-build")
     parser.add_argument("--out", type=Path, default=Path("ef-rescore-vectordb.json"))
     parser.add_argument("--limit", type=int, default=0)
     args = parser.parse_args()
