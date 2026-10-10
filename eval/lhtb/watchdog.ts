@@ -227,7 +227,18 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
     if (verdict === 'wedged') {
       // The compose project name is the container name without its `-main-1` suffix.
       const project = cell.container.replace(/-main-1$/u, '')
-      const killed = await reapStuckClients(project, thresholds.toolTimeoutSec + thresholds.slackSec)
+      // The SAME bound the verdict used, not the stale-process bound.
+      //
+      // These disagreed and it cost real time: the verdict fires at `toolTimeoutSec`
+      // (900s), while the reap required a client older than `toolTimeout + slack`
+      // (1200s), so two consecutive rounds logged a wedge as `unblocked: false` for a
+      // client that was merely not yet old enough to touch. Measured on this run:
+      // silent=1162s and 1223s both found nothing, then silent=1284s killed the
+      // client — three minutes late, and the log blamed the wrong thing.
+      //
+      // 900s is already the right bound: harbor's own timeout fires there, so a
+      // client still alive past it is a client harbor failed to kill.
+      const killed = await reapStuckClients(project, thresholds.toolTimeoutSec)
       record({
         cell: cell.label,
         verdict,

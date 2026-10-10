@@ -190,4 +190,14 @@ describe('the ACTION must kill the process that is actually blocking the agent',
   it('records an unreachable block as UNREACHABLE, not as a success', () => {
     expect(RUNNER).toContain('unblocked: killed.length > 0')
   })
+
+  it('acts on the SAME bound the verdict used, so "unreachable" means unreachable', () => {
+    // The two thresholds disagreed (900s to declare, 1200s to act), so a wedged
+    // cell was logged as UNREACHABLE for two rounds while the client was simply not
+    // yet old enough. Measured: silent=1162s and 1223s found nothing, 1284s killed
+    // it. An action that lags its own verdict by minutes, and blames the wrong
+    // cause in the log, is worse than a slower action honestly labelled.
+    expect(RUNNER).toContain('reapStuckClients(project, thresholds.toolTimeoutSec)')
+    expect(RUNNER).not.toContain('toolTimeoutSec + thresholds.slackSec)')
+  })
 })
