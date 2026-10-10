@@ -58,11 +58,37 @@
 
 job_name: lhtb-ef-sweep
 jobs_dir: ./jobs
-n_attempts: 2
-# Measured, not declared: the two tasks below held 209 MiB combined (193 + 16).
-# Left at 2
-# because the build and verifier phases, not the agent loop, are what spike.
-n_concurrent_trials: 2
+# ## 8, and why the count went UP rather than the clock coming down
+#
+# The agent phase of these tasks runs to a FIXED budget: vector-db carries
+# continue_until_timeout = true, so it consumes the whole 4 hours by construction
+# -- measured, 14400s and 14397s, against environment setup of 1.4s and a verifier
+# of 1-24s. The wall clock is therefore a FLOOR, not a cost to be optimised: no
+# amount of parallelism produces a round shorter than one agent budget.
+#
+# What CAN be improved is how much evidence that fixed window yields. Raise the
+# replicate count and raise concurrency with it, and one 4-hour wave returns 8
+# replicates per arm per task instead of 2. Eight concurrent cells were measured
+# at ZERO 429s with providerFailures of 0-2; this is 32, which that measurement
+# does not cover, so the round watches for throttling and the heartbeat exists to
+# make a dead run visible.
+#
+# Memory is not what bounds this: at 192.8 MiB measured per cell, 32 cells hold
+# ~6.4 GiB of the host's 23.47 GiB. The agent loop is also not CPU-bound -- it
+# waits ~99s per model call over ~145 calls.
+n_attempts: 8
+# ## TWICE n_attempts, so a sweep is ONE wave
+#
+# A sweep is 2 tasks x n_attempts = 16 trials. At 16 concurrent they all run
+# inside a single 4-hour agent budget, which is the shortest a sweep can be. At
+# anything less the sweep takes ceil(16 / N) waves and the extra replicates are
+# paid for in wall clock rather than won.
+#
+# The constraint this must respect is the HOST'S total across sweeps, and that is
+# a property of the invocation rather than of this file: 2 sweeps (basic, economy)
+# x 16 = 32 concurrent cells. Leave this at 16 and run more sweeps and the host
+# carries proportionally more.
+n_concurrent_trials: 16
 timeout_multiplier: 1.0
 
 environment:
