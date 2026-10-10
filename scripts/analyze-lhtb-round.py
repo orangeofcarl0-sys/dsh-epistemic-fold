@@ -68,7 +68,11 @@ def cell_record(cell: Path) -> dict | None:
     results = read_json(cell / "verifier" / "test_results.json") or {}
     metrics = results.get("metrics") or {}
     ratio_text = pick(r"Distance ratio:\s*([0-9.]+)x", stdout)
-    recall_text = pick(r"Recall`10:\s*([0-9.]+)", stdout)
+    # Recall@10 carries a literal "@". An earlier revision of this file used "@" as a
+    # placeholder for a backtick and rewrote it here too, so the pattern searched for
+    # "Recall`10" and matched nothing -- every cell that HAD a recall printed a
+    # dash, silently. A placeholder that can occur in the content it fills is not one.
+    recall_text = pick(r"Recall@10:\s*([0-9.]+)", stdout)
     official = pick(r"OFFICIAL REWARD:\s*([0-9.]+)", stdout)
     return {
         "cell": f"{cell.parent.name}/{cell.name}",
