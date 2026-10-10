@@ -61,6 +61,42 @@ MAX_TURNS = int(os.environ.get("EF_LHTB_MAX_TURNS", "400"))
 # an anomaly to nudge past, not a reason to abandon a multi-hour task.
 MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
 
+# ## The REPLY budget is a reasoning budget too
+#
+# `max_tokens` caps the model's REASONING and its CONTENT together, so this is not
+# "how much the agent may write" — it is how much it may THINK and write. Measured
+# on `step-5-preview-free`, reasoning is 47-82% of the completion, and at a small cap
+# the whole budget can go to reasoning: the reply then arrives EMPTY and finishes
+# `max-tokens`. The provider-probed proof is that an empty `max-tokens` reply means
+# every output token was spent on something other than content, and reasoning is the
+# only other consumer.
+#
+# That is a TRUNCATION, and until this existed it was classified as an EMPTY
+# RESPONSE. The model was nudged ("your last reply was empty"), retried, was cut off
+# in exactly the same place, and the episode died at `MAX_EMPTY_STREAK`. Measured in
+# the step-5 round: one `basic` cell returned five consecutive `max-tokens` empties
+# at turns 52-56 and was terminated after 56 model calls, having spent 1.04M tokens
+# of a four-hour budget, and an `economy` cell reached 4 of the same 5.
+#
+# The recovery is a BIGGER BUDGET, not a nudge, so a truncation escalates what it
+# asks the bridge for. The base must match the bridge's own default
+# (`EF_BRIDGE_MAX_TOKENS`); the ceiling bounds how far escalation can go; and the
+# streak bounds how many consecutive cut-offs are tolerated.
+REPLY_MAX_TOKENS = int(
+    os.environ.get(
+        "EF_LHTB_REPLY_MAX_TOKENS", os.environ.get("EF_BRIDGE_MAX_TOKENS", "32768")
+    )
+)
+
+# Largest reply budget an escalation may ask for.
+REPLY_MAX_TOKENS_CEILING = int(os.environ.get("EF_LHTB_REPLY_MAX_TOKENS_CEILING", "131072"))
+
+# Consecutive cut-off replies tolerated. Each one doubles the budget first, so this
+# bounds the escalation ladder rather than the model's mistake: it is deliberately
+# not the same ceiling as `MAX_EMPTY_STREAK`, because a cut-off reply and a silent
+# model are different events with different recoveries.
+MAX_TRUNCATION_STREAK = int(os.environ.get("EF_LHTB_MAX_TRUNCATED", "3"))
+
 # How many PROVIDER failures are tolerated before the episode is abandoned.
 #
 # Separate from MAX_EMPTY_STREAK, and deliberately larger, because the two are
@@ -243,6 +279,29 @@ class EFLhtbAgent(BaseAgent):
 
         total_calls = 0
         empty_streak = 0
+        # Separate from "empty_streak⟫ -- see "MAX_TRUNCATION_STREAK⟫.
+        truncation_streak = 0
+        # "None⟫ means "whatever the bridge defaults to"; a truncation raises it and
+        # it is never lowered again, because the model needed the room once.
+        reply_budget: Optional[int] = None
+
+        def escalate_reply_budget() -> int:
+            """
+            Raise the reply budget for the next call, capped.
+
+            Doubling is the lever because the failure is a deficit: measured, the
+            truncated reply had spent its whole budget on reasoning, so repeating
+            the same request reproduces the same cut-off. A ceiling keeps a
+            pathological model from asking for an unbounded completion.
+
+            @returns the budget the next "step⟫ should request.
+            """
+            nonlocal reply_budget
+            current = reply_budget if reply_budget is not None else REPLY_MAX_TOKENS
+            reply_budget = min(
+                current * 2, max(REPLY_MAX_TOKENS_CEILING, REPLY_MAX_TOKENS)
+            )
+            return reply_budget
         # Provider failures are counted across the WHOLE episode, not per streak:
         # a rate limit that clears and returns must not reset the ledger, or an
         # intermittently-throttled run would look healthy.
@@ -293,12 +352,65 @@ class EFLhtbAgent(BaseAgent):
                 if provider_failures > MAX_PROVIDER_FAILURES:
                     termination = f"provider-failures-exceeded ({provider_failures})"
                     break
-                reply = self._bridge.step()
+                reply = self._bridge.step(reply_budget)
                 continue
 
             if not calls:
                 content = (reply.get("content") or "").strip()
                 finish = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
+                # ## A reply cut off by the cap is a TRUNCATION, whether or not any
+                # ## text survived
+                #
+                # This test MUST come first. It used to come second, after the
+                # empty-content test, so a reply the cap cut off before it could emit
+                # anything was classified as the model DECLINING TO ACT and answered
+                # with a nudge. A nudge cannot fix a budget overrun: the model
+                # re-derives the same reasoning and is cut off at the same place,
+                # which is how five identical `max-tokens` empties ended a multi-hour
+                # cell.
+                #
+                # The two events need opposite responses — silence wants a nudge, a
+                # cut-off wants more room — so they are tested in that order and
+                # counted separately.
+                if finish.endswith("max-tokens"):
+                    truncation_streak += 1
+                    escalated = escalate_reply_budget()
+                    self._transcript.append(
+                        {
+                            "turn": turn,
+                            "anomaly": "truncated response",
+                            "streak": truncation_streak,
+                            "finishReason": finish,
+                            "chars": len(content),
+                            "replyBudget": escalated,
+                        }
+                    )
+                    if truncation_streak > MAX_TRUNCATION_STREAK:
+                        termination = (
+                            f"truncated-streak ({truncation_streak}, "
+                            f"budget {escalated})"
+                        )
+                        break
+                    # The nudge differs by whether anything survived: "continue from
+                    # where it stopped" means nothing for a reply with no text at all.
+                    self._bridge.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                "Your last reply was cut off at the output limit. "
+                                + (
+                                    "Continue from where it stopped, or run a command "
+                                    "with run_shell."
+                                    if content
+                                    else "Retry the step and keep the reasoning brief: "
+                                    "run a command with run_shell, or state plainly "
+                                    "that the task is complete."
+                                )
+                            ),
+                        }
+                    )
+                    reply = self._bridge.step(escalated)
+                    continue
                 # An EMPTY response is an anomaly, not a completion. Treating it
                 # as "done" ended the first diagnostic run after 14 shell calls:
                 # one blank completion silently terminated a task budgeted in
@@ -331,44 +443,7 @@ class EFLhtbAgent(BaseAgent):
                             ),
                         }
                     )
-                    reply = self._bridge.step()
-                    continue
-                # ## Prose with content is NOT necessarily a completion
-                #
-                # This branch used to end the task on any non-empty text, ignoring
-                # the finish reason. A reply truncated at the token cap arrives as
-                # `max-tokens` WITH partial text, so a cut-off answer was read as
-                # the model declaring itself finished — the quieter and more
-                # dangerous of the two misreadings, because it ends a task with no
-                # anomaly recorded anywhere.
-                #
-                # `max-tokens` with no tool calls is an incomplete turn: the model
-                # was still writing. Continuing it is what a human reader would do,
-                # and it keeps the distinction the measurement needed.
-                if finish.endswith("max-tokens"):
-                    empty_streak += 1
-                    self._transcript.append(
-                        {
-                            "turn": turn,
-                            "anomaly": "truncated response",
-                            "streak": empty_streak,
-                            "finishReason": finish,
-                            "chars": len(content),
-                        }
-                    )
-                    if empty_streak >= MAX_EMPTY_STREAK:
-                        termination = f"truncated-streak ({empty_streak})"
-                        break
-                    self._bridge.append(
-                        {
-                            "role": "user",
-                            "content": (
-                                "Your last reply was cut off at the output limit. Continue "
-                                "from where it stopped, or run a command with run_shell."
-                            ),
-                        }
-                    )
-                    reply = self._bridge.step()
+                    reply = self._bridge.step(reply_budget)
                     continue
                 # Prose with content and a normal finish: the model is reporting
                 # it is finished.
@@ -377,6 +452,10 @@ class EFLhtbAgent(BaseAgent):
                 break
 
             empty_streak = 0
+            # A productive turn clears the cut-off streak. The ESCALATED BUDGET is
+            # deliberately NOT lowered: the model needed the room once, and taking
+            # it back would only truncate it again.
+            truncation_streak = 0
 
             # EVERY result from this message is appended BEFORE the next model
             # call. A model may emit several tool calls at once, and calling the

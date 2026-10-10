@@ -205,7 +205,26 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # Reasoning length does NOT track the cap: 47 tokens at cap 1024 against 82 at
 # cap 4096 on the same prompt. Raising this therefore does not invite rambling;
 # it stops the reasoning from eating the reply.
-export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-8192}"
+# ## Raised again to 32768: 8192 was still spent ENTIRELY on reasoning
+#
+# The step-5 round measured this failure at the reply layer. One `basic` cell
+# returned five CONSECUTIVE empty replies, every one of them finishing `max-tokens`:
+#
+#     turn 52..56   anomaly "empty response"  streak 1..5  finishReason "max-tokens"
+#     termination   "empty-streak (5, last finish max-tokens)"  at 56 model calls
+#
+# An empty reply that finishes `max-tokens` proves every output token went to
+# something other than content, and reasoning is the only other consumer. So 8192
+# was not a reply budget at all in that context, and the cell burned 1.04M tokens of
+# a four-hour budget before the empty-streak ceiling ended it. An `economy` cell
+# reached 4 of the same 5 and would have died identically.
+#
+# 32768 is the SUMMARIZATION budget already chosen for exactly this reason, applied
+# to the agent's own replies. It is a cap and not a target, so it costs nothing
+# unless the model actually uses the room -- and `ef_lhtb_agent.py` now escalates
+# further from here (EF_LHTB_REPLY_MAX_TOKENS defaults to this value) if even it is
+# spent on reasoning.
+export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-32768}"
 
 # ## Verify the route in the transport that will actually use it
 #

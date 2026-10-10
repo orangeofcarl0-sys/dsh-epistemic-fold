@@ -290,6 +290,11 @@
     "sha256": "f203a0e352838071ff7d961dc5e636ed7a3f2c0de3e9851ce9d932e50b2fb7e7"
   },
   {
+    "file": "58_RC30_REPLY_BUDGET_AND_WATCHDOG.md",
+    "bytes": 6874,
+    "sha256": "2b5295a63dfb321e1366dc93cf0795d2bea4b90db87165fcc28919ddb62ce5be"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -311,8 +316,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8597,
-    "sha256": "5d9e9c0b33bdf7f64e43e8320325fe32635535c1058d04f61ac9b7aacdfed711"
+    "bytes": 8676,
+    "sha256": "d7f3b6b9488838833c9ad2271d0189b7367fddbeb49a01303721c1dec013a5db"
   },
   {
     "file": "README.zh.md",

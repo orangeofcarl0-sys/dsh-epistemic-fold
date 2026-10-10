@@ -179,9 +179,26 @@ class EpistemicFoldBridge:
         """
         self._send({"op": "append", "message": message})
 
-    def step(self) -> dict[str, Any]:
-        """Run one model call on the current surface and return the reply."""
-        response = self._send({"op": "step"})
+    def step(self, max_tokens: Optional[int] = None) -> dict[str, Any]:
+        """
+        Run one model call on the current surface and return the reply.
+
+        ## Why the caller may raise the budget
+
+        The reply budget caps the model's REASONING and its CONTENT together, so a
+        budget sized for a non-reasoning model can be spent before the answer
+        starts: the reply then arrives EMPTY and finishes `max-tokens`. That is a
+        truncation, not the model declining to act, and a nudge cannot recover from
+        it — the recovery is a bigger budget, which is what this argument lets the
+        agent ask for without restarting the episode.
+
+        @param max_tokens - budget for THIS call; omitted means the host default.
+        @returns the assistant reply as a plain dict.
+        """
+        request: dict[str, Any] = {"op": "step"}
+        if max_tokens is not None:
+            request["maxTokens"] = int(max_tokens)
+        response = self._send(request)
         return response["assistant"]
 
     def call_tool(self, name: str, arguments: dict[str, Any], call_id: str) -> str:

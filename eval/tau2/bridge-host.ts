@@ -874,7 +874,7 @@ interface TauAssistant {
  * Text and tool calls are kept mutually exclusive, which is tau2's protocol
  * rule: a message with both is rejected by the orchestrator.
  */
-async function modelTurn(): Promise<TauAssistant> {
+async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   await foldIfNeeded()
   // Immediately after the fold, and BEFORE the request is measured and sent.
   //
@@ -897,7 +897,7 @@ async function modelTurn(): Promise<TauAssistant> {
     messages,
     ...(systemText === undefined ? {} : { system: systemText }),
     tools: toolSchemas(),
-    maxTokens: STEP_MAX_TOKENS,
+    maxTokens: maxTokens ?? STEP_MAX_TOKENS,
   } as never)) {
     if (chunk.type === 'text-delta') text += chunk.text
     if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
@@ -1328,15 +1328,25 @@ async function main(): Promise<void> {
           emit({ ok: true, telemetry: await telemetry() })
         } else if (op === 'step') {
           // One model call on the current surface, with a fresh turn boundary.
+          //
+          // `maxTokens` is the caller's REPLY budget for this call. It is optional
+          // because the default is right most of the time, and it exists because a
+          // reasoning model can spend the whole default on reasoning and answer with
+          // nothing — a truncation the caller can only recover from by asking again
+          // with more room.
           rotateTurn()
-          const assistant = await modelTurn()
+          const assistant = await modelTurn(
+            typeof request.maxTokens === 'number' ? request.maxTokens : undefined,
+          )
           emit({ ok: true, assistant, telemetry: await telemetry() })
         } else if (op === 'turn') {
           // Append and call, for callers whose protocol delivers exactly one
           // message per exchange (tau2's orchestrator).
           rotateTurn()
           appendIncoming(request.message as TauMessage)
-          const assistant = await modelTurn()
+          const assistant = await modelTurn(
+            typeof request.maxTokens === 'number' ? request.maxTokens : undefined,
+          )
           emit({ ok: true, assistant, telemetry: await telemetry() })
         } else if (op === 'tool') {
           // One EF tool call, dispatched against the host's own ToolRuntime.
