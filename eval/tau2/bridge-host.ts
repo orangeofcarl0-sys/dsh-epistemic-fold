@@ -276,6 +276,18 @@ interface Telemetry {
    */
   readonly prunerMounted: boolean | null
   readonly prunerError: string | null
+  /**
+   * Whether the provider was offered EF's `context_search` / `context_recall`.
+   *
+   * `toolSchemas()` forwards `ctx.tools.schemas()` to the provider UNCONDITIONALLY —
+   * it has no notion of the arm — so the only thing keeping EF's retrieval tools out
+   * of the `basic` baseline is the plugin returning before it registers them, in a
+   * different file. That is a single line of defence for a measurement-integrity
+   * invariant, so the OUTCOME is recorded per episode rather than trusted: a
+   * `basic` cell reporting `true` here is a contaminated baseline, and a run can be
+   * audited for it without re-reading the source.
+   */
+  readonly efToolsOffered: boolean
   /** The pressure regime the last automatic fold decision resolved. */
   readonly pressureRegime: string
   readonly costTotal: number
@@ -1280,6 +1292,8 @@ async function telemetry(): Promise<Telemetry> {
     lastProviderError,
     prunerMounted,
     prunerError,
+    efToolsOffered: (toolsRuntime()?.schemas() ?? [])
+      .some(schema => schema.name.startsWith('context_')),
     pressureRegime: engine!.lastPressureRegime ?? 'none',
     costTotal,
     tokensPrompt: bill?.promptTokens ?? null,

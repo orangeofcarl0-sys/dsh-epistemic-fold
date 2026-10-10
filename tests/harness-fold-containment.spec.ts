@@ -113,6 +113,12 @@ describe('a fold failure is contained in the harness', () => {
     expect(source).toMatch(/compactionFailures = 0/u)
     expect(source).toMatch(/compactionFailureKinds = \{\}/u)
     expect(source).toMatch(/lastCompactionError = null/u)
+
+    // The arm-integrity audit. `toolSchemas()` forwards EF's tools to the provider
+    // with no notion of the arm, so the OUTCOME is recorded rather than trusted: a
+    // `basic` cell reporting this true is a contaminated baseline.
+    expect(source).toMatch(/readonly efToolsOffered: boolean/u)
+    expect(source).toMatch(/^\s*efToolsOffered: /mu)
   })
 
   it('records TOKENS, because seconds are a property of the host', () => {

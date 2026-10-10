@@ -167,6 +167,45 @@ describe('RC7-T6: mode:basic registers NO EF surface', () => {
       registry?.stateOf(session, 'epistemicFold.status'),
       'mode:basic must not register the status projection (the Sidebar source)',
     ).toBeUndefined()
+
+    // (3) No recall tools.
+    //
+    // This check was MISSING while the header of this very file listed "no recall
+    // tools" among the surfaces T6 asserts, so the claim was untested: a mount that
+    // registered them would have gone unnoticed.
+    //
+    // It matters more than the two above, because `toolSchemas()` in the LHTB bridge
+    // forwards `ctx.tools.schemas()` to the provider UNCONDITIONALLY. Nothing there
+    // knows the arm. So if EF's tools were ever registered under `mode: basic`, the
+    // model would be offered `context_search` / `context_recall` against a context
+    // runtime that is standing aside — and a BASIC cell that called them would be
+    // credited with EF's retrieval mechanism, which is precisely the contamination
+    // this arm exists to rule out.
+    const toolNames = ctx.tools.schemas().map(schema => schema.name)
+    expect(
+      toolNames,
+      'mode:basic must not offer EF recall tools; it offered: ' + toolNames.join(', '),
+    ).not.toContain('context_search')
+    expect(
+      toolNames,
+      'mode:basic must not offer EF recall tools; it offered: ' + toolNames.join(', '),
+    ).not.toContain('context_recall')
+  }, 300_000)
+
+  it('the same probe DOES see the tools under a folding mode', async () => {
+    // Without this, `not.toContain('context_search')` would pass just as happily on a
+    // fixture that mounted no ToolRuntime at all — a detector that cannot detect
+    // anything reports every surface as absent. The economy arm is the control:
+    // same fixture, same probe, and there the tools must be visible.
+    const { ctx } = await createHarness({ text: 'x' }, {
+      contextWindow: WINDOW, plugin: true, projection: true, systemPrompt: true, tools: true,
+      workloadModel: 'live', efConfig: { ...SHARED, mode: 'economy' },
+    })
+    const names = ctx.tools.schemas().map(schema => schema.name)
+    expect(
+      names,
+      'the probe must be able to see EF tools at all; it saw: ' + names.join(', '),
+    ).toContain('context_search')
   }, 300_000)
 
   it('runtime switching in or out of basic is refused, not half-applied', async () => {
