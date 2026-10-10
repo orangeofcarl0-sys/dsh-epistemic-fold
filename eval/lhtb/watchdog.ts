@@ -142,15 +142,68 @@ async function processesIn(container: string): Promise<CellProcess[] | null> {
   }
 }
 
-/** Kill the given PIDs through the container's own shell, so `kill` need not be a binary. */
-async function reap(container: string, pids: readonly number[]): Promise<boolean> {
+/**
+ * Unblock a wedged cell by killing the HOST-side `docker compose exec` client.
+ *
+ * ## Why the process INSIDE the container is the wrong target
+ *
+ * The first implementation killed the orphan by PID, using the PIDs that `docker
+ * top` reported. Every single reap failed with `sh: 1: kill: No such process` —
+ * because `docker top` reads the HOST's procfs, so those PIDs are host PIDs, and
+ * they do not exist inside the container's PID namespace. The watchdog detected
+ * correctly and did nothing, six times, which is worse than not detecting at all
+ * because the log said the cells had been handled.
+ *
+ * ## What actually blocks the agent
+ *
+ * Harbor runs `docker compose --project-name <p> exec main …` and bounds it with
+ * `timeout_sec`. On expiry it calls `process.terminate()`, waits, then
+ * `process.kill()` — all on the LOCAL compose client — and then awaits
+ * `communicate()` with no timeout. Measured: six of those clients sat on the host
+ * for 37-59 minutes, and the agent was waiting the whole time. Killing the client is
+ * what releases it, and it is exactly the step harbor intended to take.
+ *
+ * Killing the local client does leave the in-container orphan running; it holds a
+ * port until the container is destroyed. That is accepted deliberately: the
+ * alternative is the cell never continuing at all.
+ *
+ * @param project - the compose project name, which is the container name without its
+ *   `-main-1` suffix.
+ * @param minAgeSec - clients younger than this are left alone, because they may be a
+ *   legitimate call still inside its own timeout.
+ * @returns the PIDs killed.
+ */
+async function reapStuckClients(project: string, minAgeSec: number): Promise<number[]> {
+  // Host process enumeration is Windows-specific here; elsewhere the watchdog still
+  // detects and records, and simply cannot act. Stated rather than silently skipped.
+  if (process.platform !== 'win32') return []
+  const query = 'Get-CimInstance Win32_Process -Filter "Name=\'docker-compose.exe\' or Name=\'docker.exe\'"'
+    + ' | Where-Object { $_.CommandLine -like \'*--project-name ' + project + '*\''
+    + ' -and $_.CommandLine -like \'*exec*\''
+    + ' -and ((Get-Date) - $_.CreationDate).TotalSeconds -gt ' + minAgeSec + ' }'
+    + ' | ForEach-Object { $_.ProcessId }'
+  let pids: number[] = []
   try {
-    await docker(['exec', container, 'sh', '-c', 'kill -9 ' + pids.join(' ')])
-    return true
+    const { stdout } = await execFileAsync(
+      'powershell',
+      ['-NoProfile', '-NonInteractive', '-Command', query],
+      { timeout: 30_000, maxBuffer: 4 * 1024 * 1024 },
+    )
+    pids = stdout.split('\n').map(line => Number(line.trim())).filter(pid => Number.isInteger(pid) && pid > 0)
   } catch (error: unknown) {
-    record({ event: 'reap-failed', container, pids, error: String(error).slice(0, 200) })
-    return false
+    record({ event: 'reap-query-failed', project, error: String(error).slice(0, 200) })
+    return []
   }
+  for (const pid of pids) {
+    // `/T` so the whole client tree goes: the CLI and the compose plugin hold the
+    // same pipe, so killing only one of them leaves the agent waiting.
+    try {
+      await execFileAsync('taskkill', ['/F', '/T', '/PID', String(pid)], { timeout: 15_000 })
+    } catch (error: unknown) {
+      record({ event: 'reap-kill-failed', project, pid, error: String(error).slice(0, 160) })
+    }
+  }
+  return pids
 }
 
 /** One sampling round. Returns how many cells still had a running container. */
@@ -172,13 +225,24 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
     const verdict = classifyCell({ silentSec, processes }, thresholds)
     const stale = selectStaleProcesses(processes, thresholds)
     if (verdict === 'wedged') {
-      const reaped = await reap(cell.container, stale.map(process => process.pid))
+      // The compose project name is the container name without its `-main-1` suffix.
+      const project = cell.container.replace(/-main-1$/u, '')
+      const killed = await reapStuckClients(project, thresholds.toolTimeoutSec + thresholds.slackSec)
       record({
         cell: cell.label,
         verdict,
         silentSec,
-        reaped,
-        stale: stale.map(process => ({ pid: process.pid, elapsedSec: process.elapsedSec, args: process.args.slice(0, 90) })),
+        // An EMPTY `killed` means the client was already gone and the agent is blocked
+        // somewhere this watchdog cannot reach. It is reported as such rather than as
+        // a success, which is the mistake the first implementation made: it logged a
+        // reap for six cells whose agents never moved.
+        killed,
+        unblocked: killed.length > 0,
+        stale: stale.map(process => ({
+          pid: process.pid,
+          elapsedSec: process.elapsedSec,
+          args: process.args.slice(0, 90),
+        })),
       })
     } else if (verdict === 'leaking') {
       // A WORKING cell's own leftovers. Recorded, never removed: these are usually

@@ -20,6 +20,8 @@
  * @module tests/lhtb-watchdog
  */
 
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   classifyCell,
@@ -149,5 +151,43 @@ describe('reading a sample as a verdict', () => {
       silentSec: 4_000,
       processes: parseProcessTable(TASK_DAEMON_PS),
     })).toBe('stuck')
+  })
+})
+
+describe('the ACTION must kill the process that is actually blocking the agent', () => {
+  const RUNNER = readFileSync(join(import.meta.dirname, '..', 'eval', 'lhtb', 'watchdog.ts'), 'utf8')
+
+  it('kills the HOST-side compose client, which is what the agent is waiting on', () => {
+    // Measured: six of these sat on the host for 37-59 minutes while their agents
+    // waited. Harbor tried to kill them, then awaited communicate() with no timeout.
+    expect(RUNNER).toContain('docker-compose.exe')
+    expect(RUNNER).toContain('docker.exe')
+    expect(RUNNER).toContain('--project-name')
+    expect(RUNNER).toContain("execFileAsync('taskkill'")
+  })
+
+  it('never kills INSIDE the container by a host PID', () => {
+    // The measured no-op. docker top reports host PIDs, which do not exist in the
+    // container's PID namespace, so every reap failed with "No such process" while
+    // the log recorded the cells as handled. Detecting without acting is worse than
+    // not detecting, because the log lies.
+    // The old shape was `docker(['exec', container, 'sh', '-c', 'kill -9 …'])`, and
+    // every call to it failed. Pinned as literal text so it cannot come back.
+    expect(RUNNER).not.toContain("'exec', container")
+    expect(RUNNER).not.toContain("'kill -9 '")
+  })
+
+  it('kills the whole client tree, because two processes share one pipe', () => {
+    // The CLI and the compose plugin both hold the write end: killing only the
+    // plugin left two cells waiting exactly as before.
+    expect(RUNNER).toContain("'/F', '/T', '/PID'")
+  })
+
+  it('derives the compose project name from the container name', () => {
+    expect(RUNNER).toContain("cell.container.replace(/-main-1$/u, '')")
+  })
+
+  it('records an unreachable block as UNREACHABLE, not as a success', () => {
+    expect(RUNNER).toContain('unblocked: killed.length > 0')
   })
 })
