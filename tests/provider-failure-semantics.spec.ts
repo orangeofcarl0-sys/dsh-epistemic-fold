@@ -236,6 +236,29 @@ describe('the agent never attributes a provider fault to the model', () => {
     // Measured on the 8-hour run: five of eight cells recorded 55-61 CONSECUTIVE
     // "fetch failed" turns -- a genuine outage of the transport -- and the ceiling
     // correctly stopped them instead of letting them spin.
+    // ## Assert the ENFORCEMENT POINT, not the names
+    //
+    // The first version of this test checked that a variable called
+    // consecutive_provider_failures existed, that something reset it, and that a
+    // backoff constant was present. All three were true of code that never
+    // INCREMENTED the counter, so the test passed while:
+    //
+    //   * the abort condition still read the CUMULATIVE count (unchanged), and
+    //   * the backoff read the always-zero counter, so 2 ** 0 = 1 second.
+    //
+    // Measured consequence: a run in which all eight cells hit 61 "fetch failed"
+    // turns in ten minutes, terminating with the message "0 consecutive, 61 total".
+    // A test that checks a declaration instead of the place it is enforced is the
+    // exact defect this repository keeps finding in benchmarks.
+    expect(AGENT, 'the counter must be INCREMENTED on failure').toMatch(
+      /consecutive_provider_failures \+= 1/,
+    )
+    expect(AGENT, 'the ceiling must test the CONSECUTIVE counter').toMatch(
+      /if consecutive_provider_failures > MAX_PROVIDER_FAILURES/,
+    )
+    expect(AGENT, 'the backoff must be driven by the same counter').toMatch(
+      /2 \*\* min\(consecutive_provider_failures/,
+    )
     expect(AGENT, 'a consecutive counter must exist').toMatch(/consecutive_provider_failures/)
     expect(AGENT, 'and a successful call must end the outage').toMatch(
       /# A successful call ends the outage[\s\S]{0,120}consecutive_provider_failures = 0/,

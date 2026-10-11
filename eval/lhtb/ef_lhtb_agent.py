@@ -376,6 +376,7 @@ class EFLhtbAgent(BaseAgent):
             error = reply.get("error")
             if error:
                 provider_failures += 1
+                consecutive_provider_failures += 1
                 self._transcript.append(
                     {
                         "turn": turn,
@@ -388,7 +389,7 @@ class EFLhtbAgent(BaseAgent):
                 # allowance is deliberately generous next to MAX_EMPTY_STREAK: a
                 # provider recovering is worth waiting for, and the adapter has
                 # already retried the rate limit before reporting this.
-                if provider_failures > MAX_PROVIDER_FAILURES:
+                if consecutive_provider_failures > MAX_PROVIDER_FAILURES:
                     termination = (f"provider-failures-exceeded "
                                    f"({consecutive_provider_failures} consecutive, "
                                    f"{provider_failures} total)")
