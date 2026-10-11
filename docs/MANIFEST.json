@@ -295,6 +295,11 @@
     "sha256": "2b5295a63dfb321e1366dc93cf0795d2bea4b90db87165fcc28919ddb62ce5be"
   },
   {
+    "file": "59_WIDE_TASK_MEASUREMENT.md",
+    "bytes": 10699,
+    "sha256": "a53629275b7155a3f0af94117c6369d3defaf7be5b90ef2d4afe217e4ece19ac"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -316,8 +321,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8676,
-    "sha256": "d7f3b6b9488838833c9ad2271d0189b7367fddbeb49a01303721c1dec013a5db"
+    "bytes": 8737,
+    "sha256": "98e600311ef03d105dc0e2b94b322debe3bd46b04e8dfb6da0acf1e05cf27dab"
   },
   {
     "file": "README.zh.md",
