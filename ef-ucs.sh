@@ -32,7 +32,7 @@ echo "ucs: model=${EF_LIVE_MODEL:-step-5-preview-free} budget=28800s tiers=basic
 : > "$WATCHLOG"
 # ## Only OUR containers
 #
-# This was `docker ps -aq | xargs docker rm -f` -- every container on the host. Running
+# This was docker ps -aq | xargs docker rm -f -- every container on the host. Running
 # the four tiers in parallel with the other lines therefore deleted commit0's running
 # cell, and from the outside that looked like an unexplained crash rather than one line
 # killing another. Filtered to our own task.
