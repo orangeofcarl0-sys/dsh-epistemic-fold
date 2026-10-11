@@ -49,6 +49,14 @@ def pick(pattern: str, text: str):
     return found.group(1) if found else None
 
 
+TASK_LABELS = {
+    "vector-db-iterative-build": "vector-db",
+    "unknown-config-semantics": "unknown-config",
+    "riscv-core-debug": "riscv",
+    "commit0-multilib-tdd": "commit0",
+}
+
+
 def cell_record(cell: Path) -> dict | None:
     transcript = read_json(cell / "agent" / "ef-transcript.json")
     if transcript is None:
@@ -77,7 +85,15 @@ def cell_record(cell: Path) -> dict | None:
     return {
         "cell": f"{cell.parent.name}/{cell.name}",
         "job": cell.parent.name,
-        "task": "vector-db" if cell.name.startswith("vector-db") else "unknown-config",
+        # ## The task comes from the cell's own directory name, not from a default
+        #
+        # This was "vector-db" if the name starts with vector-db else "unknown-config" --
+        # a binary that silently files EVERY other task under unknown-config. With three
+        # tasks now running in parallel it would have reported riscv-core-debug and
+        # commit0-multilib-tdd cells as unknown-config cells, and every per-task mean
+        # would have been an average over tasks that have nothing to do with each other.
+        # The cell directory is named <task>__<id>, so read that.
+        "task": TASK_LABELS.get(cell.name.split("__")[0], cell.name.split("__")[0]),
         "reward": reward,
         "recall": float(recall_text) if recall_text else metrics.get("recall"),
         "ratio": float(ratio_text) if ratio_text else metrics.get("distance_ratio"),
@@ -147,9 +163,28 @@ def main() -> int:
     parser.add_argument("--json", type=Path, default=None)
     args = parser.parse_args()
 
+    # ## Jobs that ran on stale pre-fix images are not data
+    #
+    # harbor reused cached images (force_build: false with dated tags), so a whole wave ran
+    # against July and June images -- the unknown-config cells with the probe pool and all
+    # five spec revisions readable, the commit0 cells unable to import their own libraries.
+    # Averaging those in contaminates every per-arm figure with cells that were never
+    # measuring this task. Excluded by name rather than deleted, so the exclusion is
+    # auditable: ef-phase7-logs/INVALID-JOBS.txt.
+    invalid_path = (Path(__file__).resolve().parent.parent
+                    / "ef-phase7-logs" / "INVALID-JOBS.txt")
+    invalid = set()
+    if invalid_path.exists():
+        invalid = {ln.strip() for ln in
+                   invalid_path.read_text(encoding="utf-8").splitlines()
+                   if ln.strip() and not ln.strip().startswith("#")}
+
     records = []
     for job in sorted(args.jobs.iterdir()):
         if not job.is_dir() or not job.name.startswith(args.prefix):
+            continue
+        if job.name in invalid:
+            print(f"  EXCLUDED {job.name}: stale pre-fix image (INVALID-JOBS.txt)")
             continue
         for cell in sorted(job.iterdir()):
             if cell.is_dir():
@@ -176,8 +211,16 @@ def main() -> int:
               f"{str(record['termination'])[:26]:>26}")
 
     print("\n=== by arm and task ===")
-    for arm in ("basic", "economy"):
-        for task in ("unknown-config", "vector-db"):
+    # ## Iterate what is PRESENT, not what someone listed last time
+    #
+    # These loops were hardcoded to arms ("basic", "economy") and tasks
+    # ("unknown-config", "vector-db"). Every arm and every task added since then was
+    # silently dropped from the table: balanced and quality have never appeared in a
+    # by-arm row, and with three tasks running in parallel riscv and commit0 would have
+    # been dropped too. arm_of() had the identical defect and was fixed the same way --
+    # a hardcoded enumeration of a growing set goes stale without ever erroring.
+    for arm in sorted({r["arm"] for r in records}):
+        for task in sorted({r["task"] for r in records}):
             group = [r for r in records if r["arm"] == arm and r["task"] == task]
             if not group:
                 continue
