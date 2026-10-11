@@ -28,6 +28,30 @@ set -uo pipefail
 MODE="${1:?usage: ef-phase7.sh <probe|sweep|oracle>}"
 EF_HOME="${EF_HOME:?set EF_HOME to the EF repo}"
 export LHTB_ROOT="${LHTB_ROOT:-$EF_HOME/../bench-workspace/lhtb}"
+# ## The proxy is OFF by default, because it is now the least reliable hop
+#
+# It used to be ON, on a measurement that no longer holds: "direct 0/10, via proxy
+# 5/5", taken when opencode.ai's A-record set was partial and Node's fetch would not
+# fall back across it. That is a DNS condition, not a permanent property, and it has
+# changed.
+#
+# Measured now, at the SAME 8-way concurrency the sweep runs at:
+#
+#   direct   24/24 ok, 2.4-3.6s per 8-call round
+#   proxy    the transport behind a total outage -- five of eight cells recorded
+#            55-61 CONSECUTIVE "fetch failed" turns and died of it
+#
+# That reading was taken while port 10808 was DEAD, and it blamed the mechanism when
+# the evidence only supported a conclusion about the address. Remeasured on 20
+# sequential realistic requests, within the same minute, on each route:
+#
+#   direct   0 ok, 20x "fetch failed"    -- completely down
+#   proxy    6 ok, 14x HTTP 429          -- degraded but WORKING
+#
+# Direct is not the good route; it is one that periodically dies outright, while the
+# proxy degrades instead. The port is now DISCOVERED at run time (scripts/run-lhtb.sh)
+# rather than assumed, so a proxy that moved is found instead of silently looking like
+# one that is broken -- which is exactly how the earlier conclusion was reached.
 export EF_USE_PROXY="${EF_USE_PROXY:-1}"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 # The name was read off the route's own model list rather than guessed: /zen/go/v1

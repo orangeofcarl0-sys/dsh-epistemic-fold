@@ -177,8 +177,23 @@ EF_USE_PROXY="${EF_USE_PROXY:-1}"
 if [ "${EF_USE_PROXY}" = "1" ] && [ -z "${HTTPS_PROXY:-}" ]; then
   # A FILE, not an inline node -e: the inline form fails silently under PowerShell,
   # reported "no port" while the port was open, and the harness fell back to direct.
-  FOUND_PORT="$(node "$(dirname "$0")/find-proxy-port.mjs" 2>/dev/null || node "\
-$(cd "$(dirname "$0")" && pwd)/find-proxy-port.mjs" 2>/dev/null)"
+  # A PATH-FREE probe. The node version printed the right port when run by hand and
+  # found NOTHING inside this script: $0 has a different shape under the real
+  # invocation, so the resolved path was wrong, and 2>/dev/null hid the failure.
+  # A probe that cannot be observed failing is worse than a constant, because the
+  # fallback is the route measured at 0 of 20.
+  #
+  # curl needs no path and proves life either way: the proxy answers a plain request
+  # with 400, and 000 means nothing is listening.
+  FOUND_PORT=""
+  for _p in 7890 7897 10808 1080 7891; do
+    _code="$(curl.exe -s -o /dev/null -w '%{http_code}' --max-time 2 --noproxy '*' \
+      "http://127.0.0.1:${_p}" 2>/dev/null)"
+    if [ -n "${_code}" ] && [ "${_code}" != "000" ]; then
+      FOUND_PORT="${_p}"
+      break
+    fi
+  done
   if [ -n "${FOUND_PORT}" ]; then
     export HTTPS_PROXY="http://127.0.0.1:${FOUND_PORT}"
     export HTTP_PROXY="${HTTPS_PROXY}"
