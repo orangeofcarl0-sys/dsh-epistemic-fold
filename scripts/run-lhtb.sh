@@ -151,14 +151,44 @@ fi
 # The proxy is therefore supplied only when asked for. Set `EF_USE_PROXY=1` (and
 # optionally `HTTPS_PROXY`) on a network that needs one; otherwise the bridge
 # talks to the provider directly, which is what works here.
-if [ "${EF_USE_PROXY:-0}" = "1" ]; then
+# ## The proxy port MOVED, so the default was a dead one -- and it defaulted to OFF
+#
+# Two independent faults, both measured, both fixed here.
+#
+# 1. THE PORT. The default was http://127.0.0.1:10808. That port stopped listening when
+#    the local proxy moved to 7890, and a refused connection is indistinguishable from
+#    "the proxy is broken" -- so an enabled proxy looked like a bad idea and got disabled.
+#    The port is now DISCOVERED from a candidate list rather than assumed.
+#
+# 2. WHICH ROUTE. EF_USE_PROXY defaulted to 0 (direct) on the premise that direct was the
+#    stable one. Measured within the same minute, 20 sequential realistic requests each:
+#
+#      direct  :  0 ok, 20x "fetch failed"        -- completely down
+#      proxy   :  6 ok, 14x HTTP 429              -- degraded but WORKING
+#
+#    Direct is not "the good route"; it is a route that periodically dies outright. The
+#    proxy degrades instead. Caution default is therefore ENABLED.
+#
+# What neither fixes: the 429s themselves. "Upstream request failed: Endpoint is
+# unavailable" came back at ~70% through BOTH routes, with zero network errors, so it is
+# provider-side capacity on this model tier rather than anything the harness controls.
+# ~30% of nominal throughput is the number every budget calculation must carry.
+EF_USE_PROXY="${EF_USE_PROXY:-1}"
+if [ "${EF_USE_PROXY}" = "1" ] && [ -z "${HTTPS_PROXY:-}" ]; then
+  FOUND_PORT="$(node -e 'const net=require("net");(async()=>{for(const p of [7890,7897,10808,1080,7891]){const ok=await new Promise(r=>{const s=net.connect({host:"127.0.0.1",port:p},()=>{s.destroy();r(true)});s.on("error",()=>r(false));setTimeout(()=>{try{s.destroy()}catch(e){}r(false)},400)});if(ok){console.log(p);process.exit(0)}}process.exit(1)})()' 2>/dev/null)"
+  if [ -n "${FOUND_PORT}" ]; then
+    export HTTPS_PROXY="http://127.0.0.1:${FOUND_PORT}"
+    export HTTP_PROXY="${HTTPS_PROXY}"
+  else
+    EF_USE_PROXY=0
+  fi
+fi
+if [ "${EF_USE_PROXY}" = "1" ]; then
   export NODE_USE_ENV_PROXY=1
-  export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:10808}"
-  export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:10808}"
   echo "proxy: enabled (${HTTPS_PROXY})"
 else
   unset NODE_USE_ENV_PROXY HTTPS_PROXY HTTP_PROXY ALL_PROXY
-  echo "proxy: disabled (direct); set EF_USE_PROXY=1 to route through one"
+  echo "proxy: disabled (direct); no proxy port answered, or EF_USE_PROXY=0"
 fi
 
 # The bracketed-IPv6 NO_PROXY defect, scrubbed once for every runner. A DIFFERENT
@@ -264,6 +294,15 @@ shift || true
 case "$MODE" in
   probe)  CONFIG_SRC="lhtb-ef-probe.yaml" ;;
   sweep)  CONFIG_SRC="lhtb-ef-sweep.yaml" ;;
+  # unknown-config only, on the RECALIBRATED 28800s budget. The plain sweep
+  # config's override_timeout_sec (14400) would otherwise cap the task's own
+  # budget back down to the number this round exists to fix.
+  sweep-ucs) CONFIG_SRC="lhtb-ef-sweep-ucs.yaml" ;;
+  # Gate E: one cell per task, to measure the turns it consumes before committing a
+  # full sweep to it. The budget shortfall that produced an archive of zeros was
+  # reconstructed AFTER the fact; this is the cheap way to know it first.
+  calib)  CONFIG_SRC="lhtb-ef-calib.yaml" ;;
+  calib-c0) CONFIG_SRC="lhtb-ef-calib-c0.yaml" ;;
   oracle) CONFIG_SRC="lhtb-ef-oracle.yaml" ;;
   *)
     echo "unknown mode: ${MODE} (expected probe | sweep | oracle)" >&2
