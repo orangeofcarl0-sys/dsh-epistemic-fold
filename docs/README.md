@@ -147,6 +147,7 @@ These records document real-host defects and browser/deployment integration. The
 - [57_RC29_TRUNCATION_RETRY.md](57_RC29_TRUNCATION_RETRY.md)
 - [58_RC30_REPLY_BUDGET_AND_WATCHDOG.md](58_RC30_REPLY_BUDGET_AND_WATCHDOG.md)
 - [59_WIDE_TASK_MEASUREMENT.md](59_WIDE_TASK_MEASUREMENT.md)
+- [60_PARALLEL_RUN_REPORT.md](60_PARALLEL_RUN_REPORT.md)
 
 ## How to read old conclusions
 
