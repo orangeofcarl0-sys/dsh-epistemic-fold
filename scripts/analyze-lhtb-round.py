@@ -85,6 +85,21 @@ def cell_record(cell: Path) -> dict | None:
         "tokens": telemetry.get("tokensTotal"),
         "tokens_per_point": (round(telemetry["tokensTotal"] / reward, 1)
                              if reward and telemetry.get("tokensTotal") else None),
+        # ## The cost axis is a COMPOSITION, not a total
+        #
+        # tokensTotal conflates three things a provider prices differently: input
+        # served from cache, input charged at the miss price, and output. Read as a
+        # total it once said economy was 40% MORE expensive than basic (2.09M against
+        # 1.41M) when economy had simply made more calls -- per call its UNCACHED
+        # input was 31% LOWER. A total cannot separate "did more work" from "carried
+        # more context per step", and only the second is what a compression runtime
+        # changes. Cache reads are a near-free consequence of a stable prefix; the
+        # miss-priced input is the figure the policy actually moves.
+        "calls": telemetry.get("modelCalls"),
+        "uncached": telemetry.get("tokensUncachedInput"),
+        "cache_read": telemetry.get("tokensCacheRead"),
+        "output": telemetry.get("tokensOutput"),
+        "cost": telemetry.get("costTotal"),
         "folds": telemetry.get("folds"),
         "bundle_writes": telemetry.get("bundleWrites"),
         "pending": telemetry.get("pendingIntents"),
@@ -97,10 +112,13 @@ def cell_record(cell: Path) -> dict | None:
 
 
 def arm_of(job: str) -> str:
-    if "basic" in job:
-        return "basic"
-    if "economy" in job:
-        return "economy"
+    # Every tier, not just the first two. balanced and quality used to fall through to
+    # "other", so two of the four arms were reported as an unnamed group -- and a
+    # comparison that silently drops half its arms reports a confident number about
+    # something else.
+    for arm in ("quality", "balanced", "economy", "basic"):
+        if arm in job:
+            return arm
     return "other"
 
 
@@ -112,8 +130,6 @@ def invariants(record: dict) -> list[str]:
         problems.append(f"I1 revoked work: {writes} bundle writes < {folds} folds")
     if record.get("pending") not in (0, None):
         problems.append(f"I2 {record['pending']} intents never resolved")
-    if record["task"] == "unknown-config" is False:
-        pass
     return problems
 
 
@@ -179,8 +195,6 @@ def main() -> int:
     bad = 0
     for record in records:
         problems = invariants(record)
-        if record["task"] == "unknown-config" and (record.get("bundle_writes") or 0) != 0:
-            pass
         if problems:
             bad += 1
             print(f"  {record['cell']}: " + "; ".join(problems))
@@ -188,6 +202,27 @@ def main() -> int:
     breached = [r for r in basic_cells if (r.get("bundle_writes") or 0) != 0]
     print(f"  I1/I2 violations: {bad}")
     print(f"  I3 (basic must write no bundles): {len(breached)} of {len(basic_cells)} breached")
+
+    print("\n=== cost axis: composition PER CALL, not a total ===")
+    print(f"{'arm':>8} {'cells':>5} {'calls':>6} {'cacheRead':>10} {'uncached':>10} "
+          f"{'output':>9} {'hit%':>6} {'unc/call':>9} {'out/call':>9} {'$/call':>9}")
+    for arm in ("basic", "economy", "balanced", "quality", "other"):
+        group = [r for r in records if r["arm"] == arm and r.get("uncached") is not None]
+        if not group:
+            continue
+        calls = sum(r["calls"] or 0 for r in group)
+        cr = sum(r["cache_read"] or 0 for r in group)
+        un = sum(r["uncached"] or 0 for r in group)
+        ou = sum(r["output"] or 0 for r in group)
+        cost = sum(r["cost"] or 0 for r in group)
+        hit = 100 * cr / max(1, cr + un)
+        print(f"{arm:>8} {len(group):>5} {calls:>6} {cr:>10} {un:>10} {ou:>9} "
+              f"{hit:>5.1f} {un / max(1, calls):>9.0f} {ou / max(1, calls):>9.0f} "
+              f"{cost / max(1, calls):>9.4f}")
+    print("  uncached/call is the figure a compression policy moves: the context the")
+    print("  model must actually READ. hit% is largely a consequence of a stable")
+    print("  prefix, and output/call is the model's own verbosity, so neither is")
+    print("  attributable to the runtime on its own.")
 
     print("\n=== provider health ===")
     total_pf = sum(r.get("provider_failures") or 0 for r in records)
