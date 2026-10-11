@@ -18,13 +18,13 @@ timeout_multiplier: 1.0
 environment:
   type: docker
   # TRUE, and this is load-bearing. With force_build: false harbor REUSES an image whose
-    # tag already exists locally, and the tags here are dated constants
-    # (lhtb-unknown-config-semantics:20260729, lhtb-commit0-multilib-tdd:20260615). The
-    # wave therefore ran July and June images: the probe pool and all five spec revisions
-    # were readable on disk, and commit0 could not even import its own libraries. Every
-    # fix in the Dockerfile was silently absent. Deleted the stale images as well, so the
-    # next run cannot inherit them even if this setting regresses.
-    force_build: true
+  # tag already exists locally, and the tags here are dated constants
+  # (lhtb-unknown-config-semantics:20260729, lhtb-commit0-multilib-tdd:20260615). The
+  # wave therefore ran July and June images: the probe pool and all five spec revisions
+  # were readable on disk, and commit0 could not even import its own libraries. Every
+  # fix in the Dockerfile was silently absent. Deleted the stale images as well, so the
+  # next run cannot inherit them even if this setting regresses.
+  force_build: true
   delete: false
 
 agents:
