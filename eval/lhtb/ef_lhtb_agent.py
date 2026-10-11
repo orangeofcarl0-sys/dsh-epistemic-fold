@@ -39,6 +39,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -105,7 +106,44 @@ MAX_TRUNCATION_STREAK = int(os.environ.get("EF_LHTB_MAX_TRUNCATED", "3"))
 # usually transient). Conflating them is what let provider load be mistaken for
 # mode quality. The adapter already retried a rate limit before reporting one, so
 # reaching this ceiling means the route is genuinely down.
-MAX_PROVIDER_FAILURES = int(os.environ.get("EF_LHTB_MAX_PROVIDER_FAILURES", "12"))
+#
+# ## The ceiling has to scale with the EPISODE, and 12 did not
+#
+# It was 12, which was fine for a 4-hour episode and silently wrong once the
+# unknown-config budget was recalibrated to 8 hours: doubling the wall clock
+# doubles the number of transport failures a cell meets, while the counter never
+# resets. Measured live, one hour into that run:
+#
+#   195 model calls, 11 provider failures = 5.6%, spread across turns 12-25
+#   (NOT a startup burst -- a steady transport rate)
+#   projected over the ~218 calls a full episode now takes: ~12 failures
+#
+# So the expected episode lands EXACTLY on the old ceiling, and any cell on the
+# unlucky side of that average dies around hour four with
+# `provider-failures-exceeded` -- an infrastructure death recorded against a
+# model that did nothing wrong. Four of the eight live cells were already at 1-4
+# by turn 30.
+#
+# 60 keeps the bound meaningful (a genuine outage still stops the episode after 60
+# wasted attempts) while tolerating a ~25% transport failure rate across a full
+# 218-call episode. A CEILING IS A PROPERTY OF THE EPISODE LENGTH, so it moves
+# whenever the budget does.
+MAX_PROVIDER_FAILURES = int(os.environ.get("EF_LHTB_MAX_PROVIDER_FAILURES", "60"))
+
+# ## Consecutive failures, and a BACKOFF between them
+#
+# The ceiling counts CONSECUTIVE failures now, not cumulative ones. Cumulative was
+# wrong for an episode this long in the same way the old value of 12 was: a cell that
+# fails 60 times spread over eight hours, with successes in between, has not suffered
+# an outage and must not be terminated as if it had.
+#
+# The backoff is what makes "consecutive" mean "outage". Retrying immediately burns the
+# whole allowance in about a minute of wall clock; waiting up to a minute between
+# attempts lets a cell SIT OUT a short outage instead of dying in it. The measured
+# failure was not short -- 55 to 61 consecutive turns -- so backoff alone would not
+# have saved those cells, but it is what makes the ceiling measure the right thing on
+# the next one.
+PROVIDER_BACKOFF_MAX_SEC = int(os.environ.get("EF_LHTB_PROVIDER_BACKOFF_SEC", "60"))
 
 # The placeholder the bridge substitutes when the model produced nothing. Kept in
 # sync with `EMPTY_TURN_PLACEHOLDER` in bridge-host.ts.
@@ -306,6 +344,7 @@ class EFLhtbAgent(BaseAgent):
         # a rate limit that clears and returns must not reset the ledger, or an
         # intermittently-throttled run would look healthy.
         provider_failures = 0
+        consecutive_provider_failures = 0
         # Why the loop ended. Recorded because a cell's reward says nothing about
         # it, and the container is deleted afterwards — so "died after 7 calls"
         # was previously unattributable from the archive alone.
@@ -350,10 +389,18 @@ class EFLhtbAgent(BaseAgent):
                 # provider recovering is worth waiting for, and the adapter has
                 # already retried the rate limit before reporting this.
                 if provider_failures > MAX_PROVIDER_FAILURES:
-                    termination = f"provider-failures-exceeded ({provider_failures})"
+                    termination = (f"provider-failures-exceeded "
+                                   f"({consecutive_provider_failures} consecutive, "
+                                   f"{provider_failures} total)")
                     break
+                # Back off before retrying: immediate retries turn a one-minute blip
+                # into a terminated episode.
+                time.sleep(min(2 ** min(consecutive_provider_failures, 6),
+                               PROVIDER_BACKOFF_MAX_SEC))
                 reply = self._bridge.step(reply_budget)
                 continue
+            # A successful call ends the outage, whatever the cumulative total is.
+            consecutive_provider_failures = 0
 
             if not calls:
                 content = (reply.get("content") or "").strip()

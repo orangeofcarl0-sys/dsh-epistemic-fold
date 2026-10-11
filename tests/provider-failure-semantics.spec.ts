@@ -227,6 +227,25 @@ describe('the agent never attributes a provider fault to the model', () => {
     ).toBeGreaterThan(Number(emptyCeiling![1]))
   })
 
+  it('counts CONSECUTIVE provider failures, and backs off between attempts', () => {
+    // ## Why consecutive, and why backoff
+    //
+    // Cumulative was wrong for an episode this long in the same way the old value of
+    // 12 was: a cell that fails sixty times spread over eight hours, with successes in
+    // between, has not suffered an outage and must not be ended as though it had.
+    // Measured on the 8-hour run: five of eight cells recorded 55-61 CONSECUTIVE
+    // "fetch failed" turns -- a genuine outage of the transport -- and the ceiling
+    // correctly stopped them instead of letting them spin.
+    expect(AGENT, 'a consecutive counter must exist').toMatch(/consecutive_provider_failures/)
+    expect(AGENT, 'and a successful call must end the outage').toMatch(
+      /# A successful call ends the outage[\s\S]{0,120}consecutive_provider_failures = 0/,
+    )
+    // Immediate retries turn a one-minute blip into a dead episode: they spend the
+    // whole allowance in about a minute of wall clock.
+    expect(AGENT, 'retries must wait before trying again').toMatch(/PROVIDER_BACKOFF_MAX_SEC/)
+    expect(AGENT).toMatch(/time\.sleep\(min\(/)
+  })
+
   it('does NOT read a truncated reply as a completed task', () => {
     // The quieter misreading: `max-tokens` WITH partial text used to end the task
     // with no anomaly recorded, because the branch only checked for emptiness.
