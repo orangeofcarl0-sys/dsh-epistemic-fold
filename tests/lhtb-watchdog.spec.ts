@@ -187,6 +187,17 @@ describe('the ACTION must kill the process that is actually blocking the agent',
     expect(RUNNER).toContain("cell.container.replace(/-main-1$/u, '')")
   })
 
+  it('treats a kill as an ACTION, not as an outcome', () => {
+    // The first version logged `unblocked: true` and never looked again, so a cell
+    // it saved and a cell it failed to save produced the same line. Every reap is
+    // now pending until a later sample shows the cell moving.
+    expect(RUNNER).toContain('pendingReaps.set(cell.container')
+    expect(RUNNER).toContain("event: 'reap-confirmed'")
+    expect(RUNNER).toContain("event: 'reap-ineffective'")
+    expect(RUNNER).toContain('REAP_CONFIRM_ROUNDS')
+    expect(RUNNER).toContain('RESUMED_SILENT_SEC')
+  })
+
   it('records an unreachable block as UNREACHABLE, not as a success', () => {
     expect(RUNNER).toContain('unblocked: killed.length > 0')
   })

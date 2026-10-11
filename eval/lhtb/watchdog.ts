@@ -58,6 +58,31 @@ const INTERVAL_MS = Number(process.env.EF_WATCH_INTERVAL_SEC ?? 60) * 1_000
 /** Consecutive rounds with no live container before the watchdog stands down. */
 const IDLE_ROUNDS_BEFORE_EXIT = 3
 
+/**
+ * Reaps awaiting confirmation, by container.
+ *
+ * ## Why a kill is not an outcome
+ *
+ * Killing the stuck client is what SHOULD release the agent, and it did in the
+ * two cases measured. But "the kill was issued" is not "the cell resumed", and the
+ * first version of this logged `unblocked: true` and never looked again — so a cell
+ * that stayed wedged was indistinguishable in the log from one that was saved.
+ * That is the same failure as a reap that never fired: a record that reads like
+ * success without being one.
+ *
+ * A reap is therefore confirmed against the NEXT samples: the transcript must move
+ * within a couple of rounds, or it is recorded as ineffective.
+ */
+const pendingReaps = new Map<string, { round: number; silentSec: number }>()
+
+/** Rounds elapsed with a silently wedged cell before a kill is called ineffective. */
+const REAP_CONFIRM_ROUNDS = 2
+
+/** Recently-written: a cell this active is making progress again. */
+const RESUMED_SILENT_SEC = 120
+
+let roundCounter = 0
+
 /** One cell under watch. */
 interface WatchedCell {
   readonly label: string
@@ -211,6 +236,10 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
   if (JOBS_ROOT === '') throw new Error('watchdog: EF_WATCH_JOBS is not set')
   const running = await runningContainers()
   if (running === null) return 1
+  roundCounter += 1
+  // Every cell's silence THIS round, so a pending reap can be judged against a
+  // fresh observation rather than against the one that triggered it.
+  const observed = new Map<string, number>()
   let live = 0
   for (const cell of discoverCells(JOBS_ROOT)) {
     if (!running.has(cell.container)) continue
@@ -222,6 +251,7 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
     }
     let silentSec = -1
     try { silentSec = Math.round((Date.now() - statSync(cell.transcript).mtimeMs) / 1_000) } catch { /* gone */ }
+    observed.set(cell.container, silentSec)
     const verdict = classifyCell({ silentSec, processes }, thresholds)
     const stale = selectStaleProcesses(processes, thresholds)
     if (verdict === 'wedged') {
@@ -239,6 +269,11 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
       // 900s is already the right bound: harbor's own timeout fires there, so a
       // client still alive past it is a client harbor failed to kill.
       const killed = await reapStuckClients(project, thresholds.toolTimeoutSec)
+      if (killed.length > 0) {
+        // Judged on the NEXT samples, not claimed here: a kill is an action, not an
+        // outcome, and the first version logged it as one.
+        pendingReaps.set(cell.container, { round: roundCounter, silentSec })
+      }
       record({
         cell: cell.label,
         verdict,
@@ -262,6 +297,26 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
       record({ cell: cell.label, verdict, silentSec, stale: stale.length })
     } else if (verdict === 'stuck') {
       record({ cell: cell.label, verdict, silentSec, processes: processes.length })
+    }
+  }
+  // ## Did the kill actually release the agent?
+  //
+  // The check the first version lacked, and why a dead reap and a successful one
+  // produced the same log line: the outcome was never observed.
+  for (const [container, entry] of pendingReaps) {
+    const silence = observed.get(container)
+    if (silence === undefined) continue
+    if (silence <= RESUMED_SILENT_SEC) {
+      record({ event: 'reap-confirmed', container, afterRounds: roundCounter - entry.round,
+        silentAtKill: entry.silentSec, silentNow: silence })
+      pendingReaps.delete(container)
+    } else if (roundCounter - entry.round >= REAP_CONFIRM_ROUNDS) {
+      // The client was killed and the cell is STILL silent: either it re-wedged on a
+      // new call, or the block was never a host client. Saying so is the point --
+      // otherwise the next reader assumes the reap worked.
+      record({ event: 'reap-ineffective', container, afterRounds: roundCounter - entry.round,
+        silentAtKill: entry.silentSec, silentNow: silence })
+      pendingReaps.delete(container)
     }
   }
   if (HEARTBEAT_PATH !== '') {
