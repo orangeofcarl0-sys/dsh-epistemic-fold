@@ -73,6 +73,20 @@ def cell_record(cell: Path) -> dict | None:
             reward = float(reward_path.read_text(encoding="utf-8").strip())
         except ValueError:
             reward = None
+    # ## riscv's reward is a weighted GATE SUM, and the gates are the interesting part
+    #
+    # riscv-core-debug writes verifier/scorecard.json alongside reward.txt: per-gate
+    # weights and scores, plus a tamper check over the read-only harness. A bare 0.28 says
+    # nothing about whether the model failed to build, failed the directed tests, or never
+    # started -- the gates say which. Read here so the report can attribute rather than
+    # just rank.
+    scorecard = read_json(cell / "verifier" / "scorecard.json") or {}
+    gates = [
+        {"id": g.get("id"), "weight": g.get("weight"), "score": g.get("score")}
+        for g in (scorecard.get("gates") or [])
+        if isinstance(g, dict)
+    ]
+    tamper = scorecard.get("tamper") or {}
     results = read_json(cell / "verifier" / "test_results.json") or {}
     metrics = results.get("metrics") or {}
     ratio_text = pick(r"Distance ratio:\s*([0-9.]+)x", stdout)
@@ -116,6 +130,9 @@ def cell_record(cell: Path) -> dict | None:
         "cache_read": telemetry.get("tokensCacheRead"),
         "output": telemetry.get("tokensOutput"),
         "cost": telemetry.get("costTotal"),
+        "gates": gates,
+        "tamper_checked": tamper.get("checked"),
+        "tamper_modified": len(tamper.get("modified") or []),
         "folds": telemetry.get("folds"),
         "bundle_writes": telemetry.get("bundleWrites"),
         "pending": telemetry.get("pendingIntents"),
@@ -233,6 +250,22 @@ def main() -> int:
                   f"  mean tokens={mean([r['tokens'] for r in group])}"
                   f"  folds>0: {len(work)}"
                   + (f"  mean ratio={mean(ratios)}" if ratios else ""))
+
+    # ## Attribution for tasks whose reward is a gate sum
+    #
+    # A single number cannot distinguish "the model built nothing" from "it built and
+    # failed the directed tests" from "it never got started". riscv-core-debug's scorecard
+    # carries the split, so print it rather than making the reader guess from the total.
+    gate_cells = [r for r in records if r.get("gates")]
+    if gate_cells:
+        print("\n=== riscv gate breakdown (scorecard.json) ===")
+        for r in gate_cells:
+            label = r["cell"].split("/")[-1][-7:]
+            print(f"  {label}  reward={r['reward']}  "
+                  f"tamper: {r.get('tamper_checked')} checked, "
+                  f"{r.get('tamper_modified')} modified")
+            for g in r["gates"]:
+                print(f"      {str(g['id']):<16} weight={g['weight']:<6} score={g['score']}")
 
     print("\n=== section 4 invariants ===")
     bad = 0
