@@ -120,6 +120,30 @@ const TAU2_WINDOW = Number(process.env.EF_TAU2_WINDOW ?? 32_000)
 const FOLD_TIMEOUT_MS = Number(process.env.EF_TAU2_FOLD_TIMEOUT_MS ?? 600_000)
 
 /**
+ * Bound on ONE main model call, in ms. 0 disables it.
+ *
+ * ## Why the fold's fix was not the whole fix
+ *
+ * The comment below on the fold explains that a summarization call stalled for 16 minutes
+ * with Harbor and the container both alive and no error anywhere, and that a real deadline
+ * is what turns that stall into a recorded failure the episode survives. That fix was
+ * applied to the FOLD and not to the MAIN call, which is the one that runs hundreds of
+ * times per episode rather than a handful.
+ *
+ * Measured on riscv-core-debug, which is the task that found it: two cells stopped
+ * emitting transcript entries at 03:52:11 and 03:53:13, their containers idle at 0% CPU
+ * with no simulation running, and nothing else in the system aware that anything was
+ * wrong. They would have sat there until the 21600s episode timeout, having spent the
+ * whole budget, and recorded a score of nothing with no error to explain it.
+ *
+ * 900s: roughly three times the slowest legitimate call observed (305s at a 32768-token
+ * budget) and well below the episode budget, so a real answer completes and a hang is
+ * cut. A cut call surfaces as an ordinary transport failure, which the LHTB agent already
+ * counts, backs off from, and retries.
+ */
+const STEP_TIMEOUT_MS = Number(process.env.EF_TAU2_STEP_TIMEOUT_MS ?? 900_000)
+
+/**
  * What the bridge sends when the model produced neither text nor tool calls.
  *
  * tau2 rejects an empty assistant message, so the episode would abort on a turn
@@ -903,23 +927,33 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   let text = ''
   const calls: { id: string; name: string; args: string }[] = []
   let finishReason = 'unknown'
-  for await (const chunk of ctx!.llm.stream({
-    provider: LIVE_PROVIDER,
-    model: 'live',
-    messages,
-    ...(systemText === undefined ? {} : { system: systemText }),
-    tools: toolSchemas(),
-    maxTokens: maxTokens ?? STEP_MAX_TOKENS,
-  } as never)) {
-    if (chunk.type === 'text-delta') text += chunk.text
-    if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
-      calls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
+  // A REAL deadline on the main call, exactly as the fold has. Without it a hung
+  // provider call blocks this process forever: the agent's readline() on the other end of
+  // the pipe has no timeout either, so nothing in the system can notice or recover.
+  const deadline = new AbortController()
+  const timer = STEP_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), STEP_TIMEOUT_MS) : undefined
+  try {
+    for await (const chunk of ctx!.llm.stream({
+      provider: LIVE_PROVIDER,
+      model: 'live',
+      messages,
+      ...(systemText === undefined ? {} : { system: systemText }),
+      tools: toolSchemas(),
+      signal: deadline.signal,
+      maxTokens: maxTokens ?? STEP_MAX_TOKENS,
+    } as never)) {
+      if (chunk.type === 'text-delta') text += chunk.text
+      if (chunk.type === 'block-end' && chunk.block.type === 'tool-call') {
+        calls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
+      }
+      if (chunk.type === 'finish') {
+        finishReason = chunk.reason.kind === 'error'
+          ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 160)}`
+          : chunk.reason.kind
+      }
     }
-    if (chunk.type === 'finish') {
-      finishReason = chunk.reason.kind === 'error'
-        ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 160)}`
-        : chunk.reason.kind
-    }
+  } finally {
+    if (timer) clearTimeout(timer)
   }
   // An empty reply is ambiguous on its own: the model may have said nothing, or
   // the call may have failed in transport. The finish reason separates them, and
