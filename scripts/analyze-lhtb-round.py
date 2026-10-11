@@ -80,6 +80,23 @@ def cell_record(cell: Path) -> dict | None:
     # nothing about whether the model failed to build, failed the directed tests, or never
     # started -- the gates say which. Read here so the report can attribute rather than
     # just rank.
+    # ## The fields that decide whether a number may be TRUSTED at all
+    #
+    # Two of the three tasks ship integrity evidence beside the reward and the analyser was
+    # reading neither:
+    #
+    #   unknown-config  reward.json carries raw_ungated and baseline_ungated. The reward is
+    #                   normalised as (raw - floor) / (1 - floor); without both ends the
+    #                   normalisation cannot be checked, and a reward that looks low could
+    #                   be a floor that moved.
+    #   commit0         score_breakdown.json carries sandbox_sealed and, when the guard
+    #                   fires, cheat_warning. Its libraries are public, so a reachable
+    #                   network means the real sources could simply be fetched -- in which
+    #                   case the score is zeroed and is not a measurement of anything.
+    #
+    # A reward with its integrity flag unread is a number of unknown provenance.
+    reward_json = read_json(cell / "verifier" / "reward.json") or {}
+    breakdown = read_json(cell / "verifier" / "score_breakdown.json") or {}
     scorecard = read_json(cell / "verifier" / "scorecard.json") or {}
     gates = [
         {"id": g.get("id"), "weight": g.get("weight"), "score": g.get("score")}
@@ -131,6 +148,12 @@ def cell_record(cell: Path) -> dict | None:
         "output": telemetry.get("tokensOutput"),
         "cost": telemetry.get("costTotal"),
         "gates": gates,
+        "raw_ungated": reward_json.get("raw_ungated"),
+        "baseline_ungated": reward_json.get("baseline_ungated"),
+        "submits": reward_json.get("submits"),
+        "per_library": breakdown.get("per_library"),
+        "sandbox_sealed": breakdown.get("sandbox_sealed"),
+        "cheat_warning": breakdown.get("cheat_warning"),
         "tamper_checked": tamper.get("checked"),
         "tamper_modified": len(tamper.get("modified") or []),
         "folds": telemetry.get("folds"),
@@ -266,6 +289,26 @@ def main() -> int:
                   f"{r.get('tamper_modified')} modified")
             for g in r["gates"]:
                 print(f"      {str(g['id']):<16} weight={g['weight']:<6} score={g['score']}")
+
+    # ## Provenance: what each number is, and whether it may be believed
+    prov = [r for r in records if r.get("raw_ungated") is not None
+            or r.get("sandbox_sealed") is not None]
+    if prov:
+        print("\n=== reward provenance ===")
+        for r in prov:
+            label = r["cell"].split("/")[-1][-7:]
+            bits = [f"reward={r['reward']}"]
+            if r.get("raw_ungated") is not None:
+                bits.append(f"raw={r['raw_ungated']} floor={r['baseline_ungated']}")
+            if r.get("submits") is not None:
+                bits.append(f"submits={r['submits']}")
+            if r.get("sandbox_sealed") is not None:
+                bits.append(f"sealed={r['sandbox_sealed']}")
+            print(f"  {label}  " + "  ".join(bits))
+            if r.get("cheat_warning"):
+                print(f"      !! {str(r['cheat_warning'])[:150]}")
+            for lib, d in (r.get("per_library") or {}).items():
+                print(f"      {lib:<16} {d.get('passed')}/{d.get('expected_total')} passed")
 
     print("\n=== section 4 invariants ===")
     bad = 0
