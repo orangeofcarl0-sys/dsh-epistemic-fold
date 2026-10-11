@@ -1,0 +1,38 @@
+# Gate E calibration for commit0-multilib-tdd: ONE cell.
+#
+# riscv-core-debug is already being calibrated in another job; this measures the second
+# task on its own so the two numbers are not confused by concurrency.
+#
+# Both tasks are now believed mature enough to run:
+#   riscv   Gate A verified by a full in-order Dockerfile read (bugs/ and .git both
+#           removed, and the run was observed working the RTL rather than reading /app/bugs)
+#   commit0 Gate A verified live (no readable implementation; /app/.git holds one commit
+#           of the stubbed tree) and the five import-breaking stubs are repaired, verified
+#           by the task's own checker reporting "all import: True"
+job_name: lhtb-ef-calib-c0
+jobs_dir: ./jobs
+n_attempts: 1
+n_concurrent_trials: 1
+timeout_multiplier: 1.0
+
+environment:
+  type: docker
+  # TRUE, and this is load-bearing. With force_build: false harbor REUSES an image whose
+    # tag already exists locally, and the tags here are dated constants
+    # (lhtb-unknown-config-semantics:20260729, lhtb-commit0-multilib-tdd:20260615). The
+    # wave therefore ran July and June images: the probe pool and all five spec revisions
+    # were readable on disk, and commit0 could not even import its own libraries. Every
+    # fix in the Dockerfile was silently absent. Deleted the stale images as well, so the
+    # next run cannot inherit them even if this setting regresses.
+    force_build: true
+  delete: false
+
+agents:
+  - import_path: "ef_lhtb_agent:EFLhtbAgent"
+    model_name: openai/step-5-preview-free
+    override_timeout_sec: 18000      # the task's own declared budget
+
+datasets:
+  - path: ./tasks
+    task_names:
+      - commit0-multilib-tdd

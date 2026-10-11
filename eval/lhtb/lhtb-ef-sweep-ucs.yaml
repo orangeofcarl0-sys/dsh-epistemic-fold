@@ -1,0 +1,66 @@
+# LHTB x EF — unknown-config ONLY, on the RECALIBRATED budget.
+#
+# ## Why a separate config from lhtb-ef-sweep.yaml
+#
+# Two of that file's settings would silently undo this round's fixes:
+#
+#   override_timeout_sec: 14400
+#       It OVERRIDES the task's own agent budget. The task's task.toml was just
+#       recalibrated from 14400 to 28800 because 14400 buys 109 model turns for a
+#       protocol that needs ~185 (measured: 32 of 70 archived runs hit
+#       AgentTimeoutError at a median 132s per call). Leaving this at 14400 would
+#       cap that back to the infeasible number and the round would measure nothing.
+#       The parent file's own comment already names this failure: "a config value
+#       TIGHTER than the budget it claimed to defer to ... was what ended those
+#       trials". Keeping them equal is the whole point.
+#
+#   task_names: [unknown-config-semantics, vector-db-iterative-build]
+#       vector-db does not need this recalibration (it carries
+#       continue_until_timeout and its budget is not the binding constraint), and
+#       including it would double the cells for no question asked.
+#
+# ## Concurrency
+#
+# 8 concurrent is this file's ceiling, unchanged and for the documented reason:
+# latency rises 6.6x going from 8 to 32 cells while calls per cell FALL, so
+# over-subscribing buys fewer turns per cell AND fewer turns overall. One task x
+# n_attempts=2 is 2 cells per arm; four arm processes are therefore 8 cells, which
+# is exactly the measured ceiling. One wave, all four tiers.
+job_name: lhtb-ef-sweep-ucs
+jobs_dir: ./jobs
+# ONE attempt per arm in this wave: four arms means four cells, leaving room for
+# riscv-core-debug and commit0-multilib-tdd beside them inside the 8-cell concurrency
+# measured safe. A second attempt per arm follows once this wave reports.
+n_attempts: 1
+# 1 task x 2 attempts = 2 cells per arm job; 4 arms = 8 concurrent, the ceiling.
+n_concurrent_trials: 1
+timeout_multiplier: 1.0
+
+environment:
+  type: docker
+  # TRUE, and this is load-bearing. With force_build: false harbor REUSES an image whose
+    # tag already exists locally, and the tags here are dated constants
+    # (lhtb-unknown-config-semantics:20260729, lhtb-commit0-multilib-tdd:20260615). The
+    # wave therefore ran July and June images: the probe pool and all five spec revisions
+    # were readable on disk, and commit0 could not even import its own libraries. Every
+    # fix in the Dockerfile was silently absent. Deleted the stale images as well, so the
+    # next run cannot inherit them even if this setting regresses.
+    force_build: true
+  delete: true
+  env:
+    DOCKER_DEFAULT_PLATFORM: linux/amd64
+
+agents:
+  - import_path: "ef_lhtb_agent:EFLhtbAgent"
+    # A LABEL, not the route: run-lhtb.sh rewrites this line from EF_LIVE_MODEL.
+    model_name: openai/step-5-preview-free
+    # ## MUST equal the task's agent budget
+    #
+    # task.toml now declares 28800. This is deliberately the same number: a value
+    # below it makes the config, not the task, the thing that ends every trial.
+    override_timeout_sec: 28800
+
+datasets:
+  - path: ./tasks
+    task_names:
+      - unknown-config-semantics
