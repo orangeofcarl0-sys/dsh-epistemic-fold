@@ -175,7 +175,10 @@ fi
 # ~30% of nominal throughput is the number every budget calculation must carry.
 EF_USE_PROXY="${EF_USE_PROXY:-1}"
 if [ "${EF_USE_PROXY}" = "1" ] && [ -z "${HTTPS_PROXY:-}" ]; then
-  FOUND_PORT="$(node -e 'const net=require("net");(async()=>{for(const p of [7890,7897,10808,1080,7891]){const ok=await new Promise(r=>{const s=net.connect({host:"127.0.0.1",port:p},()=>{s.destroy();r(true)});s.on("error",()=>r(false));setTimeout(()=>{try{s.destroy()}catch(e){}r(false)},400)});if(ok){console.log(p);process.exit(0)}}process.exit(1)})()' 2>/dev/null)"
+  # A FILE, not an inline node -e: the inline form fails silently under PowerShell,
+  # reported "no port" while the port was open, and the harness fell back to direct.
+  FOUND_PORT="$(node "$(dirname "$0")/find-proxy-port.mjs" 2>/dev/null || node "\
+$(cd "$(dirname "$0")" && pwd)/find-proxy-port.mjs" 2>/dev/null)"
   if [ -n "${FOUND_PORT}" ]; then
     export HTTPS_PROXY="http://127.0.0.1:${FOUND_PORT}"
     export HTTP_PROXY="${HTTPS_PROXY}"
