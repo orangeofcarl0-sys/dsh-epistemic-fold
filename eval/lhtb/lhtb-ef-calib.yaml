@@ -22,7 +22,24 @@ environment:
   # were readable on disk, and commit0 could not even import its own libraries. Every
   # fix in the Dockerfile was silently absent. Deleted the stale images as well, so the
   # next run cannot inherit them even if this setting regresses.
-  force_build: true
+  # ## The one documented exception to force_build: true
+  #
+  # riscv-core-debug's image is 7.04 GB and is built from source (Verilator, Yosys, Z3),
+  # so a forced rebuild costs one to two HOURS and produces no visible container, no
+  # job.log output and no docker event until it finishes -- which is indistinguishable
+  # from a wedged job. It cost exactly that tonight: two riscv launches sat with empty
+  # trial directories and a live driver while harbor rebuilt an image it already had.
+  #
+  # Reuse is safe HERE and only here, on an explicit precondition that was CHECKED in a
+  # running container rather than assumed: riscv's environment/ has not been modified,
+  # so its June image cannot be stale, and the only riscv change was task.toml (the
+  # artifacts path), which harbor reads from the task source at run time.
+  #
+  #   docker exec <riscv cell> sh -c "ls /app/bugs /app/starter_project/.git"
+  #   -> both must be absent; if either exists, the image IS stale and this must be true
+  #
+  # If riscv's Dockerfile is ever edited, set this back to true first.
+  force_build: false
   delete: false          # calibrating several tasks must not rebuild each time
 
 agents:
