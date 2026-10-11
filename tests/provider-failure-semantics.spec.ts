@@ -253,8 +253,27 @@ describe('the agent never attributes a provider fault to the model', () => {
     expect(AGENT, 'the counter must be INCREMENTED on failure').toMatch(
       /consecutive_provider_failures \+= 1/,
     )
-    expect(AGENT, 'the ceiling must test the CONSECUTIVE counter').toMatch(
-      /if consecutive_provider_failures > MAX_PROVIDER_FAILURES/,
+    // ## And the terminator must be ELAPSED TIME, not a number of attempts
+    //
+    // The consecutive counter was the right fix for cumulative-counting, and still the
+    // wrong instrument for the thing it bounds. Measured: riscv-core-debug's calibration
+    // ran 113 turns in 97 minutes, was mid-suite with 0.28 on the board, and died with
+    // "provider-failures-exceeded (61 consecutive, 78 total)" -- an outage that simply
+    // outlasted what a 60-count ceiling plus a 60-second cap implies (~50 minutes).
+    //
+    // No value of the first bound fixes a failure measured in the second. The episode
+    // terminator is now the outage's AGE, and the counts only describe it.
+    expect(AGENT, 'the terminator must compare ELAPSED OUTAGE TIME').toMatch(
+      /if outage_sec > PROVIDER_OUTAGE_MAX_SEC/,
+    )
+    expect(AGENT, 'the outage clock must start on the first failure of a streak').toMatch(
+      /if outage_started_at is None:\s*\n\s*outage_started_at = time\.monotonic\(\)/,
+    )
+    expect(AGENT, 'and reset on a successful call').toMatch(
+      /outage_started_at = None\s*\n/,
+    )
+    expect(AGENT, 'the bound must be expressed in seconds, generously').toMatch(
+      /PROVIDER_OUTAGE_MAX_SEC = float\(os\.environ\.get\("EF_LHTB_PROVIDER_OUTAGE_MAX_SEC", "7200"\)\)/,
     )
     expect(AGENT, 'the backoff must be driven by the same counter').toMatch(
       /2 \*\* min\(consecutive_provider_failures/,

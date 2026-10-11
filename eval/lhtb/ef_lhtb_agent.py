@@ -130,6 +130,23 @@ MAX_TRUNCATION_STREAK = int(os.environ.get("EF_LHTB_MAX_TRUNCATED", "3"))
 # whenever the budget does.
 MAX_PROVIDER_FAILURES = int(os.environ.get("EF_LHTB_MAX_PROVIDER_FAILURES", "60"))
 
+# ## How long an outage is worth waiting for, in SECONDS
+#
+# A count of failures is the wrong instrument for an outage, and the measurement says so.
+# riscv-core-debug's calibration ran 113 turns in 97 minutes and was then killed by
+# "provider-failures-exceeded (61 consecutive, 78 total)" -- a real, sustained outage that
+# simply outlasted the patience a 60-count ceiling plus a 60-second cap implies (~50
+# minutes). The task was working: it had earned 0.28 and was mid-suite when it died.
+#
+# 60 attempts and 60 seconds are different quantities, and no choice of the first fixes a
+# bound expressed in the second. So the terminator is now ELAPSED TIME, and the count is
+# kept only to describe what happened.
+#
+# Two hours against a six-hour budget: long enough to ride out the outages actually
+# observed, short enough that a provider that is down for the whole window does not burn
+# the entire episode producing a foregone zero.
+PROVIDER_OUTAGE_MAX_SEC = float(os.environ.get("EF_LHTB_PROVIDER_OUTAGE_MAX_SEC", "7200"))
+
 # ## Consecutive failures, and a BACKOFF between them
 #
 # The ceiling counts CONSECUTIVE failures now, not cumulative ones. Cumulative was
@@ -345,6 +362,8 @@ class EFLhtbAgent(BaseAgent):
         # intermittently-throttled run would look healthy.
         provider_failures = 0
         consecutive_provider_failures = 0
+        # When the CURRENT outage began (monotonic), or None while the route is healthy.
+        outage_started_at = None
         # Why the loop ended. Recorded because a cell's reward says nothing about
         # it, and the container is deleted afterwards — so "died after 7 calls"
         # was previously unattributable from the archive alone.
@@ -377,6 +396,8 @@ class EFLhtbAgent(BaseAgent):
             if error:
                 provider_failures += 1
                 consecutive_provider_failures += 1
+                if outage_started_at is None:
+                    outage_started_at = time.monotonic()
                 self._transcript.append(
                     {
                         "turn": turn,
@@ -389,10 +410,15 @@ class EFLhtbAgent(BaseAgent):
                 # allowance is deliberately generous next to MAX_EMPTY_STREAK: a
                 # provider recovering is worth waiting for, and the adapter has
                 # already retried the rate limit before reporting this.
-                if consecutive_provider_failures > MAX_PROVIDER_FAILURES:
-                    termination = (f"provider-failures-exceeded "
-                                   f"({consecutive_provider_failures} consecutive, "
-                                   f"{provider_failures} total)")
+                # ELAPSED TIME, not attempts. 60 attempts and 60 seconds are different
+                # quantities, and no choice of the first bounds a failure expressed in
+                # the second: riscv's calibration outlived exactly that combination.
+                outage_sec = time.monotonic() - outage_started_at
+                if outage_sec > PROVIDER_OUTAGE_MAX_SEC:
+                    termination = (f"provider-outage-exceeded "
+                                   f"({outage_sec / 60:.0f} min without a successful "
+                                   f"call; {consecutive_provider_failures} consecutive, "
+                                   f"{provider_failures} total failures)")
                     break
                 # Back off before retrying: immediate retries turn a one-minute blip
                 # into a terminated episode.
@@ -402,6 +428,7 @@ class EFLhtbAgent(BaseAgent):
                 continue
             # A successful call ends the outage, whatever the cumulative total is.
             consecutive_provider_failures = 0
+            outage_started_at = None
 
             if not calls:
                 content = (reply.get("content") or "").strip()
