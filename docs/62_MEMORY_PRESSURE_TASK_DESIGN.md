@@ -471,6 +471,42 @@ the confound section 8 exists to remove.
     seeding     one seed reproduces the corpus exactly, which is what makes pairing possible
     placement   probed facts at designed positions; everything else randomised (3.1)
 
+### 10.3 Most of this is already built, in this workspace
+
+Designing the corpus, the probes and the grader from scratch would be a large amount of work
+for no benefit, because an existing task in this checkout already implements the pattern and
+has been instantiated twice (`apex-law433-matter`, `apex-ib244-matter`).
+
+What `apex-law433-matter` contains:
+
+    70 stages
+    292 typed probe fields          bool 177, enum 24, quote 28, num 63
+    86 declared drops (38 unique files)
+    a frozen 113 KB answer key, an 84 KB single-source generator
+
+| this design needs | where it already exists | what to do |
+|---|---|---|
+| interference: confusable candidates and decoys | `_build_chain_matter()` builds three documents per chain with decoy rows and three interchangeable candidates | **scale the parameter** |
+| typed probes | `B()` `N()` `E()` `Q()` field constructors | reuse as-is |
+| answers verified against the SOURCE document | `check_quote` + `load_doc_norm` normalise the cited document and require the quote to appear in it | reuse as-is |
+| an answer key separated from the agent-visible spec | `full_spec()` / `public_spec()` | reuse as-is |
+| deterministic grading, no LLM judge | `grade.py` + `test_outputs.py`, per-stage breakdown written to `scorecard.json` | reuse as-is |
+| one source regenerating every derived artifact | `main()` | reuse as-is |
+| **the compression loop, exposure measurement, injection arms** | -- | **build; this is the only genuinely new part** |
+
+**292 fields already exceeds the ~60 probes this design asked for**, and the grader is
+deterministic and reports per-stage, which is the per-probe outcome section 7.4 needs.
+
+**The one real gap is scale.** The existing corpus is about 115 KB, which cannot create
+extreme pressure. But `_build_chain_matter(n_chains=12)` is parametric, so reaching a corpus
+larger than the window is a change of parameter rather than a redesign -- which is what makes
+borrowing worth more here than building.
+
+**What borrowing does not remove:** the existing task reveals documents *reactively to an
+agent that fetches them*, while this design needs them *pushed* (6.7). The corpus generator
+and the grader transfer unchanged; the delivery mechanism does not, and the driver is where
+that difference lives.
+
 **The driver is a local harness, not a container task.** Nothing here needs a shell: ingestion
 appends documents, probing asks questions. The existing `EpistemicFoldBridge` already speaks to
 the plugin, so the test reuses the same engine and telemetry as the LHTB lane without a container,
