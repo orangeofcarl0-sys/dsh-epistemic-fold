@@ -293,6 +293,48 @@ is not used for unlocking here. It is used for **corpus assembly** instead -- wh
 belongs to which project, and which projects a composition probe links -- so the field stays
 meaningful rather than becoming dead weight.
 
+#### 3.2.16 The generator, as an algorithm
+
+    VOCAB = { coding: [...], execution: [...], reasoning: [...], generation: [...] }
+    # one field vocabulary per type, so a type's projects are mutually confusable
+
+    for type in TYPES:
+        for project in 1..5:
+            values = { field: draw(field, rng) for field in VOCAB[type] }
+            assert all values in a type are UNIQUE across projects
+            documents = render(type, project, values)        # ~5 docs, ~25k tokens
+            facts += [ (type, project, field, values[field]) for field in probed ]
+
+    assign cross-links as a ring between adjacent types
+    place the errata documents late in the corpus
+    reserve some (project, field) pairs as NEVER STATED
+
+**Four constraints in that algorithm are load-bearing, and each was found by asking what would
+break the probe rather than by taste:**
+
+1. **Values must be unique within a type.** If two projects share `max_attempts = 5`, a
+   disambiguation probe has **two correct answers** and the distractor is not a distractor. The
+   generator asserts uniqueness rather than hoping for it.
+2. **Every project of a type carries the whole vocabulary.** A distractor is "the same field in
+   another project", which only exists if every project has that field. This is what "shared
+   schema" (5.1) means operationally.
+3. **Some pairs are reserved as never stated.** An abstention probe asks about a fact that does
+   not exist, so the generator must **deliberately omit** specific pairs. Without an explicit
+   reserve, abstention probes would be accidental and their count unpredictable.
+4. **Errata go late.** An update probe needs the stale value to have been **stated earlier**, so
+   the correction must arrive after the original. Placing it early makes the "stale" value the
+   only one the model ever saw.
+
+#### 3.2.17 The cross-links are a ring, and the count works out
+
+Five projects per type and four link edges give **20 links**, and each link supports a
+composition probe **from either side** -- 40 composition probes, which is exactly the 10 per type
+that 3.2.11 requires.
+
+The ring is chosen over a random graph for one reason: it is **checkable**. A ring has a known
+in-degree and out-degree, so "every project is cited by exactly one other" is an assertion the
+generator can make, and a composition probe can never point at a project that does not exist.
+
 ## 4. Compression as the independent variable
 
 Compression must be an independent variable, and natural pressure cannot supply one: it depends
@@ -817,6 +859,64 @@ the probes and the statistics; none supplies that comparison.
 appends documents, probing asks questions. The existing `EpistemicFoldBridge` already speaks to
 the plugin, so the test reuses the same engine and telemetry as the LHTB lane without a container,
 a verifier or a reward file.
+
+### 10.5 The driver, as a sequence
+
+    for cell in grid:
+        bridge.init(system_prompt)                     # minimal (6.9)
+        for doc in corpus in cell.order:               # phase 1, ingestion
+            bridge.append(user_message(doc))           # no tool call (6.7)
+        for i in 1..cell.depth:                        # the independent variable
+            bridge.compact()                           # returns mechanism + sizes
+        if cell.arm in {B, C}:                         # injection, if any
+            bridge.append(user_message(needed_documents(cell.probe)))
+        bridge.set_compaction(enabled = False)         # 5.4: measure, do not change
+        answers = bridge.step(probe_turn(all_probes))  # phase 2, ONE turn
+        score(answers, answer_key)                     # deterministic, no LLM
+        record(lineage, exposure, telemetry, cost)
+
+**Three ordering details in that sequence are not arbitrary:**
+
+- **Compaction is requested before the injection.** Otherwise the injection's own tokens could
+  be folded, and arm B would be measured on a corpus that includes the answer key's source
+  material in compressed form (5.4).
+- **Compaction is disabled before the probe turn, not during it.** Disabling it after the first
+  probe token would leave a window in which a fold could land.
+- **Every document is appended as a user message**, so ingestion is push and requires no tool
+  call at all -- which is the paradigm difference 6.7 insists on.
+
+### 10.6 Calibration, as a procedure
+
+Section 8 requires the headline comparison at **matched final size**, and 10.1 says that needs
+its own pass. Concretely:
+
+    target = 20% of the ingested surface size          # a ratio, so it survives resizing
+    for mechanism in {basic, economy, balanced, quality}:
+        sweep depth N upward
+        record surface tokens after the Nth compaction
+        stop at the smallest N whose size <= target
+        that N is the mechanism's depth for the matched-size arms
+
+**The target is a ratio, not an absolute**, for the same reason 3.2.5 states sizing as a
+multiple: an absolute target silently stops being matched when the corpus is resized.
+
+**The sweep is recorded, not discarded.** If a mechanism cannot reach the target at any
+practical depth, that is itself a finding about the mechanism, and it is reported rather than
+hidden by choosing a target it happens to hit.
+
+### 10.7 The analysis, as a table
+
+| what | against what | answers |
+|---|---|---|
+| retention per type | arm B, at matched size | how much survived, **and whether it differs by content type** |
+| binding loss per type | extraction vs disambiguation | whether facts outlived their referents, **worst where predicted** |
+| interference | `B - C` | whether the retained summary hurts with the source in hand |
+| retention vs exposure | the measured lineage, not the nominal depth | whether compression is what is losing the facts |
+| cost per retained fact | `costTotal` / correct | which tier is worth its price |
+| confabulation | abstention probes alone | whether the model invents rather than declines |
+
+**The per-type row is the one 3.2 exists for.** If the four types produce one curve, the
+four-type corpus was unnecessary and 11 says so.
 
 ## 11. What would falsify this design
 
