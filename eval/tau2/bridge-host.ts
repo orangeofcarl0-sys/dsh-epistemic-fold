@@ -364,6 +364,28 @@ let turnCounter = 0
 let stepCounter = 0
 /** Whether the current turn already carries a message, so it can be closed. */
 let turnHasContent = false
+/**
+ * Whether a turn is currently OPEN on the session.
+ *
+ * `turnHasContent` answers "may I close the current turn?", which is a different
+ * question, and conflating the two is what let them drift apart: a provider
+ * failure closes the empty turn and clears `turnHasContent`, and the next
+ * `rotateTurn` then skipped opening one, because it only opened inside the
+ * `if (turnHasContent)` branch. The step then ran with NO open turn.
+ *
+ * Basic's automatic compaction refuses exactly that state
+ * (`compactRegion: no open turn — automatic compaction events must be enclosed
+ * in a turn`), and `src/basic/region.ts` is vendored byte-for-byte from
+ * `@deepseek-ai/dsh-compaction-basic`, so the refusal is correct and this host
+ * is what was wrong. Production never reaches it: Basic's `compactIfNeeded` runs
+ * on `agent/pre-step`, inside a turn the agent loop owns.
+ *
+ * Measured before the fix: every `basic` cell reported double-digit compaction
+ * failures (unknown-config 21/33, riscv 26/41 and 26/45, commit0 13/36) while
+ * every EF arm reported 0 — because `drainIdleRebase` incidentally repaired the
+ * invariant for EF arms and returns early for `mode: basic`.
+ */
+let turnOpen = false
 let folds = 0
 let roots = 0
 let emergencies = 0
@@ -485,12 +507,18 @@ function appendIncoming(message: TauMessage | TauMultiTool): void {
   throw new Error(`bridge: unsupported incoming role "${message.role}"`)
 }
 
-/** Close the current turn and open the next one, if it carries content. */
+/**
+ * Close the current turn and open the next one.
+ *
+ * The invariant this must uphold is that a turn is OPEN whenever the model is
+ * called, because automatic compaction requires an enclosing turn. The recovery
+ * is written as `if (!turnOpen) openTurn()` rather than folded into the
+ * `turnHasContent` branch, so it also runs after a step that closed the turn
+ * without producing content — which is exactly the provider-failure path.
+ */
 function rotateTurn(): void {
-  if (turnHasContent) {
-    closeTurn()
-    openTurn()
-  }
+  if (turnHasContent) closeTurn()
+  if (!turnOpen) openTurn()
   turnHasContent = true
 }
 
@@ -498,11 +526,19 @@ function rotateTurn(): void {
 function openTurn(): void {
   turnCounter += 1
   session!.append('turn/start', { turn: turnCounter })
+  turnOpen = true
 }
 
-/** Close the current turn. */
+/**
+ * Close the current turn.
+ *
+ * Guarded on `turnOpen` so it can never emit an unbalanced `turn/end`: an
+ * unclosed turn is illegal, and so is closing one twice.
+ */
 function closeTurn(): void {
+  if (!turnOpen) return
   session!.append('turn/end', { turn: turnCounter, reason: { kind: 'completed' } })
+  turnOpen = false
 }
 
 /** The message history the model should see, as the engine currently exposes it. */
@@ -701,7 +737,10 @@ async function drainIdleRebase(): Promise<void> {
 
   // Close the turn so the manual (idle) transaction is admissible. `openTurn`
   // below restores the enclosing turn the automatic fold path requires.
-  const wasOpen = turnHasContent
+  // Asks whether a turn is OPEN, not whether it carries content: the close/reopen
+  // below is about the lifecycle, and using the content flag here is what let a
+  // provider-failed step leave the session with no enclosing turn.
+  const wasOpen = turnOpen
   if (wasOpen) closeTurn()
 
   let busy = false
@@ -1057,6 +1096,7 @@ async function init(request: {
   turnCounter = 0
   stepCounter = 0
   turnHasContent = false
+  turnOpen = false
   folds = 0
   roots = 0
   emergencies = 0

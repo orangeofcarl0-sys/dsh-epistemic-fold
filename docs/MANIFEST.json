@@ -300,6 +300,11 @@
     "sha256": "a53629275b7155a3f0af94117c6369d3defaf7be5b90ef2d4afe217e4ece19ac"
   },
   {
+    "file": "60_PARALLEL_RUN_REPORT.md",
+    "bytes": 12884,
+    "sha256": "6e0e36451346d183ddd3204e03c159266979f7992e1bc5233b484b76acdf30d2"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -321,8 +326,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8737,
-    "sha256": "98e600311ef03d105dc0e2b94b322debe3bd46b04e8dfb6da0acf1e05cf27dab"
+    "bytes": 8794,
+    "sha256": "ed61c56817ace16ee8b13a3267f6f73eba4e54094686244e66a54a0c5bb67a9d"
   },
   {
     "file": "README.zh.md",
@@ -338,10 +343,5 @@
     "file": "USER_GUIDE.zh.md",
     "bytes": 6963,
     "sha256": "0553c00ae10541aa1068c65b8f6a6279e2704b24f521449dfe7c0d87a65d9279"
-  },
-  {
-    "file": "60_PARALLEL_RUN_REPORT.md",
-    "bytes": 12884,
-    "sha256": "6e0e36451346d183ddd3204e03c159266979f7992e1bc5233b484b76acdf30d2"
   }
 ]
