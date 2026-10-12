@@ -311,8 +311,18 @@
   },
   {
     "file": "62_MEMORY_PRESSURE_TASK_DESIGN.md",
-    "bytes": 70586,
-    "sha256": "0cf921fcbde50d4e4832ac86525b3b189258d2e1a6ac481d8aa7560e18da7160"
+    "bytes": 77854,
+    "sha256": "ba71fd26e67f89eaa1ee04d9408d415a8f0b4aee62bc10f07633538583bb1145"
+  },
+  {
+    "file": "63_STEP5_RESUME_HANDOFF.md",
+    "bytes": 12191,
+    "sha256": "eb539165257d10488f622d80b31bfb93166f4343aa6d537842190033cf2f8d08"
+  },
+  {
+    "file": "64_TASK_SERVICE_AUDIT.md",
+    "bytes": 5057,
+    "sha256": "4079476b1580f06333fdee496db7a665985e26df52600be0d0c506c42d8bfe3a"
   },
   {
     "file": "ARCHITECTURE.md",
@@ -336,8 +346,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8950,
-    "sha256": "49903c43258b1027783a4986ae9010f85ab9df7a4fc7a55a4c3211b2e68bfe97"
+    "bytes": 9064,
+    "sha256": "f78f9c340a0538cf9bcaef623cb44cbaea8c8478587f769dbebdf740fe4f9322"
   },
   {
     "file": "README.zh.md",
