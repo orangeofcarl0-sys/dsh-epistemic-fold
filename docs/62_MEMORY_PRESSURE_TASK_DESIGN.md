@@ -507,6 +507,73 @@ agent that fetches them*, while this design needs them *pushed* (6.7). The corpu
 and the grader transfer unchanged; the delivery mechanism does not, and the driver is where
 that difference lives.
 
+### 10.4 What the six benchmarks already solved
+
+All six were read in full (README, and where it mattered the harness). Four of them contain
+pieces this design would otherwise have had to invent.
+
+**MemoryAgentBench** (ICLR 2026, MIT) already runs the push paradigm and names it:
+
+> "inject once, query multiple times" -- one long text corresponds to multiple questions
+
+Its data is chunked to simulate multi-turn interaction, and its four competencies (Accurate
+Retrieval, Test-Time Learning, Long-Range Understanding, **Conflict Resolution**) are a
+probe taxonomy. Conflict Resolution is the one this design calls the update probe.
+
+**MemoryCD** (MIT) already implements the arm comparison behind a plug-in interface:
+
+    --method long_context      the long-context baseline
+    --method bm25_rag          retrieval
+
+Both sit behind one interface, over one unified JSONL, producing `predictions_*.jsonl` and
+`summary_*.json`. That is arms F and the regenerable control, already written. Its data
+(Amazon reviews, user personalisation) does not fit this task, but the harness does.
+
+**TRACE** (Nokia, MIT) is the methodology source, and four of its choices apply directly:
+
+| TRACE does | why this design needs it |
+|---|---|
+| reports `mean(POST) - mean(PRE)` per boundary over the first k post-boundary actions | **the paired pre/post design section 7.4 asks for**, with a horizon parameter |
+| marks effects with a **bootstrap 95% CI excluding zero** | an effect size without an interval is what section 7.5 warns about |
+| **PRE rollouts are never re-run** -- the control does not depend on the summary | the control arm can be computed once and frozen, which is most of the cost |
+| **stratifies evidence boundaries** rather than selecting worst-by-score | selecting the worst by score "skews the failure mix" -- the same error as averaging over exposure in 7.1 |
+| **promotes on pass^2** -- run twice, count a task only if it passes both | variance control, and the direct answer to this design's n=1 problem |
+| checks reproduction by sha256 against frozen CSVs | the corpus and answer key must be frozen the same way |
+
+Its warning about the proposer is also worth carrying: giving a model measurements makes it
+**back-fit a causal story** to them. Any arm here that is shown its own scores mid-run risks
+the same.
+
+**LongMemEval** (ICLR 2025, MIT) supplies the five-ability taxonomy -- Information Extraction,
+Multi-Session Reasoning, **Knowledge Updates**, Temporal Reasoning, **Abstention** -- and a
+caution from its own changelog: a later release "cleaned up the history sessions to prevent
+**interference on answer correction**". Update and abstention probes are the ones interference
+corrupts first, which is why this design keeps the stale value in the corpus deliberately
+rather than accidentally.
+
+**BABILong** (NeurIPS 2024, MIT) supplies a difficulty ladder rather than a single setting: its
+20 tasks are tabulated by *facts per task* and *supporting facts per task*, so difficulty is a
+declared parameter. This design's depth levels should be calibrated the same way, not chosen by
+feel.
+
+**RULER** (MIT) supplies the argument for section 3. Its finding is that models claiming 32k or
+more mostly cannot use it, and that "almost all models fall below the threshold before reaching
+the claimed context lengths". Length is therefore a poor source of pressure -- which is why
+this design puts the pressure in compression depth instead.
+
+**What none of them does**, and why this design still exists:
+
+    MemoryAgentBench   injects once, never compresses
+    MemoryCD           compares SELECTION methods, not compression depths
+    TRACE              optimises compression, but measures action burden (blocked, refetch),
+                       not what the model still knows
+    LongMemEval        multi-session, no compression loop
+    BABILong, RULER    synthetic length, no compression at all
+
+The gap is unchanged: **compression depth as the independent variable, retention as the
+dependent variable, and a regenerable arm as the control.** Four benchmarks supply the harness,
+the probes and the statistics; none supplies that comparison.
+
 **The driver is a local harness, not a container task.** Nothing here needs a shell: ingestion
 appends documents, probing asks questions. The existing `EpistemicFoldBridge` already speaks to
 the plugin, so the test reuses the same engine and telemetry as the LHTB lane without a container,
