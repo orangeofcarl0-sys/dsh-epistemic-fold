@@ -186,7 +186,34 @@ and "could not do it"; the gates establish which KIND of failure this was, which
 ### 3.5 Final rewards — all seven cells
 
 Every cell terminated `turn-budget-exhausted` at 401 calls (the `MAX_TURNS` cap, not the
-time budget), so the comparison is at a **uniform** 400-turn cut.
+time budget).
+
+**The cut was NOT uniform, and an earlier version of this report said it was.** `modelCalls` is
+incremented *before* the request is sent, so it counts ATTEMPTS and not successes, and the budget
+logic in force when these cells ran counted iterations rather than turns. The provider failure
+counts are therefore inside the 401:
+
+    arm       calls   provider failures   real turns   reward
+    basic      401          132              269       0.7795
+    economy    401          102              299       0.6545
+    balanced   401           88              313       0.7114
+    quality    401           94              307       0.7705
+
+So the four arms ran **269, 299, 313 and 307** real turns, not 400 each. `d2442c7` fixed the
+budget to count model turns and to charge provider failures to a separate allowance, but it landed
+at 15:25 and these cells started at 04:12 — they predate it, along with the turn-lifecycle fix
+(`ac68146`, 14:09) and the bounded read (`d449c93`, 16:23).
+
+**The direction of the error matters, and it runs against the headline rather than for it.** The
+winner, `basic`, had the MOST failures and therefore the FEWEST real turns — 269 against 313 for
+`balanced`, which it beat by 0.068. A no-folding baseline that wins on 269 turns while a folding
+arm gets 313 is a stronger result than one that wins at a matched cut, not a weaker one. But it is
+a different claim from the one made above, and it is the one the data supports.
+
+**What the four-tier comparison may therefore say** is limited to a direction: the baseline was
+not beaten. It may not say the arms were compared at equal opportunity, and a rerun on the fixed
+code is what would settle it. That rerun is the 17:58 wave, which is still in flight and which the
+provider outage has cost several cells (see 3.7).
 
     task            arm       reward   raw      stages  official  folds  unc/call  $/call   cost
     unknown-config  basic     0.7795   0.8606   4       0.8592    0      1815     0.00091  0.3641
@@ -221,6 +248,38 @@ wrote `JOURNAL.md`, which is a real and consistent 0.12 omission.
 **commit0 is the one clear shortfall**: 58/784, sealed sandbox, and concentrated -- tinydb
 55/204, sortedcontainers 3/297, cachetools 0/283 (its test file failed to collect). Three
 libraries in 400 turns got through roughly one.
+
+
+### 3.7 The provider outage, and what it did to the results
+
+The endpoint began answering `HTTP 429 Upstream request failed: Rate limit exceeded` and stayed
+there. The effect on the lane is measurable and is recorded here because it is the difference
+between "a cell scored zero" and "a cell was never measured".
+
+    termination                      cells   what it means
+    model-reported-completion            9   the model finished; a measurement
+    provider-outage-exceeded             6   the 2h ceiling; NOT a measurement
+    provider-failures-exceeded          16   all at exactly 61 failures; NOT measurements
+    turn-budget-exhausted                7   the pre-fix batch; see 3.5
+    empty-streak                         -   the model produced nothing repeatedly
+
+**Sixteen cells stopped at exactly 61 provider failures**, which is the consecutive-failure
+ceiling doing its job: it converts an unbounded wait into a bounded, labelled outcome. Without it
+those cells would have sat until their time budget expired and reported a score, and a score of
+0.0 produced by an unreachable endpoint is indistinguishable in a results table from a score of
+0.0 produced by a model that could not do the task.
+
+**Several cells do carry a reward AND a high failure rate** -- `2ALnjyE` economy at R=0.0 with
+252 failures in 583 calls (43%), `UeugNPr` quality at R=0.6 with 191 in 412 (46%). Those numbers
+should not be read as measurements of the model, and the rule this report adopts is that **a cell
+whose termination names the provider is excluded from the comparison regardless of the reward it
+carries.** A reward computed from a run in which the model was denied the provider for half its
+turns is a measurement of the outage.
+
+**From the fully fixed code (`d449c93`) exactly two cells completed normally**: `qrCmKnF`
+balanced at 0.7977 and `H7GD76Z` basic at 0.575. Everything else from that wave either hit the
+outage ceiling or is still running. That is the honest state of the four-tier comparison: two
+cells, both from the fixed apparatus, neither of which is enough to carry the claim in 3.5.
 
 ### 3.6 What the four-tier comparison may and may not say
 

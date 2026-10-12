@@ -301,8 +301,8 @@
   },
   {
     "file": "60_PARALLEL_RUN_REPORT.md",
-    "bytes": 12884,
-    "sha256": "6e0e36451346d183ddd3204e03c159266979f7992e1bc5233b484b76acdf30d2"
+    "bytes": 16743,
+    "sha256": "12c93cc86e7e907c87018a95c1ee0e2536774f0608fdd9e3630eadad658e83b4"
   },
   {
     "file": "61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md",
