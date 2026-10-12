@@ -24,3 +24,5 @@ client-instr.js
 # They are runtime state, not source.
 .epistemic-fold/
 eval/memory/last_score.json
+eval/memory/_*.json
+eval/memory/_bundles/
