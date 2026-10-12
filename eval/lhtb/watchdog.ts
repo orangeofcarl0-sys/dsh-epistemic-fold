@@ -41,6 +41,7 @@ import {
   DEFAULT_POLICY,
   parseProcessTable,
   selectStaleProcesses,
+  taskServiceDead,
 } from './watchdog-policy.ts'
 import type { CellProcess, WatchdogPolicy } from './watchdog-policy.ts'
 
@@ -253,6 +254,37 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
     try { silentSec = Math.round((Date.now() - statSync(cell.transcript).mtimeMs) / 1_000) } catch { /* gone */ }
     observed.set(cell.container, silentSec)
     const verdict = classifyCell({ silentSec, processes }, thresholds)
+
+    // ## A dead task service is terminal, and it outranks every liveness verdict
+    //
+    // The staged-config task's daemon consumes and DESTROYS its own secret on first start, so a
+    // restart dies before it can listen and the episode becomes unwinnable. Liveness cannot see
+    // this: the agent keeps writing the transcript and the container stays Up, so every other
+    // verdict reads HEALTHY while the cell burns its whole budget producing nothing. Measured:
+    // three samples served, then 24 crash-restarts at cfg_daemon.py line 111.
+    //
+    // Recorded as its own event, and stopped, because "the environment was broken" and "the model
+    // could not do it" must not look the same in the results -- and because the only alternative is
+    // spending the rest of the budget to produce nothing.
+    const service = taskServiceDead(cell.container, processes, thresholds)
+    if (service.dead) {
+      let stopped = false
+      try {
+        await docker(['stop', '--time', '5', cell.container])
+        stopped = true
+      } catch (error: unknown) {
+        record({ event: 'environment-dead-stop-failed', container: cell.container, error: String(error).slice(0, 160) })
+      }
+      record({
+        cell: cell.label,
+        verdict: 'environment-dead',
+        silentSec,
+        reason: service.reason,
+        processes: processes.length,
+        stopped,
+      })
+      continue
+    }
     const stale = selectStaleProcesses(processes, thresholds)
     if (verdict === 'wedged') {
       // The compose project name is the container name without its `-main-1` suffix.

@@ -175,3 +175,94 @@ export function parseProcessTable(text: string): CellProcess[] {
   }
   return parsed
 }
+
+/**
+ * ## Rule 4: the task's own service is SINGLE-USE, and a restart cannot succeed
+ *
+ * The staged-config task runs /opt/cfg/cfg_daemon.py, which on its first successful start merges
+ * its private half and then DESTROYS the only copy on disk:
+ *
+ *     def _consume_secret(self):
+ *         """Merge the private half, then DESTROY the only copy on disk."""
+ *
+ * Every later start therefore dies before it can listen, with KeyError: 'seed':
+ *
+ *     File "/opt/cfg/cfg_daemon.py", line 111, in __init__
+ *       self.seed = self.data["seed"]
+ *
+ * Measured on a live cell: actions.log recorded three samples and then stopped, while daemon.log
+ * accumulated 24 such crashes. cfg status, cfg sample and cfg probe all returned nothing, so the
+ * episode had become UNWINNABLE -- and nothing reported it. The container stayed Up, Harbor stayed
+ * running, the transcript kept being written, and the cell spent its full budget producing nothing.
+ *
+ * This is why it never appeared in the step-5 round: the daemon is only ever started ONCE there,
+ * because that round's model went straight at the task. A stronger model goes looking for the
+ * private data -- reading /proc/<pid>/mem, decompiling __pycache__/cfg_daemon.cpython-*.pyc,
+ * hunting for a secret file -- and something in that hunt ends the daemon. So the defect is
+ * SELECTIVE AGAINST STRONGER MODELS, which is a validity problem, not an operations one.
+ *
+ * The detection is cheap and needs no new sampling: the service must be as old as the container,
+ * because the container's own entrypoint starts it. A service younger by more than the startup
+ * grace has restarted, and a restart cannot succeed. Rule 2 already says such a process "is not a
+ * candidate at all, however old it is" -- this is the other half of that same fact.
+ *
+ * Scoped by CONTAINER NAME on purpose. Most tasks have no such service, and a rule that looked for
+ * a missing process unconditionally would declare every healthy cell of every other task dead.
+ */
+export interface TaskServiceRule {
+  /** Only containers matching this are subject to the rule. */
+  readonly containerPattern: RegExp
+  /** The service that must be present, and as old as the container. */
+  readonly processPattern: RegExp
+}
+
+/** The measured case: the staged-config task's daemon. */
+export const DEFAULT_TASK_SERVICE: TaskServiceRule = {
+  containerPattern: /unknown-config-semantics/u,
+  processPattern: /cfg_daemon[.]py/u,
+}
+
+/** Whether the task's own service is gone or has restarted, and why. */
+export interface TaskServiceVerdict {
+  readonly dead: boolean
+  readonly reason: string
+}
+
+/**
+ * Is the task's own service gone, or younger than the container that started it?
+ *
+ * @param container - the container name, used to scope the rule.
+ * @param processes - every process the container reported.
+ * @param policy - thresholds; defaults to DEFAULT_POLICY.
+ * @param rule - which container and which service; defaults to the measured case.
+ * @returns whether the environment is dead, and the evidence.
+ */
+export function taskServiceDead(
+  container: string,
+  processes: readonly CellProcess[],
+  policy: WatchdogPolicy = DEFAULT_POLICY,
+  rule: TaskServiceRule = DEFAULT_TASK_SERVICE,
+): TaskServiceVerdict {
+  if (!rule.containerPattern.test(container)) {
+    return { dead: false, reason: 'not a task that runs a single-use service' }
+  }
+  const service = processes.find(process => rule.processPattern.test(process.args))
+  if (service === undefined) {
+    return { dead: true, reason: 'the task service is not running at all' }
+  }
+  // The container's age from everything EXCEPT the service, so the comparison is meaningful.
+  const others = processes.filter(process => process !== service)
+  if (others.length === 0) {
+    return { dead: false, reason: 'no other process to date the container against' }
+  }
+  const age = containerAgeSec(others)
+  const younger = age - service.elapsedSec
+  if (younger > policy.startupGraceSec) {
+    return {
+      dead: true,
+      reason: 'the task service restarted: ' + younger + 's younger than the container, and a'
+        + ' restart cannot succeed because the first start consumed the only copy of its secret',
+    }
+  }
+  return { dead: false, reason: 'the task service is as old as the container' }
+}
