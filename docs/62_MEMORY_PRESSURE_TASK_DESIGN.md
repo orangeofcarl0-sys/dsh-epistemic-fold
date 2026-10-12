@@ -105,6 +105,29 @@ rather than among nonsense.
 would multiply cost by the probe count, and a multiple-choice form does not need a
 conversation. Batching is recorded so a batch-position effect can be checked.
 
+### 5.1 How the corpus creates interference
+
+Every project carries the **same schema** — the same field names — with **different values**.
+`retry_limit` therefore exists in all twenty projects and means something different in each.
+That is the interference: a summary can record "retry_limit: 5" and be wrong about which
+project it belongs to while looking complete.
+
+### 5.2 How the probes are built, and why they are paired
+
+    extraction      "What is Aurora's retry_limit?"       options = every project's retry_limit
+    disambiguation  "Which project has retry_limit 8?"    options = project names
+
+**The two have the same option structure**, so they are comparable rather than merely
+similar, and the distractors **share the field and differ only in the referent**. That is
+what makes them measure binding rather than knowledge.
+
+**The update probe has the strongest distractor available**: the value it asks about was
+changed mid-corpus, so **the stale value is in the corpus**. A model that kept the old value
+does not guess — it selects a wrong answer that it has a reason to believe.
+
+**The abstention probe** asks about a (project, field) pair never stated, with "not stated"
+among the options.
+
 ## 6. Arms and controls
 
 ### 6.1 The control is REGENERABLE MEMORY, not the absence of compression
@@ -228,6 +251,35 @@ the model can read nothing and fetch later. Withholding retrieval makes the inta
 consequential, and a model that reads everything in order is then indistinguishable from
 the temporal arm — which is itself the finding.
 
+### 6.7 Exploration needs a read cap and a matched-random control
+
+A menu of titles would be an index, and an index is exactly what SCALE-QA says makes the task
+easier, so exploration cannot be menu-driven. The store therefore holds N documents under
+**opaque ids**, the model may request any **unread** one, and a read consumes it.
+
+**A read cap is mandatory.** If the model can read everything, exploration collapses into the
+push arm and measures nothing. With k < N the choice has consequences.
+
+That gives exploration its own control, and without it "the exploration arm scored low" cannot
+be told from "it chose badly":
+
+    random-k       same number of reads, no selection skill
+    oracle-k       the harness picks the k most informative documents
+    exploration    the model picks
+
+    exploration - random   selection skill
+    oracle - exploration   distance from optimal
+
+### 6.8 Three constraints that protect the measurement
+
+1. **No note-taking.** The exploration arm needs a tool call to request a document. If the
+   model can also WRITE, it externalises its memory and the test stops measuring retention.
+   Read only; no scratchpad, no notes, no files.
+2. **A minimal system prompt.** Any instruction to be concise, or to summarise, changes what
+   the compressor does and contaminates the independent variable.
+3. **A seeded corpus.** Cells are compared by pairing facts across positions; if the corpus
+   differs between cells the pairing does not exist.
+
 ## 7. Per-probe exposure, and decoupling the analysis from it
 
 ### 7.1 The defect this fixes
@@ -313,6 +365,17 @@ the grid is already constrained.
 **Every reported number carries its exposure distribution.** An aggregate retention figure
 alone would be exactly the kind of number this section exists to prevent.
 
+### 7.6 All probes go in ONE turn
+
+Batching probes across turns changes the state between them: answering probe 1 adds tokens,
+those tokens can trigger a fold, and probe 2 is then asked at a higher exposure than probe 1.
+A batch therefore violates the decoupling section 7 exists to establish.
+
+**All probes are asked in a single turn**, so no fold can occur between them.
+
+The cost is a long reply and a truncation risk, which the multiple-choice format removes —
+one letter per probe — and which the existing reply-budget escalation already handles.
+
 ## 8. Scoring
 
 **The headline comparison is at matched final size, not at matched fold count.** Five EF
@@ -355,13 +418,19 @@ retains more while spending more has not obviously won, and the existing telemet
    alongside, never as a substitute.
 6. **Chance floor** — with k real distractors the floor is 1/k, so accuracy must be
    reported against that floor, not against zero.
-7. **Sample size** — separating 0.9 from 0.7 needs on the order of 60 probes per condition.
-   Fewer probes make the curve unreadable, and this constrains the grid.
+7. **Sample size** — separating 0.9 from 0.7 needs 60-90 probes per condition UNPAIRED, and
+   stratification by exposure multiplies that by the number of levels. The within-fact design
+   is paired and needs 30-40 for the same difference (7.5), which is what keeps the grid
+   affordable. If pairing is abandoned the grid must shrink to match.
 8. **The control's own competence** — oracle retrieval assumes the injected document
    actually contains the answer. Each injection is validated against the probe's ground
    truth before the arm is scored, or the ceiling is measuring the injection rather than
    the model.
-9. **Ingestion order interacts with compression** — which facts are folded first depends on
+9. **A batch of probes is a state change.** Mitigated by asking all probes in one turn
+   (7.6); recorded regardless, since the probe turn itself can fold before it is answered.
+10. **Externalised memory.** Any write capability in the exploration arm lets the model keep
+    notes instead of retaining, which voids the measurement (6.8).
+11. **Ingestion order interacts with compression** — which facts are folded first depends on
    arrival order, so two cells with the same depth can retain different facts. Order is
    randomised and the per-probe outcome is kept, not only the aggregate.
 
@@ -376,6 +445,29 @@ retains more while spending more has not obviously won, and the existing telemet
 | oracle-retrieval harness | injects the document each probe needs, validated against ground truth |
 | memory-pressure driver | ingests with no tool calls, requests N compressions, asks probes |
 | analysis | the retention curve, load penalty, binding loss, cost per retained fact |
+| **size calibration** | for each mechanism, the fold count that reaches a target surface size |
+
+### 10.1 Matched size needs its own calibration step
+
+"The headline comparison is at matched final size" is a requirement, not a mechanism. It needs
+a calibration pass that, for each compression mechanism, finds the fold count that reaches the
+target surface size. Without it the arms are compared at whatever size they happen to land on,
+which is the confound section 8 exists to remove.
+
+### 10.2 The corpus generator, concretely
+
+    schema      a fixed set of field names, shared by every project
+    projects    ~20, each a coherent service narrative: config, dependencies, incidents
+    values      generated from plausible ranges (retry_limit 2-12, timeouts 5-120s),
+                so they cannot be recalled from world knowledge and cannot be eliminated
+                as obviously random
+    links       some projects name others as dependencies, which is what composition
+                probes traverse
+    seeding     one seed reproduces the corpus exactly, which is what makes cross-cell
+                pairing possible
+
+The generator must also be able to **place a given fact at a chosen position**, because
+section 7.4's within-fact comparison depends on it.
 
 **The driver can be a local harness rather than a container task.** Nothing in this design
 needs a shell: ingestion appends documents, probing asks questions. The existing
