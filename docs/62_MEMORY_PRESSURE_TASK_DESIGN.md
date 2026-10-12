@@ -176,10 +176,45 @@ by `build_filler_source.py`. It is the same register as the probed facts, which 
 in a different register — literary prose, or source code — lets a summariser treat the facts as the
 only real content and preserve them, inflating retention.
 
-    corpus             7,239,897 chars  =  1,809,974 tokens  =  13.8x the window
-    background share   94%
-    distinct words     19,346   (generated filler: 58;  type/token 0.0192 against 0.0000247)
-    source-code share  8.8%     (bounded, by explicit guidance)
+**The size is DERIVED from the window, per tier.** A flat size cannot serve tiers that differ by
+an order of magnitude: sized for 131k it is not four times a 1M window, and sized for 1M it cannot
+be injected into 131k. The derivation is scale-invariant:
+
+    documents          100        (20 projects x 5)
+    doc tokens         ratio * W / 100
+    composition batch  10 * doc  = ratio * W / 10     (a composition probe needs two projects)
+    at probe           batch + 0.5W = W * (ratio/10 + 0.5)
+
+    fits iff  ratio/10 + 0.5 <= 1   ->   ratio <= 5.0
+
+The floor is the four-times rule above; the ceiling is the injection protocol. **Any window in
+[4.0, 5.0] works with the same ratio**, and 4.5 sits between them with 5% to spare.
+
+| tier | window | per document | corpus | ratio | composition batch | batch + 50% surface |
+|---|---|---|---|---|---|---|
+| 131K | 131,072 | 5,898 | 589,824 | 4.5x | 58,982 | 124,518 = 0.95x |
+| 252K | 258,048 | 11,612 | 1,161,216 | 4.5x | 116,122 | 245,146 = 0.95x |
+| 475K | 475,136 | 21,381 | 2,138,112 | 4.5x | 213,811 | 451,379 = 0.95x |
+| 1M | 1,048,576 | 47,186 | 4,718,592 | 4.5x | 471,859 | 996,147 = 0.95x |
+
+**The pool bounds which tiers are reachable.** The vendored pool is 7,233,446 chars, which supports
+windows up to about 402k. The 475K and 1M tiers need 8.6M and 18.9M chars and therefore a larger
+pool. The generator **refuses** rather than emitting a corpus too small to be four times its window:
+
+    the pool is 7,233,446 chars but this window needs 8,552,448 (ratio 4.5 of 475,136).
+    Enlarge filler_source.txt, or lower EF_MEMORY_CORPUS_RATIO to no less than 4.0, which is
+    3.2.5's floor.
+
+**What a flat size got wrong, on the record.** The corpus was briefly a flat 4M tokens. Against a
+131k window that is 30.9x, and every composition batch was 181k — **1.38x the window** — so arm B
+could not inject its own documents at all and would have measured truncation rather than the model,
+while every score it produced looked like a measurement. A corpus is not "as large as possible"; it
+is as large as the **injection** allows, and the injection scales with the window.
+
+    at the 131k tier:  corpus 591,437 tokens = 4.51x
+                       background share 94%
+                       distinct words 19,346   (generated filler: 58;  type/token 0.0192 vs 0.0000247)
+                       source-code share 8.8%  (bounded, by explicit guidance)
 
 **The size follows the vendored pool, not a knob.** It was briefly an environment variable, and that
 went wrong in a way worth keeping on the record: the default was 25000 while the corpus on disk was

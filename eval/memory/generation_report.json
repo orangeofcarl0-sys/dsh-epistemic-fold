@@ -40,5 +40,17 @@
     "ok": true,
     "violations": [],
     "count": 0
+  },
+  "sizing": {
+    "ok": true,
+    "window": 131072,
+    "ratio_target": 4.5,
+    "corpus_tokens": 591437,
+    "ratio_achieved": 4.512,
+    "documents": 100,
+    "tokens_per_document": 5914,
+    "composition_batch_tokens": 59140,
+    "batch_plus_surface_over_window": 0.951,
+    "note": "fits iff ratio <= 5.0; the floor 4.0 is 3.2.5's four-times rule"
   }
 }

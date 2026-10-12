@@ -312,6 +312,31 @@ ABSTENTION_FIELD = {
 FILLER_POOL = HERE / "filler_source.txt"
 _FILLER_CACHE: list = []
 
+# ## The corpus is sized from the WINDOW, per tier (3.2.5)
+#
+# The window is a property of the model under test, and it differs by an order of magnitude across
+# the tiers this benchmark targets. A single absolute corpus size cannot serve them: sized for 131k
+# it is not four times a 1M window, and sized for 1M it cannot be injected into 131k.
+#
+# So the size is DERIVED, and the derivation is scale-invariant:
+#
+#     documents          100        (20 projects x 5)
+#     doc tokens         ratio * W / 100
+#     composition batch  10 * doc  = ratio * W / 10     (a composition probe needs two projects)
+#     at probe           batch + 0.5W = W * (ratio/10 + 0.5)
+#
+#     fits iff  ratio/10 + 0.5 <= 1   ->   ratio <= 5.0
+#
+# Any window therefore works with the SAME ratio, anywhere in [4.0, 5.0]. The floor is 3.2.5's
+# four-times rule and the ceiling is the injection protocol. 4.5 sits between them with 5% to spare.
+#
+# This is what a flat "4M tokens" got wrong: it is 30.9x a 131k window, so every composition batch
+# was 1.38x the window and arm B could not inject at all. The corpus is not "as large as possible";
+# it is as large as the INJECTION allows, and the injection scales with the window.
+WINDOW = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
+CORPUS_RATIO = float(os.environ.get("EF_MEMORY_CORPUS_RATIO", "4.5"))
+CORPUS_TARGET_CHARS = int(WINDOW * CORPUS_RATIO * 4)
+
 
 def filler_pool() -> str:
     if not _FILLER_CACHE:
@@ -319,7 +344,14 @@ def filler_pool() -> str:
             raise SystemExit(
                 f"{FILLER_POOL.name} is missing; run build_filler_source.py to vendor it"
             )
-        _FILLER_CACHE.append(FILLER_POOL.read_text(encoding="utf-8"))
+        pool = FILLER_POOL.read_text(encoding="utf-8")
+        if len(pool) < CORPUS_TARGET_CHARS:
+            raise SystemExit(
+                f"the pool is {len(pool):,} chars but this window needs {CORPUS_TARGET_CHARS:,} "
+                f"(ratio {CORPUS_RATIO} of {WINDOW:,}). Enlarge filler_source.txt, or lower "
+                f"EF_MEMORY_CORPUS_RATIO to no less than 4.0, which is 3.2.5's floor."
+            )
+        _FILLER_CACHE.append(pool)
     return _FILLER_CACHE[0]
 
 
@@ -330,7 +362,7 @@ def render_filler(global_index: int, total_documents: int) -> str:
     generated filler compressible for free, and re-introducing it here would restore the defect
     that this replaced.
     """
-    pool = filler_pool()
+    pool = filler_pool()[:CORPUS_TARGET_CHARS]
     start = len(pool) * global_index // total_documents
     end = len(pool) * (global_index + 1) // total_documents
     return pool[start:end].strip("\n")
@@ -750,6 +782,28 @@ def main() -> None:
     orders = orderings(corpus, docs, probes["errata"], random.Random(SEED + 2))
     report["orderings_distinct"] = check_orderings(orders)
     report["answers_are_stated"] = check_answers_are_stated(corpus, probes["probes"], docs)
+
+    # ## The sizing, recorded so the artifact and the parameter cannot silently disagree
+    #
+    # The window is what this corpus was built FOR. Recording the achieved size beside the window
+    # it was derived from lets a reader check the arithmetic rather than trust it, and the suite
+    # asserts it. The flat-size version had no such record, which is how its default came to
+    # disagree with the artifact on disk and every test run silently resized the corpus.
+    _n_docs = sum(len(v) for v in docs.values())
+    _corpus_tokens = sum(len(d["text"]) for ds in docs.values() for d in ds) // 4
+    _batch_tokens = 10 * (_corpus_tokens // max(1, _n_docs))
+    report["sizing"] = {
+        "ok": (_corpus_tokens >= 4 * WINDOW) and (_batch_tokens + WINDOW * 0.5 <= WINDOW),
+        "window": WINDOW,
+        "ratio_target": CORPUS_RATIO,
+        "corpus_tokens": _corpus_tokens,
+        "ratio_achieved": round(_corpus_tokens / WINDOW, 3),
+        "documents": _n_docs,
+        "tokens_per_document": _corpus_tokens // max(1, _n_docs),
+        "composition_batch_tokens": _batch_tokens,
+        "batch_plus_surface_over_window": round((_batch_tokens + WINDOW * 0.5) / WINDOW, 3),
+        "note": "fits iff ratio <= 5.0; the floor 4.0 is 3.2.5's four-times rule",
+    }
     build_options(corpus, probes["probes"], random.Random(SEED + 3))
     key, public = split(corpus, probes)
 

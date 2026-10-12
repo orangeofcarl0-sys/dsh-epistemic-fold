@@ -44,7 +44,7 @@ gets a fast HTTP 400 that reads as "the endpoint is fine".
 | `build_filler_source.py` | vendors the real-text background, and asserts what must not be in it |
 | `filler_source.txt` | the background itself — real documentation prose, used once, never repeated |
 | `filler_source_provenance.json` | where the text came from, under which licences, and the narrowed rule |
-| `documents.json` | 100 documents, 20 projects, ~1.81M tokens |
+| `documents.json` | 100 documents, 20 projects — sized from the window, see Sizing |
 | `answer_key.json` | 204 probes **with** expected values — the grader reads this |
 | `public_probes.json` | the same probes with every answer stripped — a run may see only this |
 | `orderings.json` | random, temporal and logical, as explicit sequences |
@@ -88,8 +88,9 @@ written. [docs/62 §13.0](../../docs/62_MEMORY_PRESSURE_TASK_DESIGN.md) carries 
 |---|---|
 | `build_corpus.py` | exit 0, all six constraints pass |
 | regeneration | byte-identical hashes for all five artifacts — the files on disk match the generator |
-| corpus | 100 documents / 20 projects / **1,809,974 tokens** = 13.8x the window |
+| corpus | 100 documents / 20 projects / **591,437 tokens** = 4.51x the 131k window |
 | background | 94% of it, **19,346 distinct words** (the generated filler had 58) |
+| injection | max composition batch 59,150 tokens = 0.45x the window; with a 50% surface, 0.95x |
 | probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
 | leakage | 204 keyed, 204 public, **0 leaked answers** |
 | answer positions | 46 / 43 / 66 / 49 — position carries no signal |
@@ -97,9 +98,35 @@ written. [docs/62 §13.0](../../docs/62_MEMORY_PRESSURE_TASK_DESIGN.md) carries 
 
 ### Sizing, and why the background is real text
 
-`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window.
+`EF_MEMORY_WINDOW` defaults to **131,072**. The corpus is **derived** from it, because a flat size
+cannot serve tiers that differ by an order of magnitude — sized for 131k it is not four times a 1M
+window, and sized for 1M it cannot be injected into 131k.
 
-    1,809,974 / 131,072 = 13.8x         section 3.2.5 requires >= 4x   -> PASS
+    documents          100        (20 projects x 5)
+    doc tokens         ratio * W / 100
+    composition batch  10 * doc  = ratio * W / 10     (a composition probe needs two projects)
+    at probe           batch + 0.5W = W * (ratio/10 + 0.5)
+
+    fits iff  ratio/10 + 0.5 <= 1   ->   ratio <= 5.0
+
+The floor is 3.2.5's four-times rule, the ceiling is the injection protocol. **Any window in
+[4.0, 5.0] works with the same ratio**; 4.5 sits between them with 5% to spare.
+
+| tier | window | per document | corpus | ratio | composition batch | batch + 50% surface |
+|---|---|---|---|---|---|---|
+| 131K | 131,072 | 5,898 | 589,824 | 4.5x | 58,982 | 124,518 = 0.95x |
+| 252K | 258,048 | 11,612 | 1,161,216 | 4.5x | 116,122 | 245,146 = 0.95x |
+| 475K | 475,136 | 21,381 | 2,138,112 | 4.5x | 213,811 | 451,379 = 0.95x |
+| 1M | 1,048,576 | 47,186 | 4,718,592 | 4.5x | 471,859 | 996,147 = 0.95x |
+
+**The pool bounds which tiers are reachable.** It is 7,233,446 chars, supporting windows up to about
+402k. The 475K and 1M tiers need a larger pool, and the generator **refuses** rather than emitting a
+corpus too small to be four times its window.
+
+**What a flat size got wrong.** The corpus was briefly a flat 4M tokens. Against a 131k window that
+is 30.9x, and every composition batch was 181k — **1.38x the window** — so arm B could not inject at
+all and would have measured truncation rather than the model, while every score looked like a
+measurement. A corpus is not "as large as possible"; it is as large as the **injection** allows.
 
 **The first background was generated, and it was measured rather than suspected.** 48 sentence
 templates over 12 topics: 2,344,000 word tokens drawn from **58 distinct words**, 99.60% of a
