@@ -23,18 +23,32 @@
 #
 # 8 concurrent is this file's ceiling, unchanged and for the documented reason:
 # latency rises 6.6x going from 8 to 32 cells while calls per cell FALL, so
-# over-subscribing buys fewer turns per cell AND fewer turns overall. One task x
-# n_attempts=2 is 2 cells per arm; four arm processes are therefore 8 cells, which
-# is exactly the measured ceiling. One wave, all four tiers.
+# over-subscribing buys fewer turns per cell AND fewer turns overall.
+#
+# n=3 per tier, as the objective requires: 1 task x 3 attempts = 3 cells per arm,
+# four arm processes = 12 cells. n_concurrent_trials=2 keeps the CONCURRENT count at
+# 4 arms x 2 = 8, which is exactly the measured ceiling -- so the third attempt per
+# arm queues behind the first two rather than adding a ninth concurrent cell.
+#
+# The earlier comments here disagreed with the values (they described n_attempts=2
+# while the value was 1). A comment that contradicts its setting is how a wave comes
+# to run a different n than the one it reports.
 job_name: lhtb-ef-sweep-ucs
 jobs_dir: ./jobs
-# ONE attempt per arm in this wave: four arms means four cells, leaving room for
-# riscv-core-debug and commit0-multilib-tdd beside them inside the 8-cell concurrency
-# measured safe. A second attempt per arm follows once this wave reports.
-n_attempts: 1
-# 1 task x 2 attempts = 2 cells per arm job; 4 arms = 8 concurrent, the ceiling.
-n_concurrent_trials: 1
-timeout_multiplier: 1.0
+n_attempts: 3
+n_concurrent_trials: 2
+# ## Measured, not inherited: the task needs more than the old 8h
+#
+# The task is 5 GATED stages (A..E) with a 45-sample budget each, and stage k+1 stays locked until
+# stage k passes, so nothing can be skipped: about 225 samples. Measured on the LongCat route, a
+# sample takes ~7 minutes wall-clock -- the protocol's own `sleep 50` accounts for ~1 of them and
+# the rest is model-call latency -- which puts the task near 26 hours against an 8-hour allowance.
+#
+# Raising the ALLOWANCE rather than shrinking the task is deliberate. The sample budget, the stage
+# gating, the noisy spec and the scoring are all part of what is being measured; changing any of
+# them changes the experiment and breaks comparability with the existing corpus. Wall-clock
+# allowance is the one knob that does not touch the task's semantics.
+timeout_multiplier: 3.0
 
 environment:
   type: docker
@@ -58,7 +72,7 @@ agents:
   #
   # task.toml now declares 28800. This is deliberately the same number: a value
   # below it makes the config, not the task, the thing that ends every trial.
-    override_timeout_sec: 28800
+    override_timeout_sec: 86400
 
 datasets:
   - path: ./tasks
