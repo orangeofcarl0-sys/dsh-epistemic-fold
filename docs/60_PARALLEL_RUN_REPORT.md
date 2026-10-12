@@ -183,26 +183,55 @@ of a 6-hour budget, so `G_directed = 0` is equally consistent with "never got fa
 and "could not do it"; the gates establish which KIND of failure this was, which a bare
 0.28 could not.
 
-### 3.5 Final rewards
+### 3.5 Final rewards — all seven cells
 
-Pending. Expected 09:12 (commit0), 10:19 (riscv), 12:12 (unknown-config). Delivered with
-`scripts/analyze-lhtb-round.py`, which now reports per-task attribution, the cost
-composition, riscv's gate breakdown, commit0's per-library split, and each reward's
-provenance (`raw`/`floor`, `sandbox_sealed`, `cheat_warning`).
+Every cell terminated `turn-budget-exhausted` at 401 calls (the `MAX_TURNS` cap, not the
+time budget), so the comparison is at a **uniform** 400-turn cut.
 
----
+    task            arm       reward   raw      stages  official  folds  unc/call  $/call   cost
+    unknown-config  basic     0.7795   0.8606   4       0.8592    0      1815     0.00091  0.3641
+    unknown-config  quality   0.7705   0.8549   3       0.7299    15     1297     0.00053  0.2131
+    unknown-config  balanced  0.7114   0.8175   0       0.0000    30     1970     0.00074  0.2973
+    unknown-config  economy   0.6545   0.7816   1       0.2385    19     1276     0.00058  0.2326
+    riscv           basic     0.88     --       --      --        0      2649     0.00108  0.4346
+    riscv           basic     0.82     --       --      --        0      2482     0.00107  0.4309
+    commit0         basic     0.074    --       --      --        0      2136     0.00098  0.3918
 
-## 4. What these results will and will not support
+**The headline is not the one the study was built to find.** On unknown-config the
+**no-folding baseline scored highest on both metrics** -- 0.7795 dense and 0.8592
+stage-gated, against 0.7705/0.7299 for the best folding arm -- and passed the most stages
+(4, against 3/1/0).
 
-- **n = 1 per unknown-config arm.** This cannot separate variance from effect. A second
-  attempt per arm is owed and is the next wave.
-- **No positive control arm.** A deliberately crippled runtime is what proves the
-  measurement can detect a difference at all; without it, four similar scores are
-  uninterpretable. It is deliberately NOT added mid-wave: a new arm would run a different
-  plugin version than the seven cells already in flight, confounding the very comparison it
-  exists to enable. It belongs in a wave where all arms share one plugin version.
-- **No per-turn context trajectory.** Only the last telemetry snapshot is persisted, so the
-  archive shows endpoints, not how much each fold compressed. The cost axis covers the
-  effect; the trajectory needs a one-line change to the agent in the next wave.
-- **The ~70% provider rejection is an input to every budget**, not a surprise. ~30% of
-  nominal throughput is what this route delivers.
+**And it was the most expensive**: $0.00091 per call against $0.00053-$0.00074. Folding
+does what it claims at the per-call level -- `uncached/call` falls from 1,815 to
+1,276-1,297, about 30% -- and that saving does **not** convert into score on this task at
+this cut.
+
+Cost tracks **fold count**, not retention: `balanced` folded 30 times and cost the most
+among the folding arms; `quality` folded 15 times and cost the least. Each fold is a
+summarization call that reads the whole surface, so folding more often costs more.
+
+**riscv is the counterexample that shows the apparatus works.** Two independent cells both
+fixed every injected defect (`G_directed` 11/11, compliance 84/0, torture 20/0, cosim 6/0,
+formal all-pass, tamper 7705-checked/0-modified). They differ by exactly 0.06 -- the weight
+of `G_build`, which scored 0 in one cell because `rv32ui/add` reported **SKIP** and
+`rc=1` rather than a failure. Every other gate is byte-identical between them. Neither
+wrote `JOURNAL.md`, which is a real and consistent 0.12 omission.
+
+**commit0 is the one clear shortfall**: 58/784, sealed sandbox, and concentrated -- tinydb
+55/204, sortedcontainers 3/297, cachetools 0/283 (its test file failed to collect). Three
+libraries in 400 turns got through roughly one.
+
+### 3.6 What the four-tier comparison may and may not say
+
+**May say**: on this task, at 400 turns, with one cell per arm, the folding arms did not
+beat the baseline, and they were cheaper per call.
+
+**May not say**: that folding does not help. n=1 cannot separate 0.009 (basic against
+quality) from noise, and it cannot separate the 0.125 spread from variance either. The
+comparison needs the second attempt per arm that is still owed, and it needs the positive
+control that would show the measurement can detect a difference at all.
+
+**And it cannot say the models were given a fair shot at the task**: 400 turns is the cap
+that bound, not the 28800 s budget. Whether the tiers separate when given the full budget
+is a different experiment, and the cap has to move first.
