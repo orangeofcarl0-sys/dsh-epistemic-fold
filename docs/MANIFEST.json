@@ -343,5 +343,10 @@
     "file": "USER_GUIDE.zh.md",
     "bytes": 6963,
     "sha256": "0553c00ae10541aa1068c65b8f6a6279e2704b24f521449dfe7c0d87a65d9279"
+  },
+  {
+    "file": "61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md",
+    "bytes": 8288,
+    "sha256": "9a318c801f3cea7da6da1e1716003c2cebafb8a3d738f1ca187d66d822269a62"
   }
 ]
