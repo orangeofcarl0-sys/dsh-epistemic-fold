@@ -305,6 +305,16 @@
     "sha256": "6e0e36451346d183ddd3204e03c159266979f7992e1bc5233b484b76acdf30d2"
   },
   {
+    "file": "61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md",
+    "bytes": 8288,
+    "sha256": "9a318c801f3cea7da6da1e1716003c2cebafb8a3d738f1ca187d66d822269a62"
+  },
+  {
+    "file": "62_MEMORY_PRESSURE_TASK_DESIGN.md",
+    "bytes": 63397,
+    "sha256": "864ee648b6cfff656dbed11c9f97422d5b505ebf453f65e02872ae3afdf0bcd4"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -326,8 +336,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 8794,
-    "sha256": "ed61c56817ace16ee8b13a3267f6f73eba4e54094686244e66a54a0c5bb67a9d"
+    "bytes": 8950,
+    "sha256": "49903c43258b1027783a4986ae9010f85ab9df7a4fc7a55a4c3211b2e68bfe97"
   },
   {
     "file": "README.zh.md",
@@ -343,15 +353,5 @@
     "file": "USER_GUIDE.zh.md",
     "bytes": 6963,
     "sha256": "0553c00ae10541aa1068c65b8f6a6279e2704b24f521449dfe7c0d87a65d9279"
-  },
-  {
-    "file": "61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md",
-    "bytes": 8288,
-    "sha256": "9a318c801f3cea7da6da1e1716003c2cebafb8a3d738f1ca187d66d822269a62"
-  },
-  {
-    "file": "62_MEMORY_PRESSURE_TASK_DESIGN.md",
-    "bytes": 63431,
-    "sha256": "0050d57a82aba0a421da0cec08a7959700124571bbcfada3e2c01f4b101d2df8"
   }
 ]

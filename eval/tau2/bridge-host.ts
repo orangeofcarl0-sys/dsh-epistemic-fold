@@ -203,6 +203,20 @@ function isMultiTool(message: TauMessage | TauMultiTool): message is TauMultiToo
   return Array.isArray((message as TauMultiTool).tool_messages)
 }
 
+/** One fold, with what it shadowed, so exposure is recoverable afterwards. */
+interface FoldEvent {
+  /** Which of the three mechanisms committed it, from the counter deltas. */
+  readonly mechanism: 'leaf' | 'root' | 'emergency'
+  /** The surface seqs it shadowed -- the range a fact's seq must fall in to count. */
+  readonly shadowedSeqs: readonly number[]
+  /** The seq of the summary that replaced them, which extends the lineage chain. */
+  readonly summarySeq: number | null
+  readonly shadowedTokenCount: number | null
+  /** Surface tokens either side, so the fold's compression ratio is visible. */
+  readonly tokensBefore: number
+  readonly tokensAfter: number
+}
+
 /** Telemetry the EF side reports back; never part of the benchmark score. */
 interface Telemetry {
   readonly folds: number
@@ -214,6 +228,25 @@ interface Telemetry {
    * a live turn because the provider already refused the request.
    */
   readonly emergencies: number
+  /**
+   * One entry per fold, so a fact's exposure can be computed after the run.
+   *
+   * `exposure(f)` -- how many folds had f inside the shadowed region -- is the
+   * quantity `docs/62_MEMORY_PRESSURE_TASK_DESIGN.md` section 7 needs, and it
+   * cannot be recovered from the lifetime counters: `folds` says how many folds
+   * happened, not which seqs each one shadowed.
+   *
+   * `CompactionResult` carries `shadowedSeqs` and `summarySeq`, and this host
+   * discarded the result entirely -- it read only the engine's counters around
+   * the call. Recording it is therefore a PURE ADDITION: no behaviour changes,
+   * only what is reported, which is why it can be added while a measurement lane
+   * is still running.
+   *
+   * `mechanism` is derived from the counter deltas rather than from the result,
+   * because `CompactionResult` has no `kind` field -- something this file
+   * already learned when it tried substring-matching the JSON for one.
+   */
+  readonly foldLineage: readonly FoldEvent[]
   readonly modelCalls: number
   readonly promptTokensLast: number
   readonly surfaceNodesLast: number
@@ -387,6 +420,8 @@ let turnHasContent = false
  */
 let turnOpen = false
 let folds = 0
+/** Every fold this episode, in order. See `Telemetry.foldLineage`. */
+let foldLineage: FoldEvent[] = []
 let roots = 0
 let emergencies = 0
 /** Failed maintenance calls, split by kind, and the last message. See `Telemetry`. */
@@ -673,8 +708,16 @@ async function foldIfNeeded(): Promise<void> {
   // has an `assertNever` on the same switch, so the moment the `basic` arm was
   // fixed to construct a real Basic engine it would have thrown
   // `unreachable variant in compaction trigger: "auto"` on its first fold.
+  // Read the counters BEFORE the call: the mechanism is the delta, because
+  // `CompactionResult` carries no `kind` field to read it from.
+  const countersBefore = foldCounters(active)
+  // Measured through the same meter the rest of the host uses; `session` has no
+  // meter of its own, and an earlier draft of this line read one from it and
+  // typechecked only because `session!` is loosely typed.
+  const tokensBefore = ctx!.tokenMeter.measure(session!).totalTokens
+  let committed: unknown = null
   try {
-    await active.compactIfNeeded(agent, 'pressure', deadline.signal)
+    committed = await active.compactIfNeeded(agent, 'pressure', deadline.signal)
   } catch (error: unknown) {
     compactionFailures += 1
     const kind = classifyCompactionFailure(error, deadline.signal.aborted)
@@ -694,6 +737,35 @@ async function foldIfNeeded(): Promise<void> {
   roots = counters.roots
   emergencies = counters.emergencies
   surfaceNodesLast = session!.surface.nodes.length
+
+  // ## Record the lineage, not only the count
+  //
+  // A count cannot answer "how many times was THIS fact folded", which is the
+  // quantity the memory-pressure design needs (docs/62, section 7). The result
+  // carries the shadowed seqs, so recording it is what makes exposure
+  // recoverable -- and it is a pure addition, since the result was discarded.
+  //
+  // A fold that threw commits nothing and is already counted by
+  // `compactionFailures`; recording it here as well would double-count it as an
+  // event that shadowed nothing.
+  if (committed !== null && committed !== undefined) {
+    const result = committed as {
+      shadowedSeqs?: readonly number[]
+      summarySeq?: number
+      shadowedTokenCount?: number
+    }
+    const dLeaves = counters.leaves - countersBefore.leaves
+    const dRoots = counters.roots - countersBefore.roots
+    const dEmergencies = counters.emergencies - countersBefore.emergencies
+    foldLineage.push({
+      mechanism: dEmergencies > 0 ? 'emergency' : dRoots > 0 ? 'root' : 'leaf',
+      shadowedSeqs: [...(result.shadowedSeqs ?? [])],
+      summarySeq: result.summarySeq ?? null,
+      shadowedTokenCount: result.shadowedTokenCount ?? null,
+      tokensBefore,
+      tokensAfter: ctx!.tokenMeter.measure(session!).totalTokens,
+    })
+  }
 }
 
 /**
@@ -1098,6 +1170,7 @@ async function init(request: {
   turnHasContent = false
   turnOpen = false
   folds = 0
+  foldLineage = []
   roots = 0
   emergencies = 0
   compactionFailures = 0
@@ -1350,6 +1423,7 @@ async function telemetry(): Promise<Telemetry> {
     folds,
     roots,
     emergencies,
+    foldLineage,
     modelCalls,
     promptTokensLast,
     surfaceNodesLast,
