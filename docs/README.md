@@ -150,6 +150,7 @@ These records document real-host defects and browser/deployment integration. The
 - [60_PARALLEL_RUN_REPORT.md](60_PARALLEL_RUN_REPORT.md)
 - [61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md](61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md)
 - [62_MEMORY_PRESSURE_TASK_DESIGN.md](62_MEMORY_PRESSURE_TASK_DESIGN.md)
+- [63_STEP5_RESUME_HANDOFF.md](63_STEP5_RESUME_HANDOFF.md)
 
 ## How to read old conclusions
 

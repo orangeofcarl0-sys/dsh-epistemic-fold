@@ -74,3 +74,31 @@ probe file may carry **only** a named set of fields, so a field added later cann
 Built and unit-verified; **not yet run against a live endpoint.** The provider answered
 `HTTP 429 Upstream request failed: Rate limit exceeded` throughout the session in which this was
 written. [docs/62 §13.0](../../docs/62_MEMORY_PRESSURE_TASK_DESIGN.md) carries the per-step status.
+
+### What was verified without the provider (2026-10-13)
+
+| check | result |
+|---|---|
+| `build_corpus.py` | exit 0, all six constraints pass |
+| regeneration | byte-identical hashes for all five artifacts — the files on disk match the generator |
+| corpus | 100 documents / 20 projects / **861,697 tokens** |
+| probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
+| leakage | 204 keyed, 204 public, **0 leaked answers** |
+| answer positions | 46 / 43 / 66 / 49 — position carries no signal |
+| `analyse.py` | exits 1 with "no result files found" — correct while no cell has run |
+
+### Sizing is settled, and it was never in question
+
+`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window. Against that
+window the corpus is:
+
+    861,697 / 131,072 = 6.57x          section 3.2.5 requires >= 4x   -> PASS
+
+A mid-session claim that the corpus was too small compared it against a **1M-token window belonging
+to a different model** — the model a separate mistake had wrongly switched the harness to. The
+artifact was already correct. See [docs/63](../../docs/63_STEP5_RESUME_HANDOFF.md) §8.1.
+
+### Running it
+
+`python` on this host is the Microsoft Store stub and returns `9009`. Use the harbor venv
+interpreter named in `run-memory.sh`; `run-memory.sh` already does.
