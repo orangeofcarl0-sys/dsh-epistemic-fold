@@ -1,4 +1,4 @@
-﻿# 62 — Extreme memory pressure: task design
+# 62 — Extreme memory pressure: task design
 
 Status: **DESIGN**. Nothing here has been built or run. The companion survey
 (`61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md`) establishes which components exist; this fixes
@@ -788,16 +788,34 @@ it throws away the power the pairing exists to provide.
 **Every probed fact therefore gets BOTH an extraction probe and a disambiguation probe**, which
 makes binding loss a paired comparison on the same fact asked two ways.
 
-The count changes accordingly:
+### 8.1.1 The count as IMPLEMENTED, and why it is smaller than the first estimate
 
-    per type   5 projects x 5 facts            = 25 probed facts
-               each fact x 2 (extraction, disambiguation) = 50
-               + composition 10 + update 10 + abstention 10 = 30
-    per type   80 probes
-    total      320 probes
+The estimate above assumed five probed facts per project. The generator reserves one field per
+project for the abstention probes (3.2.13), so four are probed, and the arithmetic that actually
+holds is:
 
-320 questions at roughly 25 tokens each is about 8k tokens of question, so the one-turn rule
-(5.3) still holds.
+    per type   5 projects x 4 probed facts                       = 20
+               each fact x 2 (extraction, disambiguation)        = 40
+               + composition 5 + update 1 + abstention 5         = 11
+    per type   51 probes
+    total      204 probes  (extraction 80, disambiguation 80,
+                            composition 20, update 4, abstention 20)
+
+**The estimate was not wrong about the design, only about the reserve.** It was written before
+3.2.13 fixed the abstention mechanism, and the reserve is not free: a field withheld from the
+abstention probe is a field that cannot also be probed for retention, because asking "what is X
+for project P?" and expecting "not stated" is incompatible with asking the same question and
+expecting a value.
+
+The measured turn is **21,207 characters, about 5.3k tokens**, which is what the generator
+reports and what the one-turn rule (5.3) needs. The estimate of 8k was in the same direction and
+for the same reason.
+
+**Update and composition are deliberately uneven.** There is one errata per type rather than one
+per project, because an errata changes a value and only one change per type is needed to make the
+stale-value distractor exist; and composition is one probe per ring edge per project, so it is
+20 rather than 40. Those are counts the design chose, and they are stated here rather than left
+for a reader to infer from the generator.
 
 ### 8.2 Probes are not independent, and the resampling unit must be the fact
 
@@ -1128,7 +1146,7 @@ last so that a reader who has followed the reasoning arrives at something execut
 | 1 | **fold-lineage capture** in the bridge | a run whose transcript carries \`shadowedSeqs\` and \`summarySeq\` per fold | -- |
 | 2 | **\`compact\` operation** | a run where depth N is requested and N events come back | 1 |
 | 3 | **corpus generator** (3.2.16) | the four assertions hold: unique values per type, full vocabulary per project, reserved abstentions, late errata | -- |
-| 4 | **probe generator + scorer** | 320 probes score against the key deterministically; a planted wrong answer scores wrong | 3 |
+| 4 | **probe generator + scorer** | 204 probes score against the key deterministically; a planted wrong answer scores wrong | 3 |
 | 5 | **size calibration** (10.6) | a mechanism reaches the 20% target, or the sweep shows it cannot | 2, 3 |
 | 6 | **driver** (10.5) | one cell end to end, with the ordering constraints visible in the trace | 1-5 |
 | 7 | **injection harness** (6.4) | arm B's injected set contains the answer for every probe it serves | 4 |
