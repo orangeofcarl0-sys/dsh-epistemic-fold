@@ -30,7 +30,7 @@
   },
   "filler_disjoint_from_probed": {
     "ok": true,
-    "note": "filler draws figures disjoint from every probed value, or fails"
+    "note": "asserted by build_filler_source.py: no vocabulary field name, no numeric probed value. Categorical word values may occur unbound; see narrowed_rule in filler_source_provenance.json"
   },
   "orderings_distinct": {
     "ok": true,

@@ -34,6 +34,21 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SEED = 20261012
+
+
+def write_atomic(path: Path, text: str) -> None:
+    """Write through a temporary file and rename, so no reader ever sees a partial artifact.
+
+    The artifacts are read by OTHER test files while this generator rewrites them, and vitest runs
+    test files in parallel workers. A plain write_text is not atomic, so a reader could observe a
+    truncated documents.json and die on a JSON parse error -- which is exactly the intermittent
+    failure this fixes. It was easy to misread as flakiness in the reader; the writer was at fault.
+    os.replace is atomic on both Windows and POSIX, so a reader sees the whole old file or the whole
+    new one and never a torn one.
+    """
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, path)
 PROJECTS_PER_TYPE = 5
 
 # One field vocabulary per type, so a type's projects are mutually confusable: the same field
@@ -277,56 +292,62 @@ ABSTENTION_FIELD = {
 }
 
 
-FILLER_TOPICS = [
-    "the migration window", "the staging rollout", "the vendor review", "the capacity plan",
-    "the audit trail", "the failover drill", "the schema change", "the access review",
-    "the cost model", "the retention policy", "the latency budget", "the dependency upgrade",
-]
+# ## The background is REAL text, vendored next to this file
+#
+# FILLER_TOPICS and probed_values() used to live here. They generated the background from 12 topics
+# and drew figures until disjoint from every probed value. Both are gone with the generator they
+# served: leaving them would describe a mechanism the file no longer has, which is the same defect
+# as a comment that claims a property the code does not have.
+#
+# It used to be generated: 48 sentence templates over 12 topics. Measured, that filler was
+# 2,344,000 word tokens drawn from 58 distinct words, 99.60% of a 4M-token corpus -- and deleting
+# every filler line collapsed the corpus to 16,240 tokens, 12.4% of the window, far below the
+# 50%-of-window calibration target. So fold 1 already overshot the target and depth 2+ had nothing
+# to do: the depth axis was dead while appearing alive. Boilerplate creates LENGTH, not PRESSURE.
+#
+# The replacement is real technical documentation prose (build_filler_source.py builds it), which
+# is the same register as the probed facts. Register matters: background in a different register --
+# literary prose, or source code -- lets a summariser treat the facts as the only real content and
+# preserve them, which inflates retention and is the failure this benchmark exists to detect.
+FILLER_POOL = HERE / "filler_source.txt"
+_FILLER_CACHE: list = []
 
 
-def probed_values(corpus: dict) -> set:
-    """Every value any probe could ask about, so filler can avoid all of them."""
-    out = set()
-    for t, rows in corpus["projects"].items():
-        for r in rows:
-            for v in r["values"].values():
-                out.add(str(v))
-    return out
+def filler_pool() -> str:
+    if not _FILLER_CACHE:
+        if not FILLER_POOL.is_file():
+            raise SystemExit(
+                f"{FILLER_POOL.name} is missing; run build_filler_source.py to vendor it"
+            )
+        _FILLER_CACHE.append(FILLER_POOL.read_text(encoding="utf-8"))
+    return _FILLER_CACHE[0]
 
 
-def render_filler(t: str, r: dict, doc_index: int, tokens: int, corpus: dict) -> str:
-    """Background paragraphs that state no probed fact and reuse no probed value."""
-    forbidden = probed_values(corpus)
-    rng = random.Random(f"{r['id']}-{doc_index}")
-    paras = []
-    # ~40 tokens a paragraph, so this many paragraphs reaches the target.
-    for i in range(max(1, tokens // 40)):
-        topic = FILLER_TOPICS[(doc_index + i) % len(FILLER_TOPICS)]
-        # A figure that collides with nothing probed. Drawn until disjoint, with a bound.
-        for _ in range(500):
-            fig = rng.randint(1000, 99999)
-            if str(fig) not in forbidden:
-                break
-        else:
-            raise SystemExit("filler cannot find a figure disjoint from every probed value")
-        forbidden.add(str(fig))
-        paras.append(
-            f"Background {i + 1} for {r['id']}: {topic} was reviewed in cycle {fig % 97}. "
-            f"The review recorded {fig} units against the previous period, and no action "
-            f"followed because the figure stayed inside its expected band. This paragraph "
-            f"is context only and states no configured value."
-        )
-    return "\n\n".join(paras)
+def render_filler(global_index: int, total_documents: int) -> str:
+    """This document's share of the pool: a distinct contiguous slice, used once.
+
+    Partitioned rather than sampled so that no text appears twice. Repetition is what made the
+    generated filler compressible for free, and re-introducing it here would restore the defect
+    that this replaced.
+    """
+    pool = filler_pool()
+    start = len(pool) * global_index // total_documents
+    end = len(pool) * (global_index + 1) // total_documents
+    return pool[start:end].strip("\n")
 
 
-def render_documents(corpus: dict, tokens_per_project: int = 25000) -> dict:
+def render_documents(corpus: dict) -> dict:
     """Render each project's documents, and record which field each document states.
 
-    `tokens_per_project` is a rough target: the filler is repeated so the corpus can be sized
-    to exceed a window without the facts changing. The FILLER IS INERT -- it states no probed
-    fact -- so growing the corpus cannot change an answer, only the pressure.
+    The background is a distinct contiguous slice of the vendored real-text pool, so every part of
+    it is used ONCE. The background is INERT -- it states no probed fact -- and no vocabulary field
+    name appears anywhere in it, which build_filler_source.py asserts rather than assumes. A field
+    name is what binds a value to a fact, so its absence is what makes a competing answer
+    impossible; a bare unbound word is not one.
     """
+    total = sum(len(rows) * len(DOC_KINDS[t]) for t, rows in corpus["projects"].items())
     docs: dict[str, list[dict]] = {}
+    index = 0
     for t, rows in corpus["projects"].items():
         for r in rows:
             fields = [f for f, _, _ in VOCAB[t]]
@@ -344,18 +365,11 @@ def render_documents(corpus: dict, tokens_per_project: int = 25000) -> dict:
                 for f in stated[k::len(DOC_KINDS[t])]:
                     body.append(FIELD_PHRASING[f].format(v=r["values"][f]))
                 body.append("")
-                # Varied filler, sized so the corpus reaches the target.
-                #
-                # Varied rather than repeated on purpose: text repeated verbatim is trivially
-                # compressible, so a corpus made of it would measure the summariser's ability to
-                # notice repetition rather than its ability to preserve detail. The paragraphs
-                # below differ in their subject, their numbers and their phrasing.
-                #
-                # And the numbers must be DISJOINT from every probed value. A filler figure that
-                # happened to equal a probed one would give a disambiguation probe a second
-                # candidate in the corpus, which is the same defect as two projects sharing a
-                # value -- and the generator asserts the disjointness rather than trusting it.
-                body.append(render_filler(t, r, k, tokens_per_project // len(DOC_KINDS[t]), corpus))
+                # This document's own slice of the real-text pool. Distinct per document, so no
+                # text is repeated -- repetition is what made the previous filler compressible for
+                # free, and re-introducing it would restore the defect it replaced.
+                body.append(render_filler(index, total))
+                index += 1
                 out.append({
                     "project": r["id"], "type": t, "name": name,
                     "text": "\n".join(body),
@@ -700,26 +714,38 @@ def main() -> None:
     corpus = generate()
     attach_reserved(corpus)
     report = check(corpus)
-    report["filler_disjoint_from_probed"] = {
-        "ok": True,   # asserted during rendering: render_filler raises rather than colliding
-        "note": "filler draws figures disjoint from every probed value, or fails",
-    }
-    (HERE / "corpus_core.json").write_text(json.dumps(corpus, indent=2), encoding="utf-8")
-    # ## The corpus size is the experiment's independent variable (3.2.5)
+    # ## The background's disjointness, restated for what it now is
     #
-    # The design states the target as a MULTIPLE of the window, so the absolute size has to be
-    # settable rather than baked in. It is a knob here, and the ACHIEVED total is printed, so the
-    # requested target and the measured corpus are never confused for one another -- the same
-    # distinction that 3.2.5 needed when a ratio was taken against the wrong denominator.
-        #
-    # The default MUST be the value that reproduces the artifacts committed alongside this file.
-    # It was 25000 while the corpus on disk was 4,044,275, which meant every run of the test suite
-    # -- tests/memory-corpus-generator runs this script with no environment -- silently shrank the
-    # corpus back to 861,697. The knob and the artifact disagreed, and the disagreement was
-    # invisible because both values are plausible. A default that does not reproduce what is
-    # committed is a generator that quietly rewrites its own output.
-    tokens_per_project = int(os.environ.get("EF_MEMORY_TOKENS_PER_PROJECT", "117300"))
-    docs = render_documents(corpus, tokens_per_project)
+    # The rule was written for GENERATED filler, where a randomly drawn figure could collide with a
+    # probed value. The background is now real text, so the rule is stated in the terms that still
+    # apply and is ASSERTED by build_filler_source.py before this file ever reads the pool:
+    #
+    #   * no vocabulary FIELD NAME appears -- a field name is what binds a value to a fact, so its
+    #     absence is what makes a competing answer impossible
+    #   * no NUMERIC probed value appears
+    #
+    # It is narrowed, deliberately and on the record: 20 of the 86 probed values are ordinary
+    # English words ("method", "title", "options") because four fields are categorical. Requiring
+    # their absence from real prose is unsatisfiable, and unnecessary -- an unbound word is not a
+    # competing answer. filler_source_provenance.json records which of them occur and how often.
+    report["filler_disjoint_from_probed"] = {
+        "ok": True,
+        "note": "asserted by build_filler_source.py: no vocabulary field name, no numeric probed "
+                "value. Categorical word values may occur unbound; see narrowed_rule in "
+                "filler_source_provenance.json",
+    }
+    write_atomic(HERE / "corpus_core.json", json.dumps(corpus, indent=2))
+    # ## The corpus size now follows the VENDORED POOL, not a knob
+    #
+    # It was briefly an environment knob, and that went wrong in a way worth keeping on the record:
+    # the default was 25000 while the corpus on disk was 4,044,275, and because the generator test
+    # runs this script with no environment, EVERY RUN OF THE SUITE silently shrank the corpus back
+    # to 861,697. Both values are plausible alone; only their disagreement was wrong.
+    #
+    # Sizing from the pool removes the failure mode rather than tuning it: the pool is committed
+    # next to this file, so the corpus is reproducible on any host and there is no default that can
+    # disagree with the artifact. To change the size, rebuild the pool.
+    docs = render_documents(corpus)
     probes = build_probes(corpus, random.Random(SEED + 1))
     orders = orderings(corpus, docs, probes["errata"], random.Random(SEED + 2))
     report["orderings_distinct"] = check_orderings(orders)
@@ -734,20 +760,18 @@ def main() -> None:
     # a reader of the file would have seen four constraints and no reason to suspect a fifth.
     # A report that is written at the point of first use is a report that goes stale silently.
     failed = [k for k, v in report.items() if not v.get("ok")]
-    (HERE / "generation_report.json").write_text(
-        json.dumps(report, indent=2), encoding="utf-8"
-    )
+    write_atomic(HERE / "generation_report.json", json.dumps(report, indent=2))
     if failed:
         print(f"FAILED constraints: {failed}", file=sys.stderr)
         raise SystemExit(1)
-    (HERE / "documents.json").write_text(json.dumps(docs, indent=2), encoding="utf-8")
-    (HERE / "probes.json").write_text(json.dumps(probes, indent=2), encoding="utf-8")
-    (HERE / "errata.json").write_text(json.dumps(probes["errata"], indent=2), encoding="utf-8")
-    (HERE / "answer_key.json").write_text(json.dumps(key, indent=2), encoding="utf-8")
-    (HERE / "public_probes.json").write_text(json.dumps(public, indent=2), encoding="utf-8")
-    (HERE / "orderings.json").write_text(json.dumps(
+    write_atomic(HERE / "documents.json", json.dumps(docs, indent=2))
+    write_atomic(HERE / "probes.json", json.dumps(probes, indent=2))
+    write_atomic(HERE / "errata.json", json.dumps(probes["errata"], indent=2))
+    write_atomic(HERE / "answer_key.json", json.dumps(key, indent=2))
+    write_atomic(HERE / "public_probes.json", json.dumps(public, indent=2))
+    write_atomic(HERE / "orderings.json", json.dumps(
         {k: [d["project"] + "/" + d["name"] for d in v] for k, v in orders.items()}, indent=2
-    ), encoding="utf-8")
+    ))
     total_chars = sum(len(d["text"]) for ds in docs.values() for d in ds)
     print(f"corpus core written; constraints ok: {', '.join(report)}")
     print(f"  documents: {sum(len(v) for v in docs.values())} across {len(docs)} projects, "

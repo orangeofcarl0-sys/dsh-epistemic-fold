@@ -177,7 +177,8 @@ python analyse.py
 |---|---|
 | `build_corpus.py` | exit 0; all six constraints pass |
 | regeneration | byte-identical hashes for all five artifacts (deterministic) |
-| corpus | 100 documents / 20 projects / 16,177,100 chars / **4,044,275 tokens** |
+| corpus | 100 documents / 20 projects / 7,239,897 chars / **1,809,974 tokens** = 13.8x the window |
+| background | 94% of it, real documentation prose, **19,346 distinct words** (the generated filler had 58) |
 | probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
 | answer leakage | 204 keyed, 204 public, **0 leaked** |
 | answer positions | 46 / 43 / 66 / 49 — position carries no signal |
@@ -200,26 +201,44 @@ Section 3.2.5 already said "at least four times the window of the model under te
 already said "at six times the window". **The design was self-consistent the whole time**, and the
 blocker was an artifact of the same error rather than a property of the corpus.
 
-**The corpus was then enlarged anyway — deliberately.** The size became a knob
-(`EF_MEMORY_TOKENS_PER_PROJECT`), and the corpus now stands at:
+**The corpus was enlarged, and then the background was replaced.** Both were deliberate, and the
+second is the one that mattered. It now stands at:
 
 ```
-4,044,275 / 131,072 = 30.9x         roughly 7 folds forced by ingestion -> roughly 31
+1,809,974 / 131,072 = 13.8x         background 94%, 19,346 distinct words
 ```
 
-That is a **change of regime, not a repair**, and the distinction is the point: calling it a repair
-would mean a correct artifact had been destroyed to fix a problem that did not exist.
+**Why the generated background had to go.** It was 48 sentence templates over 12 topics — measured,
+2,344,000 word tokens drawn from **58 distinct words**, 99.60% of a 4M-token corpus. Deleting every
+filler line collapsed the corpus to 16,240 tokens, 12.4% of the window, far below the 50%-of-window
+calibration target. So fold 1 already overshot the target and depth 2+ had nothing to do: **the
+depth axis was dead while appearing alive.** Boilerplate creates LENGTH, not PRESSURE, and the
+4M-token corpus was 3.18M tokens of a 58-word loop.
 
-Only the filler scales. The 20 projects, 100 documents, 204 probes and four errata are unchanged,
-and `answer_key.json`, `public_probes.json`, `orderings.json` and `generation_report.json` are
-**byte-identical across the resize**. Growing the project count instead would have scaled the probes
-toward a thousand and broken 3.2.10 ("two hundred probes still fit in one turn").
+**The replacement is real technical documentation prose**, in the same register as the probed facts,
+vendored as `eval/memory/filler_source.txt`. Register is the point: background in a different
+register — literary prose, or source code — lets a summariser treat the facts as the only real
+content and keep them, inflating retention. Source code is included only in a bounded share (8.8%).
 
-**Check this first on the first live run.** At 30.9x, ingestion may already bring the surface to or
-below the 50%-of-window target before any `compact` is requested. If so, `depth_to_target` sits
-at its floor and the depth axis has no range — the calibration would be measuring nothing while
-looking like it measured something. The driver reports that case rather than hiding it; it is the
-first number to read.
+**Only the background changed.** The 20 projects, 100 documents, 204 probes and four errata are
+unchanged, and `answer_key.json`, `public_probes.json`, `orderings.json` and
+`generation_report.json` are **byte-identical**. Growing the project count instead would have scaled
+the probes toward a thousand and broken 3.2.10.
+
+**Two properties are now checked rather than claimed**, because the old generator's comment asserted
+its paragraphs "differ in their subject, their numbers and their phrasing" — and the phrasing was
+byte-identical:
+
+  * `tests/memory-filler-source.spec.ts` pins lexical diversity, the absence of any vocabulary field
+    name, the absence of any numeric probed value, and the bounded code share
+  * the disjointness rule was **narrowed and recorded**: twenty of the 86 probed values are ordinary
+    English words, so "no probed value at all" is unsatisfiable for real prose. It now asserts no
+    field name and no numeric value; the provenance file records which categorical values occur.
+
+**Check this first on the first live run.** With a background that cannot be dropped for free, the
+surface should no longer collapse after one fold — but confirm it: if `depth_to_target` sits at its
+floor, the depth axis still has no range and the calibration is measuring nothing while looking like
+it measured something. The driver reports that case rather than hiding it.
 
 ---
 

@@ -41,7 +41,10 @@ gets a fast HTTP 400 that reads as "the endpoint is fine".
 | file | what it is |
 |---|---|
 | `build_corpus.py` | the single source of truth; one run regenerates everything below |
-| `documents.json` | 100 documents, 20 projects, ~4.04M tokens |
+| `build_filler_source.py` | vendors the real-text background, and asserts what must not be in it |
+| `filler_source.txt` | the background itself — real documentation prose, used once, never repeated |
+| `filler_source_provenance.json` | where the text came from, under which licences, and the narrowed rule |
+| `documents.json` | 100 documents, 20 projects, ~1.81M tokens |
 | `answer_key.json` | 204 probes **with** expected values — the grader reads this |
 | `public_probes.json` | the same probes with every answer stripped — a run may see only this |
 | `orderings.json` | random, temporal and logical, as explicit sequences |
@@ -61,8 +64,12 @@ invisible in the output:
 3. **the ring is closed and regular** — so a composition probe cannot point at nothing
 4. **the orderings actually differ** — `temporal` and `logical` were once byte-identical, which
    would have made two thirds of the position pairing one observation counted twice
-5. **filler values are disjoint from probed ones** — a filler figure equal to a probed value puts a
-   second candidate in the corpus
+5. **the background names no vocabulary field and carries no numeric probed value** — a field name
+   is what binds a value to a fact, and a background figure equal to a probed one puts a second
+   candidate in the corpus. *Narrowed from "no probed value at all": twenty of the 86 probed values
+   are ordinary English words, so the original rule is unsatisfiable for real prose and unnecessary
+   — an unbound word is not a competing answer. The narrowing is recorded in the provenance file
+   rather than assumed.*
 6. **every expected answer is stated somewhere** — a probe whose answer is stated nowhere is
    unanswerable by construction, and its failure is indistinguishable from a retention failure
 
@@ -81,37 +88,48 @@ written. [docs/62 §13.0](../../docs/62_MEMORY_PRESSURE_TASK_DESIGN.md) carries 
 |---|---|
 | `build_corpus.py` | exit 0, all six constraints pass |
 | regeneration | byte-identical hashes for all five artifacts — the files on disk match the generator |
-| corpus | 100 documents / 20 projects / **4,044,275 tokens** |
+| corpus | 100 documents / 20 projects / **1,809,974 tokens** = 13.8x the window |
+| background | 94% of it, **19,346 distinct words** (the generated filler had 58) |
 | probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
 | leakage | 204 keyed, 204 public, **0 leaked answers** |
 | answer positions | 46 / 43 / 66 / 49 — position carries no signal |
 | `analyse.py` | exits 1 with "no result files found" — correct while no cell has run |
 
-### Sizing
+### Sizing, and why the background is real text
 
-`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window. The corpus
-size is a knob, because it is the experiment's independent variable:
+`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window.
 
-    EF_MEMORY_TOKENS_PER_PROJECT   default 117300   (reproduces the committed corpus)
+    1,809,974 / 131,072 = 13.8x         section 3.2.5 requires >= 4x   -> PASS
 
-    4,044,275 / 131,072 = 30.9x         section 3.2.5 requires >= 4x   -> PASS
+**The first background was generated, and it was measured rather than suspected.** 48 sentence
+templates over 12 topics: 2,344,000 word tokens drawn from **58 distinct words**, 99.60% of a
+4M-token corpus. Deleting every filler line collapsed the corpus to 16,240 tokens — 12.4% of the
+window, far below the 50%-of-window calibration target — so fold 1 already overshot the target and
+depth 2+ had nothing to do. **The depth axis was dead while appearing alive**, and every number the
+calibration produced would have looked like a measurement. Boilerplate creates LENGTH, not
+PRESSURE.
 
-**The resize was a change of regime, not the repair of a defect.** A mid-session claim that the
-corpus was too small compared it against a **1M-token window belonging to a different model** — the
-model a separate mistake had wrongly switched the harness to. Against the window actually under
-test the corpus was already **6.57x**, comfortably past the four-times rule, and section 3.2.5 had
-said so. It was enlarged deliberately, to move from roughly 7 folds forced by ingestion to roughly
-31. See [docs/63](../../docs/63_STEP5_RESUME_HANDOFF.md) §8.1.
+The background is now real technical documentation prose, in the **same register as the probed
+facts**. Register is the point: background in a different register — literary prose, or source code
+— lets a summariser treat the facts as the only real content and keep them, inflating retention.
+Source code is included only in a bounded share, for the same reason.
 
-Only the filler scales. The projects, documents, probes and errata are unchanged, and
-`answer_key.json`, `public_probes.json`, `orderings.json` and `generation_report.json` are
-byte-identical across the resize — the filler states no probed fact, so a larger corpus cannot
-change an answer.
+The size follows the **vendored pool**, not a knob. It was briefly an environment variable and that
+went wrong in a way worth recording: the default was 25000 while the corpus on disk was 4,044,275,
+and because the generator test runs the script with no environment, **every run of the suite
+silently shrank the corpus back to 861,697**. Both values are plausible alone; only their
+disagreement was wrong. A committed pool removes the failure mode instead of tuning it.
 
-**First thing to check on the first live run:** at 30.9x, ingestion may already bring the surface to
-or below the 50%-of-window target before any `compact` is requested. If so, `depth_to_target`
-sits at its floor and the depth axis has no range. The driver reports that case rather than hiding
-it, but it is the measurement to look at first.
+**What was NOT repaired.** A mid-session claim that the corpus was too small compared it against a
+**1M-token window belonging to a different model** — the model a separate mistake had wrongly
+switched the harness to. Against the window actually under test the corpus was already **6.57x**,
+past the four-times rule, and section 3.2.5 had said so. See
+[docs/63](../../docs/63_STEP5_RESUME_HANDOFF.md) §8.1.
+
+**Diversity is a test, not a comment.** The old generator's comment claimed its paragraphs "differ
+in their subject, their numbers and their phrasing"; the phrasing was byte-identical. That claim is
+now pinned by `tests/memory-filler-source.spec.ts`, because a claim about the corpus that nothing
+executes can stay false for as long as nobody looks.
 
 ### Running it
 

@@ -162,37 +162,56 @@ The corpus must exceed what the model can hold, and the window differs per model
 is stated as a multiple rather than an absolute: **at least four times the window of the model
 under test**, which for a 131k window is roughly 500k tokens.
 
-**The size is a knob, not a constant**, because it is this experiment's independent variable:
+**The background is real text, and that is what sets the size.**
 
-    EF_MEMORY_TOKENS_PER_PROJECT   default 117300  ->  4,044,275 tokens  =  30.9x the window
+The first background was generated from 48 sentence templates. Measured, it was 2,344,000 word
+tokens drawn from **58 distinct words** — 99.60% of a 4M-token corpus. Deleting every filler line
+collapsed the corpus to 16,240 tokens, 12.4% of the window, far below the 50%-of-window calibration
+target. So fold 1 already overshot the target and depth 2+ had nothing to do: **the depth axis was
+dead while appearing alive**, and every number the calibration produced would have looked like a
+measurement. Boilerplate creates LENGTH, not PRESSURE.
 
-The default **must** be the value that reproduces the committed artifacts. It was briefly 25000
-while the corpus on disk was 4,044,275, and because the generator test runs this script with no
-environment, **every run of the suite silently shrank the corpus back to 861,697**. Both numbers are
-plausible on their own, so nothing looked wrong; only the disagreement was wrong. A default that
-does not reproduce what is committed is a generator that quietly rewrites its own output.
+The background is now real technical documentation prose, vendored as `filler_source.txt` and built
+by `build_filler_source.py`. It is the same register as the probed facts, which matters: background
+in a different register — literary prose, or source code — lets a summariser treat the facts as the
+only real content and preserve them, inflating retention.
 
-**Recorded because the reason for the change is not the obvious one.** A blocker was raised
-mid-session claiming the corpus was too small — 862k against a **1M** window. That 1M window
-belonged to a *different model*, the one a separate mistake had wrongly switched the harness to.
-Against the window actually under test (131,072) the corpus was already **6.57x**, so it had met
-the four-times rule from the start, and section 3.2.5 had said so. Enlarging it was therefore a
-**deliberate change of regime** — roughly 7 folds forced by ingestion became roughly 31 — and not
-the repair of a defect. The distinction matters: one is a design decision, the other would mean a
-correct artifact had been destroyed to fix a problem that did not exist.
+    corpus             7,239,897 chars  =  1,809,974 tokens  =  13.8x the window
+    background share   94%
+    distinct words     19,346   (generated filler: 58;  type/token 0.0192 against 0.0000247)
+    source-code share  8.8%     (bounded, by explicit guidance)
 
-**Only the filler scales.** The 20 projects, 100 documents, 204 probes and four errata are
-unchanged, and so are `answer_key.json`, `public_probes.json`, `orderings.json` and
-`generation_report.json` — byte-identical across the resize. Growing the project count instead
+**The size follows the vendored pool, not a knob.** It was briefly an environment variable, and that
+went wrong in a way worth keeping on the record: the default was 25000 while the corpus on disk was
+4,044,275, and because the generator test runs the script with no environment, **every run of the
+suite silently shrank the corpus back to 861,697**. Both values are plausible alone; only their
+disagreement was wrong. Sizing from a committed pool removes the failure mode rather than tuning it:
+the corpus is reproducible on any host, and no default can disagree with the artifact.
+
+**What was NOT repaired, and why the distinction matters.** A blocker was raised mid-session claiming
+the corpus was too small — 862k against a **1M** window. That 1M window belonged to a *different
+model*, the one a separate mistake had wrongly switched the harness to. Against the window actually
+under test (131,072) the corpus was already **6.57x**, so it had met the four-times rule from the
+start and this section had said so. The enlargement was never the repair of a defect.
+
+**Only the background scales.** The 20 projects, 100 documents, 204 probes and four errata are
+unchanged, and `answer_key.json`, `public_probes.json`, `orderings.json` and
+`generation_report.json` are byte-identical across the change. Growing the project count instead
 would have scaled the probes toward a thousand and broken 3.2.10 ("two hundred probes still fit in
-one turn"). The filler states no probed fact, so a larger corpus cannot change an answer.
+one turn").
 
-**What to watch when this first runs.** At 30.9x the window, ingestion alone forces far more folds
-than the calibration's depth range was written around. If the surface is already at or below the
-50%-of-window target before any `compact` is requested, then `depth_to_target` collapses to its
-floor and the depth axis loses its range. The driver already reports "the target was already
-exceeded before I asked" rather than silently correcting it, so this will be visible as a
-measurement rather than as a failure — but it is the first thing to check.
+**The disjointness rule was narrowed, deliberately and on the record.**
+`filler_disjoint_from_probed` forbade any probed value from appearing. Twenty of the 86 probed values
+are ordinary English words ("method", "title", "options") because four fields are categorical, so the
+rule as written is unsatisfiable for real prose — and unnecessary: an unbound word is not a competing
+answer. What creates one is a **field name**, because that is what binds a value to a fact. The rule
+now asserts *no vocabulary field name* and *no numeric probed value*, and
+`filler_source_provenance.json` records which categorical values occur and how often.
+
+**A claim in the old generator was false.** A comment stated the filler paragraphs "differ in their
+subject, their numbers and their phrasing". The phrasing was byte-identical. That is why the
+diversity is now a **test** (`tests/memory-filler-source.spec.ts`) rather than a comment: a claim
+about the corpus that nothing executes can stay false for as long as nobody looks.
 
 #### 3.2.6 The fact schema of each type
 
