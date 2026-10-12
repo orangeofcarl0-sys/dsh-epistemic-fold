@@ -163,6 +163,79 @@ is stated as a multiple rather than an absolute: **at least four times the windo
 under test**, which for a 131k window is roughly 500k tokens. Twenty projects at ~25k tokens
 each reaches it.
 
+#### 3.2.6 The fact schema of each type
+
+Every fact is a tuple, and the four types differ only in the tuple's shape. All four fit the
+existing field constructors, so no new grading logic is needed.
+
+| type | tuple | example |
+|---|---|---|
+| **coding** | `(module, symbol, property) -> value` | `(retry.py, MAX_ATTEMPTS, default) -> 5` |
+| **execution** | `(runbook, condition, threshold)` and `(runbook, step_index, action)` | `(P1 runbook, escalate_after_minutes) -> 15` |
+| **reasoning** | `(study, premise_id, statement)` and `(study, conclusion, rests_on)` | `(latency study, C2, rests_on) -> P4` |
+| **generation** | `(spec, rule, value)` | `(API doc spec, section_order) -> [...]` |
+
+#### 3.2.7 The cross-type links form a closed cycle
+
+This is where the strongest interference comes from, and it is built deliberately:
+
+    coding  --defines a config key-->  execution
+       ^                                  |
+       |                            cites a threshold
+    generation  <--must cite the analysis--  reasoning
+
+| link | the composition probe it makes possible |
+|---|---|
+| coding -> execution | "the runbook escalates when retries exceed **the configured limit** -- what is it?" |
+| execution -> reasoning | "which **premise** justifies the 200 ms threshold?" |
+| reasoning -> generation | "which section **must cite** the effect size?" |
+| generation -> coding | "which config key **violates** the naming rule?" |
+
+Each needs both sides held at once, so keeping one and paraphrasing the other cannot answer it.
+
+#### 3.2.8 The logical ingestion order is defined by that cycle
+
+A consequence worth stating, because it removes a hand-made decision: the prerequisite relation
+for the **logical** order (6.6) is the direction of the cross-type links. Coding's config must
+exist before the runbook that cites it.
+
+So the three orders acquire exact meanings:
+
+| order | meaning on this corpus |
+|---|---|
+| **random** | types interleaved, no structure to exploit |
+| **temporal** | blocked by type |
+| **logical** | **topological order of the cross-type cycle** -- the cited project enters first |
+
+And because "cited first" means "folded most", the failure mode section 6.6 calls the sharpest --
+**the most needed fact decays the most** -- arises here by construction rather than by assertion.
+
+#### 3.2.9 Probe instances for every type and kind
+
+All twenty combinations, so the crossing in 3.2.3 is concrete rather than claimed:
+
+| | coding | execution | reasoning | generation |
+|---|---|---|---|---|
+| **extraction** | default of `MAX_ATTEMPTS` in `retry.py`? | minutes before a P1 escalates? | effect size in the latency study? | required section order? |
+| **disambiguation** | which module defines `MAX_ATTEMPTS = 7`? | which runbook escalates at 15 min? | which study reports 0.31? | which spec requires Overview first? |
+| **composition** | the limit the runbook escalates on? | which premise justifies 200 ms? | which premise does C2 rest on? | which config key breaks the naming rule? |
+| **update** | what did the errata change it to? | what is the corrected window? | **does C2 still hold after P4 was revised?** | what is the new preferred term? |
+| **abstention** | `MAX_RETRIES` in `client.py`? | the P3 escalation window? | effect size in the throughput study? | section order for the runbook doc? |
+
+**The reasoning update probe is the interesting one**: it does not change a value, it revises a
+premise and asks whether the conclusion survives. That is a chain-level update, and it is a
+different failure from a stale number.
+
+#### 3.2.10 Two hundred probes still fit in one turn
+
+Section 5.3 requires every probe in a single turn, and 200 probes sounds too many for that.
+Arithmetic says otherwise: 200 questions at roughly 25 tokens each is about **5,000 tokens of
+question**, and one letter per answer is about **400 tokens of reply**.
+
+So the one-turn rule survives the corpus size, and the batch does not have to be split -- which
+matters, because splitting it is what would let a fold fall between probes and break the
+decoupling of section 7.
+
 ## 4. Compression as the independent variable
 
 Compression must be an independent variable, and natural pressure cannot supply one: it depends
