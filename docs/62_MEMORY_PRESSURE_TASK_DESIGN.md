@@ -1209,6 +1209,33 @@ around: without the lineage there is no exposure, and without exposure section 7
 unavailable and the analysis degrades to the nominal-depth averaging that 7.1 identifies as a
 validity problem.
 
+### 13.0 Build status
+
+Recorded because a checklist without one is a plan, and the difference matters to anyone deciding
+whether to trust a result.
+
+| # | piece | status |
+|---|---|---|
+| 1 | fold-lineage capture | **built** — `foldLineage` per fold, mechanism from counter deltas |
+| 2 | `compact` operation | **built** — reports whether a fold COMMITTED |
+| 3 | corpus generator | **built** — six constraints, all checked, all passing |
+| 4 | probe generator + scorer | **built** — 204 probes, four options each, deterministic |
+| 5 | size calibration | **code built, not yet run** — needs the provider |
+| 6 | driver | **built** — batched probing, arm-dependent ingestion, retrying step |
+| 7 | injection harness | **built** — minimal per-batch sets, validated to contain the answer |
+| 8 | the minimum grid | **not run** — needs 5 and 6 |
+| 9 | analysis | **built** — verified against a planted effect |
+
+**Everything that can be built without the provider is built, and each piece is pinned by a test
+that states the property rather than the implementation.** The three that remain are blocked on
+one thing: the endpoint was answering `HTTP 429 Upstream request failed: Rate limit exceeded`
+for the whole of the session in which this was written, which is also why the LHTB lane stalled.
+
+**Two of the pieces needed a source that did not exist and was not noticed**, which is the pattern
+worth recording: the fold lineage had no consumer until the analysis was written, and `exposure`
+had no `fact -> seq` map until the join was attempted. **In both cases both ends of a chain
+existed and the middle did not**, and neither was visible from either end.
+
 ### 13.1 What is deliberately not built yet
 
 - **the warning factor** (6.3) -- cheap to add, but it doubles the grid and the primary question
