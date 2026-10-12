@@ -48,4 +48,7 @@ if [ "${EF_USE_PROXY:-1}" = "1" ] && [ -z "${HTTPS_PROXY:-}" ]; then
 fi
 [ -n "${HTTPS_PROXY:-}" ] || echo "proxy: disabled (direct)"
 
+if [ "${1:-}" = "--check-route" ]; then
+  exec "$HARBOR_PY" "$EF_HOME/eval/memory/check_route.py"
+fi
 exec "$HARBOR_PY" "$EF_HOME/eval/memory/run_cell.py" "$@"
