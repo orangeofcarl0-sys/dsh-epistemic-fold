@@ -144,7 +144,20 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                                  domain="memory", task_id=f"{mode}-{arm}-{order_name}")
     bridge.init(SYSTEM_WARNED if warned else SYSTEM_PUSH, [])
 
-    seq = orders[order_name]
+    # ## Which arms get a corpus at all
+    #
+    # A and B ingest it; C and N do NOT. Section 6.2 is explicit -- C is "a minimal context, plus
+    # the same document(s)", and N is "the probe, no corpus" -- and the first version of this
+    # driver ingested for every arm, which would have made C identical to B (so the interference
+    # term B - C would be identically zero) and the floor meaningless. A silent zero is worse
+    # than a loud failure: it reads as "the retained summary does not interfere", which is a
+    # finding, when nothing was measured.
+    #
+    # C still receives the INJECTED documents below, which is what makes it the
+    # reading-comprehension ceiling: can the model answer at all when the source is in front of
+    # it and nothing else is.
+    ingests_corpus = mode in ("A", "B")
+    seq = orders[order_name] if ingests_corpus else []
     if limit_docs:
         seq = seq[:limit_docs]
     appended = 0
@@ -169,10 +182,13 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # from telemetry rather than inferred, and a corpus that folds more than the target is
     # reported rather than silently corrected, because "the target was already exceeded before I
     # asked" is a fact about the cell.
-    natural = int(bridge.last_telemetry.get("folds") or 0)
+    # Without a corpus there is nothing to fold, so the target applies only to the arms that
+    # ingested one. Asking C or N for depth would be asking them to compress a document set that
+    # is already minimal.
+    natural = int(bridge.last_telemetry.get("folds") or 0) if ingests_corpus else 0
     requested = 0
     committed = 0
-    for _ in range(max(0, depth - natural)):
+    for _ in range(max(0, depth - natural) if ingests_corpus else 0):
         requested += 1
         if bridge.compact():
             committed += 1
@@ -202,6 +218,7 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         "cell": {"arm": arm, "order": order_name, "depth": depth, "mode": mode,
                  "warned": warned, "inject": inject, "compaction_disabled": not compaction_on},
         "ingested_tokens": ingested, "ingested_docs": ingested_docs,
+        "ingests_corpus": ingests_corpus,
         # Three separate numbers, because conflating them is how the independent variable
         # disappears: the target, what ingestion forced, and what the request added.
         "depth_target": depth,

@@ -61,7 +61,10 @@ describe('the memory driver sequence', () => {
     // the corpus rather than the request, and the request barely moves it.
     expect(DRIVER).toMatch(/if bridge\.compact\(\):\n\s+committed \+= 1/u)
     expect(DRIVER).toContain('natural = int(bridge.last_telemetry.get("folds") or 0)')
-    expect(DRIVER).toMatch(/for _ in range\(max\(0, depth - natural\)\):/u)
+    // Only the DIFFERENCE is requested, and the guard is not pinned verbatim: the line also
+    // carries the arm check that keeps C and N from being asked to fold a corpus they do not
+    // have, so asserting the exact text made this fail the moment that was added.
+    expect(DRIVER).toMatch(/for _ in range\(max\(0, depth - natural\)/u)
     // And the three numbers are reported separately, because conflating them is the defect.
     for (const k of ['depth_target', 'folds_natural', 'folds_requested', 'folds_committed', 'folds_total']) {
       expect(DRIVER, k + ' must be reported').toContain('"' + k + '"')
@@ -87,6 +90,25 @@ describe('the memory driver sequence', () => {
       expect(body, transient + ' must be retryable').toContain(transient)
     }
     expect(body, 'a plain 4xx must NOT be listed as retryable').not.toContain('HTTP 400')
+  })
+
+  it('gives a corpus to A and B ONLY, so C is not a copy of B', () => {
+    // Section 6.2: C is "a minimal context, plus the same document(s)" and N is "the probe, no
+    // corpus". The first version of this driver ingested for EVERY arm, which would have made
+    // C identical to B -- so the interference term B - C would be identically ZERO and read as
+    // "the retained summary does not interfere", which is a finding, when nothing was
+    // measured. A silent zero is worse than a loud failure.
+    expect(DRIVER).toContain('ingests_corpus = mode in ("A", "B")')
+    expect(DRIVER).toContain('seq = orders[order_name] if ingests_corpus else []')
+    // And C still receives the injected documents, which is what makes it the ceiling.
+    expect(DRIVER).toContain('if inject:')
+    // The flag is reported, so a reader cannot mistake C for B in a result file.
+    expect(DRIVER).toContain('"ingests_corpus": ingests_corpus')
+  })
+
+  it('asks for no folds from an arm that has no corpus', () => {
+    expect(DRIVER).toContain('if ingests_corpus else 0')
+    expect(DRIVER).toMatch(/max\(0, depth - natural\) if ingests_corpus else 0/u)
   })
 
   it('keeps the system prompt minimal, because an instruction to summarise changes the IV', () => {
