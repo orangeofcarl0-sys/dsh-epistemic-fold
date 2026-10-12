@@ -34,7 +34,9 @@ from __future__ import annotations
 import atexit
 import json
 import os
+import queue
 import subprocess
+import threading
 from pathlib import Path
 from typing import Any, Optional
 
@@ -62,7 +64,13 @@ class BridgeError(RuntimeError):
 class EpistemicFoldBridge:
     """A long-lived Node process holding one EF session for one episode."""
 
+    # A bridge call that has not answered in this long is hung, not slow. Set well
+    # above the host's own step timeout (EF_TAU2_STEP_TIMEOUT_MS, default 900s) so a
+    # host that IS enforcing its deadline still gets to report the failure itself.
+    _READ_TIMEOUT_SEC = float(os.environ.get("EF_BRIDGE_READ_TIMEOUT_SEC", "1200"))
+
     def __init__(self, arm: str, bundle_root: str, domain: str, task_id: str) -> None:
+        self._read_timeout_sec = self._READ_TIMEOUT_SEC
         spec = ARM_SPECS.get(arm)
         if spec is None:
             raise BridgeError(f"unknown arm {arm!r}; expected one of {sorted(ARM_SPECS)}")
@@ -109,6 +117,40 @@ class EpistemicFoldBridge:
             bufsize=1,
         )
         atexit.register(self.close)
+        self._start_reader()
+
+    def _start_reader(self) -> None:
+        """Read the host's stdout on a thread, so a read can be BOUNDED.
+
+        `readline()` on the pipe has no timeout, and that is not a detail: when the
+        provider accepts the connection and then never answers, the host blocks
+        inside the model call, this end blocks inside `readline()`, and nothing in
+        the system can notice. Measured on a live wave: eight cells frozen for more
+        than thirty minutes with their host processes alive and idle, no failure
+        counted, and no termination reason -- the wall-clock simply drained.
+
+        A thread turning the pipe into a queue is what makes the wait observable, so
+        the hang becomes a recorded, retryable provider failure like any other.
+        """
+        self._lines: "queue.Queue[Optional[str]]" = queue.Queue()
+
+        def pump() -> None:
+            assert self._proc.stdout is not None
+            try:
+                for line in self._proc.stdout:
+                    self._lines.put(line)
+            except (OSError, ValueError):
+                pass
+            # EOF, so a reader that is waiting learns the host is gone rather than
+            # waiting for a line that can never arrive.
+            self._lines.put(None)
+
+        self._reader = threading.Thread(target=pump, name="ef-bridge-stdout", daemon=True)
+        self._reader.start()
+
+    def _readline(self, timeout: float) -> Optional[str]:
+        """One response line, or None on EOF. Raises `queue.Empty` on timeout."""
+        return self._lines.get(timeout=timeout)
 
     def _stderr_tail(self, limit: int = 600) -> str:
         """The host's stderr, from the file when one was configured."""
@@ -133,7 +175,21 @@ class EpistemicFoldBridge:
         assert self._proc.stdin is not None and self._proc.stdout is not None
         self._proc.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
         self._proc.stdin.flush()
-        line = self._proc.stdout.readline()
+        try:
+            line = self._readline(self._read_timeout_sec)
+        except queue.Empty:
+            # A host that does not answer is infrastructure, exactly like a 429: the
+            # model never replied. It is returned in the SAME shape as a provider
+            # failure so the agent's existing recovery -- backoff, the outage ceiling,
+            # and the wasted-attempt bound -- stays in charge, instead of this end
+            # blocking until the container is killed with nothing recorded.
+            return {
+                "ok": True,
+                "error": (
+                    f"bridge host did not answer within {self._read_timeout_sec}s "
+                    f"({request.get('op', 'unknown')}); the provider call is hung"
+                ),
+            }
         if not line:
             raise BridgeError(f"bridge host closed the stream: {self._stderr_tail()}")
         response = json.loads(line)
