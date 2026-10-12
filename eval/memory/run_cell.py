@@ -44,6 +44,19 @@ SYSTEM_PUSH = (
 SYSTEM_WARNED = SYSTEM_PUSH + " You will be asked to recall specific details, so retain them."
 
 
+def retryable(error: str) -> bool:
+    """Whether an error could plausibly succeed on a later attempt.
+
+    Retryable: a rate limit, a server fault, or a transport failure -- all transient.
+    Deterministic: a 4xx that is not 429, which describes the REQUEST and will describe it again.
+    """
+    for marker in ("HTTP 429", "HTTP 500", "HTTP 502", "HTTP 503", "HTTP 504",
+                   "transport", "fetch failed", "timeout", "ECONNRESET", "socket hang up"):
+        if marker.lower() in error.lower():
+            return True
+    return False
+
+
 def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0) -> tuple[dict, int]:
     """One model call, retried through a provider failure.
 
@@ -58,6 +71,12 @@ def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0) -> t
         if not reply.get("error"):
             return reply, failures
         failures += 1
+        if not retryable(str(reply.get("error"))):
+            # A DETERMINISTIC error is not going to become true. Retrying it spends the whole
+            # backoff budget and, worse, hides the cause: the first plumbing run reported one
+            # provider failure, which read as provider turbulence and was in fact a malformed
+            # header that would have failed identically on every attempt.
+            return reply, failures
         time.sleep(min(base_sleep * (2 ** min(failures, 4)), 120))
     return reply, failures
 

@@ -25,7 +25,12 @@ export EF_ROOT="$EF_HOME"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
-export EF_LIVE_HEADERS="${EF_LIVE_HEADERS:-{\"x-opencode-session\":\"ef-memory-$(date +%s)-$$\"}}"
+# Built in its own variable first. Inside ${VAR:-...} bash does not process backslash escapes
+# the way the surrounding quoting suggests, and the value that reached the host was not valid
+# JSON -- so the header was silently absent and every request answered HTTP 400
+# MissingSessionID, which reads as "the endpoint is up" while nothing can be routed.
+_EF_HEADERS="{\"x-opencode-session\":\"ef-memory-$(date +%s)-$$\"}"
+export EF_LIVE_HEADERS="${EF_LIVE_HEADERS:-$_EF_HEADERS}"
 export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-$EF_HOME/ef-phase7-logs/memory-bridge-stderr.log}"
 echo "route: $EF_LIVE_BASE_URL model=$EF_LIVE_MODEL"
 

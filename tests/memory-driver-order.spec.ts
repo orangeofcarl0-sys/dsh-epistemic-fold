@@ -65,6 +65,20 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toMatch(/for attempt in range\(max_attempts\)/u)
   })
 
+  it('retries only errors that could become true, not deterministic ones', () => {
+    // A malformed header answered HTTP 400 MissingSessionID on every attempt. The retry loop
+    // spent its whole backoff budget on it AND hid the cause: the run reported one provider
+    // failure, which read as provider turbulence and was in fact a request that could never
+    // succeed. A 4xx that is not 429 describes the REQUEST.
+    expect(DRIVER).toContain('def retryable(')
+    expect(DRIVER).toContain('if not retryable(str(reply.get("error"))):')
+    const body = DRIVER.slice(DRIVER.indexOf('def retryable('), DRIVER.indexOf('def step_with_retry('))
+    for (const transient of ['HTTP 429', 'HTTP 503', 'fetch failed']) {
+      expect(body, transient + ' must be retryable').toContain(transient)
+    }
+    expect(body, 'a plain 4xx must NOT be listed as retryable').not.toContain('HTTP 400')
+  })
+
   it('keeps the system prompt minimal, because an instruction to summarise changes the IV', () => {
     const start = DRIVER.indexOf('SYSTEM_PUSH = (')
     const end = DRIVER.indexOf(')', start)
