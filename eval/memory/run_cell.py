@@ -187,6 +187,28 @@ def validate_injection(batch: dict, docs: dict) -> list[str]:
     return problems
 
 
+def corpus_with_errata(docs: dict, errata: list) -> dict:
+    """The corpus as the driver ingests it: the documents PLUS the errata.
+
+    \`orderings.json\` places ERRATA.md at 85% of the sequence (3.2.16 constraint 4: errata go
+    late, so the stale value was stated earlier). A lookup built from \`documents.json\` alone
+    contains no errata, so those entries resolved to None and were SILENTLY SKIPPED -- the
+    correction never entered the corpus, and an update probe would have measured whether the model
+    could read the injected errata rather than whether it replaced a value it had already been
+    told.
+
+    Written as one function because the two call sites had the identical line, and an edit aimed
+    at one of them landed in the other.
+    """
+    out = {f"{pid}/{d['name']}": d for pid, ds in docs.items() for d in ds}
+    for e in errata:
+        out[f"{e['project']}/ERRATA.md"] = {
+            "project": e["project"], "type": e["type"], "name": "ERRATA.md",
+            "text": e["text"], "states": [e["field"]], "reserved": None,
+        }
+    return out
+
+
 def load(name: str) -> dict:
     return json.loads((HERE / name).read_text(encoding="utf-8"))
 
@@ -199,7 +221,15 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
     """
     orders = load("orderings.json")
     docs = load("documents.json")
-    by_key = {f"{pid}/{d['name']}": d for pid, ds in docs.items() for d in ds}
+    # ## The errata belong to the CORPUS, not only to the injection
+    #
+    # `orderings.json` places ERRATA.md at 85% of the sequence (3.2.16 constraint 4: errata go
+    # late, so the stale value was stated earlier). This lookup was built from `documents.json`
+    # alone, which contains no errata -- so the entries in the ordering resolved to None and were
+    # SILENTLY SKIPPED. The correction never entered the corpus, and an update probe would have
+    # measured whether the model could read the injected errata rather than whether it replaced a
+    # value it had already been told.
+    by_key = corpus_with_errata(docs, errata)
 
     bridge = EpistemicFoldBridge(arm=arm, bundle_root=str(HERE / "_bundles"),
                                  domain="memory", task_id=f"calib-{arm}-{order_name}")
@@ -244,7 +274,7 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     docs = load("documents.json")
     public = load("public_probes.json")
     key = load("answer_key.json")
-    by_key = {f"{pid}/{d['name']}": d for pid, ds in docs.items() for d in ds}
+    by_key = corpus_with_errata(docs, key["errata"])
 
     bridge = EpistemicFoldBridge(arm=arm, bundle_root=str(HERE / "_bundles"),
                                  domain="memory", task_id=f"{mode}-{arm}-{order_name}")
