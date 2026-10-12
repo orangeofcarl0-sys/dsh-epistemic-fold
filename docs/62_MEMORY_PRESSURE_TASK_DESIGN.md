@@ -1175,12 +1175,37 @@ a verifier or a reward file.
 Section 8 requires the headline comparison at **matched final size**, and 10.1 says that needs
 its own pass. Concretely:
 
-    target = 50% of the WINDOW, not of the ingested size
+    target = 30% of the WINDOW, not of the ingested size
     for mechanism in {basic, economy, balanced, quality}:
         sweep depth N upward
         record surface tokens after the Nth compaction
         stop at the smallest N whose size <= target
         that N is the mechanism's depth for the matched-size arms
+
+**The target is set by the BUDGET, not chosen.** It was 50%, which is not affordable. At a probe
+turn the window must hold four things besides the surface, and the fourth is easy to forget:
+
+| item | 131k tier | note |
+|---|---|---|
+| compressed surface | 0.30 x W = 39,321 | this target |
+| injected batch | 55,210 | two whole projects |
+| probe turn | 10,000 | 204 probes with their options |
+| **x tokenizer slack** | x1.05 | **measured 1.02**; chars/4 understates |
+| completion reserve | 8,192 | the answer must still fit |
+| **probe turn total** | **117,950 = 0.90 x W** | the binding case |
+
+    probe turn   (surface + batch + probes) x slack + reserve <= W
+    fold turn    (surface + fold prompt) x slack + summary budget <= W
+
+At a 0.50 surface target the arithmetic caps the corpus at about **3.2x** — below the four-times
+floor — so the design would be **infeasible while every run still appeared to work**: the request
+succeeds, the provider truncates, and the score describes the budget rather than the model. That is
+the failure mode this section exists to prevent, and it is why `build_corpus.py` now checks the
+same arithmetic and refuses to emit a corpus that violates it.
+
+**A smaller batch would relax this.** The batch is two WHOLE projects; 6.4.1 asks for minimal
+injection, and injecting only the documents a probe actually needs would put the surface back near
+0.50. That is the next lever if the target needs to rise.
 
 **The ratio is of the WINDOW, and the first version's ratio of the INGESTED SIZE was
 unreachable.** The arithmetic is not close:

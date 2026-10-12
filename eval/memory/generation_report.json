@@ -44,13 +44,24 @@
   "sizing": {
     "ok": true,
     "window": 131072,
-    "ratio_target": 4.5,
-    "corpus_tokens": 591437,
-    "ratio_achieved": 4.512,
+    "ratio_target": 4.2,
+    "corpus_tokens": 552115,
+    "ratio_achieved": 4.212,
     "documents": 100,
-    "tokens_per_document": 5914,
-    "composition_batch_tokens": 59140,
-    "batch_plus_surface_over_window": 0.951,
-    "note": "fits iff ratio <= 5.0; the floor 4.0 is 3.2.5's four-times rule"
+    "tokens_per_document": 5521,
+    "composition_batch_tokens": 55210,
+    "budget": {
+      "surface_frac": 0.3,
+      "surface_tokens": 39321,
+      "batch_tokens": 55210,
+      "probe_tokens": 10000,
+      "tokenizer_slack": 1.05,
+      "completion_reserve": 8192,
+      "probe_turn_tokens": 117950,
+      "probe_turn_over_window": 0.9,
+      "fold_turn_tokens": 76155,
+      "fold_turn_over_window": 0.581
+    },
+    "note": "probe turn is the binding case; it must leave room for the tokenizer, the compressed surface, the injection and the completion reserve"
   }
 }

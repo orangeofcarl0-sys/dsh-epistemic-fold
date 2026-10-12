@@ -452,7 +452,19 @@ def main() -> None:
     # A fraction of the WINDOW, not of the ingested size. The first version used 0.20 of the
     # ingested surface, which was 172,339 tokens against a 131,072-token window -- 31% above it,
     # and therefore unreachable by any mechanism.
-    ap.add_argument("--target-frac", type=float, default=0.50)
+    # ## The surface target is set by the BUDGET, not chosen (10.6)
+    #
+    # It was 0.50 of the window. That is not affordable: at a probe turn the window must also hold
+    # the injected batch, the rendered probes, the completion reserve, and a tokenizer that does not
+    # agree with a chars/4 estimate. Measured, real tokens run 1.02x that estimate; 1.05 is budgeted.
+    #
+    # With a batch of two whole projects the arithmetic caps the surface at about 0.37W for a
+    # four-times corpus, so a 0.50 target makes the design INFEASIBLE -- and infeasibly is silent
+    # here: the request still succeeds, the provider truncates, and the score describes the budget
+    # rather than the model. 0.30 leaves the probe turn at 0.90W with the corpus at 4.2x.
+    #
+    # build_corpus.py checks the same arithmetic and refuses to emit a corpus that violates it.
+    ap.add_argument("--target-frac", type=float, default=0.30)
     ap.add_argument("--limit-docs", type=int, default=None)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()

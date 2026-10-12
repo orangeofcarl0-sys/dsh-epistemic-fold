@@ -30,6 +30,7 @@ import json
 import os
 import random
 import sys
+import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -46,9 +47,34 @@ def write_atomic(path: Path, text: str) -> None:
     os.replace is atomic on both Windows and POSIX, so a reader sees the whole old file or the whole
     new one and never a torn one.
     """
-    tmp = path.with_name(path.name + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
-    os.replace(tmp, path)
+    # The suffix carries the pid, because a FIXED temp name is itself a race: two writers -- the
+    # suite runs the generator from one test file while others read the artifacts -- would share
+    # one temporary and one could rename a file the other was still filling. A unique name costs
+    # nothing and removes the class.
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(text, encoding="utf-8")
+        # ## Windows: os.replace fails if the destination is OPEN by another process
+        #
+        # That is a sharing violation, not a problem with the content, and it is why the generator
+        # died intermittently while printing no "constraints ok" -- which the suite reported as a
+        # flaky test. The cause is the suite itself: vitest runs test files in parallel, and the
+        # other memory tests read documents.json, corpus_core.json and generation_report.json while
+        # this generator rewrites them. A reader holding one open at the wrong instant makes the
+        # rename fail.
+        #
+        # Retrying clears it, because the reader closes. Raising instead would turn a transient
+        # sharing conflict into a lost run.
+        for attempt in range(20):
+            try:
+                os.replace(tmp, path)
+                break
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
+    finally:
+        tmp.unlink(missing_ok=True)
 PROJECTS_PER_TYPE = 5
 
 # One field vocabulary per type, so a type's projects are mutually confusable: the same field
@@ -334,8 +360,33 @@ _FILLER_CACHE: list = []
 # was 1.38x the window and arm B could not inject at all. The corpus is not "as large as possible";
 # it is as large as the INJECTION allows, and the injection scales with the window.
 WINDOW = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
-CORPUS_RATIO = float(os.environ.get("EF_MEMORY_CORPUS_RATIO", "4.5"))
+CORPUS_RATIO = float(os.environ.get("EF_MEMORY_CORPUS_RATIO", "4.2"))
 CORPUS_TARGET_CHARS = int(WINDOW * CORPUS_RATIO * 4)
+
+# ## The context budget, because the window is not all available to the corpus (10.6)
+#
+# Three things compete for the window at a probe turn, and a fourth is easy to forget:
+#
+#   1. the COMPRESSED SURFACE      -- the memory the fold left behind
+#   2. the INJECTED BATCH          -- the documents arm B adds for the probe
+#   3. the PROBE TURN              -- 204 probes rendered with their options
+#   4. the TOKENIZER, which does not agree with a chars/4 estimate
+#
+# Measured on this corpus, real tokens run 1.02x the chars/4 estimate, and the factor grows slowly
+# with length. 1.05 is budgeted. The reserve is the completion the model must still be able to
+# produce, and the summary budget is what a FOLD needs on top of the surface it is summarising.
+#
+# Getting this wrong is silent in the worst way: the request still succeeds, the provider truncates
+# or the fold drops the tail, and the resulting score describes the budget rather than the model.
+#
+#   probe turn   (SURFACE_FRAC*W + batch + PROBE_TOKENS) * SLACK + RESERVE <= W
+#   fold turn    (SURFACE_FRAC*W + FOLD_PROMPT_TOKENS) * SLACK + SUMMARY_BUDGET <= W
+TOKENIZER_SLACK = float(os.environ.get("EF_MEMORY_TOKENIZER_SLACK", "1.05"))
+SURFACE_FRAC = float(os.environ.get("EF_MEMORY_SURFACE_FRAC", "0.30"))
+PROBE_TOKENS = int(os.environ.get("EF_MEMORY_PROBE_TOKENS", "10000"))
+COMPLETION_RESERVE = int(os.environ.get("EF_MEMORY_COMPLETION_RESERVE", "8192"))
+SUMMARY_BUDGET = int(os.environ.get("EF_MEMORY_SUMMARY_BUDGET", "32768"))
+FOLD_PROMPT_TOKENS = 2000
 
 
 def filler_pool() -> str:
@@ -792,8 +843,11 @@ def main() -> None:
     _n_docs = sum(len(v) for v in docs.values())
     _corpus_tokens = sum(len(d["text"]) for ds in docs.values() for d in ds) // 4
     _batch_tokens = 10 * (_corpus_tokens // max(1, _n_docs))
+    _surface = SURFACE_FRAC * WINDOW
+    _probe_turn = (_surface + _batch_tokens + PROBE_TOKENS) * TOKENIZER_SLACK + COMPLETION_RESERVE
+    _fold_turn = (_surface + FOLD_PROMPT_TOKENS) * TOKENIZER_SLACK + SUMMARY_BUDGET
     report["sizing"] = {
-        "ok": (_corpus_tokens >= 4 * WINDOW) and (_batch_tokens + WINDOW * 0.5 <= WINDOW),
+        "ok": (_corpus_tokens >= 4 * WINDOW) and (_probe_turn <= WINDOW) and (_fold_turn <= WINDOW),
         "window": WINDOW,
         "ratio_target": CORPUS_RATIO,
         "corpus_tokens": _corpus_tokens,
@@ -801,8 +855,20 @@ def main() -> None:
         "documents": _n_docs,
         "tokens_per_document": _corpus_tokens // max(1, _n_docs),
         "composition_batch_tokens": _batch_tokens,
-        "batch_plus_surface_over_window": round((_batch_tokens + WINDOW * 0.5) / WINDOW, 3),
-        "note": "fits iff ratio <= 5.0; the floor 4.0 is 3.2.5's four-times rule",
+        "budget": {
+            "surface_frac": SURFACE_FRAC,
+            "surface_tokens": int(_surface),
+            "batch_tokens": _batch_tokens,
+            "probe_tokens": PROBE_TOKENS,
+            "tokenizer_slack": TOKENIZER_SLACK,
+            "completion_reserve": COMPLETION_RESERVE,
+            "probe_turn_tokens": int(_probe_turn),
+            "probe_turn_over_window": round(_probe_turn / WINDOW, 3),
+            "fold_turn_tokens": int(_fold_turn),
+            "fold_turn_over_window": round(_fold_turn / WINDOW, 3),
+        },
+        "note": "probe turn is the binding case; it must leave room for the tokenizer, the "
+                "compressed surface, the injection and the completion reserve",
     }
     build_options(corpus, probes["probes"], random.Random(SEED + 3))
     key, public = split(corpus, probes)

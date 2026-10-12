@@ -56,11 +56,26 @@ describe.skipIf(!canRun)('the memory corpus is sized from the window', () => {
     expect(sizing.ratio_achieved).toBeGreaterThanOrEqual(4)
   })
 
-  it('leaves room for a composition batch plus the compressed surface', () => {
-    // The ceiling. Above 5.0x, a batch of two whole projects plus a 50%-of-window surface no
-    // longer fits, and arm B measures truncation instead of the model.
-    expect(sizing.ratio_achieved).toBeLessThanOrEqual(5)
-    expect(sizing.batch_plus_surface_over_window).toBeLessThanOrEqual(1)
+  it('leaves room for the tokenizer, the surface, the injection and the reserve', () => {
+    // The ceiling, and the reason it is a budget rather than a ratio. The window must hold the
+    // compressed surface, the injected batch, the rendered probes and the completion reserve, all
+    // scaled by a tokenizer that does not agree with a chars/4 estimate. Exceeding it is SILENT:
+    // the request still succeeds, the provider truncates, and the score describes the budget
+    // rather than the model.
+    const b = sizing.budget
+    expect(b, 'the budget must be recorded, not assumed').toBeDefined()
+    expect(b.probe_turn_over_window, 'the probe turn is the binding case').toBeLessThanOrEqual(1)
+    expect(b.fold_turn_over_window, 'a fold needs room for its own summary budget').toBeLessThanOrEqual(1)
+    expect(b.tokenizer_slack, 'measured 1.02, budgeted 1.05').toBeGreaterThanOrEqual(1)
+    expect(b.completion_reserve).toBeGreaterThan(0)
+  })
+
+  it('keeps the surface target low enough to afford a four-times corpus', () => {
+    // At 0.50 the arithmetic caps the corpus at about 3.2x -- BELOW the four-times floor -- so the
+    // design would be infeasible while every run still appeared to work.
+    const b = sizing.budget
+    expect(b.surface_frac).toBeLessThanOrEqual(0.4)
+    expect(sizing.ratio_achieved).toBeGreaterThanOrEqual(4)
   })
 
   it('derives every tier with the same rule, and every tier fits', () => {
@@ -84,6 +99,6 @@ describe.skipIf(!canRun)('the memory corpus is sized from the window', () => {
     expect(sizing.composition_batch_tokens).toBeGreaterThan(0)
     expect(sizing.tokens_per_document).toBeGreaterThan(0)
     expect(sizing.documents).toBe(100)
-    expect(sizing.note).toContain('5.0')
+    expect(sizing.note).toContain('probe turn')
   })
 })
