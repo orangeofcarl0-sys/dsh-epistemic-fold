@@ -374,6 +374,17 @@ def build_composition(corpus: dict) -> list[dict]:
             probes.append({
                 "fact": f"{src['id']}->{dst['id']}", "type": src_type, "kind": "composition",
                 "q": q, "answer": answer, "needs": [src["id"], dst["id"]],
+                # The field the answer belongs to, RECORDED rather than re-derived from the
+                # question text. An earlier draft searched the prose for a field name and failed
+                # on the edge whose question says "the limit configured in" without naming it.
+                "field": field,
+                "answer_is_project": field is None,
+                # WHICH SIDE holds the answer, recorded for the same reason the field is:
+                # deriving it was wrong twice. max_attempts lives on the coding side of
+                # coding->execution, citation_required on the generation side of
+                # reasoning->generation, and a rule that assumed "always the destination"
+                # raised KeyError on the first edge it met.
+                "answer_type": (src_type if side == "src" else dst_type),
             })
     return probes
 
@@ -481,6 +492,81 @@ def attach_reserved(corpus: dict) -> None:
 
 
 
+
+# ---------------------------------------------------------------- options
+
+def build_options(corpus: dict, probes: list[dict], rng) -> None:
+    """Give every probe its option set, IN PLACE.
+
+    Section 5.2: distractors **share the field and differ only in the referent**. That is what
+    makes a probe measure binding rather than knowledge -- a model that kept "retry_limit = 5"
+    without keeping whose 5 lands on a real value rather than an obviously wrong one.
+
+    Section 5: the floor is therefore chance among REAL candidates, not among nonsense, and the
+    report says so rather than implying zero is the floor.
+    """
+    # The candidate pool for a field is that field's values across every project OF ITS TYPE --
+    # which is exactly the set a disambiguation probe must discriminate between.
+    by_type_field: dict[tuple[str, str], list] = {}
+    for t, rows in corpus["projects"].items():
+        for field, _, _ in VOCAB[t]:
+            by_type_field[(t, field)] = [r["values"][field] for r in rows]
+    ids_by_type = {t: [r["id"] for r in corpus["projects"][t]] for t in RING}
+
+    for p in probes:
+        kind = p["kind"]
+        if kind == "abstention":
+            # The answer is an absence, so the options are the absence plus real values of that
+            # field -- a model that confabulates picks a real number.
+            field = p["fact"].split(".")[1]
+            pool = list(by_type_field[(p["type"], field)])
+            p["options"] = _order(pool[:3] + ["not stated"], "not stated", rng)
+        elif kind == "disambiguation":
+            p["options"] = _order(ids_by_type[p["type"]], p["answer"], rng)
+        elif kind == "composition":
+            if p.get("answer_is_project"):
+                p["options"] = _order(ids_by_type[p["type"]], p["answer"], rng)
+            else:
+                # The pool is the ANSWER's type, which is not always the probe's own type.
+                pool = list(by_type_field[(p["answer_type"], p["field"])])
+                p["options"] = _order(pool, p["answer"], rng)
+        elif kind == "update":
+            # The STALE value is included on purpose: it is in the corpus, so a model that kept
+            # the old value is not guessing, it is choosing something it has a reason to believe.
+            field = p["fact"].split(".")[1]
+            pool = [v for v in by_type_field[(p["type"], field)] if str(v) != str(p["answer"])]
+            p["options"] = _order(pool[:3] + [p["stale"], p["answer"]], p["answer"], rng)
+        else:  # extraction
+            field = p["fact"].split(".")[1]
+            pool = list(by_type_field[(p["type"], field)])
+            p["options"] = _order(pool, p["answer"], rng)
+        # The answer must be present, and the option order must not encode it.
+        if str(p["answer"]) not in [str(o) for o in p["options"]]:
+            raise SystemExit(f"probe {p['id']}: answer {p['answer']!r} missing from options")
+        p["answer_index"] = [str(o) for o in p["options"]].index(str(p["answer"]))
+
+
+def _order(pool: list, answer, rng) -> list:
+    """Four options, the answer among them, in an order that does not encode it.
+
+    The order of operations matters and the first draft got it wrong: it shuffled the whole pool
+    and THEN truncated to four, so with five project ids the answer could be cut off entirely.
+    The assertion caught it -- "answer 'coding-1' missing from options" -- but the same defect
+    without the assertion would have produced a probe that was unanswerable by construction and
+    scored as a retention failure.
+    """
+    seen = {str(answer)}
+    distractors = []
+    for v in pool:
+        if str(v) in seen:
+            continue
+        seen.add(str(v))
+        distractors.append(v)
+    rng.shuffle(distractors)
+    out = [answer] + distractors[:3]
+    rng.shuffle(out)
+    return out
+
 # ---------------------------------------------------------------- orderings and the split
 
 
@@ -539,8 +625,18 @@ def split(corpus: dict, probes: dict) -> tuple[dict, dict]:
     an answer.
     """
     key = {"probes": probes["probes"], "errata": probes["errata"]}
+    # EVERY field that reveals the answer, not only the obvious one.
+    #
+    # The first draft stripped "answer" and "stale" and left `answer_index` -- which `build_options`
+    # adds, and which names the position of the correct option. A public probe carrying it would
+    # have handed the model the answer to every question, and the leak check below would have
+    # passed because it looked for the two fields it already knew about.
+    #
+    # The check is now a whitelist rather than a blacklist: a public probe may carry only the
+    # fields named here, so a field added later cannot leak by being unlisted.
+    PUBLIC_FIELDS = ("id", "fact", "type", "kind", "q", "options", "needs")
     public = {"probes": [
-        {k: v for k, v in p.items() if k not in ("answer", "stale")}
+        {k: v for k, v in p.items() if k in PUBLIC_FIELDS}
         for p in probes["probes"]
     ]}
     return key, public
@@ -559,6 +655,7 @@ def main() -> None:
     probes = build_probes(corpus, random.Random(SEED + 1))
     orders = orderings(corpus, docs, probes["errata"], random.Random(SEED + 2))
     report["orderings_distinct"] = check_orderings(orders)
+    build_options(corpus, probes["probes"], random.Random(SEED + 3))
     key, public = split(corpus, probes)
 
     # The report is written ONCE, at the end, after every check has contributed to it.
@@ -592,13 +689,19 @@ def main() -> None:
     print(f"  probes: {len(probes['probes'])}  by kind: {dict(kinds)}")
     print(f"  by type: {dict(types_)}   errata: {len(probes['errata'])}")
     # The split must actually strip: a public file carrying an answer would void the run.
-    leaked = [p["id"] for p in public["probes"] if "answer" in p or "stale" in p]
+    allowed = {"id", "fact", "type", "kind", "q", "options", "needs"}
+    leaked = [p["id"] for p in public["probes"] if set(p) - allowed]
     print(f"  split: {len(key['probes'])} keyed, {len(public['probes'])} public, "
           f"{len(leaked)} leaked answers")
     if leaked:
         raise SystemExit(f"public probes carry answers: {leaked[:5]}")
     for name, seq in orders.items():
         print(f"  ordering {name}: {len(seq)} documents")
+    sizes = Counter(len(p["options"]) for p in probes["probes"])
+    print(f"  option counts: {dict(sorted(sizes.items()))}")
+    positions = Counter(p["answer_index"] for p in probes["probes"])
+    print(f"  answer positions: {dict(sorted(positions.items()))}  "
+          f"(a uniform spread means position carries no signal)")
 
 
 if __name__ == "__main__":

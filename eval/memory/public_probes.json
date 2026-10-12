@@ -5,1120 +5,2080 @@
       "fact": "coding-1.max_attempts",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_attempts for coding-1?"
+      "q": "What is max_attempts for coding-1?",
+      "options": [
+        4,
+        5,
+        8,
+        2
+      ]
     },
     {
       "id": 2,
       "fact": "coding-1.max_attempts",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_attempts = 8?"
+      "q": "Which project has max_attempts = 8?",
+      "options": [
+        "coding-1",
+        "coding-5",
+        "coding-3",
+        "coding-4"
+      ]
     },
     {
       "id": 3,
       "fact": "coding-1.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-1?"
+      "q": "What is pool_size for coding-1?",
+      "options": [
+        40,
+        52,
+        54,
+        37
+      ]
     },
     {
       "id": 4,
       "fact": "coding-1.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 52?"
+      "q": "Which project has pool_size = 52?",
+      "options": [
+        "coding-3",
+        "coding-4",
+        "coding-5",
+        "coding-1"
+      ]
     },
     {
       "id": 5,
       "fact": "coding-1.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-1?"
+      "q": "What is backoff_base_ms for coding-1?",
+      "options": [
+        1169,
+        505,
+        153,
+        1607
+      ]
     },
     {
       "id": 6,
       "fact": "coding-1.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 153?"
+      "q": "Which project has backoff_base_ms = 153?",
+      "options": [
+        "coding-5",
+        "coding-3",
+        "coding-1",
+        "coding-4"
+      ]
     },
     {
       "id": 7,
       "fact": "coding-1.max_payload_bytes",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_payload_bytes for coding-1?"
+      "q": "What is max_payload_bytes for coding-1?",
+      "options": [
+        9491301,
+        6707356,
+        9010391,
+        123869
+      ]
     },
     {
       "id": 8,
       "fact": "coding-1.max_payload_bytes",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_payload_bytes = 123869?"
+      "q": "Which project has max_payload_bytes = 123869?",
+      "options": [
+        "coding-5",
+        "coding-1",
+        "coding-2",
+        "coding-4"
+      ]
     },
     {
       "id": 9,
       "fact": "coding-2.max_attempts",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_attempts for coding-2?"
+      "q": "What is max_attempts for coding-2?",
+      "options": [
+        2,
+        8,
+        12,
+        4
+      ]
     },
     {
       "id": 10,
       "fact": "coding-2.max_attempts",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_attempts = 2?"
+      "q": "Which project has max_attempts = 2?",
+      "options": [
+        "coding-1",
+        "coding-5",
+        "coding-2",
+        "coding-4"
+      ]
     },
     {
       "id": 11,
       "fact": "coding-2.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-2?"
+      "q": "What is connect_timeout_ms for coding-2?",
+      "options": [
+        2947,
+        8034,
+        18911,
+        2748
+      ]
     },
     {
       "id": 12,
       "fact": "coding-2.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 18911?"
+      "q": "Which project has connect_timeout_ms = 18911?",
+      "options": [
+        "coding-4",
+        "coding-3",
+        "coding-2",
+        "coding-1"
+      ]
     },
     {
       "id": 13,
       "fact": "coding-2.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-2?"
+      "q": "What is backoff_base_ms for coding-2?",
+      "options": [
+        1607,
+        505,
+        1169,
+        153
+      ]
     },
     {
       "id": 14,
       "fact": "coding-2.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 1607?"
+      "q": "Which project has backoff_base_ms = 1607?",
+      "options": [
+        "coding-1",
+        "coding-2",
+        "coding-3",
+        "coding-4"
+      ]
     },
     {
       "id": 15,
       "fact": "coding-2.max_payload_bytes",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_payload_bytes for coding-2?"
+      "q": "What is max_payload_bytes for coding-2?",
+      "options": [
+        123869,
+        9010391,
+        6707356,
+        9491301
+      ]
     },
     {
       "id": 16,
       "fact": "coding-2.max_payload_bytes",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_payload_bytes = 9010391?"
+      "q": "Which project has max_payload_bytes = 9010391?",
+      "options": [
+        "coding-1",
+        "coding-2",
+        "coding-4",
+        "coding-5"
+      ]
     },
     {
       "id": 17,
       "fact": "coding-3.max_attempts",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_attempts for coding-3?"
+      "q": "What is max_attempts for coding-3?",
+      "options": [
+        2,
+        4,
+        5,
+        12
+      ]
     },
     {
       "id": 18,
       "fact": "coding-3.max_attempts",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_attempts = 12?"
+      "q": "Which project has max_attempts = 12?",
+      "options": [
+        "coding-1",
+        "coding-5",
+        "coding-2",
+        "coding-3"
+      ]
     },
     {
       "id": 19,
       "fact": "coding-3.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-3?"
+      "q": "What is connect_timeout_ms for coding-3?",
+      "options": [
+        2748,
+        18911,
+        2947,
+        758
+      ]
     },
     {
       "id": 20,
       "fact": "coding-3.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 2748?"
+      "q": "Which project has connect_timeout_ms = 2748?",
+      "options": [
+        "coding-1",
+        "coding-2",
+        "coding-3",
+        "coding-4"
+      ]
     },
     {
       "id": 21,
       "fact": "coding-3.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-3?"
+      "q": "What is pool_size for coding-3?",
+      "options": [
+        54,
+        62,
+        40,
+        52
+      ]
     },
     {
       "id": 22,
       "fact": "coding-3.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 62?"
+      "q": "Which project has pool_size = 62?",
+      "options": [
+        "coding-5",
+        "coding-4",
+        "coding-3",
+        "coding-1"
+      ]
     },
     {
       "id": 23,
       "fact": "coding-3.max_payload_bytes",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_payload_bytes for coding-3?"
+      "q": "What is max_payload_bytes for coding-3?",
+      "options": [
+        6707356,
+        9491301,
+        123869,
+        5397860
+      ]
     },
     {
       "id": 24,
       "fact": "coding-3.max_payload_bytes",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_payload_bytes = 6707356?"
+      "q": "Which project has max_payload_bytes = 6707356?",
+      "options": [
+        "coding-5",
+        "coding-2",
+        "coding-1",
+        "coding-3"
+      ]
     },
     {
       "id": 25,
       "fact": "coding-4.max_attempts",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_attempts for coding-4?"
+      "q": "What is max_attempts for coding-4?",
+      "options": [
+        12,
+        8,
+        4,
+        5
+      ]
     },
     {
       "id": 26,
       "fact": "coding-4.max_attempts",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_attempts = 4?"
+      "q": "Which project has max_attempts = 4?",
+      "options": [
+        "coding-3",
+        "coding-1",
+        "coding-4",
+        "coding-2"
+      ]
     },
     {
       "id": 27,
       "fact": "coding-4.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-4?"
+      "q": "What is connect_timeout_ms for coding-4?",
+      "options": [
+        2947,
+        18911,
+        8034,
+        2748
+      ]
     },
     {
       "id": 28,
       "fact": "coding-4.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 8034?"
+      "q": "Which project has connect_timeout_ms = 8034?",
+      "options": [
+        "coding-5",
+        "coding-1",
+        "coding-4",
+        "coding-3"
+      ]
     },
     {
       "id": 29,
       "fact": "coding-4.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-4?"
+      "q": "What is pool_size for coding-4?",
+      "options": [
+        37,
+        54,
+        40,
+        62
+      ]
     },
     {
       "id": 30,
       "fact": "coding-4.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 37?"
+      "q": "Which project has pool_size = 37?",
+      "options": [
+        "coding-1",
+        "coding-4",
+        "coding-5",
+        "coding-3"
+      ]
     },
     {
       "id": 31,
       "fact": "coding-4.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-4?"
+      "q": "What is backoff_base_ms for coding-4?",
+      "options": [
+        1169,
+        1607,
+        1869,
+        505
+      ]
     },
     {
       "id": 32,
       "fact": "coding-4.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 1869?"
+      "q": "Which project has backoff_base_ms = 1869?",
+      "options": [
+        "coding-5",
+        "coding-4",
+        "coding-2",
+        "coding-3"
+      ]
     },
     {
       "id": 33,
       "fact": "coding-5.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-5?"
+      "q": "What is connect_timeout_ms for coding-5?",
+      "options": [
+        2748,
+        2947,
+        18911,
+        8034
+      ]
     },
     {
       "id": 34,
       "fact": "coding-5.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 2947?"
+      "q": "Which project has connect_timeout_ms = 2947?",
+      "options": [
+        "coding-2",
+        "coding-1",
+        "coding-5",
+        "coding-4"
+      ]
     },
     {
       "id": 35,
       "fact": "coding-5.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-5?"
+      "q": "What is pool_size for coding-5?",
+      "options": [
+        40,
+        54,
+        62,
+        52
+      ]
     },
     {
       "id": 36,
       "fact": "coding-5.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 40?"
+      "q": "Which project has pool_size = 40?",
+      "options": [
+        "coding-5",
+        "coding-3",
+        "coding-2",
+        "coding-1"
+      ]
     },
     {
       "id": 37,
       "fact": "coding-5.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-5?"
+      "q": "What is backoff_base_ms for coding-5?",
+      "options": [
+        1607,
+        1169,
+        505,
+        153
+      ]
     },
     {
       "id": 38,
       "fact": "coding-5.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 1169?"
+      "q": "Which project has backoff_base_ms = 1169?",
+      "options": [
+        "coding-1",
+        "coding-4",
+        "coding-5",
+        "coding-3"
+      ]
     },
     {
       "id": 39,
       "fact": "coding-5.max_payload_bytes",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_payload_bytes for coding-5?"
+      "q": "What is max_payload_bytes for coding-5?",
+      "options": [
+        9491301,
+        6707356,
+        5397860,
+        123869
+      ]
     },
     {
       "id": 40,
       "fact": "coding-5.max_payload_bytes",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_payload_bytes = 5397860?"
+      "q": "Which project has max_payload_bytes = 5397860?",
+      "options": [
+        "coding-5",
+        "coding-2",
+        "coding-1",
+        "coding-3"
+      ]
     },
     {
       "id": 41,
       "fact": "execution-1.escalate_after_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is escalate_after_minutes for execution-1?"
+      "q": "What is escalate_after_minutes for execution-1?",
+      "options": [
+        9,
+        50,
+        49,
+        32
+      ]
     },
     {
       "id": 42,
       "fact": "execution-1.escalate_after_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has escalate_after_minutes = 32?"
+      "q": "Which project has escalate_after_minutes = 32?",
+      "options": [
+        "execution-3",
+        "execution-1",
+        "execution-4",
+        "execution-5"
+      ]
     },
     {
       "id": 43,
       "fact": "execution-1.page_threshold_pct",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is page_threshold_pct for execution-1?"
+      "q": "What is page_threshold_pct for execution-1?",
+      "options": [
+        97,
+        79,
+        89,
+        67
+      ]
     },
     {
       "id": 44,
       "fact": "execution-1.page_threshold_pct",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has page_threshold_pct = 97?"
+      "q": "Which project has page_threshold_pct = 97?",
+      "options": [
+        "execution-3",
+        "execution-1",
+        "execution-5",
+        "execution-4"
+      ]
     },
     {
       "id": 45,
       "fact": "execution-1.cooloff_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is cooloff_minutes for execution-1?"
+      "q": "What is cooloff_minutes for execution-1?",
+      "options": [
+        86,
+        10,
+        80,
+        79
+      ]
     },
     {
       "id": 46,
       "fact": "execution-1.cooloff_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has cooloff_minutes = 79?"
+      "q": "Which project has cooloff_minutes = 79?",
+      "options": [
+        "execution-4",
+        "execution-1",
+        "execution-5",
+        "execution-2"
+      ]
     },
     {
       "id": 47,
       "fact": "execution-1.max_concurrent_jobs",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is max_concurrent_jobs for execution-1?"
+      "q": "What is max_concurrent_jobs for execution-1?",
+      "options": [
+        13,
+        19,
+        11,
+        5
+      ]
     },
     {
       "id": 48,
       "fact": "execution-1.max_concurrent_jobs",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has max_concurrent_jobs = 5?"
+      "q": "Which project has max_concurrent_jobs = 5?",
+      "options": [
+        "execution-4",
+        "execution-5",
+        "execution-2",
+        "execution-1"
+      ]
     },
     {
       "id": 49,
       "fact": "execution-2.escalate_after_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is escalate_after_minutes for execution-2?"
+      "q": "What is escalate_after_minutes for execution-2?",
+      "options": [
+        9,
+        50,
+        10,
+        49
+      ]
     },
     {
       "id": 50,
       "fact": "execution-2.escalate_after_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has escalate_after_minutes = 10?"
+      "q": "Which project has escalate_after_minutes = 10?",
+      "options": [
+        "execution-2",
+        "execution-1",
+        "execution-4",
+        "execution-5"
+      ]
     },
     {
       "id": 51,
       "fact": "execution-2.retry_budget",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is retry_budget for execution-2?"
+      "q": "What is retry_budget for execution-2?",
+      "options": [
+        6,
+        2,
+        8,
+        7
+      ]
     },
     {
       "id": 52,
       "fact": "execution-2.retry_budget",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has retry_budget = 6?"
+      "q": "Which project has retry_budget = 6?",
+      "options": [
+        "execution-2",
+        "execution-4",
+        "execution-5",
+        "execution-1"
+      ]
     },
     {
       "id": 53,
       "fact": "execution-2.cooloff_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is cooloff_minutes for execution-2?"
+      "q": "What is cooloff_minutes for execution-2?",
+      "options": [
+        80,
+        79,
+        10,
+        86
+      ]
     },
     {
       "id": 54,
       "fact": "execution-2.cooloff_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has cooloff_minutes = 86?"
+      "q": "Which project has cooloff_minutes = 86?",
+      "options": [
+        "execution-1",
+        "execution-4",
+        "execution-2",
+        "execution-3"
+      ]
     },
     {
       "id": 55,
       "fact": "execution-2.max_concurrent_jobs",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is max_concurrent_jobs for execution-2?"
+      "q": "What is max_concurrent_jobs for execution-2?",
+      "options": [
+        5,
+        11,
+        19,
+        13
+      ]
     },
     {
       "id": 56,
       "fact": "execution-2.max_concurrent_jobs",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has max_concurrent_jobs = 19?"
+      "q": "Which project has max_concurrent_jobs = 19?",
+      "options": [
+        "execution-1",
+        "execution-4",
+        "execution-3",
+        "execution-2"
+      ]
     },
     {
       "id": 57,
       "fact": "execution-3.escalate_after_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is escalate_after_minutes for execution-3?"
+      "q": "What is escalate_after_minutes for execution-3?",
+      "options": [
+        50,
+        49,
+        9,
+        10
+      ]
     },
     {
       "id": 58,
       "fact": "execution-3.escalate_after_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has escalate_after_minutes = 50?"
+      "q": "Which project has escalate_after_minutes = 50?",
+      "options": [
+        "execution-4",
+        "execution-2",
+        "execution-5",
+        "execution-3"
+      ]
     },
     {
       "id": 59,
       "fact": "execution-3.retry_budget",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is retry_budget for execution-3?"
+      "q": "What is retry_budget for execution-3?",
+      "options": [
+        7,
+        2,
+        8,
+        5
+      ]
     },
     {
       "id": 60,
       "fact": "execution-3.retry_budget",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has retry_budget = 8?"
+      "q": "Which project has retry_budget = 8?",
+      "options": [
+        "execution-3",
+        "execution-4",
+        "execution-2",
+        "execution-5"
+      ]
     },
     {
       "id": 61,
       "fact": "execution-3.page_threshold_pct",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is page_threshold_pct for execution-3?"
+      "q": "What is page_threshold_pct for execution-3?",
+      "options": [
+        52,
+        79,
+        89,
+        67
+      ]
     },
     {
       "id": 62,
       "fact": "execution-3.page_threshold_pct",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has page_threshold_pct = 89?"
+      "q": "Which project has page_threshold_pct = 89?",
+      "options": [
+        "execution-5",
+        "execution-4",
+        "execution-3",
+        "execution-1"
+      ]
     },
     {
       "id": 63,
       "fact": "execution-3.max_concurrent_jobs",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is max_concurrent_jobs for execution-3?"
+      "q": "What is max_concurrent_jobs for execution-3?",
+      "options": [
+        11,
+        5,
+        19,
+        10
+      ]
     },
     {
       "id": 64,
       "fact": "execution-3.max_concurrent_jobs",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has max_concurrent_jobs = 10?"
+      "q": "Which project has max_concurrent_jobs = 10?",
+      "options": [
+        "execution-5",
+        "execution-1",
+        "execution-3",
+        "execution-2"
+      ]
     },
     {
       "id": 65,
       "fact": "execution-4.escalate_after_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is escalate_after_minutes for execution-4?"
+      "q": "What is escalate_after_minutes for execution-4?",
+      "options": [
+        9,
+        50,
+        49,
+        32
+      ]
     },
     {
       "id": 66,
       "fact": "execution-4.escalate_after_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has escalate_after_minutes = 49?"
+      "q": "Which project has escalate_after_minutes = 49?",
+      "options": [
+        "execution-5",
+        "execution-2",
+        "execution-4",
+        "execution-1"
+      ]
     },
     {
       "id": 67,
       "fact": "execution-4.retry_budget",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is retry_budget for execution-4?"
+      "q": "What is retry_budget for execution-4?",
+      "options": [
+        7,
+        6,
+        5,
+        8
+      ]
     },
     {
       "id": 68,
       "fact": "execution-4.retry_budget",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has retry_budget = 7?"
+      "q": "Which project has retry_budget = 7?",
+      "options": [
+        "execution-5",
+        "execution-4",
+        "execution-3",
+        "execution-2"
+      ]
     },
     {
       "id": 69,
       "fact": "execution-4.page_threshold_pct",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is page_threshold_pct for execution-4?"
+      "q": "What is page_threshold_pct for execution-4?",
+      "options": [
+        79,
+        89,
+        97,
+        67
+      ]
     },
     {
       "id": 70,
       "fact": "execution-4.page_threshold_pct",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has page_threshold_pct = 79?"
+      "q": "Which project has page_threshold_pct = 79?",
+      "options": [
+        "execution-5",
+        "execution-4",
+        "execution-2",
+        "execution-1"
+      ]
     },
     {
       "id": 71,
       "fact": "execution-4.cooloff_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is cooloff_minutes for execution-4?"
+      "q": "What is cooloff_minutes for execution-4?",
+      "options": [
+        86,
+        10,
+        18,
+        80
+      ]
     },
     {
       "id": 72,
       "fact": "execution-4.cooloff_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has cooloff_minutes = 80?"
+      "q": "Which project has cooloff_minutes = 80?",
+      "options": [
+        "execution-1",
+        "execution-3",
+        "execution-4",
+        "execution-5"
+      ]
     },
     {
       "id": 73,
       "fact": "execution-5.retry_budget",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is retry_budget for execution-5?"
+      "q": "What is retry_budget for execution-5?",
+      "options": [
+        7,
+        2,
+        5,
+        8
+      ]
     },
     {
       "id": 74,
       "fact": "execution-5.retry_budget",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has retry_budget = 5?"
+      "q": "Which project has retry_budget = 5?",
+      "options": [
+        "execution-1",
+        "execution-3",
+        "execution-5",
+        "execution-2"
+      ]
     },
     {
       "id": 75,
       "fact": "execution-5.page_threshold_pct",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is page_threshold_pct for execution-5?"
+      "q": "What is page_threshold_pct for execution-5?",
+      "options": [
+        52,
+        79,
+        97,
+        67
+      ]
     },
     {
       "id": 76,
       "fact": "execution-5.page_threshold_pct",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has page_threshold_pct = 52?"
+      "q": "Which project has page_threshold_pct = 52?",
+      "options": [
+        "execution-2",
+        "execution-1",
+        "execution-5",
+        "execution-4"
+      ]
     },
     {
       "id": 77,
       "fact": "execution-5.cooloff_minutes",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is cooloff_minutes for execution-5?"
+      "q": "What is cooloff_minutes for execution-5?",
+      "options": [
+        18,
+        80,
+        79,
+        10
+      ]
     },
     {
       "id": 78,
       "fact": "execution-5.cooloff_minutes",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has cooloff_minutes = 10?"
+      "q": "Which project has cooloff_minutes = 10?",
+      "options": [
+        "execution-1",
+        "execution-4",
+        "execution-3",
+        "execution-5"
+      ]
     },
     {
       "id": 79,
       "fact": "execution-5.max_concurrent_jobs",
       "type": "execution",
       "kind": "extraction",
-      "q": "What is max_concurrent_jobs for execution-5?"
+      "q": "What is max_concurrent_jobs for execution-5?",
+      "options": [
+        19,
+        5,
+        10,
+        13
+      ]
     },
     {
       "id": 80,
       "fact": "execution-5.max_concurrent_jobs",
       "type": "execution",
       "kind": "disambiguation",
-      "q": "Which project has max_concurrent_jobs = 13?"
+      "q": "Which project has max_concurrent_jobs = 13?",
+      "options": [
+        "execution-1",
+        "execution-3",
+        "execution-2",
+        "execution-5"
+      ]
     },
     {
       "id": 81,
       "fact": "reasoning-1.effect_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is effect_size for reasoning-1?"
+      "q": "What is effect_size for reasoning-1?",
+      "options": [
+        0.6,
+        0.56,
+        0.46,
+        0.45
+      ]
     },
     {
       "id": 82,
       "fact": "reasoning-1.effect_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has effect_size = 0.46?"
+      "q": "Which project has effect_size = 0.46?",
+      "options": [
+        "reasoning-5",
+        "reasoning-3",
+        "reasoning-1",
+        "reasoning-2"
+      ]
     },
     {
       "id": 83,
       "fact": "reasoning-1.p_value",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is p_value for reasoning-1?"
+      "q": "What is p_value for reasoning-1?",
+      "options": [
+        0.019,
+        0.017,
+        0.034,
+        0.003
+      ]
     },
     {
       "id": 84,
       "fact": "reasoning-1.p_value",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has p_value = 0.034?"
+      "q": "Which project has p_value = 0.034?",
+      "options": [
+        "reasoning-3",
+        "reasoning-1",
+        "reasoning-2",
+        "reasoning-5"
+      ]
     },
     {
       "id": 85,
       "fact": "reasoning-1.ci_low",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_low for reasoning-1?"
+      "q": "What is ci_low for reasoning-1?",
+      "options": [
+        31,
+        33,
+        10,
+        7
+      ]
     },
     {
       "id": 86,
       "fact": "reasoning-1.ci_low",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_low = 10?"
+      "q": "Which project has ci_low = 10?",
+      "options": [
+        "reasoning-2",
+        "reasoning-3",
+        "reasoning-4",
+        "reasoning-1"
+      ]
     },
     {
       "id": 87,
       "fact": "reasoning-1.ci_high",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_high for reasoning-1?"
+      "q": "What is ci_high for reasoning-1?",
+      "options": [
+        67,
+        55,
+        64,
+        52
+      ]
     },
     {
       "id": 88,
       "fact": "reasoning-1.ci_high",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_high = 67?"
+      "q": "Which project has ci_high = 67?",
+      "options": [
+        "reasoning-4",
+        "reasoning-2",
+        "reasoning-3",
+        "reasoning-1"
+      ]
     },
     {
       "id": 89,
       "fact": "reasoning-2.effect_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is effect_size for reasoning-2?"
+      "q": "What is effect_size for reasoning-2?",
+      "options": [
+        0.56,
+        0.45,
+        0.64,
+        0.6
+      ]
     },
     {
       "id": 90,
       "fact": "reasoning-2.effect_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has effect_size = 0.64?"
+      "q": "Which project has effect_size = 0.64?",
+      "options": [
+        "reasoning-3",
+        "reasoning-4",
+        "reasoning-2",
+        "reasoning-1"
+      ]
     },
     {
       "id": 91,
       "fact": "reasoning-2.sample_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is sample_size for reasoning-2?"
+      "q": "What is sample_size for reasoning-2?",
+      "options": [
+        4291,
+        4367,
+        639,
+        4693
+      ]
     },
     {
       "id": 92,
       "fact": "reasoning-2.sample_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has sample_size = 639?"
+      "q": "Which project has sample_size = 639?",
+      "options": [
+        "reasoning-2",
+        "reasoning-3",
+        "reasoning-1",
+        "reasoning-4"
+      ]
     },
     {
       "id": 93,
       "fact": "reasoning-2.ci_low",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_low for reasoning-2?"
+      "q": "What is ci_low for reasoning-2?",
+      "options": [
+        7,
+        6,
+        10,
+        33
+      ]
     },
     {
       "id": 94,
       "fact": "reasoning-2.ci_low",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_low = 33?"
+      "q": "Which project has ci_low = 33?",
+      "options": [
+        "reasoning-5",
+        "reasoning-2",
+        "reasoning-1",
+        "reasoning-3"
+      ]
     },
     {
       "id": 95,
       "fact": "reasoning-2.ci_high",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_high for reasoning-2?"
+      "q": "What is ci_high for reasoning-2?",
+      "options": [
+        52,
+        55,
+        43,
+        67
+      ]
     },
     {
       "id": 96,
       "fact": "reasoning-2.ci_high",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_high = 43?"
+      "q": "Which project has ci_high = 43?",
+      "options": [
+        "reasoning-5",
+        "reasoning-3",
+        "reasoning-2",
+        "reasoning-1"
+      ]
     },
     {
       "id": 97,
       "fact": "reasoning-3.effect_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is effect_size for reasoning-3?"
+      "q": "What is effect_size for reasoning-3?",
+      "options": [
+        0.6,
+        0.64,
+        0.46,
+        0.56
+      ]
     },
     {
       "id": 98,
       "fact": "reasoning-3.effect_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has effect_size = 0.56?"
+      "q": "Which project has effect_size = 0.56?",
+      "options": [
+        "reasoning-1",
+        "reasoning-3",
+        "reasoning-4",
+        "reasoning-2"
+      ]
     },
     {
       "id": 99,
       "fact": "reasoning-3.sample_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is sample_size for reasoning-3?"
+      "q": "What is sample_size for reasoning-3?",
+      "options": [
+        4693,
+        4367,
+        1614,
+        4291
+      ]
     },
     {
       "id": 100,
       "fact": "reasoning-3.sample_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has sample_size = 4291?"
+      "q": "Which project has sample_size = 4291?",
+      "options": [
+        "reasoning-2",
+        "reasoning-3",
+        "reasoning-1",
+        "reasoning-5"
+      ]
     },
     {
       "id": 101,
       "fact": "reasoning-3.p_value",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is p_value for reasoning-3?"
+      "q": "What is p_value for reasoning-3?",
+      "options": [
+        0.004,
+        0.019,
+        0.003,
+        0.017
+      ]
     },
     {
       "id": 102,
       "fact": "reasoning-3.p_value",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has p_value = 0.017?"
+      "q": "Which project has p_value = 0.017?",
+      "options": [
+        "reasoning-5",
+        "reasoning-1",
+        "reasoning-3",
+        "reasoning-2"
+      ]
     },
     {
       "id": 103,
       "fact": "reasoning-3.ci_high",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_high for reasoning-3?"
+      "q": "What is ci_high for reasoning-3?",
+      "options": [
+        64,
+        55,
+        43,
+        52
+      ]
     },
     {
       "id": 104,
       "fact": "reasoning-3.ci_high",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_high = 55?"
+      "q": "Which project has ci_high = 55?",
+      "options": [
+        "reasoning-3",
+        "reasoning-5",
+        "reasoning-2",
+        "reasoning-1"
+      ]
     },
     {
       "id": 105,
       "fact": "reasoning-4.effect_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is effect_size for reasoning-4?"
+      "q": "What is effect_size for reasoning-4?",
+      "options": [
+        0.64,
+        0.46,
+        0.45,
+        0.6
+      ]
     },
     {
       "id": 106,
       "fact": "reasoning-4.effect_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has effect_size = 0.45?"
+      "q": "Which project has effect_size = 0.45?",
+      "options": [
+        "reasoning-4",
+        "reasoning-5",
+        "reasoning-2",
+        "reasoning-1"
+      ]
     },
     {
       "id": 107,
       "fact": "reasoning-4.sample_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is sample_size for reasoning-4?"
+      "q": "What is sample_size for reasoning-4?",
+      "options": [
+        4693,
+        639,
+        4291,
+        1614
+      ]
     },
     {
       "id": 108,
       "fact": "reasoning-4.sample_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has sample_size = 1614?"
+      "q": "Which project has sample_size = 1614?",
+      "options": [
+        "reasoning-4",
+        "reasoning-1",
+        "reasoning-2",
+        "reasoning-5"
+      ]
     },
     {
       "id": 109,
       "fact": "reasoning-4.p_value",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is p_value for reasoning-4?"
+      "q": "What is p_value for reasoning-4?",
+      "options": [
+        0.019,
+        0.017,
+        0.004,
+        0.003
+      ]
     },
     {
       "id": 110,
       "fact": "reasoning-4.p_value",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has p_value = 0.004?"
+      "q": "Which project has p_value = 0.004?",
+      "options": [
+        "reasoning-5",
+        "reasoning-2",
+        "reasoning-3",
+        "reasoning-4"
+      ]
     },
     {
       "id": 111,
       "fact": "reasoning-4.ci_low",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_low for reasoning-4?"
+      "q": "What is ci_low for reasoning-4?",
+      "options": [
+        33,
+        31,
+        7,
+        6
+      ]
     },
     {
       "id": 112,
       "fact": "reasoning-4.ci_low",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_low = 7?"
+      "q": "Which project has ci_low = 7?",
+      "options": [
+        "reasoning-4",
+        "reasoning-3",
+        "reasoning-1",
+        "reasoning-2"
+      ]
     },
     {
       "id": 113,
       "fact": "reasoning-5.sample_size",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is sample_size for reasoning-5?"
+      "q": "What is sample_size for reasoning-5?",
+      "options": [
+        1614,
+        4367,
+        4693,
+        639
+      ]
     },
     {
       "id": 114,
       "fact": "reasoning-5.sample_size",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has sample_size = 4367?"
+      "q": "Which project has sample_size = 4367?",
+      "options": [
+        "reasoning-1",
+        "reasoning-4",
+        "reasoning-5",
+        "reasoning-3"
+      ]
     },
     {
       "id": 115,
       "fact": "reasoning-5.p_value",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is p_value for reasoning-5?"
+      "q": "What is p_value for reasoning-5?",
+      "options": [
+        0.017,
+        0.004,
+        0.034,
+        0.003
+      ]
     },
     {
       "id": 116,
       "fact": "reasoning-5.p_value",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has p_value = 0.003?"
+      "q": "Which project has p_value = 0.003?",
+      "options": [
+        "reasoning-4",
+        "reasoning-5",
+        "reasoning-2",
+        "reasoning-3"
+      ]
     },
     {
       "id": 117,
       "fact": "reasoning-5.ci_low",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_low for reasoning-5?"
+      "q": "What is ci_low for reasoning-5?",
+      "options": [
+        6,
+        7,
+        31,
+        10
+      ]
     },
     {
       "id": 118,
       "fact": "reasoning-5.ci_low",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_low = 31?"
+      "q": "Which project has ci_low = 31?",
+      "options": [
+        "reasoning-5",
+        "reasoning-4",
+        "reasoning-3",
+        "reasoning-1"
+      ]
     },
     {
       "id": 119,
       "fact": "reasoning-5.ci_high",
       "type": "reasoning",
       "kind": "extraction",
-      "q": "What is ci_high for reasoning-5?"
+      "q": "What is ci_high for reasoning-5?",
+      "options": [
+        55,
+        52,
+        64,
+        67
+      ]
     },
     {
       "id": 120,
       "fact": "reasoning-5.ci_high",
       "type": "reasoning",
       "kind": "disambiguation",
-      "q": "Which project has ci_high = 52?"
+      "q": "Which project has ci_high = 52?",
+      "options": [
+        "reasoning-2",
+        "reasoning-1",
+        "reasoning-4",
+        "reasoning-5"
+      ]
     },
     {
       "id": 121,
       "fact": "generation-1.section_order",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is section_order for generation-1?"
+      "q": "What is section_order for generation-1?",
+      "options": [
+        "scope-first",
+        "examples-first",
+        "reference-first",
+        "overview-first"
+      ]
     },
     {
       "id": 122,
       "fact": "generation-1.section_order",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has section_order = reference-first?"
+      "q": "Which project has section_order = reference-first?",
+      "options": [
+        "generation-4",
+        "generation-5",
+        "generation-1",
+        "generation-2"
+      ]
     },
     {
       "id": 123,
       "fact": "generation-1.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-1?"
+      "q": "What is max_sentence_len for generation-1?",
+      "options": [
+        17,
+        21,
+        33,
+        28
+      ]
     },
     {
       "id": 124,
       "fact": "generation-1.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 28?"
+      "q": "Which project has max_sentence_len = 28?",
+      "options": [
+        "generation-1",
+        "generation-3",
+        "generation-2",
+        "generation-4"
+      ]
     },
     {
       "id": 125,
       "fact": "generation-1.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-1?"
+      "q": "What is citation_required for generation-1?",
+      "options": [
+        "discussion",
+        "introduction",
+        "limitations",
+        "appendix"
+      ]
     },
     {
       "id": 126,
       "fact": "generation-1.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = introduction?"
+      "q": "Which project has citation_required = introduction?",
+      "options": [
+        "generation-5",
+        "generation-2",
+        "generation-1",
+        "generation-3"
+      ]
     },
     {
       "id": 127,
       "fact": "generation-1.heading_style",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is heading_style for generation-1?"
+      "q": "What is heading_style for generation-1?",
+      "options": [
+        "imperative",
+        "gerund",
+        "question",
+        "title"
+      ]
     },
     {
       "id": 128,
       "fact": "generation-1.heading_style",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has heading_style = imperative?"
+      "q": "Which project has heading_style = imperative?",
+      "options": [
+        "generation-3",
+        "generation-4",
+        "generation-2",
+        "generation-1"
+      ]
     },
     {
       "id": 129,
       "fact": "generation-2.section_order",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is section_order for generation-2?"
+      "q": "What is section_order for generation-2?",
+      "options": [
+        "examples-first",
+        "reference-first",
+        "overview-first",
+        "changelog-first"
+      ]
     },
     {
       "id": 130,
       "fact": "generation-2.section_order",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has section_order = examples-first?"
+      "q": "Which project has section_order = examples-first?",
+      "options": [
+        "generation-3",
+        "generation-5",
+        "generation-4",
+        "generation-2"
+      ]
     },
     {
       "id": 131,
       "fact": "generation-2.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-2?"
+      "q": "What is preferred_term for generation-2?",
+      "options": [
+        "settings",
+        "properties",
+        "options",
+        "attributes"
+      ]
     },
     {
       "id": 132,
       "fact": "generation-2.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = properties?"
+      "q": "Which project has preferred_term = properties?",
+      "options": [
+        "generation-2",
+        "generation-3",
+        "generation-1",
+        "generation-4"
+      ]
     },
     {
       "id": 133,
       "fact": "generation-2.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-2?"
+      "q": "What is citation_required for generation-2?",
+      "options": [
+        "method",
+        "discussion",
+        "limitations",
+        "appendix"
+      ]
     },
     {
       "id": 134,
       "fact": "generation-2.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = method?"
+      "q": "Which project has citation_required = method?",
+      "options": [
+        "generation-1",
+        "generation-2",
+        "generation-4",
+        "generation-3"
+      ]
     },
     {
       "id": 135,
       "fact": "generation-2.heading_style",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is heading_style for generation-2?"
+      "q": "What is heading_style for generation-2?",
+      "options": [
+        "imperative",
+        "title",
+        "gerund",
+        "question"
+      ]
     },
     {
       "id": 136,
       "fact": "generation-2.heading_style",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has heading_style = gerund?"
+      "q": "Which project has heading_style = gerund?",
+      "options": [
+        "generation-1",
+        "generation-3",
+        "generation-2",
+        "generation-4"
+      ]
     },
     {
       "id": 137,
       "fact": "generation-3.section_order",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is section_order for generation-3?"
+      "q": "What is section_order for generation-3?",
+      "options": [
+        "overview-first",
+        "reference-first",
+        "changelog-first",
+        "examples-first"
+      ]
     },
     {
       "id": 138,
       "fact": "generation-3.section_order",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has section_order = changelog-first?"
+      "q": "Which project has section_order = changelog-first?",
+      "options": [
+        "generation-4",
+        "generation-3",
+        "generation-2",
+        "generation-5"
+      ]
     },
     {
       "id": 139,
       "fact": "generation-3.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-3?"
+      "q": "What is preferred_term for generation-3?",
+      "options": [
+        "options",
+        "attributes",
+        "settings",
+        "configuration"
+      ]
     },
     {
       "id": 140,
       "fact": "generation-3.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = settings?"
+      "q": "Which project has preferred_term = settings?",
+      "options": [
+        "generation-4",
+        "generation-5",
+        "generation-3",
+        "generation-1"
+      ]
     },
     {
       "id": 141,
       "fact": "generation-3.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-3?"
+      "q": "What is max_sentence_len for generation-3?",
+      "options": [
+        29,
+        17,
+        28,
+        33
+      ]
     },
     {
       "id": 142,
       "fact": "generation-3.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 17?"
+      "q": "Which project has max_sentence_len = 17?",
+      "options": [
+        "generation-1",
+        "generation-5",
+        "generation-3",
+        "generation-4"
+      ]
     },
     {
       "id": 143,
       "fact": "generation-3.heading_style",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is heading_style for generation-3?"
+      "q": "What is heading_style for generation-3?",
+      "options": [
+        "sentence",
+        "title",
+        "question",
+        "imperative"
+      ]
     },
     {
       "id": 144,
       "fact": "generation-3.heading_style",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has heading_style = sentence?"
+      "q": "Which project has heading_style = sentence?",
+      "options": [
+        "generation-4",
+        "generation-2",
+        "generation-5",
+        "generation-3"
+      ]
     },
     {
       "id": 145,
       "fact": "generation-4.section_order",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is section_order for generation-4?"
+      "q": "What is section_order for generation-4?",
+      "options": [
+        "examples-first",
+        "scope-first",
+        "overview-first",
+        "reference-first"
+      ]
     },
     {
       "id": 146,
       "fact": "generation-4.section_order",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has section_order = overview-first?"
+      "q": "Which project has section_order = overview-first?",
+      "options": [
+        "generation-2",
+        "generation-1",
+        "generation-4",
+        "generation-3"
+      ]
     },
     {
       "id": 147,
       "fact": "generation-4.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-4?"
+      "q": "What is preferred_term for generation-4?",
+      "options": [
+        "attributes",
+        "options",
+        "properties",
+        "configuration"
+      ]
     },
     {
       "id": 148,
       "fact": "generation-4.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = options?"
+      "q": "Which project has preferred_term = options?",
+      "options": [
+        "generation-1",
+        "generation-4",
+        "generation-5",
+        "generation-2"
+      ]
     },
     {
       "id": 149,
       "fact": "generation-4.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-4?"
+      "q": "What is max_sentence_len for generation-4?",
+      "options": [
+        29,
+        33,
+        17,
+        21
+      ]
     },
     {
       "id": 150,
       "fact": "generation-4.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 29?"
+      "q": "Which project has max_sentence_len = 29?",
+      "options": [
+        "generation-5",
+        "generation-1",
+        "generation-2",
+        "generation-4"
+      ]
     },
     {
       "id": 151,
       "fact": "generation-4.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-4?"
+      "q": "What is citation_required for generation-4?",
+      "options": [
+        "discussion",
+        "limitations",
+        "method",
+        "introduction"
+      ]
     },
     {
       "id": 152,
       "fact": "generation-4.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = discussion?"
+      "q": "Which project has citation_required = discussion?",
+      "options": [
+        "generation-5",
+        "generation-3",
+        "generation-1",
+        "generation-4"
+      ]
     },
     {
       "id": 153,
       "fact": "generation-5.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-5?"
+      "q": "What is preferred_term for generation-5?",
+      "options": [
+        "properties",
+        "configuration",
+        "attributes",
+        "settings"
+      ]
     },
     {
       "id": 154,
       "fact": "generation-5.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = attributes?"
+      "q": "Which project has preferred_term = attributes?",
+      "options": [
+        "generation-5",
+        "generation-3",
+        "generation-1",
+        "generation-2"
+      ]
     },
     {
       "id": 155,
       "fact": "generation-5.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-5?"
+      "q": "What is max_sentence_len for generation-5?",
+      "options": [
+        29,
+        33,
+        17,
+        28
+      ]
     },
     {
       "id": 156,
       "fact": "generation-5.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 33?"
+      "q": "Which project has max_sentence_len = 33?",
+      "options": [
+        "generation-3",
+        "generation-4",
+        "generation-2",
+        "generation-5"
+      ]
     },
     {
       "id": 157,
       "fact": "generation-5.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-5?"
+      "q": "What is citation_required for generation-5?",
+      "options": [
+        "method",
+        "appendix",
+        "limitations",
+        "discussion"
+      ]
     },
     {
       "id": 158,
       "fact": "generation-5.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = appendix?"
+      "q": "Which project has citation_required = appendix?",
+      "options": [
+        "generation-3",
+        "generation-4",
+        "generation-2",
+        "generation-5"
+      ]
     },
     {
       "id": 159,
       "fact": "generation-5.heading_style",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is heading_style for generation-5?"
+      "q": "What is heading_style for generation-5?",
+      "options": [
+        "question",
+        "gerund",
+        "imperative",
+        "title"
+      ]
     },
     {
       "id": 160,
       "fact": "generation-5.heading_style",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has heading_style = question?"
+      "q": "Which project has heading_style = question?",
+      "options": [
+        "generation-1",
+        "generation-5",
+        "generation-4",
+        "generation-2"
+      ]
     },
     {
       "fact": "coding-1->execution-1",
@@ -1129,7 +2089,13 @@
         "coding-1",
         "execution-1"
       ],
-      "id": 161
+      "id": 161,
+      "options": [
+        12,
+        5,
+        2,
+        8
+      ]
     },
     {
       "fact": "coding-2->execution-2",
@@ -1140,7 +2106,13 @@
         "coding-2",
         "execution-2"
       ],
-      "id": 162
+      "id": 162,
+      "options": [
+        5,
+        12,
+        2,
+        8
+      ]
     },
     {
       "fact": "coding-3->execution-3",
@@ -1151,7 +2123,13 @@
         "coding-3",
         "execution-3"
       ],
-      "id": 163
+      "id": 163,
+      "options": [
+        2,
+        4,
+        12,
+        8
+      ]
     },
     {
       "fact": "coding-4->execution-4",
@@ -1162,7 +2140,13 @@
         "coding-4",
         "execution-4"
       ],
-      "id": 164
+      "id": 164,
+      "options": [
+        12,
+        4,
+        8,
+        2
+      ]
     },
     {
       "fact": "coding-5->execution-5",
@@ -1173,7 +2157,13 @@
         "coding-5",
         "execution-5"
       ],
-      "id": 165
+      "id": 165,
+      "options": [
+        12,
+        5,
+        2,
+        8
+      ]
     },
     {
       "fact": "execution-1->reasoning-1",
@@ -1184,7 +2174,13 @@
         "execution-1",
         "reasoning-1"
       ],
-      "id": 166
+      "id": 166,
+      "options": [
+        "execution-5",
+        "reasoning-1",
+        "execution-4",
+        "execution-1"
+      ]
     },
     {
       "fact": "execution-2->reasoning-2",
@@ -1195,7 +2191,13 @@
         "execution-2",
         "reasoning-2"
       ],
-      "id": 167
+      "id": 167,
+      "options": [
+        "reasoning-2",
+        "execution-4",
+        "execution-3",
+        "execution-1"
+      ]
     },
     {
       "fact": "execution-3->reasoning-3",
@@ -1206,7 +2208,13 @@
         "execution-3",
         "reasoning-3"
       ],
-      "id": 168
+      "id": 168,
+      "options": [
+        "execution-2",
+        "execution-5",
+        "execution-3",
+        "reasoning-3"
+      ]
     },
     {
       "fact": "execution-4->reasoning-4",
@@ -1217,7 +2225,13 @@
         "execution-4",
         "reasoning-4"
       ],
-      "id": 169
+      "id": 169,
+      "options": [
+        "execution-4",
+        "execution-3",
+        "reasoning-4",
+        "execution-5"
+      ]
     },
     {
       "fact": "execution-5->reasoning-5",
@@ -1228,7 +2242,13 @@
         "execution-5",
         "reasoning-5"
       ],
-      "id": 170
+      "id": 170,
+      "options": [
+        "reasoning-5",
+        "execution-5",
+        "execution-2",
+        "execution-1"
+      ]
     },
     {
       "fact": "reasoning-1->generation-1",
@@ -1239,7 +2259,13 @@
         "reasoning-1",
         "generation-1"
       ],
-      "id": 171
+      "id": 171,
+      "options": [
+        "introduction",
+        "discussion",
+        "limitations",
+        "method"
+      ]
     },
     {
       "fact": "reasoning-2->generation-2",
@@ -1250,7 +2276,13 @@
         "reasoning-2",
         "generation-2"
       ],
-      "id": 172
+      "id": 172,
+      "options": [
+        "introduction",
+        "limitations",
+        "discussion",
+        "method"
+      ]
     },
     {
       "fact": "reasoning-3->generation-3",
@@ -1261,7 +2293,13 @@
         "reasoning-3",
         "generation-3"
       ],
-      "id": 173
+      "id": 173,
+      "options": [
+        "introduction",
+        "limitations",
+        "discussion",
+        "appendix"
+      ]
     },
     {
       "fact": "reasoning-4->generation-4",
@@ -1272,7 +2310,13 @@
         "reasoning-4",
         "generation-4"
       ],
-      "id": 174
+      "id": 174,
+      "options": [
+        "discussion",
+        "limitations",
+        "introduction",
+        "appendix"
+      ]
     },
     {
       "fact": "reasoning-5->generation-5",
@@ -1283,7 +2327,13 @@
         "reasoning-5",
         "generation-5"
       ],
-      "id": 175
+      "id": 175,
+      "options": [
+        "appendix",
+        "method",
+        "discussion",
+        "introduction"
+      ]
     },
     {
       "fact": "generation-1->coding-1",
@@ -1294,7 +2344,13 @@
         "generation-1",
         "coding-1"
       ],
-      "id": 176
+      "id": 176,
+      "options": [
+        "settings",
+        "properties",
+        "configuration",
+        "attributes"
+      ]
     },
     {
       "fact": "generation-2->coding-2",
@@ -1305,7 +2361,13 @@
         "generation-2",
         "coding-2"
       ],
-      "id": 177
+      "id": 177,
+      "options": [
+        "attributes",
+        "settings",
+        "configuration",
+        "properties"
+      ]
     },
     {
       "fact": "generation-3->coding-3",
@@ -1316,7 +2378,13 @@
         "generation-3",
         "coding-3"
       ],
-      "id": 178
+      "id": 178,
+      "options": [
+        "attributes",
+        "settings",
+        "configuration",
+        "properties"
+      ]
     },
     {
       "fact": "generation-4->coding-4",
@@ -1327,7 +2395,13 @@
         "generation-4",
         "coding-4"
       ],
-      "id": 179
+      "id": 179,
+      "options": [
+        "settings",
+        "properties",
+        "attributes",
+        "options"
+      ]
     },
     {
       "fact": "generation-5->coding-5",
@@ -1338,175 +2412,325 @@
         "generation-5",
         "coding-5"
       ],
-      "id": 180
+      "id": 180,
+      "options": [
+        "properties",
+        "attributes",
+        "options",
+        "settings"
+      ]
     },
     {
       "fact": "coding-2.max_attempts",
       "type": "coding",
       "kind": "update",
       "q": "After the errata, what is max_attempts for coding-2?",
-      "id": 181
+      "id": 181,
+      "options": [
+        11,
+        2,
+        8,
+        12
+      ]
     },
     {
       "fact": "execution-2.escalate_after_minutes",
       "type": "execution",
       "kind": "update",
       "q": "After the errata, what is escalate_after_minutes for execution-2?",
-      "id": 182
+      "id": 182,
+      "options": [
+        50,
+        10,
+        32,
+        34
+      ]
     },
     {
       "fact": "reasoning-2.effect_size",
       "type": "reasoning",
       "kind": "update",
       "q": "After the errata, what is effect_size for reasoning-2?",
-      "id": 183
+      "id": 183,
+      "options": [
+        0.56,
+        0.46,
+        0.64,
+        0.29
+      ]
     },
     {
       "fact": "generation-2.section_order",
       "type": "generation",
       "kind": "update",
       "q": "After the errata, what is section_order for generation-2?",
-      "id": 184
+      "id": 184,
+      "options": [
+        "faq-first",
+        "examples-first",
+        "reference-first",
+        "changelog-first"
+      ]
     },
     {
       "fact": "coding-1.connect_timeout_ms",
       "type": "coding",
       "kind": "abstention",
       "q": "What is connect_timeout_ms for coding-1?",
-      "id": 185
+      "id": 185,
+      "options": [
+        "not stated",
+        18911,
+        758,
+        2748
+      ]
     },
     {
       "fact": "coding-2.pool_size",
       "type": "coding",
       "kind": "abstention",
       "q": "What is pool_size for coding-2?",
-      "id": 186
+      "id": 186,
+      "options": [
+        52,
+        62,
+        54,
+        "not stated"
+      ]
     },
     {
       "fact": "coding-3.backoff_base_ms",
       "type": "coding",
       "kind": "abstention",
       "q": "What is backoff_base_ms for coding-3?",
-      "id": 187
+      "id": 187,
+      "options": [
+        153,
+        505,
+        "not stated",
+        1607
+      ]
     },
     {
       "fact": "coding-4.max_payload_bytes",
       "type": "coding",
       "kind": "abstention",
       "q": "What is max_payload_bytes for coding-4?",
-      "id": 188
+      "id": 188,
+      "options": [
+        123869,
+        6707356,
+        9010391,
+        "not stated"
+      ]
     },
     {
       "fact": "coding-5.max_attempts",
       "type": "coding",
       "kind": "abstention",
       "q": "What is max_attempts for coding-5?",
-      "id": 189
+      "id": 189,
+      "options": [
+        12,
+        8,
+        "not stated",
+        2
+      ]
     },
     {
       "fact": "execution-1.retry_budget",
       "type": "execution",
       "kind": "abstention",
       "q": "What is retry_budget for execution-1?",
-      "id": 190
+      "id": 190,
+      "options": [
+        8,
+        6,
+        "not stated",
+        2
+      ]
     },
     {
       "fact": "execution-2.page_threshold_pct",
       "type": "execution",
       "kind": "abstention",
       "q": "What is page_threshold_pct for execution-2?",
-      "id": 191
+      "id": 191,
+      "options": [
+        67,
+        "not stated",
+        97,
+        89
+      ]
     },
     {
       "fact": "execution-3.cooloff_minutes",
       "type": "execution",
       "kind": "abstention",
       "q": "What is cooloff_minutes for execution-3?",
-      "id": 192
+      "id": 192,
+      "options": [
+        86,
+        "not stated",
+        79,
+        18
+      ]
     },
     {
       "fact": "execution-4.max_concurrent_jobs",
       "type": "execution",
       "kind": "abstention",
       "q": "What is max_concurrent_jobs for execution-4?",
-      "id": 193
+      "id": 193,
+      "options": [
+        5,
+        10,
+        "not stated",
+        19
+      ]
     },
     {
       "fact": "execution-5.escalate_after_minutes",
       "type": "execution",
       "kind": "abstention",
       "q": "What is escalate_after_minutes for execution-5?",
-      "id": 194
+      "id": 194,
+      "options": [
+        10,
+        32,
+        50,
+        "not stated"
+      ]
     },
     {
       "fact": "reasoning-1.sample_size",
       "type": "reasoning",
       "kind": "abstention",
       "q": "What is sample_size for reasoning-1?",
-      "id": 195
+      "id": 195,
+      "options": [
+        4291,
+        4693,
+        "not stated",
+        639
+      ]
     },
     {
       "fact": "reasoning-2.p_value",
       "type": "reasoning",
       "kind": "abstention",
       "q": "What is p_value for reasoning-2?",
-      "id": 196
+      "id": 196,
+      "options": [
+        0.017,
+        0.034,
+        0.019,
+        "not stated"
+      ]
     },
     {
       "fact": "reasoning-3.ci_low",
       "type": "reasoning",
       "kind": "abstention",
       "q": "What is ci_low for reasoning-3?",
-      "id": 197
+      "id": 197,
+      "options": [
+        6,
+        33,
+        "not stated",
+        10
+      ]
     },
     {
       "fact": "reasoning-4.ci_high",
       "type": "reasoning",
       "kind": "abstention",
       "q": "What is ci_high for reasoning-4?",
-      "id": 198
+      "id": 198,
+      "options": [
+        "not stated",
+        43,
+        55,
+        67
+      ]
     },
     {
       "fact": "reasoning-5.effect_size",
       "type": "reasoning",
       "kind": "abstention",
       "q": "What is effect_size for reasoning-5?",
-      "id": 199
+      "id": 199,
+      "options": [
+        0.46,
+        "not stated",
+        0.56,
+        0.64
+      ]
     },
     {
       "fact": "generation-1.preferred_term",
       "type": "generation",
       "kind": "abstention",
       "q": "What is preferred_term for generation-1?",
-      "id": 200
+      "id": 200,
+      "options": [
+        "settings",
+        "properties",
+        "configuration",
+        "not stated"
+      ]
     },
     {
       "fact": "generation-2.max_sentence_len",
       "type": "generation",
       "kind": "abstention",
       "q": "What is max_sentence_len for generation-2?",
-      "id": 201
+      "id": 201,
+      "options": [
+        "not stated",
+        28,
+        21,
+        17
+      ]
     },
     {
       "fact": "generation-3.citation_required",
       "type": "generation",
       "kind": "abstention",
       "q": "What is citation_required for generation-3?",
-      "id": 202
+      "id": 202,
+      "options": [
+        "limitations",
+        "not stated",
+        "method",
+        "introduction"
+      ]
     },
     {
       "fact": "generation-4.heading_style",
       "type": "generation",
       "kind": "abstention",
       "q": "What is heading_style for generation-4?",
-      "id": 203
+      "id": 203,
+      "options": [
+        "imperative",
+        "gerund",
+        "sentence",
+        "not stated"
+      ]
     },
     {
       "fact": "generation-5.section_order",
       "type": "generation",
       "kind": "abstention",
       "q": "What is section_order for generation-5?",
-      "id": 204
+      "id": 204,
+      "options": [
+        "not stated",
+        "examples-first",
+        "reference-first",
+        "changelog-first"
+      ]
     }
   ]
 }
