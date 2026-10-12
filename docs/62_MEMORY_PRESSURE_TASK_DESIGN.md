@@ -95,6 +95,74 @@ positions", which cannot both hold. The reconciliation:
 Designing the placement of probed facts is what makes the within-fact comparison (7.4)
 possible; randomising the rest is what keeps position from being a proxy for project.
 
+### 3.2 Task objective: four content types
+
+The corpus is not twenty interchangeable projects. It is **four content types, five projects
+each**, because compression is not type-blind and a single retention number cannot show that.
+
+#### 3.2.1 The hypothesis this tests
+
+Different content has different structure, and a token-budgeted summary destroys structure
+unevenly:
+
+| type | what the facts are | what compression most likely destroys |
+|---|---|---|
+| **coding** | source, APIs, configuration | **exact identifiers** — a summary paraphrases `retry_limit` into "retry limit", and the probe asks for the identifier |
+| **execution** | runbooks, deployment steps, escalation paths | **step order** — a summary keeps the steps and loses the sequence |
+| **reasoning** | premises, derivations, conclusions | **the chain** — a summary keeps the conclusion and drops the premise it rested on |
+| **generation** | requirements, style constraints, templates | **constraints** — a summary keeps the topic and loses the rules |
+
+**This is the sharper claim.** "Retention was 0.62" says how much was kept; "conclusions
+survived and premises did not" says **what kind of thing the compressor drops**, which is what
+a folding policy can act on. It is also the same axis as the binding-loss hypothesis in
+section 5: binding loss should be worst for **coding** (identifiers) and **reasoning**
+(premise-to-conclusion links), because those are exactly the structures a fluent summary
+discards while still reading well.
+
+#### 3.2.2 Why five per type, not one
+
+    four types x five projects = twenty projects
+
+- five instances inside a type make **within-type variance measurable**, so a type difference
+  can be told from project noise
+- the type comparison then has n=5 per type rather than n=1
+- projects **inside** a type share the schema, which is the interference in 5.1
+- projects **across** types share surface forms but not schemas
+
+**Cross-type interference is the strongest kind available**, and it is worth building on
+purpose: a coding project defines a configuration field, an execution runbook says to check
+"that configuration", and a composition probe then needs both held at once. A summary that
+keeps one and paraphrases the other cannot answer it.
+
+#### 3.2.3 The probe taxonomy is orthogonal to the type
+
+    content type (4) x probe kind (5) x compression depth (N)
+
+All five probe kinds (extraction, disambiguation, composition, update, abstention) can be built
+against all four content types, so the two factors cross rather than nest. That is what makes
+the per-type retention curve computable from the same run, and it is why the corpus needs the
+four types rather than more of one.
+
+#### 3.2.4 What this changes downstream
+
+| section | change |
+|---|---|
+| 3 (corpus) | twenty projects, four types, five each; each type carries its own schema |
+| 5 (probes) | every probe is tagged with its type, and every reported retention is **per type** |
+| 8 (scoring) | `binding loss` is reported **per type**, because the hypothesis predicts it differs by type |
+| 11 (falsification) | if retention is the same across all four types, compression is type-blind and the four-type corpus was unnecessary work |
+
+That last row is the honest cost: the four-type corpus is more work than twenty of one kind, and
+it is only worth it if the types separate. The falsifier is written down so the result can say
+so.
+
+#### 3.2.5 Sizing
+
+The corpus must exceed what the model can hold, and the window differs per model, so the target
+is stated as a multiple rather than an absolute: **at least four times the window of the model
+under test**, which for a 131k window is roughly 500k tokens. Twenty projects at ~25k tokens
+each reaches it.
+
 ## 4. Compression as the independent variable
 
 Compression must be an independent variable, and natural pressure cannot supply one: it depends
