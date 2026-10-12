@@ -16,9 +16,21 @@
 #
 # ## Why four arms at once is right here
 #
-# Each arm job is 1 task x n_attempts=2 = 2 cells, so four arms are 8 concurrent
-# cells -- exactly the largest MEASURED point that does not make the route queue.
-# Under one wave the arms share the provider's conditions, which is the point.
+# Each arm job is 1 task x n_attempts=3 = 3 cells, and n_concurrent_trials=2, so four
+# arms are 8 CONCURRENT cells -- exactly the largest MEASURED point that does not make
+# the route queue -- with the third attempt per arm queued behind the first two. Twelve
+# cells in one wave, and the arms share the provider's conditions, which is the point.
+#
+# ## The daemon is patched for this wave (LHTB ccefd69)
+#
+# `cfg_cli` probed the daemon's liveness with a 5-second ping while the daemon enforces
+# a 50-second pacing floor and serves one connection at a time, so a BUSY daemon was
+# read as a DEAD one; the restart unlinked the live socket and then died on the
+# already-consumed private half, leaving the episode unwinnable and looking healthy.
+# Reproduced both ways, fixed, and verified against the task's own validate.py
+# (reward 1.0000, 5250s floor intact) -- see docs/64. This is a COHORT BOUNDARY: every
+# earlier `unknown-config-semantics` cell was run against the fragile harness, and this
+# wave must not be pooled with them for that task.
 set -uo pipefail
 EF_HOME="D:/Data and code/xuchengjian/workplace/dsh-epistemic-fold"
 LHTB_ROOT="${LHTB_ROOT:-$EF_HOME/../bench-workspace/lhtb}"
@@ -28,7 +40,7 @@ WATCHHEART="$EF_HOME/ef-phase7-logs/ucs-watchdog.heartbeat"
 cd "$EF_HOME" || exit 1
 
 echo "ucs: start $(date +%H:%M:%S) | ef $(git rev-parse --short HEAD) | lhtb $(git -C "$LHTB_ROOT" rev-parse --short HEAD)" | tee -a "$LOG"
-echo "ucs: model=${EF_LIVE_MODEL:-step-5-preview-free} budget=28800s tiers=basic,economy,balanced,quality cells=8" | tee -a "$LOG"
+echo "ucs: model=${EF_LIVE_MODEL:-step-5-preview-free} budget=28800s tiers=basic,economy,balanced,quality n=3 arms=4 cells=12 concurrent=8 lhtb=$(git -C "$LHTB_ROOT" rev-parse --short HEAD)" | tee -a "$LOG"
 : > "$WATCHLOG"
 # ## Only OUR containers
 #
