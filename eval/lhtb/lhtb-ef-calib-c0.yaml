@@ -11,8 +11,8 @@
 #           by the task's own checker reporting "all import: True"
 job_name: lhtb-ef-calib-c0
 jobs_dir: ./jobs
-n_attempts: 1
-n_concurrent_trials: 1
+n_attempts: 2
+n_concurrent_trials: 2
 timeout_multiplier: 1.0
 
 environment:
@@ -29,7 +29,7 @@ environment:
 
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
-    model_name: openai/step-5-preview-free
+    model_name: openai/deepseek-v4-flash
     override_timeout_sec: 18000      # the task's own declared budget
 
 datasets:

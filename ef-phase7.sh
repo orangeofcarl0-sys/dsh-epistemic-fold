@@ -57,7 +57,7 @@ export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 # The name was read off the route's own model list rather than guessed: /zen/go/v1
 # serves 38 models and an unknown one answers `Model is unavailable`, so a typo
 # here fails loudly instead of silently measuring something else.
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-deepseek-v4-flash}"
 
 [ -d "$LHTB_ROOT" ] || { echo "driver: LHTB_ROOT=$LHTB_ROOT is not a directory; set LHTB_ROOT to the LHTB checkout" >&2; exit 1; }
 cd "$EF_HOME" || exit 1

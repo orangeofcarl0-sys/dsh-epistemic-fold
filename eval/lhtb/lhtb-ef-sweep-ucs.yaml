@@ -53,7 +53,7 @@ environment:
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
   # A LABEL, not the route: run-lhtb.sh rewrites this line from EF_LIVE_MODEL.
-    model_name: openai/step-5-preview-free
+    model_name: openai/deepseek-v4-flash
   # ## MUST equal the task's agent budget
   #
   # task.toml now declares 28800. This is deliberately the same number: a value
