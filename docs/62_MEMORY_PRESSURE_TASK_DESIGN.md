@@ -168,7 +168,89 @@ count and summary size differ if the compressor changed behaviour).
 Basic and one EF tier, unwarned — five cells. The full-context arm is added once the first
 five separate.
 
-## 7. Scoring
+### 6.4 Ingestion order is a factor, not a nuisance
+
+A very long target cannot be ingested at once, so it enters in SOME order. Which order is
+not a detail: it decides **which facts are folded most often**, and therefore which facts
+the probes are really asking about.
+
+| mode | exposure profile | what it stresses |
+|---|---|---|
+| **random** | position independent of importance | the control — no structure to exploit |
+| **temporal** | age equals exposure | the natural narrative order; the oldest is folded most |
+| **logical** | prerequisites first, so prerequisites are folded most | **the sharpest**: the facts later composition probes DEPEND on are the most decayed |
+| **self-exploration** (non-regenerable) | chosen by the model | intake policy itself — the model doing its own compression by attention |
+
+**Logical order is the one to run first.** If prerequisites enter first they are folded most
+often, and later composition probes need exactly them, so the failure mode is "the most
+needed fact decayed the most" — which is both realistic and invisible to an aggregate
+score.
+
+**Self-exploration must be non-regenerable**, or it degenerates: with retrieval available,
+the model can read nothing and fetch later. Withholding retrieval makes the intake decision
+consequential, and a model that reads everything in order is then indistinguishable from
+the temporal arm — which is itself the finding.
+
+## 7. Per-probe exposure, and decoupling the analysis from it
+
+### 7.1 The defect this fixes
+
+Depth N is a GLOBAL count, and the first version of this design treated it as a property
+shared by every fact. It is not:
+
+    P(correct | probe p) = f(exposure(p)),   not f(N)
+
+    exposure(f) = how many folds had f inside the shadowed region
+
+A fact ingested early is folded repeatedly; one ingested late is folded rarely. Averaging
+over probes therefore averages over a distribution that **differs per cell**, and comparing
+two ingestion modes compares two different exposure distributions rather than two orders.
+
+This is a validity problem, not noise, and it does not go away with more probes.
+
+### 7.2 Exposure is measurable
+
+`CompactionResult` carries `shadowedSeqs` and `summarySeq`, so the fold lineage can be
+reconstructed:
+
+    fact f  ->  summary s1  ->  summary s2  ->  ...  ->  sk
+    exposure(f) = k
+
+**The bridge does not capture these today** — it reads the engine's lifetime counters only
+— so recording each fold's `shadowedSeqs` and `summarySeq` is a prerequisite of the
+measurement, not an optimisation.
+
+Four per-probe covariates come out of the same structure:
+
+| covariate | why it matters |
+|---|---|
+| `exposure` | how many times the fact was folded |
+| `lineage depth` | how deep in the summary chain it sits |
+| **`containing-summary size`** | a fact inside a 50-token summary is likelier intact than one inside a 5-token summary |
+| `token distance` | distance from the probe |
+
+### 7.3 The analysis is against exposure, not against depth
+
+    retention(k) = P(correct | exposure = k)
+
+and the **fact is its own control**: the same probed fact is planted at different positions
+in different cells, so the fact is held constant and only its exposure varies. A synthetic
+corpus can place a given fact anywhere, which is what makes this possible.
+
+Three further decouplings, in decreasing strength:
+
+1. **Within-fact comparison** — same fact, different exposure, across cells. Strongest,
+   because nothing about the fact can confound it.
+2. **Stratified comparison** — compare only probes whose exposure matches. Weaker, and it
+   costs sample size, but it needs no extra cells.
+3. **Covariate-adjusted reporting** — report the exposure distribution beside every
+   aggregate. Weakest, but a retention figure without its exposure distribution is
+   uninterpretable, so this is a floor rather than an option.
+
+**Every reported number carries its exposure distribution.** An aggregate retention figure
+alone would be exactly the kind of number this section exists to prevent.
+
+## 8. Scoring
 
     retention(depth)       = accuracy(depth) / accuracy(regenerable)   <- the headline
     load penalty           = accuracy(regenerable) - accuracy(full context)
@@ -188,7 +270,7 @@ damage a good folding policy should avoid.
 retains more while spending more has not obviously won, and the existing telemetry
 (`costTotal`, `tokensUncachedInput`, `folds`) already supplies both terms.
 
-## 8. Threats to validity
+## 9. Threats to validity
 
 1. **Contamination** — mitigated by synthesis, not provable; a probe the model answers
    before the corpus is fed is a leak signal.
@@ -213,13 +295,14 @@ retains more while spending more has not obviously won, and the existing telemet
    arrival order, so two cells with the same depth can retain different facts. Order is
    randomised and the per-probe outcome is kept, not only the aggregate.
 
-## 9. What has to be built
+## 10. What has to be built
 
 | piece | note |
 |---|---|
 | corpus generator | 20 projects, shared surface forms, cross-references, no labels, larger than the window |
 | probe generator + scorer | five kinds, distractors from other projects, deterministic |
 | bridge `compact` operation | makes depth an independent variable |
+| **fold-lineage capture** | records each fold's `shadowedSeqs` and `summarySeq`, without which exposure cannot be computed |
 | oracle-retrieval harness | injects the document each probe needs, validated against ground truth |
 | memory-pressure driver | ingests with no tool calls, requests N compressions, asks probes |
 | analysis | the retention curve, load penalty, binding loss, cost per retained fact |
@@ -230,7 +313,7 @@ needs a shell: ingestion appends documents, probing asks questions. The existing
 the same telemetry as the LHTB lane without a container, a verifier or a reward file.
 Packaging it as an LHTB task later is possible but is not on the critical path.
 
-## 10. What would falsify this design
+## 11. What would falsify this design
 
 - **Retention near 1.0 at every depth** — the corpus is not hard enough, or the compression
   is lossless at this size. Either way the instrument has no range.
@@ -242,6 +325,9 @@ Packaging it as an LHTB task later is possible but is not on the critical path.
   and extraction is sufficient; the primary metric would then be simpler.
 - **The warned and unwarned arms differ only in fold count** — then the warning changed the
   compressor, not the model, and the factor measures policy rather than attention.
+- **Exposure does not predict retention** — then the compression is not what is losing the
+  facts, and the per-probe covariates are decoration. That would send the search to the
+  probe design or the corpus rather than to the compressor.
 - **The load penalty is near zero** — then the full-context arm was a usable ceiling after
   all and the correction, while sound in principle, does not bind at this size. That is a
   result about the model, and it would be reported as one.
