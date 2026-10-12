@@ -67,6 +67,17 @@ describe('fold lineage', () => {
   it('emits it and resets it with the rest of the per-episode state', () => {
     expect(HOST).toMatch(/return \{\n    folds,\n    roots,\n    emergencies,\n    foldLineage,/u)
     expect(HOST).toContain('let foldLineage: FoldEvent[] = []')
-    expect(HOST).toMatch(/foldLineage = \[\]\n  roots = 0/u)
+    // Both are reset, but NOT asserted adjacent: the reset block gains a line whenever a new
+    // piece of per-episode state is added, and pinning the layout made this test fail the
+    // moment `compactionEnabled` was inserted between them. The intent is that the block
+    // clears both, so that is what is checked -- each inside the reset region, either order.
+    // Anchored on `init`, NOT on `turnCounter = 0`: that string also appears as a module-level
+    // declaration earlier in the file, so indexOf found the declaration and the check read a
+    // region that contains no reset at all -- it passed for the wrong reason until the block
+    // was edited. `systemText = request.policy` is unique to init.
+    const resetStart = HOST.indexOf('systemText = request.policy')
+    const resetBlock = HOST.slice(resetStart, resetStart + 600)
+    expect(resetBlock).toContain('foldLineage = []')
+    expect(resetBlock).toContain('roots = 0')
   })
 })

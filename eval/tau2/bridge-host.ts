@@ -247,6 +247,8 @@ interface Telemetry {
    * already learned when it tried substring-matching the JSON for one.
    */
   readonly foldLineage: readonly FoldEvent[]
+  /** Whether the automatic fold was enabled at the moment of this snapshot. */
+  readonly compactionEnabled: boolean
   readonly modelCalls: number
   readonly promptTokensLast: number
   readonly surfaceNodesLast: number
@@ -422,6 +424,21 @@ let turnOpen = false
 let folds = 0
 /** Every fold this episode, in order. See `Telemetry.foldLineage`. */
 let foldLineage: FoldEvent[] = []
+/**
+ * Whether the automatic fold runs before a model call.
+ *
+ * The memory-pressure task measures a state, so the probe turn must not change one: a fold
+ * landing before the probes would measure the state after a compression the caller did not ask
+ * for, and one landing between them is impossible only if the whole probe set is a single turn
+ * AND no fold can precede it (docs/62 section 5.4).
+ *
+ * It is also what makes the injection arms sound. Injecting a document adds tokens, and tokens
+ * can trigger a fold -- which would compress the very document just injected, so arm B would be
+ * measured on a state the injection itself changed.
+ *
+ * A measurement choice, not a claim about production, and recorded as one.
+ */
+let compactionEnabled = true
 let roots = 0
 let emergencies = 0
 /** Failed maintenance calls, split by kind, and the last message. See `Telemetry`. */
@@ -649,6 +666,10 @@ function classifyCompactionFailure(error: unknown, aborted: boolean): string {
 
 async function foldIfNeeded(): Promise<void> {
   const active = engine!
+  // Disabled for the probe turn (see `compactionEnabled`). The fold is skipped rather than
+  // faked: nothing is recorded, so `folds` and `foldLineage` keep describing what the engine
+  // actually did.
+  if (!compactionEnabled) return
   // ## A fold that fails must not end the episode
   //
   // This call used to be unguarded, and that made the harness report a failed
@@ -1171,6 +1192,7 @@ async function init(request: {
   turnOpen = false
   folds = 0
   foldLineage = []
+  compactionEnabled = true
   roots = 0
   emergencies = 0
   compactionFailures = 0
@@ -1424,6 +1446,7 @@ async function telemetry(): Promise<Telemetry> {
     roots,
     emergencies,
     foldLineage,
+    compactionEnabled,
     modelCalls,
     promptTokensLast,
     surfaceNodesLast,
@@ -1524,6 +1547,10 @@ async function main(): Promise<void> {
             String(request.callId ?? ''),
           )
           emit({ ok: true, content, telemetry: await telemetry() })
+        } else if (op === 'compaction') {
+          // Turn the automatic fold on or off. See `compactionEnabled`.
+          compactionEnabled = request.enabled !== false
+          emit({ ok: true, compactionEnabled, telemetry: await telemetry() })
         } else if (op === 'compact') {
           // ## One requested fold, and an honest report of whether it happened
           //

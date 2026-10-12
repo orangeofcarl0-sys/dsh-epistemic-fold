@@ -257,6 +257,26 @@ class EpistemicFoldBridge:
         response = self._send(request)
         return response["assistant"]
 
+    def set_compaction(self, enabled: bool) -> bool:
+        """
+        Turn the automatic fold on or off, and return the state the host reports.
+
+        ## Why the probe turn needs this
+
+        The probe measures a STATE, so it must not change one. A fold landing before the probes
+        would measure the state after a compression the caller did not ask for (docs/62 section
+        5.4). It is also what makes the injection arms sound: injecting a document adds tokens,
+        and tokens can trigger a fold, which would compress the very document just injected.
+
+        The host skips the fold rather than faking it, so `folds` and `foldLineage` keep
+        describing what the engine actually did.
+
+        @param enabled - False to suppress the automatic fold.
+        @returns the state the host reports, which is not assumed to be the one requested.
+        """
+        response = self._send({"op": "compaction", "enabled": bool(enabled)})
+        return bool(response.get("compactionEnabled"))
+
     def compact(self) -> bool:
         """
         Ask the engine to fold once, and report whether it committed.
