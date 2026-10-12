@@ -1,4 +1,4 @@
-# 62 — Extreme memory pressure: task design
+﻿# 62 — Extreme memory pressure: task design
 
 Status: **DESIGN**. Nothing here has been built or run. The companion survey
 (`61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md`) establishes which components exist; this fixes
@@ -350,6 +350,8 @@ first requested compaction is not at depth zero.
 
 ## 5. The probes
 
+## 5. The probes
+
 **Disambiguation is the primary instrument**, for a reason worth stating:
 
     Aurora    retry_limit = 5
@@ -423,6 +425,18 @@ just injected.** Arms B and C would then be measured on a state the injection it
 Disabling compaction is a measurement choice, not a claim about production, and it is recorded
 as one.
 
+#### 5.5 The probe turn's exact form, and how it is parsed
+
+    Answer each question with ONE letter. Reply with exactly 200 lines, "N: X".
+
+    1. What is the default of max_attempts in retry.py?
+       A) 3   B) 5   C) 7   D) 9
+
+Parsing is per line against `^(\\d+):\\s*([A-D])`, with a fallback that takes the first
+letter of each line. **The fallback matters**: a model that answers in prose still produces
+parseable letters, and a parse failure must be recorded as a parse failure rather than silently
+scored as wrong -- those are different facts about the run.
+
 ## 6. Arms
 
 ### 6.1 The ceiling is REGENERABLE, not uncompressed
@@ -475,6 +489,19 @@ A composition probe needs **two** projects' documents, so "the document a probe 
 set, not one file. Each injection is validated against the probe's ground truth before the arm
 is scored — an injection that does not contain the answer measures the injection rather than
 the model (threat 8).
+
+#### 6.4.1 What "the document a probe needs" means exactly
+
+The injection is **the minimal document set that states the required fact(s)** -- minimal
+because injecting the whole project would make arm B trivially easy and blunt the measurement.
+
+| probe kind | injected |
+|---|---|
+| extraction | the probe's project documents |
+| **disambiguation** | **the documents of the project that holds the answer** -- asking "which project has retry_limit 8?" injects the project that has 8 |
+| composition | **both linked projects' documents** |
+| update | the project's documents **plus the errata** |
+| abstention | **nothing** (3.2.13) |
 
 ### 6.5 The full-context arm is a SEPARATE experiment
 
@@ -538,6 +565,22 @@ push arm. With k < N the choice has consequences, and exploration gets its own c
     exploration - random   selection skill
     oracle - exploration   distance from optimal
 
+#### 6.8.1 The exploration menu needs titles, and the objection does not apply to it
+
+An earlier reading of 6.8 had the store hold documents under **opaque ids only**, on the grounds
+that metadata would be an index. That reading is self-defeating: with opaque ids the model
+cannot judge what to read, so selection degenerates to random and the arm measures nothing.
+
+**The objection was aimed at the wrong thing.** SCALE-QA's critique is that a corpus **pre-segmented
+into topics** hands the model a retrieval index at *probe* time. A menu of titles at *intake* is
+not that -- it is how any real reader encounters documents.
+
+**And it does not help at probe time**, which is the point: **the titles are not retained
+either.** The model still has to remember which document held what, and that is what the arm
+measures.
+
+So the menu shows an **opaque id plus a one-line title**, and the model fetches by id.
+
 ### 6.9 Three constraints that protect the measurement
 
 1. **No note-taking.** The exploration arm needs a tool call to request a document. If the model
@@ -593,6 +636,29 @@ that pairing the source of statistical power. The three ingestion orders supply 
 
 So the pairing is not extra machinery -- **it falls out of a factor the design already has**, and
 each fact is observed at three different exposures without a dedicated position sweep.
+
+#### 6.13 The exploration action is a text protocol, not a tool
+
+The proposal says ingestion "does not require a tool call", and the exploration arm should not
+quietly reintroduce one. The model emits
+
+    FETCH doc-7f3a
+
+the harness appends that document and marks it consumed, and the loop repeats until the read cap
+k is reached. **A text protocol rather than a tool** keeps the difference between the paradigms
+about *what the model does*, not about what the harness exposes.
+
+#### 6.14 The cell count, and the arithmetic
+
+The minimum grid (6.10) is seven cells, but ingestion order is a factor **and the pairing in 7.4
+comes from it** (6.12), so the orders cannot be dropped:
+
+    7 cells x 3 orders = 21
+    minus the floor arm, which does not depend on order = 19
+
+At roughly two hours per cell and eight running concurrently, that is about five hours of wall
+clock -- long but feasible, and the number is stated here so the cost is known before the run
+rather than discovered during it.
 
 ## 7. Per-probe exposure, and decoupling the analysis from it
 
