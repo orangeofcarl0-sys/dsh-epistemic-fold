@@ -1,0 +1,34 @@
+[
+  {
+    "type": "coding",
+    "project": "coding-2",
+    "field": "max_attempts",
+    "old": 2,
+    "new": 11,
+    "text": "# ERRATA \u2014 coding-2\n\nCorrection: max_attempts was previously published as 2. The corrected value is 11. The earlier figure is superseded and must not be relied on."
+  },
+  {
+    "type": "execution",
+    "project": "execution-2",
+    "field": "escalate_after_minutes",
+    "old": 10,
+    "new": 34,
+    "text": "# ERRATA \u2014 execution-2\n\nCorrection: escalate_after_minutes was previously published as 10. The corrected value is 34. The earlier figure is superseded and must not be relied on."
+  },
+  {
+    "type": "reasoning",
+    "project": "reasoning-2",
+    "field": "effect_size",
+    "old": 0.64,
+    "new": 0.29,
+    "text": "# ERRATA \u2014 reasoning-2\n\nCorrection: effect_size was previously published as 0.64. The corrected value is 0.29. The earlier figure is superseded and must not be relied on."
+  },
+  {
+    "type": "generation",
+    "project": "generation-2",
+    "field": "section_order",
+    "old": "examples-first",
+    "new": "faq-first",
+    "text": "# ERRATA \u2014 generation-2\n\nCorrection: section_order was previously published as examples-first. The corrected value is faq-first. The earlier figure is superseded and must not be relied on."
+  }
+]

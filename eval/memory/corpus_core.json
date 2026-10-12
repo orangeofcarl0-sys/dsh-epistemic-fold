@@ -1,0 +1,279 @@
+{
+  "seed": 20261012,
+  "projects": {
+    "coding": [
+      {
+        "type": "coding",
+        "index": 1,
+        "id": "coding-1",
+        "values": {
+          "max_attempts": 8,
+          "connect_timeout_ms": 758,
+          "pool_size": 52,
+          "backoff_base_ms": 153,
+          "max_payload_bytes": 123869
+        },
+        "reserved_field": "connect_timeout_ms"
+      },
+      {
+        "type": "coding",
+        "index": 2,
+        "id": "coding-2",
+        "values": {
+          "max_attempts": 2,
+          "connect_timeout_ms": 18911,
+          "pool_size": 54,
+          "backoff_base_ms": 1607,
+          "max_payload_bytes": 9010391
+        },
+        "reserved_field": "pool_size"
+      },
+      {
+        "type": "coding",
+        "index": 3,
+        "id": "coding-3",
+        "values": {
+          "max_attempts": 12,
+          "connect_timeout_ms": 2748,
+          "pool_size": 62,
+          "backoff_base_ms": 505,
+          "max_payload_bytes": 6707356
+        },
+        "reserved_field": "backoff_base_ms"
+      },
+      {
+        "type": "coding",
+        "index": 4,
+        "id": "coding-4",
+        "values": {
+          "max_attempts": 4,
+          "connect_timeout_ms": 8034,
+          "pool_size": 37,
+          "backoff_base_ms": 1869,
+          "max_payload_bytes": 9491301
+        },
+        "reserved_field": "max_payload_bytes"
+      },
+      {
+        "type": "coding",
+        "index": 5,
+        "id": "coding-5",
+        "values": {
+          "max_attempts": 5,
+          "connect_timeout_ms": 2947,
+          "pool_size": 40,
+          "backoff_base_ms": 1169,
+          "max_payload_bytes": 5397860
+        },
+        "reserved_field": "max_attempts"
+      }
+    ],
+    "execution": [
+      {
+        "type": "execution",
+        "index": 1,
+        "id": "execution-1",
+        "values": {
+          "escalate_after_minutes": 32,
+          "retry_budget": 2,
+          "page_threshold_pct": 97,
+          "cooloff_minutes": 79,
+          "max_concurrent_jobs": 5
+        },
+        "reserved_field": "retry_budget"
+      },
+      {
+        "type": "execution",
+        "index": 2,
+        "id": "execution-2",
+        "values": {
+          "escalate_after_minutes": 10,
+          "retry_budget": 6,
+          "page_threshold_pct": 67,
+          "cooloff_minutes": 86,
+          "max_concurrent_jobs": 19
+        },
+        "reserved_field": "page_threshold_pct"
+      },
+      {
+        "type": "execution",
+        "index": 3,
+        "id": "execution-3",
+        "values": {
+          "escalate_after_minutes": 50,
+          "retry_budget": 8,
+          "page_threshold_pct": 89,
+          "cooloff_minutes": 18,
+          "max_concurrent_jobs": 10
+        },
+        "reserved_field": "cooloff_minutes"
+      },
+      {
+        "type": "execution",
+        "index": 4,
+        "id": "execution-4",
+        "values": {
+          "escalate_after_minutes": 49,
+          "retry_budget": 7,
+          "page_threshold_pct": 79,
+          "cooloff_minutes": 80,
+          "max_concurrent_jobs": 11
+        },
+        "reserved_field": "max_concurrent_jobs"
+      },
+      {
+        "type": "execution",
+        "index": 5,
+        "id": "execution-5",
+        "values": {
+          "escalate_after_minutes": 9,
+          "retry_budget": 5,
+          "page_threshold_pct": 52,
+          "cooloff_minutes": 10,
+          "max_concurrent_jobs": 13
+        },
+        "reserved_field": "escalate_after_minutes"
+      }
+    ],
+    "reasoning": [
+      {
+        "type": "reasoning",
+        "index": 1,
+        "id": "reasoning-1",
+        "values": {
+          "effect_size": 0.46,
+          "sample_size": 4693,
+          "p_value": 0.034,
+          "ci_low": 10,
+          "ci_high": 67
+        },
+        "reserved_field": "sample_size"
+      },
+      {
+        "type": "reasoning",
+        "index": 2,
+        "id": "reasoning-2",
+        "values": {
+          "effect_size": 0.64,
+          "sample_size": 639,
+          "p_value": 0.019,
+          "ci_low": 33,
+          "ci_high": 43
+        },
+        "reserved_field": "p_value"
+      },
+      {
+        "type": "reasoning",
+        "index": 3,
+        "id": "reasoning-3",
+        "values": {
+          "effect_size": 0.56,
+          "sample_size": 4291,
+          "p_value": 0.017,
+          "ci_low": 6,
+          "ci_high": 55
+        },
+        "reserved_field": "ci_low"
+      },
+      {
+        "type": "reasoning",
+        "index": 4,
+        "id": "reasoning-4",
+        "values": {
+          "effect_size": 0.45,
+          "sample_size": 1614,
+          "p_value": 0.004,
+          "ci_low": 7,
+          "ci_high": 64
+        },
+        "reserved_field": "ci_high"
+      },
+      {
+        "type": "reasoning",
+        "index": 5,
+        "id": "reasoning-5",
+        "values": {
+          "effect_size": 0.6,
+          "sample_size": 4367,
+          "p_value": 0.003,
+          "ci_low": 31,
+          "ci_high": 52
+        },
+        "reserved_field": "effect_size"
+      }
+    ],
+    "generation": [
+      {
+        "type": "generation",
+        "index": 1,
+        "id": "generation-1",
+        "values": {
+          "section_order": "reference-first",
+          "preferred_term": "configuration",
+          "max_sentence_len": 28,
+          "citation_required": "introduction",
+          "heading_style": "imperative"
+        },
+        "reserved_field": "preferred_term"
+      },
+      {
+        "type": "generation",
+        "index": 2,
+        "id": "generation-2",
+        "values": {
+          "section_order": "examples-first",
+          "preferred_term": "properties",
+          "max_sentence_len": 21,
+          "citation_required": "method",
+          "heading_style": "gerund"
+        },
+        "reserved_field": "max_sentence_len"
+      },
+      {
+        "type": "generation",
+        "index": 3,
+        "id": "generation-3",
+        "values": {
+          "section_order": "changelog-first",
+          "preferred_term": "settings",
+          "max_sentence_len": 17,
+          "citation_required": "limitations",
+          "heading_style": "sentence"
+        },
+        "reserved_field": "citation_required"
+      },
+      {
+        "type": "generation",
+        "index": 4,
+        "id": "generation-4",
+        "values": {
+          "section_order": "overview-first",
+          "preferred_term": "options",
+          "max_sentence_len": 29,
+          "citation_required": "discussion",
+          "heading_style": "title"
+        },
+        "reserved_field": "heading_style"
+      },
+      {
+        "type": "generation",
+        "index": 5,
+        "id": "generation-5",
+        "values": {
+          "section_order": "scope-first",
+          "preferred_term": "attributes",
+          "max_sentence_len": 33,
+          "citation_required": "appendix",
+          "heading_style": "question"
+        },
+        "reserved_field": "section_order"
+      }
+    ]
+  },
+  "ring": [
+    "coding",
+    "execution",
+    "reasoning",
+    "generation"
+  ]
+}

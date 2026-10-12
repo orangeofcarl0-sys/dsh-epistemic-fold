@@ -1,0 +1,39 @@
+{
+  "unique_within_type": {
+    "ok": true,
+    "violations": []
+  },
+  "full_vocabulary": {
+    "ok": true,
+    "violations": []
+  },
+  "ring_closed": {
+    "ok": true,
+    "degree": {
+      "coding": {
+        "out": 1,
+        "in": 1
+      },
+      "execution": {
+        "out": 1,
+        "in": 1
+      },
+      "reasoning": {
+        "out": 1,
+        "in": 1
+      },
+      "generation": {
+        "out": 1,
+        "in": 1
+      }
+    }
+  },
+  "filler_disjoint_from_probed": {
+    "ok": true,
+    "note": "filler draws figures disjoint from every probed value, or fails"
+  },
+  "orderings_distinct": {
+    "ok": true,
+    "identical_pairs": []
+  }
+}
