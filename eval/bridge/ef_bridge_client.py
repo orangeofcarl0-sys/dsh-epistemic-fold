@@ -225,15 +225,24 @@ class EpistemicFoldBridge:
         response = self._send({"op": "turn", "message": message})
         return response["assistant"]
 
-    def append(self, message: dict[str, Any]) -> None:
+    def append(self, message: dict[str, Any]) -> dict[str, Any]:
         """
         Add a message to the history WITHOUT calling the model.
 
         Needed when a model emits several tool calls in one message: every result
         must be in the history before the next model call, or the model is shown
         a transcript with its own calls still unanswered.
+
+        ## Why it returns anything
+
+        The reply carries \`seqs\`: the surface seqs this append created. A caller that needs
+        \`exposure\` -- how many folds had a given fact inside their shadowed range -- has to join
+        the fold lineage, which records shadowed SEQS, to the facts it appended. Without the seqs
+        that join has no source, and the exposure covariate of docs/62 section 7 is unreachable.
+
+        @returns the host's reply, including \`seqs\`.
         """
-        self._send({"op": "append", "message": message})
+        return self._send({"op": "append", "message": message})
 
     def step(self, max_tokens: Optional[int] = None) -> dict[str, Any]:
         """

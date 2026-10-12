@@ -513,21 +513,33 @@ function toolResultText(content: unknown): string {
  * turn as `user/message`, or the engine cannot see the history it is meant to
  * manage.
  */
-function appendIncoming(message: TauMessage | TauMultiTool): void {
+function appendIncoming(message: TauMessage | TauMultiTool): number[] {
   const active = session!
+  // ## The seqs this append created, returned rather than inferred
+  //
+  // Exposure is "how many folds had this fact inside their shadowed range" (docs/62 section 7.2),
+  // and the fold lineage records the shadowed SEQS. Without a fact -> seq mapping the lineage
+  // cannot be joined to a probe at all, so the exposure covariate -- the whole point of section 7
+  // -- is unreachable. The first version of this function returned nothing and the mapping had no
+  // source.
+  //
+  // The seqs are the surface nodes that did not exist before the append, which is exact rather
+  // than assumed: nothing here presumes they are contiguous, or that a seq equals an index.
+  const before = new Set(active.surface.nodes)
   // tau2 bundles several tool results into one message when the model issued
   // parallel calls. Each result is a separate DSH event, so they are expanded
   // rather than collapsed — the fold frontier reasons per event.
   if (isMultiTool(message)) {
-    for (const inner of message.tool_messages ?? []) appendIncoming(inner)
-    return
+    const all: number[] = []
+    for (const inner of message.tool_messages ?? []) all.push(...appendIncoming(inner))
+    return all
   }
   if (message.role === 'user') {
     active.append('user/message', createUserMessage({
       content: [{ type: 'text', text: message.content ?? '' }],
       source: { kind: 'user' },
     }), { surfaceOp: 'append' })
-    return
+    return active.surface.nodes.filter((s: number) => !before.has(s))
   }
   if (message.role === 'tool') {
     // tau2 delivers a tool result as its own message carrying the originating
@@ -554,7 +566,7 @@ function appendIncoming(message: TauMessage | TauMultiTool): void {
         isError: message.error === true,
       }),
     }, { surfaceOp: 'append' })
-    return
+    return active.surface.nodes.filter((s: number) => !before.has(s))
   }
   throw new Error(`bridge: unsupported incoming role "${message.role}"`)
 }
@@ -1509,8 +1521,10 @@ async function main(): Promise<void> {
           // model call. Folding the two operations together forced one model
           // call per result, which would show the model a transcript with some
           // of its own tool calls still unanswered.
-          appendIncoming(request.message as TauMessage)
-          emit({ ok: true, telemetry: await telemetry() })
+          // The seqs the append created, so a caller can build a fact -> seq map and join it to
+          // the fold lineage. Without them `exposure` -- section 7's covariate -- is unreachable.
+          const appendedSeqs = appendIncoming(request.message as TauMessage)
+          emit({ ok: true, seqs: appendedSeqs, telemetry: await telemetry() })
         } else if (op === 'step') {
           // One model call on the current surface, with a fresh turn boundary.
           //

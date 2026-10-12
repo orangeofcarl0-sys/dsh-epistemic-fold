@@ -84,6 +84,45 @@ def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0) -> t
 
 # ---------------------------------------------------------------- batching
 
+
+# ---------------------------------------------------------------- exposure
+
+def compute_exposure(fact_seqs: dict, fold_lineage: list) -> dict:
+    """Per-fact exposure, as a VECTOR over mechanisms (docs/62 section 7.3).
+
+    `exposure(f)` is how many folds had f's seq inside their shadowed range. Section 7.3 is
+    explicit that it is not an integer: a leaf fold is local, a root fold is global, and an
+    emergency rebase happens under overflow pressure inside a live turn and is likeliest to be
+    hasty. "Folded three times by leaves" and "folded once by a root" are not the same event, so
+    the three are counted separately and the total is derived rather than stored.
+
+    The other three covariates of 7.2 come from the same structure: `lineage_depth` is how many
+    distinct folds touched the fact, `containing_summary_size` is the token count of the smallest
+    fold that swallowed it, and `token_distance` is left to the analysis because it depends on
+    where the probe is asked rather than on what the engine did.
+    """
+    out: dict[str, dict] = {}
+    for fact, seqs in fact_seqs.items():
+        sset = set(seqs)
+        counts = {"leaf": 0, "root": 0, "emergency": 0}
+        sizes = []
+        for fold in fold_lineage:
+            shadowed = set(fold.get("shadowedSeqs") or [])
+            if sset & shadowed:
+                mech = fold.get("mechanism")
+                if mech in counts:
+                    counts[mech] += 1
+                sizes.append(fold.get("shadowedTokenCount"))
+        out[fact] = {
+            "leaf": counts["leaf"],
+            "root": counts["root"],
+            "emergency": counts["emergency"],
+            "total": sum(counts.values()),
+            "lineage_depth": sum(counts.values()),
+            "containing_summary_size": min((x for x in sizes if x is not None), default=None),
+        }
+    return out
+
 def probe_batches(key: dict, docs: dict, errata: list[dict] | None = None) -> list[dict]:
     """Group probes by the documents they need, one batch per project.
 
@@ -228,10 +267,20 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     if limit_docs:
         seq = seq[:limit_docs]
     appended = 0
+    # ## The fact -> seq map, without which exposure is unreachable
+    #
+    # Section 7.2 computes exposure by joining a fact to the fold lineage, and the lineage records
+    # the seqs each fold SHADOWED. So the driver has to know which seqs carry which fact. The
+    # bridge returns them from \`append\`; recording them here is what makes the join possible at
+    # all. A document states a known set of fields (\`states\`), so each of those fields inherits
+    # the document's seqs.
+    fact_seqs: dict[str, list[int]] = {}
     for k in seq:
         d = by_key.get(k)
         if d is not None:
-            bridge.append({"role": "user", "content": d["text"]})
+            reply = bridge.append({"role": "user", "content": d["text"]})
+            for f in d.get("states", []):
+                fact_seqs.setdefault(f"{d['project']}.{f}", []).extend(reply.get("seqs") or [])
             appended += 1
     # Read AFTER the last append. The first draft read it from the telemetry carried by `init`,
     # which describes an empty session, so a full corpus reported an ingested size of zero.
@@ -314,6 +363,9 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
               "parsed_strict": strict, "parsed_loose": loose}
     result = score_probes.score(key, parsed)
     telemetry = bridge.last_telemetry
+    # The join section 7.2 describes, now that both sides exist: the fold lineage from the bridge
+    # and the fact -> seq map from the appends.
+    exposure = compute_exposure(fact_seqs, telemetry.get("foldLineage") or [])
     bridge.close()
 
     return {
@@ -343,6 +395,15 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                        "compactionFailureKinds", "promptTokensLast", "surfaceNodesLast",
                        "costTotal", "providerFailures")},
         "foldLineage": telemetry.get("foldLineage", []),
+        "factSeqs": {k: v for k, v in sorted(fact_seqs.items())},
+        "exposure": exposure,
+        "exposure_summary": {
+            "facts_with_any_fold": sum(1 for v in exposure.values() if v["total"] > 0),
+            "facts_total": len(exposure),
+            "by_mechanism": {
+                m: sum(v[m] for v in exposure.values()) for m in ("leaf", "root", "emergency")
+            },
+        },
     }
 
 
