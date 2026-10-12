@@ -770,6 +770,16 @@ async function foldIfNeeded(): Promise<void> {
   roots = counters.roots
   emergencies = counters.emergencies
   surfaceNodesLast = session!.surface.nodes.length
+  // ## The surface size, published here and not only on a model call
+  //
+  // promptTokensLast was set ONLY inside the model-call path. A bridge that had ingested documents
+  // but not yet called the model therefore reported ZERO, and the memory driver reads this field as
+  // BOTH the ingested size and the surface size -- so its calibration measured nothing and then
+  // reported "reached the target", because zero is less than the target. A false green of exactly
+  // the kind that benchmark exists to detect, and it survived because the path had never been run.
+  //
+  // The meter is already used two lines up for the lineage; it simply was not published.
+  promptTokensLast = ctx!.tokenMeter.measure(session!).totalTokens
 
   // ## Record the lineage, not only the count
   //
@@ -891,6 +901,9 @@ async function drainIdleRebase(): Promise<void> {
   roots = counters.roots
   emergencies = counters.emergencies
   surfaceNodesLast = session.surface.nodes.length
+  // Published for the same reason as in the append path: a fold changes the surface size, and a
+  // reader that only sees it after the NEXT model call is reading a stale value.
+  promptTokensLast = ctx!.tokenMeter.measure(session).totalTokens
 }
 
 /** The engine's lifetime fold counters, as one snapshot. */
@@ -1524,6 +1537,19 @@ async function main(): Promise<void> {
           // The seqs the append created, so a caller can build a fact -> seq map and join it to
           // the fold lineage. Without them `exposure` -- section 7's covariate -- is unreachable.
           const appendedSeqs = appendIncoming(request.message as TauMessage)
+            // ## Publish the surface size, because this operation does NOT call the model
+            //
+            // promptTokensLast was set ONLY inside the model-call path, so an append-only bridge
+            // reported ZERO on every append. That is exactly what the memory driver is: it ingests
+            // the whole corpus before folding, so it read an ingested size of zero, then folded to
+            // a surface of zero, then reported "reached the target" -- because zero is less than
+            // the target. It measured nothing and said it had succeeded.
+            //
+            // A false green of precisely the kind that benchmark exists to detect, and it survived
+            // because the path had never been executed: the endpoint answered 429 for the whole
+            // session in which the driver was written.
+            promptTokensLast = ctx!.tokenMeter.measure(session!).totalTokens
+            surfaceNodesLast = session!.surface.nodes.length
           emit({ ok: true, seqs: appendedSeqs, telemetry: await telemetry() })
         } else if (op === 'step') {
           // One model call on the current surface, with a fresh turn boundary.
