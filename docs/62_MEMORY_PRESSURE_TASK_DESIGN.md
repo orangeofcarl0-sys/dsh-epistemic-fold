@@ -168,7 +168,28 @@ count and summary size differ if the compressor changed behaviour).
 Basic and one EF tier, unwarned — five cells. The full-context arm is added once the first
 five separate.
 
-### 6.4 Ingestion order is a factor, not a nuisance
+### 6.4 The control is three arms, because the failure has three states
+
+A two-arm design cannot tell "the fact is gone" from "the fact is present and harmful".
+Three conditions separate them:
+
+    A = acc(compressed, no injection)
+    B = acc(compressed + oracle injection)
+    C = acc(clean context + oracle injection)
+
+| difference | meaning |
+|---|---|
+| `B - A` | **recoverable loss** — the fact was gone, and re-supplying the source restores it |
+| **`C - B`** | **the summary as an interferent** — the source is in hand and the answer is still wrong |
+| `C - A` | total loss |
+
+**`C - B` is the one a two-arm design cannot see.** A summary reading "retry_limit is 5 or 8"
+can keep the model from answering correctly *even when the correct document is placed in
+front of it*: the retained text has stopped being a carrier of information and become a
+distractor. That is damage caused by compression alone, with nothing missing, and it is
+worth separating from loss.
+
+### 6.5 Ingestion order is a factor, not a nuisance
 
 A very long target cannot be ingested at once, so it enters in SOME order. Which order is
 not a detail: it decides **which facts are folded most often**, and therefore which facts
@@ -186,7 +207,23 @@ often, and later composition probes need exactly them, so the failure mode is "t
 needed fact decayed the most" — which is both realistic and invisible to an aggregate
 score.
 
-**Self-exploration must be non-regenerable**, or it degenerates: with retrieval available,
+### 6.6 Push and exploration are two paradigms, not two settings
+
+The proposal says ingestion "does not require a tool call", which is not the same as
+forbidding one — and the distinction matters, because **self-exploration cannot exist under
+a pure push regime**. Choosing what to read next is an action.
+
+| paradigm | ingestion | the ability under test |
+|---|---|---|
+| **push** (default) | documents are appended; the model acts not at all | **maintenance alone** |
+| **exploration** (variant) | the model requests the next document — one minimal action | **intake policy** |
+
+**These must never be pooled.** A low score in the exploration arm is evidence about what
+the model chose to read, not about what it retained, and reading it as a retention result
+would attribute a selection failure to the compressor. The push arm is the one that
+measures retention; the exploration arm measures curation.
+
+**Self-exploration must also be non-regenerable**, or it degenerates: with retrieval available,
 the model can read nothing and fetch later. Withholding retrieval makes the intake decision
 consequential, and a model that reads everything in order is then indistinguishable from
 the temporal arm — which is itself the finding.
@@ -229,7 +266,22 @@ Four per-probe covariates come out of the same structure:
 | **`containing-summary size`** | a fact inside a 50-token summary is likelier intact than one inside a 5-token summary |
 | `token distance` | distance from the probe |
 
-### 7.3 The analysis is against exposure, not against depth
+### 7.3 Exposure is typed by MECHANISM, not just counted
+
+The engine compresses three ways, and their loss signatures should not be assumed equal:
+
+| mechanism | character |
+|---|---|
+| leaf fold | local — the fact is replaced by a summary of its neighbourhood |
+| root fold (idle rebase) | global — the whole surface is rebased |
+| emergency rebase | happens under overflow pressure inside a live turn, and is the likeliest to be hasty |
+
+"Folded three times by leaves" and "folded once by a root" are not the same event, so
+exposure is a vector over mechanisms rather than an integer. Retention is then reportable by
+`(mechanism, count)`, and a difference between mechanisms is a finding about the compressor
+rather than about the corpus.
+
+### 7.4 The analysis is against exposure, not against depth
 
     retention(k) = P(correct | exposure = k)
 
@@ -247,12 +299,30 @@ Three further decouplings, in decreasing strength:
    aggregate. Weakest, but a retention figure without its exposure distribution is
    uninterpretable, so this is a floor rather than an option.
 
+### 7.5 Pairing is where the statistical power comes from
+
+Resolving 0.9 from 0.7 with an unpaired two-proportion test needs roughly 60-90 probes per
+condition at 80% power. Stratifying by exposure makes that worse rather than better: six
+exposure levels at 60 probes each is 360.
+
+**The within-fact design is paired, and that is the reason to prefer it.** Detecting the same
+0.2 difference with pairing needs on the order of 30-40. The power comes from holding the
+fact constant, not from buying more probes — which matters because probes are not free and
+the grid is already constrained.
+
 **Every reported number carries its exposure distribution.** An aggregate retention figure
 alone would be exactly the kind of number this section exists to prevent.
 
 ## 8. Scoring
 
-    retention(depth)       = accuracy(depth) / accuracy(regenerable)   <- the headline
+**The headline comparison is at matched final size, not at matched fold count.** Five EF
+folds and five Basic summarisations are not the same work: if one compresses the surface to
+20k and the other to 40k, comparing their retention compares two different amounts of
+compression. Fold count describes what was done; **final size is what must be held equal**
+before "which compressor is better" means anything.
+
+    retention(size)        = accuracy(at matched final size) / accuracy(regenerable)  <- headline
+    retention(depth)       = accuracy(depth) / accuracy(regenerable)                  <- mechanism
     load penalty           = accuracy(regenerable) - accuracy(full context)
     binding loss           = accuracy(extraction) - accuracy(disambiguation)
     confabulation rate     = 1 - accuracy(abstention)
