@@ -580,6 +580,29 @@ measures.
 
 So the menu shows an **opaque id plus a one-line title**, and the model fetches by id.
 
+#### 6.8.2 The read cap's value, and how exploration is scored
+
+**The cap must make selection consequential.** If k equals the number of documents, exploration
+collapses into the push arm and measures nothing (6.8), so the cap is set at roughly **a third of
+the corpus**: enough that a choice exists, small enough that it matters.
+
+**\`oracle-k\` is computable from the answer key** -- the k documents containing the most probed
+facts -- so the upper bound of selection is a number the generator produces rather than a
+judgement.
+
+Exploration is scored in three layers over the same probes:
+
+    acc(exploration)   the k documents the model chose
+    acc(random-k)      k documents chosen at random
+    acc(oracle-k)      the k most informative documents
+
+    exploration - random    selection skill
+    oracle - exploration    distance from optimal
+
+**All three run the same probe set**, so the arm yields both "did it choose well" and "did it
+retain" -- and 6.7 forbids reporting them as one number. The first is a fact about curation, the
+second about compression, and a low exploration score is evidence about the former.
+
 ### 6.9 Three constraints that protect the measurement
 
 1. **No note-taking.** The exploration arm needs a tool call to request a document. If the model
@@ -1094,3 +1117,41 @@ used without definition, now fixed in section 0.
 repository has hit the same shape repeatedly in code this session: a correct fix applied to one
 instance of a class, leaving the class. The review is recorded here so the next revision starts by
 reading the whole document rather than the section it intends to change.
+
+## 13. Implementation checklist
+
+The design is settled; this is the order of work, with what can be verified at each step. It is
+last so that a reader who has followed the reasoning arrives at something executable.
+
+| # | piece | verify by | depends on |
+|---|---|---|---|
+| 1 | **fold-lineage capture** in the bridge | a run whose transcript carries \`shadowedSeqs\` and \`summarySeq\` per fold | -- |
+| 2 | **\`compact\` operation** | a run where depth N is requested and N events come back | 1 |
+| 3 | **corpus generator** (3.2.16) | the four assertions hold: unique values per type, full vocabulary per project, reserved abstentions, late errata | -- |
+| 4 | **probe generator + scorer** | 320 probes score against the key deterministically; a planted wrong answer scores wrong | 3 |
+| 5 | **size calibration** (10.6) | a mechanism reaches the 20% target, or the sweep shows it cannot | 2, 3 |
+| 6 | **driver** (10.5) | one cell end to end, with the ordering constraints visible in the trace | 1-5 |
+| 7 | **injection harness** (6.4) | arm B's injected set contains the answer for every probe it serves | 4 |
+| 8 | **the minimum grid** (6.10, 6.14) | 19 cells, and the four falsifiers in 11 are checkable from the output | 6, 7 |
+| 9 | **analysis** (10.7, 8.3) | the retention curve, per type, with clustered intervals | 8 |
+
+**Steps 1 and 2 are the only ones that touch existing code**, and both are additions rather than
+changes: the bridge records more per fold, and gains one operation. Steps 3 to 5 are new files
+with no dependencies on the running system, so they can be built and tested while the LHTB lane
+is still using the machine.
+
+**The first thing to build is 1**, because it is the only prerequisite that cannot be worked
+around: without the lineage there is no exposure, and without exposure section 7's decoupling is
+unavailable and the analysis degrades to the nominal-depth averaging that 7.1 identifies as a
+validity problem.
+
+### 13.1 What is deliberately not built yet
+
+- **the warning factor** (6.3) -- cheap to add, but it doubles the grid and the primary question
+  does not need it
+- **the exploration paradigm** (6.7) -- it measures a different ability, and pooling it with
+  retention is forbidden, so it is a second experiment rather than an extra arm
+- **the full-context arm** (6.5) -- a separate reduced-corpus experiment by construction
+- **depth 3, the other EF tiers, the other orders** -- added only if the minimum grid separates
+
+Each of those is a decision the design already argues for, not an omission.
