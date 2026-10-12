@@ -27,6 +27,7 @@ violates one.
 from __future__ import annotations
 
 import json
+import os
 import random
 import sys
 from pathlib import Path
@@ -704,7 +705,21 @@ def main() -> None:
         "note": "filler draws figures disjoint from every probed value, or fails",
     }
     (HERE / "corpus_core.json").write_text(json.dumps(corpus, indent=2), encoding="utf-8")
-    docs = render_documents(corpus)
+    # ## The corpus size is the experiment's independent variable (3.2.5)
+    #
+    # The design states the target as a MULTIPLE of the window, so the absolute size has to be
+    # settable rather than baked in. It is a knob here, and the ACHIEVED total is printed, so the
+    # requested target and the measured corpus are never confused for one another -- the same
+    # distinction that 3.2.5 needed when a ratio was taken against the wrong denominator.
+        #
+    # The default MUST be the value that reproduces the artifacts committed alongside this file.
+    # It was 25000 while the corpus on disk was 4,044,275, which meant every run of the test suite
+    # -- tests/memory-corpus-generator runs this script with no environment -- silently shrank the
+    # corpus back to 861,697. The knob and the artifact disagreed, and the disagreement was
+    # invisible because both values are plausible. A default that does not reproduce what is
+    # committed is a generator that quietly rewrites its own output.
+    tokens_per_project = int(os.environ.get("EF_MEMORY_TOKENS_PER_PROJECT", "117300"))
+    docs = render_documents(corpus, tokens_per_project)
     probes = build_probes(corpus, random.Random(SEED + 1))
     orders = orderings(corpus, docs, probes["errata"], random.Random(SEED + 2))
     report["orderings_distinct"] = check_orderings(orders)

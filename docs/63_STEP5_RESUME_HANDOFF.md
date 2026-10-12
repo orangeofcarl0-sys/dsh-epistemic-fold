@@ -177,29 +177,49 @@ python analyse.py
 |---|---|
 | `build_corpus.py` | exit 0; all six constraints pass |
 | regeneration | byte-identical hashes for all five artifacts (deterministic) |
-| corpus | 100 documents / 20 projects / 3,446,788 chars / **861,697 tokens** |
+| corpus | 100 documents / 20 projects / 16,177,100 chars / **4,044,275 tokens** |
 | probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
 | answer leakage | 204 keyed, 204 public, **0 leaked** |
 | answer positions | 46 / 43 / 66 / 49 — position carries no signal |
 | `analyse.py` | exits 1 with **"no result files found"** — correct, no cells have run |
 
-### 8.1 The sizing question was never a question
+### 8.1 Sizing — what was true, and what was decided
 
 `EF_MEMORY_WINDOW` defaults to **131,072**, and that is the routed model's real window
 (`eval/src/default-regime.ts:10`, "contextWindow 131072 (the routed model's real window)").
 
+**The four-times rule was already met.** A "corpus is only 862k against a 1M window" blocker was
+raised mid-session, and that 1M window belonged to `deepseek-v4-flash` — the model the mistake in
+§3 had wrongly switched the harness to. Against the window actually under test:
+
 ```
-861,697 tokens / 131,072 = 6.57x window        design 3.2.5 requires >= 4x   -> PASS
+861,697 / 131,072 = 6.57x          section 3.2.5 requires >= 4x   -> PASS
 ```
 
-Section 3.2.5 already states "at least four times the window of the model under test, which for a
-131k window is roughly 500k tokens", and line 1116 already says "at six times the window". **The
-design was self-consistent the whole time.**
+Section 3.2.5 already said "at least four times the window of the model under test", and line 1116
+already said "at six times the window". **The design was self-consistent the whole time**, and the
+blocker was an artifact of the same error rather than a property of the corpus.
 
-A "corpus is only 862k against a 1M window" blocker was raised mid-session. That comparison used
-**`deepseek-v4-flash`'s** window — the wrong model. The blocker was an artifact of the very
-mistake recorded in §3, and regenerating a 4M-token corpus would have destroyed a correct artifact
-to fix a problem that did not exist.
+**The corpus was then enlarged anyway — deliberately.** The size became a knob
+(`EF_MEMORY_TOKENS_PER_PROJECT`), and the corpus now stands at:
+
+```
+4,044,275 / 131,072 = 30.9x         roughly 7 folds forced by ingestion -> roughly 31
+```
+
+That is a **change of regime, not a repair**, and the distinction is the point: calling it a repair
+would mean a correct artifact had been destroyed to fix a problem that did not exist.
+
+Only the filler scales. The 20 projects, 100 documents, 204 probes and four errata are unchanged,
+and `answer_key.json`, `public_probes.json`, `orderings.json` and `generation_report.json` are
+**byte-identical across the resize**. Growing the project count instead would have scaled the probes
+toward a thousand and broken 3.2.10 ("two hundred probes still fit in one turn").
+
+**Check this first on the first live run.** At 30.9x, ingestion may already bring the surface to or
+below the 50%-of-window target before any `compact` is requested. If so, `depth_to_target` sits
+at its floor and the depth axis has no range — the calibration would be measuring nothing while
+looking like it measured something. The driver reports that case rather than hiding it; it is the
+first number to read.
 
 ---
 

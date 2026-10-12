@@ -160,8 +160,39 @@ so.
 
 The corpus must exceed what the model can hold, and the window differs per model, so the target
 is stated as a multiple rather than an absolute: **at least four times the window of the model
-under test**, which for a 131k window is roughly 500k tokens. Twenty projects at ~25k tokens
-each reaches it.
+under test**, which for a 131k window is roughly 500k tokens.
+
+**The size is a knob, not a constant**, because it is this experiment's independent variable:
+
+    EF_MEMORY_TOKENS_PER_PROJECT   default 117300  ->  4,044,275 tokens  =  30.9x the window
+
+The default **must** be the value that reproduces the committed artifacts. It was briefly 25000
+while the corpus on disk was 4,044,275, and because the generator test runs this script with no
+environment, **every run of the suite silently shrank the corpus back to 861,697**. Both numbers are
+plausible on their own, so nothing looked wrong; only the disagreement was wrong. A default that
+does not reproduce what is committed is a generator that quietly rewrites its own output.
+
+**Recorded because the reason for the change is not the obvious one.** A blocker was raised
+mid-session claiming the corpus was too small — 862k against a **1M** window. That 1M window
+belonged to a *different model*, the one a separate mistake had wrongly switched the harness to.
+Against the window actually under test (131,072) the corpus was already **6.57x**, so it had met
+the four-times rule from the start, and section 3.2.5 had said so. Enlarging it was therefore a
+**deliberate change of regime** — roughly 7 folds forced by ingestion became roughly 31 — and not
+the repair of a defect. The distinction matters: one is a design decision, the other would mean a
+correct artifact had been destroyed to fix a problem that did not exist.
+
+**Only the filler scales.** The 20 projects, 100 documents, 204 probes and four errata are
+unchanged, and so are `answer_key.json`, `public_probes.json`, `orderings.json` and
+`generation_report.json` — byte-identical across the resize. Growing the project count instead
+would have scaled the probes toward a thousand and broken 3.2.10 ("two hundred probes still fit in
+one turn"). The filler states no probed fact, so a larger corpus cannot change an answer.
+
+**What to watch when this first runs.** At 30.9x the window, ingestion alone forces far more folds
+than the calibration's depth range was written around. If the surface is already at or below the
+50%-of-window target before any `compact` is requested, then `depth_to_target` collapses to its
+floor and the depth axis loses its range. The driver already reports "the target was already
+exceeded before I asked" rather than silently correcting it, so this will be visible as a
+measurement rather than as a failure — but it is the first thing to check.
 
 #### 3.2.6 The fact schema of each type
 
@@ -1100,11 +1131,11 @@ its own pass. Concretely:
 **The ratio is of the WINDOW, and the first version's ratio of the INGESTED SIZE was
 unreachable.** The arithmetic is not close:
 
-    ingested            861,697 tokens
-    20% of ingested     172,339 tokens      <- the first target
+    ingested          4,044,275 tokens
+    20% of ingested     808,855 tokens      <- the first target
     window              131,072 tokens
 
-**The target was 31% above the window**, so no mechanism could ever reach it: the surface has to
+**The target was 6.2x above the window**, so no mechanism could ever reach it: the surface has to
 fit the window or the provider refuses the request, and a target above the window is a target that
 cannot be held. Every sweep would have run to its depth ceiling and reported "this mechanism
 cannot reach the target" -- which 10.6 treats as a finding ABOUT THE MECHANISM, and it would have
@@ -1113,7 +1144,7 @@ been a finding about the arithmetic instead.
 **The tell is that the ratio was taken against the wrong quantity.** 3.2.5 sizes the corpus as a
 multiple of the window, and the calibration then took its ratio against the corpus rather than
 against the window the corpus was sized in terms of. A ratio of the ingested size is only
-meaningful while the result fits the window, and at six times the window it cannot.
+meaningful while the result fits the window, and at thirty times the window it cannot.
 
 **A fraction of the window is matched by construction** -- it is the same absolute size for every
 mechanism, which is what "matched final size" means -- and it survives resizing for the same

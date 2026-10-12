@@ -41,7 +41,7 @@ gets a fast HTTP 400 that reads as "the endpoint is fine".
 | file | what it is |
 |---|---|
 | `build_corpus.py` | the single source of truth; one run regenerates everything below |
-| `documents.json` | 100 documents, 20 projects, ~862k tokens |
+| `documents.json` | 100 documents, 20 projects, ~4.04M tokens |
 | `answer_key.json` | 204 probes **with** expected values — the grader reads this |
 | `public_probes.json` | the same probes with every answer stripped — a run may see only this |
 | `orderings.json` | random, temporal and logical, as explicit sequences |
@@ -81,22 +81,37 @@ written. [docs/62 §13.0](../../docs/62_MEMORY_PRESSURE_TASK_DESIGN.md) carries 
 |---|---|
 | `build_corpus.py` | exit 0, all six constraints pass |
 | regeneration | byte-identical hashes for all five artifacts — the files on disk match the generator |
-| corpus | 100 documents / 20 projects / **861,697 tokens** |
+| corpus | 100 documents / 20 projects / **4,044,275 tokens** |
 | probes | 204 — extraction 80, disambiguation 80, composition 20, update 4, abstention 20 |
 | leakage | 204 keyed, 204 public, **0 leaked answers** |
 | answer positions | 46 / 43 / 66 / 49 — position carries no signal |
 | `analyse.py` | exits 1 with "no result files found" — correct while no cell has run |
 
-### Sizing is settled, and it was never in question
+### Sizing
 
-`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window. Against that
-window the corpus is:
+`EF_MEMORY_WINDOW` defaults to **131,072**, which is the routed model's real window. The corpus
+size is a knob, because it is the experiment's independent variable:
 
-    861,697 / 131,072 = 6.57x          section 3.2.5 requires >= 4x   -> PASS
+    EF_MEMORY_TOKENS_PER_PROJECT   default 117300   (reproduces the committed corpus)
 
-A mid-session claim that the corpus was too small compared it against a **1M-token window belonging
-to a different model** — the model a separate mistake had wrongly switched the harness to. The
-artifact was already correct. See [docs/63](../../docs/63_STEP5_RESUME_HANDOFF.md) §8.1.
+    4,044,275 / 131,072 = 30.9x         section 3.2.5 requires >= 4x   -> PASS
+
+**The resize was a change of regime, not the repair of a defect.** A mid-session claim that the
+corpus was too small compared it against a **1M-token window belonging to a different model** — the
+model a separate mistake had wrongly switched the harness to. Against the window actually under
+test the corpus was already **6.57x**, comfortably past the four-times rule, and section 3.2.5 had
+said so. It was enlarged deliberately, to move from roughly 7 folds forced by ingestion to roughly
+31. See [docs/63](../../docs/63_STEP5_RESUME_HANDOFF.md) §8.1.
+
+Only the filler scales. The projects, documents, probes and errata are unchanged, and
+`answer_key.json`, `public_probes.json`, `orderings.json` and `generation_report.json` are
+byte-identical across the resize — the filler states no probed fact, so a larger corpus cannot
+change an answer.
+
+**First thing to check on the first live run:** at 30.9x, ingestion may already bring the surface to
+or below the 50%-of-window target before any `compact` is requested. If so, `depth_to_target`
+sits at its floor and the depth axis has no range. The driver reports that case rather than hiding
+it, but it is the measurement to look at first.
 
 ### Running it
 
