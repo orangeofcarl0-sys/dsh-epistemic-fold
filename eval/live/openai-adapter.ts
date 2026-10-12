@@ -150,6 +150,26 @@ function mapFinish(reason: string | undefined, sawToolCall: boolean): FinishReas
  */
 const MAX_RATE_LIMIT_RETRIES = 3
 
+/**
+ * How long a single request may take before it is abandoned.
+ *
+ * ## Why a request needs a deadline of its own
+ *
+ * The caller-supplied signal bounds a TURN, not a request, and the live driver passes none for an
+ * ordinary model call. So a request that never returns had nothing to stop it: the cell sat there
+ * while Harbor reported the trial as running and the container stayed Up, and the only thing that
+ * ended it was the 28800s task budget. That is the documented "fold stalled for 16 minutes with
+ * both sides alive and no error anywhere", observed again on the LongCat route, where the endpoint
+ * answers 429 for large prompts and can simply hang.
+ *
+ * A deadline turns a hang into a transport failure, which the caller already knows how to record as
+ * a provider failure. It is combined with the caller signal so cancellation still wins immediately.
+ *
+ * Generous on purpose: a legitimate call on a large prompt took 40s in measurement, so five minutes
+ * is far above anything healthy while still ending a hang in minutes rather than hours.
+ */
+const REQUEST_TIMEOUT_MS = Number(process.env.EF_LIVE_REQUEST_TIMEOUT_MS ?? 300_000)
+
 /** First backoff step when the provider sends no `Retry-After`. */
 const RATE_LIMIT_BASE_DELAY_MS = 1_000
 
@@ -251,6 +271,12 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
     let attempt = 0
     for (;;) {
       signal?.throwIfAborted()
+      // Combined with the caller signal so a cancelled turn still stops at once, and bounded so a
+      // request that never returns cannot hold a cell open until the task budget expires.
+      const requestDeadline = AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+      const requestSignal = signal === undefined
+        ? requestDeadline
+        : AbortSignal.any([signal, requestDeadline])
       const response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -263,7 +289,7 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
           authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify(body),
-        ...(signal === undefined ? {} : { signal }),
+        signal: requestSignal,
       })
       if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
         if (response.status === 429) this.rateLimitExhausted += 1
