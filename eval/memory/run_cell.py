@@ -158,10 +158,25 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     ingested = bridge.last_telemetry.get("promptTokensLast", 0)
     ingested_docs = appended
 
-    folds = 0
-    for _ in range(depth):
+    # ## Depth is the ACHIEVED TOTAL, not the number of requests
+    #
+    # The corpus is more than four times the window (3.2.5), so ingestion alone forces folds: the
+    # surface cannot fit otherwise. Requesting "depth 5" on top of the folds ingestion already
+    # committed would give a total that depends on the corpus rather than on the request, and the
+    # requested depth would barely move it -- which is the independent variable gone.
+    #
+    # So the target is a TOTAL, and the loop asks only for the difference. Natural folds are read
+    # from telemetry rather than inferred, and a corpus that folds more than the target is
+    # reported rather than silently corrected, because "the target was already exceeded before I
+    # asked" is a fact about the cell.
+    natural = int(bridge.last_telemetry.get("folds") or 0)
+    requested = 0
+    committed = 0
+    for _ in range(max(0, depth - natural)):
+        requested += 1
         if bridge.compact():
-            folds += 1
+            committed += 1
+    folds = natural + committed
 
     # Injection AFTER compaction, so the injected tokens cannot be folded (5.4).
     if inject:
@@ -187,7 +202,13 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         "cell": {"arm": arm, "order": order_name, "depth": depth, "mode": mode,
                  "warned": warned, "inject": inject, "compaction_disabled": not compaction_on},
         "ingested_tokens": ingested, "ingested_docs": ingested_docs,
-        "folds_requested": depth, "folds_committed": folds,
+        # Three separate numbers, because conflating them is how the independent variable
+        # disappears: the target, what ingestion forced, and what the request added.
+        "depth_target": depth,
+        "folds_natural": natural,
+        "folds_requested": requested,
+        "folds_committed": committed,
+        "folds_total": folds,
         "probe_turn_chars": len(turn), "probe_seconds": round(elapsed, 1),
         "probe_provider_failures": probe_failures,
         # The first 400 characters of the reply, so a parse failure is diagnosable from the

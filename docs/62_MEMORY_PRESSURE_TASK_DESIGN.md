@@ -348,6 +348,32 @@ and receive the engine's counters back. Recorded per event: mechanism, `folds`, 
 Natural pressure is still recorded as a covariate — a cell that folded on its own before the
 first requested compaction is not at depth zero.
 
+### 4.1 Depth is the ACHIEVED TOTAL, and the first version of this was wrong
+
+The covariate sentence above was written as if natural folds were an occasional nuisance. **They
+are not occasional: they are unavoidable.** The corpus is more than four times the window (3.2.5),
+so the surface cannot fit without folding, and **ingestion alone commits folds before the driver
+asks for any.**
+
+That breaks the independent variable as first specified. If ingestion forces about seven folds,
+then requesting depth 5 gives a total of 12 and depth 1 gives 8 — **the requested depth moves the
+total by four while the corpus moves it by seven, so the request is no longer what is being
+varied.** Two cells labelled depth 1 and depth 5 would differ mostly because of the corpus.
+
+**Depth is therefore the achieved total**, and the driver asks only for the difference:
+
+    natural   = folds the engine committed during ingestion   (read from telemetry)
+    requested = calls the driver makes                        (only what is missing)
+    total     = natural + committed
+
+**A corpus that folds past the target is reported rather than corrected.** "The target was already
+exceeded before I asked" is a fact about the cell, and silently clamping it would hide the one
+observation that says the target is unreachable at that corpus size.
+
+Three numbers are recorded separately — target, natural, requested — because conflating them is
+exactly how the variable disappears. The same reasoning already governs 7.1: the analysis is
+against `exposure(p)`, not against the nominal depth, and this is the same defect one level up.
+
 ## 5. The probes
 
 

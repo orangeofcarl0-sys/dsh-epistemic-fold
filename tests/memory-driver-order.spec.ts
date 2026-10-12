@@ -52,10 +52,20 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toContain('bridge.init(SYSTEM_PUSH, [])')
   })
 
-  it('counts COMMITS as depth, not calls', () => {
-    // compact() returns False when the engine declines, and counting calls would record a
-    // depth the engine never reached.
-    expect(DRIVER).toMatch(/if bridge\.compact\(\):\n\s+folds \+= 1/u)
+  it('counts COMMITS, and treats depth as the ACHIEVED TOTAL', () => {
+    // Two distinct defects, both of which lose the independent variable.
+    //
+    // compact() returns False when the engine declines, so counting CALLS records a depth the
+    // engine never reached. And the corpus is more than four times the window, so ingestion
+    // alone forces folds: requesting "depth 5" on top of those gives a total that depends on
+    // the corpus rather than the request, and the request barely moves it.
+    expect(DRIVER).toMatch(/if bridge\.compact\(\):\n\s+committed \+= 1/u)
+    expect(DRIVER).toContain('natural = int(bridge.last_telemetry.get("folds") or 0)')
+    expect(DRIVER).toMatch(/for _ in range\(max\(0, depth - natural\)\):/u)
+    // And the three numbers are reported separately, because conflating them is the defect.
+    for (const k of ['depth_target', 'folds_natural', 'folds_requested', 'folds_committed', 'folds_total']) {
+      expect(DRIVER, k + ' must be reported').toContain('"' + k + '"')
+    }
   })
 
   it('retries a provider failure on the probe turn rather than scoring it as a loss', () => {
