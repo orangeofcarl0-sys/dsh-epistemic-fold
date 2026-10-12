@@ -162,6 +162,19 @@ PROVIDER_OUTAGE_MAX_SEC = float(os.environ.get("EF_LHTB_PROVIDER_OUTAGE_MAX_SEC"
 # the next one.
 PROVIDER_BACKOFF_MAX_SEC = int(os.environ.get("EF_LHTB_PROVIDER_BACKOFF_SEC", "60"))
 
+# ## How many wasted attempts are tolerated before the episode gives up
+#
+# A provider failure no longer consumes a turn, so the budget stays fair -- but a
+# provider that fails often without ever failing CONSECUTIVELY for
+# PROVIDER_OUTAGE_MAX_SEC would otherwise let the loop run until harbor kills the
+# container, which yields no termination reason and no reward.
+#
+# Generous on purpose: at MAX_TURNS * 3 a cell still receives its full MAX_TURNS
+# real turns even if three of every four calls fail. Past that the route is too
+# broken for the number to mean anything, and saying so is better than being
+# killed silently.
+MAX_WASTED_ATTEMPTS = int(os.environ.get("EF_LHTB_MAX_WASTED_ATTEMPTS", str(MAX_TURNS * 3)))
+
 # The placeholder the bridge substitutes when the model produced nothing. Kept in
 # sync with `EMPTY_TURN_PLACEHOLDER` in bridge-host.ts.
 EMPTY_PLACEHOLDER = "(no response)"
@@ -372,7 +385,24 @@ class EFLhtbAgent(BaseAgent):
         # in the session.
         reply = self._bridge.step()
 
-        for turn in range(1, MAX_TURNS + 1):
+        # ## The budget counts MODEL TURNS, not provider luck
+        #
+        # This was `for turn in range(1, MAX_TURNS + 1)`, and a provider failure
+        # consumed an iteration from it -- even though the comment below already said
+        # "a provider failure is not a model turn". The two disagreed, and the budget
+        # was therefore allocated by provider luck. Measured on a live wave: one cell
+        # met a 36% failure rate and another 63%, a wider spread than the differences
+        # the arms are being compared on, so the confound was larger than the effect.
+        #
+        # The turn number now advances only on a call that actually reached the
+        # model, so every arm gets MAX_TURNS real turns whatever the network does.
+        # Termination is still guaranteed: an uninterrupted outage ends the episode
+        # after PROVIDER_OUTAGE_MAX_SEC, and harbor's own wall-clock ceiling bounds
+        # the case where failures are frequent but never consecutive.
+        turn = 0
+        wasted_attempts = 0
+        while turn < MAX_TURNS:
+            turn += 1
             calls = reply.get("tool_calls") or []
 
             # ## A provider failure is not a model turn
@@ -424,6 +454,16 @@ class EFLhtbAgent(BaseAgent):
                 # into a terminated episode.
                 time.sleep(min(2 ** min(consecutive_provider_failures, 6),
                                PROVIDER_BACKOFF_MAX_SEC))
+                # Give the turn back. The request never reached the model, so the
+                # episode has not spent one; charging for it is what let a burst of
+                # upstream 429s decide how many turns an arm received.
+                turn -= 1
+                wasted_attempts += 1
+                if wasted_attempts > MAX_WASTED_ATTEMPTS:
+                    termination = (f"provider-waste-exceeded ({wasted_attempts} attempts "
+                                   f"for {turn} model turns; {provider_failures} total "
+                                   f"failures)")
+                    break
                 reply = self._bridge.step(reply_budget)
                 continue
             # A successful call ends the outage, whatever the cumulative total is.
