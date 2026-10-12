@@ -23,3 +23,4 @@ client-instr.js
 # DSH with EF mounted from inside this repository writes real fold bundles here.
 # They are runtime state, not source.
 .epistemic-fold/
+eval/memory/last_score.json
