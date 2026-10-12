@@ -123,6 +123,40 @@ def analyse(cells: list[dict]) -> dict:
 
     out: dict = {"n_cells": len(cells), "n_scored_probes": len(rows)}
 
+    # ## The chance floor, and the dimensions section 11 needs
+    #
+    # Section 11 lists what would falsify the design, and an analysis that cannot check them is
+    # not an analysis of this design. Three were unreachable as first written:
+    #
+    #   "arm B near chance" needs the FLOOR. Every probe carries four real options, so chance is
+    #   about 0.25; an arm at 0.30 is at chance, and the same 0.30 read against zero looks like a
+    #   weak-but-real result. The scorer computes the floor and the analysis was dropping it.
+    #
+    #   "B and A indistinguishable at DEPTH 1" needs depth as a dimension, and retention was
+    #   reported by type and by exposure but never by depth.
+    #
+    #   "the warned and unwarned arms differ only in fold count" needs the warning as a dimension.
+    #
+    # All three are cheap to carry and impossible to reconstruct afterwards from a summary.
+    key_all = json.loads((HERE / "answer_key.json").read_text(encoding="utf-8"))
+    n_opts = [len(p["options"]) for p in key_all["probes"]]
+    out["chance_floor"] = round(sum(1.0 / n for n in n_opts) / len(n_opts), 4)
+
+    def group(rows_subset, keyfn):
+        g: dict = defaultdict(list)
+        for r in rows_subset:
+            g[keyfn(r)].append(r)
+        return {k: {"n": len(v), "accuracy": round(acc(v), 4),
+                    "ci95": list(cluster_bootstrap(v, acc)),
+                    "n_facts": len({r["fact"] for r in v})}
+                for k, v in sorted(g.items(), key=lambda kv: str(kv[0]))}
+
+    paired = [r for r in rows if r["kind"] in ("extraction", "disambiguation")]
+    out["retention_by_depth"] = group(
+        paired, lambda r: (r["cell"]["arm"], r["cell"]["depth"]))
+    out["retention_by_warning"] = group(
+        paired, lambda r: (r["cell"]["arm"], bool(r["cell"].get("warned"))))
+
     # ---- retention per type, per arm
     by_type_arm: dict[tuple, list] = defaultdict(list)
     for r in rows:
@@ -220,6 +254,110 @@ def analyse(cells: list[dict]) -> dict:
     return out
 
 
+
+# ---------------------------------------------------------------- falsifiers
+
+def evaluate_falsifiers(out: dict) -> dict:
+    """Which of section 11's falsifiers the data actually triggers.
+
+    Section 11 lists eight. Six are checkable from this output and two are not: the warned factor
+    and the full-context load penalty are separate experiments, and reporting them as "not
+    triggered" because their cells are absent would be the worst kind of green.
+
+    Each entry says what was tested, what was seen, and what it means -- because a falsifier that
+    fires is a RESULT about the design, not a failure of the run.
+    """
+    f: dict[str, dict] = {}
+    floor = out.get("chance_floor")
+
+    # 1. retention near 1.0 at every exposure: the instrument has no range.
+    by_exp = out.get("retention_by_exposure") or {}
+    accs = [v["accuracy"] for v in by_exp.values() if v["accuracy"] is not None]
+    if accs:
+        f["retention_near_ceiling"] = {
+            "min_accuracy": min(accs), "max_accuracy": max(accs),
+            "triggered": min(accs) > 0.95,
+            "means": "the corpus is too easy or compression is lossless at this size",
+        }
+
+    # 2. arm B near chance: the probes are unanswerable even with the source injected.
+    b = (out.get("retention_by_type") or {}).get("B") or {}
+    bacc = [v["accuracy"] for v in b.values() if v["accuracy"] is not None]
+    if bacc and floor is not None:
+        f["arm_B_near_chance"] = {
+            "B_accuracy": round(sum(bacc) / len(bacc), 4), "chance_floor": floor,
+            "triggered": (sum(bacc) / len(bacc)) - floor < 0.10,
+            "means": "nothing downstream can be attributed; the probes are unanswerable",
+        }
+
+    # 3. B and A indistinguishable at depth 1.
+    by_depth = out.get("retention_by_depth") or {}
+
+    def at_depth(arm: str, d: int):
+        """Find a group whose key is (arm, depth), whatever form the key arrived in.
+
+        The groups are keyed by TUPLE. An earlier version looked up the JSON string form
+        ("['A', 1]") and so never found anything: this falsifier could not fire, and a falsifier
+        that cannot fire is worse than an absent one because it reads as "checked and clear".
+        """
+        for k, v in by_depth.items():
+            if isinstance(k, str):
+                try:
+                    k = json.loads(k.replace("(", "[").replace(")", "]"))
+                except json.JSONDecodeError:
+                    continue
+            if isinstance(k, (list, tuple)) and len(k) == 2 and k[0] == arm and k[1] == d:
+                return v
+        return None
+
+    a1, b1 = at_depth("A", 1), at_depth("B", 1)
+    if a1 and b1 and a1["accuracy"] is not None and b1["accuracy"] is not None:
+        gap = b1["accuracy"] - a1["accuracy"]
+        f["A_and_B_tie_at_depth_1"] = {
+            "A": a1["accuracy"], "B": b1["accuracy"], "gap": round(gap, 4),
+            "triggered": abs(gap) < 0.05,
+            "means": "compression at this size does nothing; depth must be raised",
+        }
+
+    # 4. extraction and disambiguation move together: binding loss is not a real phenomenon.
+    bl = out.get("binding_loss")
+    if bl:
+        f["extraction_tracks_disambiguation"] = {
+            "extraction": bl["extraction"], "disambiguation": bl["disambiguation"],
+            "mcnemar_p": bl.get("p"),
+            "triggered": bl.get("p") is not None and bl["p"] > 0.05,
+            "means": "the binding-loss hypothesis is wrong and extraction would suffice",
+        }
+
+    # 5. exposure does not predict retention: the covariates are decoration.
+    if len(accs) >= 2 and by_exp:
+        # A monotone-ish signal is what "predicts" means here; a flat curve is the falsifier.
+        ordered = [v["accuracy"] for k, v in sorted(by_exp.items(), key=lambda kv: int(kv[0]))
+                   if v["accuracy"] is not None]
+        f["exposure_does_not_predict"] = {
+            "curve": ordered,
+            "spread": round(max(ordered) - min(ordered), 4) if ordered else None,
+            "triggered": bool(ordered) and (max(ordered) - min(ordered)) < 0.05,
+            "means": "compression is not what is losing the facts",
+        }
+
+    # 6. B - C near zero: the retained summary does not interfere.
+    it = out.get("interference_B_minus_C")
+    if it:
+        gap = it["B_accuracy"] - it["C_accuracy"]
+        f["interference_near_zero"] = {
+            "B": it["B_accuracy"], "C": it["C_accuracy"], "gap": round(gap, 4),
+            "triggered": abs(gap) < 0.05,
+            "means": "the interference term can be dropped and retention alone suffices",
+        }
+
+    # 7 and 8 are NOT checkable here, and saying so is the point.
+    f["warning_factor"] = {"checked": False,
+                           "why": "the warned and unwarned arms are separate cells; none are in this set"}
+    f["load_penalty"] = {"checked": False,
+                         "why": "the full-context arm is a separate reduced-corpus experiment (6.5)"}
+    return f
+
 def main() -> None:
     args = sys.argv[1:]
     paths = [Path(a) for a in args] if args else sorted(HERE.glob("result_*.json"))
@@ -228,6 +366,7 @@ def main() -> None:
         print("no result files found", file=sys.stderr)
         raise SystemExit(1)
     out = analyse(cells)
+    out["falsifiers"] = evaluate_falsifiers(out)
     (HERE / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"cells: {out['n_cells']}   scored probes: {out['n_scored_probes']}")
     for arm, types in out["retention_by_type"].items():
@@ -245,6 +384,12 @@ def main() -> None:
     if "confabulation" in out:
         print(f"  confabulation: declined {out['confabulation']['declined_correctly']}"
               f"/{out['confabulation']['n']} = {out['confabulation']['rate']}")
+    fired = [k for k, v in out["falsifiers"].items() if v.get("triggered")]
+    unchecked = [k for k, v in out["falsifiers"].items() if v.get("checked") is False]
+    print(f"chance floor: {out.get('chance_floor')}")
+    print(f"falsifiers triggered: {fired if fired else 'none'}")
+    if unchecked:
+        print(f"  not checkable from this set: {', '.join(unchecked)}")
     print("wrote analysis.json")
 
 
