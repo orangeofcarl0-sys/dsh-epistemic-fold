@@ -205,7 +205,12 @@ export interface LiveAdapterOptions {
 /**
  * The live adapter. One instance serves one model route.
  */
-export class OpenAiCompatibleAdapter extends LlmAdapter {
+export class OpenAiCompatibleAdapter
+  extends LlmAdapter {
+  /** How many requests needed their tool shape repaired, and how much was changed. */
+  toolShapeRepairs = 0
+  toolResultsSynthesised = 0
+  toolResultsDropped = 0
   private readonly baseUrl: string
   private readonly apiKey: string
   private readonly model: string
@@ -370,6 +375,64 @@ export class OpenAiCompatibleAdapter extends LlmAdapter {
       messages.push({ role: 'system', content: options.system })
     }
     messages.push(...options.messages.map(toWireMessage))
+
+    // ## Every tool_call must have exactly one result, or the provider rejects the request
+    //
+    // Measured against this route: an assistant message whose tool_calls are not all answered,
+    // or a tool result naming an id that was never called, returns HTTP 400
+    // `invalid_request_error`. Order does not matter and the CONTENT does not matter -- NUL
+    // bytes, lone surrogates and 200KB of output all pass. The request SHAPE is what is rejected.
+    //
+    // That matters because the failure is self-perpetuating: once the history holds an unanswered
+    // tool_call, every later request in that episode is malformed, so the cell stops dead while
+    // every outer layer still reports it as running. Observed as 13 provider failures in 23 calls
+    // and then no further progress at all. It is model-independent -- this is the benchmark's own
+    // request shape, not a provider's weakness.
+    //
+    // Repaired rather than refused, because refusing kills the episode. The placeholder says what
+    // it is, so a reader can tell a real result from a synthesised one, and the count is reported
+    // on stderr and in the adapter's counters rather than being absorbed silently.
+    const calledIds = new Set<string>()
+    for (const m of messages) {
+      const calls = m.tool_calls as readonly { id?: unknown }[] | undefined
+      if (!Array.isArray(calls)) continue
+      for (const c of calls) if (typeof c.id === 'string' && c.id.length > 0) calledIds.add(c.id)
+    }
+    if (calledIds.size > 0 || messages.some(m => m.role === 'tool')) {
+      const answeredIds = new Set<string>()
+      for (const m of messages) {
+        if (m.role === 'tool' && typeof m.tool_call_id === 'string') answeredIds.add(m.tool_call_id)
+      }
+      const orphans = messages.filter(
+        m => m.role === 'tool' && !calledIds.has(String(m.tool_call_id)),
+      ).length
+      if (orphans > 0) {
+        for (let i = messages.length - 1; i >= 0; i -= 1) {
+          const m = messages[i]!
+          if (m.role === 'tool' && !calledIds.has(String(m.tool_call_id))) messages.splice(i, 1)
+        }
+      }
+      let missing = 0
+      for (const id of calledIds) {
+        if (answeredIds.has(id)) continue
+        messages.push({
+          role: 'tool',
+          tool_call_id: id,
+          content: '[ef-bridge] no result was recorded for this tool call',
+        })
+        missing += 1
+      }
+      if (orphans > 0 || missing > 0) {
+        this.toolShapeRepairs += 1
+        this.toolResultsSynthesised += missing
+        this.toolResultsDropped += orphans
+        process.stderr.write(
+          `[openai-adapter] repaired an invalid tool shape: ${missing} unanswered tool_call(s) ` +
+          `filled, ${orphans} orphan tool result(s) dropped. The provider rejects this shape ` +
+          `with HTTP 400, and one bad history poisons every later request in the episode.\n`,
+        )
+      }
+    }
 
     const body: Record<string, unknown> = {
       model: this.model,
