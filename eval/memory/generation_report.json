@@ -35,5 +35,10 @@
   "orderings_distinct": {
     "ok": true,
     "identical_pairs": []
+  },
+  "answers_are_stated": {
+    "ok": true,
+    "violations": [],
+    "count": 0
   }
 }

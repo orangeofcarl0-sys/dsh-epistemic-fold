@@ -13,7 +13,7 @@
           "backoff_base_ms": 153,
           "max_payload_bytes": 123869
         },
-        "reserved_field": "connect_timeout_ms"
+        "reserved_field": "pool_size"
       },
       {
         "type": "coding",
@@ -26,7 +26,7 @@
           "backoff_base_ms": 1607,
           "max_payload_bytes": 9010391
         },
-        "reserved_field": "pool_size"
+        "reserved_field": "backoff_base_ms"
       },
       {
         "type": "coding",
@@ -39,7 +39,7 @@
           "backoff_base_ms": 505,
           "max_payload_bytes": 6707356
         },
-        "reserved_field": "backoff_base_ms"
+        "reserved_field": "max_payload_bytes"
       },
       {
         "type": "coding",
@@ -52,7 +52,7 @@
           "backoff_base_ms": 1869,
           "max_payload_bytes": 9491301
         },
-        "reserved_field": "max_payload_bytes"
+        "reserved_field": "connect_timeout_ms"
       },
       {
         "type": "coding",
@@ -65,7 +65,7 @@
           "backoff_base_ms": 1169,
           "max_payload_bytes": 5397860
         },
-        "reserved_field": "max_attempts"
+        "reserved_field": "pool_size"
       }
     ],
     "execution": [
@@ -214,7 +214,7 @@
           "citation_required": "introduction",
           "heading_style": "imperative"
         },
-        "reserved_field": "preferred_term"
+        "reserved_field": "max_sentence_len"
       },
       {
         "type": "generation",
@@ -227,7 +227,7 @@
           "citation_required": "method",
           "heading_style": "gerund"
         },
-        "reserved_field": "max_sentence_len"
+        "reserved_field": "heading_style"
       },
       {
         "type": "generation",
@@ -240,7 +240,7 @@
           "citation_required": "limitations",
           "heading_style": "sentence"
         },
-        "reserved_field": "citation_required"
+        "reserved_field": "section_order"
       },
       {
         "type": "generation",
@@ -253,7 +253,7 @@
           "citation_required": "discussion",
           "heading_style": "title"
         },
-        "reserved_field": "heading_style"
+        "reserved_field": "max_sentence_len"
       },
       {
         "type": "generation",
@@ -266,7 +266,7 @@
           "citation_required": "appendix",
           "heading_style": "question"
         },
-        "reserved_field": "section_order"
+        "reserved_field": "heading_style"
       }
     ]
   },

@@ -111,6 +111,24 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toMatch(/max\(0, depth - natural\) if ingests_corpus else 0/u)
   })
 
+  it('batches the probes by the documents they need, instead of one turn', () => {
+    // 5.3's requirement is NO FOLD BETWEEN PROBES, and compaction is off for the whole phase,
+    // so one turn is not required. It was also impossible: the union of every probe's needed
+    // documents is the whole corpus, 861,703 tokens, so arm B could not inject it.
+    expect(DRIVER).toContain('def probe_batches(')
+    expect(DRIVER).toContain('for batch in batches:')
+    expect(DRIVER).toContain('"probe_batches": len(batches)')
+  })
+
+  it('validates that each injection actually CONTAINS the answer', () => {
+    // An injection without the answer measures the injection, not the model, and the score
+    // looks like a recall failure rather than a missing document.
+    expect(DRIVER).toContain('def validate_injection(')
+    // The errata belong to an update probe's injection: the corrected value appears nowhere
+    // in the project's own documents.
+    expect(DRIVER).toContain('g["errata"] = [e for e in (errata or []) if e["project"] in g["needs"]]')
+  })
+
   it('keeps the system prompt minimal, because an instruction to summarise changes the IV', () => {
     const start = DRIVER.indexOf('SYSTEM_PUSH = (')
     const end = DRIVER.indexOf(')', start)

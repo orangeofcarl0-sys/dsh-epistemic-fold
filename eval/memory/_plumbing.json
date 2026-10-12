@@ -1,0 +1,1544 @@
+{
+  "cell": {
+    "arm": "quality",
+    "order": "logical",
+    "depth": 0,
+    "mode": "A",
+    "warned": false,
+    "inject": false,
+    "compaction_disabled": true
+  },
+  "ingested_tokens": 0,
+  "folds_requested": 0,
+  "folds_committed": 0,
+  "probe_turn_chars": 21207,
+  "probe_seconds": 11.4,
+  "parsed": {
+    "strict": 0,
+    "loose": 0,
+    "unparsed": 204
+  },
+  "score": {
+    "overall": {
+      "n": 204,
+      "scored": 0,
+      "unparsed": 204,
+      "correct": 0,
+      "accuracy": null,
+      "chance_floor": 0.25
+    },
+    "by_kind": {
+      "abstention": {
+        "n": 20,
+        "scored": 0,
+        "unparsed": 20,
+        "correct": 0,
+        "accuracy": null
+      },
+      "composition": {
+        "n": 20,
+        "scored": 0,
+        "unparsed": 20,
+        "correct": 0,
+        "accuracy": null
+      },
+      "disambiguation": {
+        "n": 80,
+        "scored": 0,
+        "unparsed": 80,
+        "correct": 0,
+        "accuracy": null
+      },
+      "extraction": {
+        "n": 80,
+        "scored": 0,
+        "unparsed": 80,
+        "correct": 0,
+        "accuracy": null
+      },
+      "update": {
+        "n": 4,
+        "scored": 0,
+        "unparsed": 4,
+        "correct": 0,
+        "accuracy": null
+      }
+    },
+    "by_type": {
+      "coding": {
+        "n": 51,
+        "scored": 0,
+        "unparsed": 51,
+        "correct": 0,
+        "accuracy": null
+      },
+      "execution": {
+        "n": 51,
+        "scored": 0,
+        "unparsed": 51,
+        "correct": 0,
+        "accuracy": null
+      },
+      "generation": {
+        "n": 51,
+        "scored": 0,
+        "unparsed": 51,
+        "correct": 0,
+        "accuracy": null
+      },
+      "reasoning": {
+        "n": 51,
+        "scored": 0,
+        "unparsed": 51,
+        "correct": 0,
+        "accuracy": null
+      }
+    },
+    "binding_loss": {
+      "n_pairs": 0,
+      "note": "no fact has both forms scored"
+    }
+  },
+  "rows": [
+    {
+      "id": 1,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 2,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 3,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 4,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 5,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 6,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 7,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 8,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 9,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 10,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 11,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 12,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 13,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 14,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 15,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 16,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 17,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 18,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 19,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 20,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 21,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 22,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 23,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 24,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 25,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 26,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 27,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 28,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 29,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 30,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 31,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 32,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 33,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 34,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 35,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 36,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 37,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 38,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 39,
+      "type": "coding",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 40,
+      "type": "coding",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 41,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 42,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 43,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 44,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 45,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 46,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 47,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 48,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 49,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 50,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 51,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 52,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 53,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 54,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 55,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 56,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 57,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 58,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 59,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 60,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 61,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 62,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 63,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 64,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 65,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 66,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 67,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 68,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 69,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 70,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 71,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 72,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 73,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 74,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 75,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 76,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 77,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 78,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 79,
+      "type": "execution",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 80,
+      "type": "execution",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 81,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 82,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 83,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 84,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 85,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 86,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 87,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 88,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 89,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 90,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 91,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 92,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 93,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 94,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 95,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 96,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 97,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 98,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 99,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 100,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 101,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 102,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 103,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 104,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 105,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 106,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 107,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 108,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 109,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 110,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 111,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 112,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 113,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 114,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 115,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 116,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 117,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 118,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 119,
+      "type": "reasoning",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 120,
+      "type": "reasoning",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 121,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 122,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 123,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 124,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 125,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 126,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 127,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 128,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 129,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 130,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 131,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 132,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 133,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 134,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 135,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 136,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 137,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 138,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 139,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 140,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 141,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 142,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 143,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 144,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 145,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 146,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 147,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 148,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 149,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 150,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 151,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 152,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 153,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 154,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 155,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 156,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 157,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 158,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 159,
+      "type": "generation",
+      "kind": "extraction",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 160,
+      "type": "generation",
+      "kind": "disambiguation",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 161,
+      "type": "coding",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 162,
+      "type": "coding",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 163,
+      "type": "coding",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 164,
+      "type": "coding",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 165,
+      "type": "coding",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 166,
+      "type": "execution",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 167,
+      "type": "execution",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 168,
+      "type": "execution",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 169,
+      "type": "execution",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 170,
+      "type": "execution",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 171,
+      "type": "reasoning",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 172,
+      "type": "reasoning",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 173,
+      "type": "reasoning",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 174,
+      "type": "reasoning",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 175,
+      "type": "reasoning",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 176,
+      "type": "generation",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 177,
+      "type": "generation",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 178,
+      "type": "generation",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 179,
+      "type": "generation",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 180,
+      "type": "generation",
+      "kind": "composition",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 181,
+      "type": "coding",
+      "kind": "update",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 182,
+      "type": "execution",
+      "kind": "update",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 183,
+      "type": "reasoning",
+      "kind": "update",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 184,
+      "type": "generation",
+      "kind": "update",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 185,
+      "type": "coding",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 186,
+      "type": "coding",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 187,
+      "type": "coding",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 188,
+      "type": "coding",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 189,
+      "type": "coding",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 190,
+      "type": "execution",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 191,
+      "type": "execution",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 192,
+      "type": "execution",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 193,
+      "type": "execution",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 194,
+      "type": "execution",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 195,
+      "type": "reasoning",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 196,
+      "type": "reasoning",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 197,
+      "type": "reasoning",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 198,
+      "type": "reasoning",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 199,
+      "type": "reasoning",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 200,
+      "type": "generation",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 201,
+      "type": "generation",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 202,
+      "type": "generation",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 203,
+      "type": "generation",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    },
+    {
+      "id": 204,
+      "type": "generation",
+      "kind": "abstention",
+      "outcome": "unparsed",
+      "correct": null
+    }
+  ],
+  "telemetry": {
+    "folds": 0,
+    "roots": 0,
+    "emergencies": 0,
+    "compactionFailures": 0,
+    "compactionFailureKinds": {},
+    "promptTokensLast": 25648,
+    "surfaceNodesLast": 3,
+    "costTotal": 0,
+    "providerFailures": 1
+  },
+  "foldLineage": []
+}

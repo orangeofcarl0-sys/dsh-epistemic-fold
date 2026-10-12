@@ -79,6 +79,26 @@ describe.skipIf(!canRun)('the memory corpus generator', () => {
     expect(unpaired.length, 'every probed fact needs both forms, or binding loss is unpaired').toBe(0)
   })
 
+  it('reads ONE reserve rather than computing two that can disagree', () => {
+    // attach_reserved chose the withheld field; render_documents recomputed its own from the
+    // full field list, so the probe builder skipped one field while the renderer withheld a
+    // DIFFERENT one -- and 23 probes asked about a field no document states. Both computations
+    // look reasonable alone; only their difference is wrong.
+    const gen = readFileSync(join(MEM, 'build_corpus.py'), 'utf8')
+    expect(gen).toContain('reserved = r["reserved_field"]')
+    expect(gen, 'the renderer must not recompute the reserve').not.toContain('reserved = fields[r["index"] % len(fields)]')
+    // And a composition answer can never be reserved: it is asked for by a probe.
+    expect(gen).toContain('COMPOSITION_ANSWER_FIELDS')
+  })
+
+  it('asserts every expected answer is actually STATED somewhere', () => {
+    // The general form of the defect above. A probe whose answer is stated nowhere cannot be
+    // answered by any arm, and its failure is indistinguishable from a retention failure.
+    const report = JSON.parse(readFileSync(join(MEM, 'generation_report.json'), 'utf8'))
+    expect(report.answers_are_stated).toBeDefined()
+    expect(report.answers_are_stated.ok, report.answers_are_stated.violations?.join('; ')).toBe(true)
+  })
+
   it('places the errata late, so there is a stale value to update from', () => {
     const orders = JSON.parse(readFileSync(join(MEM, 'orderings.json'), 'utf8'))
     for (const [name, seq] of Object.entries(orders) as [string, string[]][]) {

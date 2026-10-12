@@ -81,6 +81,73 @@ def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0) -> t
     return reply, failures
 
 
+
+# ---------------------------------------------------------------- batching
+
+def probe_batches(key: dict, docs: dict, errata: list[dict] | None = None) -> list[dict]:
+    """Group probes by the documents they need, one batch per project.
+
+    Section 5.3, as corrected: the requirement is NO FOLD BETWEEN PROBES, not one turn. With all
+    204 probes in a single turn the union of their needed documents is the ENTIRE corpus -- 100
+    documents, 861,703 tokens -- so arm B could not inject it and would have measured truncation
+    rather than the model. Batching makes 6.4.1's "minimal injection" achievable.
+
+    A composition probe needs TWO projects, so it rides in its source project's batch and that
+    batch injects both. Ten documents is about 86k tokens, which fits a 131k window.
+    """
+    groups: dict[str, dict] = {}
+    for p in key["probes"]:
+        # The batch a probe belongs to is its own project; composition carries both.
+        owner = p["fact"].split("->")[0].split(".")[0]
+        g = groups.setdefault(owner, {"owner": owner, "probes": [], "needs": set()})
+        g["probes"].append(p)
+        if p.get("answer_is_project"):
+            g["needs"].add(p["fact"].split("->")[1])
+        elif p.get("needs"):
+            g["needs"].update(p["needs"])
+        else:
+            g["needs"].add(owner)
+    out = []
+    for owner in sorted(groups):
+        g = groups[owner]
+        g["needs"] = sorted(g["needs"])
+        # The ERRATA document belongs to an update probe's injection (6.4.1: "the project's
+        # documents PLUS THE ERRATA"). Leaving it out was caught by validate_injection on four
+        # batches: an update probe's answer is the CORRECTED value, which appears nowhere in the
+        # project's own documents, so arm B would have scored near zero on every update probe and
+        # it would have read as the model failing to find a value that was never supplied.
+        g["errata"] = [e for e in (errata or []) if e["project"] in g["needs"]]
+        g["docs"] = [f"{pid}/{d['name']}" for pid in g["needs"] for d in docs[pid]]
+        out.append(g)
+    return out
+
+
+def validate_injection(batch: dict, docs: dict) -> list[str]:
+    """Every injected set must actually contain the answer (6.4, threat 8).
+
+    An injection that does not contain the answer measures the INJECTION rather than the model,
+    and the failure is invisible in the score: it looks like the model could not find something
+    that was never there.
+    """
+    problems = []
+    texts = {}
+    for pid in batch["needs"]:
+        texts[pid] = "\n".join(d["text"] for d in docs[pid])
+    errata_text = "\n".join(e["text"] for e in batch.get("errata", []))
+    for p in batch["probes"]:
+        if p["kind"] == "abstention":
+            continue                      # nothing is injected, by design (3.2.13)
+        if p.get("answer_is_project"):
+            target = p["fact"].split("->")[1]
+            if target not in texts:
+                problems.append(f"probe {p['id']}: {target} not injected")
+            continue
+        hay = " ".join(texts.values()) + " " + errata_text
+        if str(p["answer"]) not in hay:
+            problems.append(f"probe {p['id']}: answer {p['answer']!r} absent from the injection")
+    return problems
+
+
 def load(name: str) -> dict:
     return json.loads((HERE / name).read_text(encoding="utf-8"))
 
@@ -204,12 +271,47 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # Measure a state, do not change one (5.4).
     compaction_on = bridge.set_compaction(False)
 
-    turn = score_probes.render_probe_turn(public)
+    # ## Batched probing (5.3 as corrected)
+    #
+    # The requirement is NO FOLD BETWEEN PROBES, and compaction is off for the whole phase, so
+    # the probes are grouped by the documents they need rather than forced into one turn. One
+    # turn was the first design and it made the injection arms impossible: the union of every
+    # probe's needed documents is the entire corpus, 861,703 tokens, which cannot be injected.
+    batches = probe_batches(key, docs, key["errata"])
     started = time.monotonic()
-    reply, probe_failures = step_with_retry(bridge)
+    all_answers: dict[int, str] = {}
+    unparsed_all: list[int] = []
+    probe_failures = 0
+    strict = loose = 0
+    turn_chars = 0
+    reply_heads = []
+    for batch in batches:
+        if inject:
+            # The minimal set for THIS batch, which is what 6.4.1 asks for and what the
+            # single-turn design made unreachable.
+            for key_name in batch["docs"]:
+                pid, name = key_name.split("/", 1)
+                doc = next(d for d in docs[pid] if d["name"] == name)
+                bridge.append({"role": "user", "content": doc["text"]})
+            for e in batch["errata"]:
+                bridge.append({"role": "user", "content": e["text"]})
+        batch_public = {"probes": [p for p in public["probes"]
+                                   if p["id"] in {q["id"] for q in batch["probes"]}]}
+        turn = score_probes.render_probe_turn(batch_public)
+        turn_chars += len(turn)
+        reply, failures = step_with_retry(bridge)
+        probe_failures += failures
+        text = reply.get("content") or ""
+        if len(reply_heads) < 2:
+            reply_heads.append(text[:300])
+        got = score_probes.parse_answers(text, [p["id"] for p in batch["probes"]])
+        all_answers.update(got["answers"])
+        unparsed_all.extend(got["unparsed"])
+        strict += got["parsed_strict"]
+        loose += got["parsed_loose"]
     elapsed = time.monotonic() - started
-    text = reply.get("content") or ""
-    parsed = score_probes.parse_answers(text, [p["id"] for p in key["probes"]])
+    parsed = {"answers": all_answers, "unparsed": unparsed_all,
+              "parsed_strict": strict, "parsed_loose": loose}
     result = score_probes.score(key, parsed)
     telemetry = bridge.last_telemetry
     bridge.close()
@@ -226,11 +328,12 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         "folds_requested": requested,
         "folds_committed": committed,
         "folds_total": folds,
-        "probe_turn_chars": len(turn), "probe_seconds": round(elapsed, 1),
+        "probe_turn_chars": turn_chars, "probe_batches": len(batches),
+        "probe_seconds": round(elapsed, 1),
         "probe_provider_failures": probe_failures,
         # The first 400 characters of the reply, so a parse failure is diagnosable from the
         # result file rather than only from a rerun.
-        "reply_head": text[:400],
+        "reply_head": (reply_heads[0] if reply_heads else ""),
         "parsed": {"strict": parsed["parsed_strict"], "loose": parsed["parsed_loose"],
                    "unparsed": len(parsed["unparsed"])},
         "score": {k: v for k, v in result.items() if k != "rows"},

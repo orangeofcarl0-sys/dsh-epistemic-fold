@@ -422,15 +422,35 @@ among the options.
 **Distractors are the other projects' real values**, so the floor is chance among real candidates
 rather than among nonsense.
 
-### 5.3 All probes are asked in ONE turn
+### 5.3 The probes are asked with NO FOLD BETWEEN THEM, which is not the same as one turn
 
 Batching probes across turns changes the state between them: answering probe 1 adds tokens,
 those tokens can trigger a fold, and probe 2 is then asked at a higher exposure than probe 1.
-That would violate the decoupling section 7 exists to establish, so **every probe goes in a
-single turn** and no fold can occur between them.
+That would violate the decoupling section 7 exists to establish.
 
-The cost is a long reply and a truncation risk, which the multiple-choice format removes — one
-letter per probe — and which the existing reply-budget escalation already handles.
+**The first version of this section concluded that every probe must therefore go in a SINGLE
+turn. That conclusion was wrong, and 5.4 says so in its own words** -- "section 7's decoupling no
+longer depends on the batch being small enough to fit one turn" -- because the mechanism that
+would fold between probes is switched off for the whole probing phase. The requirement is **no
+fold between probes**, and disabling compaction satisfies it however the probes are grouped. This
+section was written before 5.4 and never re-read against it.
+
+**The single-turn rule was not merely unnecessary. It made the injection arms impossible.**
+
+The injection is the minimal document set a probe needs (6.4.1). With all 204 probes in one turn,
+the union of those sets is the whole corpus -- measured: **every one of the 20 projects appears in
+some probe's `needs`, so the injection is 100 documents and 861,703 tokens, the entire corpus,
+and the minimal covering set is still 80 documents.** Both exceed a 131k window several times
+over, so arm B could not be run at all, and had it been run by injecting what fits, it would have
+measured the truncation rather than the model.
+
+**The probes are therefore asked in batches, grouped by the documents they need**, one batch per
+project, with compaction off across the whole phase. Each batch injects only its own group's
+documents, which is what makes 6.4.1's "minimal" achievable rather than aspirational.
+
+The reply-length concern that motivated the original rule is real but smaller: a batch is a few
+dozen probes rather than 204, and the multiple-choice format plus the existing reply-budget
+escalation already handle it.
 
 ### 5.4 Compaction is DISABLED for the probe turn
 

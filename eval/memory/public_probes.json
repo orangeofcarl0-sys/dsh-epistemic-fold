@@ -28,23 +28,23 @@
     },
     {
       "id": 3,
-      "fact": "coding-1.pool_size",
+      "fact": "coding-1.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-1?",
+      "q": "What is connect_timeout_ms for coding-1?",
       "options": [
-        40,
-        52,
-        54,
-        37
+        2947,
+        758,
+        18911,
+        8034
       ]
     },
     {
       "id": 4,
-      "fact": "coding-1.pool_size",
+      "fact": "coding-1.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 52?",
+      "q": "Which project has connect_timeout_ms = 758?",
       "options": [
         "coding-3",
         "coding-4",
@@ -158,23 +158,23 @@
     },
     {
       "id": 13,
-      "fact": "coding-2.backoff_base_ms",
+      "fact": "coding-2.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-2?",
+      "q": "What is pool_size for coding-2?",
       "options": [
-        1607,
-        505,
-        1169,
-        153
+        54,
+        62,
+        40,
+        52
       ]
     },
     {
       "id": 14,
-      "fact": "coding-2.backoff_base_ms",
+      "fact": "coding-2.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 1607?",
+      "q": "Which project has pool_size = 54?",
       "options": [
         "coding-1",
         "coding-2",
@@ -288,23 +288,23 @@
     },
     {
       "id": 23,
-      "fact": "coding-3.max_payload_bytes",
+      "fact": "coding-3.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is max_payload_bytes for coding-3?",
+      "q": "What is backoff_base_ms for coding-3?",
       "options": [
-        6707356,
-        9491301,
-        123869,
-        5397860
+        505,
+        1869,
+        153,
+        1169
       ]
     },
     {
       "id": 24,
-      "fact": "coding-3.max_payload_bytes",
+      "fact": "coding-3.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has max_payload_bytes = 6707356?",
+      "q": "Which project has backoff_base_ms = 505?",
       "options": [
         "coding-5",
         "coding-2",
@@ -340,23 +340,23 @@
     },
     {
       "id": 27,
-      "fact": "coding-4.connect_timeout_ms",
+      "fact": "coding-4.pool_size",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-4?",
+      "q": "What is pool_size for coding-4?",
       "options": [
-        2947,
-        18911,
-        8034,
-        2748
+        40,
+        54,
+        37,
+        62
       ]
     },
     {
       "id": 28,
-      "fact": "coding-4.connect_timeout_ms",
+      "fact": "coding-4.pool_size",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 8034?",
+      "q": "Which project has pool_size = 37?",
       "options": [
         "coding-5",
         "coding-1",
@@ -366,23 +366,23 @@
     },
     {
       "id": 29,
-      "fact": "coding-4.pool_size",
+      "fact": "coding-4.backoff_base_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-4?",
+      "q": "What is backoff_base_ms for coding-4?",
       "options": [
-        37,
-        54,
-        40,
-        62
+        1869,
+        1607,
+        1169,
+        505
       ]
     },
     {
       "id": 30,
-      "fact": "coding-4.pool_size",
+      "fact": "coding-4.backoff_base_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 37?",
+      "q": "Which project has backoff_base_ms = 1869?",
       "options": [
         "coding-1",
         "coding-4",
@@ -392,23 +392,23 @@
     },
     {
       "id": 31,
-      "fact": "coding-4.backoff_base_ms",
+      "fact": "coding-4.max_payload_bytes",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is backoff_base_ms for coding-4?",
+      "q": "What is max_payload_bytes for coding-4?",
       "options": [
-        1169,
-        1607,
-        1869,
-        505
+        5397860,
+        9010391,
+        9491301,
+        6707356
       ]
     },
     {
       "id": 32,
-      "fact": "coding-4.backoff_base_ms",
+      "fact": "coding-4.max_payload_bytes",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has backoff_base_ms = 1869?",
+      "q": "Which project has max_payload_bytes = 9491301?",
       "options": [
         "coding-5",
         "coding-4",
@@ -418,23 +418,23 @@
     },
     {
       "id": 33,
-      "fact": "coding-5.connect_timeout_ms",
+      "fact": "coding-5.max_attempts",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is connect_timeout_ms for coding-5?",
+      "q": "What is max_attempts for coding-5?",
       "options": [
-        2748,
-        2947,
-        18911,
-        8034
+        12,
+        5,
+        2,
+        4
       ]
     },
     {
       "id": 34,
-      "fact": "coding-5.connect_timeout_ms",
+      "fact": "coding-5.max_attempts",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has connect_timeout_ms = 2947?",
+      "q": "Which project has max_attempts = 5?",
       "options": [
         "coding-2",
         "coding-1",
@@ -444,23 +444,23 @@
     },
     {
       "id": 35,
-      "fact": "coding-5.pool_size",
+      "fact": "coding-5.connect_timeout_ms",
       "type": "coding",
       "kind": "extraction",
-      "q": "What is pool_size for coding-5?",
+      "q": "What is connect_timeout_ms for coding-5?",
       "options": [
-        40,
-        54,
-        62,
-        52
+        2947,
+        18911,
+        2748,
+        758
       ]
     },
     {
       "id": 36,
-      "fact": "coding-5.pool_size",
+      "fact": "coding-5.connect_timeout_ms",
       "type": "coding",
       "kind": "disambiguation",
-      "q": "Which project has pool_size = 40?",
+      "q": "Which project has connect_timeout_ms = 2947?",
       "options": [
         "coding-5",
         "coding-3",
@@ -1588,23 +1588,23 @@
     },
     {
       "id": 123,
-      "fact": "generation-1.max_sentence_len",
+      "fact": "generation-1.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-1?",
+      "q": "What is preferred_term for generation-1?",
       "options": [
-        17,
-        21,
-        33,
-        28
+        "settings",
+        "properties",
+        "attributes",
+        "configuration"
       ]
     },
     {
       "id": 124,
-      "fact": "generation-1.max_sentence_len",
+      "fact": "generation-1.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 28?",
+      "q": "Which project has preferred_term = configuration?",
       "options": [
         "generation-1",
         "generation-3",
@@ -1718,23 +1718,23 @@
     },
     {
       "id": 133,
-      "fact": "generation-2.citation_required",
+      "fact": "generation-2.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-2?",
+      "q": "What is max_sentence_len for generation-2?",
       "options": [
-        "method",
-        "discussion",
-        "limitations",
-        "appendix"
+        21,
+        29,
+        17,
+        33
       ]
     },
     {
       "id": 134,
-      "fact": "generation-2.citation_required",
+      "fact": "generation-2.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = method?",
+      "q": "Which project has max_sentence_len = 21?",
       "options": [
         "generation-1",
         "generation-2",
@@ -1744,23 +1744,23 @@
     },
     {
       "id": 135,
-      "fact": "generation-2.heading_style",
+      "fact": "generation-2.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is heading_style for generation-2?",
+      "q": "What is citation_required for generation-2?",
       "options": [
-        "imperative",
-        "title",
-        "gerund",
-        "question"
+        "introduction",
+        "discussion",
+        "method",
+        "appendix"
       ]
     },
     {
       "id": 136,
-      "fact": "generation-2.heading_style",
+      "fact": "generation-2.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has heading_style = gerund?",
+      "q": "Which project has citation_required = method?",
       "options": [
         "generation-1",
         "generation-3",
@@ -1770,23 +1770,23 @@
     },
     {
       "id": 137,
-      "fact": "generation-3.section_order",
+      "fact": "generation-3.preferred_term",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is section_order for generation-3?",
+      "q": "What is preferred_term for generation-3?",
       "options": [
-        "overview-first",
-        "reference-first",
-        "changelog-first",
-        "examples-first"
+        "options",
+        "configuration",
+        "settings",
+        "properties"
       ]
     },
     {
       "id": 138,
-      "fact": "generation-3.section_order",
+      "fact": "generation-3.preferred_term",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has section_order = changelog-first?",
+      "q": "Which project has preferred_term = settings?",
       "options": [
         "generation-4",
         "generation-3",
@@ -1796,23 +1796,23 @@
     },
     {
       "id": 139,
-      "fact": "generation-3.preferred_term",
+      "fact": "generation-3.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-3?",
+      "q": "What is max_sentence_len for generation-3?",
       "options": [
-        "options",
-        "attributes",
-        "settings",
-        "configuration"
+        29,
+        33,
+        17,
+        28
       ]
     },
     {
       "id": 140,
-      "fact": "generation-3.preferred_term",
+      "fact": "generation-3.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = settings?",
+      "q": "Which project has max_sentence_len = 17?",
       "options": [
         "generation-4",
         "generation-5",
@@ -1822,23 +1822,23 @@
     },
     {
       "id": 141,
-      "fact": "generation-3.max_sentence_len",
+      "fact": "generation-3.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-3?",
+      "q": "What is citation_required for generation-3?",
       "options": [
-        29,
-        17,
-        28,
-        33
+        "discussion",
+        "limitations",
+        "introduction",
+        "appendix"
       ]
     },
     {
       "id": 142,
-      "fact": "generation-3.max_sentence_len",
+      "fact": "generation-3.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 17?",
+      "q": "Which project has citation_required = limitations?",
       "options": [
         "generation-1",
         "generation-5",
@@ -1926,23 +1926,23 @@
     },
     {
       "id": 149,
-      "fact": "generation-4.max_sentence_len",
+      "fact": "generation-4.citation_required",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is max_sentence_len for generation-4?",
+      "q": "What is citation_required for generation-4?",
       "options": [
-        29,
-        33,
-        17,
-        21
+        "discussion",
+        "appendix",
+        "limitations",
+        "method"
       ]
     },
     {
       "id": 150,
-      "fact": "generation-4.max_sentence_len",
+      "fact": "generation-4.citation_required",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has max_sentence_len = 29?",
+      "q": "Which project has citation_required = discussion?",
       "options": [
         "generation-5",
         "generation-1",
@@ -1952,23 +1952,23 @@
     },
     {
       "id": 151,
-      "fact": "generation-4.citation_required",
+      "fact": "generation-4.heading_style",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is citation_required for generation-4?",
+      "q": "What is heading_style for generation-4?",
       "options": [
-        "discussion",
-        "limitations",
-        "method",
-        "introduction"
+        "title",
+        "sentence",
+        "gerund",
+        "imperative"
       ]
     },
     {
       "id": 152,
-      "fact": "generation-4.citation_required",
+      "fact": "generation-4.heading_style",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has citation_required = discussion?",
+      "q": "Which project has heading_style = title?",
       "options": [
         "generation-5",
         "generation-3",
@@ -1978,23 +1978,23 @@
     },
     {
       "id": 153,
-      "fact": "generation-5.preferred_term",
+      "fact": "generation-5.section_order",
       "type": "generation",
       "kind": "extraction",
-      "q": "What is preferred_term for generation-5?",
+      "q": "What is section_order for generation-5?",
       "options": [
-        "properties",
-        "configuration",
-        "attributes",
-        "settings"
+        "examples-first",
+        "reference-first",
+        "scope-first",
+        "changelog-first"
       ]
     },
     {
       "id": 154,
-      "fact": "generation-5.preferred_term",
+      "fact": "generation-5.section_order",
       "type": "generation",
       "kind": "disambiguation",
-      "q": "Which project has preferred_term = attributes?",
+      "q": "Which project has section_order = scope-first?",
       "options": [
         "generation-5",
         "generation-3",
@@ -2004,19 +2004,45 @@
     },
     {
       "id": 155,
+      "fact": "generation-5.preferred_term",
+      "type": "generation",
+      "kind": "extraction",
+      "q": "What is preferred_term for generation-5?",
+      "options": [
+        "options",
+        "attributes",
+        "settings",
+        "configuration"
+      ]
+    },
+    {
+      "id": 156,
+      "fact": "generation-5.preferred_term",
+      "type": "generation",
+      "kind": "disambiguation",
+      "q": "Which project has preferred_term = attributes?",
+      "options": [
+        "generation-3",
+        "generation-4",
+        "generation-2",
+        "generation-5"
+      ]
+    },
+    {
+      "id": 157,
       "fact": "generation-5.max_sentence_len",
       "type": "generation",
       "kind": "extraction",
       "q": "What is max_sentence_len for generation-5?",
       "options": [
-        29,
+        21,
         33,
         17,
-        28
+        29
       ]
     },
     {
-      "id": 156,
+      "id": 158,
       "fact": "generation-5.max_sentence_len",
       "type": "generation",
       "kind": "disambiguation",
@@ -2029,50 +2055,24 @@
       ]
     },
     {
-      "id": 157,
+      "id": 159,
       "fact": "generation-5.citation_required",
       "type": "generation",
       "kind": "extraction",
       "q": "What is citation_required for generation-5?",
       "options": [
-        "method",
         "appendix",
-        "limitations",
+        "method",
+        "introduction",
         "discussion"
       ]
     },
     {
-      "id": 158,
+      "id": 160,
       "fact": "generation-5.citation_required",
       "type": "generation",
       "kind": "disambiguation",
       "q": "Which project has citation_required = appendix?",
-      "options": [
-        "generation-3",
-        "generation-4",
-        "generation-2",
-        "generation-5"
-      ]
-    },
-    {
-      "id": 159,
-      "fact": "generation-5.heading_style",
-      "type": "generation",
-      "kind": "extraction",
-      "q": "What is heading_style for generation-5?",
-      "options": [
-        "question",
-        "gerund",
-        "imperative",
-        "title"
-      ]
-    },
-    {
-      "id": 160,
-      "fact": "generation-5.heading_style",
-      "type": "generation",
-      "kind": "disambiguation",
-      "q": "Which project has heading_style = question?",
       "options": [
         "generation-1",
         "generation-5",
@@ -2473,68 +2473,68 @@
       ]
     },
     {
-      "fact": "coding-1.connect_timeout_ms",
+      "fact": "coding-1.pool_size",
       "type": "coding",
       "kind": "abstention",
-      "q": "What is connect_timeout_ms for coding-1?",
+      "q": "What is pool_size for coding-1?",
       "id": 185,
       "options": [
         "not stated",
-        18911,
-        758,
-        2748
-      ]
-    },
-    {
-      "fact": "coding-2.pool_size",
-      "type": "coding",
-      "kind": "abstention",
-      "q": "What is pool_size for coding-2?",
-      "id": 186,
-      "options": [
-        52,
-        62,
         54,
-        "not stated"
+        52,
+        62
       ]
     },
     {
-      "fact": "coding-3.backoff_base_ms",
+      "fact": "coding-2.backoff_base_ms",
       "type": "coding",
       "kind": "abstention",
-      "q": "What is backoff_base_ms for coding-3?",
-      "id": 187,
+      "q": "What is backoff_base_ms for coding-2?",
+      "id": 186,
       "options": [
         153,
         505,
-        "not stated",
-        1607
-      ]
-    },
-    {
-      "fact": "coding-4.max_payload_bytes",
-      "type": "coding",
-      "kind": "abstention",
-      "q": "What is max_payload_bytes for coding-4?",
-      "id": 188,
-      "options": [
-        123869,
-        6707356,
-        9010391,
+        1607,
         "not stated"
       ]
     },
     {
-      "fact": "coding-5.max_attempts",
+      "fact": "coding-3.max_payload_bytes",
       "type": "coding",
       "kind": "abstention",
-      "q": "What is max_attempts for coding-5?",
+      "q": "What is max_payload_bytes for coding-3?",
+      "id": 187,
+      "options": [
+        123869,
+        6707356,
+        "not stated",
+        9010391
+      ]
+    },
+    {
+      "fact": "coding-4.connect_timeout_ms",
+      "type": "coding",
+      "kind": "abstention",
+      "q": "What is connect_timeout_ms for coding-4?",
+      "id": 188,
+      "options": [
+        758,
+        2748,
+        18911,
+        "not stated"
+      ]
+    },
+    {
+      "fact": "coding-5.pool_size",
+      "type": "coding",
+      "kind": "abstention",
+      "q": "What is pool_size for coding-5?",
       "id": 189,
       "options": [
-        12,
-        8,
+        62,
+        52,
         "not stated",
-        2
+        54
       ]
     },
     {
@@ -2668,68 +2668,68 @@
       ]
     },
     {
-      "fact": "generation-1.preferred_term",
+      "fact": "generation-1.max_sentence_len",
       "type": "generation",
       "kind": "abstention",
-      "q": "What is preferred_term for generation-1?",
+      "q": "What is max_sentence_len for generation-1?",
       "id": 200,
       "options": [
-        "settings",
-        "properties",
-        "configuration",
+        17,
+        21,
+        28,
         "not stated"
       ]
     },
     {
-      "fact": "generation-2.max_sentence_len",
+      "fact": "generation-2.heading_style",
       "type": "generation",
       "kind": "abstention",
-      "q": "What is max_sentence_len for generation-2?",
+      "q": "What is heading_style for generation-2?",
       "id": 201,
       "options": [
         "not stated",
-        28,
-        21,
-        17
-      ]
-    },
-    {
-      "fact": "generation-3.citation_required",
-      "type": "generation",
-      "kind": "abstention",
-      "q": "What is citation_required for generation-3?",
-      "id": 202,
-      "options": [
-        "limitations",
-        "not stated",
-        "method",
-        "introduction"
-      ]
-    },
-    {
-      "fact": "generation-4.heading_style",
-      "type": "generation",
-      "kind": "abstention",
-      "q": "What is heading_style for generation-4?",
-      "id": 203,
-      "options": [
         "imperative",
         "gerund",
-        "sentence",
+        "sentence"
+      ]
+    },
+    {
+      "fact": "generation-3.section_order",
+      "type": "generation",
+      "kind": "abstention",
+      "q": "What is section_order for generation-3?",
+      "id": 202,
+      "options": [
+        "changelog-first",
+        "not stated",
+        "examples-first",
+        "reference-first"
+      ]
+    },
+    {
+      "fact": "generation-4.max_sentence_len",
+      "type": "generation",
+      "kind": "abstention",
+      "q": "What is max_sentence_len for generation-4?",
+      "id": 203,
+      "options": [
+        28,
+        21,
+        17,
         "not stated"
       ]
     },
     {
-      "fact": "generation-5.section_order",
+      "fact": "generation-5.heading_style",
       "type": "generation",
       "kind": "abstention",
-      "q": "What is section_order for generation-5?",
+      "q": "What is heading_style for generation-5?",
       "id": 204,
       "options": [
         "not stated",
-        "examples-first",
-        "reference-first",
-        "changelog-first"
+        "gerund",
+        "imperative",
+        "sentence"
       ]
     }
   ]

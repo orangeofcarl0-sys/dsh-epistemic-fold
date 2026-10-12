@@ -179,6 +179,39 @@ def check(corpus: dict) -> dict:
     return report
 
 
+def check_answers_are_stated(corpus: dict, probes: list[dict], docs: dict) -> dict:
+    """Every answer a probe expects must appear in the documents a run can reach.
+
+    This is the general form of the defect that produced two unanswerable composition probes: a
+    probe whose answer is stated NOWHERE cannot be answered by any arm, and its failure is
+    indistinguishable from a retention failure. Abstention probes are exempt by design -- their
+    expected answer IS the absence (3.2.13).
+    """
+    stated: dict[str, set] = {}
+    for pid, ds in docs.items():
+        for d in ds:
+            for f in d["states"]:
+                stated.setdefault(pid, set()).add(f)
+    problems = []
+    for p in probes:
+        if p["kind"] == "abstention":
+            continue
+        if p.get("answer_is_project"):
+            continue
+        owner = p["fact"].split("->")[0].split(".")[0]
+        field = p.get("field") or (p["fact"].split(".")[1] if "." in p["fact"] else None)
+        if field is None:
+            continue
+        holder = p.get("answer_type") and p["answer_type"] or p["type"]
+        # For a composition edge the answer may live on either side, so check both.
+        sides = {p["fact"].split("->")[0].split(".")[0]}
+        if "->" in p["fact"]:
+            sides.add(p["fact"].split("->")[1])
+        if not any(field in stated.get(side, set()) for side in sides):
+            problems.append(f"probe {p['id']} ({p['kind']}): {field} is never stated for {sorted(sides)}")
+    return {"ok": not problems, "violations": problems[:10], "count": len(problems)}
+
+
 def check_orderings(orders: dict) -> dict:
     """The three orderings must actually differ, or the position pairing is degenerate.
 
@@ -231,8 +264,10 @@ FIELD_PHRASING = {
     "heading_style": "Headings use heading_style = \"{v}\".",
 }
 
-# One field per type is deliberately NEVER STATED for some projects (constraint 3). The reserve
-# is explicit so the abstention count is chosen rather than accidental.
+# Superseded: the reserve is now chosen per project by `attach_reserved`, which rotates and skips
+# composition-answer fields. Kept as a record of the first design, where the withheld field was
+# fixed per type -- which made every abstention probe ask about the same field and gave the
+# abstention set no variety. Do NOT reintroduce it as a source of truth.
 ABSTENTION_FIELD = {
     "coding": "max_payload_bytes",
     "execution": "max_concurrent_jobs",
@@ -294,10 +329,12 @@ def render_documents(corpus: dict, tokens_per_project: int = 25000) -> dict:
     for t, rows in corpus["projects"].items():
         for r in rows:
             fields = [f for f, _, _ in VOCAB[t]]
-            stated = [f for f in fields if f != ABSTENTION_FIELD[t]]
-            # Reserve one field as never stated for THIS project, rotating which one, so the
-            # abstention reserve is spread rather than always the same field.
-            reserved = fields[r["index"] % len(fields)]
+            # The reserve is READ, never recomputed. `attach_reserved` chose it, and choosing it
+            # again here from the full field list is what produced two disagreeing reserves: the
+            # probe builder skipped one field while the renderer withheld a DIFFERENT one, so 23
+            # probes asked about a field no document states. The duplication was invisible because
+            # both computations look reasonable in isolation and only their DIFFERENCE is wrong.
+            reserved = r["reserved_field"]
             stated = [f for f in fields if f != reserved]
             out = []
             for k, name in enumerate(DOC_KINDS[t]):
@@ -483,10 +520,26 @@ def build_probes(corpus: dict, rng) -> dict:
     return {"probes": probes, "errata": errata}
 
 
+# Fields a composition probe uses as its ANSWER. These can never be reserved: a reserved field is
+# never stated, so a probe asking for it is unanswerable by construction, and the injection cannot
+# contain a value that appears nowhere.
+COMPOSITION_ANSWER_FIELDS = {"max_attempts", "citation_required", "preferred_term"}
+
+
 def attach_reserved(corpus: dict) -> None:
-    """Record, per project, which field was withheld -- needed before probes are built."""
+    """Record, per project, which field was withheld -- needed before probes are built.
+
+    The choice ROTATES so the abstention reserve is spread rather than always the same field, but
+    it skips any field a composition probe needs as an answer. Rotating over the full list was
+    the first version, and it made two composition probes unanswerable: generation-1's index
+    selected preferred_term and generation-3's selected citation_required, both of which are
+    answers to ring edges. The failure was invisible in the score -- arm B would have scored near
+    zero on those two and it would have read as the model failing to recall.
+    """
     for t, rows in corpus["projects"].items():
-        fields = [f for f, _, _ in VOCAB[t]]
+        fields = [f for f, _, _ in VOCAB[t] if f not in COMPOSITION_ANSWER_FIELDS]
+        if not fields:
+            raise SystemExit(f"{t}: every field is a composition answer, nothing to reserve")
         for r in rows:
             r["reserved_field"] = fields[r["index"] % len(fields)]
 
@@ -655,6 +708,7 @@ def main() -> None:
     probes = build_probes(corpus, random.Random(SEED + 1))
     orders = orderings(corpus, docs, probes["errata"], random.Random(SEED + 2))
     report["orderings_distinct"] = check_orderings(orders)
+    report["answers_are_stated"] = check_answers_are_stated(corpus, probes["probes"], docs)
     build_options(corpus, probes["probes"], random.Random(SEED + 3))
     key, public = split(corpus, probes)
 
