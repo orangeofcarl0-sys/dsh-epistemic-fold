@@ -165,10 +165,13 @@ const MAX_RATE_LIMIT_RETRIES = 3
  * A deadline turns a hang into a transport failure, which the caller already knows how to record as
  * a provider failure. It is combined with the caller signal so cancellation still wins immediately.
  *
- * Generous on purpose: a legitimate call on a large prompt took 40s in measurement, so five minutes
- * is far above anything healthy while still ending a hang in minutes rather than hours.
+ * Two minutes, chosen by measurement rather than taste. At five minutes the LongCat route managed 2.7
+ * model calls per cell in 25 minutes; at two it managed 4.8 in 6 -- a sevenfold improvement -- while
+ * the longest LEGITIMATE call measured 40s, so two minutes still leaves three times the headroom a
+ * healthy call needs. A longer deadline does not make a hung request succeed; it only spends budget
+ * waiting to find out.
  */
-const REQUEST_TIMEOUT_MS = Number(process.env.EF_LIVE_REQUEST_TIMEOUT_MS ?? 300_000)
+const REQUEST_TIMEOUT_MS = Number(process.env.EF_LIVE_REQUEST_TIMEOUT_MS ?? 120_000)
 
 /** First backoff step when the provider sends no `Retry-After`. */
 const RATE_LIMIT_BASE_DELAY_MS = 1_000
