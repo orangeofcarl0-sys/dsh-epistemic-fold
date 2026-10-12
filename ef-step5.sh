@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fresh run on deepseek-v4-flash, with every harness defect this round exposed
+# Fresh run on step-5-preview-free, with every harness defect this round exposed
 # FIXED and launched together, so the round measures the tasks rather than the rig:
 #
 #   1. RC29 truncation retry  -- a summarization cut off at the cap is retried
@@ -27,7 +27,7 @@ WATCHLOG="$EF_HOME/ef-phase7-logs/step5e-watchdog.log"
 WATCHHEART="$EF_HOME/ef-phase7-logs/step5e-watchdog.heartbeat"
 cd "$EF_HOME" || exit 1
 echo "step5e: start $(date +%H:%M:%S) | ef $(git rev-parse --short HEAD) | lhtb $(git -C "$LHTB_ROOT" rev-parse --short HEAD)" | tee -a "$LOG"
-echo "step5e: model=${EF_LIVE_MODEL:-deepseek-v4-flash} reply_budget=${EF_BRIDGE_MAX_TOKENS:-32768} summary_budget=${EF_TAU2_SUMMARY_MAX_TOKENS:-32768} summary_retry=${EF_SUMMARY_RETRY_ATTEMPTS:-2} trunc_streak=${EF_LHTB_MAX_TRUNCATED:-3} watch=${EF_WATCH_INTERVAL_SEC:-60}s" | tee -a "$LOG"
+echo "step5e: model=${EF_LIVE_MODEL:-step-5-preview-free} reply_budget=${EF_BRIDGE_MAX_TOKENS:-32768} summary_budget=${EF_TAU2_SUMMARY_MAX_TOKENS:-32768} summary_retry=${EF_SUMMARY_RETRY_ATTEMPTS:-2} trunc_streak=${EF_LHTB_MAX_TRUNCATED:-3} watch=${EF_WATCH_INTERVAL_SEC:-60}s" | tee -a "$LOG"
 : > "$WATCHLOG"
 ORPHANS=$(docker ps -aq | wc -l)
 if [ "$ORPHANS" != "0" ]; then echo "step5e: removing $ORPHANS orphan(s)" | tee -a "$LOG"; docker ps -aq | xargs -r docker rm -f >/dev/null 2>&1; fi

@@ -1,0 +1,34 @@
+# Jobs that must NEVER be analysed.
+#
+# Why: harbor reused cached images (force_build: false with dated tags), so these ran
+# against images from June and July:
+#
+#   unknown-config  the probe pool (cfgd_data.json) AND all five spec revisions in spec.md
+#                   were readable by the agent -- the task paid for reading the answer
+#   commit0         the libraries could not be imported at all
+#
+# Their numbers describe the wrong task. Kept on disk only so the exclusion is auditable.
+# Nine of the ten were moved to ../jobs-invalid-stale-images/; this one was locked by the
+# driver process that created it, so it is excluded by name instead.
+lhtb-ef-20261012-034019-calib-c0-basic
+
+# ---------------------------------------------------------------------------
+# MODEL-SWITCH CONTAMINATION (2026-10-13)
+#
+# Commit c0d460f changed EF_LIVE_MODEL to deepseek-v4-flash on the mistaken
+# reading that step-5-preview-free had been RETIRED. It had not: the model is
+# still in the provider catalogue on both routes, and the 429 it returns is the
+# literal message "Rate limit exceeded. Please try again later." -- a genuine
+# upstream rate limit, confirmed by 44 consecutive 429s over 1h27m in
+# monitor-provider.log, and by the user.
+#
+# These six cells therefore ran on a DIFFERENT MODEL from every other cell in
+# the sweep. Reward, cost and fold behaviour are not comparable with the
+# step-5-preview-free corpus and must never be pooled with it. Kept on disk
+# only so the exclusion is auditable.
+lhtb-ef-20261013-002900-sweep-ucs-balanced
+lhtb-ef-20261013-002915-sweep-ucs-quality
+lhtb-ef-20261013-002920-sweep-ucs-basic
+lhtb-ef-20261013-002925-sweep-ucs-economy
+lhtb-ef-20261013-002931-sweep-ucs-balanced
+lhtb-ef-20261013-002936-sweep-ucs-quality

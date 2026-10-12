@@ -108,7 +108,7 @@ export OPENAI_API_KEY="$KEY"
 export OPENAI_API_BASE="${OPENAI_API_BASE:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-deepseek-v4-flash}"
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 
 # ## `/zen/go/v1` requires a session id on every request
 #
@@ -237,7 +237,7 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # ## Raised to 8192 because the route now serves REASONING models
 #
 # `max_tokens` caps reasoning AND content together, and these models spend much
-# of it reasoning. Measured on deepseek-v4-flash, asking only for a one-line
+# of it reasoning. Measured on step-5-preview-free, asking only for a one-line
 # reply:
 #
 #     max_tokens=16   finish=length  reasoning=16  contentLen=0

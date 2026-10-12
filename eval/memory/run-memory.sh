@@ -24,7 +24,7 @@ PY
 export EF_ROOT="$EF_HOME"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-deepseek-v4-flash}"
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 # Built in its own variable first. Inside ${VAR:-...} bash does not process backslash escapes
 # the way the surrounding quoting suggests, and the value that reached the host was not valid
 # JSON -- so the header was silently absent and every request answered HTTP 400

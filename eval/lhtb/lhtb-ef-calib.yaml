@@ -44,7 +44,7 @@ environment:
 
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
-    model_name: openai/deepseek-v4-flash
+    model_name: openai/step-5-preview-free
   # The task's OWN declared budget, so the measurement reports whether it suffices
   # instead of hiding the answer behind an override.
     override_timeout_sec: 21600

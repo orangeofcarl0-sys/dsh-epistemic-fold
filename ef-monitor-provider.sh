@@ -18,7 +18,7 @@ echo "monitor: start $(date +%H:%M:%S)" >> "$LOG"
 for i in $(seq 1 400); do
   code=$(curl.exe -s -o /tmp/mp.txt -w '%{http_code}' --max-time 45 --noproxy '*' -x http://127.0.0.1:7890 \
     -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' -H "x-opencode-session: mon-$RANDOM$RANDOM" \
-    -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"ok"}],"stream":false}' \
+    -d '{"model":"step-5-preview-free","messages":[{"role":"user","content":"ok"}],"stream":false}' \
     https://opencode.ai/zen/go/v1/chat/completions 2>/dev/null)
   echo "  probe $i: HTTP $code at $(date +%H:%M:%S)" >> "$LOG"
   if [ "$code" = "200" ]; then

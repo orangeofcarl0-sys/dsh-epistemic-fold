@@ -19,7 +19,7 @@ for i in $(seq 1 240); do
   SID="wait-$RANDOM$RANDOM"
   code=$(curl.exe -s -o /tmp/wp.txt -w '%{http_code}' --max-time 45 --noproxy '*' -x http://127.0.0.1:7890 \
     -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' -H "x-opencode-session: $SID" \
-    -d '{"model":"deepseek-v4-flash","messages":[{"role":"user","content":"ok"}],"stream":false}' \
+    -d '{"model":"step-5-preview-free","messages":[{"role":"user","content":"ok"}],"stream":false}' \
     https://opencode.ai/zen/go/v1/chat/completions 2>/dev/null)
   if [ "$code" = "200" ]; then
     echo "wait-provider: RECOVERED at $(date +%H:%M:%S) after $i probes" | tee -a "$LOG"

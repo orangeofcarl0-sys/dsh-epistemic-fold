@@ -29,7 +29,7 @@ environment:
 
 agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
-    model_name: openai/deepseek-v4-flash
+    model_name: openai/step-5-preview-free
     override_timeout_sec: 18000      # the task's own declared budget
 
 datasets:

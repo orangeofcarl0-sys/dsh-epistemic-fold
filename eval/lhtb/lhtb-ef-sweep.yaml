@@ -108,7 +108,7 @@ agents:
     # EF_LIVE_MODEL on every invocation, because Harbor prints it and a run
     # whose record names the wrong model describes something other than what
     # it measured. Do not read the value below as the route used.
-    model_name: openai/deepseek-v4-flash
+    model_name: openai/step-5-preview-free
     # ## Matches the task's OWN agent budget, deliberately
     #
     # The task declares `timeout_sec = 14400` (240 min) for its agent phase, so

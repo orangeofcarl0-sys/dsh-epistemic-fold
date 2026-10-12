@@ -28,7 +28,7 @@ WATCHHEART="$EF_HOME/ef-phase7-logs/ucs-watchdog.heartbeat"
 cd "$EF_HOME" || exit 1
 
 echo "ucs: start $(date +%H:%M:%S) | ef $(git rev-parse --short HEAD) | lhtb $(git -C "$LHTB_ROOT" rev-parse --short HEAD)" | tee -a "$LOG"
-echo "ucs: model=${EF_LIVE_MODEL:-deepseek-v4-flash} budget=28800s tiers=basic,economy,balanced,quality cells=8" | tee -a "$LOG"
+echo "ucs: model=${EF_LIVE_MODEL:-step-5-preview-free} budget=28800s tiers=basic,economy,balanced,quality cells=8" | tee -a "$LOG"
 : > "$WATCHLOG"
 # ## Only OUR containers
 #
