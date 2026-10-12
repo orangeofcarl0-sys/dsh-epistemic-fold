@@ -257,6 +257,27 @@ class EpistemicFoldBridge:
         response = self._send(request)
         return response["assistant"]
 
+    def compact(self) -> bool:
+        """
+        Ask the engine to fold once, and report whether it committed.
+
+        ## Why the return value is a bool and not None
+
+        `compactIfNeeded` legitimately DECLINES: there may be no pressure, or no
+        safe range to compact. A driver that counted its own calls as depth would
+        then record a depth the engine never reached, and every downstream figure —
+        exposure, the retention curve, the matched-size comparison — would be
+        computed against a number that describes the caller rather than the engine.
+
+        So the caller counts commits, not calls: loop until `committed` is true
+        the requested number of times, with an attempt ceiling so a corpus that
+        cannot fold does not spin.
+
+        @returns True when a fold committed, False when the engine declined.
+        """
+        response = self._send({"op": "compact"})
+        return bool(response.get("committed"))
+
     def call_tool(self, name: str, arguments: dict[str, Any], call_id: str) -> str:
         """
         Execute one EF tool call against the host's ToolRuntime and return its text.

@@ -1524,6 +1524,30 @@ async function main(): Promise<void> {
             String(request.callId ?? ''),
           )
           emit({ ok: true, content, telemetry: await telemetry() })
+        } else if (op === 'compact') {
+          // ## One requested fold, and an honest report of whether it happened
+          //
+          // This is the independent variable for the memory-pressure task. Natural
+          // pressure cannot supply one: the fold count would depend on the corpus,
+          // the threshold and the provider, so it would vary per cell and no curve
+          // could be drawn (docs/62_MEMORY_PRESSURE_TASK_DESIGN.md section 4). The
+          // op turns depth into a number the driver ASKS for.
+          //
+          // It reports `committed` rather than asserting it. `compactIfNeeded`
+          // legitimately declines when nothing qualifies -- there is no pressure, or
+          // no safe range -- and a caller that counted its own calls as depth would
+          // record a depth the engine never reached. The driver counts commits.
+          //
+          // The fold itself goes through `foldIfNeeded`, so it inherits the fold
+          // deadline, the failure containment and the lineage capture rather than
+          // duplicating them.
+          const before = foldCounters(engine!)
+          await foldIfNeeded()
+          const after = foldCounters(engine!)
+          const committed = (after.leaves - before.leaves)
+            + (after.roots - before.roots)
+            + (after.emergencies - before.emergencies)
+          emit({ ok: true, committed, telemetry: await telemetry() })
         } else if (op === 'close') {
           closeTurn()
           emit({ ok: true, telemetry: await telemetry() })
