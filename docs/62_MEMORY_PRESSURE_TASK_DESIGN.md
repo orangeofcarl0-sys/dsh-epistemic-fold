@@ -350,7 +350,6 @@ first requested compaction is not at depth zero.
 
 ## 5. The probes
 
-## 5. The probes
 
 **Disambiguation is the primary instrument**, for a reason worth stating:
 
@@ -756,6 +755,54 @@ policy should avoid.
 `cost per retained fact` is what makes the result comparable across tiers, and the existing
 telemetry (`costTotal`, `tokensUncachedInput`, `folds`) already supplies both terms.
 
+### 8.1 Binding loss must be PAIRED, which changes the probe count
+
+Section 8 defines `binding loss = acc(extraction) - acc(disambiguation)`, but as first written
+those two probes ask about **different facts**, so the difference is between two independent
+samples. That contradicts the design's own principle -- the fact is its own control (7.4) -- and
+it throws away the power the pairing exists to provide.
+
+**Every probed fact therefore gets BOTH an extraction probe and a disambiguation probe**, which
+makes binding loss a paired comparison on the same fact asked two ways.
+
+The count changes accordingly:
+
+    per type   5 projects x 5 facts            = 25 probed facts
+               each fact x 2 (extraction, disambiguation) = 50
+               + composition 10 + update 10 + abstention 10 = 30
+    per type   80 probes
+    total      320 probes
+
+320 questions at roughly 25 tokens each is about 8k tokens of question, so the one-turn rule
+(5.3) still holds.
+
+### 8.2 Probes are not independent, and the resampling unit must be the fact
+
+The same fact appears in several cells -- that is what 6.12 buys -- so probe instances **within a
+fact are correlated**. Bootstrapping over probes would understate the interval, because the
+effective sample size is the number of **facts**, not the number of probes.
+
+**The bootstrap is clustered by fact.** Type comparisons additionally nest fact within project
+within type, so the cluster structure is not flat and a naive per-type interval would be too
+narrow in exactly the comparison section 3.2 exists for.
+
+### 8.3 The tests, named
+
+| comparison | test | why |
+|---|---|---|
+| **retention vs exposure** (primary) | **McNemar**, paired by fact, with a cluster bootstrap CI | paired binary outcomes |
+| **binding loss** | **McNemar** -- the same fact asked two ways | paired only after 8.1 |
+| **difference between types** | mixed-effects logistic with random effects for project and fact, **or** per-type McNemar with **Holm** correction | four comparisons |
+| **interference** `B - C` | McNemar, paired by probe | same probes, different arm |
+
+**Multiplicity is handled by pre-registration rather than by correction alone**: the primary
+metric is retention per type, everything else is labelled exploratory, and Holm-Bonferroni is
+applied within each family.
+
+**And TRACE's `pass^2` is adopted**: every cell is run twice and counts only if it passes both
+times. That is the direct answer to the n=1 problem this design would otherwise inherit, and it
+costs a factor of two in cells rather than a factor of two in claims.
+
 ## 9. Threats to validity
 
 1. **Contamination** — mitigated by synthesis, not provable. Arm N is the check: a probe the
@@ -983,6 +1030,28 @@ hidden by choosing a target it happens to hit.
 
 **The per-type row is the one 3.2 exists for.** If the four types produce one curve, the
 four-type corpus was unnecessary and 11 says so.
+
+### 10.8 The telemetry this needs, and which parts are new
+
+    {
+      "cell":          { arm, depth, order, mechanism, paradigm, warned },
+      "foldLineage":   [ { mechanism, shadowedSeqs, summarySeq,
+                           tokensBefore, tokensAfter, phase } ],
+      "probeAnswers":  [ { id, factId, kind, raw, parsed } ],
+      "injections":    [ { arm, probeIds, docs } ],
+      "compactionDisabledAtProbe": true
+    }
+
+**`foldLineage` is the only genuinely new capture** (7.2): the bridge reads the engine's
+lifetime counters today and does not record `shadowedSeqs` or `summarySeq`, so exposure cannot
+be computed without it.
+
+Four per-probe covariates are **derived**, not captured: `exposure`, `lineageDepth`,
+`containingSummarySize` and `tokenDistance` (7.2).
+
+**`phase` on each fold event matters**: a fold during ingestion and a fold during probing are
+different events, and 5.4 disables compaction for the probe turn precisely so the second should
+not occur. If one does, it is visible rather than inferred.
 
 ## 11. What would falsify this design
 
