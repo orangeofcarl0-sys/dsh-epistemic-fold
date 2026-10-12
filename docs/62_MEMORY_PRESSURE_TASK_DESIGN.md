@@ -236,6 +236,63 @@ So the one-turn rule survives the corpus size, and the batch does not have to be
 matters, because splitting it is what would let a fold fall between probes and break the
 decoupling of section 7.
 
+#### 3.2.11 The probe count, pinned
+
+    per type      5 projects x 10 probed facts per project = 50 probes
+    per project   10 probed facts = 2 probes of each of the five kinds
+    per type      10 probes of each kind
+    total         4 x 50 = 200 probes
+
+The 30-40 paired observations section 7.5 needs do **not** come from one cell. They come from
+the same fact appearing in several cells at different positions (3.1), so a per-cell count of 50
+per type is enough to build the curve while the pairing supplies the power.
+
+#### 3.2.12 What a project's documents physically are
+
+Each project is about five documents of roughly 5k tokens, so ~25k per project and ~500k for
+twenty -- the sizing 3.2.5 asks for.
+
+| type | documents |
+|---|---|
+| **coding** | source files, README, CHANGELOG, config |
+| **execution** | runbooks, on-call policy, postmortems |
+| **reasoning** | analysis notes, data dictionary, memo |
+| **generation** | spec, style guide, template |
+
+#### 3.2.13 Abstention probes have nothing to inject
+
+Section 6.4 says the injection covers every document a probe needs. **An abstention probe asks
+about a fact that was never stated, so there is no document to inject**, and arm B is empty for
+it: `B - A` is undefined.
+
+**Abstention probes are therefore analysed on their own** and excluded from the B/A comparison.
+They answer a different question -- whether the model confabulates -- and folding them into a
+retention ratio would make one number carry two meanings.
+
+#### 3.2.14 Distractors require a shared schema, and here is how it is built
+
+For a coding disambiguation probe the distractors are **another module's value for the same
+symbol**. That only works if every project of a type carries the **same symbol set** with
+different values -- which is what "projects share surface forms" (5.1) means concretely.
+
+**So the generator's rule is: one field vocabulary per type, one value set per project.** The
+same rule gives execution its thresholds, reasoning its effect sizes and generation its rules.
+
+#### 3.2.15 The answer key reuses the existing format, with one adaptation
+
+The key keeps the shape the workspace already grades:
+
+    { "fields": { "max_attempts_default": { "type": "num", "expected": 5, "criterion": "..." } } }
+
+and `public_spec()` strips `expected`, which is the mechanism that keeps the answers out of
+anything the model can read.
+
+**One adaptation is needed.** The existing spec's `depends_on` and `drops` exist to unlock
+stages **reactively, one at a time**. This design asks every probe **at once**, so that machinery
+is not used for unlocking here. It is used for **corpus assembly** instead -- which document
+belongs to which project, and which projects a composition probe links -- so the field stays
+meaningful rather than becoming dead weight.
+
 ## 4. Compression as the independent variable
 
 Compression must be an independent variable, and natural pressure cannot supply one: it depends
@@ -305,6 +362,24 @@ single turn** and no fold can occur between them.
 
 The cost is a long reply and a truncation risk, which the multiple-choice format removes — one
 letter per probe — and which the existing reply-budget escalation already handles.
+
+### 5.4 Compaction is DISABLED for the probe turn
+
+Earlier revisions had the probe turn recorded as "a state change", with any fold in it noted as
+a caveat. That is weaker than it needs to be: **the probe measures a state, so it must not
+change one.**
+
+Compaction is therefore **switched off for the probe turn in every arm**. The consequence is
+that threats 4 and 9 stop being threats -- no fold can fall between probes, and none can fall
+before them either -- and section 7's decoupling no longer depends on the batch being small
+enough to fit one turn.
+
+It also fixes a problem that was not visible until the injection arms were specified: **injecting
+a document adds tokens, and tokens can trigger a fold, which would compress the very document
+just injected.** Arms B and C would then be measured on a state the injection itself changed.
+
+Disabling compaction is a measurement choice, not a claim about production, and it is recorded
+as one.
 
 ## 6. Arms
 
@@ -453,6 +528,29 @@ push arm. With k < N the choice has consequences, and exploration gets its own c
 
 Depth 3, the other tiers, the other orders, the warning factor and the exploration paradigm are
 added only once these seven separate.
+
+### 6.11 What "minimal context" means in arm C
+
+Arm C is "a minimal context, plus the same document(s)". Concretely: the system prompt, the
+probe turn, and the injected documents. **No corpus, no summaries, nothing else.**
+
+That makes C the pure reading-comprehension ceiling -- can the model answer at all when the
+source is in front of it and nothing else is -- which is what the interference term
+`B - C` needs as its baseline.
+
+### 6.12 The three ingestion orders ARE the position assignment
+
+Section 3.1 requires the same fact at different positions across cells, and section 7.4 makes
+that pairing the source of statistical power. The three ingestion orders supply it directly:
+
+| cell | order | where a given fact lands |
+|---|---|---|
+| 1 | random | an arbitrary position |
+| 2 | temporal | inside its type's block |
+| 3 | logical | by its position in the cross-type cycle |
+
+So the pairing is not extra machinery -- **it falls out of a factor the design already has**, and
+each fact is observed at three different exposures without a dedicated position sweep.
 
 ## 7. Per-probe exposure, and decoupling the analysis from it
 
