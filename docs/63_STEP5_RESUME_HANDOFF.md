@@ -31,7 +31,7 @@ spawns four `ef-phase7.sh sweep-ucs` children, and all of those were killed. Sto
 |---|---|
 | base URL | `https://opencode.ai/zen/go/v1` |
 | model | `step-5-preview-free` |
-| key source | `C:\Users\a\.dsh\.credentials.yaml` → `OPENCODE_GO_API_KEY` |
+| key source | `$HOME/.dsh/.credentials.yaml` → `OPENCODE_GO_API_KEY` |
 | key | `sk-dSwdM…DXMX`, length 67, written **2026-10-12 17:57 local** |
 | required header | `x-opencode-session` — **omitting it gives a fast HTTP 400 `MissingSessionID`** that reads as "the endpoint is fine" |
 
