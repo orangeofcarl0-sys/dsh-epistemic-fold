@@ -26,7 +26,7 @@ time, and on a disambiguation probe it cannot.
 ## Pipeline
 
     python build_corpus.py      # regenerates every derived artifact, or fails on a constraint
-    bash run-memory.sh --calibrate --arm quality --order logical   # find the depth that reaches 20%
+    bash run-memory.sh --calibrate --arm quality --order logical   # depth reaching 50% of the window
     bash run-memory.sh --mode A --arm quality --order logical --depth 5
     python analyse.py           # the table, and which falsifiers the data triggers
 

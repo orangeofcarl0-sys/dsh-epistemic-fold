@@ -129,6 +129,26 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toContain('g["errata"] = [e for e in (errata or []) if e["project"] in g["needs"]]')
   })
 
+  it('takes the calibration target from the WINDOW, so it is reachable', () => {
+    // The first version set the target at 20% of the INGESTED surface. The corpus is 861,697
+    // tokens and the window is 131,072, so that target was 172,339 -- 31% ABOVE the window, and
+    // unreachable by any mechanism: the surface has to fit the window or the provider refuses
+    // the request.
+    //
+    // 10.6 treats a mechanism that cannot reach the target as a finding ABOUT THE MECHANISM.
+    // Every sweep would have reported that, and it would have been a finding about arithmetic.
+    expect(DRIVER).toContain('window = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))')
+    expect(DRIVER).toContain('target = int(window * target_frac)')
+    expect(DRIVER, 'the target must not be derived from the ingested size').not.toMatch(
+      /target = int\(ingested \* target_frac\)/u)
+    // And the default fraction must leave room for the probe turn and the reply.
+    const m = /--target-frac", type=float, default=([0-9.]+)/u.exec(DRIVER)
+    expect(m, 'the default fraction must be declared').not.toBeNull()
+    const frac = Number(m![1])
+    expect(frac).toBeGreaterThan(0)
+    expect(frac, 'a target at the window leaves nothing for the probe turn').toBeLessThanOrEqual(0.75)
+  })
+
   it('keeps the system prompt minimal, because an instruction to summarise changes the IV', () => {
     const start = DRIVER.indexOf('SYSTEM_PUSH = (')
     const end = DRIVER.indexOf(')', start)

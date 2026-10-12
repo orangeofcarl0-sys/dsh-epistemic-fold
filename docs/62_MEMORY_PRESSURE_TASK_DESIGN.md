@@ -1090,15 +1090,34 @@ a verifier or a reward file.
 Section 8 requires the headline comparison at **matched final size**, and 10.1 says that needs
 its own pass. Concretely:
 
-    target = 20% of the ingested surface size          # a ratio, so it survives resizing
+    target = 50% of the WINDOW, not of the ingested size
     for mechanism in {basic, economy, balanced, quality}:
         sweep depth N upward
         record surface tokens after the Nth compaction
         stop at the smallest N whose size <= target
         that N is the mechanism's depth for the matched-size arms
 
-**The target is a ratio, not an absolute**, for the same reason 3.2.5 states sizing as a
-multiple: an absolute target silently stops being matched when the corpus is resized.
+**The ratio is of the WINDOW, and the first version's ratio of the INGESTED SIZE was
+unreachable.** The arithmetic is not close:
+
+    ingested            861,697 tokens
+    20% of ingested     172,339 tokens      <- the first target
+    window              131,072 tokens
+
+**The target was 31% above the window**, so no mechanism could ever reach it: the surface has to
+fit the window or the provider refuses the request, and a target above the window is a target that
+cannot be held. Every sweep would have run to its depth ceiling and reported "this mechanism
+cannot reach the target" -- which 10.6 treats as a finding ABOUT THE MECHANISM, and it would have
+been a finding about the arithmetic instead.
+
+**The tell is that the ratio was taken against the wrong quantity.** 3.2.5 sizes the corpus as a
+multiple of the window, and the calibration then took its ratio against the corpus rather than
+against the window the corpus was sized in terms of. A ratio of the ingested size is only
+meaningful while the result fits the window, and at six times the window it cannot.
+
+**A fraction of the window is matched by construction** -- it is the same absolute size for every
+mechanism, which is what "matched final size" means -- and it survives resizing for the same
+reason, because the window is a property of the model under test rather than of the corpus.
 
 **The sweep is recorded, not discarded.** If a mechanism cannot reach the target at any
 practical depth, that is itself a finding about the mechanism, and it is reported rather than

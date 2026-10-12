@@ -243,7 +243,10 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
     # session, and reading it there reported an ingested size of zero for a full corpus.
     # Measured after the last append: the telemetry carried by `init` describes an empty session.
     ingested = bridge.last_telemetry.get("promptTokensLast", 0)
-    target = int(ingested * target_frac)
+    # The target is a fraction of the WINDOW. Taking it from `ingested` produced a target above
+    # the window, which no mechanism can hold.
+    window = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
+    target = int(window * target_frac)
     sweep = []
     for i in range(1, max_depth + 1):
         committed = bridge.compact()
@@ -259,7 +262,7 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
     reached = [s for s in sweep if s["committed"] and (s["tokens"] or 0) <= target]
     return {
         "arm": arm, "order": order_name, "ingested_tokens": ingested,
-        "target_frac": target_frac, "target_tokens": target,
+        "target_frac": target_frac, "target_tokens": target, "window": window,
         "sweep": sweep,
         "depth_to_target": reached[0]["attempt"] if reached else None,
         # A mechanism that cannot reach the target is a FINDING, not something to hide by
@@ -446,7 +449,10 @@ def main() -> None:
     ap.add_argument("--warned", action="store_true")
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--max-depth", type=int, default=40)
-    ap.add_argument("--target-frac", type=float, default=0.20)
+    # A fraction of the WINDOW, not of the ingested size. The first version used 0.20 of the
+    # ingested surface, which was 172,339 tokens against a 131,072-token window -- 31% above it,
+    # and therefore unreachable by any mechanism.
+    ap.add_argument("--target-frac", type=float, default=0.50)
     ap.add_argument("--limit-docs", type=int, default=None)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
