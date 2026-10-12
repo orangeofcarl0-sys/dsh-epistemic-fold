@@ -190,8 +190,8 @@ def validate_injection(batch: dict, docs: dict) -> list[str]:
 def corpus_with_errata(docs: dict, errata: list) -> dict:
     """The corpus as the driver ingests it: the documents PLUS the errata.
 
-    \`orderings.json\` places ERRATA.md at 85% of the sequence (3.2.16 constraint 4: errata go
-    late, so the stale value was stated earlier). A lookup built from \`documents.json\` alone
+    `orderings.json` places ERRATA.md at 85% of the sequence (3.2.16 constraint 4: errata go
+    late, so the stale value was stated earlier). A lookup built from `documents.json` alone
     contains no errata, so those entries resolved to None and were SILENTLY SKIPPED -- the
     correction never entered the corpus, and an update probe would have measured whether the model
     could read the injected errata rather than whether it replaced a value it had already been
@@ -216,11 +216,25 @@ def load(name: str) -> dict:
 def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: float) -> dict:
     """Ingest once, then fold repeatedly, recording the surface size after each fold.
 
-    The target is a RATIO of the ingested size, not an absolute: an absolute silently stops being
-    matched when the corpus is resized (10.6).
+    The target is a FRACTION OF THE WINDOW, not of the ingested size (10.6). A fraction of the
+    ingested size is only meaningful while the result fits the window, and at four times the window
+    it cannot: the first version's 20%-of-ingested target was 31% ABOVE the window, so no mechanism
+    could ever reach it and every sweep would have reported "this mechanism cannot reach the target"
+    -- a finding about the arithmetic, not about the mechanism.
+
+    The target is also set by the BUDGET rather than chosen: at a probe turn the window must also
+    hold the injected batch, the rendered probes and a completion reserve, all scaled by a
+    tokenizer that does not agree with a chars/4 estimate. See build_corpus.py.
     """
     orders = load("orderings.json")
     docs = load("documents.json")
+    # ## The errata belong to the CORPUS, and this call did not have them
+    #
+    # corpus_with_errata was called with a name that was never bound, so the calibration path died
+    # with NameError the first time it was ever run. Nothing caught it earlier because nothing had
+    # ever run it: the endpoint was answering 429 for the whole session in which this was written.
+    # A path that has never executed is not a path that works.
+    errata = load("errata.json")
     # ## The errata belong to the CORPUS, not only to the injection
     #
     # `orderings.json` places ERRATA.md at 85% of the sequence (3.2.16 constraint 4: errata go
@@ -304,8 +318,8 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     #
     # Section 7.2 computes exposure by joining a fact to the fold lineage, and the lineage records
     # the seqs each fold SHADOWED. So the driver has to know which seqs carry which fact. The
-    # bridge returns them from \`append\`; recording them here is what makes the join possible at
-    # all. A document states a known set of fields (\`states\`), so each of those fields inherits
+    # bridge returns them from `append`; recording them here is what makes the join possible at
+    # all. A document states a known set of fields (`states`), so each of those fields inherits
     # the document's seqs.
     fact_seqs: dict[str, list[int]] = {}
     for k in seq:
