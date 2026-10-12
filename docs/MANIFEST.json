@@ -348,5 +348,10 @@
     "file": "61_MEMORY_PRESSURE_BENCHMARK_SURVEY.md",
     "bytes": 8288,
     "sha256": "9a318c801f3cea7da6da1e1716003c2cebafb8a3d738f1ca187d66d822269a62"
+  },
+  {
+    "file": "62_MEMORY_PRESSURE_TASK_DESIGN.md",
+    "bytes": 10247,
+    "sha256": "7380bac475326c9ed14c47850e8310f47d1e5b103ee0e103e413e2c71f047eb1"
   }
 ]
