@@ -276,6 +276,24 @@ whose termination names the provider is excluded from the comparison regardless 
 carries.** A reward computed from a run in which the model was denied the provider for half its
 turns is a measurement of the outage.
 
+**The limit is NOT self-inflicted, and the monitor is what settles it.** The obvious
+hypothesis for a rate limit is our own concurrency -- eight cells plus probes against one endpoint.
+It is testable, because `ef-monitor-provider.sh` sends **one** request every two minutes,
+independent of the lane: a single request every 120 seconds cannot be rate-limited by us. It was
+refused on **fourteen consecutive probes**, so the endpoint is refusing traffic it could not
+plausibly be rationing.
+
+That matters for the response rather than for the diagnosis. If the limit were ours, the fix would
+be to reduce concurrency and the eight-cell measurement would be wrong. Since it is not, reducing
+concurrency would cost cells and change nothing -- and the correct response is to wait, which is
+what the lane is doing.
+
+**The same probe also rules out an alternate model.** `space-bunny-free`, the model the launcher
+defaults to when `EF_LIVE_MODEL` is unset, answers `HTTP 400 Model is unavailable` -- a
+DETERMINISTIC failure, distinct from the 429. The retry classifier added for the memory driver
+refuses to retry it, which is correct: a request that names an unavailable model will name it
+again, and retrying only spends the budget.
+
 **From the fully fixed code (`d449c93`) exactly two cells completed normally**: `qrCmKnF`
 balanced at 0.7977 and `H7GD76Z` basic at 0.575. Everything else from that wave either hit the
 outage ceiling or is still running. That is the honest state of the four-tier comparison: two
