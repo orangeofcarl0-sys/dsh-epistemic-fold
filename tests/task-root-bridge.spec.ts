@@ -259,6 +259,54 @@ describe('the LHTB host declares its task root through the bridge', () => {
       'the task text is in the next model request EXACTLY once',
     ).toBe(1)
   })
+  it('executes context_search and an EXACT context_recall through the real ToolRuntime', async () => {
+    const { bridge } = await start({ taskRootMode: 'exact' })
+
+    // The task root, registered and NOT to be folded -- so it cannot serve as the archived sentinel.
+    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
+    // A SEPARATE message, carrying a nonce nothing else in the session contains.
+    const SENTINEL = 'zqxjvbnonce'
+    await bridge.send({
+      op: 'append',
+      message: { role: 'user', content: `recovered evidence: the format family is ${SENTINEL}.` },
+    })
+    for (let i = 0; i < 6; i += 1) {
+      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${i} ` + 'f'.repeat(6_000) } })
+    }
+    const leaf = await bridge.send({ op: 'compact' })
+    const folded = telemetryOf(leaf)
+    expect(folded.folds, 'the fixtures folded nothing, so there is no archive to search').toBeGreaterThan(0)
+    expect(shadowed(folded).length, 'and the fold archived real messages').toBeGreaterThan(0)
+
+    /** Dispatch one real tool call through the bridge's ToolRuntime. */
+    const callTool = async (name: string, args: Record<string, unknown>, callId: string) => {
+      const reply = await bridge.send({ op: 'tool', name, arguments: args, callId })
+      expect(reply['ok'], `${name} dispatch failed`).toBe(true)
+      return String(reply['content'])
+    }
+
+    // 1. SEARCH. Dispatched, not simulated: `callEfTool` runs it on the host's own ToolRuntime.
+    const searched = await callTool('context_search', { query: `format family ${SENTINEL}` }, 'call-search')
+    expect(() => JSON.parse(searched) as unknown, 'the tool returns JSON the model can read').not.toThrow()
+    const search = JSON.parse(searched) as Record<string, unknown>
+    expect(JSON.stringify(search)).toContain('cp:')
+
+    // Every `cp:` the search surfaced, so the exact page can be opened by REFERENCE rather than by
+    // guessing a checkpoint id out of band.
+    const refs = [...new Set(searched.match(/cp:[A-Za-z0-9_-]+/gu) ?? [])]
+    expect(refs.length, 'the search surfaced at least one checkpoint reference').toBeGreaterThan(0)
+
+    // 2. EXACT RECALL. Walk the refs until the archived page contains the nonce, which is the
+    // assertion that matters: the bytes came back, not a promise that they could.
+    let recovered = ''
+    for (const ref of refs) {
+      const page = await callTool('context_recall', { ref, depth: 'exact', offset: 0, limit: 20 }, `call-exact-${ref}`)
+      recovered += page
+      if (page.includes(SENTINEL)) break
+    }
+    expect(recovered, 'exact recall returned the ORIGINAL archived message, nonce and all').toContain(SENTINEL)
+    expect(recovered, 'and not a summary of it').toContain('recovered evidence')
+  })
   it('registers NOTHING when the arm says off, and the instruction IS then folded away', async () => {
     const { bridge } = await start({ taskRootMode: 'off' })
     const appended = await bridge.send({

@@ -380,6 +380,11 @@
     "sha256": "260f46aa0e41893e3654c0609142cd9bf82ff3dc984f7a6c75e0a4339b93d666"
   },
   {
+    "file": "76_EPISODE_CLOSURE_AND_RECALL.md",
+    "bytes": 6093,
+    "sha256": "66c80c94bd6978beabc0c3d571152702077fbde609aa2bfda61d0a4f10b15f21"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -401,8 +406,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9775,
-    "sha256": "70c1d3a49524ead024ecdeb7e8b8adb3159bf0358a8382bf64b7d4cf275232b7"
+    "bytes": 9846,
+    "sha256": "78b24b81d5cc8f16730e754442210c9be9acc94beabd99169f5abb2b877d7900"
   },
   {
     "file": "README.zh.md",
