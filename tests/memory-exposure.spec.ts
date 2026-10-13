@@ -38,7 +38,9 @@ describe('the exposure chain', () => {
     expect(HOST).toContain('const before = new Set(active.surface.nodes)')
     expect(HOST).toContain('return active.surface.nodes.filter((s: number) => !before.has(s))')
     expect(HOST).toContain('seqs: appendedSeqs')
-    expect(CLIENT).toContain('def append(self, message: dict[str, Any]) -> dict[str, Any]:')
+    // The flag is additive and defaulted, so every existing caller keeps the old behaviour;
+    // what this line exists for is that `append` is the one call that RETURNS `seqs`.
+    expect(CLIENT).toContain('def append(self, message: dict[str, Any], task_root: bool = False) -> dict[str, Any]:')
   })
 
   it('is a VECTOR over mechanisms, with the total derived', () => {
