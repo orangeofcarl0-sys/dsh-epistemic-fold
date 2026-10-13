@@ -340,6 +340,11 @@
     "sha256": "cffe3187e1e891906748d3ec3e72a5e23f32e36ea9d78a31f4187b9d835f6beb"
   },
   {
+    "file": "68_STRUCTURAL_AUDIT_AND_PLAN.md",
+    "bytes": 14751,
+    "sha256": "1e9fcbb7b134ec356940a58b9e0bc075f97aee05f407e45db9a220ec798c84d5"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -361,8 +366,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9265,
-    "sha256": "0f921a221fcdf8e798fdae5799667449847630b0f069325fc1b420894011f6a5"
+    "bytes": 9334,
+    "sha256": "04bc323f62e0728de2eded936d4a162f9c57ddd8e75b7cb04836ac7bf94b9a04"
   },
   {
     "file": "README.zh.md",
