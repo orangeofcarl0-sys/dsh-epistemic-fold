@@ -268,6 +268,24 @@ class EFLhtbAgent(BaseAgent):
         self.arm = arm or os.environ.get("EF_LHTB_ARM", "basic")
         self._bridge: Optional[EpistemicFoldBridge] = None
         self._transcript: list[dict[str, Any]] = []
+        # Tool-command wall clock: the other half of the bridge's `timing` block.
+        #
+        # The bridge times the model call and the gap between calls. This splits that gap
+        # into "running a command in the container" and everything else -- the graded-sample
+        # pacing floor, harness round trips, transcript writes. Without both halves the
+        # residual was ~74% of a cell's wall clock and no outside measurement could attribute
+        # it: the provider answers in 2.5s at 24K tokens and `docker exec` costs ~110ms.
+        self._tool_ms = 0.0
+        self._tool_ms_max = 0.0
+        self._tool_ms_series: list[dict[str, int]] = []
+
+    def _record_tool_ms(self, tool_ms: float) -> None:
+        """Accumulate one tool command's wall clock, bounded so a long cell cannot bloat it."""
+        self._tool_ms += tool_ms
+        self._tool_ms_max = max(self._tool_ms_max, tool_ms)
+        if len(self._tool_ms_series) >= 80:
+            self._tool_ms_series.pop(0)
+        self._tool_ms_series.append({"ms": round(tool_ms)})
 
     @staticmethod
     def name() -> str:
@@ -597,16 +615,24 @@ class EFLhtbAgent(BaseAgent):
                 if name == SHELL_TOOL:
                     command = str(arguments.get("command", ""))
                     total_calls += 1
+                    tool_started = time.monotonic()
                     output = await self._exec(environment, command)
+                    tool_ms = (time.monotonic() - tool_started) * 1000.0
+                    self._record_tool_ms(tool_ms)
                     self._transcript.append(
-                        {"turn": turn, "tool": name, "command": command[:500], "output": output[:1000]}
+                        {"turn": turn, "tool": name, "command": command[:500],
+                         "output": output[:1000], "toolMs": round(tool_ms)}
                     )
                 else:
                     # An EF tool: the bridge dispatches it against the ToolRuntime
                     # and returns the JSON it produced.
+                    tool_started = time.monotonic()
                     output = self._bridge.call_tool(name, arguments, call.get("id") or "")
+                    tool_ms = (time.monotonic() - tool_started) * 1000.0
+                    self._record_tool_ms(tool_ms)
                     self._transcript.append(
-                        {"turn": turn, "tool": name, "arguments": arguments, "output": str(output)[:1000]}
+                        {"turn": turn, "tool": name, "arguments": arguments,
+                         "output": str(output)[:1000], "toolMs": round(tool_ms)}
                     )
                 self._bridge.append(
                     {
@@ -691,6 +717,14 @@ class EFLhtbAgent(BaseAgent):
                 "termination": termination,
                 "provider_failures": provider_failures,
                 "telemetry": telemetry,
+                # The agent's own half of the wall-clock decomposition. Read against the
+                # bridge's `telemetry.timing`: `gapMsTotal` minus `toolTiming.totalMs` is the
+                # part of the gap that no command explains.
+                "tool_timing": {
+                    "totalMs": round(self._tool_ms),
+                    "maxMs": round(self._tool_ms_max),
+                    "series": self._tool_ms_series,
+                },
                 "transcript": self._transcript,
             }
             (self.logs_dir.parent / "ef-transcript.json").write_text(

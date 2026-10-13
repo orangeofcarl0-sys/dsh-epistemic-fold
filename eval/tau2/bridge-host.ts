@@ -416,6 +416,28 @@ interface Telemetry {
    * empty reply and was attributed to the model.
    */
   readonly providerFailures: number
+  /**
+   * The wall-clock decomposition of the model-call loop, in milliseconds.
+   *
+   * `callMs` is the provider's share, `turnMs` is the fold and rebase drain that run before
+   * the request, and `gapMs` is everything between the end of one call and the start of the
+   * next -- the agent's own work plus the task's graded-sample pacing floor.
+   *
+   * Read the three against the cell's age: they are what turns `calls` into calls per hour.
+   */
+  readonly timing: {
+    readonly calls: number
+    readonly callMsTotal: number
+    readonly callMsMax: number
+    readonly callMsLast: number
+    readonly turnMsTotal: number
+    readonly turnMsMax: number
+    readonly gapMsTotal: number
+    readonly gapMsMax: number
+    readonly gapMsLast: number
+    /** The last 40 calls as `{ c: callMs, t: turnMs, g: gapMs }`, so a snapshot shows the shape. */
+    readonly series: readonly { readonly c: number; readonly t: number; readonly g: number }[]
+  }
   readonly lastProviderError: string | null
   /**
    * Whether the tool-result pruner mounted, and why not when it did not.
@@ -551,6 +573,34 @@ let modelCalls = 0
  */
 let providerFailures = 0
 let lastProviderError: string | null = null
+/**
+ * The wall-clock decomposition, in milliseconds.
+ *
+ * ## Why this exists
+ *
+ * A cell's turns per hour is set by how long it takes to get from one model call to the
+ * next, and every attempt to explain that from OUTSIDE the process was wrong: the provider
+ * answers in 2.5s even at a 24K-token prompt, `docker exec` costs ~110ms, and the model
+ * emits at 89 tok/s -- yet one call costs ~100s of wall clock. Those measurements EXHAUST
+ * the cheap explanations and leave most of the time unattributed, which is the same class
+ * of blind spot as the 160-character error cut that hid the `reasoning_content` 400.
+ *
+ * So the bridge times its own side of the loop:
+ *
+ *   callMs   the `ctx.llm.stream` loop -- provider latency, including its own retries
+ *   turnMs   the fold and idle-rebase drain that run BEFORE the request is measured
+ *   gapMs    from the END of the previous call to the START of this one: the agent parsing
+ *            the reply, running the tool in the container, appending the transcript, and
+ *            the graded-sample pacing floor, all together
+ *
+ * `gapMs` is deliberately coarse. Splitting it further needs the tool timings, which the
+ * Python agent records on its side and carries into the transcript.
+ */
+const timing = { calls: 0, callMsTotal: 0, callMsMax: 0, turnMsTotal: 0, turnMsMax: 0,
+  gapMsTotal: 0, gapMsMax: 0, lastCallMs: 0, lastTurnMs: 0, lastGapMs: 0,
+  series: [] as { c: number; t: number; g: number }[] }
+/** When the previous call's stream loop returned; 0 before the first call. */
+let lastCallEndedAt = 0
 /** How the last model call finished, so an empty reply can be attributed. */
 let lastFinishReason = 'unknown'
 let promptTokensLast = 0
@@ -1159,6 +1209,8 @@ interface TauAssistant {
  * rule: a message with both is rejected by the orchestrator.
  */
 async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
+  const turnStartedAt = performance.now()
+  const gapMs = lastCallEndedAt === 0 ? 0 : turnStartedAt - lastCallEndedAt
   await foldIfNeeded()
   // Immediately after the fold, and BEFORE the request is measured and sent.
   //
@@ -1180,6 +1232,9 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   // the pipe has no timeout either, so nothing in the system can notice or recover.
   const deadline = new AbortController()
   const timer = STEP_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), STEP_TIMEOUT_MS) : undefined
+  // After the fold and the drain, so `callMs` is the PROVIDER's share and `turnMs` is the
+  // fold's. `gapMs` already includes both, because it starts when the last call ended.
+  const callStartedAt = performance.now()
   try {
     for await (const chunk of ctx!.llm.stream({
       provider: LIVE_PROVIDER,
@@ -1214,6 +1269,26 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
     }
   } finally {
     if (timer) clearTimeout(timer)
+    // Recorded in `finally` so a FAILED call is timed too: a provider timeout is exactly
+    // the case this instrumentation exists to separate from tool time.
+    const endedAt = performance.now()
+    const callMs = endedAt - callStartedAt
+    const turnMs = callStartedAt - turnStartedAt
+    timing.calls += 1
+    timing.callMsTotal += callMs
+    timing.callMsMax = Math.max(timing.callMsMax, callMs)
+    timing.turnMsTotal += turnMs
+    timing.turnMsMax = Math.max(timing.turnMsMax, turnMs)
+    timing.lastCallMs = callMs
+    timing.lastTurnMs = turnMs
+    if (gapMs > 0) {
+      timing.gapMsTotal += gapMs
+      timing.gapMsMax = Math.max(timing.gapMsMax, gapMs)
+      timing.lastGapMs = gapMs
+    }
+    lastCallEndedAt = endedAt
+    if (timing.series.length >= 40) timing.series.shift()
+    timing.series.push({ c: Math.round(callMs), t: Math.round(turnMs), g: Math.round(gapMs) })
   }
   // An empty reply is ambiguous on its own: the model may have said nothing, or
   // the call may have failed in transport. The finish reason separates them, and
@@ -1330,6 +1405,20 @@ async function init(request: {
   prunerError = null
   providerFailures = 0
   lastProviderError = null
+  // Per-episode, like every other counter: a bridge process can outlive one episode, and an
+  // accumulated timing series would report the previous cell's wall clock as this one's.
+  timing.calls = 0
+  timing.callMsTotal = 0
+  timing.callMsMax = 0
+  timing.turnMsTotal = 0
+  timing.turnMsMax = 0
+  timing.gapMsTotal = 0
+  timing.gapMsMax = 0
+  timing.lastCallMs = 0
+  timing.lastTurnMs = 0
+  timing.lastGapMs = 0
+  timing.series.length = 0
+  lastCallEndedAt = 0
   modelCalls = 0
   promptTokensLast = 0
   surfaceNodesLast = 0
@@ -1611,6 +1700,18 @@ async function telemetry(): Promise<Telemetry> {
     summarizationRetryExhausted: summaryRetryStats.exhausted,
     providerFailures,
     lastProviderError,
+    timing: {
+      calls: timing.calls,
+      callMsTotal: Math.round(timing.callMsTotal),
+      callMsMax: Math.round(timing.callMsMax),
+      callMsLast: Math.round(timing.lastCallMs),
+      turnMsTotal: Math.round(timing.turnMsTotal),
+      turnMsMax: Math.round(timing.turnMsMax),
+      gapMsTotal: Math.round(timing.gapMsTotal),
+      gapMsMax: Math.round(timing.gapMsMax),
+      gapMsLast: Math.round(timing.lastGapMs),
+      series: timing.series,
+    },
     prunerMounted,
     prunerError,
     efToolsOffered: (toolsRuntime()?.schemas() ?? [])
