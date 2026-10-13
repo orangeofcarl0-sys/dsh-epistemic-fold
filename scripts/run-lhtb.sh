@@ -152,6 +152,31 @@ case "$EF_LIVE_MODEL" in
   *) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} ASSUMED for ${EF_LIVE_MODEL} (adapter default, not measured on this route)" ;;
 esac
 
+# ## The request deadline, set per model for the same reason the window is
+#
+# `eval/live/openai-adapter.ts:195` defaults to 120_000, and that number was MEASURED on
+# the LongCat route: its longest legitimate call was 40s, and raising the deadline to five
+# minutes took it from 4.8 model calls in 6 minutes to 2.7 in 25 -- a long deadline spends
+# budget waiting on hangs. So the default is right FOR LONGCAT and is left alone here.
+#
+# `deepseek-v4.1-flash` needs more, and the bridge now measures why
+# (`telemetry.timing.callMs`, added for exactly this): at 8-way concurrency its calls
+# averaged 47.9s with a 64.4s last call, and one call in seven reported 120_004ms -- the
+# deadline EXACTLY, i.e. it was aborted, not slow. An aborted call is not a slow call: the
+# bridge closes the turn empty, so the cell pays 120s and receives nothing.
+#
+# 300_000 leaves ~6x the measured mean and ~4.7x the measured maximum -- the headroom the
+# original 120_000 was chosen to provide on LongCat. Whether it IMPROVES calls per cell is
+# not assumed: `telemetry.timing` reports it on the next wave.
+model_request_timeout() {
+  case "$1" in
+    deepseek-v4.1-flash) echo 300000 ;;   # measured: mean 47.9s, max 64.4s, the 120s deadline was hit
+    *) echo 120000 ;;
+  esac
+}
+export EF_LIVE_REQUEST_TIMEOUT_MS="${EF_LIVE_REQUEST_TIMEOUT_MS:-$(model_request_timeout "$EF_LIVE_MODEL")}"
+echo "request deadline: EF_LIVE_REQUEST_TIMEOUT_MS=${EF_LIVE_REQUEST_TIMEOUT_MS} for ${EF_LIVE_MODEL}"
+
 # ## `/zen/go/v1` requires a session id on every request
 #
 # That route answers `400 MissingSessionID` ("cannot be routed efficiently") on

@@ -191,6 +191,13 @@ const MAX_RATE_LIMIT_RETRIES = 3
  * the longest LEGITIMATE call measured 40s, so two minutes still leaves three times the headroom a
  * healthy call needs. A longer deadline does not make a hung request succeed; it only spends budget
  * waiting to find out.
+ *
+ * That measurement is LONGCAT's, and it is not universal. Measured later on `deepseek-v4.1-flash`
+ * at 8-way concurrency (`telemetry.timing.callMs`): mean call 47.9s, maximum 64.4s, and one call in
+ * seven reported exactly this deadline -- i.e. it was ABORTED. An aborted call is not a slow call:
+ * the caller closes the turn empty, so the cell pays the full deadline and receives nothing. The
+ * LHTB lane therefore raises it per model (`scripts/run-lhtb.sh` -> `model_request_timeout`) rather
+ * than this default moving, because moving it would rewrite LongCat's measured choice.
  */
 const REQUEST_TIMEOUT_MS = Number(process.env.EF_LIVE_REQUEST_TIMEOUT_MS ?? 120_000)
 
