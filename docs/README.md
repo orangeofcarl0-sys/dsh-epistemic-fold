@@ -153,6 +153,7 @@ These records document real-host defects and browser/deployment integration. The
 - [63_STEP5_RESUME_HANDOFF.md](63_STEP5_RESUME_HANDOFF.md)
 - [64_TASK_SERVICE_AUDIT.md](64_TASK_SERVICE_AUDIT.md)
 - [65_LHTB_FOLD_WINDOW_AND_TURN_BUDGET.md](65_LHTB_FOLD_WINDOW_AND_TURN_BUDGET.md)
+- [66_CONTEXT_EXPOSURE_BOUNDARY.md](66_CONTEXT_EXPOSURE_BOUNDARY.md)
 
 ## How to read old conclusions
 

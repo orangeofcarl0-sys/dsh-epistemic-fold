@@ -330,6 +330,11 @@
     "sha256": "766cb81ecc66bf1ccc30e1cb040ecde519f610dec4b16ccc18992ab4c312d430"
   },
   {
+    "file": "66_CONTEXT_EXPOSURE_BOUNDARY.md",
+    "bytes": 15411,
+    "sha256": "6631b07b4249658e3036a1c08bb9fef06295a9fea4f228d157b514bfa505a32a"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -351,8 +356,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9147,
-    "sha256": "2d18a03314206b39a7783ea5d14f6a99fd4a614192c8d4f1c2565a27cb52088c"
+    "bytes": 9216,
+    "sha256": "4c48c876836053b94f28ae7b1aa7a2e09a06a989d1157f6bc5724ab4ec51f14a"
   },
   {
     "file": "README.zh.md",
