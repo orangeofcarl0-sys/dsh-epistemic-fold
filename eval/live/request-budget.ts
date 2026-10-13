@@ -29,6 +29,15 @@ export class BudgetExhaustedError extends Error {
   }
 }
 
+/**
+ * The output a single request is RESERVED at when its true cost is unknown.
+ *
+ * Deliberately not the main model's reply budget. The fold's summarization is a different call
+ * site with its own `maxTokens`, so reserving the smaller of the two would under-charge exactly
+ * the requests this reserve exists to cover.
+ */
+export const DEFAULT_OUTPUT_RESERVE = 32_768
+
 export interface BudgetLimits {
   /** Every HTTP ATTEMPT, including 429 retries. 0 disables the check. */
   readonly requests: number
@@ -52,6 +61,12 @@ export interface BudgetSnapshot {
   readonly requests: number
   readonly promptTokens: number
   readonly outputTokens: number
+  readonly observedPromptTokens: number
+  readonly observedOutputTokens: number
+  readonly reservedPromptTokens: number
+  readonly reservedOutputTokens: number
+  readonly unknownUsageRequests: number
+  readonly partialUsageRequests: number
   readonly elapsedMs: number
   readonly refusals: number
   readonly limit: BudgetLimits
@@ -59,12 +74,46 @@ export interface BudgetSnapshot {
 
 export class RequestBudget {
   private requests = 0
-  private promptTokens = 0
-  private outputTokens = 0
   private refusals = 0
   private readonly startedAt = Date.now()
 
-  constructor(readonly limit: BudgetLimits) {}
+  /**
+   * Conservative per-request reserves, charged when a request is ADMITTED.
+   *
+   * ## Why the reserve happens at admission and not on success
+   *
+   * `record()` used to run only after a 200 whose JSON parsed. So a request that was SENT and
+   * then failed -- HTTP 5xx, a transport error, an abort, a parse failure, a 429 whose retries
+   * ran out -- charged nothing, while the provider may well have processed and billed it. A
+   * partial usage record was worse: `mapUsage` fills the absent fields with 0, so the object
+   * existed and the conservative fallback did not apply, and the request was under-charged.
+   *
+   * Reserving at admission covers every one of those cases without touching a single failure
+   * path, because the charge happens before the request rather than after its outcome.
+   *
+   * The reserve is not a measurement and is never reported as one: `snapshot()` keeps
+   * `observed` (provider-reported), `reserved` (conservative, for requests whose true cost is
+   * unknown) and `unknownUsageRequests` apart.
+   */
+  private readonly reserve: { readonly promptTokens: number; readonly outputTokens: number }
+  private reservedPrompt = 0
+  private reservedOutput = 0
+  private observedPrompt = 0
+  private observedOutput = 0
+  private unknownUsageRequests = 0
+  private partialUsageRequests = 0
+  /** The most recent admission's reserve, settled by the next `record`. */
+  private outstanding: { promptTokens: number; outputTokens: number } | undefined
+
+  constructor(
+    readonly limit: BudgetLimits,
+    reserve: { readonly promptTokens: number; readonly outputTokens: number } = {
+      promptTokens: 0,
+      outputTokens: 0,
+    },
+  ) {
+    this.reserve = reserve
+  }
 
   /**
    * Admit one HTTP attempt, or refuse it.
@@ -77,11 +126,14 @@ export class RequestBudget {
     const snapshot = this.snapshot()
     let reason: string | undefined
     if (this.limit.requests > 0 && this.requests >= this.limit.requests) reason = 'requests'
-    else if (this.limit.promptTokens > 0 && this.promptTokens >= this.limit.promptTokens) reason = 'promptTokens'
-    else if (this.limit.outputTokens > 0 && this.outputTokens >= this.limit.outputTokens) reason = 'outputTokens'
+    else if (this.limit.promptTokens > 0 && this.consumedPrompt() >= this.limit.promptTokens) reason = 'promptTokens'
+    else if (this.limit.outputTokens > 0 && this.consumedOutput() >= this.limit.outputTokens) reason = 'outputTokens'
     else if (this.limit.wallClockMs > 0 && snapshot.elapsedMs >= this.limit.wallClockMs) reason = 'wallClock'
     if (reason === undefined) {
       this.requests += 1
+      this.reservedPrompt += this.reserve.promptTokens
+      this.reservedOutput += this.reserve.outputTokens
+      this.outstanding = { ...this.reserve }
       return
     }
     this.refusals += 1
@@ -102,32 +154,67 @@ export class RequestBudget {
    * cached re-reads, which are the bulk of a long episode's prompt traffic and must not be free
    * merely because they are cheap.
    *
-   * A response with NO usage leaves the totals alone. That is deliberate: treating a missing
-   * measurement as zero is how a spent budget reports itself as unspent. `requests` still moves,
-   * so the REQUEST limit stays sound even when usage is absent -- which is exactly the case the
-   * token limits cannot cover, and the snapshot's job is to show that rather than hide it.
+   * The admission RESERVE for this request is settled first: it was charged when the request was
+   * admitted, and the measurement replaces it rather than adding to it. A request that never
+   * reaches `record` -- 5xx, transport error, abort, unparseable body, exhausted 429 retries --
+   * keeps its reserve, which is the conservative treatment of a request that may have been
+   * processed and billed.
+   *
+   * `usage === undefined` (no usage at all) settles with the caller's fallback. A PARTIAL usage
+   * record is settled with what it says, and is counted in `partialUsageRequests`: `mapUsage`
+   * fills absent fields with 0, so the object exists and a `undefined` test cannot see it.
    */
-  record(usage: TokenUsageLike | undefined, fallback?: TokenUsageLike): void {
-    // A response with no usage still consumed SOMETHING, and the provider will bill for it.
-    // Recording nothing is how 140 requests of unknown size look free: the request cap alone
-    // would then bound nothing, because 140 x a full 131,072-token window is far past the
-    // authorized usage. The caller supplies a CONSERVATIVE estimate instead.
+  record(usage: TokenUsageLike | undefined, fallback?: TokenUsageLike, partial = false): void {
+    // Settle the reserve for the request this measurement belongs to.
+    if (this.outstanding !== undefined) {
+      this.reservedPrompt -= this.outstanding.promptTokens
+      this.reservedOutput -= this.outstanding.outputTokens
+      this.outstanding = undefined
+    }
     const effective = usage ?? fallback
-    if (effective === undefined) return
+    if (effective === undefined) {
+      // Nothing measured and nothing to fall back on: the reserve stays charged, and the
+      // request is recorded as one whose true cost is unknown rather than free.
+      this.unknownUsageRequests += 1
+      return
+    }
+    if (usage === undefined) this.unknownUsageRequests += 1
+    // Detected by the CALLER, from the raw wire record: `mapUsage` fills absent fields with 0, so
+    // the mapped object cannot distinguish "reported zero" from "never reported".
+    else if (partial) this.partialUsageRequests += 1
     const prompt = (effective.inputTokens ?? 0)
       + (effective.cacheReadTokens ?? 0)
       + (effective.cacheWriteTokens ?? 0)
       + (effective.promptTokens ?? 0)
-    if (Number.isFinite(prompt)) this.promptTokens += prompt
+    if (Number.isFinite(prompt)) this.observedPrompt += prompt
     if (typeof effective.outputTokens === 'number' && Number.isFinite(effective.outputTokens)) {
-      this.outputTokens += effective.outputTokens
+      this.observedOutput += effective.outputTokens
     }
   }
+  /** Prompt tokens charged: measured plus conservatively reserved. */
+  consumedPrompt(): number {
+    return this.observedPrompt + this.reservedPrompt
+  }
+
+  /** Output tokens charged: measured plus conservatively reserved. */
+  consumedOutput(): number {
+    return this.observedOutput + this.reservedOutput
+  }
+
   snapshot(): BudgetSnapshot {
     return {
       requests: this.requests,
-      promptTokens: this.promptTokens,
-      outputTokens: this.outputTokens,
+      // `promptTokens`/`outputTokens` are the CHARGED totals -- measured plus reserved -- because
+      // those are what admission compares against. The split is published beside them so a
+      // report can never present a reserve as a provider measurement.
+      promptTokens: this.consumedPrompt(),
+      outputTokens: this.consumedOutput(),
+      observedPromptTokens: this.observedPrompt,
+      observedOutputTokens: this.observedOutput,
+      reservedPromptTokens: this.reservedPrompt,
+      reservedOutputTokens: this.reservedOutput,
+      unknownUsageRequests: this.unknownUsageRequests,
+      partialUsageRequests: this.partialUsageRequests,
       elapsedMs: Date.now() - this.startedAt,
       refusals: this.refusals,
       limit: this.limit,

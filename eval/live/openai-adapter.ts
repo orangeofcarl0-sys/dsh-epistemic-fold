@@ -548,7 +548,11 @@ export class OpenAiCompatibleAdapter
     // The fallback charges a FULL context window when the provider reports no usage. Recording
     // nothing would let 140 requests of unknown size look free, and the request cap alone does
     // not bound cost: 140 x 131,072 tokens is far past the authorized usage.
-    this.budget?.record(usage, { promptTokens: this.contextWindow })
+    // PARTIAL is judged from the RAW record, because `mapUsage` fills absent fields with 0 and
+    // the mapped object therefore cannot tell "reported zero" from "never reported".
+    const partial = payload.usage !== undefined
+      && (payload.usage.prompt_tokens === undefined || payload.usage.completion_tokens === undefined)
+    this.budget?.record(usage, { promptTokens: this.contextWindow }, partial)
     if (usage !== undefined) yield { type: 'usage', usage }
     yield { type: 'finish', reason: mapFinish(choice?.finish_reason, sawToolCall) }
   }

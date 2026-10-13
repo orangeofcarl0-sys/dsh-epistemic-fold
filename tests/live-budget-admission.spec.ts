@@ -62,6 +62,56 @@ async function drive(
   return { ...(failure === undefined ? {} : { failure }), ...(kind === undefined ? {} : { kind }), ...(usage === undefined ? {} : { usage }) }
 }
 
+describe('an UNKNOWN-cost request is charged, never treated as free', () => {
+  const RESERVE = { promptTokens: 1_000, outputTokens: 100 }
+
+  /** A provider that answers with one fixed status and no usage. */
+  function statusFetch(status: number) {
+    const calls: number[] = []
+    const impl = (async (): Promise<Response> => {
+      calls.push(calls.length + 1)
+      return new Response('nope', { status })
+    }) as unknown as typeof fetch
+    return { calls, impl }
+  }
+
+  it('keeps the reserve when a sent request fails with 5xx and never reports usage', async () => {
+    // The request left the process. It may have been processed and billed, and nothing local can
+    // know. Charging it nothing is the defect this reservation exists to remove.
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = statusFetch(500)
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    expect(fake.calls.length).toBe(1)
+    const snapshot = budget.snapshot()
+    expect(snapshot.reservedPromptTokens, 'reserved, because the cost is unknown').toBe(1_000)
+    expect(snapshot.observedPromptTokens, 'nothing was measured').toBe(0)
+    expect(snapshot.promptTokens, 'the CHARGED total includes the reserve').toBe(1_000)
+  })
+
+  it('settles the reserve into the measurement when usage DOES arrive', async () => {
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = scriptedFetch(['ok'], { prompt_tokens: 250, completion_tokens: 7, total_tokens: 257 })
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    const snapshot = budget.snapshot()
+    expect(snapshot.reservedPromptTokens, 'the reserve is REPLACED, not added to').toBe(0)
+    expect(snapshot.observedPromptTokens).toBe(250)
+    expect(snapshot.promptTokens).toBe(250)
+  })
+
+  it('counts a partial usage record rather than letting it pass as a measurement', async () => {
+    // `mapUsage` fills absent fields with 0, so the usage object EXISTS and an `undefined` test
+    // cannot see that the output side was never reported.
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = scriptedFetch(['ok'], { prompt_tokens: 300 })
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    expect(budget.snapshot().partialUsageRequests).toBe(1)
+    expect(budget.snapshot().observedPromptTokens).toBe(300)
+  })
+})
+
 describe('the budget gate refuses BEFORE the request leaves', () => {
   it('admits the first request and refuses the second, with fetch called exactly once', async () => {
     const budget = new RequestBudget({ ...LIMITS, requests: 1 })

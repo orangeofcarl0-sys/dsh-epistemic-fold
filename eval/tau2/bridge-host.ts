@@ -73,7 +73,7 @@ import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagen
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
-import { RequestBudget, budgetLimitsFromEnv } from '../live/request-budget.ts'
+import { DEFAULT_OUTPUT_RESERVE, RequestBudget, budgetLimitsFromEnv } from '../live/request-budget.ts'
 import { assertRouteRoutable, resolveLiveRoute } from '../live/zcode-config.ts'
 import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
@@ -320,8 +320,17 @@ interface Telemetry {
   /** The provider budget as it stands, so a report reconciles against the provider's own log. */
   readonly budget?: {
     readonly requests: number
+    /** CHARGED totals: measured plus reserved. What admission compares. */
     readonly promptTokens: number
     readonly outputTokens: number
+    /** Provider-reported. Never includes a reserve. */
+    readonly observedPromptTokens: number
+    readonly observedOutputTokens: number
+    /** Conservatively reserved for requests whose true cost is unknown. */
+    readonly reservedPromptTokens: number
+    readonly reservedOutputTokens: number
+    readonly unknownUsageRequests: number
+    readonly partialUsageRequests: number
     readonly elapsedMs: number
     readonly refusals: number
     readonly limit: {
@@ -1627,7 +1636,15 @@ async function init(request: {
   // limit, so an unconfigured lane behaves exactly as before.
   // `budgetLimitsFromEnv` refuses a SET BUT INVALID value instead of letting it disable the
   // check, and refuses a run that asked for enforcement and did not get it. See the module.
-  budget = new RequestBudget(budgetLimitsFromEnv())
+  // The reserve is what an UNKNOWN-cost request is charged: a full context window plus a generous
+  // output allowance, because the fold's summarization has its own `maxTokens` and reserving the
+  // main model's smaller reply budget would under-charge exactly the requests the reserve exists
+  // for. It is a reservation, never reported as a measurement -- `telemetry.budget` keeps
+  // `observed` and `reserved` apart.
+  budget = new RequestBudget(budgetLimitsFromEnv(), {
+    promptTokens: TAU2_WINDOW,
+    outputTokens: DEFAULT_OUTPUT_RESERVE,
+  })
   const adapter = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl,
     apiKey: route.apiKey,
@@ -1860,8 +1877,9 @@ async function telemetry(): Promise<Telemetry> {
     foldLineage,
     taskRoot: taskRootState,
     // The raw count, so a report can be reconciled against the provider's own request log rather
-    // than trusting a derived figure.
-    budget: budget?.snapshot(),
+    // than trusting a derived figure. Spread rather than set to `undefined`, because
+    // `exactOptionalPropertyTypes` distinguishes the two.
+    ...(budget === undefined ? {} : { budget: budget.snapshot() }),
     compactBudget,
     derivedAnswersRetired: engine!.derivedAnswersRetired,
     subagentRecall: { ...subagentRecallStats },

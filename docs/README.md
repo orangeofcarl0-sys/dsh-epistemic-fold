@@ -169,6 +169,7 @@ These records document real-host defects and browser/deployment integration. The
 - [79_NATURAL_FOLD_READINESS.md](79_NATURAL_FOLD_READINESS.md)
 - [80_BUDGET_GATE.md](80_BUDGET_GATE.md)
 - [81_BUDGET_ADMISSION.md](81_BUDGET_ADMISSION.md)
+- [82_UNKNOWN_COST_ACCOUNTING.md](82_UNKNOWN_COST_ACCOUNTING.md)
 
 ## How to read old conclusions
 
