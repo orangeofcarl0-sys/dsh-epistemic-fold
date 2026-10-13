@@ -126,8 +126,17 @@ export function admitLeafEconomically(options: {
   readonly thresholdTokens: number
   readonly minReclaimTokens: number
   readonly minReclaimRatio: number
+  /**
+   * Surface positions no span may include -- the resident active task root.
+   *
+   * Passed in so the DECIDER and the EXECUTOR look at the same span. Without it this
+   * function prices a span that contains the task root while the fold excludes it, which
+   * is a decision made on one span and executed on another.
+   */
+  readonly protectedPositions?: readonly number[]
 }): LeafAdmissionVerdict {
   const { session, measurement, thresholdTokens, minReclaimTokens, minReclaimRatio } = options
+  const protectedPositions = options.protectedPositions ?? []
   const breakdown = pressureBreakdown(session, measurement, thresholdTokens)
   if (breakdown.leafCannotSuffice) {
     return {
@@ -145,7 +154,7 @@ export function admitLeafEconomically(options: {
     }
   }
 
-  const span = selectLeafSpan(session, measurement, 0)
+  const span = selectLeafSpan(session, measurement, 0, undefined, protectedPositions)
   if (span === null) {
     return {
       admitted: false,
@@ -245,6 +254,8 @@ export function assessFoldReachability(options: {
   readonly measurement: TokenMeasurement
   readonly thresholdTokens: number
   readonly retainTokens: number
+  /** Surface positions no span may include; see `admitLeafEconomically`. */
+  readonly protectedPositions?: readonly number[]
 }): FoldReachability {
   const { session, measurement, thresholdTokens, retainTokens } = options
   const breakdown = pressureBreakdown(session, measurement, thresholdTokens)
@@ -252,7 +263,7 @@ export function assessFoldReachability(options: {
   // The widest legal span, taken with retain 0 so it is an UPPER bound on what
   // any selector could fold. `selectLeafSpan` with the caller's own retention
   // can only be narrower, which is why the bound is computed this way.
-  const widest = selectLeafSpan(session, measurement, 0)
+  const widest = selectLeafSpan(session, measurement, 0, undefined, options.protectedPositions ?? [])
   if (widest === null) {
     return {
       canReachThreshold: false,

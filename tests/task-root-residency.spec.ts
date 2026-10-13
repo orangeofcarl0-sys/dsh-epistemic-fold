@@ -363,22 +363,164 @@ describe('task root: residency survives repeated leaf folds', () => {
   })
 })
 
-describe('task root: explicitly BLOCKED for root folds', () => {
-  it('PINNED: a ROOT fold still takes the root, because Basic selects that span', async () => {
-    const { engine } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+describe('task root: a PROTECTED root fold keeps it resident', () => {
+  it('executes a real root commit whose span excludes the root, and archives only that span', async () => {
+    const { engine, store } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
     const session = taskSession(3, 3_000)
     // `compactNow` requires an IDLE session: close the turn the pressure fixture leaves open.
     session.append('turn/end', { turn: 4, reason: { kind: 'completed' } })
+    const rootSeq = session.surface.nodes[0]!
     registerFirstNode(engine, session)
     expect(engine.taskRootStatus(session)).toEqual({ status: 'resident', position: 0 })
-    expect(surfaceText(session)).toContain('RECOVER THE TRUE SEMANTICS')
+    const surfaceBefore = session.surface.nodes.length
 
-    // `compactNow` delegates to the vendored Basic engine, which picks its own range and calls
-    // `compactSurfaceRegion` directly instead of `this.compactRegion` -- so EF's exclusion never
-    // runs. This assertion records the GAP, it does not endorse it: see docs/70.
+    const result = await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    expect(result, 'a protected root really commits').not.toBeNull()
+    expect(engine.rootFoldCount).toBe(1)
+    expect(session.surface.nodes.length, 'the surface actually shrank').toBeLessThan(surfaceBefore)
+
+    // 1. The contract is still model-visible, and it is still the SAME user event.
+    expect(surfaceText(session)).toContain('RECOVER THE TRUE SEMANTICS')
+    expect(surfaceText(session).split('RECOVER THE TRUE SEMANTICS').length - 1).toBe(1)
+    expect(session.surface.nodes[0], 'still the original node, at position 0').toBe(rootSeq)
+    expect(engine.taskRootStatus(session)).toEqual({ status: 'resident', position: 0 })
+
+    // 2. Provenance: the bundle describes the span that was COMMITTED and not the prefix.
+    const descriptors = await store.list(session.id)
+    const bundle = await store.read(session.id, descriptors[descriptors.length - 1]!.checkpointId)
+    expect(bundle).not.toBeNull()
+    expect(bundle!.mode).toBe('root')
+    expect(bundle!.source.orderedSurfaceSeqs as readonly number[], 'the root seq is NOT in the archive refs')
+      .not.toContain(rootSeq)
+    const archived = (bundle!.archive.shadowedMessages ?? [])
+      .map(message => message.content.map(block => (block.type === 'text' ? block.text : '')).join(''))
+    expect(archived.join('\n'), 'and the instruction was not archived by this fold')
+      .not.toContain('RECOVER THE TRUE SEMANTICS')
+    expect(archived.length, 'the archive is not empty').toBeGreaterThan(0)
+
+    // 3. Exact recall returns what was actually folded, never the protected root.
+    const page = await recall({
+      store, sessionId: session.id, checkpointId: bundle!.checkpointId, depth: 'exact', offset: 0, limit: 20,
+    })
+    const recalled = (page?.page?.messages ?? [])
+      .map(message => message.content.map(block => (block.type === 'text' ? block.text : '')).join(''))
+      .join('\n')
+    expect(recalled).not.toContain('RECOVER THE TRUE SEMANTICS')
+    expect(page!.page!.totalMessages).toBe(archived.length)
+  })
+
+  it('declines a NON-PREFIX root instead of folding around it', async () => {
+    const { engine } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+    const session = taskSession(3, 3_000)
+    session.append('turn/end', { turn: 4, reason: { kind: 'completed' } })
+    registerFirstNode(engine, session)
+    // A first root fold freezes a checkpoint; Task B then sits AFTER it on the surface.
     await drive(engine).compactNow(stubAgent(session), SIGNAL)
     expect(engine.rootFoldCount).toBe(1)
+    // Task B must be a LATER USER message, so the refusal under test is about POSITION and not
+    // about the node being ineligible for some other reason.
+    session.append('turn/start', { turn: 5 })
+    session.append('user/message', createUserMessage({
+      content: [{ type: 'text', text: 'Task B: a different job entirely.' }],
+      source: { kind: 'user' },
+    }), { surfaceOp: 'append' })
+    session.append('turn/end', { turn: 5, reason: { kind: 'completed' } })
+    const taskB = session.surface.nodes[session.surface.nodes.length - 1]!
+    const taskBMessage = session.deriveEventMessage(session.eventAt(taskB)!)!
+    expect(taskBMessage.role).toBe('user')
+    engine.registerActiveTaskRoot({
+      sessionId: session.id, sourceSeq: taskB, sourceDigest: taskRootDigest(taskBMessage), generation: 0,
+    } as never)
+    const before = [...session.surface.nodes]
+
+    const result = await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    // Refused, and the surface is untouched: a fold that cannot protect the declared root must
+    // not run and break the frontier promise instead.
+    expect(result).toBeNull()
+    expect(engine.lastRootRefusal).toBe('unsupported-nonprefix')
+    expect([...session.surface.nodes]).toEqual(before)
+    expect(engine.rootFoldCount, 'no second root committed').toBe(1)
+  })
+
+  it('declines a root whose digest no longer matches, rather than claiming protection', async () => {
+    const { engine } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+    const session = taskSession(3, 3_000)
+    session.append('turn/end', { turn: 4, reason: { kind: 'completed' } })
+    const rootSeq = session.surface.nodes[0]!
+    engine.registerActiveTaskRoot({
+      sessionId: session.id, sourceSeq: rootSeq, sourceDigest: 'not-the-digest', generation: 1,
+    } as never)
+    const before = [...session.surface.nodes]
+    const result = await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    expect(result).toBeNull()
+    expect(engine.lastRootRefusal).toBe('digest-mismatch')
+    expect([...session.surface.nodes]).toEqual(before)
+  })
+
+  it('leaves an UNREGISTERED session on the original root path, byte for byte', async () => {
+    const { engine } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+    const session = taskSession(3, 3_000)
+    session.append('turn/end', { turn: 4, reason: { kind: 'completed' } })
+    expect(engine.taskRootStatus(session)).toEqual({ status: 'unregistered' })
+    const result = await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    // The pre-existing behaviour, including that an unregistered session gets NO protection:
+    // nothing was declared, so nothing is promised.
+    expect(result).not.toBeNull()
+    expect(engine.rootFoldCount).toBe(1)
+    expect(engine.lastRootRefusal).toBeUndefined()
     expect(surfaceText(session)).not.toContain('RECOVER THE TRUE SEMANTICS')
-    expect(engine.taskRootStatus(session)).toEqual({ status: 'absent', reason: 'source-not-on-surface' })
+  })
+
+  it('a repeated root commits NOTHING, even though it re-attempts the span', async () => {
+    const { engine } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+    const session = taskSession(3, 3_000)
+    session.append('turn/end', { turn: 4, reason: { kind: 'completed' } })
+    registerFirstNode(engine, session)
+    await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    expect(engine.rootFoldCount).toBe(1)
+    const afterFirst = [...session.surface.nodes]
+
+    // The second call DOES select a range -- collapsing the new checkpoint into another one is
+    // what a root rebase is for -- and the transaction refuses it because the summary is not
+    // smaller. Basic maps that failure to `busy`, and this path inherits the mapping rather than
+    // inventing a second one. What matters here is that nothing was COMMITTED.
+    await expect(drive(engine).compactNow(stubAgent(session), SIGNAL)).rejects.toMatchObject({
+      name: 'ManualCompactionError',
+    })
+    expect(engine.rootFoldCount, 'NO second root committed').toBe(1)
+    expect([...session.surface.nodes], 'and the surface is untouched').toEqual(afterFirst)
+    expect(engine.taskRootStatus(session)).toEqual({ status: 'resident', position: 0 })
+  })
+
+  it('survives Leaf then Root then Leaf, keeping exactly one copy of the contract', async () => {
+    const { engine, ctx } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })
+    const session = taskSession(6, 3_000)
+    const rootSeq = session.surface.nodes[0]!
+    registerFirstNode(engine, session)
+
+    let openTurn = 7
+    for (let round = 0; round < 2; round += 1) {
+      await drive(engine).compactIfNeeded(stubAgent(session), 'pressure', SIGNAL)
+      openTurn = addWork(session, openTurn, 2, 3_000)
+    }
+    expect(engine.leafFoldCount).toBeGreaterThanOrEqual(1)
+    // A root fold needs an idle surface, and the chain above leaves a turn open.
+    session.append('turn/end', { turn: openTurn, reason: { kind: 'completed' } })
+    await drive(engine).compactNow(stubAgent(session), SIGNAL)
+    expect(engine.rootFoldCount).toBe(1)
+
+    // One more leaf after the root, to prove the protection is not a one-shot.
+    openTurn = addWork(session, openTurn, 3, 3_000)
+    await drive(engine).compactIfNeeded(stubAgent(session), 'pressure', SIGNAL)
+
+    expect(session.surface.nodes[0], 'the same user event throughout').toBe(rootSeq)
+    const text = surfaceText(session)
+    expect(text).toContain('RECOVER THE TRUE SEMANTICS')
+    expect(text.split('RECOVER THE TRUE SEMANTICS').length - 1, 'exactly one copy').toBe(1)
+    expect(engine.taskRootStatus(session)).toEqual({ status: 'resident', position: 0 })
+    // And the residency cost is still priced after the root.
+    const priced = ctx.tokenMeter.measure(session).nodes.find(node => node.seq === rootSeq)
+    expect(priced).toBeDefined()
+    expect(priced!.tokens).toBeGreaterThan(1_000)
   })
 })

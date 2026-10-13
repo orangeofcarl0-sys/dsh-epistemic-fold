@@ -25,6 +25,7 @@
 // dispatch re-enters EF's own overrides. See src/basic/ and THIRD_PARTY_NOTICES.md.
 import BasicCompactionEngine from './basic/index.ts'
 import { toolPairingBalancedBefore } from '@deepseek-ai/dsh-compaction'
+import { ManualCompactionError } from '@deepseek-ai/dsh-compaction'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
@@ -40,7 +41,7 @@ import {
   splitSummarizationInput,
 } from './compiler.ts'
 import { FileBundleStore } from './bundle-store.ts'
-import { selectCompactableRange } from './basic/region.ts'
+import { compactSurfaceRegion, selectCompactableRange } from './basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
@@ -833,7 +834,26 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // candidate is prepared and no commit record is written. See the note on
     // `compactIfNeeded`.
     if (this.isBasic()) return super.compactNow(...args)
-    const [agent] = args
+    const [agent, signal, sourceCommandId] = args
+    // A host-declared root changes WHICH span a root fold may take. With no
+    // registration this branch does not run and the pre-existing path is used byte for
+    // byte, so a session that never declared a task root behaves exactly as before.
+    const guard = this.protectedRootGuard(agent.session)
+    if (guard.status === 'refused') {
+      // The root is REGISTERED and the protection cannot be honoured. Folding anyway would
+      // silently break the residency the host was promised, so the fold is declined and the
+      // reason is recorded. `clearActiveTaskRoot` restores ordinary root compaction.
+      this.refusedRootReason = guard.reason
+      this.ctx.logger.warn(
+        `[epistemic-fold] root fold declined: ${guard.reason} for the registered active task root`,
+      )
+      return null
+    }
+    if (guard.status === 'protected') {
+      this.refusedRootReason = undefined
+      return this.protectedRootFold(agent, signal, sourceCommandId)
+    }
+    this.refusedRootReason = undefined
     const candidate = createFoldCandidate({ mode: 'root', session: agent.session })
     this.candidates.prepare(agent.session, candidate)
     try {
@@ -854,6 +874,168 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       return result
     } finally {
       this.candidates.clear(agent.session)
+    }
+  }
+
+  /** Why the last root fold was DECLINED to protect a registered root, or `undefined`. */
+  private refusedRootReason: string | undefined
+
+  /**
+   * Why the last root fold was declined, or `undefined` when none was.
+   *
+   * A declined root fold returns `null`, which is also what "nothing to compact" returns.
+   * Those are different facts and a caller reading only the return value cannot tell them
+   * apart, so the reason is published here as well.
+   */
+  get lastRootRefusal(): string | undefined {
+    return this.refusedRootReason
+  }
+
+  /**
+   * Whether a root fold may protect a registered task root, and if not, why not.
+   *
+   * `none` is the ordinary case -- no host ever declared a root -- and it must stay the
+   * common one: this returns `none` without touching the surface for every session that
+   * never registered, which is what keeps the default path unchanged.
+   *
+   * `refused` covers a root that is registered but cannot be honoured. A NON-PREFIX root is
+   * the case the contract names: `[Task A][CP1][history][Task B]` cannot be protected by
+   * excluding one contiguous span, because Task B sits after a frozen checkpoint, and this
+   * round does not re-order the surface. Folding anyway would break the frontier promise, so
+   * the fold is declined instead.
+   */
+  private protectedRootGuard(session: Session):
+    | { readonly status: 'none' }
+    | { readonly status: 'protected'; readonly position: number }
+    | { readonly status: 'refused'; readonly reason: string } {
+    const ref = this.taskRoots.get(session.id)
+    if (ref === undefined) return { status: 'none' }
+    const position = protectedTaskRootPosition(session, ref)
+    if (position === undefined) {
+      const event = session.eventAt(ref.sourceSeq)
+      const message = event === undefined ? null : session.deriveEventMessage(event)
+      return {
+        status: 'refused',
+        reason: message === null
+          ? 'source-not-on-surface'
+          : message.role !== 'user'
+            ? 'not-a-user-message'
+            : taskRootDigest(message) !== ref.sourceDigest ? 'digest-mismatch' : 'source-not-on-surface',
+      }
+    }
+    const firstFrozen = locateFoldFrontier(session).frozen[0]
+    if (firstFrozen !== undefined && firstFrozen.position < position) {
+      return { status: 'refused', reason: 'unsupported-nonprefix' }
+    }
+    return { status: 'protected', position }
+  }
+
+  /**
+   * The dependencies `compactSurfaceRegion` needs, built from this engine.
+   *
+   * `BasicCompactionEngine.regionDependencies()` is private, so the four members are named
+   * here explicitly rather than reached for. Every one of them is reachable from this
+   * subclass, and two of them are EF's OWN overrides -- `summarize` and `frameCheckpoint` --
+   * so a protected root keeps the EF summarization path and the EF checkpoint framing rather
+   * than bypassing them.
+   */
+  private rootRegionDependencies(): Parameters<typeof compactSurfaceRegion>[0] {
+    return {
+      meter: this.ctx.tokenMeter,
+      summarize: (input, owner, abort) => this.summarize(input, owner, abort),
+      recover: (error, agent, sourceEventSeqs, signal) => this.ctx.waterfall('compaction/summary-error', {
+        session: agent.session,
+        sourceEventSeqs,
+        error,
+        ...signal === undefined ? {} : { signal },
+      }, () => false),
+      frameCheckpoint: (summary, agent) => this.frameCheckpoint(summary, agent),
+    }
+  }
+
+  /**
+   * One ROOT fold whose span excludes the resident active task root.
+   *
+   * ## Why this calls the exported transaction instead of `super.compactNow`
+   *
+   * `BasicCompactionEngine.compactNow` selects its own range and calls
+   * `compactSurfaceRegion` directly, so neither EF's `compactRegion` override nor any
+   * exclusion EF adds can reach it. `compactSurfaceRegion` is EXPORTED, so EF can supply the
+   * span itself and keep Basic's transaction -- region validation, the compaction lock, the
+   * `compaction/start`+`compaction/end` pair, the shrink check, the flush-failure path and
+   * the cancellation precedence -- instead of reimplementing any of it.
+   *
+   * The idle bracket is the real `agent.runMaintenance`, and the error mapping mirrors
+   * Basic's: an abort the agent itself requested is `cancelled`, anything else is `busy`.
+   *
+   * @returns the committed result, or `null` when no safe range exists past the root.
+   */
+  private async protectedRootFold(
+    agent: Agent,
+    signal: AbortSignal,
+    sourceCommandId: Parameters<BasicCompactionEngine['compactNow']>[2],
+  ): Promise<CompactionResult | null> {
+    signal.throwIfAborted()
+    try {
+      return await agent.runMaintenance(async (agentSignal) => {
+        const operationSignal = AbortSignal.any([agentSignal, signal])
+        try {
+          operationSignal.throwIfAborted()
+          // A FRESH measurement: the span is chosen from the surface as it is now, not as it
+          // was when the command was issued.
+          const measurement = this.ctx.tokenMeter.measure(agent.session)
+          const range = this.avoidTaskRoot(
+            agent.session, selectCompactableRange(agent.session, measurement, 0),
+          )
+          if (range === null) return null
+          // EXPLICIT start/end. Without them the bundle's seq list would fall back to the
+          // pre-existing "the folded span is a prefix of the surface" assumption, which this
+          // span deliberately is NOT -- the task root precedes it and was not folded.
+          const candidate = createFoldCandidate({
+            mode: 'root',
+            session: agent.session,
+            start: range.start,
+            end: range.end,
+          })
+          this.candidates.prepare(agent.session, candidate)
+          try {
+            const result = await compactSurfaceRegion(
+              this.rootRegionDependencies(),
+              agent.session,
+              range.start,
+              range.end,
+              agent,
+              {
+                owner: null,
+                stability: 'selected-span',
+                ...sourceCommandId === undefined ? {} : { sourceCommandId },
+                flush: async () => { await this.ctx.sessions.flush(agent.session) },
+              },
+              operationSignal,
+            )
+            // ONE commit record, ONE counter increment, exactly as the delegating path.
+            await this.recordCommit(candidate, result)
+            this.stepsSinceRootRebase = 0
+            this.rebaseIntents.clear(agent.session)
+            this.telemetry.rootRebaseAdvice = undefined
+            return result
+          } finally {
+            this.candidates.clear(agent.session)
+          }
+        } catch (error) {
+          if (agentSignal.aborted && operationSignal.reason === agentSignal.reason) {
+            throw new ManualCompactionError('cancelled', 'manual compaction was cancelled', { cause: error })
+          }
+          operationSignal.throwIfAborted()
+          throw error
+        }
+      })
+    } catch (error) {
+      throw new ManualCompactionError(
+        'busy',
+        'manual compaction requires an idle agent with no waking queued work',
+        { cause: error },
+      )
     }
   }
 
@@ -924,6 +1106,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         thresholdTokens: spec.thresholdTokens,
         minReclaimTokens: this.efConfig.minReclaimTokens,
         minReclaimRatio: this.efConfig.minReclaimRatio,
+        // The SAME exclusion the executor applies. A decider that priced a span containing
+        // the task root while the fold excluded it would authorize work it cannot do.
+        protectedPositions: this.protectedPositions(agent.session),
       })
       this.telemetry.leafAdmission = admissionVerdict
     }
@@ -994,6 +1179,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       measurement,
       thresholdTokens: spec.thresholdTokens,
       retainTokens: spec.retainTokens,
+      protectedPositions: this.protectedPositions(agent.session),
     })
     this.telemetry.foldReachability = reach
 
@@ -1074,6 +1260,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         measurement,
         thresholdTokens: spec.thresholdTokens,
         retainTokens: spec.retainTokens,
+        protectedPositions: this.protectedPositions(agent.session),
       })
       this.telemetry.foldReachability = afterFold
       if (!afterFold.canReachThreshold) {
@@ -1101,6 +1288,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         measurement,
         thresholdTokens: spec.thresholdTokens,
         retainTokens: spec.retainTokens,
+        protectedPositions: this.protectedPositions(agent.session),
       }))})`,
     ) as Error & { code?: string }
     stalled.code = 'PRESSURE_UNRESOLVED'

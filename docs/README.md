@@ -158,6 +158,7 @@ These records document real-host defects and browser/deployment integration. The
 - [68_STRUCTURAL_AUDIT_AND_PLAN.md](68_STRUCTURAL_AUDIT_AND_PLAN.md)
 - [69_RECALL_REACHABILITY.md](69_RECALL_REACHABILITY.md)
 - [70_TASK_ROOT_RESIDENCY.md](70_TASK_ROOT_RESIDENCY.md)
+- [71_PROTECTED_ROOT_TRANSACTION.md](71_PROTECTED_ROOT_TRANSACTION.md)
 
 ## How to read old conclusions
 

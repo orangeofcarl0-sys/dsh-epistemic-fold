@@ -2,6 +2,10 @@
 
 Status: measured and partly implemented, 2026-10-13. Parent commit `fedf47d`.
 
+**SUPERSEDED IN PART by docs/71.** The blocker below was an analysis error: `compactSurfaceRegion`
+IS exported, so EF can run Basic's own transaction with a span of its own choosing. The root case is
+now implemented; see docs/71.
+
 ## 1. The problem, restated from the measurement
 
 A real LHTB cell folded its own task instruction away in the FIRST leaf fold. The instruction
