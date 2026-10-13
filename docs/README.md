@@ -165,6 +165,7 @@ These records document real-host defects and browser/deployment integration. The
 - [75_NATURAL_LHTB_GATE.md](75_NATURAL_LHTB_GATE.md)
 - [76_EPISODE_CLOSURE_AND_RECALL.md](76_EPISODE_CLOSURE_AND_RECALL.md)
 - [77_PYTHON_RECALL_DISPATCH.md](77_PYTHON_RECALL_DISPATCH.md)
+- [78_BRIDGE_CHILD_LIFECYCLE.md](78_BRIDGE_CHILD_LIFECYCLE.md)
 
 ## How to read old conclusions
 

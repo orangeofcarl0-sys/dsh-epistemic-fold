@@ -343,6 +343,31 @@ class EFLhtbAgent(BaseAgent):
         environment: BaseEnvironment,
         context: AgentContext,
     ) -> None:
+        """
+        Drive the episode, and GUARANTEE the bridge is closed however it ends.
+        """
+        # The bridge is a child PROCESS, so leaving it behind is not a leak of memory but of a live
+        # node process holding a session. The episode body used to call `close()` on its normal
+        # path only, which meant any exception raised inside the loop -- a `BridgeError` from a
+        # dead host, a cancelled coroutine, a provider that never answers -- left the bridge to
+        # exit on its own, if it did. `close()` is idempotent, so wrapping it here costs nothing
+        # on the normal path and is the difference between "usually closed" and "closed".
+        #
+        # This covers everything Python can observe: normal return, a raised exception, and a
+        # `CancelledError` delivered to this coroutine. It does NOT cover the process being killed
+        # outright -- see `_run_episode` and docs/78 for that boundary.
+        try:
+            await self._run_episode(instruction, environment, context)
+        finally:
+            if self._bridge is not None:
+                self._bridge.close()
+
+    async def _run_episode(
+        self,
+        instruction: str,
+        environment: BaseEnvironment,
+        context: AgentContext,
+    ) -> None:
         """Drive the task loop, folding the transcript as it grows."""
         bundle_root = os.environ.get(
             "EF_LHTB_BUNDLE_ROOT",
