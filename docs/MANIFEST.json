@@ -405,6 +405,11 @@
     "sha256": "38c0427b9ae85d09feb956e41c2b1e96b1b3a7c2a17995e36ebe38555e8c6ca9"
   },
   {
+    "file": "81_BUDGET_ADMISSION.md",
+    "bytes": 6228,
+    "sha256": "6f6e4d56d6366f4fe7b12ca59ad7c8c96f41e031e309022feb408864ff718f5d"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -426,8 +431,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10076,
-    "sha256": "471a6824be970e879300effc998aeb09f9fd0f675e51482742ed1abd00eafa58"
+    "bytes": 10127,
+    "sha256": "a21d2c0933f11f9d205ffe3808eb1f05f45995333a7f015588ef2ea175bb56b6"
   },
   {
     "file": "README.zh.md",
