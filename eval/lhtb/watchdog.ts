@@ -128,7 +128,14 @@ function discoverCells(root: string): WatchedCell[] {
     const jobDir = join(root, job)
     try { if (!statSync(jobDir).isDirectory()) continue } catch { continue }
     for (const cell of readdirSync(jobDir)) {
-      const transcript = join(jobDir, cell, 'agent', 'ef-transcript.json')
+      // BOTH locations, for the same reason `_persist_transcript` writes one level
+      // up: `agent/` is mounted into the task container at /logs/agent, so a
+      // transcript there is readable by the agent -- and it read it, including the
+      // `arm` label. Older cells are still at the mounted path, so both are tried
+      // rather than the archive being split.
+      const mounted = join(jobDir, cell, 'agent', 'ef-transcript.json')
+      const hostSide = join(jobDir, cell, 'ef-transcript.json')
+      const transcript = existsSync(hostSide) ? hostSide : mounted
       if (!existsSync(transcript)) continue
       cells.push({ label: job.replace(/^lhtb-ef-[^-]*-/, '') + '/' + cell, container: containerFor(cell), transcript })
     }

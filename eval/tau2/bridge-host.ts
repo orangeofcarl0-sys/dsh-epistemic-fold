@@ -97,7 +97,34 @@ const STEP_MAX_TOKENS = Number(
   process.env.EF_BRIDGE_MAX_TOKENS ?? process.env.EF_TAU2_MAX_TOKENS ?? 900,
 )
 
-/** Context window the engine prices its fold threshold against. */
+/**
+ * Context window the engine prices its fold threshold against.
+ *
+ * ## This is a LANE constant, and that made it wrong for a bigger-window model
+ *
+ * The default of 32_000 was chosen for the tau2 lane (662d468) and inherited by LHTB,
+ * so every fold in that lane was priced at `min(32000 x 0.5, 32000 - reserve) = 16_000`
+ * tokens (`resolveEfCompactSpec`, `src/policy.ts:386-431`; `thresholdRatio` below).
+ * Measured on the 4.1F round: the task's own working set is 16_471 tokens, so EVERY
+ * fold evicted 7-11K tokens of material the agent had just read -- 50-109 folds per
+ * cell against step-5's 2-17 on the same threshold, 489K-803K tokens evicted per
+ * episode, and 10 of 11 cells never wrote the deliverable. See docs/65.
+ *
+ * The escape hatch is `EF_TAU2_WINDOW`, and it is set by the lane that knows its
+ * model (`scripts/run-lhtb.sh`), deliberately NOT by changing this default: 32K is the
+ * tau2 lane's recorded choice and RC9's null result was measured at it.
+ *
+ * ## The reply budget is NOT reserved, which is a second, latent incoherence
+ *
+ * `reservedCompletionTokens` (`src/policy.ts:49`) is
+ * `session.requestHeader()?.config.maxTokens ?? info.defaultMaxTokens ?? 0`, and this
+ * lane's adapter publishes no `defaultMaxTokens` (`eval/live/openai-adapter.ts:234-241`
+ * returns `context` only). So the reserve is 0 even while `EF_BRIDGE_MAX_TOKENS` asks
+ * for a 32_768-token completion -- against a window of 32_000. It does not currently
+ * bite, because measured replies are 204-2_804 output tokens per call, but a lane that
+ * asks for a completion larger than its declared window should say so rather than rely
+ * on the model declining to use the room.
+ */
 const TAU2_WINDOW = Number(process.env.EF_TAU2_WINDOW ?? 32_000)
 
 /**
@@ -218,6 +245,26 @@ interface FoldEvent {
 }
 
 /** Telemetry the EF side reports back; never part of the benchmark score. */
+/**
+ * What the fold was priced against, as the engine resolved it.
+ *
+ * Published so an archive can answer "what budget did this run have?" without a
+ * second computation that could disagree with the engine, and without the forensic
+ * dig that the 4.1F round required.
+ */
+export interface CompactBudget {
+  /** The window the fold threshold is a fraction of. */
+  readonly contextWindow: number
+  /** The pressure threshold: at or above this the engine folds. */
+  readonly thresholdTokens: number
+  /** `contextWindow - reservedCompletionTokens`: the largest surface that fits. */
+  readonly hardCapacityTokens: number
+  /** Tokens of recent tail kept verbatim across a fold. */
+  readonly retainTokens: number
+  /** Completion tokens the engine deducted from the window. */
+  readonly reservedCompletionTokens: number
+}
+
 interface Telemetry {
   readonly folds: number
   readonly roots: number
@@ -247,6 +294,24 @@ interface Telemetry {
    * already learned when it tried substring-matching the JSON for one.
    */
   readonly foldLineage: readonly FoldEvent[]
+  /**
+   * The window and budgets the folds were actually priced against, read off the
+   * engine that priced them.
+   *
+   * ## The defect this closes
+   *
+   * A round archived `folds`, `promptTokensLast` and the whole fold lineage but NOT
+   * the budget behind them, so "this arm folded 50-109 times" and "this arm folded
+   * 2-17 times" could not be explained from the archive — the threshold had to be
+   * recovered by decompressing a bundle and re-deriving
+   * `min(contextWindow x thresholdRatio, window - reserve)` by hand. When that was
+   * done the answer was that the window was 32_000 tokens while the task's own
+   * working set was 16_471, so every fold evicted material the agent had just read.
+   *
+   * `null` means no pressure check ever resolved a spec, which is a different fact
+   * from "the budget was zero".
+   */
+  readonly compactBudget: CompactBudget | null
   /** Whether the automatic fold was enabled at the moment of this snapshot. */
   readonly compactionEnabled: boolean
   readonly modelCalls: number
@@ -1466,11 +1531,22 @@ async function telemetry(): Promise<Telemetry> {
   const bill = recorder === undefined || profile === undefined
     ? undefined
     : summarizeBill(recorder.bill, profile)
+  // The budget, read off the engine that acted on it. `lastCompactSpec` is the same
+  // value `lastThresholdTokens` reports one field of, so the two cannot disagree.
+  const spec = engine!.lastCompactSpec
+  const compactBudget: CompactBudget | null = spec === undefined ? null : {
+    contextWindow: spec.contextWindow,
+    thresholdTokens: spec.thresholdTokens,
+    hardCapacityTokens: spec.hardCapacityTokens,
+    retainTokens: spec.retainTokens,
+    reservedCompletionTokens: spec.contextWindow - spec.hardCapacityTokens,
+  }
   return {
     folds,
     roots,
     emergencies,
     foldLineage,
+    compactBudget,
     compactionEnabled,
     modelCalls,
     promptTokensLast,

@@ -110,6 +110,48 @@ export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 
+# ## The FOLD WINDOW must be the MODEL's window, not a lane constant
+#
+# `eval/tau2/bridge-host.ts:101` prices every fold against `EF_TAU2_WINDOW`, whose
+# default is 32_000 -- a value chosen for the tau2 lane (662d468). LHTB inherited it, so
+# a model whose window is at least 250K was folded at
+# `min(32000 x 0.5, 32000 - reserve) = 16_000` tokens (`bridge-host.ts:1400`,
+# `src/policy.ts:386-431`) while THIS task's own working set is 16_471 tokens:
+#
+#     instruction.md 1,625   spec.md 1,160   cfg_daemon.py 7,831   cfg_cli.py 1,904
+#     engine.py 1,344        engine_runner.py 688   cfgd_public.json 1,920
+#
+# So every fold evicted 7-11K tokens of material the agent had just read. Measured on
+# the 4.1F round: 50-109 folds per cell against step-5's 2-17 on the SAME threshold,
+# 489K-803K tokens evicted per episode (the working set 30-49 times), `cfg_daemon.py`
+# re-read 127-168 times against 26-27 in the no-fold arm, and 10 of 11 cells never wrote
+# the deliverable. See docs/65.
+#
+# The escape hatch existed and was never used: `EF_TAU2_WINDOW` appears exactly ONCE in
+# this repository -- at its own default. It is set HERE rather than by changing that
+# default, because 32K is the tau2 lane's recorded choice and RC9's null result was
+# measured at it; rewriting the default would silently rewrite that record.
+#
+# ## Measured where it can be, and NAMED AS AN ASSUMPTION where it cannot
+#
+# The route's `/models` publishes no context length (id/object/created/owned_by only),
+# so a window cannot be read off the API. For `deepseek-v4.1-flash` it was measured
+# instead: a ~250K-token prompt was accepted with HTTP 200, so 131_072 is conservative
+# for it rather than a guess. Every other model takes the adapter's own default
+# (`eval/live/openai-adapter.ts:229`, also 131_072) and SAYS SO, so a reader can tell a
+# measured window from an assumed one.
+model_window() {
+  case "$1" in
+    deepseek-v4.1-flash) echo 131072 ;;   # measured: >=250K-token prompt accepted (HTTP 200)
+    *) echo 131072 ;;
+  esac
+}
+export EF_TAU2_WINDOW="${EF_TAU2_WINDOW:-$(model_window "$EF_LIVE_MODEL")}"
+case "$EF_LIVE_MODEL" in
+  deepseek-v4.1-flash) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} (measured for this model)" ;;
+  *) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} ASSUMED for ${EF_LIVE_MODEL} (adapter default, not measured on this route)" ;;
+esac
+
 # ## `/zen/go/v1` requires a session id on every request
 #
 # That route answers `400 MissingSessionID` ("cannot be routed efficiently") on
@@ -273,6 +315,24 @@ export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-${EF_LHTB_BUNDLE_ROOT%/lhtb-bundles
 # further from here (EF_LHTB_REPLY_MAX_TOKENS defaults to this value) if even it is
 # spent on reasoning.
 export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-32768}"
+
+# ## The TURN budget must outlast the protocol it exists to allow
+#
+# `eval/lhtb/ef_lhtb_agent.py:59` defaults this to 400, and nothing ever raised it.
+# Measured on the 4.1F round: every EF cell ended `turn-budget-exhausted` at 401-412
+# model calls -- about 2h31m into a task whose own agent budget is 28800s (8h) and whose
+# harbor override is 86400. 5.5 hours went unused, and the cells were ended by OUR cap
+# rather than by the task. That is the same defect this repository already fixed once
+# for `override_timeout_sec` ("a config value TIGHTER than the budget it claimed to
+# defer to ... was what ended those trials"): the time budget was raised from 14400 to
+# 28800 and this cap was not raised with it.
+#
+# 1200 is DERIVED, not chosen. The protocol needs ~185 gated turns as a floor -- 105
+# probe rounds (21 x 5 stages, zero failures allowed) + 45 samples + ~35 reads/edits,
+# none avoidable because stage k+1 stays locked until stage k passes -- and the step-5
+# cells that SCORED on this task used 57-583 calls. 1200 gives ~6x the protocol floor,
+# while harbor's wall clock remains the real bound.
+export EF_LHTB_MAX_TURNS="${EF_LHTB_MAX_TURNS:-1200}"
 
 # ## Verify the route in the transport that will actually use it
 #

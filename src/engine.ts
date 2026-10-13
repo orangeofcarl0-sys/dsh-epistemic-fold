@@ -183,6 +183,22 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private stepsSinceRootRebase = Number.POSITIVE_INFINITY
   /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
   private lastThresholdTokensValue = 0
+  /**
+   * The WHOLE spec the most recent pressure check resolved, not just its threshold.
+   *
+   * ## Why the threshold alone was not enough
+   *
+   * A benchmark archive recorded `folds`, `promptTokensLast` and the fold lineage but
+   * NOT the budget those folds were priced against, so a round that folded 50-109 times
+   * per cell could not be told apart from one that folded 2-17 times for a reason -- the
+   * threshold had to be recovered afterwards by decompressing a bundle and re-deriving
+   * `min(contextWindow x thresholdRatio, window - reserve)` by hand. Measured on that
+   * round: the window was 32_000 while the task's working set was 16_471 tokens.
+   *
+   * Exposed so telemetry can publish what the engine ACTED on rather than a second
+   * computation of it that could disagree.
+   */
+  private lastCompactSpecValue: EfCompactSpec | undefined
   /** Most recent economic leaf-admission verdict (R2-B telemetry). */
   private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
   /** Most recent provider-aware rebase decision (R2-C telemetry). */
@@ -364,6 +380,16 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   get lastThresholdTokens(): number {
     return this.lastThresholdTokensValue
+  }
+
+  /**
+   * The whole compact spec the most recent pressure check resolved, or `undefined`
+   * before the first one. Companion to `lastThresholdTokens`, which reports one field
+   * of it; this is what makes `contextWindow`, the hard capacity and the retain budget
+   * publishable without re-deriving them.
+   */
+  get lastCompactSpec(): EfCompactSpec | undefined {
+    return this.lastCompactSpecValue
   }
 
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
@@ -767,6 +793,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       log: line => this.ctx.logger.info(line),
     })
     this.lastThresholdTokensValue = spec.thresholdTokens
+    this.lastCompactSpecValue = spec
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
     if (prune !== undefined) {
@@ -1069,6 +1096,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       reservedCompletionTokens(agent, info.defaultMaxTokens),
     )
     this.lastThresholdTokensValue = spec.thresholdTokens
+    this.lastCompactSpecValue = spec
     const breakdown = pressureBreakdown(agent.session, measurement, spec.thresholdTokens)
     // Recorded even though this path decides on the HARD capacity: leaving the
     // field untouched would report whatever a previous pressure call happened to

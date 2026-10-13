@@ -325,6 +325,11 @@
     "sha256": "af85a53bf1af2dcf0c9ca56ebaba7f3fd95047a0c84964668e318b0e0d2433f6"
   },
   {
+    "file": "65_LHTB_FOLD_WINDOW_AND_TURN_BUDGET.md",
+    "bytes": 11616,
+    "sha256": "766cb81ecc66bf1ccc30e1cb040ecde519f610dec4b16ccc18992ab4c312d430"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -346,8 +351,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9064,
-    "sha256": "f78f9c340a0538cf9bcaef623cb44cbaea8c8478587f769dbebdf740fe4f9322"
+    "bytes": 9147,
+    "sha256": "2d18a03314206b39a7783ea5d14f6a99fd4a614192c8d4f1c2565a27cb52088c"
   },
   {
     "file": "README.zh.md",

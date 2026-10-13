@@ -58,7 +58,16 @@ TASK_LABELS = {
 
 
 def cell_record(cell: Path) -> dict | None:
-    transcript = read_json(cell / "agent" / "ef-transcript.json")
+    # TWO locations, on purpose. `agent/` is the directory Harbor mounts into the
+    # task container at `/logs/agent`, so a transcript written there is readable by
+    # the agent -- which it was, and did: cells spent 18-137 commands mining it, and
+    # 38 of those read `arm`, `provenance` or `telemetry` out of it. New runs write
+    # one level up (`<cell>/ef-transcript.json`), which is on the host and not
+    # mounted; archives written before that change are still at the old path, so
+    # BOTH are read rather than splitting the corpus in two.
+    transcript = read_json(cell / "ef-transcript.json") or read_json(
+        cell / "agent" / "ef-transcript.json"
+    )
     if transcript is None:
         return None
     telemetry = transcript.get("telemetry") or {}

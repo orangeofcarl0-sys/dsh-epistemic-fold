@@ -653,6 +653,27 @@ class EFLhtbAgent(BaseAgent):
 
         Failures here are reported but never raised: a diagnostic must not be
         able to fail the measurement it exists to explain.
+
+        ## NOT inside `logs_dir`, because Harbor MOUNTS that into the container
+
+        `logs_dir` is `<cell>/agent`, and Harbor bind-mounts it at `/logs/agent`
+        inside the task container — so for as long as this file lived there, the
+        agent could read its own history, and did. Measured on the 4.1F round:
+        18-137 commands per cell were spent dumping, pickling and grepping it.
+
+        The cost is not only turns. The payload carries `arm` ("economy"),
+        `provenance`, `telemetry` (`folds`, `pressureRegime`, `costTotal`,
+        `efToolsOffered`) and `termination` — 38 commands across those cells read
+        one of them. A cell whose model can see WHICH ARM IT IS is not a clean
+        observation of that arm, and `efToolsOffered` is the field the `basic`
+        baseline is audited on.
+
+        So it is written one level up, to `<cell>/ef-transcript.json`, which is on
+        the host and not mounted. Durability is unchanged — it is still the same
+        every-step write to the same filesystem — and `scripts/ef-collect.py`
+        already discovers it by `rglob`. Readers that name the old path
+        (`scripts/analyze-lhtb-round.py`, `eval/lhtb/watchdog.ts`) accept BOTH, so
+        the archives written before this change stay readable.
         """
         try:
             self.logs_dir.mkdir(parents=True, exist_ok=True)
@@ -672,7 +693,7 @@ class EFLhtbAgent(BaseAgent):
                 "telemetry": telemetry,
                 "transcript": self._transcript,
             }
-            (self.logs_dir / "ef-transcript.json").write_text(
+            (self.logs_dir.parent / "ef-transcript.json").write_text(
                 json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
             )
         except Exception as error:  # noqa: BLE001 - logging must not fail a run

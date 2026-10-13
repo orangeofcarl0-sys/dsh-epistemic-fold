@@ -126,12 +126,22 @@ function collect(cells: readonly Cell[]): { status: number | null; stdout: strin
   try {
     cells.forEach((c, index) => {
       const dir = join(root, `cell-${index}`)
-      // The REAL layout is <job>/<cell>/agent/ef-transcript.json, with the
-      // verifier's files beside it in <job>/<cell>/verifier. This fixture used to
-      // write the transcript one level shallower, so the collector's sibling lookup
-      // resolved to a directory that does not exist in production and the fixture
-      // could not tell. It does now.
-      const agentDir = join(dir, 'agent')
+      // ## TWO layouts, and the fixture exercises BOTH
+      //
+      // The transcript lives beside the verifier's files in <job>/<cell>, and the
+      // collector finds it by `rglob` so the exact depth does not matter to it.
+      // What DOES matter is that both depths exist in the corpus:
+      //
+      //   <cell>/agent/ef-transcript.json   what every cell written before the
+      //       container-leak fix used. `agent/` is bind-mounted into the task
+      //       container at /logs/agent, so the agent could read its own transcript
+      //       -- including the `arm` label -- and did.
+      //   <cell>/ef-transcript.json         where it is written now, one level up,
+      //       on the host and not mounted.
+      //
+      // Alternating here means every existing case already covers one of the two,
+      // and the case below asserts the pair.
+      const agentDir = index % 2 === 0 ? join(dir, 'agent') : dir
       mkdirSync(agentDir, { recursive: true })
       writeFileSync(join(agentDir, 'ef-transcript.json'), JSON.stringify({
         schema: 'ef-lhtb-transcript/1',
@@ -345,6 +355,27 @@ describe.skipIf(PYTHON === undefined)('the LHTB transcript collector', () => {
     }])
     expect(status).toBe(1)
     expect(stdout).toMatch(/FAIL I3/u)
+  }, 30_000)
+
+  it('finds the transcript in BOTH layouts, so the corpus is not split in two', () => {
+    // The location changed for a reason that is not cosmetic: `agent/` is mounted
+    // into the task container, so a transcript written there is readable by the
+    // agent, and 38 commands across the 4.1F round read `arm`, `provenance` or
+    // `telemetry` out of it. New runs write to `<cell>/ef-transcript.json`; the
+    // archives written before that are still at the mounted path. A collector that
+    // found only one of them would silently halve every future report.
+    const healthy = {
+      folds: 1, roots: 0, emergencies: 0,
+      bundleWrites: 1, bundlesPresent: 1, pendingIntents: 0,
+      compactionFailures: 0, lastCompactionError: null,
+    }
+    // index 0 -> <cell>/agent/ef-transcript.json, index 1 -> <cell>/ef-transcript.json
+    const { status, stdout } = collect([
+      { arm: 'economy', telemetry: healthy },
+      { arm: 'balanced', telemetry: healthy },
+    ])
+    expect(status, stdout).toBe(0)
+    expect(stdout, 'both depths must be discovered, not just the new one').toMatch(/2 cell\(s\)/u)
   }, 30_000)
 
   it('runs end to end against a real cell without a Python error', () => {
