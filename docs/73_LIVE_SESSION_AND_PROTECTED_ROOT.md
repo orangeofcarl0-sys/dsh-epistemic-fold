@@ -83,3 +83,33 @@ the assembled model request contains the task text EXACTLY once.
 checking the commit lineage would conclude no root had happened. The lineage push is now one
 function (`recordFoldLineage`) that both paths call, and the mechanism is derived from the
 engine's own counter deltas rather than the caller's intent.
+
+## 6. Live run: the root committed, the model calls did not
+
+Provider health preflight first: 2/2 HTTP 200 in ~1.7s with real content. So a controlled
+post-fold continuation smoke was run through the same bridge against the real route
+(`deepseek-v4.1-flash`, window 16384, one episode, no ranking):
+
+```
+taskRoot@append      {mode: exact, status: resident, sourceSeq: 2, digestVerified: true, surfacePosition: 0}
+PRE-FOLD reply       ""            providerFailures: 1
+leaf committed       0             folds: 0
+taskRoot@afterLeaf   resident (same seq, digestVerified)
+POST-FOLD reply      ""            providerFailures: 2
+ROOT committed       1             refusal: none
+ROOT lineage         ["leaf", "root"]
+ROOT shadowed rootSeq: false
+taskRoot@afterRoot   resident (same seq, digestVerified)
+POST-ROOT reply      ""            providerFailures: 3
+```
+
+**What the live run establishes:** the protected ROOT transaction COMMITS against the real route --
+`committed: 1`, no refusal, its lineage entry recorded, its span excluding the task root, and the
+task root still resident and digest-verified afterwards. That is a transactional fact.
+
+**What it does NOT establish:** any post-fold continuation. All three model calls returned an empty
+reply and were counted as provider failures, so no turn completed and the forced leaf never
+committed. Per the round's instructions this is reported rather than retried until it looks good.
+
+**Live status: OPEN — PROVIDER BLOCKED.** The keyless root is verified; the live continuation is
+not, and the two are not merged into "live root verified".
