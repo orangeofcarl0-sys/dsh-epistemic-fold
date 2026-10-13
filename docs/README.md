@@ -170,6 +170,7 @@ These records document real-host defects and browser/deployment integration. The
 - [80_BUDGET_GATE.md](80_BUDGET_GATE.md)
 - [81_BUDGET_ADMISSION.md](81_BUDGET_ADMISSION.md)
 - [82_UNKNOWN_COST_ACCOUNTING.md](82_UNKNOWN_COST_ACCOUNTING.md)
+- [83_PER_DIMENSION_SETTLEMENT.md](83_PER_DIMENSION_SETTLEMENT.md)
 
 ## How to read old conclusions
 

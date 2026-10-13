@@ -548,11 +548,20 @@ export class OpenAiCompatibleAdapter
     // The fallback charges a FULL context window when the provider reports no usage. Recording
     // nothing would let 140 requests of unknown size look free, and the request cap alone does
     // not bound cost: 140 x 131,072 tokens is far past the authorized usage.
-    // PARTIAL is judged from the RAW record, because `mapUsage` fills absent fields with 0 and
-    // the mapped object therefore cannot tell "reported zero" from "never reported".
-    const partial = payload.usage !== undefined
-      && (payload.usage.prompt_tokens === undefined || payload.usage.completion_tokens === undefined)
-    this.budget?.record(usage, { promptTokens: this.contextWindow }, partial)
+    // ## Which dimensions were RELIABLY reported
+    //
+    // Judged from the RAW record, because `mapUsage` fills absent fields with 0 and the mapped
+    // object therefore cannot tell "reported zero" from "never reported". A dimension that is
+    // absent -- or present but not a sane non-negative finite number -- is NOT reported, and the
+    // budget keeps its conservative reserve for it rather than settling it to a smaller figure.
+    const wire = payload.usage
+    const sane = (value: unknown): boolean => typeof value === 'number' && Number.isFinite(value) && value >= 0
+    const reported = {
+      prompt: wire !== undefined
+        && (sane(wire.prompt_tokens) || sane(wire.cache_hit_tokens) || sane(wire.cache_miss_tokens)),
+      output: wire !== undefined && sane(wire.completion_tokens),
+    }
+    this.budget?.record(usage, { promptTokens: this.contextWindow }, reported)
     if (usage !== undefined) yield { type: 'usage', usage }
     yield { type: 'finish', reason: mapFinish(choice?.finish_reason, sawToolCall) }
   }

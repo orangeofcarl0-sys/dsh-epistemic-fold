@@ -32,11 +32,12 @@ export class BudgetExhaustedError extends Error {
 /**
  * The output a single request is RESERVED at when its true cost is unknown.
  *
- * Deliberately not the main model's reply budget. The fold's summarization is a different call
- * site with its own `maxTokens`, so reserving the smaller of the two would under-charge exactly
- * the requests this reserve exists to cover.
+ * Derived from the code, not guessed: `EF_LHTB_REPLY_MAX_TOKENS_CEILING` defaults to **131,072**,
+ * and `escalate_reply_budget()` may raise a reply up to that ceiling, so a LEGITIMATE main-model
+ * request can use far more than the summarization's 32,768. Reserving the smaller figure would
+ * under-charge exactly the requests this reserve exists to cover.
  */
-export const DEFAULT_OUTPUT_RESERVE = 32_768
+export const DEFAULT_OUTPUT_RESERVE = 131_072_768
 
 export interface BudgetLimits {
   /** Every HTTP ATTEMPT, including 429 retries. 0 disables the check. */
@@ -164,30 +165,35 @@ export class RequestBudget {
    * record is settled with what it says, and is counted in `partialUsageRequests`: `mapUsage`
    * fills absent fields with 0, so the object exists and a `undefined` test cannot see it.
    */
-  record(usage: TokenUsageLike | undefined, fallback?: TokenUsageLike, partial = false): void {
-    // Settle the reserve for the request this measurement belongs to.
+  record(
+    usage: TokenUsageLike | undefined,
+    fallback?: TokenUsageLike,
+    reported: { readonly prompt: boolean; readonly output: boolean } = { prompt: true, output: true },
+  ): void {
+    // ## Settlement is PER DIMENSION, and an unreported dimension keeps its reserve
+    //
+    // Settling the whole reserve and then adding the measurement RELEASES the reserve of any
+    // dimension the provider did not report -- and `mapUsage` reports 0 for an absent field, so
+    // `{prompt_tokens: 12000}` used to free the entire output reserve as if the reply had been
+    // free. A dimension settles only when the caller says it was RELIABLY reported; otherwise the
+    // conservative reserve stands, which is the whole point of having one.
+    const effective = usage ?? fallback
+    if (usage === undefined) this.unknownUsageRequests += 1
+    if (!reported.prompt || !reported.output) this.partialUsageRequests += 1
+    if (effective === undefined) return
     if (this.outstanding !== undefined) {
-      this.reservedPrompt -= this.outstanding.promptTokens
-      this.reservedOutput -= this.outstanding.outputTokens
+      if (reported.prompt) this.reservedPrompt -= this.outstanding.promptTokens
+      if (reported.output) this.reservedOutput -= this.outstanding.outputTokens
       this.outstanding = undefined
     }
-    const effective = usage ?? fallback
-    if (effective === undefined) {
-      // Nothing measured and nothing to fall back on: the reserve stays charged, and the
-      // request is recorded as one whose true cost is unknown rather than free.
-      this.unknownUsageRequests += 1
-      return
+    if (reported.prompt) {
+      const prompt = (effective.inputTokens ?? 0)
+        + (effective.cacheReadTokens ?? 0)
+        + (effective.cacheWriteTokens ?? 0)
+        + (effective.promptTokens ?? 0)
+      if (Number.isFinite(prompt)) this.observedPrompt += prompt
     }
-    if (usage === undefined) this.unknownUsageRequests += 1
-    // Detected by the CALLER, from the raw wire record: `mapUsage` fills absent fields with 0, so
-    // the mapped object cannot distinguish "reported zero" from "never reported".
-    else if (partial) this.partialUsageRequests += 1
-    const prompt = (effective.inputTokens ?? 0)
-      + (effective.cacheReadTokens ?? 0)
-      + (effective.cacheWriteTokens ?? 0)
-      + (effective.promptTokens ?? 0)
-    if (Number.isFinite(prompt)) this.observedPrompt += prompt
-    if (typeof effective.outputTokens === 'number' && Number.isFinite(effective.outputTokens)) {
+    if (reported.output && typeof effective.outputTokens === 'number' && Number.isFinite(effective.outputTokens)) {
       this.observedOutput += effective.outputTokens
     }
   }

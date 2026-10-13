@@ -112,6 +112,44 @@ describe('an UNKNOWN-cost request is charged, never treated as free', () => {
   })
 })
 
+describe('an UNREPORTED dimension keeps its reserve; a reported one settles', () => {
+  const RESERVE = { promptTokens: 131_072, outputTokens: 131_072 }
+
+  it('keeps the OUTPUT reserve when only input usage is reported', async () => {
+    // `{prompt_tokens: 12000}` makes `mapUsage` return outputTokens: 0. Settling the whole reserve
+    // would free the reply as if it had been free -- the defect this per-dimension rule removes.
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = scriptedFetch(['ok'], { prompt_tokens: 12_000 })
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    const snapshot = budget.snapshot()
+    expect(snapshot.observedPromptTokens, 'the input side used the report').toBe(12_000)
+    expect(snapshot.reservedPromptTokens, 'and its reserve was released').toBe(0)
+    expect(snapshot.reservedOutputTokens, 'the UNREPORTED output keeps its reserve').toBe(131_072)
+    expect(snapshot.partialUsageRequests).toBe(1)
+  })
+
+  it('keeps the PROMPT reserve when only output usage is reported', async () => {
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = scriptedFetch(['ok'], { completion_tokens: 400 })
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    const snapshot = budget.snapshot()
+    expect(snapshot.observedOutputTokens, 'the output side used the report').toBe(400)
+    expect(snapshot.reservedOutputTokens, 'and its reserve was released').toBe(0)
+    expect(snapshot.reservedPromptTokens, 'the UNREPORTED prompt keeps its reserve').toBe(131_072)
+  })
+
+  it('refuses a NONSENSE value rather than settling to a smaller figure', async () => {
+    const budget = new RequestBudget({ ...LIMITS, requests: 5 }, RESERVE)
+    const fake = scriptedFetch(['ok'], { prompt_tokens: -1, completion_tokens: 400 })
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    await drive(adapter)
+    expect(budget.snapshot().reservedPromptTokens, 'a negative report is NOT a measurement').toBe(131_072)
+    expect(budget.snapshot().observedPromptTokens).toBe(0)
+  })
+})
+
 describe('the budget gate refuses BEFORE the request leaves', () => {
   it('admits the first request and refuses the second, with fetch called exactly once', async () => {
     const budget = new RequestBudget({ ...LIMITS, requests: 1 })
@@ -161,14 +199,16 @@ describe('token limits are OBSERVED-consumption limits, and say so', () => {
   it('still counts the request when the provider reports NO usage', async () => {
     // Usage is missing, so the token figures are an ESTIMATE -- but a conservative one, and the
     // request cap is exact because `admit` counted the attempt regardless.
-    const budget = new RequestBudget({ ...LIMITS, requests: 1, promptTokens: 5 })
+    // Production shape: a reserve is configured, so an unmeasured response keeps it.
+    const budget = new RequestBudget({ ...LIMITS, requests: 1, promptTokens: 5 }, { promptTokens: 131_072, outputTokens: 131_072 })
     const fake = scriptedFetch(['ok', 'ok'], undefined)
     const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
     await drive(adapter)
     expect(budget.snapshot().requests, 'the attempt counted').toBe(1)
-    // CONSERVATIVE, not zero: a full context window is charged for a response that reported no
-    // usage, because the provider will bill for it and the request cap alone does not bound cost.
-    expect(budget.snapshot().promptTokens, 'unknown is charged at the window, not as zero').toBe(131_072)
+    expect(budget.snapshot().reservedPromptTokens, 'the reserve STANDS when nothing was measured').toBe(131_072)
+    expect(budget.snapshot().observedPromptTokens, 'nothing was measured, and none is invented').toBe(0)
+    expect(budget.snapshot().promptTokens, 'the charged total is the reserve').toBe(131_072)
+    expect(budget.snapshot().unknownUsageRequests).toBe(1)
     const second = await drive(adapter)
     expect(second.failure?.code, 'the REQUEST cap still holds').toBe('BUDGET_EXHAUSTED')
   })
