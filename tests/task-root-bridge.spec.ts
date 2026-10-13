@@ -116,6 +116,18 @@ interface TelemetryBlock {
     readonly reason?: string
   }
   readonly folds: number
+  readonly summarizationAttempts?: number
+  readonly summarizationRetries?: number
+  readonly providerFailures?: number
+  readonly lastFinishReason?: string
+  readonly budget?: {
+    readonly requests: number
+    readonly promptTokens: number
+    readonly outputTokens: number
+    readonly observedPromptTokens: number
+    readonly reservedPromptTokens: number
+    readonly refusals: number
+  }
   readonly foldLineage: readonly {
     readonly mechanism: string
     readonly shadowedSeqs: readonly number[]
@@ -138,7 +150,19 @@ afterEach(() => {
   while (dirs.length > 0) rmSync(dirs.pop()!, { recursive: true, force: true })
 })
 
-async function start(options: { readonly taskRootMode: 'off' | 'exact'; readonly engine?: 'basic' | 'ef' }) {
+interface BudgetEnv {
+  readonly requests?: number
+  readonly promptTokens?: number
+  readonly outputTokens?: number
+  readonly wallMs?: number
+}
+
+async function start(options: {
+  readonly taskRootMode: 'off' | 'exact'
+  readonly engine?: 'basic' | 'ef'
+  /** When set, the episode runs under a REAL budget gate. See docs/84. */
+  readonly budget?: BudgetEnv
+}) {
   const provider = await fakeProvider()
   const bundleRoot = mkdtempSync(join(tmpdir(), 'ef-taskroot-bridge-'))
   dirs.push(bundleRoot)
@@ -149,6 +173,17 @@ async function start(options: { readonly taskRootMode: 'off' | 'exact'; readonly
     EF_TAU2_BUNDLE_ROOT: bundleRoot,
     // A small window makes a leaf fold affordable to force; the threshold is half of it.
     EF_TAU2_WINDOW: '8192',
+    // `REQUIRED=1` refuses to start unless every limit is armed, so a test cannot pass by
+    // accidentally running with the budget switched off.
+    ...(options.budget === undefined
+      ? {}
+      : {
+          EF_LHTB_BUDGET_REQUIRED: '1',
+          EF_LHTB_BUDGET_REQUESTS: String(options.budget.requests ?? 50),
+          EF_LHTB_BUDGET_PROMPT_TOKENS: String(options.budget.promptTokens ?? 5_000_000),
+          EF_LHTB_BUDGET_OUTPUT_TOKENS: String(options.budget.outputTokens ?? 1_000_000),
+          EF_LHTB_BUDGET_WALL_MS: String(options.budget.wallMs ?? 600_000),
+        }),
   })
   running.push(bridge)
   const init = await bridge.send({
@@ -306,6 +341,46 @@ describe('the LHTB host declares its task root through the bridge', () => {
     }
     expect(recovered, 'exact recall returned the ORIGINAL archived message, nonce and all').toContain(SENTINEL)
     expect(recovered, 'and not a summary of it').toContain('recovered evidence')
+  })
+  it('MEASURES whether this fixture exercises the summarization path at all', async () => {
+    // Gate A's precondition. "The summarization shares the budget" cannot be tested against a
+    // fixture whose folds never call the model -- and this one's do not: a fold commits with ZERO
+    // extra HTTP requests, because EF takes its fallback checkpoint instead of a semantic summary.
+    // Recorded as the reason Gate A is BLOCKED rather than dressed up as a passing integration.
+    const { bridge, provider } = await start({ taskRootMode: 'exact', budget: { requests: 50 } })
+    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
+    for (let i = 0; i < 6; i += 1) {
+      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${i} ` + 'f'.repeat(6_000) } })
+    }
+    const before = provider.calls()
+    const folded = telemetryOf(await bridge.send({ op: 'compact' }))
+    const delta = provider.calls() - before
+    expect(folded.folds, 'a fold really committed').toBeGreaterThan(0)
+    expect(delta, 'and it cost NO provider request, so no summary was asked for').toBe(0)
+    expect(folded.summarizationAttempts ?? 0, 'the summarizer was never invoked').toBe(0)
+    // The gate is therefore not exercised here; the request count still reconciles.
+    expect(folded.budget?.requests, 'the gate counted what actually left').toBe(provider.calls())
+  })
+
+  it('still refuses the main model call once a spent budget has no requests left', async () => {
+    // The request limit is real even though this fixture's folds are free: the task call must be
+    // refused BEFORE it leaves.
+    const { bridge, provider } = await start({ taskRootMode: 'exact', budget: { requests: 1 } })
+    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
+    for (let i = 0; i < 6; i += 1) {
+      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${i} ` + 'f'.repeat(6_000) } })
+    }
+    await bridge.send({ op: 'compact' })
+    expect(provider.calls(), 'the free fold spent nothing').toBe(0)
+
+    const stepped = telemetryOf(await bridge.send({ op: 'step' }))
+    expect(provider.calls(), 'the first real request was allowed').toBe(1)
+    const second = telemetryOf(await bridge.send({ op: 'step' }))
+    expect(provider.calls(), 'and the next one was refused').toBe(1)
+    expect(second.lastFinishReason).toBe('budget-exhausted')
+    expect(second.providerFailures, 'a spent budget is not a provider failure').toBe(0)
+    expect(second.budget?.refusals).toBeGreaterThan(0)
+    expect(stepped.taskRoot, 'the task root is untouched throughout').toMatchObject({ status: 'resident' })
   })
   it('registers NOTHING when the arm says off, and the instruction IS then folded away', async () => {
     const { bridge } = await start({ taskRootMode: 'off' })
