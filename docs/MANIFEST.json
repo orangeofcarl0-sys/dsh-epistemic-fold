@@ -400,6 +400,11 @@
     "sha256": "219443c5c503b89a8978c3e002d1c9958e08b28f4077fbf6fd7b444cd3beb489"
   },
   {
+    "file": "80_BUDGET_GATE.md",
+    "bytes": 4147,
+    "sha256": "38c0427b9ae85d09feb956e41c2b1e96b1b3a7c2a17995e36ebe38555e8c6ca9"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -421,8 +426,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10035,
-    "sha256": "fc67573efea7c3e54f004130afbe038f6cd9fbb3d48c47994052b8386b4d5e57"
+    "bytes": 10076,
+    "sha256": "471a6824be970e879300effc998aeb09f9fd0f675e51482742ed1abd00eafa58"
   },
   {
     "file": "README.zh.md",
