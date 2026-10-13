@@ -365,6 +365,11 @@
     "sha256": "8ae6d2ffe4164c83cafcf0711aeceafdcaa66e9b8f2250fb68cff9a046192aba"
   },
   {
+    "file": "73_LIVE_SESSION_AND_PROTECTED_ROOT.md",
+    "bytes": 4906,
+    "sha256": "cd1a59e460ca876c394e026f5f41d88f376d444d67a4425f45d8447a96ac794c"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -386,8 +391,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9580,
-    "sha256": "718c87180c1d8cb0317f550ffca094400ef27ef83730c1fdcd0056c20499a450"
+    "bytes": 9661,
+    "sha256": "4df32872472cdc185aa4b2e3357df8265b421d576d258fa113490c58a132c90a"
   },
   {
     "file": "README.zh.md",

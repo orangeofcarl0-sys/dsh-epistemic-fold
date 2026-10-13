@@ -33,14 +33,17 @@ const ROOT = join(import.meta.dirname, '..')
 const HOST = join(ROOT, 'eval', 'tau2', 'bridge-host.ts')
 
 /** A provider that answers every request with one canned assistant message. */
-async function fakeProvider(): Promise<{ server: Server; url: string; calls: () => number }> {
+async function fakeProvider(): Promise<{ server: Server; url: string; calls: () => number; lastBody: () => string }> {
   let calls = 0
+  let lastBody = ''
   const server = createServer((request, response) => {
     let body = ''
     request.on('data', chunk => { body += String(chunk) })
     request.on('end', () => {
       calls += 1
-      void body
+      // The ASSEMBLED request, which is the only place the model-visible task text can be
+      // counted directly instead of inferred from the surface.
+      lastBody = body
       response.writeHead(200, { 'content-type': 'application/json' })
       response.end(JSON.stringify({
         id: 'fake-1',
@@ -53,7 +56,7 @@ async function fakeProvider(): Promise<{ server: Server; url: string; calls: () 
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve))
   const address = server.address()
   const port = typeof address === 'object' && address !== null ? address.port : 0
-  return { server, url: `http://127.0.0.1:${port}`, calls: () => calls }
+  return { server, url: `http://127.0.0.1:${port}`, calls: () => calls, lastBody: () => lastBody }
 }
 
 /** One bridge process, spoken to over its JSON-line protocol. */
@@ -113,7 +116,10 @@ interface TelemetryBlock {
     readonly reason?: string
   }
   readonly folds: number
-  readonly foldLineage: readonly { readonly shadowedSeqs: readonly number[] }[]
+  readonly foldLineage: readonly {
+    readonly mechanism: string
+    readonly shadowedSeqs: readonly number[]
+  }[]
 }
 
 function telemetryOf(reply: Record<string, unknown>): TelemetryBlock {
@@ -194,34 +200,64 @@ describe('the LHTB host declares its task root through the bridge', () => {
     await bridge.send({ op: 'step' })
   })
 
-  it('documents the harness limit on FORCED roots, and shows it is Basic parity', async () => {
-    // A manual root fold is the one EF path the bridge cannot drive, for a reason that has
-    // nothing to do with task roots: `compactNow` passes a durability barrier
-    // (`ctx.sessions.flush`), and this harness creates a bare in-memory session that the store
-    // has never seen. Basic's own `compactNow` passes the SAME barrier, so the limit is the
-    // harness's and not this change's -- which is what makes it a parity fact rather than an
-    // excuse. Verified for EF below and asserted for Basic in the next test.
-    const { bridge } = await start({ taskRootMode: 'exact' })
-    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
-    for (let turn = 0; turn < 4; turn += 1) {
-      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${turn} ` + 'f'.repeat(3_000) } })
-    }
-    const root = await bridge.send({ op: 'rootCompact' })
-    expect(root['refusal']).toContain('not live in this store')
-    expect(root['committed'], 'nothing committed').toBe(0)
-    // And the declaration is UNHARMED: the root is still resident after the declined root fold.
-    expect(telemetryOf(root).taskRoot).toMatchObject({ status: 'resident' })
-  })
+  it('runs Leaf, Leaf, PROTECTED ROOT, Leaf through the real bridge', async () => {
+    const { bridge, provider } = await start({ taskRootMode: 'exact' })
 
-  it('the SAME forced-root limit applies to the basic arm, so it is not this change', async () => {
-    const { bridge } = await start({ taskRootMode: 'exact', engine: 'basic' })
-    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
-    for (let turn = 0; turn < 4; turn += 1) {
-      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${turn} ` + 'f'.repeat(3_000) } })
+    const appended = await bridge.send({
+      op: 'append',
+      message: { role: 'user', content: INSTRUCTION },
+      taskRoot: true,
+    })
+    const declared = telemetryOf(appended)
+    expect(declared.taskRoot).toMatchObject({
+      mode: 'exact', status: 'resident', digestVerified: true, surfacePosition: 0,
+    })
+    const rootSeq = declared.taskRoot!.sourceSeq!
+    expect(rootSeq, 'the declared seq IS the instruction event').toBe((appended['seqs'] as number[])[0])
+
+    /** Push the surface over the threshold and commit one real automatic fold. */
+    const forceLeaf = async (round: number) => {
+      for (let index = 0; index < 6; index += 1) {
+        await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${round}-${index} ` + 'f'.repeat(6_000) } })
+      }
+      return telemetryOf(await bridge.send({ op: 'compact' }))
     }
+
+    const leaf1 = await forceLeaf(1)
+    expect(leaf1.folds, 'leaf 1 committed').toBeGreaterThanOrEqual(1)
+    const leaf2 = await forceLeaf(2)
+    expect(leaf2.folds, 'leaf 2 committed').toBeGreaterThanOrEqual(2)
+    expect(shadowed(leaf2), 'two leaves never touched the task root').not.toContain(rootSeq)
+    expect(leaf2.taskRoot).toMatchObject({ status: 'resident', sourceSeq: rootSeq })
+
+    // The idle gap: a manual compaction requires no open turn, which is exactly what the
+    // bridge's `rootCompact` arranges around the call.
     const root = await bridge.send({ op: 'rootCompact' })
-    expect(root['refusal'], 'the identical durability barrier').toContain('not live in this store')
-    expect(root['committed']).toBe(0)
+    expect(root['committed'], `one protected root committed: ${JSON.stringify(root['refusal'])}`).toBe(1)
+    const afterRoot = telemetryOf(root)
+    expect(afterRoot.foldLineage.filter(entry => entry.mechanism === 'root').length, 'exactly ONE root').toBe(1)
+    expect(afterRoot.foldLineage.filter(entry => entry.mechanism === 'emergency').length).toBe(0)
+    expect(shadowed(afterRoot), 'and the root span excluded the task root').not.toContain(rootSeq)
+    expect(afterRoot.taskRoot).toMatchObject({ status: 'resident', sourceSeq: rootSeq, digestVerified: true })
+    // The protected node holds at position 0, so the root fold left it where it was.
+    expect(afterRoot.taskRoot!.surfacePosition).toBe(0)
+
+    const leaf3 = await forceLeaf(3)
+    expect(leaf3.folds, 'leaf 3 committed after the root').toBeGreaterThanOrEqual(1)
+    expect(shadowed(leaf3), 'nor did the post-root leaf').not.toContain(rootSeq)
+    expect(leaf3.taskRoot).toMatchObject({ status: 'resident', sourceSeq: rootSeq, digestVerified: true })
+    // A leaf fold succeeding AFTER a root is the practical proof the frontier is still legal:
+    // `compactRegion` refuses a leaf that starts before `firstOpenPosition`.
+
+    // The assembled model request is the only place the model-visible task text can be
+    // counted directly. Exactly once, after two leaves and a root.
+    await bridge.send({ op: 'step' })
+    const body = provider.lastBody()
+    expect(body.length, 'the last request was captured').toBeGreaterThan(0)
+    expect(
+      body.split('You must RECOVER THE TRUE SEMANTICS').length - 1,
+      'the task text is in the next model request EXACTLY once',
+    ).toBe(1)
   })
   it('registers NOTHING when the arm says off, and the instruction IS then folded away', async () => {
     const { bridge } = await start({ taskRootMode: 'off' })

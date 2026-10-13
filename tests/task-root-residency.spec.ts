@@ -363,6 +363,14 @@ describe('task root: residency survives repeated leaf folds', () => {
   })
 })
 
+// ## Why the flush outcomes are NOT tested here
+//
+// `tests/harness.ts:247-249` REPLACES `ctx.sessions.flush` with a spy that records the call and
+// returns `true`, with the comment "detached test sessions are not store-live". So in THIS harness
+// the durability barrier always succeeds, which is exactly why the protected-root tests here
+// passed while the real bridge could not commit a manual root at all. The two fixtures differ, and
+// the flush semantics are therefore pinned through the BRIDGE (see tests/task-root-bridge.spec.ts
+// and docs/73), where the real SessionStore is mounted and the difference is observable.
 describe('task root: a PROTECTED root fold keeps it resident', () => {
   it('executes a real root commit whose span excludes the root, and archives only that span', async () => {
     const { engine, store } = await createHarness({ text: 'digest' }, { contextWindow: 8_192, pruner: true, efConfig: EF_CONFIG })

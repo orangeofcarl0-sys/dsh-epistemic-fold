@@ -48,6 +48,7 @@ import {
   createUserMessage,
   ToolCallId,
 } from '@deepseek-ai/dsh-llm'
+import type { CompactionResult } from '@deepseek-ai/dsh-compaction'
 import type { Message } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 // `SystemPrompt` and `ToolRuntime` are mounted by the shared helper
@@ -972,23 +973,38 @@ async function foldIfNeeded(): Promise<void> {
   // `compactionFailures`; recording it here as well would double-count it as an
   // event that shadowed nothing.
   if (committed !== null && committed !== undefined) {
-    const result = committed as {
-      shadowedSeqs?: readonly number[]
-      summarySeq?: number
-      shadowedTokenCount?: number
-    }
-    const dLeaves = counters.leaves - countersBefore.leaves
-    const dRoots = counters.roots - countersBefore.roots
-    const dEmergencies = counters.emergencies - countersBefore.emergencies
-    foldLineage.push({
-      mechanism: dEmergencies > 0 ? 'emergency' : dRoots > 0 ? 'root' : 'leaf',
-      shadowedSeqs: [...(result.shadowedSeqs ?? [])],
-      summarySeq: result.summarySeq ?? null,
-      shadowedTokenCount: result.shadowedTokenCount ?? null,
-      tokensBefore,
-      tokensAfter: ctx!.tokenMeter.measure(session!).totalTokens,
-    })
+    recordFoldLineage(countersBefore, counters, committed, tokensBefore)
   }
+}
+
+/**
+ * Record one COMMITTED fold in the lineage. ONE place, so every fold path agrees.
+ *
+ * The mechanism is derived from the engine's own counters rather than from the caller's
+ * intent: a path that believed it was performing a root and committed a leaf must read as a
+ * leaf, or the lineage would describe the caller instead of the engine.
+ *
+ * @param countersBefore - fold counters taken before the transaction.
+ * @param countersAfter - fold counters taken after it.
+ * @param result - the committed result, whose `shadowedSeqs` are the archive's own record.
+ * @param tokensBefore - surface tokens before the fold.
+ */
+function recordFoldLineage(
+  countersBefore: { readonly leaves: number; readonly roots: number; readonly emergencies: number },
+  countersAfter: { readonly leaves: number; readonly roots: number; readonly emergencies: number },
+  result: { readonly shadowedSeqs?: readonly number[]; readonly summarySeq?: number; readonly shadowedTokenCount?: number },
+  tokensBefore: number,
+): void {
+  const dEmergencies = countersAfter.emergencies - countersBefore.emergencies
+  const dRoots = countersAfter.roots - countersBefore.roots
+  foldLineage.push({
+    mechanism: dEmergencies > 0 ? 'emergency' : dRoots > 0 ? 'root' : 'leaf',
+    shadowedSeqs: [...(result.shadowedSeqs ?? [])],
+    summarySeq: result.summarySeq ?? null,
+    shadowedTokenCount: result.shadowedTokenCount ?? null,
+    tokensBefore,
+    tokensAfter: ctx!.tokenMeter.measure(session!).totalTokens,
+  })
 }
 
 /**
@@ -1582,7 +1598,18 @@ async function init(request: {
   // (arm, domain, task) starting in the same millisecond would otherwise share a
   // session id, and therefore a bundle namespace and a fold history.
   const unique = `${Date.now()}-${Math.floor(Math.random() * 1e9).toString(36)}`
-  session = Session.create(SessionId(`tau2-${request.arm.label}-${request.domain}-${request.taskId}-${unique}`))
+  // ## A STORE-MANAGED session, not a detached one
+  //
+  // `Session.create` builds a detached session: it appends and derives messages, but the
+  // store has never seen it, so `ctx.sessions.flush` rejects it with
+  // `session "..." is not live in this store`. That is invisible to the automatic leaf path,
+  // which never calls flush, and fatal to the MANUAL path -- `compactNow` passes a durability
+  // barrier -- so the protected-root acceptance could never run through this bridge.
+  //
+  // `ctx.sessions.create` prepares, enters and announces the session, which is what makes it
+  // live: `ctx.sessions.get(id) === session`, publication hooks are installed, and the store
+  // owns the lifecycle. The session id is unchanged, so nothing downstream rekeys.
+  session = ctx.sessions.create(SessionId(`tau2-${request.arm.label}-${request.domain}-${request.taskId}-${unique}`))
 
   // The arm IS the mode. `basic` mounts the real Basic engine — no EF surface,
   // no projection, no recall tools — so a report can say "versus DSH Basic" and
@@ -1966,13 +1993,15 @@ async function main(): Promise<void> {
           // root that DECLINES -- no safe range, or a registered task root the span cannot
           // exclude -- must not be counted as depth by the caller.
           const before = foldCounters(engine!)
+          const tokensBefore = ctx!.tokenMeter.measure(session!).totalTokens
           closeTurn()
           let refusal: string | undefined
+          let result: CompactionResult | null = null
           try {
             const deadline = new AbortController()
             const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
             try {
-              await engine!.compactNow({
+              result = await engine!.compactNow({
                 session: session!,
                 options: { provider: LIVE_PROVIDER, model: 'live' },
                 runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> => task(deadline.signal),
@@ -2001,6 +2030,12 @@ async function main(): Promise<void> {
           const committed = (after.leaves - before.leaves)
             + (after.roots - before.roots)
             + (after.emergencies - before.emergencies)
+          // The lineage, recorded by the SAME function the automatic path uses. Without this a
+          // committed root was counted but unrecorded: `rootFoldCount` moved while
+          // `foldLineage` stayed silent, so exposure -- which joins facts to shadowed SEQS --
+          // could not see a root at all, and a reader checking the commit lineage would
+          // conclude no root had happened.
+          if (committed > 0 && result !== null) recordFoldLineage(before, after, result, tokensBefore)
           emit({
             ok: true,
             committed,
