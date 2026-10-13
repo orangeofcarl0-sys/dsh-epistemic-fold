@@ -16,7 +16,7 @@ import { sessionEventSource } from './archive-refs.ts'
 import type { LogReader } from './archive-refs.ts'
 import type { FoldBundleStore } from './types.ts'
 import { CHECKPOINT_MARKER_EXPLANATION, normalizeCheckpointRef } from './checkpoint-marker.ts'
-import { EXACT_PAGE_LIMIT, recall, recallForeign, search } from './recall.ts'
+import { EXACT_PAGE_LIMIT, recall, recallForeign, search, searchWithDiagnosis } from './recall.ts'
 import type { RecallDepth } from './recall.ts'
 import { routedTarget } from './policy.ts'
 import {
@@ -116,7 +116,13 @@ export function registerRecallTools(
       + '`checkpoint-text` means the query matched the checkpoint summary already on the surface, while '
       + '`message-text` / `tool-name` mean it matched the ARCHIVED history. A hit is a pointer, not the answer: '
       + '`matchedMessageIndex` is the `offset` for context_recall with `depth: "exact"`, whose page then begins '
-      + 'at the match.',
+      + 'at the match. `confidence` is `verified` for a literal match and `partial` for one that only '
+      + 'shares WORDS with the query — a partial hit is a candidate to check, never a confirmed answer. '
+      + '`outcome` says what the answer MEANS, and an empty `hits` is never a statement that the history '
+      + 'lacks the fact: `browse` means nothing matched the QUERY and `candidates` lists what each '
+      + 'checkpoint holds, so read one and open the entry you want with context_recall `depth: "exact"` '
+      + 'at its offset; `no-archive` means nothing has been folded yet; `unreadable` means checkpoints '
+      + 'exist but could not be read, which is a failure to look rather than an absence.',
     parameters: {
       query: { type: 'string', description: 'search text, file path, tool name, or checkpoint id' },
       limit: { type: 'integer', description: 'maximum hits to return (default 10, most recent first)' },
@@ -131,7 +137,11 @@ export function registerRecallTools(
       if (agent === undefined) {
         throw new Error('context_search requires an executing agent session')
       }
-      const hits = await search({
+      // `searchWithDiagnosis`, not `search`: an empty `hits` array is true of four
+      // different situations that call for four different next actions, and reporting
+      // all of them as `hits: []` is what let a model conclude that folded history did
+      // not hold a task statement that was archived in it, verbatim, at index 0.
+      const diagnosis = await searchWithDiagnosis({
         store,
         sessionId: agent.session.id,
         query,
@@ -141,7 +151,7 @@ export function registerRecallTools(
         // is pure. Passing it costs nothing when archives are inline.
         source: sessionEventSource(agent.session),
       })
-      return asJsonValue({ hits })
+      return asJsonValue(diagnosis)
     },
     isConcurrencySafe: () => true,
   })
@@ -149,8 +159,17 @@ export function registerRecallTools(
   const contextRecall = defineTool({
     name: 'context_recall',
     description:
-      `${CHECKPOINT_MARKER_EXPLANATION} depth=summary returns the checkpoint view; depth=detail adds the `
-      + 'semantic digest; depth=exact returns one bounded page of the archived model history.',
+      `${CHECKPOINT_MARKER_EXPLANATION} `
+      + 'depth="summary" returns the checkpoint view, and reports `summaryAvailable: false` when the '
+      + 'checkpoint has no semantic summary — a marker-only checkpoint — rather than returning the marker '
+      + 'as if it were content. '
+      + 'depth="detail" returns the semantic digest when one exists, and otherwise a bounded INVENTORY of '
+      + 'what the checkpoint holds: every entry carries its `index` and the `offset` that opens it, with '
+      + '`nextIndex` to continue browsing. This is the DEFAULT depth. '
+      + 'depth="exact" returns one bounded page of the ARCHIVED messages, integrity-checked: `offset` is '
+      + 'an archived message INDEX, not a surface sequence. '
+      + 'To read one known message — the task statement, say — prefer a targeted page such as '
+      + '`{ref, depth: "exact", offset: 0, limit: 1}` over paging the whole archive.',
     parameters: {
       ref: { type: 'string', description: 'checkpoint reference, e.g. `cp:<id>` from a checkpoint marker' },
       depth: { type: 'string', enum: ['summary', 'detail', 'exact'], description: 'recall depth (default summary)' },

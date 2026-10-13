@@ -186,3 +186,74 @@ What this adds:
 * (5): folds per cell and total tokens spent on descriptors, against the fold count.
 
 Items 1-4 are all deterministic and testable without a wave. Only 5 needs one.
+
+## 7. Task Root Pinning: audited, NOT fixed here
+
+This round fixed RECALL REACHABILITY only. The objective's survival in the hot surface is a
+separate mechanism, and this section states its risk and the decision it needs. It is not
+implemented, and nothing in the recall change should be read as covering it.
+
+### 7.1 What protects the objective today: nothing that identifies one
+
+`src/frontier.ts:90-92` is the only position-based protection:
+
+    // The system head (surface node 0) is never inside a leaf span.
+    const systemHeadAtZero = ... && session.deriveEventMessage(...)?.role === 'system'
+
+It protects POSITION 0, and only when that node's role is `system`. A user instruction is
+neither. In the measured cell the instruction sat at surface seq 2 and was shadowed in the
+first fold (`shadowedSeqs` head `[2, 6, 10, 11, 17, ...]`), so the criterion is met by the
+data, not inferred from the code. A search of `src/` finds no objective or pin mechanism at all.
+
+### 7.2 The five questions, answered from what exists
+
+**How is the original user instruction identified as a still-valid task contract?** It is not.
+There is no rule that marks a user message as the objective; identification would have to be
+added, and the obvious candidate (the first user message of the episode) is a NEW policy rather
+than a reuse of something present.
+
+**How are authority and supersession handled when the user revises the goal?** They are not, for
+a pin. Supersession exists on the RETRIEVAL side -- `compareCheckpointRecencyDescending` orders
+newest first and a hit reports `earliestMatchedMessageIndex` -- but that answers "which statement
+is later" during a search. A pin would need its own rule for "the objective was replaced", and
+`authority.ts` terminates authority at the original event, so the rule cannot be implied.
+
+**How is task continuity maintained after Leaf and Root?** It is not. A leaf fold leaves the
+marker (identity only); a root fold leaves the state projection. Neither restores the objective
+text. Measured: two recovery attempts in the studied cell, zero characters returned.
+
+**Can it reuse existing state or provenance without breaking the Fold Frontier?** Partly, and
+not safely by addition. `sourceRangeOf`/`orderedSurfaceSeqs` say where a checkpoint sits, the
+descriptor says what it holds, and the fold lineage is durable provenance. But a pin is a NEW
+surface node, and `firstOpenPosition` is computed over the surface the frontier sees -- so a pin
+moves the frontier's own inputs and belongs in the fold transaction, not beside it.
+
+**What is the token cost of full retention versus a bounded Task Anchor?** Measured from the
+bundle: 130,530 archived characters mapped to 42,351 tokens, i.e. ~0.324 tokens per character.
+
+| option | tokens | share of the 65,536 threshold |
+|---|---|---|
+| retain the instruction verbatim (5,741 chars) | **~1,860** | ~2.8%, paid on every request |
+| a bounded anchor (~200 tokens) | ~200 | ~0.3%, but it is a SUMMARY |
+
+The cheap option is the one the requirement forbids: an LLM-written summary standing in for the
+authoritative instruction is exactly the substitution this project has refused elsewhere.
+
+### 7.3 Verdict
+
+**The risk is real, measured, and NOT reduced by this round.** The objective was archived
+verbatim, was sought twice through the tools, and was recovered zero times -- and that was
+BEFORE the recall fix. After it, the same cell would very likely recover it (the fix makes the
+instruction a `partial` candidate at index 0 and the inventory names it), which is precisely why
+the pin cannot be judged by that one number any more.
+
+**It must be its own round.** Three reasons, in order:
+
+1. It changes the fold transaction and the surface the frontier is computed over.
+2. It must be symmetric across Basic and EF, or EF gains an advantage on a dimension the
+   benchmark does not test (`src/basic/region.ts:143` implements the identical frontier rule).
+3. Its supersession rule is an open design question, not an implementation detail.
+
+**Success in this round is not evidence about that one.** A working retrieval path reduces how
+often the loss is fatal; it does not make the loss repairable, because recall still costs a
+tool call the model must decide to make.

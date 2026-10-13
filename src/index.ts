@@ -33,16 +33,28 @@ export {
   compareCheckpointRecencyDescending,
   recall,
   search,
+  searchWithDiagnosis,
   sourceRangeOf,
+  DETAIL_INVENTORY_LINES,
+  DETAIL_PAGE_CHARS,
   EXACT_PAGE_LIMIT,
+  SEARCH_BROWSE_CANDIDATES,
 } from './recall.ts'
 export type {
+  BrowseCandidate,
   RecallDepth,
+  RecallDescriptorView,
+  RecallInventoryEntry,
   RecallResult,
+  SearchConfidence,
+  SearchDiagnosis,
   SearchHit,
   SearchMatchKind,
+  SearchOutcome,
   SourceRange,
 } from './recall.ts'
+export { INVENTORY_EXCERPT_CHARS, INVENTORY_LINES, inventoryEntriesOf, inventoryOf } from './inventory.ts'
+export type { InventoryEntry } from './inventory.ts'
 export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './policy.ts'
 export type {
   EfCompactSpec,

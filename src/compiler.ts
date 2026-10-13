@@ -44,12 +44,39 @@ export function splitSummarizationInput(input: { readonly messages: readonly Mes
  * `cp:<id>` in the exact form `context_recall` accepts, so repeating it told
  * the model nothing new on every fold.
  */
+/**
+ * The lines a fallback checkpoint carries INSTEAD of a digest.
+ *
+ * Exported because something has to recognise them. `recall` must report
+ * `summaryAvailable: false` for a checkpoint whose whole body is its identity plus this
+ * boilerplate, and a recogniser that pattern-matched its own copy of the wording would
+ * silently stop matching the moment the wording changed -- reporting a boilerplate-only
+ * checkpoint as if it had a summary.
+ */
+export function fallbackCheckpointLines(messageCount: number): readonly string[] {
+  return [
+    `- Folded ${messageCount} message(s); semantic summary unavailable.`,
+    '- Exact archived model history is recoverable via context_recall.',
+  ]
+}
+
+/**
+ * Whether one line is part of a fallback body rather than summary CONTENT.
+ *
+ * Matched by shape, not by an exact string, because the first line carries a message
+ * count that differs per checkpoint and the recogniser does not know it.
+ */
+export function isFallbackCheckpointLine(line: string): boolean {
+  const trimmed = line.trim()
+  return /^-\s*Folded \d+ message\(s\); semantic summary unavailable\.$/u.test(trimmed)
+    || trimmed === '- Exact archived model history is recoverable via context_recall.'
+}
+
 export function renderFallbackCheckpoint(candidate: FoldCandidate, messageCount: number): string {
   return [
     encodeCheckpointMarker(candidate),
     '',
-    `- Folded ${messageCount} message(s); semantic summary unavailable.`,
-    '- Exact archived model history is recoverable via context_recall.',
+    ...fallbackCheckpointLines(messageCount),
   ].join('\n')
 }
 
