@@ -10,7 +10,9 @@
 # x-opencode-session header. A probe that omits the header gets a fast 400 and reads as "the
 # endpoint is fine" while every real request fails, which is a mistake already made once tonight.
 set -uo pipefail
-EF_HOME="D:/Data and code/xuchengjian/workplace/dsh-epistemic-fold"
+# EF_HOME from this script's own location: no machine path is baked in. `pwd -W`
+# reproduces the Windows form the removed literal had, and falls back to `pwd`.
+EF_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && { pwd -W 2>/dev/null || pwd; })"
 LOG="$EF_HOME/ef-phase7-logs/monitor-provider.log"
 CRED=$(echo "$USERPROFILE/.dsh/.credentials.yaml" | sed 's|\\|/|g')
 KEY=$(grep -m1 'OPENCODE_GO_API_KEY' "$CRED" | sed 's/.*: *//' | tr -d '"' | tr -d '\r')

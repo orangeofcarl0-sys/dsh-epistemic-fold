@@ -14,9 +14,10 @@ import type { Message } from "@deepseek-ai/dsh-llm"
 import {
   CHARS_PER_TOKEN_ESTIMATE,
   describeCheckpoint,
-  estimateRenderedChars,
+  jsonChars,
   extractJsonObject,
   fallbackPlan,
+  gateRecallPayload,
   inventoryOf,
   parseAnswer,
   parsePlan,
@@ -74,12 +75,43 @@ describe("the direct-recall size gate", () => {
   })
 
   it("measures what would actually be RENDERED, not an approximation of it", () => {
-    expect(estimateRenderedChars({ a: 1 })).toBe(JSON.stringify({ a: 1 }).length)
-    expect(estimateRenderedChars(undefined)).toBe(0)
+    expect(jsonChars({ a: 1 })).toBe(JSON.stringify({ a: 1 }).length)
+    expect(jsonChars(undefined)).toBe(0)
     // A value that cannot be serialized must not throw inside a tool call.
     const circular: Record<string, unknown> = {}
     circular["self"] = circular
-    expect(estimateRenderedChars(circular)).toBe(0)
+    expect(jsonChars(circular)).toBe(0)
+  })
+
+  it("owns the refusal payload, so the policy is testable without registering a tool", async () => {
+    // B-3: the decision and the payload used to live in tools.ts, apart from the verdict
+    // function they rest on. They are one function now, and this pins the shape the tool
+    // returns — including the key ORDER, which is part of the bytes a caller sees.
+    let described = 0
+    const wiring = { thresholdChars: 10, fetchBudgetChars: 1 }
+    expect(await gateRecallPayload({ text: "short" }, "cp:a", { thresholdChars: 1_000, fetchBudgetChars: 1 },
+      async () => { described += 1; return DESC })).toBeNull()
+    expect(described, "an allowed recall never pays for the descriptor").toBe(0)
+    expect(subagentRecallStats.gated).toBe(0)
+
+    const payload = { text: "x".repeat(5000) }
+    const refusal = await gateRecallPayload(payload, "cp:big", wiring, async () => DESC) as Record<string, unknown>
+    expect(subagentRecallStats.gated).toBe(1)
+    expect(Object.keys(refusal)).toEqual([
+      "checkpointId", "overBudget", "projectedChars", "estimatedTokens",
+      "thresholdChars", "overBy", "descriptor", "suggestion", "alternatives",
+    ])
+    expect(refusal["checkpointId"]).toBe("cp:big")
+    expect(refusal["overBudget"]).toBe(true)
+    expect(refusal["projectedChars"]).toBe(jsonChars(payload))
+    expect(refusal["estimatedTokens"]).toBe(Math.ceil(jsonChars(payload) / CHARS_PER_TOKEN_ESTIMATE))
+    expect(refusal["overBy"]).toBe(jsonChars(payload) - wiring.thresholdChars)
+    expect(refusal["descriptor"]).toEqual(DESC)
+    expect(refusal["suggestion"]).toContain("over the 10-character direct limit")
+    expect(refusal["alternatives"]).toEqual([
+      "context_recall with a smaller limit returns one page",
+      "context_recall_subagent with no goal returns a survey of what the archive holds",
+    ])
   })
 })
 

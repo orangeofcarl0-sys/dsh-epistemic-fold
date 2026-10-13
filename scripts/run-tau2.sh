@@ -38,6 +38,10 @@ EF_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # `...\run-tau2.sh/proxy-env.sh`. See the same fix in run-lhtb.sh.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# The shared credential read and route exports, one implementation for every route
+# launcher. Sourced the same way as proxy-env.sh below.
+. "${SCRIPT_DIR}/live-env.sh"
+
 # The τ²-Bench-Verified checkout lives OUTSIDE this repository, so it has to be
 # supplied. No default on purpose: a path baked in here would only work on the
 # machine it was written on, and this file ships inside a published package.
@@ -60,22 +64,16 @@ CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
   exit 1
 }
 
-# Read ONE value out of the refs block. Never echoed.
-KEY=$("$TAU2_PY" - "$CREDENTIALS" <<'PY'
-import re, sys
-text = open(sys.argv[1], encoding='utf-8').read()
-m = re.search(r'^\s+OPENCODE_GO_API_KEY:\s*(\S+)\s*$', text, re.M)
-sys.stdout.write(m.group(1) if m else '')
-PY
-)
+# Read ONE value out of the refs block. Never echoed. The read itself is
+# scripts/live-env.sh's ef_read_key, shared with the other route launchers.
+KEY=$(ef_read_key "$TAU2_PY" "$CREDENTIALS")
 [ -n "$KEY" ] || { echo "OPENCODE_GO_API_KEY not present in the credential store" >&2; exit 1; }
 echo "live route: opencode.ai/zen/v1 model=space-bunny-free (key len ${#KEY})"
 
 export EF_ROOT
 export EF_LIVE=1
-export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
-export EF_LIVE_API_KEY="$KEY"
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
+# The route exports are shared; this lane's base URL and model are its defaults.
+ef_export_route "$KEY" "https://opencode.ai/zen/v1" "space-bunny-free"
 # ## The proxy is OPT-IN, because forcing it broke every model call
 #
 # This used to hardcode `NODE_USE_ENV_PROXY=1` with

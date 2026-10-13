@@ -38,6 +38,7 @@ import { createHarness, conversation, idleAgent, SIGNAL } from './harness.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 const BRIDGE = join(ROOT, 'eval', 'tau2', 'bridge-host.ts')
+const RUNTIME_MOUNT = join(ROOT, 'eval', 'src', 'runtime-mount.ts')
 const LHTB_AGENT = join(ROOT, 'eval', 'lhtb', 'ef_lhtb_agent.py')
 
 /** A harness with a ToolRuntime, which the recall tools require. */
@@ -75,15 +76,23 @@ describe('the harness exposes EF recall tools', () => {
     // Source-level for the mounting, because the host is a script: importing it
     // starts the stdin protocol loop.
     const source = readFileSync(BRIDGE, 'utf8')
-    expect(source, 'the host must mount a ToolRuntime or the recall tools never register')
-      .toContain('new ToolRuntime(ctx)')
+    // The host must mount a ToolRuntime or the recall tools never register. It gets one
+    // from the shared helper (docs/68 B-6), so this asserts the DELEGATION with both
+    // options rather than grepping for a constructor that no longer appears here.
+    expect(
+      source,
+      'the host must mount a ToolRuntime or the recall tools never register',
+    ).toContain('mountRuntime(ctx, { systemPrompt: true, tools: true })')
     expect(
       source,
       'the runtime must be read through `inject`; `ctx.get` throws for a service outside inject',
     ).toContain("ctx.inject(['tools']")
-    // Ordering: ToolRuntime registers a system-prompt section in its constructor.
-    const systemAt = source.indexOf('new SystemPrompt(ctx, {})')
-    const toolsAt = source.indexOf('new ToolRuntime(ctx)')
+    // Ordering: ToolRuntime registers a system-prompt section in its constructor, so
+    // SystemPrompt must be mounted first. That invariant now lives in ONE place, so it is
+    // pinned there — at the site that can actually break it — instead of in each caller.
+    const mount = readFileSync(RUNTIME_MOUNT, 'utf8')
+    const systemAt = mount.indexOf('new SystemPrompt(ctx, {})')
+    const toolsAt = mount.indexOf('new ToolRuntime(ctx)')
     expect(systemAt, 'SystemPrompt must be mounted').toBeGreaterThan(-1)
     expect(toolsAt, 'ToolRuntime must be mounted').toBeGreaterThan(-1)
     expect(

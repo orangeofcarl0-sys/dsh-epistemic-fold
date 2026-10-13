@@ -22,13 +22,13 @@ import { routedTarget } from './policy.ts'
 import {
   completeWithContext,
   describeCheckpoint,
-  estimateRenderedChars,
-  recallBudgetVerdict,
+  gateRecallPayload,
+  jsonChars,
   runSubagentRecall,
   SUBAGENT_MAX_DESCRIPTORS,
   subagentRecallStats,
 } from './subagent-recall.ts'
-import type { CheckpointDescriptor } from './subagent-recall.ts'
+import type { CheckpointDescriptor, SubagentRecallWiring } from './subagent-recall.ts'
 
 function textBlock(text: string): ContentBlock {
   return { type: 'text', text }
@@ -39,13 +39,9 @@ function asJsonValue(value: unknown): JsonValue {
   return JSON.parse(JSON.stringify(value)) as JsonValue
 }
 
-/** EXPERIMENTAL wiring for subagent recall; present only when the flag is on. */
-export interface SubagentRecallWiring {
-  /** Rendered characters a direct recall may return before it is refused. */
-  readonly thresholdChars: number
-  /** Characters of archive one subagent run may read. */
-  readonly fetchBudgetChars: number
-}
+// The wiring type now lives with the gate it configures (gate.ts). Re-exported
+// here so this module's surface is unchanged.
+export type { SubagentRecallWiring }
 
 /** The descriptor of one checkpoint, or `undefined` when it cannot be read. */
 async function describeOne(
@@ -209,29 +205,13 @@ export function registerRecallTools(
       // `subagentRecall`, so a default deployment sees the old behaviour exactly.
       const wiring = options.subagentRecall
       if (wiring !== undefined) {
-        const verdict = recallBudgetVerdict(estimateRenderedChars(payload), wiring.thresholdChars)
-        if (!verdict.allowed) {
-          subagentRecallStats.gated += 1
-          return asJsonValue({
-            checkpointId: ref,
-            overBudget: true,
-            projectedChars: verdict.projectedChars,
-            estimatedTokens: verdict.estimatedTokens,
-            thresholdChars: verdict.thresholdChars,
-            overBy: verdict.overBy,
-            descriptor: await describeOne(store, agent.session.id, ref, agent.session),
-            suggestion:
-              'This recall would return about ' + verdict.estimatedTokens + ' tokens (an estimate at 4 '
-              + 'characters per token), over the ' + wiring.thresholdChars + '-character direct limit. '
-              + 'Call context_recall_subagent with the goal you are trying to answer (and this ref '
-              + 'as scope if you know it): a retrieval subagent reads the archive and returns only '
-              + 'what answers the goal, plus what else it saw that you may want next.',
-            alternatives: [
-              'context_recall with a smaller limit returns one page',
-              'context_recall_subagent with no goal returns a survey of what the archive holds',
-            ],
-          })
-        }
+        const refusal = await gateRecallPayload(
+          payload,
+          ref,
+          wiring,
+          () => describeOne(store, agent.session.id, ref, agent.session),
+        )
+        if (refusal !== null) return asJsonValue(refusal)
       }
       return asJsonValue(payload)
     },
@@ -299,12 +279,12 @@ export function registerRecallTools(
             })
             if (result === null) return null
             const text = JSON.stringify(result)
-            return { text, chars: text.length }
+            return { text, chars: jsonChars(result) }
           },
           search: async q => {
             const hits = await search({ store, sessionId, query: q, source })
             const text = JSON.stringify({ hits })
-            return { text, chars: text.length }
+            return { text, chars: jsonChars({ hits }) }
           },
           complete: (messages, maxTokens) => completeWithContext({
             ctx, target, sessionId, messages, maxTokens,

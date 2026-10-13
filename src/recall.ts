@@ -12,7 +12,7 @@ import type { SessionId } from '@deepseek-ai/dsh-session'
 import { describeRefFailure, resolveArchiveRefs, resolveArchiveRefsFromLog } from './archive-refs.ts'
 import type { EventSource, LogReader, ResolveResult } from './archive-refs.ts'
 import { normalizeCheckpointRef } from './checkpoint-marker.ts'
-import type { CheckpointBundleV1, FoldBundleStore, RecallPage } from './types.ts'
+import type { BundleVerification, CheckpointBundleV1, FoldBundleStore, RecallPage } from './types.ts'
 
 /** Maximum messages one exact page may return. */
 export const EXACT_PAGE_LIMIT = 20
@@ -57,56 +57,22 @@ export async function recall(options: {
   const checkpointId = normalizeCheckpointRef(options.checkpointId)
   const depth = options.depth ?? 'summary'
   const verification = await store.verify(sessionId, checkpointId)
-  if (verification.status === 'missing') {
-    return {
-      checkpointId,
-      mode: 'unknown',
-      depth,
-      unavailable: 'bundle not found',
-    }
-  }
-  if (verification.status === 'corrupt') {
-    return {
-      checkpointId,
-      mode: 'unknown',
-      depth,
-      unavailable: `bundle corrupt: ${verification.reason}`,
-    }
-  }
-  const bundle = verification.bundle
-  if (depth === 'summary') {
-    return { checkpointId, mode: bundle.mode, depth, text: bundle.rendered.text }
-  }
-  if (depth === 'detail') {
-    const semantic = bundle.semantic?.text
-    return {
-      checkpointId,
-      mode: bundle.mode,
-      depth,
-      text: semantic ?? bundle.rendered.text,
-    }
-  }
-  // exact: paginated over the archived messages.
-  const resolved = archiveMessages(bundle, options.source)
-  if (resolved.status === 'unresolved') {
-    return {
-      checkpointId,
-      mode: bundle.mode,
-      depth: 'exact',
-      unavailable: describeRefFailure(resolved.failures),
-    }
-  }
-  const messages = resolved.messages
-  const offset = Math.max(0, Math.min(options.offset ?? 0, messages.length))
-  const limit = Math.min(Math.max(1, options.limit ?? EXACT_PAGE_LIMIT), EXACT_PAGE_LIMIT)
-  const page: RecallPage = {
+  const served = await serveDepth({
     checkpointId,
-    totalMessages: messages.length,
-    offset,
-    messages: messages.slice(offset, offset + limit),
-    ...(offset + limit < messages.length ? { nextOffset: offset + limit } : {}),
+    verification,
+    depth,
+    ...(options.offset === undefined ? {} : { offset: options.offset }),
+    ...(options.limit === undefined ? {} : { limit: options.limit }),
+    resolve: bundle => archiveMessages(bundle, options.source),
+  })
+  // A missing bundle is still reported rather than silently dropped: recall is
+  // degraded, never silent (D-015).
+  return served ?? {
+    checkpointId,
+    mode: 'unknown',
+    depth,
+    unavailable: 'bundle not found',
   }
-  return { checkpointId, mode: bundle.mode, depth: 'exact', page }
 }
 
 /**
@@ -147,17 +113,58 @@ export async function recallForeign(options: {
     return null
   }
   const verification = await options.store.verify(owner, checkpointId)
+  // A missing bundle is `null` here rather than the direct path's explicit
+  // "not found": this path is a second answer for a ref the ordinary path
+  // already reported, so absence adds nothing.
+  return serveDepth({
+    checkpointId,
+    verification,
+    depth: options.depth ?? 'summary',
+    ...(options.offset === undefined ? {} : { offset: options.offset }),
+    ...(options.limit === undefined ? {} : { limit: options.limit }),
+    // exact: an inline archive is already here; a referential one is resolved
+    // from the owner's stored log, range-read rather than replayed.
+    resolve: bundle => bundle.archive.shadowedMessages !== undefined
+      ? { status: 'resolved' as const, messages: bundle.archive.shadowedMessages }
+      : resolveArchiveRefsFromLog(
+        options.logReader,
+        owner,
+        bundle.archive.refs,
+        options.signal,
+      ),
+  })
+}
+
+/**
+ * Serve one VERIFIED bundle at the requested depth, or `null` when it is missing.
+ *
+ * This is the ONE depth dispatch, paging rule and corruption report for both
+ * recall paths. They differ only in WHERE their exact archive comes from — the
+ * live session or an inline archive for `recall`, the owner's stored log for
+ * `recallForeign` — so everything else lives here and the two cannot drift.
+ *
+ * `resolve` is called ONLY for the exact depth: summary and detail never touch
+ * the archive, so a referential bundle pays no resolution cost for them.
+ */
+async function serveDepth(options: {
+  checkpointId: string
+  verification: BundleVerification
+  depth: RecallDepth
+  offset?: number
+  limit?: number
+  resolve: (bundle: CheckpointBundleV1) => ResolveResult | Promise<ResolveResult>
+}): Promise<RecallResult | null> {
+  const { checkpointId, verification, depth } = options
   if (verification.status === 'missing') return null
   if (verification.status === 'corrupt') {
     return {
       checkpointId,
       mode: 'unknown',
-      depth: options.depth ?? 'summary',
+      depth,
       unavailable: `bundle corrupt: ${verification.reason}`,
     }
   }
   const bundle = verification.bundle
-  const depth = options.depth ?? 'summary'
   if (depth === 'summary') {
     return { checkpointId, mode: bundle.mode, depth, text: bundle.rendered.text }
   }
@@ -169,16 +176,8 @@ export async function recallForeign(options: {
       text: bundle.semantic?.text ?? bundle.rendered.text,
     }
   }
-  // exact: an inline archive is already here; a referential one is resolved
-  // from the owner's stored log, range-read rather than replayed.
-  const resolved = bundle.archive.shadowedMessages !== undefined
-    ? { status: 'resolved' as const, messages: bundle.archive.shadowedMessages }
-    : await resolveArchiveRefsFromLog(
-      options.logReader,
-      owner,
-      bundle.archive.refs,
-      options.signal,
-    )
+  // exact: paginated over the archived messages.
+  const resolved = await options.resolve(bundle)
   if (resolved.status === 'unresolved') {
     return {
       checkpointId,
@@ -190,18 +189,14 @@ export async function recallForeign(options: {
   const messages = resolved.messages
   const offset = Math.max(0, Math.min(options.offset ?? 0, messages.length))
   const limit = Math.min(Math.max(1, options.limit ?? EXACT_PAGE_LIMIT), EXACT_PAGE_LIMIT)
-  return {
+  const page: RecallPage = {
     checkpointId,
-    mode: bundle.mode,
-    depth: 'exact',
-    page: {
-      checkpointId,
-      totalMessages: messages.length,
-      offset,
-      messages: messages.slice(offset, offset + limit),
-      ...(offset + limit < messages.length ? { nextOffset: offset + limit } : {}),
-    },
+    totalMessages: messages.length,
+    offset,
+    messages: messages.slice(offset, offset + limit),
+    ...(offset + limit < messages.length ? { nextOffset: offset + limit } : {}),
   }
+  return { checkpointId, mode: bundle.mode, depth: 'exact', page }
 }
 
 /**

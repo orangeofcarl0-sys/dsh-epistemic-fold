@@ -16,6 +16,12 @@
  * Programmatic deployments can `ctx.plugin(EpistemicFoldPlugin, config)` with
  * the same effect.
  *
+ * The constructor is a COMPOSITION ROOT and nothing else (docs/68 B-4): each
+ * surface is registered by the `register*Surface` helper that owns it, so one
+ * surface can be read — or tested — without reading the other eleven. The
+ * `mode: basic` early return stays FIRST and stays early: no EF surface may
+ * exist under basic.
+ *
  * @module dsh-epistemic-fold/plugin
  */
 
@@ -38,6 +44,7 @@ import { registerRecallTools } from './tools.ts'
 import { registerContextCommand } from './command.ts'
 import type { LogReader } from './archive-refs.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
+import { EpistemicFoldPluginConfig } from './plugin-config.ts'
 
 /**
  * The persistence service as a log reader, or `undefined` when the host has
@@ -64,6 +71,217 @@ declare module '@deepseek-ai/cordis' {
 }
 
 /**
+ * Anchor service: the sanctioned `ef/anchor` producer, provided for the
+ * plugin's fiber lifetime (cordis requires provide, not assignment).
+ *
+ * The capability probe is wired here rather than defaulted in the service:
+ * `ef/anchor` is outside DSH's known event vocabulary, and a host whose
+ * `append` drops the `ignorable` marker would persist a log it then refuses
+ * to reopen. Refusing the write is the only safe answer, and only the
+ * mounted plugin knows which host it is on. The answer cannot change within
+ * a process, so it is probed once rather than on every write.
+ */
+export function registerAnchorSurface(ctx: Context): AnchorService {
+  let admitsPluginEvents: boolean | undefined
+  const anchors = createAnchorService({
+    durableWritesAllowed: () => (admitsPluginEvents ??= hostAdmitsPluginEvents()),
+  })
+  ctx.provide('epistemicFold', anchors)
+  return anchors
+}
+
+/**
+ * Deterministic state projection: registered for the plugin's lifetime, torn
+ * down when the plugin unloads.
+ *
+ * The projection is unconditional — it needs no optional sibling, so unlike the
+ * recall tools it has nothing to wait for.
+ */
+export function registerStateProjectionSurface(ctx: Context): void {
+  ctx.effect(() => {
+    const disposers: Array<() => void> = [registerEpistemicFoldProjection(ctx)]
+    return () => {
+      for (const dispose of disposers) dispose()
+    }
+  }, 'epistemic-fold projection')
+}
+
+/**
+ * The client-facing status projection (RC4): the Sidebar's data source.
+ * Registered on the SAME registry as the state projection, but WITH a wire
+ * view so a client can read it. Nothing here enters a prompt, so it cannot
+ * affect the context it reports on.
+ */
+export function registerStatusSurface(
+  ctx: Context,
+  engine: EpistemicFoldEngine,
+  config: EpistemicFoldConfig,
+): void {
+  ctx.effect(() => {
+    const profiles = config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES
+    const dispose = registerEpistemicFoldStatus(ctx, {
+      // A GETTER: `/context mode` switches the tier of a running session, and
+      // capturing the mode here would leave the panel reporting the startup
+      // mode forever.
+      mode: () => engine.currentMode,
+      // RC18: hand over the WHOLE list, not one entry. The unit resolves the
+      // profile that governs the session's own routed model, which it reads
+      // from the `request/header` events it already folds. Passing
+      // `profiles[0]` — as this did — priced every session with the first
+      // shipped list and named it in the panel, so a free route reported a
+      // DeepSeek Flash cost. A deployment whose route is priced differently
+      // sets `economicsProfiles`; the figure is labelled as an estimate
+      // either way, and names the list it actually used. With no list at all
+      // the panel reports cost as UNKNOWN rather than guessing.
+      ...(profiles.length === 0 ? {} : { profiles }),
+    })
+    return () => dispose()
+  }, 'epistemic-fold status projection')
+}
+
+/**
+ * The recall tools, registered for the plugin's lifetime.
+ *
+ * They need `ctx.tools`, which is an OPTIONAL sibling — a compaction-only
+ * deployment mounts cleanly without it — and cordis makes optionality a
+ * specific idiom:
+ *
+ *   ctx.get('tools')            THROWS when 'tools' is not in `inject`
+ *   ctx.inject(['tools'], cb)   runs `cb` only once the service exists
+ *
+ * RC3 found this the hard way: the first real DSH boot failed with
+ * `cannot get property "tools" without inject`. Every test harness had
+ * pre-mounted a ToolRuntime, so the broken probe was never exercised — the
+ * failure was only reachable in a real host, which is exactly the class of
+ * bug the harness could not see.
+ */
+export function registerRecallSurface(ctx: Context, engine: EpistemicFoldEngine): void {
+  ctx.inject(['tools'], toolsCtx => {
+    // The cross-session resolver is wired ONLY when the experiment is on, so a
+    // default deployment never even reaches for the persistence service. The
+    // flag is read once here rather than per call: it is a mount-time policy,
+    // and a tool that changed behavior mid-session would be a different tool.
+    const ef = engine.efConfig
+    const crossSession = ef.allowCrossSessionRecall
+    const reader = crossSession ? logReaderFrom(toolsCtx) : undefined
+    // Subagent recall (docs/67). The wiring is built ONLY when the experiment is on:
+    // with no `subagentRecall` passed, `registerRecallTools` registers no extra tool and
+    // gates nothing, so a default deployment is byte-identical to before this feature.
+    const subagentRecall = ef.subagentRecall
+      ? {
+        thresholdChars: ef.subagentRecallThresholdChars,
+        fetchBudgetChars: ef.subagentRecallFetchBudgetChars,
+      }
+      : undefined
+    const dispose = registerRecallTools(toolsCtx, engine.bundleStore, {
+      ...(reader === undefined ? {} : { logReader: reader }),
+      ...(subagentRecall === undefined ? {} : { subagentRecall }),
+    })
+    return () => dispose()
+  })
+}
+
+/**
+ * The `/context` diagnostic command (RC2 §3). Registered through
+ * `ctx.inject` for the same reason as the recall tools: a compaction-only
+ * deployment has no command registry, and the command simply does not exist
+ * there rather than failing the mount.
+ */
+export function registerCommandSurface(
+  ctx: Context,
+  engine: EpistemicFoldEngine,
+  config: EpistemicFoldConfig,
+): void {
+  ctx.inject(['commands'], commandCtx => {
+    const dispose = registerContextCommand(commandCtx, {
+      store: engine.bundleStore,
+      // The RAW config, not the resolved one: `mode` is a naming face the
+      // resolver expands and then drops, so the resolved object cannot report
+      // which tier a deployment actually asked for.
+      // The mode is read from the ENGINE, not the constructor argument: a
+      // runtime `/context mode` switch changes what is in force, and a status
+      // report that kept echoing the startup value would be lying after the
+      // first switch.
+      config: () => ({ mode: engine.currentMode, raw: config as Record<string, unknown> }),
+      setMode: mode => engine.setMode(mode, config),
+    })
+    return () => dispose?.()
+  })
+}
+
+/**
+ * The plugin-owned handles an idle-rebase registration writes back to. A
+ * structural subset of `EpistemicFoldPlugin`, so the helper can record the
+ * registration without the constructor owning the wiring.
+ */
+export interface IdleRebaseHandles {
+  /** The registered idle consumer, once mounted. */
+  idleRebase: IdleRebaseRegistration | undefined
+  /** Most recent idle rebase attempt; `undefined` before any idle event. */
+  lastIdleRebaseAttempt: IdleRebaseAttempt | undefined
+}
+
+/**
+ * The idle rebase consumer (R3-0b): the production half of R2-C's handoff.
+ * Registered unconditionally — whether a rebase is ever justified is the
+ * policy's decision, not the wiring's — and torn down with the plugin so
+ * unloading cannot leave maintenance firing on a disposed engine.
+ */
+export function registerIdleRebaseSurface(
+  ctx: Context,
+  engine: EpistemicFoldEngine,
+  handles: IdleRebaseHandles,
+): void {
+  ctx.effect(() => {
+    const registration = registerIdleRebaseConsumer({
+      ctx,
+      engine,
+      intents: engine.rebaseIntentRegistry,
+      onAttempt: attempt => {
+        handles.lastIdleRebaseAttempt = attempt
+        if (attempt.outcome === 'rebased') {
+          ctx.logger.info(`[epistemic-fold] idle rebase ran: ${attempt.reason ?? ''}`)
+        }
+      },
+    })
+    handles.idleRebase = registration
+    return () => {
+      registration.dispose()
+      handles.idleRebase = undefined
+    }
+  }, 'epistemic-fold idle rebase consumer')
+}
+
+/**
+ * Checkpoint framing semantics (R3-C). Under `legacy` the per-checkpoint
+ * preamble carries them and nothing is registered. Under `system-dedup`
+ * the preamble is gone, so this section is what tells the model what a
+ * checkpoint is — O(1) per request instead of O(checkpoints), and
+ * cache-stable because it never changes.
+ */
+export function registerFramingSurface(ctx: Context, engine: EpistemicFoldEngine): void {
+  ctx.effect(() => {
+    // RC0-A: resolve against the mounted context. A `system-dedup` request
+    // without a system prompt throws here (inside the effect, so the mount
+    // fails loudly) instead of degrading to per-checkpoint framing.
+    const resolved = framingModeFor(engine.efConfig.framingMode, ctx.get('systemPrompt') !== undefined)
+    if (resolved.mode !== 'system-dedup') return () => {}
+    const systemPrompt = ctx.get('systemPrompt')
+    if (systemPrompt === undefined) return () => {}
+    const dispose = systemPrompt.section({
+      name: 'epistemic-fold:checkpoints',
+      // Ahead of the deployment persona: it is a statement about how to read
+      // the conversation, not about who the model is.
+      order: systemPrompt.getSectionOrder('DEPLOYMENT_PERSONA_PREFIX') - 1,
+      text: FOLD_FRAMING_SECTION,
+    })
+    return () => {
+      dispose()
+    }
+  }, 'epistemic-fold framing section')
+}
+
+/**
  * Composite DSH plugin. `static inject` mirrors the engine's own needs —
  * the child engine plugin re-declares them when mounted through the loader.
  * Recall tools register ONLY when a ToolRuntime is present: a compaction-only
@@ -72,29 +290,8 @@ declare module '@deepseek-ai/cordis' {
 export class EpistemicFoldPlugin {
   static inject = [...EpistemicFoldEngine.inject, 'sessionProjections']
 
-  static Config: z<EpistemicFoldConfig> = z.object({
-    thresholdRatio: z.number(),
-    headroomTokens: z.number(),
-    retainRatio: z.number(),
-    retainTokens: z.number(),
-    summarizationProvider: z.string(),
-    summarizationModel: z.string(),
-    maxTokens: z.number(),
-    compactionRetries: z.number(),
-    maxOverflowRetries: z.number(),
-    framingMode: z.union(['legacy', 'system-dedup'] as const),
-    mode: z.union(['legacy', 'basic', 'economy', 'balanced', 'quality'] as const),
-    auto: z.boolean(),
-    modelPolicies: z.array(z.any()),
-    frozenCheckpointTokenBudget: z.number(),
-    semanticMode: z.union(['none', 'rationale'] as const),
-    bundleRoot: z.string(),
-    // EXPERIMENTAL (docs/67). Strict, like the other switches: a typo must not silently
-    // turn on a feature that changes what a recall RETURNS.
-    subagentRecall: z.boolean(),
-    subagentRecallThresholdChars: z.number(),
-    subagentRecallFetchBudgetChars: z.number(),
-  })
+  /** The declared config surface; see `./plugin-config.ts` for why it is descriptive. */
+  static Config: z<EpistemicFoldConfig> = EpistemicFoldPluginConfig
 
   /** The engine instance this plugin mounts (owns `ctx.compaction`). */
   readonly engine: EpistemicFoldEngine
@@ -142,159 +339,16 @@ export class EpistemicFoldPlugin {
       return
     }
 
-    // Anchor service: the sanctioned `ef/anchor` producer, provided for the
-    // plugin's fiber lifetime (cordis requires provide, not assignment).
-    //
-    // The capability probe is wired here rather than defaulted in the service:
-    // `ef/anchor` is outside DSH's known event vocabulary, and a host whose
-    // `append` drops the `ignorable` marker would persist a log it then refuses
-    // to reopen. Refusing the write is the only safe answer, and only the
-    // mounted plugin knows which host it is on. The answer cannot change within
-    // a process, so it is probed once rather than on every write.
-    let admitsPluginEvents: boolean | undefined
-    this.anchors = createAnchorService({
-      durableWritesAllowed: () => (admitsPluginEvents ??= hostAdmitsPluginEvents()),
-    })
-    ctx.provide('epistemicFold', this.anchors)
-
-    // Deterministic state projection + recall tools: registered for the
-    // plugin's lifetime, torn down when the plugin unloads.
-    //
-    // The projection is unconditional. The recall tools need `ctx.tools`, which
-    // is an OPTIONAL sibling — a compaction-only deployment mounts cleanly
-    // without it — and cordis makes optionality a specific idiom:
-    //
-    //   ctx.get('tools')            THROWS when 'tools' is not in `inject`
-    //   ctx.inject(['tools'], cb)   runs `cb` only once the service exists
-    //
-    // RC3 found this the hard way: the first real DSH boot failed with
-    // `cannot get property "tools" without inject`. Every test harness had
-    // pre-mounted a ToolRuntime, so the broken probe was never exercised — the
-    // failure was only reachable in a real host, which is exactly the class of
-    // bug the harness could not see.
-    ctx.effect(() => {
-      const disposers: Array<() => void> = [registerEpistemicFoldProjection(ctx)]
-      return () => {
-        for (const dispose of disposers) dispose()
-      }
-    }, 'epistemic-fold projection')
-
-    // The client-facing status projection (RC4): the Sidebar's data source.
-    // Registered on the SAME registry as the state projection, but WITH a wire
-    // view so a client can read it. Nothing here enters a prompt, so it cannot
-    // affect the context it reports on.
-    ctx.effect(() => {
-      const profiles = config.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES
-      const dispose = registerEpistemicFoldStatus(ctx, {
-        // A GETTER: `/context mode` switches the tier of a running session, and
-        // capturing the mode here would leave the panel reporting the startup
-        // mode forever.
-        mode: () => this.engine.currentMode,
-        // RC18: hand over the WHOLE list, not one entry. The unit resolves the
-        // profile that governs the session's own routed model, which it reads
-        // from the `request/header` events it already folds. Passing
-        // `profiles[0]` — as this did — priced every session with the first
-        // shipped list and named it in the panel, so a free route reported a
-        // DeepSeek Flash cost. A deployment whose route is priced differently
-        // sets `economicsProfiles`; the figure is labelled as an estimate
-        // either way, and names the list it actually used. With no list at all
-        // the panel reports cost as UNKNOWN rather than guessing.
-        ...(profiles.length === 0 ? {} : { profiles }),
-      })
-      return () => dispose()
-    }, 'epistemic-fold status projection')
-
-    ctx.inject(['tools'], toolsCtx => {
-      // The cross-session resolver is wired ONLY when the experiment is on, so a
-      // default deployment never even reaches for the persistence service. The
-      // flag is read once here rather than per call: it is a mount-time policy,
-      // and a tool that changed behavior mid-session would be a different tool.
-      const ef = this.engine.efConfig
-      const crossSession = ef.allowCrossSessionRecall
-      const reader = crossSession ? logReaderFrom(toolsCtx) : undefined
-      // Subagent recall (docs/67). The wiring is built ONLY when the experiment is on:
-      // with no `subagentRecall` passed, `registerRecallTools` registers no extra tool and
-      // gates nothing, so a default deployment is byte-identical to before this feature.
-      const subagentRecall = ef.subagentRecall
-        ? {
-          thresholdChars: ef.subagentRecallThresholdChars,
-          fetchBudgetChars: ef.subagentRecallFetchBudgetChars,
-        }
-        : undefined
-      const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore, {
-        ...(reader === undefined ? {} : { logReader: reader }),
-        ...(subagentRecall === undefined ? {} : { subagentRecall }),
-      })
-      return () => dispose()
-    })
-
-    // The `/context` diagnostic command (RC2 §3). Registered through
-    // `ctx.inject` for the same reason: a compaction-only deployment has no
-    // command registry, and the command simply does not exist there rather than
-    // failing the mount.
-    ctx.inject(['commands'], commandCtx => {
-      const dispose = registerContextCommand(commandCtx, {
-        store: this.engine.bundleStore,
-        // The RAW config, not the resolved one: `mode` is a naming face the
-        // resolver expands and then drops, so the resolved object cannot report
-        // which tier a deployment actually asked for.
-        // The mode is read from the ENGINE, not the constructor argument: a
-        // runtime `/context mode` switch changes what is in force, and a status
-        // report that kept echoing the startup value would be lying after the
-        // first switch.
-        config: () => ({ mode: this.engine.currentMode, raw: config as Record<string, unknown> }),
-        setMode: mode => this.engine.setMode(mode, config),
-      })
-      return () => dispose?.()
-    })
-
-    // The idle rebase consumer (R3-0b): the production half of R2-C's handoff.
-    // Registered unconditionally — whether a rebase is ever justified is the
-    // policy's decision, not the wiring's — and torn down with the plugin so
-    // unloading cannot leave maintenance firing on a disposed engine.
-    ctx.effect(() => {
-      const registration = registerIdleRebaseConsumer({
-        ctx,
-        engine: this.engine,
-        intents: this.engine.rebaseIntentRegistry,
-        onAttempt: attempt => {
-          this.lastIdleRebaseAttempt = attempt
-          if (attempt.outcome === 'rebased') {
-            ctx.logger.info(`[epistemic-fold] idle rebase ran: ${attempt.reason ?? ''}`)
-          }
-        },
-      })
-      this.idleRebase = registration
-      return () => {
-        registration.dispose()
-        this.idleRebase = undefined
-      }
-    }, 'epistemic-fold idle rebase consumer')
-
-    // Checkpoint framing semantics (R3-C). Under `legacy` the per-checkpoint
-    // preamble carries them and nothing is registered. Under `system-dedup`
-    // the preamble is gone, so this section is what tells the model what a
-    // checkpoint is — O(1) per request instead of O(checkpoints), and
-    // cache-stable because it never changes.
-    ctx.effect(() => {
-      // RC0-A: resolve against the mounted context. A `system-dedup` request
-      // without a system prompt throws here (inside the effect, so the mount
-      // fails loudly) instead of degrading to per-checkpoint framing.
-      const resolved = framingModeFor(this.engine.efConfig.framingMode, ctx.get('systemPrompt') !== undefined)
-      if (resolved.mode !== 'system-dedup') return () => {}
-      const systemPrompt = ctx.get('systemPrompt')
-      if (systemPrompt === undefined) return () => {}
-      const dispose = systemPrompt.section({
-        name: 'epistemic-fold:checkpoints',
-        // Ahead of the deployment persona: it is a statement about how to read
-        // the conversation, not about who the model is.
-        order: systemPrompt.getSectionOrder('DEPLOYMENT_PERSONA_PREFIX') - 1,
-        text: FOLD_FRAMING_SECTION,
-      })
-      return () => {
-        dispose()
-      }
-    }, 'epistemic-fold framing section')
+    // Past this point the plugin owns every EF surface, registered in the order
+    // the surfaces depend on each other: the anchor service is provided before
+    // anything can read it, and each helper owns its own effect/dispose pairing.
+    this.anchors = registerAnchorSurface(ctx)
+    registerStateProjectionSurface(ctx)
+    registerStatusSurface(ctx, this.engine, config)
+    registerRecallSurface(ctx, this.engine)
+    registerCommandSurface(ctx, this.engine, config)
+    registerIdleRebaseSurface(ctx, this.engine, this)
+    registerFramingSurface(ctx, this.engine)
   }
 
   /** Most recent idle rebase attempt; `undefined` before any idle event. */

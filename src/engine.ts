@@ -88,6 +88,8 @@ import {
   summaryRetryStats,
 } from './summary-retry.ts'
 import { retireDerivedAnswers } from './subagent-recall.ts'
+import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
+import type { FoldTelemetry } from './fold-telemetry.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'
 import type { FoldCurrentState } from './state.ts'
 import type {
@@ -113,6 +115,30 @@ export interface EpistemicFoldOptions {
  * Automatic pressure compaction folds ONLY the open trajectory past the fold
  * frontier — frozen checkpoints are never re-folded (plan §13).
  */
+/** The spec a routed session resolves to, with what the callers also need from the lookup. */
+interface ResolvedSpecFor {
+  readonly target: NonNullable<ReturnType<typeof routedTarget>>
+  readonly contextWindow: number
+  readonly reserved: number
+  readonly spec: EfCompactSpec
+}
+
+/** Why a spec could not be resolved, for the caller to turn into `null` or a throw. */
+interface UnresolvedSpecFor {
+  readonly reason: 'unrouted' | 'no-capacity'
+  readonly key?: string
+}
+
+/**
+ * The one "no context capacity" message.
+ *
+ * It was written out verbatim at two throw sites, so a reader debugging a mis-sized fold saw
+ * one of them and could not tell whether the other said something different (docs/68 A-1).
+ */
+function noContextCapacityMessage(key: string): string {
+  return `epistemic-fold: no context capacity for ${key}; configure contextWindow on that adapter model`
+}
+
 export class EpistemicFoldEngine extends BasicCompactionEngine {
   static override inject = BasicCompactionEngine.inject
 
@@ -179,109 +205,19 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private readonly rebaseIntents: RebaseIntentRegistry = createRebaseIntentRegistry()
   /** Last bundle this engine published (per transaction, for tests/telemetry). */
   private lastPublishedBundle: CheckpointBundleV1 | undefined
-  private lastRootRebaseAdviceValue: ReturnType<typeof evaluateRootRebase> | undefined
+  /**
+   * The telemetry record: counters that only increase, and last-observed values overwritten
+   * by whichever path ran most recently.
+   *
+   * Moved out of this class by docs/68 B-1. Fourteen of its mutable fields existed
+   * one-to-one with the getters below, so "what does this engine report" was spread through
+   * a 1,700-line class and every new counter was a two-site edit inside the decision code it
+   * observes. The FIELDS and the measured failure behind each one now live in
+   * `fold-telemetry.ts`; the getters are unchanged, so no caller has to move.
+   */
+  private readonly telemetry: FoldTelemetry = createFoldTelemetry()
   /** Pressure folds since the last root rebase — the anti-oscillation cooldown. */
   private stepsSinceRootRebase = Number.POSITIVE_INFINITY
-  /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
-  private lastThresholdTokensValue = 0
-  /**
-   * The WHOLE spec the most recent pressure check resolved, not just its threshold.
-   *
-   * ## Why the threshold alone was not enough
-   *
-   * A benchmark archive recorded `folds`, `promptTokensLast` and the fold lineage but
-   * NOT the budget those folds were priced against, so a round that folded 50-109 times
-   * per cell could not be told apart from one that folded 2-17 times for a reason -- the
-   * threshold had to be recovered afterwards by decompressing a bundle and re-deriving
-   * `min(contextWindow x thresholdRatio, window - reserve)` by hand. Measured on that
-   * round: the window was 32_000 while the task's working set was 16_471 tokens.
-   *
-   * Exposed so telemetry can publish what the engine ACTED on rather than a second
-   * computation of it that could disagree.
-   */
-  private lastCompactSpecValue: EfCompactSpec | undefined
-  /**
-   * Derived retrieval answers retired at fold time, cumulatively.
-   *
-   * Counted rather than inferred, for the same reason every other counter here is: a fold
-   * that silently retired material would be the same class of defect as one that silently
-   * dropped it, and the archive cannot be asked after the fact.
-   */
-  private derivedAnswersRetiredValue = 0
-  /** Most recent economic leaf-admission verdict (R2-B telemetry). */
-  private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
-  /** Most recent provider-aware rebase decision (R2-C telemetry). */
-  private lastRebaseDecisionValue: ContextPolicyDecision | undefined
-  /** Root folds committed by this engine, for maintenance-path verification. */
-  private rootFoldCountValue = 0
-  /** Leaf folds committed by this engine; the counterpart to `rootFoldCount`. */
-  private leafFoldCountValue = 0
-  /** Emergency rebases committed by this engine (provider-overflow recovery). */
-  private emergencyRebaseCountValue = 0
-  /**
-   * Bundles this engine has successfully written.
-   *
-   * A MONOTONIC write counter, deliberately NOT `bundleStore.list().length`.
-   * The two differ whenever a bundle is removed, a session directory is
-   * cleaned, or the store root becomes unreadable — and `list()` reports the
-   * first two as a smaller number and the third as a thrown error, which a
-   * caller that swallows it turns into the same `0` as "never folded". A
-   * telemetry column must count what happened, not what is still on disk.
-   *
-   * ## This counts PUBLISHES, not committed folds
-   *
-   * The two can differ, and the difference is by design. `BundleDurable ≺
-   * SurfaceLoss` requires the archive to be durable BEFORE the surface is
-   * replaced, so `summarize` publishes the bundle and only then does Basic
-   * decide whether to commit — and it can refuse, e.g. when the framed summary
-   * is not smaller than the shadowed content. A refused fold therefore leaves a
-   * published bundle behind.
-   *
-   * That asymmetry is the SAFE direction: a bundle with no surface replacement
-   * means history was copied and nothing was lost. The consequence to know
-   * about is that `context_search` can find such a bundle, so a caller must not
-   * assume `bundleWriteCount === leafFoldCount + rootFoldCount +
-   * emergencyRebaseCount`. It is `>=`, and the excess is refused folds.
-   *
-   * (Measured: a one-turn session whose root fold is refused by the shrink check
-   * reports `writes 1, root 0`, and the bundle is retrievable by
-   * `context_search`.)
-   */
-  private bundleWriteCountValue = 0
-  /** Most recent pressure regime `compactIfNeeded` acted on (telemetry). */
-  private lastPressureRegimeValue: PressureRegime | undefined
-  /**
-   * The regime the retry loop found after its most recent leaf (telemetry).
-   *
-   * Kept SEPARATE from `lastPressureRegimeValue`, which records the regime the
-   * decision was based on. The two differ whenever a leaf fold moves a span into
-   * the frozen prefix and pushes the surface from open-bound to frozen-bound —
-   * and collapsing them into one field loses exactly the transition the I1
-   * invariant is about, because the post-fold value would overwrite the entry
-   * value the decision was made on.
-   */
-  private lastPostLeafRegimeValue: PressureRegime | undefined
-  /**
-   * The CAPACITY regime the most recent overflow decision used (telemetry).
-   *
-   * The soft and hard classifications are not interchangeable, and the overflow
-   * path decides on the hard one: a surface can be soft-frozen-bound while still
-   * comfortably inside the provider's limit, and folding a leaf there is correct
-   * because the open tail is what is over capacity. Recording which budget
-   * governed the decision is what lets a reader (or a test) tell a legal
-   * overflow leaf from an illegal frozen-bound one.
-   */
-  private lastCapacityRegimeValue: CapacityRegime | undefined
-  /**
-   * The reachability arithmetic from the last automatic fold decision.
-   *
-   * Recorded because the failure it explains was previously unreadable: a
-   * `pressure-unresolved` error named only `frozenTokens`, so a reader could not
-   * tell "nothing was foldable" from "the fold did not help" — and Phase 7's
-   * report concluded the wrong one. This carries the span, the checkpoint and the
-   * retained remainder, which is what decides it.
-   */
-  private lastFoldReachabilityValue: FoldReachability | undefined
   /** Framing mode in force, resolved once against the mounted context. */
   private framingModeResolved: FramingMode | undefined
   /** The per-target trigger decomposition reported to the log (RC1-A). */
@@ -379,7 +315,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
   /** Latest frozen-budget evaluation (pressure path); `undefined` before the first check. */
   get lastRootRebaseAdvice(): ReturnType<typeof evaluateRootRebase> | undefined {
-    return this.lastRootRebaseAdviceValue
+    return this.telemetry.rootRebaseAdvice
   }
 
   /**
@@ -388,7 +324,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * the SAME threshold the engine acted on, rather than re-deriving it.
    */
   get lastThresholdTokens(): number {
-    return this.lastThresholdTokensValue
+    return this.telemetry.thresholdTokens
   }
 
   /**
@@ -398,7 +334,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * publishable without re-deriving them.
    */
   get lastCompactSpec(): EfCompactSpec | undefined {
-    return this.lastCompactSpecValue
+    return this.telemetry.compactSpec
   }
 
   /**
@@ -409,17 +345,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * produced and none had been folded yet.
    */
   get derivedAnswersRetired(): number {
-    return this.derivedAnswersRetiredValue
+    return this.telemetry.derivedAnswersRetired
   }
 
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
   get lastLeafAdmission(): LeafAdmissionVerdict | undefined {
-    return this.lastLeafAdmissionValue
+    return this.telemetry.leafAdmission
   }
 
   /** Most recent provider-aware rebase decision (R2-C); `undefined` under `legacy`. */
   get lastRebaseDecision(): ContextPolicyDecision | undefined {
-    return this.lastRebaseDecisionValue
+    return this.telemetry.rebaseDecision
   }
 
   /**
@@ -428,7 +364,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * token delta (R3-0c).
    */
   get rootFoldCount(): number {
-    return this.rootFoldCountValue
+    return this.telemetry.rootFolds
   }
 
   /**
@@ -440,17 +376,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * lifetime record of what it did.
    */
   get leafFoldCount(): number {
-    return this.leafFoldCountValue
+    return this.telemetry.leafFolds
   }
 
   /** Emergency rebases this engine has committed (provider-overflow recovery). */
   get emergencyRebaseCount(): number {
-    return this.emergencyRebaseCountValue
+    return this.telemetry.emergencyRebases
   }
 
   /** Bundles this engine has successfully written (monotonic, never decreases). */
   get bundleWriteCount(): number {
-    return this.bundleWriteCountValue
+    return this.telemetry.bundleWrites
   }
 
   /** Outstanding pending-rebase intents across all sessions (telemetry). */
@@ -466,7 +402,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * (which would silently disagree whenever the threshold moved).
    */
   get lastPressureRegime(): PressureRegime | undefined {
-    return this.lastPressureRegimeValue
+    return this.telemetry.pressureRegime
   }
 
   /**
@@ -480,7 +416,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * entry regime readable instead of overwriting it with the outcome.
    */
   get lastPostLeafRegime(): PressureRegime | undefined {
-    return this.lastPostLeafRegimeValue
+    return this.telemetry.postLeafRegime
   }
 
   /**
@@ -494,7 +430,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * whose frozen prefix alone exceeded the provider's limit.
    */
   get lastCapacityRegime(): CapacityRegime | undefined {
-    return this.lastCapacityRegimeValue
+    return this.telemetry.capacityRegime
   }
 
   /**
@@ -505,7 +441,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * a rebase would not have helped either, because it retains the same tail.
    */
   get lastFoldReachability(): FoldReachability | undefined {
-    return this.lastFoldReachabilityValue
+    return this.telemetry.foldReachability
   }
 
   /** The pending-rebase registry the idle consumer drives (R3-0b). */
@@ -559,16 +495,63 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * @returns the fresh decision, or `null` when no routed target exists (an
    *   unroutable session has no economics to reason about).
    */
-  async rebaseDecisionAtIdle(agent: Agent): Promise<ContextPolicyDecision | null> {
+  /**
+   * The compact spec for the session's routed model, or why there is none.
+   *
+   * Four call sites resolved the same three-step chain -- routed target, `resolveModelInfo`,
+   * `resolveEfCompactSpec` -- and two of them also re-threw the same "no context capacity"
+   * message verbatim. Adding a spec field or a reserve rule was therefore a four-site edit, and
+   * a missed site prices folds against a different budget than its siblings (docs/68 A-1).
+   *
+   * Callers keep their own failure policy: the idle paths return `null`, the fold paths throw.
+   * The helper returns the REASON rather than deciding, so that split stays visible at the site
+   * that chooses it.
+   */
+  private async resolveSpecFor(
+    agent: Agent,
+    signal: AbortSignal | undefined,
+  ): Promise<ResolvedSpecFor | UnresolvedSpecFor> {
     const target = routedTarget(agent.session)
-    if (target === undefined) return null
-    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, undefined)
-    if (info.context === undefined) return null
-    const spec = resolveEfCompactSpec(
-      this.efConfig,
-      info.context.contextWindow,
-      reservedCompletionTokens(agent, info.defaultMaxTokens),
-    )
+    if (target === undefined) return { reason: 'unrouted' }
+    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, signal)
+    if (info.context === undefined) {
+      return { reason: 'no-capacity', key: `${target.provider}/${target.model}` }
+    }
+    const reserved = reservedCompletionTokens(agent, info.defaultMaxTokens)
+    return {
+      target,
+      contextWindow: info.context.contextWindow,
+      reserved,
+      spec: resolveEfCompactSpec(this.efConfig, info.context.contextWindow, reserved),
+    }
+  }
+
+  /**
+   * The compaction lock, through ONE implementation and one message.
+   *
+   * The message was written out verbatim at two throw sites, so a change to the lock had to
+   * find both (docs/68 A-2).
+   *
+   * ## A divergence this does NOT close, recorded so the next change finds it
+   *
+   * The vendored `src/basic/region.ts` EXPORTS `assertNoActiveCompaction`, and its policy is
+   * not the same as `frontier.hasActiveCompaction`: the vendored one accepts an unmatched
+   * `compaction/start` when a later `session/end-seed` boundary proves its owner belongs to an
+   * earlier lifecycle (region.ts:320-332 and 583-611), and the frontier scan does not. On a
+   * RESUMED session EF can therefore refuse a fold that Basic would allow. Reusing the vendored
+   * function would change the error TYPE (`ManualCompactionError`) and its message, which is a
+   * behaviour change and not part of a structural pass -- so it is reported here rather than
+   * smuggled in.
+   */
+  private assertNoActiveCompaction(session: Session): void {
+    if (hasActiveCompaction(session)) {
+      throw new Error('epistemic-fold: compaction already in progress; the session compaction lock is already active')
+    }
+  }
+  async rebaseDecisionAtIdle(agent: Agent): Promise<ContextPolicyDecision | null> {
+    const resolved = await this.resolveSpecFor(agent, undefined)
+    if (!('spec' in resolved)) return null
+    const { spec } = resolved
     const measurement = this.ctx.tokenMeter.measure(agent.session)
     const decision = evaluateEconomicRebase({
       agent,
@@ -578,7 +561,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       stepsSinceRootRebase: this.stepsSinceRootRebase,
       atIdle: true,
     })
-    this.lastRebaseDecisionValue = decision
+    this.telemetry.rebaseDecision = decision
     return decision
   }
 
@@ -602,15 +585,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    *   `null` when the condition has cleared or no capacity is known.
    */
   async safetyRebaseDecisionAtIdle(agent: Agent): Promise<ContextPolicyDecision | null> {
-    const target = routedTarget(agent.session)
-    if (target === undefined) return null
-    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, undefined)
-    if (info.context === undefined) return null
-    const spec = resolveEfCompactSpec(
-      this.efConfig,
-      info.context.contextWindow,
-      reservedCompletionTokens(agent, info.defaultMaxTokens),
-    )
+    const resolved = await this.resolveSpecFor(agent, undefined)
+    if (!('spec' in resolved)) return null
+    const { target, spec } = resolved
     const measurement = this.ctx.tokenMeter.measure(agent.session)
     const breakdown = pressureBreakdown(agent.session, measurement, spec.thresholdTokens)
     const regime = classifyPressureRegime(breakdown)
@@ -643,7 +620,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         `frozen prefix ${breakdown.frozenTokens} >= threshold ${spec.thresholdTokens} across `
         + `${breakdown.frozenCount} checkpoint(s); a leaf cannot restore headroom, so a rebase is required`,
     }
-    this.lastRebaseDecisionValue = decision
+    this.telemetry.rebaseDecision = decision
     return decision
   }
 
@@ -702,9 +679,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // counters live here rather than at each call site. Counting at the call
     // sites is how `rootFoldCount` and a second counter would drift apart.
     switch (candidate.mode) {
-      case 'leaf': this.leafFoldCountValue += 1; break
-      case 'root': this.rootFoldCountValue += 1; break
-      case 'emergency': this.emergencyRebaseCountValue += 1; break
+      case 'leaf':
+      case 'root':
+      case 'emergency':
+        recordFold(this.telemetry, candidate.mode)
+        break
       /* v8 ignore next -- closed-union exhaustiveness guard */
       default: assertNever(candidate.mode, 'fold mode')
     }
@@ -751,7 +730,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // Invalidate the stale advice: without this, the rebase consumer
         // re-reads the pre-root recommendation every step and the arm
         // degenerates into leaf/root thrashing (R0-C anti-oscillation).
-        this.lastRootRebaseAdviceValue = undefined
+        this.telemetry.rootRebaseAdvice = undefined
       }
       return result
     } finally {
@@ -786,34 +765,22 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     const prune = this.ctx.get('toolResultPruner')
 
     if (trigger === 'context-overflow') {
-      return this.recoverFromOverflow(agent, target, measurement, meter, prune, signal)
+      return this.recoverFromOverflow(agent, measurement, meter, prune, signal)
     }
 
-    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, signal)
-    if (hasActiveCompaction(agent.session)) {
-      throw new Error('epistemic-fold: compaction already in progress; the session compaction lock is already active')
-    }
-    if (info.context === undefined) {
-      throw new Error(
-        `epistemic-fold: no context capacity for ${target.provider}/${target.model}; `
-        + 'configure contextWindow on that adapter model',
-      )
-    }
-    const reserved = reservedCompletionTokens(agent, info.defaultMaxTokens)
-    const spec = resolveEfCompactSpec(
-      this.efConfig,
-      info.context.contextWindow,
-      reserved,
-    )
+    this.assertNoActiveCompaction(agent.session)
+    const resolved = await this.resolveSpecFor(agent, signal)
+    if (!('spec' in resolved)) throw new Error(noContextCapacityMessage(resolved.key ?? ''))
+    const { contextWindow, reserved, spec } = resolved
     this.triggers.report({
       target,
-      contextWindow: info.context.contextWindow,
+      contextWindow,
       reserved,
       config: this.efConfig,
       log: line => this.ctx.logger.info(line),
     })
-    this.lastThresholdTokensValue = spec.thresholdTokens
-    this.lastCompactSpecValue = spec
+    this.telemetry.thresholdTokens = spec.thresholdTokens
+    this.telemetry.compactSpec = spec
     if (measurement.totalTokens < spec.thresholdTokens) return null
 
     if (prune !== undefined) {
@@ -839,7 +806,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         minReclaimTokens: this.efConfig.minReclaimTokens,
         minReclaimRatio: this.efConfig.minReclaimRatio,
       })
-      this.lastLeafAdmissionValue = admissionVerdict
+      this.telemetry.leafAdmission = admissionVerdict
     }
 
     // I1 — FrozenBound ⇒ ¬Leaf, checked BEFORE any leaf is attempted.
@@ -860,7 +827,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       measurement,
       spec.thresholdTokens,
     ))
-    this.lastPressureRegimeValue = regime
+    this.telemetry.pressureRegime = regime
     if (regime === 'frozen-bound') {
       // STRUCTURAL handoff: economics has no vote. A frozen-bound surface has
       // been shown to defeat every leaf, so a rebase is the only remaining
@@ -909,7 +876,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       thresholdTokens: spec.thresholdTokens,
       retainTokens: spec.retainTokens,
     })
-    this.lastFoldReachabilityValue = reach
+    this.telemetry.foldReachability = reach
 
     let result: CompactionResult | null = null
     let previousTokens = measurement.totalTokens
@@ -943,7 +910,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         measurement,
         spec.thresholdTokens,
       ))
-      this.lastPostLeafRegimeValue = afterRegime
+      this.telemetry.postLeafRegime = afterRegime
       if (afterRegime === 'frozen-bound') {
         this.handOffFrozenBound(agent, measurement, spec)
         return result
@@ -987,7 +954,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         thresholdTokens: spec.thresholdTokens,
         retainTokens: spec.retainTokens,
       })
-      this.lastFoldReachabilityValue = afterFold
+      this.telemetry.foldReachability = afterFold
       if (!afterFold.canReachThreshold) {
         this.ctx.logger.warn(
           `[epistemic-fold] after ${committed} committed leaf fold(s), no further fold can reach `
@@ -1084,7 +1051,6 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   private async recoverFromOverflow(
     agent: Agent,
-    target: { provider: string; model: string },
     measurement: TokenMeasurement,
     meter: { measure(session: Session): TokenMeasurement },
     prune: { pruneSession(session: Session): void } | undefined,
@@ -1094,36 +1060,23 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       prune.pruneSession(agent.session)
       measurement = meter.measure(agent.session)
     }
-    if (hasActiveCompaction(agent.session)) {
-      throw new Error(
-        'epistemic-fold: compaction already in progress; the session compaction lock is already active',
-      )
-    }
+    this.assertNoActiveCompaction(agent.session)
     // Fail closed on an unknown capacity, exactly as the pressure path does. A
     // leaf could be attempted without knowing the hard bound, but "we cannot
     // tell whether this can possibly work" is not a reason to guess — and the
     // provider has already told us the surface does not fit.
-    const info = await this.ctx.llm.resolveModelInfo(target.provider, target.model, signal)
-    if (info.context === undefined) {
-      throw new Error(
-        `epistemic-fold: no context capacity for ${target.provider}/${target.model}; `
-        + 'configure contextWindow on that adapter model',
-      )
-    }
-    const spec = resolveEfCompactSpec(
-      this.efConfig,
-      info.context.contextWindow,
-      reservedCompletionTokens(agent, info.defaultMaxTokens),
-    )
-    this.lastThresholdTokensValue = spec.thresholdTokens
-    this.lastCompactSpecValue = spec
+    const resolved = await this.resolveSpecFor(agent, signal)
+    if (!('spec' in resolved)) throw new Error(noContextCapacityMessage(resolved.key ?? ''))
+    const spec = resolved.spec
+    this.telemetry.thresholdTokens = spec.thresholdTokens
+    this.telemetry.compactSpec = spec
     const breakdown = pressureBreakdown(agent.session, measurement, spec.thresholdTokens)
     // Recorded even though this path decides on the HARD capacity: leaving the
     // field untouched would report whatever a previous pressure call happened to
     // set, which is a stale reading presented as current telemetry.
-    this.lastPressureRegimeValue = classifyPressureRegime(breakdown)
+    this.telemetry.pressureRegime = classifyPressureRegime(breakdown)
     const capacity = classifyCapacityRegime(breakdown, spec.hardCapacityTokens)
-    this.lastCapacityRegimeValue = capacity
+    this.telemetry.capacityRegime = capacity
 
     // A leaf is only worth attempting when the OPEN trajectory is what overflows.
     // When the frozen prefix alone is over the hard capacity, folding more of the
@@ -1150,18 +1103,16 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // I3/I4 — the stronger mechanism must run, and if it cannot, say so.
     const rebased = await this.commitEmergencyRebase(agent, signal)
     const final = meter.measure(agent.session)
-    if (classifyCapacityRegime(
-      pressureBreakdown(agent.session, final, spec.thresholdTokens),
-      spec.hardCapacityTokens,
-    ) !== 'fits') {
+    const finalBreakdown = pressureBreakdown(agent.session, final, spec.thresholdTokens)
+    if (classifyCapacityRegime(finalBreakdown, spec.hardCapacityTokens) !== 'fits') {
       // Explicit non-convergence: the provider has refused this surface, a leaf
       // could not help, and a rebase did not fit it either. Retrying would loop,
       // so fail with the diagnosis rather than let the caller retry blind.
       throw new Error(
         `epistemic-fold: cannot fit the provider's context window after overflow recovery `
         + `(${final.totalTokens} estimated tokens >= hard capacity ${spec.hardCapacityTokens}; `
-        + `frozen prefix ${pressureBreakdown(agent.session, final, spec.thresholdTokens).frozenTokens} `
-        + `across ${pressureBreakdown(agent.session, final, spec.thresholdTokens).frozenCount} checkpoint(s); `
+        + `frozen prefix ${finalBreakdown.frozenTokens} `
+        + `across ${finalBreakdown.frozenCount} checkpoint(s); `
         + `${rebased === null ? 'no rebase range was available' : 'an emergency rebase committed but did not reduce enough'})`,
       )
     }
@@ -1206,7 +1157,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       // A landed rebase satisfies any outstanding intent: the prefix it asked
       // about has been collapsed, so a later idle event must not repeat it.
       this.rebaseIntents.clear(agent.session)
-      this.lastRootRebaseAdviceValue = undefined
+      this.telemetry.rootRebaseAdvice = undefined
       return result
     } finally {
       this.candidates.clear(agent.session)
@@ -1252,7 +1203,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       config: this.efConfig,
       stepsSinceRootRebase: this.stepsSinceRootRebase,
     })
-    this.lastRebaseDecisionValue = decision
+    this.telemetry.rebaseDecision = decision
     if (decision.action !== 'root') return null
 
     // The cooldown still applies, so a rebase cannot thrash.
@@ -1288,7 +1239,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       stepsSinceRootRebase: this.stepsSinceRootRebase,
     })
     const recommended = advice.recommended
-    this.lastRootRebaseAdviceValue = advice
+    this.telemetry.rootRebaseAdvice = advice
     this.stepsSinceRootRebase += 1
     if (!recommended) return
     if (this.efConfig.rootPolicy.mode === 'economics' && agent !== undefined) {
@@ -1389,7 +1340,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     const retirement = retireDerivedAnswers(rawShadowed)
     const shadowedMessages = retirement.messages
     if (retirement.retired > 0) {
-      this.derivedAnswersRetiredValue += retirement.retired
+      this.telemetry.derivedAnswersRetired += retirement.retired
       this.ctx.logger.info(
         `[epistemic-fold] retired ${retirement.retired} derived retrieval answer(s) at fold time`,
       )
@@ -1446,7 +1397,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           : { renderedState: describeRenderedState(mountedState) }),
       })
       await this.bundles.write(bundle)
-      this.bundleWriteCountValue += 1
+      this.telemetry.bundleWrites += 1
       this.lastPublishedBundle = bundle
       if (semanticMeta !== undefined) {
         // Forward the REAL call envelope — provider, model, usage, rawOutput —

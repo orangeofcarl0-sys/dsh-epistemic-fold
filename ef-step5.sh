@@ -19,7 +19,12 @@
 # wave. 8 is the largest MEASURED point that does not make the route queue; at 32
 # the latency rose 6.6x for 4x the concurrency and total throughput FELL.
 set -uo pipefail
-EF_HOME="D:/Data and code/xuchengjian/workplace/dsh-epistemic-fold"
+# EF_HOME from this script's own location: no machine path is baked in. `pwd -W`
+# reproduces the Windows form the removed literal had, and falls back to `pwd`.
+EF_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && { pwd -W 2>/dev/null || pwd; })"
+
+# The sweep-wave body is shared, so the launch loop cannot drift between drivers.
+. "$EF_HOME/scripts/ef-wave.sh"
 LHTB_ROOT="${LHTB_ROOT:-$EF_HOME/../bench-workspace/lhtb}"
 LOG="$EF_HOME/ef-phase7-logs/step5e-run.log"
 HEART="$EF_HOME/ef-phase7-logs/step5e-run.heartbeat"
@@ -39,12 +44,7 @@ WPID=$!
 echo "step5e: watchdog pid=$WPID log=$WATCHLOG" | tee -a "$LOG"
 
 PIDS=()
-for ARM in balanced quality; do
-  echo "step5e: launching $ARM at $(date +%H:%M:%S)" | tee -a "$LOG"
-  EF_HOME="$EF_HOME" LHTB_ROOT="$LHTB_ROOT" EF_LHTB_ARM="$ARM" bash "$EF_HOME/ef-phase7.sh" sweep >> "$LOG" 2>&1 &
-  PIDS+=($!)
-  sleep 25
-done
+ef_wave_launch step5e sweep 25 "" balanced quality
 echo "step5e: 2 sweeps = 8 concurrent cells" | tee -a "$LOG"
 (
   while true; do

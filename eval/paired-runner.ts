@@ -16,7 +16,7 @@
 
 import { randomUUID } from 'node:crypto'
 import { Context } from '@deepseek-ai/cordis'
-import { createUserMessage, LlmAdapter, LlmRuntime } from '@deepseek-ai/dsh-llm'
+import { createUserMessage, LlmAdapter } from '@deepseek-ai/dsh-llm'
 import type {
   GenerateOptions,
   LlmResolvedModelInfo,
@@ -24,9 +24,7 @@ import type {
 } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { CompactionResult } from '@deepseek-ai/dsh-compaction'
-import SessionStore, { type Session } from '@deepseek-ai/dsh-session'
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
+import type { Session } from '@deepseek-ai/dsh-session'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
@@ -36,6 +34,7 @@ import { emptyCurrentState } from '../src/state.ts'
 import type { FoldCurrentState } from '../src/state.ts'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { makeTemp, releaseTemp } from './tmp.ts'
+import { mountRuntime } from './src/runtime-mount.ts'
 import { evaluateOracles, type VerifierWorld } from './src/verifier.ts'
 import { markDuplicates, normalizeAction } from './src/actions.ts'
 import { isEfOnlyOracle } from './src/arm-scope.ts'
@@ -87,10 +86,7 @@ interface MountedArm {
 
 async function mountArm(arm: ArmId, bundleRoot: string): Promise<MountedArm> {
   const ctx = new Context()
-  void new LlmRuntime(ctx)
-  void new SessionStore(ctx)
-  new SessionProjectionRegistry(ctx)
-  void new TokenMeter(ctx)
+  mountRuntime(ctx)
   const compactionText = arm === 'B1'
     ? 'basic full checkpoint: the fixture work completed all four turns'
     : `rationale: the fixture work proceeded deterministically (${arm})`

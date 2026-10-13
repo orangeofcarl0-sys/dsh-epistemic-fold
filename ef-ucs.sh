@@ -32,7 +32,12 @@
 # earlier `unknown-config-semantics` cell was run against the fragile harness, and this
 # wave must not be pooled with them for that task.
 set -uo pipefail
-EF_HOME="D:/Data and code/xuchengjian/workplace/dsh-epistemic-fold"
+# EF_HOME from this script's own location: no machine path is baked in. `pwd -W`
+# reproduces the Windows form the removed literal had, and falls back to `pwd`.
+EF_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && { pwd -W 2>/dev/null || pwd; })"
+
+# The sweep-wave body is shared, so the launch loop cannot drift between drivers.
+. "$EF_HOME/scripts/ef-wave.sh"
 LHTB_ROOT="${LHTB_ROOT:-$EF_HOME/../bench-workspace/lhtb}"
 LOG="$EF_HOME/ef-phase7-logs/ucs-run.log"
 WATCHLOG="$EF_HOME/ef-phase7-logs/ucs-watchdog.log"
@@ -60,13 +65,7 @@ EF_WATCH_JOBS="$LHTB_ROOT/jobs" EF_WATCH_LOG="$WATCHLOG" EF_WATCH_HEARTBEAT="$WA
 echo "ucs: watchdog pid=$!" | tee -a "$LOG"
 
 PIDS=()
-for ARM in basic economy balanced quality; do
-  echo "ucs: launching $ARM at $(date +%H:%M:%S)" | tee -a "$LOG"
-  EF_HOME="$EF_HOME" LHTB_ROOT="$LHTB_ROOT" EF_LHTB_ARM="$ARM" \
-    bash "$EF_HOME/ef-phase7.sh" sweep-ucs >> "$LOG" 2>&1 &
-  PIDS+=($!)
-  sleep 5
-done
+ef_wave_launch ucs sweep-ucs 5 "" basic economy balanced quality
 
 FAIL=0
 for PID in "${PIDS[@]}"; do wait "$PID" || FAIL=1; done

@@ -14,23 +14,23 @@ import {
   createMessage,
   createUserMessage,
   LlmAdapter,
-  LlmRuntime,
 } from '@deepseek-ai/dsh-llm'
 import type {
   GenerateOptions,
   LlmResolvedModelInfo,
   StreamChunk,
 } from '@deepseek-ai/dsh-llm'
-import { SessionId, SessionStore } from '@deepseek-ai/dsh-session'
+import { SessionId } from '@deepseek-ai/dsh-session'
 import { Session } from '@deepseek-ai/dsh-session'
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
-import { ToolRuntime } from '@deepseek-ai/dsh-tools'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
+// The shared DSH runtime mount sequence (docs/68 B-6): one place for the
+// services every harness used to hand-wire.
+import { mountRuntime } from '../eval/src/runtime-mount.ts'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import { createAnchorService } from '../src/anchor-service.ts'
 import { EF_CURRENT_STATE_KEY, currentFoldState } from '../src/projection.ts'
 import { recall } from '../src/recall.ts'
+import { efOwnedConfigKeys } from '../src/policy.ts'
+import type { EpistemicFoldConfig } from '../src/policy.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 
 const MODEL = 'test-model'
@@ -63,15 +63,36 @@ async function createContextWithPlugin(config: { bundleRoot?: string } = {}): Pr
   roots.push(root)
   const bundleRoot = join(root, 'bundles')
   const ctx = new Context()
-  void new LlmRuntime(ctx)
-  void new SessionStore(ctx)
-  new SessionProjectionRegistry(ctx)
-  void new TokenMeter(ctx)
-  new SystemPrompt(ctx, {})
-  new ToolRuntime(ctx)
+  mountRuntime(ctx, { systemPrompt: true, tools: true })
   ctx.llm.registerAdapter([MODEL], new CompositionAdapter())
   const plugin = new EpistemicFoldPlugin(ctx, { auto: false, bundleRoot, ...config })
   return { ctx, root, bundleRoot, plugin }
+}
+
+/**
+ * Mount the plugin with a config that has been through the DECLARED schema —
+ * the loader path, not the programmatic one.
+ *
+ * A YAML profile's config reaches the plugin through
+ * `EpistemicFoldPlugin.Config`, so that is the path B-5 must exercise. The
+ * schema is descriptive (docs/68 §4), so a key it does not declare is still
+ * carried.
+ */
+async function createContextWithSchemaParsedConfig(raw: Record<string, unknown>): Promise<{
+  plugin: EpistemicFoldPlugin
+}> {
+  const root = await makeTemp('ef-plugin-loader-')
+  roots.push(root)
+  const ctx = new Context()
+  mountRuntime(ctx, { systemPrompt: true, tools: true })
+  ctx.llm.registerAdapter([MODEL], new CompositionAdapter())
+  const parsed = EpistemicFoldPlugin.Config({
+    auto: false,
+    bundleRoot: join(root, 'bundles'),
+    ...raw,
+  } as unknown as EpistemicFoldConfig) as unknown as Record<string, unknown>
+  const plugin = new EpistemicFoldPlugin(ctx, parsed as EpistemicFoldConfig)
+  return { plugin }
 }
 
 afterEach(async () => {
@@ -215,6 +236,59 @@ describe('R0-B: native plugin composition', () => {
       depth: 'exact',
     })
     expect(recalled?.page?.totalMessages).toBe(8)
+  })
+})
+
+describe('B-5: the plugin Config schema indexes the whole EF-owned vocabulary', () => {
+  it('declares every key in efOwnedConfigKeys()', () => {
+    // docs/68 C2: the schema declared 19 keys and omitted 9 of the 17 EF-owned
+    // ones. schemastery passes unknown keys THROUGH, so the omission was a
+    // documentation and range-checking gap rather than a dropped setting — which
+    // is why the fix is this set comparison and not the declined key-table
+    // refactor (Tier C-1). `Config.dict` is the schema's own field list, so the
+    // assertion reads the declaration instead of restating it.
+    const declared = new Set(Object.keys(EpistemicFoldPlugin.Config.dict ?? {}))
+    const missing = efOwnedConfigKeys().filter(key => !declared.has(key))
+    expect(missing, 'EF-owned keys absent from the plugin Config schema').toEqual([])
+  })
+
+  it('mounts through the schema and the EF-owned keys survive to the engine', async () => {
+    // The SCHEMA is descriptive, not restrictive (docs/68 §4): a key it does not
+    // declare still survives the parse, and this pins that pass-through so a
+    // future change cannot quietly make the schema strict.
+    //
+    // The MOUNT is a different matter, and the distinction is the point: Basic
+    // validates ITS OWN keys strictly, so an unknown key reaching the engine
+    // still throws (`BasicCompactionConfig: unknown key`) — the R0 behaviour
+    // `stripEfConfigKeys` exists to keep. Pass-through is a schema property,
+    // not a licence to mount arbitrary keys.
+    const passedThrough = EpistemicFoldPlugin.Config({
+      bogusKey: 1,
+      // A wrong-typed value must also still reach `policy.ts`, which owns that
+      // rejection (docs/68 C4): declaring the key added documentation, not a
+      // second validation layer.
+      minReclaimTokens: 'not-a-number',
+    } as unknown as EpistemicFoldConfig) as unknown as Record<string, unknown>
+    expect(passedThrough.bogusKey).toBe(1)
+    expect(passedThrough.minReclaimTokens).toBe('not-a-number')
+
+    // ONE loader-path mount: a loader/YAML config goes through
+    // `EpistemicFoldPlugin.Config` before the plugin sees it, so that is the
+    // path that must carry the EF-owned keys to the engine's resolved config.
+    const { plugin } = await createContextWithSchemaParsedConfig({
+      referentialArchive: true,
+      allowCrossSessionRecall: true,
+      leafAdmission: 'economic',
+      minReclaimTokens: 1_000,
+      rootPolicy: 'economics',
+      subagentRecall: true,
+    })
+    expect(plugin.engine.efConfig.referentialArchive).toBe(true)
+    expect(plugin.engine.efConfig.allowCrossSessionRecall).toBe(true)
+    expect(plugin.engine.efConfig.leafAdmission).toBe('economic')
+    expect(plugin.engine.efConfig.minReclaimTokens).toBe(1_000)
+    expect(plugin.engine.efConfig.rootPolicy.mode).toBe('economics')
+    expect(plugin.engine.efConfig.subagentRecall).toBe(true)
   })
 })
 

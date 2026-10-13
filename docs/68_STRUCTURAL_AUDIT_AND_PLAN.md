@@ -201,3 +201,114 @@ all four:
   speculative.
 * A second deployment target (a loader/YAML path that a programmatic mount does not exercise) —
   that is when C2's omitted keys stop being harmless.
+
+## 8. Tier A and B as implemented
+
+### A-1 to A-3 and B-1 (engine.ts) — DONE
+
+| # | what changed | site count, verified after |
+|---|---|---|
+| A-1 | one `resolveSpecFor(agent, signal)`; one `noContextCapacityMessage(key)` | `resolveEfCompactSpec` in engine.ts: **4 -> 1**; the "no context capacity" text: **2 -> 1** |
+| A-2 | one `assertNoActiveCompaction(session)` | `hasActiveCompaction` call sites: **2 -> 1**; the lock message in `src/`: **3 -> 2**, and the remaining one is the vendored copy |
+| A-3 | `pressureBreakdown` hoisted for the non-convergence throw | calls in engine.ts: **9 -> 7**; the two removed are the identical call written twice inside one string concatenation |
+| B-1 | fourteen mutable fields and their fourteen getters became one `FoldTelemetry` record | private fields **23 -> 10**; `engine.ts` **1700 -> 1653** lines net of the A items; every public getter kept, so no caller moved |
+
+`FoldTelemetry` and `recordFold` are pinned by `tests/fold-telemetry.spec.ts` (3 cases), which is
+something the fourteen loose fields could not offer: the fold-kind to counter mapping used to live
+inside the fold-commit path, where a missing case is hardest to notice.
+
+### A-2 needed a correction, and the divergence is REPORTED rather than fixed
+
+docs/68 §5 recommended "export and reuse region's `assertNoActiveCompaction`". The function **is**
+already exported (`src/basic/region.ts:339`), so that part was right. But reusing it would change
+the error TYPE (`ManualCompactionError` instead of `Error`) and the message (a `stage`-prefixed
+form instead of the `epistemic-fold:` one), and the suite has tests on that message. That is a
+BEHAVIOUR change, not a structural one, so it was not smuggled into a refactor.
+
+What the divergence actually is, recorded at the new helper so the next change finds it:
+
+* vendored `assertCompactionInactive` (region.ts:320-332) accepts an unmatched `compaction/start`
+  when a later `session/end-seed` boundary proves the owner belongs to an earlier lifecycle
+  (the boundary is found by `inspectCompactionEntryState`, region.ts:583-611, which is NOT exported);
+* `frontier.hasActiveCompaction` is a plain backward scan with no seed handling.
+
+So on a RESUMED session — docs/63 is a resume handoff, so this is reachable — EF can refuse a fold
+that Basic would allow. **This needs a decision, not a refactor**: either accept the vendored error
+contract, or give `hasActiveCompaction` the seed boundary and add the test that pins it.
+
+### B-1 to B-6 — DONE
+
+| # | what changed | verified result |
+|---|---|---|
+| B-1 | `src/fold-telemetry.ts`: one `FoldTelemetry` record + `recordFold(kind)` | engine private fields **23 -> 10**; every getter kept; `tests/fold-telemetry.spec.ts` (3 cases) pins the kind-to-counter mapping, which the old in-path switch could not offer |
+| B-2 | `src/subagent-recall.ts` **841 -> 58 lines**: a barrel over `gate.ts`, `descriptors.ts`, `recall-loop.ts`, `recall-transport.ts`, `recall-telemetry.ts` | all 36 prior exports still present; prompt text byte-identical |
+| B-3 | `gateRecallPayload(...)` owns the decision AND the refusal payload | captured from a real `context_recall` before and after: **byte-identical JSON** (key order, suggestion, alternatives) |
+| B-4 | `src/plugin.ts` constructor is a composition root; 7 per-surface `register*` helpers + `src/plugin-config.ts` | the `mode: basic` early return is byte-identical and still FIRST, held by `tests/rc7-basic-mode.spec.ts` |
+| B-5 | every EF-owned key is now DECLARED in the Config schema (`z.any()`, deliberately untyped), plus set-equality and loader-path tests | the omission is closed as documentation, and the pass-through contract is pinned rather than assumed |
+| B-6 | `eval/src/runtime-mount.ts`: `mountRuntime` + `mountToolResultPruner`; all four mount sites use it | the ordering invariant moved from a grep of each caller to a pin on the ONE implementation (`tests/harness-recall-tools.spec.ts`, 8 cases) |
+
+`src/` went from 49 modules to 56: the seven new ones are the units that were extracted, and the
+largest shipped file is no longer `subagent-recall.ts` at 841 lines.
+
+### A third correction: B-6's "divergent pruner config" was a divergent MOUNT, not divergent values
+
+docs/68 D2 (from the eval-harness analyst) said `tests/harness.ts` mounted the pruner with `{}`
+while production used `{thresholdChars: 8192, headChars: 4096, tailChars: 1024}`, and called the
+values divergent. They are not: **those three numbers are the pruner package's own `DEFAULTS`**
+(`dsh-compaction-tool-result-pruner/README.md:52-54`), so `{}` resolves to exactly the same budgets.
+
+What actually diverged is that `eval/paired-runner.ts` mounted NO pruner and the bridge mounted
+none either, until its own recorded measurement forced one: without it a single tool result larger
+than the fold threshold is un-foldable by construction, and the bridge records `66116 -> 60136 chars,
+leaves=1, THREW` against `66116 -> 7406, leaves=0, converged` with it. So the finding stands, but its
+mechanism was "nothing mounted", not "different numbers" — and spelling the budgets out in
+`PRODUCTION_PRUNER_CONFIG` is a documentation change rather than a behavioural one.
+
+### What B-6 could not finish without a test change, and why that mattered
+
+`tests/harness-recall-tools.spec.ts:77-92` grepped `bridge-host.ts` SOURCE TEXT for
+`new SystemPrompt(ctx, {})` and `new ToolRuntime(ctx)` and required their order — so the bridge could
+not delegate those two to the shared helper without breaking a test that never executed the mount.
+This is D4 doing exactly what D4 predicts: a source-text assertion blocking a consolidation.
+
+It was resolved by moving the pin to where the invariant now lives: the spec asserts the bridge
+DELEGATES with both options, and asserts the SystemPrompt-before-ToolRuntime ORDER against
+`eval/src/runtime-mount.ts` — the single site that can break it. That is not a weakened assertion;
+it is the same guarantee checked one level down, at the only place it is still implemented.
+
+### B-7 — DONE in the conservative form, with two parts declined
+
+| what changed | result |
+|---|---|
+| `scripts/live-env.sh` (new): `ef_read_key` (the byte-identical credentials heredoc) + `ef_export_route` | sourced by `run-tau2.sh` and `run-live-parallel.sh`; the 4-copy heredoc is now 1 shared + 2 copies |
+| `scripts/ef-wave.sh` (new): `ef_wave_launch <label> <mode> <nap> <note> <arm>...` | 9 sweep drivers now delegate; arms, mode, sleep, label, note and the silent-loop case preserved |
+| 23 root `ef-*.sh`: `EF_HOME` derived from the script location | the derived value was verified EXACT-MATCH against the removed literal, per file |
+
+Verified with `bash -n` on all 27 launchers plus both new files, and a stub-driver run of
+`ef_wave_launch` (pids=4 across two calls, byte-identical log lines, silent for an empty label).
+`tests/release-hygiene.spec.ts`, `tau2-bridge-contract`, `lhtb-runner-dispatch`,
+`lhtb-agent-truncation` and `lhtb-parallelism` -> 35 passed, and **no assertion needed changing**.
+
+**Declined, with reasons — this is the judgment part of the tier:**
+
+* **The proxy block was NOT unified.** The four implementations genuinely differ in the default,
+  the port source (a fixed 10808 versus discovery), `HTTP_PROXY`, unset-on-disable and the echo.
+  Any single implementation changes at least one caller environment, which the brief forbade. The
+  measured `EF_USE_PROXY` divergence therefore stands as a per-host policy, not a defect.
+* **`scripts/run-lhtb.sh` was left untouched because it is EXECUTING RIGHT NOW** (inside the live
+  `ef-probe-foldwindow.sh -> ef-phase7.sh -> run-lhtb.sh` chain). Editing a file bash is still
+  reading risks the running probe. It keeps its own heredoc and proxy block, so the residual is:
+  **the next change to the credential read must touch both places until the probe exits.**
+* `eval/memory/run-memory.sh` was outside that task write scope.
+
+## 9. Where this leaves the plan
+
+Tier A is complete. Tier B is complete except for the residual recorded above. Tiers C and D are
+untouched, which is what §5 and §6 recommended: the declined refactors are still declined, and the
+four owner decisions (the committed corpus, the 2.1 GB git-ignored `vendor/`, the untracked
+leftovers, and the two names for one probe artifact) still need an answer rather than an edit.
+
+The one item that needs a DECISION rather than more work is the A-2 divergence: on a resumed
+session EF can refuse a fold that Basic would allow, because `frontier.hasActiveCompaction` does
+not implement the `session/end-seed` boundary the vendored assert does. Fixing it means accepting a
+different error type, which is a behaviour change and belongs in its own commit with its own test.

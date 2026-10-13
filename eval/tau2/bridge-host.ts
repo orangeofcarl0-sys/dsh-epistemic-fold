@@ -46,18 +46,16 @@ import {
   createMessage,
   createToolResultMessage,
   createUserMessage,
-  LlmRuntime,
   ToolCallId,
 } from '@deepseek-ai/dsh-llm'
 import type { Message } from '@deepseek-ai/dsh-llm'
-import { Session, SessionId, SessionStore } from '@deepseek-ai/dsh-session'
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
-import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
-import { ToolRuntime } from '@deepseek-ai/dsh-tools'
-// The tool-result pruner is imported LAZILY at its mount site in `init`, because
-// a static import of a package that is not installed is a bridge that cannot
-// start. See that site.
+import { Session, SessionId } from '@deepseek-ai/dsh-session'
+// `SystemPrompt` and `ToolRuntime` are mounted by the shared helper
+// (`eval/src/runtime-mount.ts`); only the ToolRuntime TYPE is needed here.
+import type { ToolRuntime } from '@deepseek-ai/dsh-tools'
+// The tool-result pruner is imported LAZILY inside the shared mount helper
+// (`eval/src/runtime-mount.ts`), because a static import of a package that is
+// not installed is a bridge that cannot start. See the mount site in `init`.
 // Imported from SOURCE, like every other module under `eval/` — not from
 // `lib/*.js`. The build deliberately ships no `.d.ts` ("emitting declarations
 // would create a SECOND artifact"), so a `lib/` import resolves to `any` and
@@ -78,6 +76,7 @@ import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { mountRuntime, mountToolResultPruner } from '../src/runtime-mount.ts'
 
 /** The provider id the harness registers the live adapter under. */
 const LIVE_PROVIDER = 'live'
@@ -1334,11 +1333,16 @@ async function init(request: {
   if (bundleRoot === undefined) throw new Error('bridge: EF_TAU2_BUNDLE_ROOT is not set')
 
   ctx = new Context()
-  void new LlmRuntime(ctx)
-  void new SessionStore(ctx)
-  new SessionProjectionRegistry(ctx)
-  void new TokenMeter(ctx)
-  void new SystemPrompt(ctx, {})
+  // The shared DSH runtime mount (docs/68 B-6): the same core sequence as the
+  // tests and the paired runner.
+  // SystemPrompt and ToolRuntime come from the SAME helper as the core sequence.
+  //
+  // They were explicit here because `tests/harness-recall-tools.spec.ts` grepped
+  // THIS FILE'S SOURCE TEXT for both constructors and their order — the D4
+  // anti-pattern docs/68 records. That order is an invariant of `mountRuntime`, so
+  // it is pinned there and this file is pinned to using it, which is the same
+  // guarantee asserted at the site that can actually break it.
+  mountRuntime(ctx, { systemPrompt: true, tools: true })
   // ## The tool-result pruner, which production mounts and this harness did not
   //
   // `dsh-base`'s own preset mounts `@deepseek-ai/dsh-compaction-tool-result-pruner`
@@ -1378,14 +1382,16 @@ async function init(request: {
   // twenty seconds, and nothing in the suite noticed, because no test imports the
   // bridge's module graph. A gate that cannot see the entry point is not a gate.
   //
+  // The dynamic import now lives in the shared mount helper, so the laziness and
+  // the production budgets are the same on every harness that mounts it.
+  //
   // The pruner still matters -- it is what makes an oversized tool result
   // foldable, and LHTB's oversized node IS shell output -- so when it is absent
   // that fact goes into the telemetry. A run that measured a configuration
   // without it must be identifiable from its own archive rather than inferred
   // from a failure mode.
   try {
-    const { ToolResultPruner } = await import('@deepseek-ai/dsh-compaction-tool-result-pruner')
-    new ToolResultPruner(ctx, { thresholdChars: 8_192, headChars: 4_096, tailChars: 1_024 })
+    await mountToolResultPruner(ctx)
     prunerMounted = true
     prunerError = null
   } catch (error: unknown) {
@@ -1409,8 +1415,7 @@ async function init(request: {
   // the mechanism the tiers are supposed to buy.
   //
   // Mounted BEFORE the plugin, because the plugin registers its tools against
-  // this service during construction.
-  void new ToolRuntime(ctx)
+  // this service during construction. The mount itself is the shared call above.
   // Capture the runtime through the sanctioned `inject` callback: `ctx.get`
   // throws for a service outside `inject`, and `tools` is optional here. Awaited
   // because the callback does not run synchronously.

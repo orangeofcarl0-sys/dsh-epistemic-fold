@@ -3,7 +3,9 @@
 # UNSCOPED container sweep in its own driver. That sweep is now scoped to riscv-core-debug
 # in ef-calib-riscv.sh, so this recovery cannot repeat it.
 set -uo pipefail
-EF_HOME="D:\Data and code\xuchengjian\workplace\dsh-epistemic-fold"
+# EF_HOME from this script's own location: no machine path is baked in. `pwd -W`
+# reproduces the Windows form the removed literal had, and falls back to `pwd`.
+EF_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && { pwd -W 2>/dev/null || pwd; })"
 LHTB_ROOT="${LHTB_ROOT:-D:\Data and code\xuchengjian\workplace\bench-workspace\lhtb}"
 LOG="$EF_HOME/ef-phase7-logs/parallel-wave3.log"
 cd "$EF_HOME" || exit 1

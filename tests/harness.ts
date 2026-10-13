@@ -11,7 +11,6 @@ import {
   createToolResultMessage,
   createUserMessage,
   LlmAdapter,
-  LlmRuntime,
   ToolCallId,
 } from '@deepseek-ai/dsh-llm'
 import type {
@@ -20,23 +19,19 @@ import type {
   Message,
   StreamChunk,
 } from '@deepseek-ai/dsh-llm'
-import { Session, SessionId, SessionStore } from '@deepseek-ai/dsh-session'
+import { Session, SessionId } from '@deepseek-ai/dsh-session'
 export type { Session }
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
 import { FileBundleStore } from '../src/bundle-store.ts'
-import { SystemPrompt } from '@deepseek-ai/dsh-system-prompt'
-import { ToolRuntime } from '@deepseek-ai/dsh-tools'
 import { CommandRuntime } from '@deepseek-ai/dsh-commands'
-import { ToolResultPruner } from '@deepseek-ai/dsh-compaction-tool-result-pruner'
 import { EpistemicFoldEngine } from '../src/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 import type { EpistemicFoldConfig } from '../src/policy.ts'
 import { registerEpistemicFoldProjection } from '../src/projection.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 import { makeTemp } from '../eval/tmp.ts'
+import { mountRuntime, mountToolResultPruner } from '../eval/src/runtime-mount.ts'
 
 export async function tempRoot(): Promise<string> {
   return makeTemp('ef-m0-')
@@ -226,20 +221,23 @@ export async function createHarness(
   const store = options.bundleStore ?? new FileBundleStore(root)
   const control: HarnessControl = { semantic, calls: [] }
   const ctx = new Context()
-  void new LlmRuntime(ctx)
-  void new SessionStore(ctx)
-  new SessionProjectionRegistry(ctx)
-  void new TokenMeter(ctx)
+  // The shared DSH runtime mount (docs/68 B-6): the same core sequence as the
+  // bridge and the paired runner. The recall tools register only when a
+  // ToolRuntime is present, so a test that wants a real agent loop must ask for
+  // one.
+  mountRuntime(ctx, {
+    systemPrompt: options.systemPrompt === true,
+    tools: options.tools === true,
+  })
   if (options.projection === true) registerEpistemicFoldProjection(ctx)
-  if (options.systemPrompt === true) new SystemPrompt(ctx, {})
-  // The recall tools register only when a ToolRuntime is present, so a test
-  // that wants a real agent loop must ask for one.
-  if (options.tools === true) new ToolRuntime(ctx)
   // Production mounts the tool-result pruner in `dsh-base`, and EF's pressure path
   // READS it (`ctx.get('toolResultPruner')`) before deciding on a fold. Opt in
   // where the prune step is under test; the default stays off so a test about
   // something else is not silently handed a second compaction mechanism.
-  if (options.pruner === true) new ToolResultPruner(ctx, {})
+  //
+  // The budgets are production's, from the shared helper: a harness that mounts
+  // a different pruner is a different experiment (docs/68 D2/B-6).
+  if (options.pruner === true) await mountToolResultPruner(ctx)
   // The `/context` command registers only when a command registry is present,
   // for the same reason: a compaction-only deployment mounts cleanly without it.
   if (options.commands === true) new CommandRuntime(ctx)

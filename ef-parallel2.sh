@@ -3,7 +3,9 @@
 # is untouched: its June image is fine because its only change was task.toml (the artifacts
 # path), which harbor reads from the task source at run time rather than from the image.
 set -uo pipefail
-EF_HOME="D:\Data and code\xuchengjian\workplace\dsh-epistemic-fold"
+# EF_HOME from this script's own location: no machine path is baked in. `pwd -W`
+# reproduces the Windows form the removed literal had, and falls back to `pwd`.
+EF_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && { pwd -W 2>/dev/null || pwd; })"
 LHTB_ROOT="${LHTB_ROOT:-D:\Data and code\xuchengjian\workplace\bench-workspace\lhtb}"
 LOG="$EF_HOME/ef-phase7-logs/parallel-wave2.log"
 cd "$EF_HOME" || exit 1

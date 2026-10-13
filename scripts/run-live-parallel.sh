@@ -25,6 +25,14 @@
 
 set -euo pipefail
 
+# This script's own directory, via `dirname` rather than `${BASH_SOURCE[0]%/*}`:
+# the parameter expansion cannot strip a backslash path. See run-tau2.sh.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# The shared credential read and route exports, one implementation for every route
+# launcher.
+. "${SCRIPT_DIR}/live-env.sh"
+
 REPLICATES="${1:-1}"
 CONCURRENCY="${2:-6}"
 shift 2 2>/dev/null || true
@@ -44,21 +52,15 @@ CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
   exit 1
 }
 
-# Read ONE value out of the refs block. Never echoed.
-KEY=$(python3 - "$CREDENTIALS" <<'PY'
-import re, sys
-text = open(sys.argv[1], encoding='utf-8').read()
-m = re.search(r'^\s+OPENCODE_GO_API_KEY:\s*(\S+)\s*$', text, re.M)
-sys.stdout.write(m.group(1) if m else '')
-PY
-)
+# Read ONE value out of the refs block. Never echoed. The read itself is
+# scripts/live-env.sh's ef_read_key, shared with the other route launchers.
+KEY=$(ef_read_key python3 "$CREDENTIALS")
 [ -n "$KEY" ] || { echo "OPENCODE_GO_API_KEY not present in the credential store" >&2; exit 1; }
 echo "live route: opencode.ai/zen/v1 model=space-bunny-free (key len ${#KEY})"
 
 export EF_LIVE=1
-export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/v1}"
-export EF_LIVE_API_KEY="$KEY"
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-space-bunny-free}"
+# The route exports are shared; this lane's base URL and model are its defaults.
+ef_export_route "$KEY" "https://opencode.ai/zen/v1" "space-bunny-free"
 # Node reaches the provider only through the local proxy. NODE_USE_ENV_PROXY
 # makes Node's own fetch honour HTTPS_PROXY, so no adapter change is needed.
 export NODE_USE_ENV_PROXY=1
