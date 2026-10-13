@@ -162,6 +162,7 @@ These records document real-host defects and browser/deployment integration. The
 - [72_LHTB_TASK_ROOT_WIRING.md](72_LHTB_TASK_ROOT_WIRING.md)
 - [73_LIVE_SESSION_AND_PROTECTED_ROOT.md](73_LIVE_SESSION_AND_PROTECTED_ROOT.md)
 - [74_LIVE_REQUEST_FIDELITY.md](74_LIVE_REQUEST_FIDELITY.md)
+- [75_NATURAL_LHTB_GATE.md](75_NATURAL_LHTB_GATE.md)
 
 ## How to read old conclusions
 

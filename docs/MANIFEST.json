@@ -375,6 +375,11 @@
     "sha256": "d7a857d3015738206bef5c9ecf52a59b2520c7426febaef46e3e6835b9865261"
   },
   {
+    "file": "75_NATURAL_LHTB_GATE.md",
+    "bytes": 5249,
+    "sha256": "260f46aa0e41893e3654c0609142cd9bf82ff3dc984f7a6c75e0a4339b93d666"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -396,8 +401,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9722,
-    "sha256": "a59b3b2bf3cb1775c57ed977f8a3d68b7add426d7030dec572449f86413ba89c"
+    "bytes": 9775,
+    "sha256": "70c1d3a49524ead024ecdeb7e8b8adb3159bf0358a8382bf64b7d4cf275232b7"
   },
   {
     "file": "README.zh.md",
