@@ -73,7 +73,7 @@ import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagen
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
-import { RequestBudget } from '../live/request-budget.ts'
+import { RequestBudget, budgetLimitsFromEnv } from '../live/request-budget.ts'
 import { assertRouteRoutable, resolveLiveRoute } from '../live/zcode-config.ts'
 import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
@@ -1625,12 +1625,9 @@ async function init(request: {
   // gate therefore lives in the adapter, where every request passes, and it is checked BEFORE the
   // request so an exhausted budget prevents traffic instead of describing it. Zero disables a
   // limit, so an unconfigured lane behaves exactly as before.
-  budget = new RequestBudget({
-    requests: Number(process.env.EF_LHTB_BUDGET_REQUESTS ?? 0),
-    promptTokens: Number(process.env.EF_LHTB_BUDGET_PROMPT_TOKENS ?? 0),
-    outputTokens: Number(process.env.EF_LHTB_BUDGET_OUTPUT_TOKENS ?? 0),
-    wallClockMs: Number(process.env.EF_LHTB_BUDGET_WALL_MS ?? 0),
-  })
+  // `budgetLimitsFromEnv` refuses a SET BUT INVALID value instead of letting it disable the
+  // check, and refuses a run that asked for enforcement and did not get it. See the module.
+  budget = new RequestBudget(budgetLimitsFromEnv())
   const adapter = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl,
     apiKey: route.apiKey,

@@ -168,6 +168,7 @@ These records document real-host defects and browser/deployment integration. The
 - [78_BRIDGE_CHILD_LIFECYCLE.md](78_BRIDGE_CHILD_LIFECYCLE.md)
 - [79_NATURAL_FOLD_READINESS.md](79_NATURAL_FOLD_READINESS.md)
 - [80_BUDGET_GATE.md](80_BUDGET_GATE.md)
+- [81_BUDGET_ADMISSION.md](81_BUDGET_ADMISSION.md)
 
 ## How to read old conclusions
 
