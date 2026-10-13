@@ -181,6 +181,34 @@ function resolveHeaders(): Readonly<Record<string, string>> | undefined {
   return Object.keys(headers).length === 0 ? undefined : headers
 }
 
+/**
+ * Refuse a route that would fail EVERY call for a reason telemetry cannot attribute.
+ *
+ * The `/zen/go/v1` gateway answers any request without an `x-opencode-session` header with
+ * HTTP 400 `MissingSessionID` -- measured, on the live route, for all three calls of a
+ * controlled run. The header is a CONFIGURATION value (`EF_LIVE_HEADERS`), but a missing one
+ * is recorded by the bridge exactly like a provider fault: `providerFailures` climbs and the
+ * replies are empty. That indistinguishability is what made a round report a provider outage
+ * that did not exist, so the misconfiguration is turned into its own error here instead of
+ * being left to look like the provider's.
+ *
+ * A health probe that hard-codes the header will NOT catch this: the probe succeeds while the
+ * harness fails, which is the second half of why the differential pointed nowhere.
+ *
+ * @param route - the resolved route, about to be used for real calls.
+ * @throws when the route is known to require a header it does not carry.
+ */
+export function assertRouteRoutable(route: LiveRoute): void {
+  if (!/\/zen\/go\/v1$/u.test(route.baseUrl.replace(/\/+$/u, ''))) return
+  if (route.headers?.['x-opencode-session'] !== undefined) return
+  throw new Error(
+    'the /zen/go/v1 route requires an `x-opencode-session` header and none is configured: ' +
+    'every model call would answer HTTP 400 MissingSessionID, which the bridge records as a ' +
+    'provider failure. Set EF_LIVE_HEADERS=\'{"x-opencode-session":"..."}\' -- ' +
+    'scripts/run-lhtb.sh sets it automatically for this route.',
+  )
+}
+
 export function resolveLiveRoute(options: {
   readonly model?: string
   readonly configPath?: string

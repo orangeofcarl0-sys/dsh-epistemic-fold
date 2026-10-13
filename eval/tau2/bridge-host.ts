@@ -73,7 +73,7 @@ import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagen
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
-import { resolveLiveRoute } from '../live/zcode-config.ts'
+import { assertRouteRoutable, resolveLiveRoute } from '../live/zcode-config.ts'
 import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
 import { readFileSync } from 'node:fs'
@@ -1440,6 +1440,10 @@ async function init(request: {
 }): Promise<void> {
   const route = resolveLiveRoute()
   if (route === undefined) throw new Error('bridge: no live route resolved')
+  // Fail HERE, not on the third model call. See `assertRouteRoutable`.
+  assertRouteRoutable(route)
+  // Fail HERE, not on the third model call. See `assertRouteRoutable`.
+  assertRouteRoutable(route)
   profile = loadProfile()
 
   tools = request.tools

@@ -161,6 +161,7 @@ These records document real-host defects and browser/deployment integration. The
 - [71_PROTECTED_ROOT_TRANSACTION.md](71_PROTECTED_ROOT_TRANSACTION.md)
 - [72_LHTB_TASK_ROOT_WIRING.md](72_LHTB_TASK_ROOT_WIRING.md)
 - [73_LIVE_SESSION_AND_PROTECTED_ROOT.md](73_LIVE_SESSION_AND_PROTECTED_ROOT.md)
+- [74_LIVE_REQUEST_FIDELITY.md](74_LIVE_REQUEST_FIDELITY.md)
 
 ## How to read old conclusions
 

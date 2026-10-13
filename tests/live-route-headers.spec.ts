@@ -27,7 +27,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
-import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
+import { assertRouteRoutable, resolveLiveRoute } from '../eval/live/zcode-config.ts'
 
 const KEYS = ['EF_LIVE_BASE_URL', 'EF_LIVE_API_KEY', 'EF_LIVE_HEADERS', 'EF_LIVE_MODEL'] as const
 
@@ -142,5 +142,41 @@ describe('route-required headers travel with the route', () => {
     const sent = calls[0]?.headers as Record<string, string>
     expect(sent.authorization, 'the real credential must win').toBe('Bearer test-key-not-real')
     expect(sent['content-type'], 'the adapter controls the content type').toBe('application/json')
+  })
+})
+
+/**
+ * The gap this closes, measured.
+ *
+ * The guard above catches a MALFORMED `EF_LIVE_HEADERS`. It did not catch a MISSING one, and
+ * that is the failure that actually happened: a controlled run pointed at `/zen/go/v1` with the
+ * header env var named incorrectly answered HTTP 400 `MissingSessionID` on all three model
+ * calls, each recorded as a provider failure with an empty reply. The run was reported as a
+ * provider outage. The header was never the provider's problem, and the health probe that
+ * hard-coded it succeeded throughout -- which is why the differential pointed nowhere.
+ */
+describe('a route that requires a header nobody configured', () => {
+  it('is refused before the first model call, not misreported as a provider failure', () => {
+    withEnv({ EF_LIVE_BASE_URL: 'https://opencode.ai/zen/go/v1', EF_LIVE_API_KEY: 'k' }, () => {
+      const route = resolveLiveRoute()!
+      expect(route.headers, 'nothing supplies the header').toBeUndefined()
+      expect(() => assertRouteRoutable(route)).toThrow(/x-opencode-session/u)
+    })
+  })
+
+  it('accepts the same route once the header IS configured', () => {
+    withEnv({
+      EF_LIVE_BASE_URL: 'https://opencode.ai/zen/go/v1',
+      EF_LIVE_API_KEY: 'k',
+      EF_LIVE_HEADERS: '{"x-opencode-session":"ef-lhtb-1"}',
+    }, () => {
+      expect(() => assertRouteRoutable(resolveLiveRoute()!)).not.toThrow()
+    })
+  })
+
+  it('leaves the sibling route alone, which asks for no such header', () => {
+    withEnv({ EF_LIVE_BASE_URL: 'https://opencode.ai/zen/v1', EF_LIVE_API_KEY: 'k' }, () => {
+      expect(() => assertRouteRoutable(resolveLiveRoute()!)).not.toThrow()
+    })
   })
 })

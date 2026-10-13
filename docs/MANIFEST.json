@@ -370,6 +370,11 @@
     "sha256": "eb8a8298a78a5d1e955e8707028133c89d694a6f8a168977e1e5ef9c4b49c48f"
   },
   {
+    "file": "74_LIVE_REQUEST_FIDELITY.md",
+    "bytes": 5516,
+    "sha256": "d7a857d3015738206bef5c9ecf52a59b2520c7426febaef46e3e6835b9865261"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -391,8 +396,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9661,
-    "sha256": "4df32872472cdc185aa4b2e3357df8265b421d576d258fa113490c58a132c90a"
+    "bytes": 9722,
+    "sha256": "a59b3b2bf3cb1775c57ed977f8a3d68b7add426d7030dec572449f86413ba89c"
   },
   {
     "file": "README.zh.md",
