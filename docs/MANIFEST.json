@@ -395,6 +395,11 @@
     "sha256": "4cb9f5fc7793f9e70b67804281c9b8fcf7e8e2d4fda64c357707575904d9e3e9"
   },
   {
+    "file": "79_NATURAL_FOLD_READINESS.md",
+    "bytes": 8145,
+    "sha256": "219443c5c503b89a8978c3e002d1c9958e08b28f4077fbf6fd7b444cd3beb489"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -416,8 +421,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9972,
-    "sha256": "986f99b499956e984ea951ad502a21180d1e47fb69090d02ef0799b4b768a517"
+    "bytes": 10035,
+    "sha256": "fc67573efea7c3e54f004130afbe038f6cd9fbb3d48c47994052b8386b4d5e57"
   },
   {
     "file": "README.zh.md",

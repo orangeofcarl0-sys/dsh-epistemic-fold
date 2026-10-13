@@ -36,7 +36,10 @@ describe('a hung bridge call is bounded', () => {
   it('reads the response through a timeout instead of a bare readline', () => {
     expect(CLIENT, 'a bare readline() blocks forever and nothing can notice')
       .not.toMatch(/line = self\._proc\.stdout\.readline\(\)/u)
-    expect(CLIENT).toMatch(/self\._readline\(self\._read_timeout_sec\)/u)
+    // The property is that `_send` reads through the BOUNDED helper rather than a bare `readline()`.
+    // It now chooses between the episode timeout and a caller-supplied one, which STRENGTHENS that
+    // property: `close()` passes a short bound instead of inheriting the 1200s episode read.
+    expect(CLIENT).toMatch(/self\._readline\(self\._read_timeout_sec if timeout is None else timeout\)/u)
     expect(CLIENT).toMatch(/except queue\.Empty:/u)
   })
 

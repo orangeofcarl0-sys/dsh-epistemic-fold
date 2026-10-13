@@ -82,6 +82,15 @@ class EpistemicFoldBridge:
 
     def __init__(self, arm: str, bundle_root: str, domain: str, task_id: str) -> None:
         self._read_timeout_sec = self._READ_TIMEOUT_SEC
+        # How long `close()` waits for the `op:"close"` acknowledgement before terminating.
+        #
+        # NOT the episode read timeout. `close()` used to call `_send` with the 1200s default and
+        # only THEN terminate, so a host that was alive but silent -- the ordinary shape of a
+        # wedged or busy bridge -- made shutdown block for twenty minutes while the child sat
+        # there holding its session. Measured: with a child that reads stdin and answers nothing,
+        # `close()` did not return within 60s. The handshake is a courtesy; it gets a courtesy's
+        # deadline, and `terminate`/`kill` does the rest.
+        self._close_timeout_sec = float(os.environ.get("EF_BRIDGE_CLOSE_TIMEOUT_SEC", "5"))
         spec = ARM_SPECS.get(arm)
         if spec is None:
             raise BridgeError(f"unknown arm {arm!r}; expected one of {sorted(ARM_SPECS)}")
@@ -185,8 +194,14 @@ class EpistemicFoldBridge:
         except (OSError, ValueError):
             return ""
 
-    def _send(self, request: dict[str, Any]) -> dict[str, Any]:
-        """Write one request and read one response line."""
+    def _send(self, request: dict[str, Any], timeout: float | None = None) -> dict[str, Any]:
+        """
+        Write one request and read one response line.
+
+        @param timeout - seconds to wait for the reply; `None` uses the episode's read timeout.
+          `close()` passes its own SHORT bound, because the request that shuts the host down has
+          no provider behind it and must not inherit a deadline sized for one.
+        """
         if self._proc.poll() is not None:
             raise BridgeError(
                 f"bridge host exited with code {self._proc.returncode}: {self._stderr_tail()}"
@@ -195,7 +210,7 @@ class EpistemicFoldBridge:
         self._proc.stdin.write(json.dumps(request, ensure_ascii=False) + "\n")
         self._proc.stdin.flush()
         try:
-            line = self._readline(self._read_timeout_sec)
+            line = self._readline(self._read_timeout_sec if timeout is None else timeout)
         except queue.Empty:
             # A host that does not answer is infrastructure, exactly like a 429: the
             # model never replied. It is returned in the SAME shape as a provider
@@ -370,7 +385,7 @@ class EpistemicFoldBridge:
         self._closed = True
         try:
             if self._proc.poll() is None:
-                self._send({"op": "close"})
+                self._send({"op": "close"}, timeout=self._close_timeout_sec)
         except Exception:  # noqa: BLE001 - shutdown must never mask a result
             pass
         try:
