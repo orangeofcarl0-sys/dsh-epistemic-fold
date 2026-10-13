@@ -360,6 +360,11 @@
     "sha256": "7118141fcde4f49e720df08195148a7ecc4375799b76575db84ff65ac65feb67"
   },
   {
+    "file": "72_LHTB_TASK_ROOT_WIRING.md",
+    "bytes": 4503,
+    "sha256": "8ae6d2ffe4164c83cafcf0711aeceafdcaa66e9b8f2250fb68cff9a046192aba"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -381,8 +386,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9519,
-    "sha256": "7a586e6902917e75b171587251b35315a43d68445eaf9a3e830e2df805e8bdd0"
+    "bytes": 9580,
+    "sha256": "718c87180c1d8cb0317f550ffca094400ef27ef83730c1fdcd0056c20499a450"
   },
   {
     "file": "README.zh.md",

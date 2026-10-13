@@ -159,6 +159,7 @@ These records document real-host defects and browser/deployment integration. The
 - [69_RECALL_REACHABILITY.md](69_RECALL_REACHABILITY.md)
 - [70_TASK_ROOT_RESIDENCY.md](70_TASK_ROOT_RESIDENCY.md)
 - [71_PROTECTED_ROOT_TRANSACTION.md](71_PROTECTED_ROOT_TRANSACTION.md)
+- [72_LHTB_TASK_ROOT_WIRING.md](72_LHTB_TASK_ROOT_WIRING.md)
 
 ## How to read old conclusions
 
