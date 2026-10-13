@@ -1195,8 +1195,20 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
         calls.push({ id: chunk.block.id, name: chunk.block.name, args: chunk.block.arguments })
       }
       if (chunk.type === 'finish') {
+        // ## Why the recorded failure is not truncated to a glance
+        //
+        // This was `.slice(0, 160)`, and that cut cost a whole wave its diagnosis. The
+        // adapter already keeps 300 characters of the provider's RESPONSE BODY
+        // (`openai-adapter.ts:466`), which is where an `invalid_request_error` names the
+        // offending field -- and 160 landed mid-word at
+        // `Upstream request failed: [invalid_reques`, so a run that failed 50-73% of its
+        // calls recorded only that SOMETHING was rejected, never WHAT.
+        //
+        // The bound is now generous rather than tight. A failure message is written once per
+        // failed call and is the only evidence a post-mortem has; a transcript that is a few
+        // KB larger is a rounding error next to re-running a multi-hour wave blind.
         finishReason = chunk.reason.kind === 'error'
-          ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 160)}`
+          ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 2_000)}`
           : chunk.reason.kind
       }
     }

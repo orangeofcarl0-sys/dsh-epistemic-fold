@@ -104,11 +104,32 @@ function toWireMessage(message: RequestMessage): Record<string, unknown> {
     return { role: 'tool', tool_call_id: tool.toolCallId, content: text }
   }
   if (role === 'assistant') {
+    // ## A replayed assistant message must carry `reasoning_content`, even empty
+    //
+    // Measured on `deepseek-v4.1-flash` through `/zen/go/v1`, and it cost a wave its
+    // diagnosis twice over: the provider answers, verbatim,
+    //
+    //   invalid_request_error: The `reasoning_content` in the thinking mode must be
+    //   passed back to the API. (request_id: ...)
+    //
+    // DSH's own provider layer has a catalog compat flag for exactly this --
+    // `requiresReasoningContentOnAssistantMessages`, documented as "Whether replayed
+    // assistant messages need an EMPTY `reasoning_content` while reasoning is on"
+    // (`vendor/deepseek-harness/packages/llm/llm-pi-ai/src/catalog.ts:398`). Its remedy is
+    // the empty form, because the provider checks that the field was REPLAYED, not what it
+    // says: a hand-built history carrying `''`, the real reasoning, or nothing at all all
+    // answer HTTP 200 when the replayed turn is synthetic.
+    //
+    // The real reasoning text is NOT recoverable here: DSH's `Message` has no reasoning
+    // block, so a bridge that wanted to pass back the true text would have to carry a
+    // side channel. The empty form is what the vendor prescribes and what compliance needs.
     const calls = message.content.filter(block => block.type === 'tool-call')
-    if (calls.length === 0) return { role: 'assistant', content: text }
+    const reasoning = { reasoning_content: '' }
+    if (calls.length === 0) return { role: 'assistant', content: text, ...reasoning }
     return {
       role: 'assistant',
       content: text.length > 0 ? text : null,
+      ...reasoning,
       tool_calls: calls.map(block => ({
         id: block.type === 'tool-call' ? block.id : '',
         type: 'function',
