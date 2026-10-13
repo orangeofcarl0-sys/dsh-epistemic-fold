@@ -30,6 +30,9 @@ export interface LeafSpan {
  * @param retainTokens - minimum recent-tail budget kept verbatim.
  * @param frontierIdx - frontier position from {@link locateFoldFrontier};
  * callers may pass `-1` to fall back to re-location (tests, direct calls).
+ * @param protectedPositions - surface positions a fold must never include. The engine
+ * passes the resident active task root here; the default is empty, so every pre-existing
+ * caller gets the behaviour it had before task roots existed.
  * @returns the span to fold, or `null` when nothing beyond the frontier is safely foldable.
  */
 export function selectLeafSpan(
@@ -37,6 +40,7 @@ export function selectLeafSpan(
   measurement: TokenMeasurement,
   retainTokens: number,
   frontierIdx?: number,
+  protectedPositions: readonly number[] = [],
 ): LeafSpan | null {
   const pricedNodes = measurement.nodes
   const nodes = session.surface.nodes
@@ -49,7 +53,11 @@ export function selectLeafSpan(
   const frontier = frontierIdx ?? locateFoldFrontier(session).firstOpenPosition - 1
   const systemHeadAtZero = nodes.length > 0
     && session.deriveEventMessage(session.eventAt(nodes[0]!)!)?.role === 'system'
-  const firstIdx = Math.max(frontier + 1, systemHeadAtZero ? 1 : 0)
+  let firstIdx = Math.max(frontier + 1, systemHeadAtZero ? 1 : 0)
+  // The active task root is never inside a leaf span, exactly as the system head never is.
+  // SKIPPING it is what keeps it resident: the original user event is left where it is and
+  // nothing is copied, restated, or synthesised to replace it.
+  while (protectedPositions.includes(firstIdx)) firstIdx += 1
   if (firstIdx >= pricedNodes.length) return null
 
   // Retain the verbatim tail, then walk the boundary left to the nearest

@@ -157,6 +157,7 @@ These records document real-host defects and browser/deployment integration. The
 - [67_SUBAGENT_RECALL.md](67_SUBAGENT_RECALL.md)
 - [68_STRUCTURAL_AUDIT_AND_PLAN.md](68_STRUCTURAL_AUDIT_AND_PLAN.md)
 - [69_RECALL_REACHABILITY.md](69_RECALL_REACHABILITY.md)
+- [70_TASK_ROOT_RESIDENCY.md](70_TASK_ROOT_RESIDENCY.md)
 
 ## How to read old conclusions
 

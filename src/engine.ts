@@ -24,11 +24,12 @@
 // exactly — which a subclass of the host engine cannot do, because virtual
 // dispatch re-enters EF's own overrides. See src/basic/ and THIRD_PARTY_NOTICES.md.
 import BasicCompactionEngine from './basic/index.ts'
+import { toolPairingBalancedBefore } from '@deepseek-ai/dsh-compaction'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
-import type { Session } from '@deepseek-ai/dsh-session'
+import type { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import { assertNever } from '@deepseek-ai/dsh-util-values'
 import { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
@@ -42,6 +43,8 @@ import { FileBundleStore } from './bundle-store.ts'
 import { selectCompactableRange } from './basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
+import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
+import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
 import { assertDshCompatibility } from './compat.ts'
 import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
 import type { FramingMode } from './framing.ts'
@@ -195,6 +198,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   }
 
   private readonly candidates = new FoldCandidateRegistry()
+  /**
+   * Host-declared active task roots, one per session.
+   *
+   * EMPTY unless a host registered one: this engine never guesses an objective from the
+   * conversation, so a session with no explicit declaration behaves exactly as it did before
+   * this field existed.
+   */
+  private readonly taskRoots = new ActiveTaskRootRegistry()
   private readonly bundles: FoldBundleStore
   /**
    * Outstanding rebase requests, keyed per agent (R3-0b). R2-C only
@@ -629,6 +640,114 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * is prepared first so the summarize hook knows the fold identity, and
    * cleared in a `finally` so cancellation or failure never leaks the slot.
    */
+  /**
+   * Declare the ACTIVE TASK ROOT for a session: the user event whose content is the current
+   * task contract, and which every fold EF controls must leave model-visible.
+   *
+   * ## Why the host must say so, and why nothing here guesses
+   *
+   * There is no trustworthy way to read an objective off a conversation. The first user message
+   * is not it (a session can open with a preamble), and a later message is not it (a revision is
+   * not a new task). So a root exists only because a host called this, and its content is the
+   * named event's own bytes.
+   *
+   * ## What is guaranteed, and what is not
+   *
+   * LEAF and EMERGENCY folds never include a resident root: EF selects both spans, so the
+   * original user event stays exactly where it was, with its own authority and no copy made.
+   *
+   * A ROOT fold is NOT covered. `compactNow` delegates to the vendored Basic implementation,
+   * which selects its own range and calls `compactSurfaceRegion` directly rather than
+   * `this.compactRegion`, so EF has no interception point. See docs/70.
+   *
+   * @param ref - the declaration, or the same one again (idempotent), or a NEW one to replace.
+   * @returns what the registry did, and the ref now in effect.
+   */
+  registerActiveTaskRoot(ref: ActiveTaskRootRef): TaskRootRegistration {
+    return this.taskRoots.register(ref)
+  }
+
+  /**
+   * Stop protecting a session's root. Called by a host that has no current task, and at teardown.
+   *
+   * @returns whether a root was actually removed.
+   */
+  clearActiveTaskRoot(sessionId: SessionId): boolean {
+    return this.taskRoots.clear(sessionId)
+  }
+
+  /**
+   * Why a registered root is or is not currently protected.
+   *
+   * Exposed so a caller can tell "this session has no task root" from "this session HAS one and
+   * it is no longer on the surface". The second is a lost contract, and the two must not read
+   * the same in a report.
+   */
+  taskRootStatus(session: Session):
+    | { readonly status: 'unregistered' }
+    | { readonly status: 'resident'; readonly position: number }
+    | { readonly status: 'absent'; readonly reason: string } {
+    const ref = this.taskRoots.get(session.id)
+    if (ref === undefined) return { status: 'unregistered' }
+    const position = protectedTaskRootPosition(session, ref)
+    if (position !== undefined) return { status: 'resident', position }
+    const event = session.eventAt(ref.sourceSeq)
+    const message = event === undefined ? null : session.deriveEventMessage(event)
+    return {
+      status: 'absent',
+      reason: message === null
+        ? 'source-not-on-surface'
+        : message.role !== 'user'
+          ? 'not-a-user-message'
+          : taskRootDigest(message) !== ref.sourceDigest ? 'digest-mismatch' : 'source-not-on-surface',
+    }
+  }
+
+  /**
+   * The surface positions no EF-selected fold may include: a resident active task root.
+   *
+   * Empty for a session with no registration, so the default path is unchanged; and empty for a
+   * registered root that is no longer on the surface, which `taskRootStatus` reports rather than
+   * this method throwing.
+   */
+  private protectedPositions(session: Session): readonly number[] {
+    const position = protectedTaskRootPosition(session, this.taskRoots.get(session.id))
+    return position === undefined ? [] : [position]
+  }
+
+  /**
+   * Re-anchor a Basic-selected range so it cannot swallow a resident task root.
+   *
+   * The emergency rebase calls Basic's `selectCompactableRange` from EF's own code, so this is
+   * the one place a Basic-selected span can be adjusted without touching Basic. The start moves
+   * RIGHT past the guard and then on to the nearest balanced edge, because a span that begins on
+   * a tool result whose call it excludes is the pairing violation the selectors exist to avoid.
+   *
+   * @returns the adjusted range, the original when nothing was in the way, or `null` when no
+   *   balanced start remains inside the range.
+   */
+  private avoidTaskRoot(
+    session: Session,
+    range: { start: SessionSeq; end: SessionSeq } | null,
+  ): { start: SessionSeq; end: SessionSeq } | null {
+    if (range === null) return null
+    const protectedPositions = this.protectedPositions(session)
+    if (protectedPositions.length === 0) return range
+    const nodes = session.surface.nodes
+    const startIdx = nodes.indexOf(range.start)
+    const endIdx = nodes.indexOf(range.end)
+    if (startIdx < 0 || endIdx < 0) return range
+    const guard = Math.max(
+      ...protectedPositions.filter(position => position >= startIdx && position <= endIdx),
+      -1,
+    )
+    if (guard < 0) return range
+    let next = guard + 1
+    while (next <= endIdx && !toolPairingBalancedBefore(session, nodes[next]!)) next += 1
+    if (next > endIdx) return null
+    return { start: nodes[next]!, end: range.end }
+  }
+
   override async compactRegion(
     start: SessionSeq,
     end: SessionSeq,
@@ -885,7 +1004,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // one committed fold and a reader could not tell how much work was done.
     let committed = 0
     for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
-      const span = selectLeafSpan(agent.session, measurement, spec.retainTokens)
+      const span = selectLeafSpan(
+        agent.session, measurement, spec.retainTokens, undefined, this.protectedPositions(agent.session),
+      )
       if (span === null) {
         if (result === null) return null
         break
@@ -1083,7 +1204,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // tail appends another checkpoint to that prefix and the retry overflows
     // again — the loop this path exists to break.
     if (capacity !== 'frozen-bound') {
-      const span = selectLeafSpan(agent.session, measurement, 0)
+      const span = selectLeafSpan(agent.session, measurement, 0, undefined, this.protectedPositions(agent.session))
       if (span !== null) {
         const result = await this.compactRegion(span.start, span.end, agent, signal)
         const after = meter.measure(agent.session)
@@ -1146,7 +1267,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // `retain 0`: recovery first. The whole point of an emergency rebase is to
     // shrink the surface below the provider's limit, so keeping a verbatim tail
     // works against the only objective this transaction has.
-    const range = selectCompactableRange(agent.session, measurement, 0)
+    const range = this.avoidTaskRoot(agent.session, selectCompactableRange(agent.session, measurement, 0))
     if (range === null) return null
     const candidate = createFoldCandidate({ mode: 'emergency', session: agent.session })
     this.candidates.prepare(agent.session, candidate)

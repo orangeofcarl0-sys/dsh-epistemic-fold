@@ -350,6 +350,11 @@
     "sha256": "525c942d8cdc478d34bcaf41f07978bcc5050ab0c348c46003a8caf5f4c2e90e"
   },
   {
+    "file": "70_TASK_ROOT_RESIDENCY.md",
+    "bytes": 7681,
+    "sha256": "4510388da00b9e3088726009d8a2700b3771b85062fca1edbedc5122bca959e7"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -371,8 +376,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 9391,
-    "sha256": "6cef74d784da15975e5c0c9dabdf8fccc543501b2f4496d404be20efe002e92a"
+    "bytes": 9448,
+    "sha256": "759e0acadca4d4672aba23303eab7cb14fd25cc0efdb8895f8370ffb8831ff23"
   },
   {
     "file": "README.zh.md",
