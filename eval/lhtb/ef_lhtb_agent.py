@@ -267,6 +267,8 @@ class EFLhtbAgent(BaseAgent):
         super().__init__(logs_dir=logs_dir, model_name=model_name, **kwargs)
         self.arm = arm or os.environ.get("EF_LHTB_ARM", "basic")
         self._bridge: Optional[EpistemicFoldBridge] = None
+        # What the host's task-root declaration produced; see the flagged append in `run`.
+        self.task_root_telemetry: Optional[dict[str, Any]] = None
         self._transcript: list[dict[str, Any]] = []
         # Tool-command wall clock: the other half of the bridge's `timing` block.
         #
@@ -361,7 +363,23 @@ class EFLhtbAgent(BaseAgent):
         # and it matters mechanically: the fold frontier and the token meter both
         # read the message surface, so an instruction that lived only in the
         # system prompt would leave the first request with no messages at all.
-        self._bridge.append({"role": "user", "content": instruction})
+        #
+        # ## Why this append is FLAGGED, and what the flag does
+        #
+        # The host is the only party that knows which message is the episode's task
+        # instruction, so it declares that here. The bridge never infers it: "the first user
+        # message" is a heuristic, and protection resting on it would protect whatever a
+        # fixture happened to send first.
+        #
+        # Whether the declaration has any effect is the ARM's `taskRootMode`, decided in the
+        # host: `off` (the default, and always the value for `basic`) registers nothing and the
+        # reply reports `unregistered`. Registration happens inside the append, BEFORE any model
+        # call, so the first request already runs under whatever protection the arm asked for.
+        appended = self._bridge.append({"role": "user", "content": instruction}, task_root=True)
+        # Recorded rather than assumed: this is the only place the run's own trace shows what
+        # the engine did with the declaration, and `resident` is the engine's answer after it
+        # re-derived the event and re-checked the digest -- not the host's hope.
+        self.task_root_telemetry = (appended.get("telemetry") or {}).get("taskRoot")
 
         total_calls = 0
         empty_streak = 0
@@ -716,6 +734,8 @@ class EFLhtbAgent(BaseAgent):
                 "shell_calls": total_calls,
                 "termination": termination,
                 "provider_failures": provider_failures,
+                # A status and identifiers, never the instruction itself.
+                "task_root": self.task_root_telemetry,
                 "telemetry": telemetry,
                 # The agent's own half of the wall-clock decomposition. Read against the
                 # bridge's `telemetry.timing`: `gapMsTotal` minus `toolTiming.totalMs` is the

@@ -47,13 +47,24 @@ EF_ROOT = Path(os.environ.get("EF_ROOT", str(Path(__file__).resolve().parents[2]
 
 ARM_ENV = "EF_LHTB_ARM"
 
+# Whether this episode's task instruction is registered as an ACTIVE TASK ROOT.
+#
+# `off` is the default and preserves the previous behaviour exactly. `exact` makes the host
+# declare the instruction explicitly (the append carrying it is flagged), and the engine then
+# keeps that USER event out of every fold EF selects.
+#
+# NOT derived from the arm name: enabling protection is a decision about the EXPERIMENT, not a
+# property of a tier, and inferring it would change what an existing arm measures without
+# anyone choosing it. The `basic` baseline forces this off in the host as well.
+TASK_ROOT_ENV = "EF_LHTB_TASK_ROOT_MODE"
+
 # The arms under test. `basic` mounts the real DSH Basic engine; the tiers mount
 # EF with that preset's policy.
 ARM_SPECS: dict[str, dict[str, str]] = {
-    "basic": {"label": "basic", "engine": "basic", "mode": "legacy"},
-    "economy": {"label": "economy", "engine": "ef", "mode": "economy"},
-    "balanced": {"label": "balanced", "engine": "ef", "mode": "balanced"},
-    "quality": {"label": "quality", "engine": "ef", "mode": "quality"},
+    "basic": {"label": "basic", "engine": "basic", "mode": "legacy", "taskRootMode": "off"},
+    "economy": {"label": "economy", "engine": "ef", "mode": "economy", "taskRootMode": "off"},
+    "balanced": {"label": "balanced", "engine": "ef", "mode": "balanced", "taskRootMode": "off"},
+    "quality": {"label": "quality", "engine": "ef", "mode": "quality", "taskRootMode": "off"},
 }
 
 
@@ -75,7 +86,15 @@ class EpistemicFoldBridge:
         if spec is None:
             raise BridgeError(f"unknown arm {arm!r}; expected one of {sorted(ARM_SPECS)}")
         self.arm = arm
-        self.spec = spec
+        # The env knob is applied HERE rather than in ARM_SPECS so the arm table keeps stating
+        # what each tier IS, and the mode stays an experiment-level choice a run makes.
+        mode = os.environ.get(TASK_ROOT_ENV, "off").strip().lower()
+        if mode not in {"off", "exact"} and not mode.isdigit():
+            # `1`/`2`/`3` are accepted as aliases by the driver; anything else is a typo and must
+            # not silently leave protection off while a report claims it was on.
+            raise BridgeError(f"unknown {TASK_ROOT_ENV} {mode!r}; expected 'off' or 'exact'")
+        self.task_root_mode = "exact" if mode != "off" else "off"
+        self.spec = {**spec, "taskRootMode": self.task_root_mode}
         self.domain = domain
         self.task_id = task_id
         self.telemetry: list[dict[str, Any]] = []
@@ -225,7 +244,7 @@ class EpistemicFoldBridge:
         response = self._send({"op": "turn", "message": message})
         return response["assistant"]
 
-    def append(self, message: dict[str, Any]) -> dict[str, Any]:
+    def append(self, message: dict[str, Any], task_root: bool = False) -> dict[str, Any]:
         """
         Add a message to the history WITHOUT calling the model.
 
@@ -240,9 +259,20 @@ class EpistemicFoldBridge:
         the fold lineage, which records shadowed SEQS, to the facts it appended. Without the seqs
         that join has no source, and the exposure covariate of docs/62 section 7 is unreachable.
 
+        ## Why \`task_root\` is a FLAG and not an inference
+
+        The host is the only party that knows which message is the episode's task instruction,
+        so it says so. The bridge never guesses: "the first user message" is a heuristic, and
+        protection that rested on it would protect whatever a fixture happened to send first.
+        Whether the flag does anything is the ARM's \`taskRootMode\`, decided in the host.
+
+        @param task_root - mark THIS append as the declared active task root.
         @returns the host's reply, including \`seqs\`.
         """
-        return self._send({"op": "append", "message": message})
+        request: dict[str, Any] = {"op": "append", "message": message}
+        if task_root:
+            request["taskRoot"] = True
+        return self._send(request)
 
     def step(self, max_tokens: Optional[int] = None) -> dict[str, Any]:
         """

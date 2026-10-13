@@ -49,7 +49,7 @@ import {
   ToolCallId,
 } from '@deepseek-ai/dsh-llm'
 import type { Message } from '@deepseek-ai/dsh-llm'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
+import { Session, SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 // `SystemPrompt` and `ToolRuntime` are mounted by the shared helper
 // (`eval/src/runtime-mount.ts`); only the ToolRuntime TYPE is needed here.
 import type { ToolRuntime } from '@deepseek-ai/dsh-tools'
@@ -65,6 +65,7 @@ import type { ToolRuntime } from '@deepseek-ai/dsh-tools'
 import { EpistemicFoldEngine } from '../../src/engine.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/preset.ts'
+import { taskRootDigest } from '../../src/task-root.ts'
 import type { FoldModeName } from '../../src/preset.ts'
 import { resetSummaryRetryStats, summaryRetryStats } from '../../src/summary-retry.ts'
 import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagent-recall.ts'
@@ -197,6 +198,18 @@ interface ArmSpec {
   readonly label: string
   readonly engine: 'basic' | 'ef'
   readonly mode: FoldModeName
+  /**
+   * Whether the host registers this episode's task instruction as an ACTIVE TASK ROOT.
+   *
+   * `off` is the default and preserves the old behaviour exactly. `exact` means the host
+   * declares the instruction explicitly (see `registerTaskRootFromAppend`).
+   *
+   * NOT derived from `mode`: enabling protection is a decision about the EXPERIMENT, not a
+   * property of a tier, and inferring it from the arm name would change what an existing
+   * arm measures without anyone choosing it. `engine: 'basic'` is forced to `off` for the
+   * same reason -- the baseline must stay the baseline.
+   */
+  readonly taskRootMode?: 'off' | 'exact'
 }
 
 /** A tau2 message, reduced to what the bridge needs. */
@@ -294,6 +307,28 @@ interface Telemetry {
    * already learned when it tried substring-matching the JSON for one.
    */
   readonly foldLineage: readonly FoldEvent[]
+  /**
+   * The task-root residency state for this episode.
+   *
+   * A status and three identifiers, NEVER the instruction: this block is archived with the
+   * transcript and a full instruction in telemetry would put benchmark content into every
+   * cell's record. `surfacePosition` is enough to check the contract was honoured, and the
+   * content can be read from the session itself.
+   */
+  readonly taskRoot: {
+    /** The host's declared mode for this arm. */
+    readonly mode: 'off' | 'exact'
+    /** `unregistered` when the mode is off, or the engine's own status once registered. */
+    readonly status: 'unregistered' | 'registered' | 'resident' | 'absent'
+    /** The session seq of the declared instruction, when one was declared. */
+    readonly sourceSeq?: number
+    /** Whether the engine re-derived the event and matched the host's digest. */
+    readonly digestVerified: boolean
+    /** The surface position the engine reports as protected, when resident. */
+    readonly surfacePosition?: number
+    /** Why registration did not happen, or why the root is absent. */
+    readonly reason?: string
+  } | undefined
   /**
    * The window and budgets the folds were actually priced against, read off the
    * engine that priced them.
@@ -537,6 +572,10 @@ let turnOpen = false
 let folds = 0
 /** Every fold this episode, in order. See `Telemetry.foldLineage`. */
 let foldLineage: FoldEvent[] = []
+/** The arm for the running episode, so later ops can read its host-facing switches. */
+let arm: ArmSpec | undefined
+/** What the host declared about the task root, and what the engine did with it. */
+let taskRootState: Telemetry['taskRoot'] = undefined
 /**
  * Whether the automatic fold runs before a model call.
  *
@@ -1395,6 +1434,11 @@ async function init(request: {
   turnOpen = false
   folds = 0
   foldLineage = []
+  arm = request.arm
+  // Reset per episode. The state is a module-level binding because the ops are dispatched from
+  // one readline loop, and a value left over from a previous episode would report that episode's
+  // task root as this one's.
+  taskRootState = undefined
   compactionEnabled = true
   roots = 0
   emergencies = 0
@@ -1644,6 +1688,64 @@ async function init(request: {
   })
 }
 
+/**
+ * Register the host's declared task instruction as an ACTIVE TASK ROOT.
+ *
+ * ## Why the host has to say WHICH message
+ *
+ * Nothing here infers the task from the conversation. The host flags the append that carries
+ * the instruction (`taskRoot: true`), because it is the only party that knows -- the first
+ * user message is a guess, and a benchmark whose protection depended on that guess would be
+ * protecting whatever the fixture happened to send first.
+ *
+ * ## What is refused rather than approximated
+ *
+ * * `taskRootMode: 'off'` (the default) -- nothing is registered and nothing changes.
+ * * `engine: 'basic'` -- forced off. The baseline stays the baseline.
+ * * an append that created more or fewer than ONE surface node -- a task root is one event;
+ *   declaring a batch is a host bug and is reported as one.
+ *
+ * The content is never copied, re-worded or re-roled: the engine protects the USER event at
+ * that seq, and the digest it verifies is over that event's own message.
+ *
+ * @param seqs - the surface seqs the flagged append created.
+ */
+async function registerTaskRootFromAppend(seqs: readonly number[]): Promise<void> {
+  const mode = arm?.engine === 'basic' ? 'off' : arm?.taskRootMode ?? 'off'
+  if (mode !== 'exact') {
+    taskRootState = { mode: 'off', status: 'unregistered', digestVerified: false,
+      ...(arm?.engine === 'basic' && arm.taskRootMode === 'exact'
+        ? { reason: 'basic-arm-never-protects' }
+        : {}) }
+    return
+  }
+  if (seqs.length !== 1) {
+    taskRootState = { mode, status: 'absent', digestVerified: false,
+      reason: `append-created-${seqs.length}-nodes` }
+    return
+  }
+  const sourceSeq = seqs[0]!
+  const event = session!.eventAt(SessionSeq(sourceSeq))
+  const message = event === undefined ? null : session!.deriveEventMessage(event)
+  if (message === null) {
+    taskRootState = { mode, status: 'absent', sourceSeq, digestVerified: false, reason: 'no-message' }
+    return
+  }
+  const sourceDigest = taskRootDigest(message)
+  const outcome = engine!.registerActiveTaskRoot({
+    sessionId: session!.id,
+    sourceSeq: SessionSeq(sourceSeq),
+    sourceDigest,
+    generation: 0,
+  })
+  // Verified by RE-DERIVING it, not by trusting the registration: `taskRootStatus` resolves the
+  // event again, checks the role and re-computes the digest against what was registered.
+  const status = engine!.taskRootStatus(session!)
+  taskRootState = status.status === 'resident'
+    ? { mode, status: 'resident', sourceSeq, digestVerified: true, surfacePosition: status.position }
+    : { mode, status: 'absent', sourceSeq, digestVerified: false, reason: status.status === 'absent' ? status.reason : outcome.status }
+}
+
 /** Collect the telemetry block for one response. */
 async function telemetry(): Promise<Telemetry> {
   // `null` means the store could not be read. It must not collapse to 0: "the
@@ -1682,6 +1784,7 @@ async function telemetry(): Promise<Telemetry> {
     roots,
     emergencies,
     foldLineage,
+    taskRoot: taskRootState,
     compactBudget,
     derivedAnswersRetired: engine!.derivedAnswersRetired,
     subagentRecall: { ...subagentRecallStats },
@@ -1763,6 +1866,13 @@ async function main(): Promise<void> {
           // The seqs the append created, so a caller can build a fact -> seq map and join it to
           // the fold lineage. Without them `exposure` -- section 7's covariate -- is unreachable.
           const appendedSeqs = appendIncoming(request.message as TauMessage)
+          // The host flagged THIS append as the episode's task instruction. Registration
+          // happens here -- after the event exists, so its seq and digest are real, and
+          // BEFORE any model call, so the very first request already runs under the
+          // protection the arm was configured to provide.
+          if ((request as { taskRoot?: boolean }).taskRoot === true) {
+            await registerTaskRootFromAppend(appendedSeqs)
+          }
             // ## Publish the surface size, because this operation does NOT call the model
             //
             // promptTokensLast was set ONLY inside the model-call path, so an append-only bridge
@@ -1841,6 +1951,63 @@ async function main(): Promise<void> {
             + (after.roots - before.roots)
             + (after.emergencies - before.emergencies)
           emit({ ok: true, committed, telemetry: await telemetry() })
+        } else if (op === 'rootCompact') {
+          // FORCE one ROOT fold, so a harness can exercise that path on demand.
+          //
+          // ## Why the turn is closed and reopened around it
+          //
+          // `compactNow` is the MANUAL command path: its contract is an idle session, and it
+          // throws `busy` while a turn is open (region.ts:205-207). The turn here is the
+          // harness's own bookkeeping for the tau2 exchange, not the session's, so closing it
+          // for the duration of a manual command is the accurate thing to do rather than
+          // weakening the check.
+          //
+          // The result is reported rather than assumed, for the same reason `compact` does: a
+          // root that DECLINES -- no safe range, or a registered task root the span cannot
+          // exclude -- must not be counted as depth by the caller.
+          const before = foldCounters(engine!)
+          closeTurn()
+          let refusal: string | undefined
+          try {
+            const deadline = new AbortController()
+            const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
+            try {
+              await engine!.compactNow({
+                session: session!,
+                options: { provider: LIVE_PROVIDER, model: 'live' },
+                runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> => task(deadline.signal),
+              } as never, deadline.signal)
+            } finally {
+              if (timer !== undefined) clearTimeout(timer)
+            }
+          } catch (error) {
+            // A refusal is a RESULT here, not a crash: the op exists to drive a fold and report
+            // what happened, and `busy`/`summary` from the transaction are outcomes a caller
+            // compares.
+            // The CAUSE too. The manual path wraps whatever went wrong in a `busy`
+            // ManualCompactionError (Basic does the same), so the outer message says only
+            // "requires an idle agent" for every failure mode there is.
+            const chain: string[] = []
+            let node: unknown = error
+            while (node instanceof Error && chain.length < 4) {
+              chain.push(node.message)
+              node = node.cause
+            }
+            refusal = chain.length === 0 ? String(error) : chain.join(' | caused by: ')
+          } finally {
+            openTurn()
+          }
+          const after = foldCounters(engine!)
+          const committed = (after.leaves - before.leaves)
+            + (after.roots - before.roots)
+            + (after.emergencies - before.emergencies)
+          emit({
+            ok: true,
+            committed,
+            ...(refusal === undefined ? {} : { refusal }),
+            ...(engine!.lastRootRefusal === undefined ? {} : { rootRefusal: engine!.lastRootRefusal }),
+            telemetry: await telemetry(),
+          })
         } else if (op === 'close') {
           closeTurn()
           emit({ ok: true, telemetry: await telemetry() })
