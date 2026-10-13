@@ -184,6 +184,27 @@ export interface CheckpointDescriptor {
 /** Characters of a message that a descriptor line carries. */
 export const INVENTORY_EXCERPT_CHARS = 80
 
+/**
+ * The key that marks a retrieval answer as DERIVED.
+ *
+ * A substring test on the rendered message is deliberately the detection mechanism: the
+ * answer is archived as the JSON a tool returned, so the mark has to survive that
+ * round-trip, and re-parsing every archived message to find it would cost more than the
+ * descriptor it feeds. It is a distinctive key rather than a prose sentence because the
+ * caller may paraphrase or quote the prose away.
+ */
+export const DERIVED_SENTINEL = 'efDerived'
+
+/**
+ * Whether a rendered message is a retrieval answer rather than raw history.
+ *
+ * Used by the descriptor builder, so that a checkpoint which holds a FOLDED derived
+ * answer advertises that instead of presenting a paraphrase as if it were the record.
+ */
+export function isDerivedAnswer(text: string): boolean {
+  return text.includes(DERIVED_SENTINEL)
+}
+
 /** How many message lines a descriptor carries before it summarises the rest. */
 export const INVENTORY_LINES = 10
 
@@ -219,6 +240,12 @@ export function inventoryOf(messages: readonly Message[], lines = INVENTORY_LINE
     const body = texts.map(textOf).join(" ").trim()
     if (body.length === 0) {
       out.push(message.role + " (no text)")
+      continue
+    }
+    // A derived answer must never read as raw history. This is the label that survives
+    // the fold: if the answer was archived into the main tree, its descriptor says so.
+    if (isDerivedAnswer(body)) {
+      out.push("DERIVED ANSWER (retrieval subagent) - not raw history: " + clip(body))
       continue
     }
     out.push(message.role + ": " + clip(body))
@@ -298,6 +325,32 @@ export interface SubagentAnswer {
     /** True when the fetch budget stopped the subagent short of its plan. */
     readonly truncated: boolean
   }
+  /**
+   * PROVENANCE, and the reason it is a named field rather than implied.
+   *
+   * ## The risk this closes
+   *
+   * The answer lands on the caller surface as an ordinary `tool/result`, so the fold
+   * policy may archive it into the main tree like any other material — and
+   * `tool/result` is an AUTHORITATIVE kind (`src/anchor-service.ts:19-24`), so a later
+   * reader has no way to tell a derived answer from raw history. A paraphrase then
+   * becomes a source, which is exactly the laundering `src/authority.ts` refuses to
+   * let an anchor do.
+   *
+   * This field is the mark that makes the distinction recoverable AFTER the fold: it is
+   * in the archived bytes, it is cheap to detect (`DERIVED_SENTINEL`), and it names what
+   * the answer was derived FROM. The descriptor builder labels any message carrying it
+   * as `derived answer (retrieval subagent)`, so a checkpoint that holds a folded answer
+   * says so instead of presenting it as history.
+   */
+  readonly efDerived: {
+    readonly by: string
+    /** The checkpoints and queries the answer was derived from. */
+    readonly refs: readonly string[]
+    readonly reads: number
+    readonly fetchedChars: number
+    readonly truncated: boolean
+  }
 }
 
 /** The plan the subagent is asked to produce, and the deterministic fallback. */
@@ -320,6 +373,8 @@ const PLAN_INSTRUCTION = [
   "- Use \"queries\" when no descriptor obviously holds the answer, so the caller can search.",
   "- If the goal is absent, choose reads that would let you DESCRIBE what this archive",
   "  holds and what a reader might want next.",
+  "- Material labelled a DERIVED ANSWER is an earlier retrieval paraphrase, not history.",
+  "  Read the raw checkpoint it names instead of re-reading the paraphrase.",
 ].join("\n")
 
 const ANSWER_INSTRUCTION = [
@@ -336,6 +391,9 @@ const ANSWER_INSTRUCTION = [
   "- \"further\" is what else you saw that the goal did not ask for but the caller may",
   "  want next, as candidate questions. This is required even when the goal is met.",
   "- If the material does not answer the goal, say so in \"answer\" rather than guessing.",
+  "- Some material may be labelled a DERIVED ANSWER from an earlier retrieval. That is a",
+  "  paraphrase, not evidence: prefer the raw material it names, and if the only thing that",
+  "  answers the goal is derived, SAY SO in \"answer\" instead of restating it as fact.",
 ].join("\n")
 
 /**
@@ -628,6 +686,13 @@ export async function runSubagentRecall(options: SubagentRecallOptions): Promise
       fetchedChars: usedChars,
       planCalls: 1,
       answerCalls: 1,
+      truncated,
+    },
+    efDerived: {
+      by: 'retrieval-subagent',
+      refs: [...plan.fetches.map(f => f.ref), ...plan.queries.map(q => 'search:' + q)],
+      reads: fetched.length,
+      fetchedChars: usedChars,
       truncated,
     },
   }

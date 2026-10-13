@@ -27,10 +27,11 @@ import {
   SUBAGENT_MAX_FETCHES,
 } from "../src/subagent-recall.ts"
 import type { CheckpointDescriptor, SubagentMessage } from "../src/subagent-recall.ts"
+import { isDerivedAnswer } from "../src/subagent-recall.ts"
 import type { CheckpointBundleV1 } from "../src/types.ts"
 
 function textMessage(role: Message["role"], text: string): Message {
-  return { role, content: [{ type: "text", text }] } as Message
+  return { role, content: [{ type: "text", text }] } as unknown as Message
 }
 
 function bundleWith(messages: Message[], id = "cp:test"): CheckpointBundleV1 {
@@ -206,7 +207,7 @@ describe("the bounded loop", () => {
     const answer = await runSubagentRecall({
       goal: "what unit is disk_mb in?",
       descriptors: [DESC],
-      fetch: async request => ({ text: "disk_mb is decimal gb", chars: 22 }),
+      fetch: async () => ({ text: "disk_mb is decimal gb", chars: 22 }),
       search: async () => ({ text: "{\"hits\":[]}", chars: 12 }),
       complete: async messages => {
         seen.push([...messages])
@@ -333,5 +334,57 @@ describe("the bounded loop", () => {
     expect(subagentRecallStats.fetches).toBe(2)
     expect(subagentRecallStats.fetchedChars).toBe(5)
     expect(subagentRecallStats.answerChars).toBe("answer text".length)
+  })
+})
+describe("derived provenance, which is what stops a paraphrase becoming a source", () => {
+  it("marks every answer as derived and names what it was derived from", async () => {
+    // The answer lands on the caller surface as an ordinary `tool/result`, and
+    // `tool/result` is an AUTHORITATIVE kind. Without this mark the fold policy can archive
+    // a paraphrase into the main tree and a later reader cannot tell it from history.
+    let planCalls = 0
+    const answer = await runSubagentRecall({
+      goal: "g",
+      descriptors: [DESC],
+      fetch: async () => ({ text: "raw material", chars: 12 }),
+      search: async () => ({ text: "hits", chars: 4 }),
+      complete: async () => { planCalls += 1; return planCalls === 1
+        ? "{\"queries\":[\"q\"],\"fetches\":[{\"ref\":\"cp:a\"}]}"
+        : "{\"answer\":\"a paraphrase\"}" },
+    })
+    expect(answer.efDerived.by).toBe("retrieval-subagent")
+    expect(answer.efDerived.refs).toEqual(["cp:a", "search:q"])
+    expect(answer.efDerived.reads).toBe(2)
+    expect(answer.efDerived.fetchedChars).toBe(16)
+    expect(answer.efDerived.truncated).toBe(false)
+  })
+
+  it("survives the JSON round-trip the archive stores, so detection is a substring test", async () => {
+    const answer = await runSubagentRecall({
+      goal: "g",
+      descriptors: [DESC],
+      fetch: async () => ({ text: "x", chars: 1 }),
+      search: async () => ({ text: "", chars: 0 }),
+      complete: async () => "{\"answer\":\"short\"}",
+    })
+    // This is exactly what the tool returns, and therefore exactly what gets archived.
+    const rendered = JSON.stringify(answer, null, 2)
+    expect(isDerivedAnswer(rendered)).toBe(true)
+    expect(rendered).toContain("efDerived")
+  })
+
+  it("labels a derived answer in the descriptor instead of presenting it as history", () => {
+    const derived = textMessage("tool", JSON.stringify({ efDerived: { by: "retrieval-subagent" }, answer: "a paraphrase" }))
+    const inventory = inventoryOf([derived, textMessage("tool", "total 100 -rw-r--r-- engine.py")])
+    expect(inventory[0]).toContain("DERIVED ANSWER (retrieval subagent)")
+    expect(inventory[0]).toContain("not raw history")
+    // Raw material is still described by its role, so the two are distinguishable at a
+    // glance — which is the whole point of the label.
+    expect(inventory[1]).toContain("tool:")
+    expect(inventory[1]).not.toContain("DERIVED")
+  })
+
+  it("does not mistake ordinary text for a derived answer", () => {
+    expect(isDerivedAnswer("the archive says disk is decimal gb")).toBe(false)
+    expect(inventoryOf([textMessage("tool", "plain output")])[0]).not.toContain("DERIVED")
   })
 })

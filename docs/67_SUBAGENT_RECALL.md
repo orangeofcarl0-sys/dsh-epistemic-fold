@@ -129,7 +129,52 @@ it took — the same principle as docs/65 F2: publish the reading, do not recons
 * **It is not free.** Two model calls per run, and they are billed to the cell. On the economy
   arm that is a real regression on the axis that arm exists to measure.
 
-## 9. A label defect this could not avoid
+## 9. Provenance, and why the answer cannot simply be retired
+
+A subagent answer is a **derived** artifact: a paraphrase of raw material that the subagent can
+regenerate at any time. It reaches the caller as an ordinary `tool/result`, and that is a problem
+with two halves.
+
+**The half that is dangerous.** `tool/result` is an AUTHORITATIVE kind (`anchor-service.ts:19-24`),
+and the fold policy treats the answer like any other surface material — so it can be archived into
+the MAIN tree as if it were history. A later `context_search` then matches it, a later subagent
+fetches it, and answers FROM it: a paraphrase becomes a source. That is precisely the laundering
+`authority.ts` refuses to let an anchor do ("derived authority must terminate at raw authority
+roots"), and there was no equivalent guard for recall content.
+
+**The half that cannot be fixed as asked.** There is no primitive in this codebase that REMOVES a
+surface node except a fold. `ef/anchor` is not a surface node at all: `state.ts` reduces anchor
+events into hot state with a `lifecycle` and a `retiredCount`, so declaring and retiring an anchor
+records a lifecycle without taking the material off the surface. So "retire the returned content
+promptly" cannot be implemented as removal today; a `drop`/volatile-node capability, or a tool
+result the host does not retain, would be a host-level change.
+
+What is implemented instead, in the order it matters:
+
+1. **A provenance mark that survives the fold.** Every answer carries
+   `efDerived: { by, refs, reads, fetchedChars, truncated }`. It is in the archived bytes, so the
+   distinction is recoverable AFTER the fold, and it is a distinctive JSON key so detection is a
+   substring test rather than a re-parse of every archived message.
+2. **A label wherever derived material is re-exposed.** `inventoryOf` renders any message carrying
+   the mark as `DERIVED ANSWER (retrieval subagent) - not raw history: ...`, so a checkpoint
+   descriptor that holds a folded answer advertises it instead of presenting a paraphrase as the
+   record.
+3. **A rule in both subagent prompts.** Material labelled derived is not evidence: read the raw
+   checkpoint it names, and if the only thing that answers the goal is derived, say so rather than
+   restating it as fact.
+4. **A size bound that makes the fold unlikely in the first place.** The answer budget is 1,024
+   tokens — far below the fold threshold — so a permitted answer is a negligible fold candidate.
+   This is the closest thing to "retire it promptly" that exists: the material is small enough not
+   to matter, and it is marked so that mattering is recoverable.
+
+**The subagent contributes no EF state of its own**, which is the other half of the same worry: it
+makes two model calls and read-only fetches, appends nothing to the session, folds nothing, and
+writes no bundle. It cannot put its own checkpoints into the main tree, and it reads the main
+session store read-only through the same `recall`/`search` the caller uses.
+
+Open: whether answers should be one-at-a-time (a new answer supersedes the previous), and who
+decides to retire — the caller, the tool, or the fold that eventually swallows them all.
+## 10. A label defect this could not avoid
 
 `GenerateOptions.purpose` is a closed union, `"compaction" | "session-title"`, and there is no
 retrieval value. The subagent calls are therefore labelled `compaction`, which is a MISLABEL: a
@@ -141,16 +186,16 @@ The subagent deliberately does NOT replay the conversation prefix. A compaction 
 prefix so the provider warm cache still applies; a retrieval question is asked about the ARCHIVE,
 and shipping the live surface to it would spend the budget this feature exists to protect.
 
-## 10. Tests
+## 11. Tests
 
-`tests/subagent-recall.spec.ts`, 22 cases. The loop is pure logic over three injected callbacks —
+`tests/subagent-recall.spec.ts`, 26 cases. The loop is pure logic over three injected callbacks —
 a fetch, a search, one model call — so every branch that decides what the caller RECEIVES is
 reachable without a provider: the gate at its boundary, the descriptor for a readable and an
 unreadable archive, the plan parser on prose and on junk, the deterministic fallback, the fetch
 budget stopping short and SAYING so, the fetch cap, the survey path, and a model call that
 throws. What cannot be tested without a model is the PROMPTS, and those are asserted by shape.
 
-## 11. Open questions
+## 12. Open questions
 
 * Should the survey path be its own tool? Two entry points with one implementation is fine; one
   entry point with two modes is what exists, and the mode is inferred from whether a goal was
