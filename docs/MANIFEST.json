@@ -415,6 +415,11 @@
     "sha256": "a1c6c370a9b44f116a9e7da8b9eee59e0b6b76477fbb060d7c91810edfaa7a6f"
   },
   {
+    "file": "83_PER_DIMENSION_SETTLEMENT.md",
+    "bytes": 3005,
+    "sha256": "f7071d4ba572d65b829861b8fc7ad0bece6d1d59021323da3d48a533f9f4b568"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -436,8 +441,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10192,
-    "sha256": "87dcbaf81f86405378083b5e69bf1a371f422f77cd62b877a78d21e6670c6d16"
+    "bytes": 10259,
+    "sha256": "246b4e79e1b099bda95c43d0b775624f13565ad5f4dd7f23e4112a0371f15791"
   },
   {
     "file": "README.zh.md",
