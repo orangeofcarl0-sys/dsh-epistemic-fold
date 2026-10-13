@@ -22,6 +22,7 @@
  */
 
 import { LlmAdapter } from '@deepseek-ai/dsh-llm'
+import { BudgetExhaustedError, type RequestBudget } from './request-budget.ts'
 import type {
   ContentBlock,
   FinishReason,
@@ -228,6 +229,14 @@ export interface LiveAdapterOptions {
   readonly headers?: Readonly<Record<string, string>>
   /** Injected for tests; defaults to global fetch. */
   readonly fetchImpl?: typeof fetch
+  /**
+   * The episode's hard pre-request budget, when the experiment sets one.
+   *
+   * It lives HERE because this is the only place every provider request passes: the main model
+   * call, the fold's summarization, and the 429 retries inside `requestWithRetry`. A gate
+   * anywhere else is bypassable by construction.
+   */
+  readonly budget?: RequestBudget
 }
 
 /**
@@ -245,6 +254,7 @@ export class OpenAiCompatibleAdapter
   private readonly contextWindow: number
   private readonly headers: Readonly<Record<string, string>>
   private readonly fetchImpl: typeof fetch
+  private readonly budget: RequestBudget | undefined
   /** Rate-limit retries performed, and rate limits given up on. See the getter. */
   private rateLimitRetries = 0
   private rateLimitExhausted = 0
@@ -257,6 +267,7 @@ export class OpenAiCompatibleAdapter
     this.contextWindow = options.contextWindow ?? 131_072
     this.headers = options.headers ?? {}
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch
+    this.budget = options.budget
   }
 
   override resolveModel(provider: string, model: string): Promise<LlmResolvedModelInfo> {
@@ -313,6 +324,9 @@ export class OpenAiCompatibleAdapter
       const requestSignal = signal === undefined
         ? requestDeadline
         : AbortSignal.any([signal, requestDeadline])
+      // BEFORE the request, not after: a budget checked afterwards can only report the
+      // overspend. `admit` counts the ATTEMPT, including a 429 retry's.
+      this.budget?.admit()
       const response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -477,9 +491,18 @@ export class OpenAiCompatibleAdapter
       response = await this.requestWithRetry(body, options.signal)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
+      // A budget refusal is NOT a transport failure. Tagging it apart is what lets the bridge
+      // keep it out of `providerFailures` and the agent terminate with its own reason.
+      const budget = error instanceof BudgetExhaustedError
       yield {
         type: 'finish',
-        reason: { kind: 'error', failure: { message: redactSecret(message, this.apiKey), code: 'LIVE_TRANSPORT' } },
+        reason: {
+          kind: 'error',
+          failure: {
+            message: redactSecret(message, this.apiKey),
+            code: budget ? 'BUDGET_EXHAUSTED' : 'LIVE_TRANSPORT',
+          },
+        },
       }
       return
     }
@@ -521,6 +544,8 @@ export class OpenAiCompatibleAdapter
     }
 
     const usage = mapUsage(payload.usage)
+    // A response with NO usage leaves the totals alone rather than reading as zero spend.
+    this.budget?.record(usage)
     if (usage !== undefined) yield { type: 'usage', usage }
     yield { type: 'finish', reason: mapFinish(choice?.finish_reason, sawToolCall) }
   }

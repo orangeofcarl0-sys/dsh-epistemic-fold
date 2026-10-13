@@ -534,6 +534,19 @@ class EFLhtbAgent(BaseAgent):
             if not calls:
                 content = (reply.get("content") or "").strip()
                 finish = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
+                # ## A SPENT BUDGET is terminal, and is neither a truncation nor a decline
+                #
+                # The provider was never asked, so no nudge, no reply-budget escalation and no
+                # retry can help: continuing would spend the very budget that refused the
+                # request. It is tested FIRST, before the truncation test, because that test's
+                # remedy (more room) is the one thing that must not happen here.
+                #
+                # The reason is its own string. A budget stop must not read as
+                # `model-reported-completion`, and it must not read as a provider failure
+                # either -- the bridge keeps it out of `providerFailures` for the same reason.
+                if finish == "budget-exhausted":
+                    termination = "budget-exhausted"
+                    break
                 # ## A reply cut off by the cap is a TRUNCATION, whether or not any
                 # ## text survived
                 #

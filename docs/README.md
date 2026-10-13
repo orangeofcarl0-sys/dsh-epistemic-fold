@@ -167,6 +167,7 @@ These records document real-host defects and browser/deployment integration. The
 - [77_PYTHON_RECALL_DISPATCH.md](77_PYTHON_RECALL_DISPATCH.md)
 - [78_BRIDGE_CHILD_LIFECYCLE.md](78_BRIDGE_CHILD_LIFECYCLE.md)
 - [79_NATURAL_FOLD_READINESS.md](79_NATURAL_FOLD_READINESS.md)
+- [80_BUDGET_GATE.md](80_BUDGET_GATE.md)
 
 ## How to read old conclusions
 

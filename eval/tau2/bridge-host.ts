@@ -73,6 +73,7 @@ import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagen
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
+import { RequestBudget } from '../live/request-budget.ts'
 import { assertRouteRoutable, resolveLiveRoute } from '../live/zcode-config.ts'
 import { parseEconomicsProfile } from '../../src/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
@@ -316,6 +317,20 @@ interface Telemetry {
    * cell's record. `surfacePosition` is enough to check the contract was honoured, and the
    * content can be read from the session itself.
    */
+  /** The provider budget as it stands, so a report reconciles against the provider's own log. */
+  readonly budget?: {
+    readonly requests: number
+    readonly promptTokens: number
+    readonly outputTokens: number
+    readonly elapsedMs: number
+    readonly refusals: number
+    readonly limit: {
+      readonly requests: number
+      readonly promptTokens: number
+      readonly outputTokens: number
+      readonly wallClockMs: number
+    }
+  }
   readonly taskRoot: {
     /** The host's declared mode for this arm. */
     readonly mode: 'off' | 'exact'
@@ -577,6 +592,8 @@ let foldLineage: FoldEvent[] = []
 let arm: ArmSpec | undefined
 /** What the host declared about the task root, and what the engine did with it. */
 let taskRootState: Telemetry['taskRoot'] = undefined
+/** The episode's provider budget, when the experiment sets one. See `eval/live/request-budget.ts`. */
+let budget: RequestBudget | undefined
 /**
  * Whether the automatic fold runs before a model call.
  *
@@ -1317,9 +1334,15 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
         // The bound is now generous rather than tight. A failure message is written once per
         // failed call and is the only evidence a post-mortem has; a transcript that is a few
         // KB larger is a rounding error next to re-running a multi-hour wave blind.
-        finishReason = chunk.reason.kind === 'error'
-          ? `error:${String((chunk.reason as { failure?: { message?: string } }).failure?.message ?? '').slice(0, 2_000)}`
-          : chunk.reason.kind
+        // A budget refusal is its OWN finish reason, not an `error:`. `providerFailures` counts
+        // only `error:` (below), so a spent budget cannot be reported as a provider fault, and
+        // the agent can terminate with a reason that says which of the two happened.
+        const failure = (chunk.reason as { failure?: { message?: string; code?: string } }).failure
+        finishReason = chunk.reason.kind !== 'error'
+          ? chunk.reason.kind
+          : failure?.code === 'BUDGET_EXHAUSTED'
+            ? 'budget-exhausted'
+            : `error:${String(failure?.message ?? '').slice(0, 2_000)}`
       }
     }
   } finally {
@@ -1369,6 +1392,15 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   // finish reason is the signal. On failure the turn is closed EMPTY and nothing
   // is appended — the transcript keeps the failure in telemetry, and the model is
   // never shown a turn it did not produce.
+  // The budget stop: the turn is closed empty, nothing is appended, and it is NOT counted as a
+  // provider failure because the provider was never asked.
+  if (finishReason === 'budget-exhausted') {
+    if (turnHasContent) {
+      closeTurn()
+      turnHasContent = false
+    }
+    return { role: 'assistant', content: null, error: 'episode budget exhausted' }
+  }
   if (finishReason.startsWith('error:')) {
     providerFailures += 1
     lastProviderError = finishReason.slice('error:'.length)
@@ -1586,11 +1618,25 @@ async function init(request: {
   // because the callback does not run synchronously.
   await captureToolsRuntime()
 
+  // ## The episode's hard provider budget
+  //
+  // `EF_LHTB_MAX_TURNS` bounds the AGENT's turns, which is not a bound on provider requests: the
+  // fold's summarization goes through this same adapter, and a 429 retry is another request. The
+  // gate therefore lives in the adapter, where every request passes, and it is checked BEFORE the
+  // request so an exhausted budget prevents traffic instead of describing it. Zero disables a
+  // limit, so an unconfigured lane behaves exactly as before.
+  budget = new RequestBudget({
+    requests: Number(process.env.EF_LHTB_BUDGET_REQUESTS ?? 0),
+    promptTokens: Number(process.env.EF_LHTB_BUDGET_PROMPT_TOKENS ?? 0),
+    outputTokens: Number(process.env.EF_LHTB_BUDGET_OUTPUT_TOKENS ?? 0),
+    wallClockMs: Number(process.env.EF_LHTB_BUDGET_WALL_MS ?? 0),
+  })
   const adapter = new OpenAiCompatibleAdapter({
     baseUrl: route.baseUrl,
     apiKey: route.apiKey,
     model: route.model,
     contextWindow: TAU2_WINDOW,
+    budget,
     // Carried by the route. `/zen/go/v1` needs `x-opencode-session` on every
     // call; without it every request is a 400 that reads like a route fault.
     ...(route.headers === undefined ? {} : { headers: route.headers }),
@@ -1816,6 +1862,9 @@ async function telemetry(): Promise<Telemetry> {
     emergencies,
     foldLineage,
     taskRoot: taskRootState,
+    // The raw count, so a report can be reconciled against the provider's own request log rather
+    // than trusting a derived figure.
+    budget: budget?.snapshot(),
     compactBudget,
     derivedAnswersRetired: engine!.derivedAnswersRetired,
     subagentRecall: { ...subagentRecallStats },
