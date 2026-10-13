@@ -123,7 +123,40 @@ export interface ResolvedEpistemicFoldConfig {
    * than resolved to something plausible.
    */
   readonly allowCrossSessionRecall: boolean
+  /**
+   * EXPERIMENTAL: subagent recall (docs/67). Default `false`.
+   *
+   * When on, `context_recall` REFUSES a result larger than
+   * `subagentRecallThresholdChars` and tells the caller to use
+   * `context_recall_subagent`, which is registered only under this flag. When off,
+   * `context_recall` behaves exactly as it always has and the subagent tool does not
+   * exist — so a default deployment cannot observe the feature at all.
+   */
+  readonly subagentRecall: boolean
+  /** Rendered characters a direct recall may return before it is refused. */
+  readonly subagentRecallThresholdChars: number
+  /** Characters of archive one subagent run may read before it stops. */
+  readonly subagentRecallFetchBudgetChars: number
 }
+
+/**
+ * Default direct-recall size limit, in rendered characters.
+ *
+ * About 6,000 tokens. A recall is an AFFORDANCE, not a second copy of the archive, and this
+ * is the point at which one stops being an affordance: measured on the LHTB task, whose
+ * whole working set is ~66,000 characters, a single recall at this size already spends a
+ * tenth of it. It is deliberately far below the fold threshold so that a permitted recall
+ * cannot be the thing that triggers the next fold.
+ */
+export const DEFAULT_SUBAGENT_RECALL_THRESHOLD_CHARS = 24_000
+/**
+ * Default archive one subagent run may read, in characters.
+ *
+ * About 30,000 tokens, five times the direct limit. The subagent does not KEEP what it
+ * reads — it answers in a bounded reply — so its read budget can be far larger than the
+ * caller's. That asymmetry is the whole point of the feature.
+ */
+export const DEFAULT_SUBAGENT_RECALL_FETCH_BUDGET_CHARS = 120_000
 
 /** Leaf admission policy mode (R2-B). */
 export type LeafAdmissionMode = 'legacy' | 'economic'
@@ -238,6 +271,12 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
   allowCrossSessionRecall?: boolean
+  /** EXPERIMENTAL: subagent recall. Default `false`; see `ResolvedEpistemicFoldConfig`. */
+  subagentRecall?: boolean
+  /** Direct-recall size limit in rendered characters. See the default's note. */
+  subagentRecallThresholdChars?: number
+  /** Archive a subagent run may read, in characters. See the default's note. */
+  subagentRecallFetchBudgetChars?: number
 }
 
 /**
@@ -327,6 +366,24 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
   }
+  // The subagent-recall experiment. Strict, like the other two switches: a typo must not
+  // silently enable a feature that changes what a recall RETURNS. The two sizes are
+  // validated even when the feature is off, so a configuration error surfaces at mount
+  // rather than the first time someone turns the flag on.
+  const subagentRecall = expanded.subagentRecall ?? false
+  if (typeof subagentRecall !== 'boolean') {
+    throw new Error('epistemic-fold: subagentRecall must be a boolean')
+  }
+  const subagentRecallThresholdChars = expanded.subagentRecallThresholdChars
+    ?? DEFAULT_SUBAGENT_RECALL_THRESHOLD_CHARS
+  if (!Number.isInteger(subagentRecallThresholdChars) || subagentRecallThresholdChars <= 0) {
+    throw new Error('epistemic-fold: subagentRecallThresholdChars must be a positive integer')
+  }
+  const subagentRecallFetchBudgetChars = expanded.subagentRecallFetchBudgetChars
+    ?? DEFAULT_SUBAGENT_RECALL_FETCH_BUDGET_CHARS
+  if (!Number.isInteger(subagentRecallFetchBudgetChars) || subagentRecallFetchBudgetChars <= 0) {
+    throw new Error('epistemic-fold: subagentRecallFetchBudgetChars must be a positive integer')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -342,6 +399,9 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     framingMode,
     referentialArchive,
     allowCrossSessionRecall,
+    subagentRecall,
+    subagentRecallThresholdChars,
+    subagentRecallFetchBudgetChars,
     rootPolicy: {
       mode: rootPolicy,
       profiles: expanded.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
@@ -456,6 +516,9 @@ const EF_OWNED_CONFIG_KEYS = [
   'mode',
   'referentialArchive',
   'allowCrossSessionRecall',
+  'subagentRecall',
+  'subagentRecallThresholdChars',
+  'subagentRecallFetchBudgetChars',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */

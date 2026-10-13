@@ -154,6 +154,7 @@ These records document real-host defects and browser/deployment integration. The
 - [64_TASK_SERVICE_AUDIT.md](64_TASK_SERVICE_AUDIT.md)
 - [65_LHTB_FOLD_WINDOW_AND_TURN_BUDGET.md](65_LHTB_FOLD_WINDOW_AND_TURN_BUDGET.md)
 - [66_CONTEXT_EXPOSURE_BOUNDARY.md](66_CONTEXT_EXPOSURE_BOUNDARY.md)
+- [67_SUBAGENT_RECALL.md](67_SUBAGENT_RECALL.md)
 
 ## How to read old conclusions
 

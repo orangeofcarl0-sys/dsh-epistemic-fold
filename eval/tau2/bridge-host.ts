@@ -69,6 +69,7 @@ import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/preset.ts'
 import type { FoldModeName } from '../../src/preset.ts'
 import { resetSummaryRetryStats, summaryRetryStats } from '../../src/summary-retry.ts'
+import { resetSubagentRecallStats, subagentRecallStats } from '../../src/subagent-recall.ts'
 import { OpenAiCompatibleAdapter } from '../live/openai-adapter.ts'
 import { BillingRecorder } from '../live/recorder.ts'
 import { realizedCost, summarizeBill } from '../live/billing.ts'
@@ -312,6 +313,25 @@ interface Telemetry {
    * from "the budget was zero".
    */
   readonly compactBudget: CompactBudget | null
+  /**
+   * Subagent recall (docs/67), when the experiment is on.
+   *
+   * `gated` is the reading that decides whether the experiment was EXERCISED at all: it
+   * counts direct recalls refused for size. A run with `gated: 0` and `invocations: 0`
+   * tells you nothing about the feature, however many turns it took.
+   */
+  readonly subagentRecall: {
+    readonly gated: number
+    readonly invocations: number
+    readonly surveyInvocations: number
+    readonly planCalls: number
+    readonly answerCalls: number
+    readonly fetches: number
+    readonly fetchedChars: number
+    readonly answerChars: number
+    readonly failures: number
+    readonly lastError: string | null
+  }
   /** Whether the automatic fold was enabled at the moment of this snapshot. */
   readonly compactionEnabled: boolean
   readonly modelCalls: number
@@ -1299,6 +1319,9 @@ async function init(request: {
   // Process-lifetime totals in EF's own module, so zeroed per episode like the rest:
   // the bridge process outlives one episode only by accident of how Harbor runs it.
   resetSummaryRetryStats()
+  // Same reason as the summary counters: the bridge process can outlive one episode, so a
+  // per-episode reading must be zeroed per episode rather than accumulated by accident.
+  resetSubagentRecallStats()
 
   const bundleRoot = process.env.EF_TAU2_BUNDLE_ROOT
   if (bundleRoot === undefined) throw new Error('bridge: EF_TAU2_BUNDLE_ROOT is not set')
@@ -1547,6 +1570,7 @@ async function telemetry(): Promise<Telemetry> {
     emergencies,
     foldLineage,
     compactBudget,
+    subagentRecall: { ...subagentRecallStats },
     compactionEnabled,
     modelCalls,
     promptTokensLast,

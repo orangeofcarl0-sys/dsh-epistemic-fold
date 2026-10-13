@@ -89,6 +89,11 @@ export class EpistemicFoldPlugin {
     frozenCheckpointTokenBudget: z.number(),
     semanticMode: z.union(['none', 'rationale'] as const),
     bundleRoot: z.string(),
+    // EXPERIMENTAL (docs/67). Strict, like the other switches: a typo must not silently
+    // turn on a feature that changes what a recall RETURNS.
+    subagentRecall: z.boolean(),
+    subagentRecallThresholdChars: z.number(),
+    subagentRecallFetchBudgetChars: z.number(),
   })
 
   /** The engine instance this plugin mounts (owns `ctx.compaction`). */
@@ -204,10 +209,21 @@ export class EpistemicFoldPlugin {
       // default deployment never even reaches for the persistence service. The
       // flag is read once here rather than per call: it is a mount-time policy,
       // and a tool that changed behavior mid-session would be a different tool.
-      const crossSession = this.engine.efConfig.allowCrossSessionRecall
+      const ef = this.engine.efConfig
+      const crossSession = ef.allowCrossSessionRecall
       const reader = crossSession ? logReaderFrom(toolsCtx) : undefined
+      // Subagent recall (docs/67). The wiring is built ONLY when the experiment is on:
+      // with no `subagentRecall` passed, `registerRecallTools` registers no extra tool and
+      // gates nothing, so a default deployment is byte-identical to before this feature.
+      const subagentRecall = ef.subagentRecall
+        ? {
+          thresholdChars: ef.subagentRecallThresholdChars,
+          fetchBudgetChars: ef.subagentRecallFetchBudgetChars,
+        }
+        : undefined
       const dispose = registerRecallTools(toolsCtx, this.engine.bundleStore, {
         ...(reader === undefined ? {} : { logReader: reader }),
+        ...(subagentRecall === undefined ? {} : { subagentRecall }),
       })
       return () => dispose()
     })
