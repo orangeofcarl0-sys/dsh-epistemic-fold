@@ -320,6 +320,13 @@ interface Telemetry {
    * counts direct recalls refused for size. A run with `gated: 0` and `invocations: 0`
    * tells you nothing about the feature, however many turns it took.
    */
+  /**
+   * Derived retrieval answers RETIRED at fold time (docs/67).
+   *
+   * Read with `subagentRecall.invocations`: answers produced but none retired means no fold
+   * has covered one yet, which is a different fact from the rule never firing.
+   */
+  readonly derivedAnswersRetired: number
   readonly subagentRecall: {
     readonly gated: number
     readonly invocations: number
@@ -1570,6 +1577,7 @@ async function telemetry(): Promise<Telemetry> {
     emergencies,
     foldLineage,
     compactBudget,
+    derivedAnswersRetired: engine!.derivedAnswersRetired,
     subagentRecall: { ...subagentRecallStats },
     compactionEnabled,
     modelCalls,

@@ -142,27 +142,46 @@ fetches it, and answers FROM it: a paraphrase becomes a source. That is precisel
 `authority.ts` refuses to let an anchor do ("derived authority must terminate at raw authority
 roots"), and there was no equivalent guard for recall content.
 
-**The half that cannot be fixed as asked.** There is no primitive in this codebase that REMOVES a
-surface node except a fold. `ef/anchor` is not a surface node at all: `state.ts` reduces anchor
-events into hot state with a `lifecycle` and a `retiredCount`, so declaring and retiring an anchor
-records a lifecycle without taking the material off the surface. So "retire the returned content
-promptly" cannot be implemented as removal today; a `drop`/volatile-node capability, or a tool
-result the host does not retain, would be a host-level change.
+**The half that is now implemented: retirement AT THE FOLD.** The requirement is that a derived
+answer does not enter the next round, and the fold is where a round ends — so the fold is where it
+is retired. When a fold span contains a derived answer, its CONTENT is replaced by a tombstone
+before the archive is built: the paraphrase never enters the main tree, and the record still says a
+derived answer was here and that re-asking regenerates it from raw checkpoints that ARE archived.
+
+It is a tombstone and not a removal, and that is forced rather than chosen. `currentSpanSeqs`
+(`src/engine.ts:1595-1630`) counts the messages the span derives and THROWS when that disagrees with
+the archived count — and the throw ends the episode. So dropping the message would convert a
+provenance problem into a lost run. The tombstone keeps the count, the surface seqs and the archive
+refs exactly as they were, and retires only the content.
+
+The semantic path gets the retired span too, so a summarizer cannot write a summary of a paraphrase
+either. `engine.derivedAnswersRetired` counts what was retired and the LHTB bridge publishes it as
+`telemetry.derivedAnswersRetired` — read it against `subagentRecall.invocations`: answers produced
+but none retired means no fold has covered one yet, which is a different fact from the rule never
+firing.
+
+**What is still not possible:** removing the NODE. There is no primitive that takes a surface node
+off except a fold, and `ef/anchor` is not a surface node at all — `state.ts` reduces anchor events
+into hot state with a `lifecycle` and a `retiredCount`, so declaring and retiring an anchor records
+a lifecycle without touching the surface. A `drop`/volatile-node capability, or a tool result the
+host does not retain, would be a host-level change.
 
 What is implemented instead, in the order it matters:
 
-1. **A provenance mark that survives the fold.** Every answer carries
+1. **Retirement at the fold**, described above: the content is replaced by a tombstone, so the
+   paraphrase does not enter the next round.
+2. **A provenance mark that survives the fold.** Every answer carries
    `efDerived: { by, refs, reads, fetchedChars, truncated }`. It is in the archived bytes, so the
    distinction is recoverable AFTER the fold, and it is a distinctive JSON key so detection is a
    substring test rather than a re-parse of every archived message.
-2. **A label wherever derived material is re-exposed.** `inventoryOf` renders any message carrying
+3. **A label wherever derived material is re-exposed.** `inventoryOf` renders any message carrying
    the mark as `DERIVED ANSWER (retrieval subagent) - not raw history: ...`, so a checkpoint
    descriptor that holds a folded answer advertises it instead of presenting a paraphrase as the
    record.
-3. **A rule in both subagent prompts.** Material labelled derived is not evidence: read the raw
+4. **A rule in both subagent prompts.** Material labelled derived is not evidence: read the raw
    checkpoint it names, and if the only thing that answers the goal is derived, say so rather than
    restating it as fact.
-4. **A size bound that makes the fold unlikely in the first place.** The answer budget is 1,024
+5. **A size bound that makes the fold unlikely in the first place.** The answer budget is 1,024
    tokens — far below the fold threshold — so a permitted answer is a negligible fold candidate.
    This is the closest thing to "retire it promptly" that exists: the material is small enough not
    to matter, and it is marked so that mattering is recoverable.
@@ -188,7 +207,7 @@ and shipping the live surface to it would spend the budget this feature exists t
 
 ## 11. Tests
 
-`tests/subagent-recall.spec.ts`, 26 cases. The loop is pure logic over three injected callbacks —
+`tests/subagent-recall.spec.ts`, 31 cases. The loop is pure logic over three injected callbacks —
 a fetch, a search, one model call — so every branch that decides what the caller RECEIVES is
 reachable without a provider: the gate at its boundary, the descriptor for a readable and an
 unreadable archive, the plan parser on prose and on junk, the deterministic fallback, the fetch

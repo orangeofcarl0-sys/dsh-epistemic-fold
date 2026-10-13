@@ -27,7 +27,7 @@ import {
   SUBAGENT_MAX_FETCHES,
 } from "../src/subagent-recall.ts"
 import type { CheckpointDescriptor, SubagentMessage } from "../src/subagent-recall.ts"
-import { isDerivedAnswer } from "../src/subagent-recall.ts"
+import { isDerivedAnswer, isRetiredDerived, retireDerivedAnswers } from "../src/subagent-recall.ts"
 import type { CheckpointBundleV1 } from "../src/types.ts"
 
 function textMessage(role: Message["role"], text: string): Message {
@@ -386,5 +386,63 @@ describe("derived provenance, which is what stops a paraphrase becoming a source
   it("does not mistake ordinary text for a derived answer", () => {
     expect(isDerivedAnswer("the archive says disk is decimal gb")).toBe(false)
     expect(inventoryOf([textMessage("tool", "plain output")])[0]).not.toContain("DERIVED")
+  })
+})
+describe("retirement at the fold, which is what keeps a paraphrase out of the next round", () => {
+  it("retires the content of a derived answer and leaves everything else alone", () => {
+    // The paraphrase must not enter the next round. It is regenerable, so retiring it costs
+    // nothing that cannot be re-obtained from raw checkpoints that ARE archived.
+    // A distinctive body, because the tombstone itself legitimately uses the words
+    // "paraphrase" and "regenerable" -- an assertion on those words would test the prose.
+    const derived = textMessage("tool", JSON.stringify({ efDerived: { by: "retrieval-subagent" }, answer: "ANSWER-BODY-SHOULD-BE-GONE" }))
+    const raw = textMessage("tool", "total 100 -rw-r--r-- engine.py")
+    const result = retireDerivedAnswers([raw, derived])
+    expect(result.retired).toBe(1)
+    expect(result.messages).toHaveLength(2)
+    // Length is preserved on purpose: `currentSpanSeqs` THROWS when the archived count
+    // disagrees with the span, and that throw ends the episode.
+    expect(result.messages[0]).toBe(raw)
+    const retired = JSON.stringify(result.messages[1]!.content)
+    expect(retired).toContain("efDerivedRetired")
+    expect(retired).toContain("regenerable")
+    expect(retired).not.toContain("ANSWER-BODY-SHOULD-BE-GONE")
+  })
+
+  it("keeps the message role and id, so the surface shape is unchanged", () => {
+    const derived = {
+      role: "tool",
+      id: "call-7",
+      content: [{ type: "text", text: JSON.stringify({ efDerived: {}, answer: "x" }) }],
+    } as unknown as Message
+    const out = retireDerivedAnswers([derived]).messages[0] as unknown as Record<string, unknown>
+    expect(out["role"]).toBe("tool")
+    expect(out["id"]).toBe("call-7")
+  })
+
+  it("is idempotent, so a second fold does not count the same answer twice", () => {
+    const derived = textMessage("tool", JSON.stringify({ efDerived: {}, answer: "x" }))
+    const once = retireDerivedAnswers([derived])
+    expect(once.retired).toBe(1)
+    const twice = retireDerivedAnswers(once.messages)
+    expect(twice.retired).toBe(0)
+    expect(isRetiredDerived(JSON.stringify(twice.messages[0]!.content))).toBe(true)
+  })
+
+  it("distinguishes a LIVE derived answer from a retired one", () => {
+    // Conflating them would tell a reader a paraphrase is still available when it is not.
+    const live = JSON.stringify({ efDerived: { by: "retrieval-subagent" }, answer: "x" })
+    expect(isDerivedAnswer(live)).toBe(true)
+    expect(isRetiredDerived(live)).toBe(false)
+    const retired = JSON.stringify(retireDerivedAnswers([textMessage("tool", live)]).messages[0]!.content)
+    expect(isDerivedAnswer(retired)).toBe(false)
+    expect(isRetiredDerived(retired)).toBe(true)
+    expect(inventoryOf([textMessage("tool", retired)])[0]).toContain("RETIRED DERIVED ANSWER")
+  })
+
+  it("retires nothing when the span holds only raw history", () => {
+    const raw = [textMessage("user", "do the thing"), textMessage("tool", "output")]
+    const result = retireDerivedAnswers(raw)
+    expect(result.retired).toBe(0)
+    expect(result.messages).toEqual(raw)
   })
 })

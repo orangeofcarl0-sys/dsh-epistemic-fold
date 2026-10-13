@@ -87,6 +87,7 @@ import {
   summaryRetryPolicy,
   summaryRetryStats,
 } from './summary-retry.ts'
+import { retireDerivedAnswers } from './subagent-recall.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'
 import type { FoldCurrentState } from './state.ts'
 import type {
@@ -199,6 +200,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * computation of it that could disagree.
    */
   private lastCompactSpecValue: EfCompactSpec | undefined
+  /**
+   * Derived retrieval answers retired at fold time, cumulatively.
+   *
+   * Counted rather than inferred, for the same reason every other counter here is: a fold
+   * that silently retired material would be the same class of defect as one that silently
+   * dropped it, and the archive cannot be asked after the fact.
+   */
+  private derivedAnswersRetiredValue = 0
   /** Most recent economic leaf-admission verdict (R2-B telemetry). */
   private lastLeafAdmissionValue: LeafAdmissionVerdict | undefined
   /** Most recent provider-aware rebase decision (R2-C telemetry). */
@@ -390,6 +399,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   get lastCompactSpec(): EfCompactSpec | undefined {
     return this.lastCompactSpecValue
+  }
+
+  /**
+   * Derived retrieval answers this engine retired at fold time (docs/67).
+   *
+   * Exposed so a host can report that the exposure feature was exercised AND that its
+   * provenance rule fired: `0` with subagent invocations above zero means answers were
+   * produced and none had been folded yet.
+   */
+  get derivedAnswersRetired(): number {
+    return this.derivedAnswersRetiredValue
   }
 
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
@@ -1354,7 +1374,31 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       // means an unsanctioned caller and fails loud.
       throw new Error('epistemic-fold: summarize reached without a prepared fold candidate')
     }
-    const { contextPrefix, shadowedMessages } = splitSummarizationInput(input)
+    const { contextPrefix, shadowedMessages: rawShadowed } = splitSummarizationInput(input)
+    // ## A derived retrieval answer is retired at the fold, not carried into the next round
+    //
+    // A subagent answer is a PARAPHRASE of material that is archived elsewhere, and it is
+    // regenerable by asking again. Archiving it would put a paraphrase into the main tree
+    // wearing a `tool/result` kind -- an AUTHORITATIVE kind -- after which a later reader
+    // cannot tell it from history. So its CONTENT is retired here.
+    //
+    // The length is preserved deliberately. `currentSpanSeqs` below THROWS when the span
+    // derives a different number of messages than the archive holds, and that throw ends the
+    // episode -- so dropping the message would convert a provenance problem into a lost run.
+    // The tombstone keeps the count, the seqs and the refs, and retires only the content.
+    const retirement = retireDerivedAnswers(rawShadowed)
+    const shadowedMessages = retirement.messages
+    if (retirement.retired > 0) {
+      this.derivedAnswersRetiredValue += retirement.retired
+      this.ctx.logger.info(
+        `[epistemic-fold] retired ${retirement.retired} derived retrieval answer(s) at fold time`,
+      )
+    }
+    // The summarizer must not read a paraphrase either, so the semantic path gets the
+    // retired span. Everything else about the input is unchanged.
+    const summarizationInput: SummarizationInput = retirement.retired === 0
+      ? input
+      : { ...input, messages: [...contextPrefix, ...shadowedMessages] }
     // The archive is the authority for how many surface nodes this fold covers;
     // see `currentSpanSeqs` for why the live surface alone cannot answer it.
     const orderedSurfaceSeqs = this.currentSpanSeqs(
@@ -1432,7 +1476,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
             ctx: this.ctx,
             target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
             maxTokens: RATIONALE_MAX_TOKENS,
-            input,
+            input: summarizationInput,
             agent,
             signal,
           })

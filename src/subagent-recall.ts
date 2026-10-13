@@ -196,14 +196,76 @@ export const INVENTORY_EXCERPT_CHARS = 80
 export const DERIVED_SENTINEL = 'efDerived'
 
 /**
- * Whether a rendered message is a retrieval answer rather than raw history.
+ * Whether a rendered message is a LIVE retrieval answer rather than raw history.
  *
  * Used by the descriptor builder, so that a checkpoint which holds a FOLDED derived
  * answer advertises that instead of presenting a paraphrase as if it were the record.
+ * A retired one is excluded: it is a different fact, and conflating the two would say a
+ * paraphrase is still available when it is not.
  */
 export function isDerivedAnswer(text: string): boolean {
-  return text.includes(DERIVED_SENTINEL)
+  return text.includes(DERIVED_SENTINEL) && !isRetiredDerived(text)
 }
+
+/**
+ * The key that marks a derived answer as RETIRED, i.e. dropped at fold time.
+ *
+ * Deliberately a superset of `DERIVED_SENTINEL` so a single substring test can find both,
+ * with `isDerivedAnswer` excluding this one: a retired answer and a live one are different
+ * facts and a descriptor that conflated them would say a paraphrase is still available.
+ */
+export const DERIVED_RETIRED_SENTINEL = 'efDerivedRetired'
+
+/**
+ * What replaces a derived answer when the fold retires it.
+ *
+ * ## Why a TOMBSTONE and not a removal
+ *
+ * The obvious implementation — drop the message from the archived list — cannot be used.
+ * `currentSpanSeqs` (`src/engine.ts:1595-1630`) counts the messages the fold span derives
+ * and THROWS when that disagrees with the archived count, and the throw ends the episode. So
+ * a naive drop converts a provenance problem into a lost run.
+ *
+ * The tombstone keeps the count, the surface seqs and the archive refs exactly as they were,
+ * and retires only the CONTENT. That is what the requirement actually needs: the paraphrase
+ * must not enter the next round. It does not, and the record still says a derived answer was
+ * here and that re-asking regenerates it from raw checkpoints that ARE archived.
+ */
+export const DERIVED_RETIRED_TOMBSTONE = [
+  '[' + DERIVED_RETIRED_SENTINEL + '] A retrieval-subagent answer was retired here by the fold.',
+  'It was a paraphrase, not history, and it is regenerable: ask context_recall_subagent the',
+  'same goal again, or read the raw checkpoints it cited. Nothing was lost from the record.',
+].join('\n')
+
+/** Whether a rendered message is a derived answer that the fold has already retired. */
+export function isRetiredDerived(text: string): boolean {
+  return text.includes(DERIVED_RETIRED_SENTINEL)
+}
+
+/**
+ * Retire every derived answer in a fold span, IN PLACE.
+ *
+ * Length-preserving on purpose: see the tombstone note. The count of what was retired is
+ * returned rather than inferred, because a fold that silently retired material would be the
+ * same class of defect as one that silently dropped it.
+ */
+export function retireDerivedAnswers(messages: readonly Message[]): {
+  readonly messages: Message[]
+  readonly retired: number
+} {
+  let retired = 0
+  const out = messages.map(message => {
+    const text = message.content
+      .map(block => (block.type === 'text' ? block.text : ''))
+      .join('\n')
+    if (!isDerivedAnswer(text)) return message
+    retired += 1
+    return { ...message, content: [{ type: 'text', text: DERIVED_RETIRED_TOMBSTONE }] } as Message
+  })
+  return { messages: out, retired }
+}
+
+/**
 
 /** How many message lines a descriptor carries before it summarises the rest. */
 export const INVENTORY_LINES = 10
@@ -244,6 +306,10 @@ export function inventoryOf(messages: readonly Message[], lines = INVENTORY_LINE
     }
     // A derived answer must never read as raw history. This is the label that survives
     // the fold: if the answer was archived into the main tree, its descriptor says so.
+    if (isRetiredDerived(body)) {
+      out.push("RETIRED DERIVED ANSWER (dropped at fold; re-ask the subagent for it)")
+      continue
+    }
     if (isDerivedAnswer(body)) {
       out.push("DERIVED ANSWER (retrieval subagent) - not raw history: " + clip(body))
       continue
