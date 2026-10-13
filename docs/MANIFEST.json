@@ -420,6 +420,11 @@
     "sha256": "f7071d4ba572d65b829861b8fc7ad0bece6d1d59021323da3d48a533f9f4b568"
   },
   {
+    "file": "84_INTEGRATION_GATE.md",
+    "bytes": 3218,
+    "sha256": "df31647563216fece1fec9d64c1c1df8d4284773212197cc5242b67c6cd01a55"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -441,8 +446,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10259,
-    "sha256": "246b4e79e1b099bda95c43d0b775624f13565ad5f4dd7f23e4112a0371f15791"
+    "bytes": 10310,
+    "sha256": "746798dbc802065287547260ce552a0baab73acd2f5bfa82f8ba3e8e8dc0fa0b"
   },
   {
     "file": "README.zh.md",
