@@ -37,7 +37,7 @@ export class BudgetExhaustedError extends Error {
  * request can use far more than the summarization's 32,768. Reserving the smaller figure would
  * under-charge exactly the requests this reserve exists to cover.
  */
-export const DEFAULT_OUTPUT_RESERVE = 131_072_768
+export const DEFAULT_OUTPUT_RESERVE = 131_072
 
 export interface BudgetLimits {
   /** Every HTTP ATTEMPT, including 429 retries. 0 disables the check. */
@@ -103,8 +103,19 @@ export class RequestBudget {
   private observedOutput = 0
   private unknownUsageRequests = 0
   private partialUsageRequests = 0
-  /** The most recent admission's reserve, settled by the next `record`. */
-  private outstanding: { promptTokens: number; outputTokens: number } | undefined
+  /**
+   * Reserves not yet settled, OLDEST FIRST.
+   *
+   * A single slot was wrong the moment two requests could be in flight: the second admission
+   * overwrote the first's entry, so the first response settled the SECOND request's reserve and
+   * the first one was stranded -- `reservedPromptTokens` ended at 131,072 after both had
+   * answered. The concurrency test that expects zero is what caught it.
+   *
+   * Order does not matter for the aggregate, which is what admission compares: one `record`
+   * settles exactly one admission's reserve, so `reserved` always equals (admitted - recorded) x
+   * reserve. Responses arriving out of order therefore cannot release more than was reserved.
+   */
+  private outstanding: { promptTokens: number; outputTokens: number }[] = []
 
   constructor(
     readonly limit: BudgetLimits,
@@ -134,7 +145,7 @@ export class RequestBudget {
       this.requests += 1
       this.reservedPrompt += this.reserve.promptTokens
       this.reservedOutput += this.reserve.outputTokens
-      this.outstanding = { ...this.reserve }
+      this.outstanding.push({ ...this.reserve })
       return
     }
     this.refusals += 1
@@ -181,10 +192,10 @@ export class RequestBudget {
     if (usage === undefined) this.unknownUsageRequests += 1
     if (!reported.prompt || !reported.output) this.partialUsageRequests += 1
     if (effective === undefined) return
-    if (this.outstanding !== undefined) {
-      if (reported.prompt) this.reservedPrompt -= this.outstanding.promptTokens
-      if (reported.output) this.reservedOutput -= this.outstanding.outputTokens
-      this.outstanding = undefined
+    const settled = this.outstanding.shift()
+    if (settled !== undefined) {
+      if (reported.prompt) this.reservedPrompt -= settled.promptTokens
+      if (reported.output) this.reservedOutput -= settled.outputTokens
     }
     if (reported.prompt) {
       const prompt = (effective.inputTokens ?? 0)

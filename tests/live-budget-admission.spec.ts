@@ -150,6 +150,56 @@ describe('an UNREPORTED dimension keeps its reserve; a reported one settles', ()
   })
 })
 
+describe('the reservation is complete BEFORE the fetch, even with two requests in flight', () => {
+  const RESERVE = { promptTokens: 131_072, outputTokens: 131_072 }
+
+  /** A provider that answers only when the test releases it, so both requests can be in flight. */
+  function deferredFetch() {
+    const waiting: ((response: Response) => void)[] = []
+    const calls: number[] = []
+    const impl = (async (): Promise<Response> => {
+      calls.push(calls.length + 1)
+      return new Promise<Response>(resolve => waiting.push(resolve))
+    }) as unknown as typeof fetch
+    return {
+      calls,
+      impl,
+      release: (index: number, usage?: Record<string, number>) => {
+        waiting[index]!(ok(usage))
+      },
+    }
+  }
+
+  it('reserves for BOTH before either settles, and one settlement frees only its own', async () => {
+    // The cost bound allows exactly one overshoot, which is only sound if a request cannot reach
+    // the provider before its own reservation is charged. This is that check, not a restatement.
+    const budget = new RequestBudget({ ...LIMITS, requests: 10 }, RESERVE)
+    const fake = deferredFetch()
+    const first = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+    const second = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: fake.impl, budget })
+
+    const inFlight = [drive(first), drive(second)]
+    while (fake.calls.length < 2) await new Promise(resolve => setTimeout(resolve, 5))
+
+    const both = budget.snapshot()
+    expect(both.requests, 'both attempts counted').toBe(2)
+    expect(both.reservedPromptTokens, 'and BOTH reserved before either fetch was answered').toBe(262_144)
+    expect(both.reservedOutputTokens).toBe(262_144)
+
+    fake.release(0, { prompt_tokens: 100, completion_tokens: 5 })
+    await inFlight[0]!
+    const afterOne = budget.snapshot()
+    expect(afterOne.observedPromptTokens, 'the settled one became a measurement').toBe(100)
+    expect(afterOne.reservedPromptTokens, "the OTHER request's reserve is untouched").toBe(131_072)
+    expect(afterOne.reservedOutputTokens).toBe(131_072)
+
+    fake.release(1, { prompt_tokens: 250, completion_tokens: 9 })
+    await inFlight[1]!
+    expect(budget.snapshot().reservedPromptTokens, 'and settles when it answers').toBe(0)
+    expect(budget.snapshot().observedPromptTokens).toBe(350)
+  })
+})
+
 describe('the budget gate refuses BEFORE the request leaves', () => {
   it('admits the first request and refuses the second, with fetch called exactly once', async () => {
     const budget = new RequestBudget({ ...LIMITS, requests: 1 })
