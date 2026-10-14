@@ -173,6 +173,7 @@ These records document real-host defects and browser/deployment integration. The
 - [83_PER_DIMENSION_SETTLEMENT.md](83_PER_DIMENSION_SETTLEMENT.md)
 - [84_INTEGRATION_GATE.md](84_INTEGRATION_GATE.md)
 - [85_HOST_GATE_CLOSURE.md](85_HOST_GATE_CLOSURE.md)
+- [86_RUNTIME_GATES.md](86_RUNTIME_GATES.md)
 
 ## How to read old conclusions
 
