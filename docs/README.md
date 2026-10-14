@@ -175,6 +175,7 @@ These records document real-host defects and browser/deployment integration. The
 - [85_HOST_GATE_CLOSURE.md](85_HOST_GATE_CLOSURE.md)
 - [86_RUNTIME_GATES.md](86_RUNTIME_GATES.md)
 - [87_GATE_B_TERMINATION.md](87_GATE_B_TERMINATION.md)
+- [88_TASK_ROOT_FAIL_CLOSED.md](88_TASK_ROOT_FAIL_CLOSED.md)
 
 ## How to read old conclusions
 

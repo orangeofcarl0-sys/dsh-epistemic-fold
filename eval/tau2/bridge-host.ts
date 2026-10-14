@@ -1299,6 +1299,30 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   // only affect this request if it runs before the surface is read. Draining it
   // later would leave the model looking at the pre-rebase surface while the
   // telemetry claimed a rebase had landed.
+  // ## `exact` must not silently degrade into Unpinned
+  //
+  // `protectedRootGuard` refuses a ROOT fold whose registered source has gone missing, but the
+  // engine cannot distinguish "this arm runs `exact` and the host never registered" from "this arm
+  // runs `off`" -- both are simply an empty registry. The MODE lives here, in the host, so the
+  // fail-closed check for the missing-registration case belongs here too. Without it a host bug
+  // removes the protection the arm was configured to provide, and every fold then runs
+  // unprotected while the telemetry still says `exact`.
+  //
+  // Checked BEFORE `drainIdleRebase()`, so the refusal precedes any fold or rebase that could
+  // commit against an unverified task state -- not merely the provider call that follows.
+  if (arm !== undefined && arm.engine !== 'basic' && arm.taskRootMode === 'exact') {
+    const status = engine!.taskRootStatus(session!)
+    if (status.status !== 'resident') {
+      lastFinishReason = 'task-root-contract'
+      taskRootState = {
+        mode: 'exact',
+        status: 'absent',
+        digestVerified: false,
+        reason: `contract failure before the model call: ${status.status}`,
+      }
+      return { role: 'assistant', content: null, error: 'task root contract failure' }
+    }
+  }
   await drainIdleRebase()
 
   const messages = surface()

@@ -494,8 +494,15 @@ class EFLhtbAgent(BaseAgent):
             #
             # Checked BEFORE the classification, because retrying is the one response that cannot
             # help: the budget that refused will refuse again, and each retry burns wall clock.
-            if str(self._bridge.last_telemetry.get("lastFinishReason", "")) == "budget-exhausted":
+            finish_reason = str(self._bridge.last_telemetry.get("lastFinishReason", ""))
+            if finish_reason == "budget-exhausted":
                 termination = "budget-exhausted"
+                break
+            # The Task Root contract, likewise: retrying cannot restore a protection the host
+            # never established, and continuing would fold an unverified task under an arm that
+            # claims `exact`.
+            if finish_reason == "task-root-contract":
+                termination = "task-root-contract"
                 break
             if error:
                 provider_failures += 1

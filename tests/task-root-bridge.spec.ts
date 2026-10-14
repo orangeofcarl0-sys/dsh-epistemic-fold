@@ -382,6 +382,38 @@ describe('the LHTB host declares its task root through the bridge', () => {
     expect(second.budget?.refusals).toBeGreaterThan(0)
     expect(stepped.taskRoot, 'the task root is untouched throughout').toMatchObject({ status: 'resident' })
   })
+  it('FAILS CLOSED when exact mode never got a registration, before any request', async () => {
+    // The host is the only party that can tell `exact` from `off`: to the engine both are just an
+    // empty registry. So a host that forgets to flag the instruction would silently lose the
+    // protection the arm was configured to provide, while telemetry still said `exact`. The guard
+    // refuses BEFORE `drainIdleRebase()`, so no fold or rebase commits against that state either.
+    const { bridge, provider } = await start({ taskRootMode: 'exact' })
+    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION } })
+    for (let i = 0; i < 3; i += 1) {
+      await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${i} ` + 'f'.repeat(2_000) } })
+    }
+
+    const before = provider.calls()
+    const stepped = telemetryOf(await bridge.send({ op: 'step' }))
+    expect(provider.calls(), 'no provider request was made').toBe(before)
+    expect(stepped.lastFinishReason, 'its own reason, not an error:').toBe('task-root-contract')
+    expect(stepped.providerFailures, 'and not a provider failure').toBe(0)
+    expect(stepped.folds, 'and no fold ran against the unverified state').toBe(0)
+    expect(stepped.taskRoot?.status).toBe('absent')
+    expect(stepped.taskRoot?.reason).toContain('contract failure')
+  })
+
+  it('does NOT block the same setup when the arm is off, which is a legal configuration', async () => {
+    const { bridge, provider } = await start({ taskRootMode: 'off' })
+    await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION } })
+    const before = provider.calls()
+    const stepped = telemetryOf(await bridge.send({ op: 'step' }))
+    expect(provider.calls(), 'the model call went out as before').toBe(before + 1)
+    expect(stepped.lastFinishReason).not.toBe('task-root-contract')
+    // Nothing was DECLARED, so there is no root state to report -- and no block either.
+    expect(stepped.taskRoot).toBeUndefined()
+  })
+
   it('registers NOTHING when the arm says off, and the instruction IS then folded away', async () => {
     const { bridge } = await start({ taskRootMode: 'off' })
     const appended = await bridge.send({
