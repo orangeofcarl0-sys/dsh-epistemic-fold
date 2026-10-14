@@ -425,6 +425,11 @@
     "sha256": "df31647563216fece1fec9d64c1c1df8d4284773212197cc5242b67c6cd01a55"
   },
   {
+    "file": "85_HOST_GATE_CLOSURE.md",
+    "bytes": 4582,
+    "sha256": "e72e31c14c025f70f61580ab6fe774c9d7e5f4f07c0c1aec2d4d6ae5be0e03e2"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -446,8 +451,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10310,
-    "sha256": "746798dbc802065287547260ce552a0baab73acd2f5bfa82f8ba3e8e8dc0fa0b"
+    "bytes": 10363,
+    "sha256": "2792fd4b8eb27bead5310e354dd30ef85ebd3896c5ace89a86862b9e192b4d4d"
   },
   {
     "file": "README.zh.md",
