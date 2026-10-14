@@ -440,6 +440,11 @@
     "sha256": "6ef72a968d8bb6fbd1a0cd6f7cd38857dc3dc93ed21b40a113fd166a1de831a5"
   },
   {
+    "file": "88_TASK_ROOT_FAIL_CLOSED.md",
+    "bytes": 3447,
+    "sha256": "1ff652812b3169d3b6178b7f46c9e53444e56766756ae3e10473d6f803545211"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -461,8 +466,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10463,
-    "sha256": "6ec6b8247f532bb9ca8a479c7406b933313de80b7066139901190bcd7e782e4e"
+    "bytes": 10524,
+    "sha256": "1fe36023d65b944664ec49780f2a4e22ddd7bac5e7ad4cb8e2be4450c0ea481d"
   },
   {
     "file": "README.zh.md",
