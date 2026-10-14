@@ -53,7 +53,10 @@ class StubEnvironment:
 
 
 class StubContext:
-    metadata = {}
+    def __init__(self):
+        # An INSTANCE attribute: the agent assigns `context.metadata = {...}`, and a class-level
+        # dict would leave the assignment invisible to a reader of the class.
+        self.metadata = {}
 
 
 async def main() -> None:
@@ -86,7 +89,8 @@ async def main() -> None:
     # An internal watchdog so a hang is DIAGNOSED rather than blocking the caller.
     timed_out = False
     try:
-        await asyncio.wait_for(agent.run('TASK: list the directory.', env, StubContext()), timeout=25)
+        ctx = StubContext()
+        await asyncio.wait_for(agent.run('TASK: list the directory.', env, ctx), timeout=25)
     except asyncio.TimeoutError:
         timed_out = True
     server.shutdown()
@@ -97,12 +101,12 @@ async def main() -> None:
     print(json.dumps({
         'timedOut': timed_out,
         'providerCalls': STATE['calls'],
-        'termination': (StubContext.metadata or {}).get('ef_termination'),
-        'providerFailures': (StubContext.metadata or {}).get('ef_provider_failures'),
+        'termination': (ctx.metadata or {}).get('ef_termination'),
+        'providerFailures': (ctx.metadata or {}).get('ef_provider_failures'),
         'budgetRequests': (telemetry.get('budget') or {}).get('requests'),
         'budgetRefusals': (telemetry.get('budget') or {}).get('refusals'),
         'lastFinishReason': telemetry.get('lastFinishReason'),
-        'taskRoot': (StubContext.metadata or {}).get('ef_telemetry', {}).get('taskRoot'),
+        'taskRoot': (ctx.metadata or {}).get('ef_telemetry', {}).get('taskRoot'),
         'turns': len(transcript),
         'lastTurn': closing,
         'bridgeClosed': agent._bridge._closed if agent._bridge is not None else None,

@@ -484,6 +484,19 @@ class EFLhtbAgent(BaseAgent):
             # changes is that the retry is counted separately and the failure is
             # recorded as infrastructure rather than as the model declining to act.
             error = reply.get("error")
+            # ## A SPENT BUDGET is not a provider failure, and this branch used to eat it
+            #
+            # The bridge reports a budget stop with its own finish reason AND an `error` string,
+            # so this classification caught it first and counted it as infrastructure. Measured
+            # with a one-request budget: `providerCalls` correctly stayed at 1, but the episode
+            # ran **126 turns** and recorded **125 provider failures**, retrying against a gate
+            # that refused every request -- and never set a termination at all.
+            #
+            # Checked BEFORE the classification, because retrying is the one response that cannot
+            # help: the budget that refused will refuse again, and each retry burns wall clock.
+            if str(self._bridge.last_telemetry.get("lastFinishReason", "")) == "budget-exhausted":
+                termination = "budget-exhausted"
+                break
             if error:
                 provider_failures += 1
                 consecutive_provider_failures += 1
