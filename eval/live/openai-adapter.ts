@@ -22,7 +22,7 @@
  */
 
 import { LlmAdapter } from '@deepseek-ai/dsh-llm'
-import { BudgetExhaustedError, type RequestBudget } from './request-budget.ts'
+import { BudgetExhaustedError, type RequestBudget, type Reservation } from './request-budget.ts'
 import type {
   ContentBlock,
   FinishReason,
@@ -314,7 +314,9 @@ export class OpenAiCompatibleAdapter
   private async requestWithRetry(
     body: Record<string, unknown>,
     signal: AbortSignal | undefined,
-  ): Promise<Response> {
+    maxTokens?: number,
+  ): Promise<{ response: Response; reservation: Reservation | undefined }> {
+    let reservation: Reservation | undefined
     let attempt = 0
     for (;;) {
       signal?.throwIfAborted()
@@ -325,8 +327,19 @@ export class OpenAiCompatibleAdapter
         ? requestDeadline
         : AbortSignal.any([signal, requestDeadline])
       // BEFORE the request, not after: a budget checked afterwards can only report the
-      // overspend. `admit` counts the ATTEMPT, including a 429 retry's.
-      this.budget?.admit()
+      // overspend. `admit` counts the ATTEMPT, including a 429 retry's, and returns the
+      // CREDENTIAL this attempt's reservation is settled by.
+      //
+      // The reserve follows the max_tokens ACTUALLY sent, not a constant. A constant was wrong
+      // in both directions: it over-charged ordinary calls, and when it exceeded the whole
+      // output limit it deadlocked the gate after one failed request (measured on the P1 run).
+      // Escalating the reply budget raises this with it, because it is read from the same value
+      // that goes on the wire.
+      reservation = this.budget?.admit(
+        maxTokens === undefined
+          ? { promptTokens: this.contextWindow }
+          : { promptTokens: this.contextWindow, outputTokens: maxTokens },
+      )
       const response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -343,7 +356,7 @@ export class OpenAiCompatibleAdapter
       })
       if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
         if (response.status === 429) this.rateLimitExhausted += 1
-        return response
+        return { response, reservation }
       }
       attempt += 1
       this.rateLimitRetries += 1
@@ -487,8 +500,11 @@ export class OpenAiCompatibleAdapter
     if (tools !== undefined) body.tools = tools
 
     let response: Response
+    let reservation: Reservation | undefined
     try {
-      response = await this.requestWithRetry(body, options.signal)
+      const attempted = await this.requestWithRetry(body, options.signal, options.maxTokens)
+      response = attempted.response
+      reservation = attempted.reservation
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error)
       // A budget refusal is NOT a transport failure. Tagging it apart is what lets the bridge
@@ -561,7 +577,7 @@ export class OpenAiCompatibleAdapter
         && (sane(wire.prompt_tokens) || sane(wire.cache_hit_tokens) || sane(wire.cache_miss_tokens)),
       output: wire !== undefined && sane(wire.completion_tokens),
     }
-    this.budget?.record(usage, { promptTokens: this.contextWindow }, reported)
+    this.budget?.record(usage, { promptTokens: this.contextWindow }, reported, reservation)
     if (usage !== undefined) yield { type: 'usage', usage }
     yield { type: 'finish', reason: mapFinish(choice?.finish_reason, sawToolCall) }
   }

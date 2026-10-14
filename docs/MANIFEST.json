@@ -445,6 +445,21 @@
     "sha256": "1ff652812b3169d3b6178b7f46c9e53444e56766756ae3e10473d6f803545211"
   },
   {
+    "file": "89_LAUNCH_CHECKS.md",
+    "bytes": 1750,
+    "sha256": "55572ab67c6494aa7227069e3a4dc0ea1e305165aceb7427e73e2d8a6bfd4671"
+  },
+  {
+    "file": "90_P1_LAUNCHED.md",
+    "bytes": 2913,
+    "sha256": "81c3aa50c5b7af4b2d75fa607c7eb1b65621150133004a769893af7e243e566a"
+  },
+  {
+    "file": "91_P1_RESULT.md",
+    "bytes": 3609,
+    "sha256": "83fb1bdec64259f963be750c8905a5d1419fa7001675e8816385ee345c991f44"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -466,8 +481,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10524,
-    "sha256": "1fe36023d65b944664ec49780f2a4e22ddd7bac5e7ad4cb8e2be4450c0ea481d"
+    "bytes": 10647,
+    "sha256": "052e59047130eb90d424a514f15b4bd466668b63e2de58337cf44fef9b4297b1"
   },
   {
     "file": "README.zh.md",

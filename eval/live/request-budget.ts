@@ -58,6 +58,13 @@ export interface TokenUsageLike {
   readonly promptTokens?: number
 }
 
+/** A credential for one admitted request, returned by `admit` and settled by `record`. */
+export interface Reservation {
+  readonly id: number
+  readonly promptTokens: number
+  readonly outputTokens: number
+}
+
 export interface BudgetSnapshot {
   readonly requests: number
   readonly promptTokens: number
@@ -115,7 +122,8 @@ export class RequestBudget {
    * settles exactly one admission's reserve, so `reserved` always equals (admitted - recorded) x
    * reserve. Responses arriving out of order therefore cannot release more than was reserved.
    */
-  private outstanding: { promptTokens: number; outputTokens: number }[] = []
+  private outstanding: Reservation[] = []
+  private nextReservationId = 1
 
   constructor(
     readonly limit: BudgetLimits,
@@ -134,52 +142,63 @@ export class RequestBudget {
    *   counted: a refused request never happened, and counting it would make the snapshot disagree
    *   with the provider's own request log.
    */
-  admit(): void {
+  admit(requestReserve?: { readonly promptTokens?: number; readonly outputTokens?: number }): Reservation {
     const snapshot = this.snapshot()
     let reason: string | undefined
     if (this.limit.requests > 0 && this.requests >= this.limit.requests) reason = 'requests'
     else if (this.limit.promptTokens > 0 && this.consumedPrompt() >= this.limit.promptTokens) reason = 'promptTokens'
     else if (this.limit.outputTokens > 0 && this.consumedOutput() >= this.limit.outputTokens) reason = 'outputTokens'
     else if (this.limit.wallClockMs > 0 && snapshot.elapsedMs >= this.limit.wallClockMs) reason = 'wallClock'
-    if (reason === undefined) {
-      this.requests += 1
-      this.reservedPrompt += this.reserve.promptTokens
-      this.reservedOutput += this.reserve.outputTokens
-      this.outstanding.push({ ...this.reserve })
-      return
+    if (reason !== undefined) {
+      this.refusals += 1
+      throw new BudgetExhaustedError(reason, snapshot)
     }
-    this.refusals += 1
-    throw new BudgetExhaustedError(reason, snapshot)
+    // ## The reserve follows the request ACTUALLY being sent
+    //
+    // A single constant was wrong: the main model asks for a few thousand output tokens and the
+    // fold's summarization for its own budget, so reserving one large figure for every request
+    // both over-charged the ordinary calls and -- when that figure exceeded the whole output limit
+    // -- deadlocked the gate after ONE failed request. Measured on the P1 run: a standing 131,072
+    // reserve against a 100,000 limit refused every later request.
+    const prompt = requestReserve?.promptTokens ?? this.reserve.promptTokens
+    const output = requestReserve?.outputTokens
+    if (output === undefined) {
+      // No reliable output bound: fail closed rather than invent one.
+      this.refusals += 1
+      throw new BudgetExhaustedError('unknown-output-bound', snapshot)
+    }
+    if (this.reserve.outputTokens > 0 && output > this.reserve.outputTokens) {
+      this.refusals += 1
+      throw new BudgetExhaustedError('output-reserve-exceeds-approved-max', snapshot)
+    }
+    this.requests += 1
+    this.reservedPrompt += prompt
+    this.reservedOutput += output
+    const reservation: Reservation = { id: this.nextReservationId++, promptTokens: prompt, outputTokens: output }
+    this.outstanding.push(reservation)
+    return reservation
   }
 
   /**
-   * Record the usage one answered request reported.
+   * Settle ONE request's reservation, named by the credential `admit` returned.
    *
-   * ## The field names are DSH's, not the provider's
-   *
-   * `mapUsage` returns disjoint counters -- `inputTokens` (which EXCLUDES cached input),
-   * `outputTokens`, `cacheReadTokens`, `cacheWriteTokens` -- and has no `promptTokens` at all.
-   * Reading `usage.promptTokens` here counted nothing and left the token caps inert while they
-   * looked implemented; the admission test that expects 100 tokens recorded 0 is what caught it.
-   *
-   * The prompt side is the SUM of its parts, deliberately: `inputTokens` alone would omit the
-   * cached re-reads, which are the bulk of a long episode's prompt traffic and must not be free
-   * merely because they are cheap.
-   *
-   * The admission RESERVE for this request is settled first: it was charged when the request was
-   * admitted, and the measurement replaces it rather than adding to it. A request that never
-   * reaches `record` -- 5xx, transport error, abort, unparseable body, exhausted 429 retries --
-   * keeps its reserve, which is the conservative treatment of a request that may have been
-   * processed and billed.
-   *
-   * `usage === undefined` (no usage at all) settles with the caller's fallback. A PARTIAL usage
-   * record is settled with what it says, and is counted in `partialUsageRequests`: `mapUsage`
-   * fills absent fields with 0, so the object exists and a `undefined` test cannot see it.
+   * FIFO remains only as a fallback for callers that do not thread the credential. Production
+   * threads it, so a response settles the reservation of the request it belongs to -- which is what
+   * makes different-sized reservations safe under concurrency and out-of-order completion.
    */
+  settle(reservation: Reservation | undefined): void {
+    if (reservation !== undefined) {
+      const at = this.outstanding.indexOf(reservation)
+      if (at >= 0) this.outstanding.splice(at, 1)
+      return
+    }
+    this.outstanding.shift()
+  }
   record(
     usage: TokenUsageLike | undefined,
     fallback?: TokenUsageLike,
     reported: { readonly prompt: boolean; readonly output: boolean } = { prompt: true, output: true },
+    reservation?: Reservation,
   ): void {
     // ## Settlement is PER DIMENSION, and an unreported dimension keeps its reserve
     //
@@ -192,7 +211,10 @@ export class RequestBudget {
     if (usage === undefined) this.unknownUsageRequests += 1
     if (!reported.prompt || !reported.output) this.partialUsageRequests += 1
     if (effective === undefined) return
-    const settled = this.outstanding.shift()
+    const settled = reservation !== undefined
+      ? this.outstanding.find(entry => entry.id === reservation.id)
+      : this.outstanding[0]
+    this.settle(reservation)
     if (settled !== undefined) {
       if (reported.prompt) this.reservedPrompt -= settled.promptTokens
       if (reported.output) this.reservedOutput -= settled.outputTokens
