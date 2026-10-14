@@ -435,6 +435,11 @@
     "sha256": "3f0e3e94452107d2b85a195d9c48249c6ff6a49c974036f1330ec8ddeef07c46"
   },
   {
+    "file": "87_GATE_B_TERMINATION.md",
+    "bytes": 3268,
+    "sha256": "6ef72a968d8bb6fbd1a0cd6f7cd38857dc3dc93ed21b40a113fd166a1de831a5"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -456,8 +461,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10408,
-    "sha256": "89bd2b9a81aeaad83e6bffb6bc13d2a0ac1c71a4fc563f5328b5bac01396fca3"
+    "bytes": 10463,
+    "sha256": "6ec6b8247f532bb9ca8a479c7406b933313de80b7066139901190bcd7e782e4e"
   },
   {
     "file": "README.zh.md",
