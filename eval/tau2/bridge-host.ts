@@ -1292,14 +1292,11 @@ interface TauAssistant {
 async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   const turnStartedAt = performance.now()
   const gapMs = lastCallEndedAt === 0 ? 0 : turnStartedAt - lastCallEndedAt
-  await foldIfNeeded()
-  // Immediately after the fold, and BEFORE the request is measured and sent.
+  // ## `exact` must not silently degrade into Unpinned -- checked FIRST, before any fold
   //
-  // The placement is load-bearing: a rebase handed off by the pressure fold can
-  // only affect this request if it runs before the surface is read. Draining it
-  // later would leave the model looking at the pre-rebase surface while the
-  // telemetry claimed a rebase had landed.
-  // ## `exact` must not silently degrade into Unpinned
+  // This guard used to sit AFTER `foldIfNeeded()`, which defeated it: a fold could commit against
+  // the very state the guard exists to refuse. It is now the first thing `modelTurn` does, so the
+  // refusal precedes the fold, the rebase and the request rather than merely the request.
   //
   // `protectedRootGuard` refuses a ROOT fold whose registered source has gone missing, but the
   // engine cannot distinguish "this arm runs `exact` and the host never registered" from "this arm
@@ -1323,6 +1320,13 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
       return { role: 'assistant', content: null, error: 'task root contract failure' }
     }
   }
+  await foldIfNeeded()
+  // Immediately after the fold, and BEFORE the request is measured and sent.
+  //
+  // The placement is load-bearing: a rebase handed off by the pressure fold can
+  // only affect this request if it runs before the surface is read. Draining it
+  // later would leave the model looking at the pre-rebase surface while the
+  // telemetry claimed a rebase had landed.
   await drainIdleRebase()
 
   const messages = surface()
