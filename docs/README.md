@@ -184,6 +184,7 @@ These records document real-host defects and browser/deployment integration. The
 - [94_RERUN_TRAJECTORY.md](94_RERUN_TRAJECTORY.md)
 - [95_RELAUNCH_NO_CAP.md](95_RELAUNCH_NO_CAP.md)
 - [96_P1_RESULT.md](96_P1_RESULT.md)
+- [97_FREE_TIER_BLOCKED.md](97_FREE_TIER_BLOCKED.md)
 
 ## How to read old conclusions
 
