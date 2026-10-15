@@ -460,6 +460,11 @@
     "sha256": "83fb1bdec64259f963be750c8905a5d1419fa7001675e8816385ee345c991f44"
   },
   {
+    "file": "92_PER_REQUEST_RESERVE.md",
+    "bytes": 3246,
+    "sha256": "adfaca28db1b422cb21f96fc4786a376ccd779ecf83bc124f2b840a1de5b9eaf"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -481,8 +486,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10647,
-    "sha256": "052e59047130eb90d424a514f15b4bd466668b63e2de58337cf44fef9b4297b1"
+    "bytes": 10704,
+    "sha256": "655bd384bc6bf780d9bb92e49a24bd89f5651d83474a3f188c9f22b6b9ee1c30"
   },
   {
     "file": "README.zh.md",

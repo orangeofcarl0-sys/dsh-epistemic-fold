@@ -180,6 +180,7 @@ These records document real-host defects and browser/deployment integration. The
 - [90_P1_LAUNCHED.md](90_P1_LAUNCHED.md)
 - [91_P1_RESULT.md](91_P1_RESULT.md)
 - [92_PER_REQUEST_RESERVE.md](92_PER_REQUEST_RESERVE.md)
+- [93_RERUN.md](93_RERUN.md)
 
 ## How to read old conclusions
 
