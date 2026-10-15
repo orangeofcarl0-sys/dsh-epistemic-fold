@@ -186,6 +186,7 @@ These records document real-host defects and browser/deployment integration. The
 - [96_P1_RESULT.md](96_P1_RESULT.md)
 - [97_FREE_TIER_BLOCKED.md](97_FREE_TIER_BLOCKED.md)
 - [98_OPENCODE_FREE_PLUGIN.md](98_OPENCODE_FREE_PLUGIN.md)
+- [99_UPGRADE_AND_REPLICATION.md](99_UPGRADE_AND_REPLICATION.md)
 
 ## How to read old conclusions
 
