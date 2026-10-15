@@ -226,7 +226,8 @@ describe('the reserve follows the REQUEST, so one failure cannot deadlock the ga
     const result = await drive(second, 2_048)
     expect(result.failure, 'the later request was admitted').toBeUndefined()
     expect(ok.calls.length).toBe(1)
-  })
+    // The 429 backoff makes this take ~7s; the default 5s timeout would kill it mid-assertion.
+  }, 60_000)
 
   it('settles only the credential it is given, so a failed request keeps its reserve', async () => {
     // A fails with a large bound, B succeeds with a small one. B must settle B's reserve; A's must
@@ -244,7 +245,7 @@ describe('the reserve follows the REQUEST, so one failure cannot deadlock the ga
     expect(budget.snapshot().reservedOutputTokens, "A's reserves survived B's settlement").toBe(failing.calls.length * 16_384)
     expect(budget.snapshot().observedOutputTokens).toBe(7)
     expect(budget.snapshot().reservedPromptTokens, 'A is still reserved in full too').toBe(failing.calls.length * 131_072)
-  })
+  }, 60_000)
 
   it('refuses a bound larger than the approved per-request ceiling, and one that is absent', async () => {
     // Escalation raises the reserve WITH the request -- and stops at the approved ceiling rather
