@@ -192,6 +192,7 @@ These records document real-host defects and browser/deployment integration. The
 - [102_FREE_TIER_LANE.md](102_FREE_TIER_LANE.md)
 - [103_STALL_DIAGNOSIS.md](103_STALL_DIAGNOSIS.md)
 - [104_STALL_NARROWED.md](104_STALL_NARROWED.md)
+- [105_STALL_CLOSED.md](105_STALL_CLOSED.md)
 
 ## How to read old conclusions
 
