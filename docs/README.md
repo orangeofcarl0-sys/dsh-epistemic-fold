@@ -181,6 +181,7 @@ These records document real-host defects and browser/deployment integration. The
 - [91_P1_RESULT.md](91_P1_RESULT.md)
 - [92_PER_REQUEST_RESERVE.md](92_PER_REQUEST_RESERVE.md)
 - [93_RERUN.md](93_RERUN.md)
+- [94_RERUN_TRAJECTORY.md](94_RERUN_TRAJECTORY.md)
 
 ## How to read old conclusions
 
