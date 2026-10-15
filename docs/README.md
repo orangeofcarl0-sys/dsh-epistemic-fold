@@ -188,6 +188,7 @@ These records document real-host defects and browser/deployment integration. The
 - [98_OPENCODE_FREE_PLUGIN.md](98_OPENCODE_FREE_PLUGIN.md)
 - [99_UPGRADE_AND_REPLICATION.md](99_UPGRADE_AND_REPLICATION.md)
 - [100_PLUGIN_WEB_ONLY.md](100_PLUGIN_WEB_ONLY.md)
+- [101_ZEN_FREE_SOLVED.md](101_ZEN_FREE_SOLVED.md)
 
 ## How to read old conclusions
 

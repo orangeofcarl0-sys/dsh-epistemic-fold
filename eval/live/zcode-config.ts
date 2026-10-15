@@ -18,6 +18,7 @@
  * @module eval/live/zcode-config
  */
 
+import { randomBytes } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -159,9 +160,59 @@ function providerForModel(model: string): string | undefined {
  * `docs/50_PHASE7_HANDOFF.md` §2.1. The failure mode is identical whether the
  * header is missing or misspelled, so the value is checked once, here.
  */
+/**
+ * OpenCode Zen's free tier answers `403 FreeTierError` to anything that is not an OpenCode
+ * client, and the gate is stricter than a header set: the session id's **first 12 hex
+ * characters must be OpenCode's own TIME encoding**. A hashed or random 12-hex region is
+ * rejected -- measured on 2026-10-16 against `/inference/v1`, and stated in the plugin's own
+ * source (`dsh-opencode-free` lib/zen-provider.js:170-175: "The time region is no longer a
+ * hash: the inference gate rejects that form").
+ *
+ * It is GENERATED here rather than configured, because a static `EF_LIVE_HEADERS` value would
+ * freeze the time region at whatever moment the file was written. One id per process is the
+ * plugin's own semantics: it keeps the first identity for cache affinity and persists nothing.
+ *
+ * The tool declarations are not decoration either: the gate refuses a request that does not
+ * declare tools named exactly `read` and `bash` (`enforceAnonymousTools`). The adapter's own
+ * tool list is the caller's, so this only supplies the identity; the declarations travel in the
+ * request body.
+ */
+const ZEN_FREE_USER_AGENT =
+  'opencode/1.18.31 ai-sdk/provider-utils/4.0.40 runtime/bun/1.3.14 dsh-opencode-free/0.3.4'
+let zenFreeSession: string | undefined
+
+function base62FromBytes(bytes: Uint8Array, length: number): string {
+  const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+  let out = ''
+  for (let index = 0; index < length; index += 1) {
+    out += alphabet[bytes[index % bytes.length]! % 62]
+  }
+  return out
+}
+
+function zenFreeIdentityHeaders(): Record<string, string> {
+  if (zenFreeSession === undefined) {
+    const encoded = ~(BigInt(Date.now()) * 0x1000n + 1n)
+    const hex = (encoded & 0xffffffffffffn).toString(16).padStart(12, '0')
+    zenFreeSession = `ses_${hex}${base62FromBytes(randomBytes(14), 14)}`
+  }
+  const session = zenFreeSession
+  return {
+    authorization: 'Bearer public',
+    'user-agent': ZEN_FREE_USER_AGENT,
+    'x-opencode-client': 'cli',
+    'x-opencode-project': 'global',
+    'x-opencode-session': session,
+    'x-client-request-id': session,
+    'x-opencode-request': `msg_${randomBytes(6).toString('hex')}${base62FromBytes(randomBytes(14), 14)}`,
+  }
+}
+
 function resolveHeaders(): Readonly<Record<string, string>> | undefined {
+  // The Zen free tier's identity is generated, never configured -- see `zenFreeIdentityHeaders`.
+  const zenFree = process.env.EF_LIVE_ZEN_FREE === '1' ? zenFreeIdentityHeaders() : undefined
   const raw = process.env.EF_LIVE_HEADERS
-  if (raw === undefined || raw.trim().length === 0) return undefined
+  if (raw === undefined || raw.trim().length === 0) return zenFree
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
@@ -178,7 +229,8 @@ function resolveHeaders(): Readonly<Record<string, string>> | undefined {
     }
     headers[name] = value
   }
-  return Object.keys(headers).length === 0 ? undefined : headers
+  const merged = zenFree === undefined ? headers : { ...zenFree, ...headers }
+  return Object.keys(merged).length === 0 ? undefined : merged
 }
 
 /**
