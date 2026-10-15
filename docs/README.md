@@ -189,6 +189,7 @@ These records document real-host defects and browser/deployment integration. The
 - [99_UPGRADE_AND_REPLICATION.md](99_UPGRADE_AND_REPLICATION.md)
 - [100_PLUGIN_WEB_ONLY.md](100_PLUGIN_WEB_ONLY.md)
 - [101_ZEN_FREE_SOLVED.md](101_ZEN_FREE_SOLVED.md)
+- [102_FREE_TIER_LANE.md](102_FREE_TIER_LANE.md)
 
 ## How to read old conclusions
 

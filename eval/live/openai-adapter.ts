@@ -489,11 +489,16 @@ export class OpenAiCompatibleAdapter
       }
     }
 
+    // The Zen free tier refuses `stream: false` with `403 FreeTierError`: measured 2026-10-16,
+    // IDENTICAL requests answered 403 non-streamed and 200 streamed. Opt in per route rather
+    // than flipping the default, so no existing route changes behaviour.
+    const streamed = process.env.EF_LIVE_STREAM === '1'
     const body: Record<string, unknown> = {
       model: this.model,
       messages,
-      stream: false,
+      stream: streamed,
     }
+    if (streamed) body.stream_options = { include_usage: true }
     if (options.maxTokens !== undefined) body.max_tokens = options.maxTokens
     if (options.temperature !== undefined) body.temperature = options.temperature
     const tools = toWireTools(options.tools)
@@ -538,7 +543,7 @@ export class OpenAiCompatibleAdapter
       return
     }
 
-    const payload = await response.json() as WireResponse
+    const payload = streamed ? await readStreamedPayload(response) : (await response.json() as WireResponse)
     const choice = payload.choices?.[0]
     const message = choice?.message
     let sawToolCall = false
@@ -581,4 +586,60 @@ export class OpenAiCompatibleAdapter
     if (usage !== undefined) yield { type: 'usage', usage }
     yield { type: 'finish', reason: mapFinish(choice?.finish_reason, sawToolCall) }
   }
+}
+
+/**
+ * Rebuild a NON-STREAMING payload from an SSE response.
+ *
+ * A route that only admits streaming (OpenCode Zen's free tier) would otherwise force every
+ * consumer to learn a second shape. This collapses the frames back into the one the rest of the
+ * adapter already reads, so exactly one line above changes.
+ */
+async function readStreamedPayload(response: Response): Promise<WireResponse> {
+  const raw = await response.text()
+  const content: string[] = []
+  const reasoning: string[] = []
+  const calls = new Map<number, { id: string; name: string; arguments: string }>()
+  let usage: unknown
+  for (const line of raw.split(/\r?\n/u)) {
+    if (!line.startsWith('data:')) continue
+    const data = line.slice(5).trim()
+    if (data.length === 0 || data === '[DONE]') continue
+    let frame: Record<string, unknown>
+    try {
+      frame = JSON.parse(data) as Record<string, unknown>
+    } catch {
+      continue
+    }
+    if (frame.usage !== undefined && frame.usage !== null) usage = frame.usage
+    const choices = frame.choices as { delta?: Record<string, unknown> }[] | undefined
+    const delta = choices?.[0]?.delta
+    if (delta === undefined) continue
+    if (typeof delta.content === 'string') content.push(delta.content)
+    if (typeof delta.reasoning_content === 'string') reasoning.push(delta.reasoning_content)
+    const deltas = (delta.tool_calls ?? []) as { index?: number; id?: string; function?: { name?: string; arguments?: string } }[]
+    for (const call of deltas) {
+      const index = call.index ?? 0
+      const entry = calls.get(index) ?? { id: '', name: '', arguments: '' }
+      if (call.id !== undefined) entry.id = call.id
+      if (call.function?.name !== undefined) entry.name = call.function.name
+      if (call.function?.arguments !== undefined) entry.arguments += call.function.arguments
+      calls.set(index, entry)
+    }
+  }
+  const toolCalls = [...calls.entries()].sort((left, right) => left[0] - right[0]).map(([, call]) => ({
+    id: call.id,
+    type: 'function',
+    function: { name: call.name, arguments: call.arguments },
+  }))
+  return {
+    choices: [{
+      message: {
+        content: content.length > 0 ? content.join('') : null,
+        tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+        reasoning_content: reasoning.length > 0 ? reasoning.join('') : undefined,
+      },
+    }],
+    usage,
+  } as unknown as WireResponse
 }
