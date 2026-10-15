@@ -194,6 +194,7 @@ These records document real-host defects and browser/deployment integration. The
 - [104_STALL_NARROWED.md](104_STALL_NARROWED.md)
 - [105_STALL_CLOSED.md](105_STALL_CLOSED.md)
 - [106_FOLD_RUN_RELAUNCHED.md](106_FOLD_RUN_RELAUNCHED.md)
+- [107_FOLD_RUN_RESULT.md](107_FOLD_RUN_RESULT.md)
 
 ## How to read old conclusions
 
