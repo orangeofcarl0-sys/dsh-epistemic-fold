@@ -190,6 +190,7 @@ These records document real-host defects and browser/deployment integration. The
 - [100_PLUGIN_WEB_ONLY.md](100_PLUGIN_WEB_ONLY.md)
 - [101_ZEN_FREE_SOLVED.md](101_ZEN_FREE_SOLVED.md)
 - [102_FREE_TIER_LANE.md](102_FREE_TIER_LANE.md)
+- [103_STALL_DIAGNOSIS.md](103_STALL_DIAGNOSIS.md)
 
 ## How to read old conclusions
 
