@@ -191,6 +191,7 @@ These records document real-host defects and browser/deployment integration. The
 - [101_ZEN_FREE_SOLVED.md](101_ZEN_FREE_SOLVED.md)
 - [102_FREE_TIER_LANE.md](102_FREE_TIER_LANE.md)
 - [103_STALL_DIAGNOSIS.md](103_STALL_DIAGNOSIS.md)
+- [104_STALL_NARROWED.md](104_STALL_NARROWED.md)
 
 ## How to read old conclusions
 
