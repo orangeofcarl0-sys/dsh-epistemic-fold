@@ -197,6 +197,7 @@ These records document real-host defects and browser/deployment integration. The
 - [107_FOLD_RUN_RESULT.md](107_FOLD_RUN_RESULT.md)
 - [108_RESERVE_RELEASE_FIX.md](108_RESERVE_RELEASE_FIX.md)
 - [109_FREE_MODEL_ROUTE_LOCKED.md](109_FREE_MODEL_ROUTE_LOCKED.md)
+- [110_FREE_MODEL_SOLVED.md](110_FREE_MODEL_SOLVED.md)
 
 ## How to read old conclusions
 
