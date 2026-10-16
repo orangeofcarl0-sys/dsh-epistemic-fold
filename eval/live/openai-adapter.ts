@@ -537,7 +537,14 @@ export class OpenAiCompatibleAdapter
       response = attempted.response
       reservation = attempted.reservation
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : String(error)
+      // ## Carry the CAUSE, not just undici's flat "fetch failed"
+      //
+      // The bridge records `lastProviderError = finishReason.slice('error:'.length)`, so whatever
+      // this message says is ALL the archive will ever know. `docs/108` claimed the detail was
+      // preserved; it was not -- the archive still read a bare `fetch failed`, which is why the
+      // 2026-10-16 failures could not be attributed (docs/118). undici puts the real reason in
+      // `cause` (and, for an address set, in `cause.errors`), so it is appended here.
+      const message = describeTransportError(error)
       // A budget refusal is NOT a transport failure. Tagging it apart is what lets the bridge
       // keep it out of `providerFailures` and the agent terminate with its own reason.
       const budget = error instanceof BudgetExhaustedError
@@ -761,4 +768,24 @@ function ensureZenFreeTools(tools: unknown[] | undefined): unknown[] | undefined
     },
   })
   return [...list, ...missing.map(admission)]
+}
+/**
+ * A failure message that keeps the transport's own reason.
+ *
+ * undici reports `fetch failed` and hides everything useful in `cause`; for a multi-address
+ * connection it nests one error per address under `cause.errors`. The archive only ever sees this
+ * string, so the codes are spelled out here rather than left to be re-derived.
+ */
+function describeTransportError(error: unknown): string {
+  if (!(error instanceof Error)) return String(error)
+  const codes: string[] = []
+  const walk = (node: unknown, depth: number): void => {
+    if (depth > 5 || node === null || typeof node !== 'object') return
+    const entry = node as { code?: unknown; errors?: unknown }
+    if (typeof entry.code === 'string') codes.push(entry.code)
+    if (Array.isArray(entry.errors)) for (const inner of entry.errors) walk(inner, depth + 1)
+  }
+  walk((error as { cause?: unknown }).cause, 0)
+  const unique = [...new Set(codes)]
+  return unique.length === 0 ? error.message : `${error.message} (${unique.join(', ')})`
 }

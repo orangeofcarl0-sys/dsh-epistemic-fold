@@ -142,13 +142,13 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 # measured window from an assumed one.
 model_window() {
   case "$1" in
-    deepseek-v4.1-flash) echo 131072 ;;   # measured: >=250K-token prompt accepted (HTTP 200)
+    deepseek-v4.1-flash*) echo 131072 ;;  # measured for the FAMILY: >=250K-token prompt accepted
     *) echo 131072 ;;
   esac
 }
 export EF_TAU2_WINDOW="${EF_TAU2_WINDOW:-$(model_window "$EF_LIVE_MODEL")}"
 case "$EF_LIVE_MODEL" in
-  deepseek-v4.1-flash) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} (measured for this model)" ;;
+  deepseek-v4.1-flash*) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} (measured for this model family)" ;;
   *) echo "window: EF_TAU2_WINDOW=${EF_TAU2_WINDOW} ASSUMED for ${EF_LIVE_MODEL} (adapter default, not measured on this route)" ;;
 esac
 
@@ -170,7 +170,10 @@ esac
 # not assumed: `telemetry.timing` reports it on the next wave.
 model_request_timeout() {
   case "$1" in
-    deepseek-v4.1-flash) echo 300000 ;;   # measured: mean 47.9s, max 64.4s, the 120s deadline was hit
+    # PREFIX, not the exact paid name. Matching only `deepseek-v4.1-flash` silently gave every
+    # sibling -- including the `-free` variant, which is the SAME model -- the 120s default, whose
+    # aborts are what filled the budget with standing reservations for calls that never answered.
+    deepseek-v4.1-flash*) echo 300000 ;;  # measured: mean 47.9s, max 64.4s; 120s aborts
     *) echo 120000 ;;
   esac
 }
@@ -361,11 +364,20 @@ export EF_LHTB_MAX_TURNS="${EF_LHTB_MAX_TURNS:-1200}"
 
 # ## Verify the route in the transport that will actually use it
 #
-# This is the precondition the handoff used to state as a `curl`. That check is
-# wrong in kind and it cost a full probe: `opencode.ai` resolves to nine A
-# records, four of which refuse TCP 443, and curl falls back across the set while
-# Node's fetch — which the bridge is — does not. So curl reported 200 while every
-# model call in the run died as `error:fetch failed`.
+# This is the precondition the handoff used to state as a `curl`. That check is wrong in kind: it
+# asked with a different transport than the one that runs.
+#
+# ## The old explanation for the failures was MEASURABLY FALSE (2026-10-16)
+#
+# It said `opencode.ai` resolves to nine A records, four refusing TCP 443, and that Node's fetch
+# does not fall back across them as curl does. Measured:
+#   * it resolves to FOUR A records (172.65.90.20-23, Cloudflare), and all four accept TCP 443;
+#   * undici 7.28.0 never sets `autoSelectFamily`, so Node's default (true) applies and it DOES walk
+#     the whole address set -- proven five ways, including an injected [dead, live] lookup returning
+#     200 and an all-refuse set returning an AggregateError with one inner error per address.
+# So "Node will not fall back" cannot explain those failures, and a comment asserting it is worse
+# than no comment. What the preflight is FOR is unchanged: ask the question with the bridge's own
+# transport, before Harbor pulls images.
 #
 # The probe below asks the question with the bridge's own transport. It costs one
 # request and it runs BEFORE Harbor pulls images, so a transport fault is found in
@@ -378,6 +390,24 @@ if [ "${EF_SKIP_ROUTE_CHECK:-0}" != "1" ]; then
     echo "EF_SKIP_ROUTE_CHECK=1 to run anyway." >&2
     exit 1
   fi
+fi
+# ## The external watchdog, started by the SHIPPED runner
+#
+# `eval/lhtb/watchdog.ts` samples the transcript mtime and `docker top` and reaps the host-side
+# compose client tree with `taskkill /F /T`. That last part is not incidental: it is the ONLY thing
+# that reaches the `docker-compose.exe` plugin, which survives its `docker.exe` parent and holds the
+# stdout pipe open, wedging harbor's `communicate()` forever (docs/116).
+#
+# It already existed and did the right thing -- but it was started only by four ad-hoc launchers
+# (ef-ucs.sh, ef-step5.sh, ef-sweep2.sh, ef-probe-foldwindow.sh), so the SHIPPED path had no
+# host-side deadline at all (docs/117 section b). Measured consequence: five archived cells never
+# finalised, one of them stuck 3h10m with no termination reason.
+#
+# Opt out with EF_LHTB_WATCHDOG=0.
+if [ "${EF_LHTB_WATCHDOG:-1}" = "1" ]; then
+  WATCHLOG="${EF_HOME:-$(cd "${SCRIPT_DIR}/.." && pwd)}/ef-phase7-logs/watchdog.log"
+  node --experimental-transform-types "${SCRIPT_DIR}/../eval/lhtb/watchdog.ts" >> "$WATCHLOG" 2>&1 &
+  echo "watchdog: pid=$! log=$WATCHLOG"
 fi
 
 # ## The mode selects the config, and it is read HERE on purpose

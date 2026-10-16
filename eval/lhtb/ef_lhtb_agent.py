@@ -58,6 +58,17 @@ SHELL_TOOL = "run_shell"
 # is the real budget; this is a safety net so a looping model cannot run forever.
 MAX_TURNS = int(os.environ.get("EF_LHTB_MAX_TURNS", "400"))
 
+# ## The episode's own wall clock
+#
+# Every other bound in this loop is a COUNT: MAX_TURNS, MAX_WASTED_ATTEMPTS, and the provider-outage
+# window -- which resets on any success. So an episode that is merely SLOW has no deadline at all, and
+# the only host-side ceiling was harbor's episode budget, measured at 86400 x 3.0 = 72 hours, nine
+# times what `lhtb-ef-sweep-ucs.yaml`'s own comment claims (docs/117 section b).
+#
+# This is the in-episode half of the fix; `eval/lhtb/watchdog.ts` is the out-of-episode half, now
+# started by `scripts/run-lhtb.sh` rather than only by ad-hoc launchers.
+EPISODE_WALL_SEC = int(os.environ.get("EF_LHTB_EPISODE_WALL_SEC", "14400"))
+
 # How many consecutive empty responses end the loop. A single blank completion is
 # an anomaly to nudge past, not a reason to abandon a multi-hour task.
 MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
@@ -504,8 +515,17 @@ class EFLhtbAgent(BaseAgent):
         # the case where failures are frequent but never consecutive.
         turn = 0
         wasted_attempts = 0
+        episode_started_at = time.monotonic()
         while turn < MAX_TURNS:
             turn += 1
+            elapsed_sec = time.monotonic() - episode_started_at
+            if elapsed_sec > EPISODE_WALL_SEC:
+                # A wall-clock stop, named as its own reason so the archive can tell it apart from
+                # a turn budget or a provider outage.
+                termination = (
+                    f"episode-wall-clock-exceeded ({int(elapsed_sec)}s of {EPISODE_WALL_SEC}s)"
+                )
+                break
             calls = reply.get("tool_calls") or []
 
             # ## A provider failure is not a model turn

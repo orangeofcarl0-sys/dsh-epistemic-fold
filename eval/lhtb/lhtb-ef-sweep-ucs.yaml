@@ -68,10 +68,19 @@ agents:
   - import_path: "ef_lhtb_agent:EFLhtbAgent"
   # A LABEL, not the route: run-lhtb.sh rewrites this line from EF_LIVE_MODEL.
     model_name: openai/step-5-preview-free
-  # ## MUST equal the task's agent budget
+  # ## What this number actually is, measured 2026-10-16
   #
-  # task.toml now declares 28800. This is deliberately the same number: a value
-  # below it makes the config, not the task, the thing that ends every trial.
+  # The comment here used to say "MUST equal the task's agent budget" and then name 28800, while
+  # the value was 86400 -- and `timeout_multiplier: 3.0` (above) multiplies it again. The effective
+  # episode ceiling is therefore **86400 x 3.0 = 259200s (72 hours)**, which is NINE TIMES the task's
+  # 28800. A comment that states the opposite of the value is worse than no comment: it is what made
+  # "harbor's wall clock is the real bound" look true (docs/117 section b, docs/119 section E).
+  #
+  # The 72h ceiling is not itself changed here -- that is a budget decision, not a documentation one.
+  # What changed is that the number is now described as it is. Note also that harbor enforces it with
+  # `asyncio.wait_for` (trial.py:961), which waits for cancellation to complete, so even 72h is not
+  # guaranteed to fire on an await that cannot be cancelled -- which is why the lane now carries its
+  # own bounds (`_exec`, EPISODE_WALL_SEC) and why scripts/run-lhtb.sh starts the watchdog.
     override_timeout_sec: 86400
 
 datasets:
