@@ -243,6 +243,41 @@ describe('a request that never left the machine releases its reserve', () => {
   })
 })
 
+describe('an AggregateError is judged by ALL its addresses, never by the first', () => {
+  const APPROVED = { promptTokens: 131_072, outputTokens: 131_072 }
+
+  function aggregate(codes: string[]) {
+    const calls: number[] = []
+    const impl = async () => {
+      calls.push(calls.length + 1)
+      const error = new TypeError('fetch failed')
+      ;(error as { cause?: unknown }).cause = { errors: codes.map(code => ({ code })) }
+      throw error
+    }
+    return { calls, impl }
+  }
+
+  async function reservedFor(codes: string[]): Promise<number> {
+    const budget = new RequestBudget({ ...LIMITS, requests: 10 }, APPROVED)
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: aggregate(codes).impl, budget })
+    await drive(adapter, 4_096)
+    return budget.snapshot().reservedOutputTokens
+  }
+
+  it('releases when EVERY address failed before sending', async () => {
+    expect(await reservedFor(['ECONNREFUSED', 'ECONNREFUSED'])).toBe(0)
+    // ETIMEDOUT is pre-send and was absent from the allow-list; the aggregate's code is the FIRST
+    // inner code, so a blackholed first address used to strand the whole reservation.
+    expect(await reservedFor(['ETIMEDOUT', 'ECONNREFUSED'])).toBe(0)
+  })
+
+  it('KEEPS the reserve when ANY address may have been reached', async () => {
+    // The aggregate's own code would be the first, but a connection that was reset means the
+    // request could have been processed and billed.
+    expect(await reservedFor(['ECONNREFUSED', 'ECONNRESET'])).toBe(4_096)
+  })
+})
+
 describe('the reserve follows the REQUEST, so one failure cannot deadlock the gate', () => {
   const APPROVED = { promptTokens: 131_072, outputTokens: 131_072 }
 

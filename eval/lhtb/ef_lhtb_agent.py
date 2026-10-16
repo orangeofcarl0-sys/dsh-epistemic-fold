@@ -83,6 +83,13 @@ MAX_EMPTY_STREAK = int(os.environ.get("EF_LHTB_MAX_EMPTY", "5"))
 # asks the bridge for. The base must match the bridge's own default
 # (`EF_BRIDGE_MAX_TOKENS`); the ceiling bounds how far escalation can go; and the
 # streak bounds how many consecutive cut-offs are tolerated.
+# One place for the container command bound, instead of the literal 900 that used to sit in
+# `_exec` and a second copy in watchdog-policy.ts.
+TOOL_TIMEOUT_SEC = int(os.environ.get("EF_LHTB_TOOL_TIMEOUT_SEC", "900"))
+# How long past its own bound the CALL may take before we stop waiting for it. Covers the
+# handler's own overrun, which is measured at +418s (toolMs=1318479 for a 900s bound).
+TOOL_ABANDON_GRACE_SEC = int(os.environ.get("EF_LHTB_TOOL_ABANDON_GRACE_SEC", "600"))
+
 REPLY_MAX_TOKENS = int(
     os.environ.get(
         "EF_LHTB_REPLY_MAX_TOKENS", os.environ.get("EF_BRIDGE_MAX_TOKENS", "32768")
@@ -324,9 +331,44 @@ class EFLhtbAgent(BaseAgent):
         ]
 
     async def _exec(self, environment: BaseEnvironment, command: str) -> str:
-        """Run one command in the container and render its result as text."""
+        """Run one command in the container and render its result as text.
+
+        ## Why this carries its OWN deadline on top of harbor's
+
+        `environment.exec` already takes `timeout_sec`, and it enforces it with
+        `asyncio.wait_for(process.communicate(), timeout_sec)` (harbor docker.py:335-338). That bound
+        is not enough, because **harbor's timeout HANDLER itself ends in an unbounded await**:
+        `docker.py:349` is a bare `await process.communicate()` inside `except asyncio.TimeoutError`.
+
+        Measured on a live stalled cell (2026-10-16, 3h10m): harbor spawns
+        `docker compose exec` via `asyncio.create_subprocess_exec`, and on Windows `docker.exe` starts
+        the `docker-compose.exe` PLUGIN as a separate process and EXITS. The plugin inherits the
+        stdout pipe's write end, so `communicate()` never sees EOF. `terminate()`/`kill()` signal only
+        the direct child's PID -- already reaped -- so they are no-ops and the real pipe holder is
+        never signalled. Live tree at the time: `docker.exe 27144` GONE, `docker-compose.exe 39196`
+        (parent 27144) still alive; the container was still running `grep -R cfgd_secret /`.
+
+        So the await is bounded here as well, with `asyncio.wait` and NOT `wait_for`: `wait_for`
+        cancels the inner await and then WAITS FOR THE CANCELLATION TO COMPLETE, which is the same
+        hang one level up. `asyncio.wait` simply stops waiting, and the abandoned task is cancelled
+        without being awaited.
+        """
         try:
-            result = await environment.exec(command=command, timeout_sec=900)
+            task = asyncio.ensure_future(
+                environment.exec(command=command, timeout_sec=TOOL_TIMEOUT_SEC),
+            )
+            done, _pending = await asyncio.wait(
+                {task}, timeout=TOOL_TIMEOUT_SEC + TOOL_ABANDON_GRACE_SEC,
+            )
+            if not done:
+                # Best effort. We do NOT await this: a cancellation that cannot complete is the
+                # very hang this bound exists to escape.
+                task.cancel()
+                return (
+                    f"<exec timeout: the command did not return within "
+                    f"{TOOL_TIMEOUT_SEC + TOOL_ABANDON_GRACE_SEC}s and was abandoned>"
+                )
+            result = task.result()
         except Exception as error:  # noqa: BLE001 - a failed command is data, not a crash
             return f"<exec error: {type(error).__name__}: {error}>"
         parts: list[str] = []

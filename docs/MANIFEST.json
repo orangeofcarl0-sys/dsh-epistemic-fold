@@ -95,9 +95,64 @@
     "sha256": "8c5860fc8fa7666b2fafc46e8fc8edca92eafdd131f12dac19cfc15a233045c4"
   },
   {
+    "file": "108_RESERVE_RELEASE_FIX.md",
+    "bytes": 3590,
+    "sha256": "40a637db70646e729508ea4ddbbd3a17616ce553b2a7a9587b206fd5d26c8a17"
+  },
+  {
+    "file": "109_FREE_MODEL_ROUTE_LOCKED.md",
+    "bytes": 2864,
+    "sha256": "2c7cdc478f0f4e229e1523678e3b3ebe6b850c1876720d335d8b7cedec8b64e0"
+  },
+  {
     "file": "10_LOCAL_AGENT_WORK_ORDER_R0C.md",
     "bytes": 9616,
     "sha256": "b51c15f1b80f54e0d0f882158b16207bb6b1c7c3a7b3b4c93f86e0c5a9ef81aa"
+  },
+  {
+    "file": "110_FREE_MODEL_SOLVED.md",
+    "bytes": 3012,
+    "sha256": "6768996e87ab0f44b643c5cb109f42faab4f7ac7fe7d6a2520dde8c5fbb16193"
+  },
+  {
+    "file": "111_CONTEXT_BLOCKED_BY_QUOTA.md",
+    "bytes": 2875,
+    "sha256": "57f017a0c5ea940465d39959ecdad173c0af65d243c64adf6c2fa656c4eb9166"
+  },
+  {
+    "file": "112_CATJAM_RERUN_STALL.md",
+    "bytes": 2565,
+    "sha256": "db5153962661a74407fc0e74dd07de0c94a835f2fd387930ab201e3fdd7c22f9"
+  },
+  {
+    "file": "113_STACK_SAMPLE.md",
+    "bytes": 2739,
+    "sha256": "1dc81807d8529fc5e62a434fe2a84b17935e1f175f55c27f4aa14cf3c7a2a417"
+  },
+  {
+    "file": "114_AGENT_STACK.md",
+    "bytes": 3062,
+    "sha256": "ad0a01021a4951cc1a9566e1b96f4b6f3ed496963bbd3368fb110a4964073fd4"
+  },
+  {
+    "file": "115_LOCATED_ENV_EXEC.md",
+    "bytes": 3344,
+    "sha256": "918de90ba60983b14d49e1fe92a3b6668ff19b2e5896baf79e7127d8e85bf8cc"
+  },
+  {
+    "file": "116_HARBOR_ENV.md",
+    "bytes": 13160,
+    "sha256": "4b37197ed793e66e160f562fd66d36dcb64796271167fcb1970bc85b2a0c41a2"
+  },
+  {
+    "file": "117_EF_LANE.md",
+    "bytes": 20486,
+    "sha256": "dc7d23854955dccfeadd1874480239eaa54340d9df8a7d60e2027ea4094e02c4"
+  },
+  {
+    "file": "118_TRANSPORT.md",
+    "bytes": 12482,
+    "sha256": "ee9baeb7bed9d6ac0666efa1d01e4383f1e878a8b3da0210aec88f20286f7728"
   },
   {
     "file": "11_R1B_ROUTE_SELECTION_GATE.md",
@@ -561,8 +616,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 11453,
-    "sha256": "98939003a978f554439c10583e703648643aa9daaab79a135d6aeb36a4d2d34e"
+    "bytes": 11901,
+    "sha256": "26cc25dbeb7eb61934cbc62d2cd408277f1a98728a851374aac0d82f471c7cc0"
   },
   {
     "file": "README.zh.md",

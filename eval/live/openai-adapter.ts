@@ -699,25 +699,36 @@ async function readStreamedPayload(response: Response): Promise<WireResponse> {
  * `ECONNRESET` and `UND_ERR_SOCKET` are NOT listed for exactly that reason.
  */
 function neverReachedProvider(error: unknown): boolean {
-  const codes = new Set([
-    'ENOTFOUND',            // DNS could not resolve the host
-    'EAI_AGAIN',            // DNS lookup failed transiently
-    'ECONNREFUSED',         // nothing was listening
+  const preSend = new Set([
+    'ENOTFOUND', // DNS could not resolve the host
+    'EAI_AGAIN', // DNS lookup failed transiently
+    'ECONNREFUSED', // nothing was listening
     'UND_ERR_CONNECT_TIMEOUT', // the connection was never established
+    'ETIMEDOUT', // measured 2026-10-16: a blackholed address reports this, and it is pre-send
     'ERR_INVALID_URL',
     'ENETUNREACH',
     'EHOSTUNREACH',
   ])
   const seen = new Set<unknown>()
-  let current: unknown = error
-  for (let depth = 0; depth < 4 && current !== null && typeof current === 'object'; depth += 1) {
-    if (seen.has(current)) break
-    seen.add(current)
-    const code = (current as { code?: unknown }).code
-    if (typeof code === 'string' && codes.has(code)) return true
-    current = (current as { cause?: unknown }).cause
+  const inspect = (node: unknown, depth: number): boolean => {
+    if (depth > 6 || node === null || typeof node !== 'object') return false
+    if (seen.has(node)) return false
+    seen.add(node)
+    const entry = node as { code?: unknown; cause?: unknown; errors?: unknown }
+    // ## An AggregateError is judged by ALL its members, never by its first
+    //
+    // undici reports one inner error per address, and sets the aggregate's own `code` to the
+    // FIRST inner code. Reading that code alone is wrong in both directions: it released a
+    // reservation when the first address was refused but a later one was reset, and it stranded
+    // one when the first address merely timed out. **One address that got a connection means the
+    // request may have been processed, so the reservation must stand** -- hence `every`.
+    if (Array.isArray(entry.errors) && entry.errors.length > 0) {
+      return entry.errors.every(inner => inspect(inner, depth + 1))
+    }
+    if (typeof entry.code === 'string' && preSend.has(entry.code)) return true
+    return inspect(entry.cause, depth + 1)
   }
-  return false
+  return inspect(error, 0)
 }
 /**
  * Ensure the request declares tools named exactly `read` and `bash`.
