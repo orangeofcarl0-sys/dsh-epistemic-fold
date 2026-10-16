@@ -368,6 +368,19 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
 
 /** Sample until every watched cell has stopped running. */
 async function main(): Promise<void> {
+  // ## A configuration error must be fatal HERE, not a per-round throw
+  //
+  // `round()` throws when JOBS_ROOT is empty, and `main` counts a failed round as `live = 1`
+  // so that a transient docker failure never looks like "all cells finished". Those two rules
+  // are right in isolation and lethal together: a watchdog started WITHOUT EF_WATCH_JOBS throws
+  // every round, never accumulates the idle rounds that would let it exit, and spins every
+  // INTERVAL_MS forever. Measured 2026-10-16: eleven such processes were alive at once, each
+  // sampling and potentially reaping. **A misconfiguration is not a transient fault.**
+  if (JOBS_ROOT === '') {
+    record({ event: 'watchdog-misconfigured', reason: 'EF_WATCH_JOBS is not set' })
+    process.exitCode = 2
+    return
+  }
   record({ event: 'watchdog-start', jobsRoot: JOBS_ROOT, intervalMs: INTERVAL_MS })
   let idle = 0
   for (;;) {

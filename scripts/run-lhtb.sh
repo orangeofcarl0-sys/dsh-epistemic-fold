@@ -404,10 +404,26 @@ fi
 # finalised, one of them stuck 3h10m with no termination reason.
 #
 # Opt out with EF_LHTB_WATCHDOG=0.
+# It REQUIRES EF_WATCH_JOBS: without it the watchdog cannot know what to watch, and before the
+# guard added to watchdog.ts that turned into an infinite per-round throw. Eleven such processes
+# were alive at once on 2026-10-16, and this runner was one of the things starting them.
+WATCHDOG_PID=""
+cleanup_watchdog() {
+  if [ -n "$WATCHDOG_PID" ]; then
+    kill "$WATCHDOG_PID" 2>/dev/null || true
+    echo "watchdog: stopped pid=$WATCHDOG_PID"
+  fi
+}
+trap cleanup_watchdog EXIT INT TERM
 if [ "${EF_LHTB_WATCHDOG:-1}" = "1" ]; then
-  WATCHLOG="${EF_HOME:-$(cd "${SCRIPT_DIR}/.." && pwd)}/ef-phase7-logs/watchdog.log"
+  EF_HOME_RESOLVED="${EF_HOME:-$(cd "${SCRIPT_DIR}/.." && pwd)}"
+  WATCHLOG="$EF_HOME_RESOLVED/ef-phase7-logs/watchdog.log"
+  EF_WATCH_JOBS="${EF_WATCH_JOBS:-${LHTB_ROOT}/jobs}" \
+  EF_WATCH_LOG="$WATCHLOG" \
+  EF_WATCH_HEARTBEAT="$EF_HOME_RESOLVED/ef-phase7-logs/watchdog.heartbeat" \
   node --experimental-transform-types "${SCRIPT_DIR}/../eval/lhtb/watchdog.ts" >> "$WATCHLOG" 2>&1 &
-  echo "watchdog: pid=$! log=$WATCHLOG"
+  WATCHDOG_PID=$!
+  echo "watchdog: pid=$WATCHDOG_PID jobs=${EF_WATCH_JOBS:-${LHTB_ROOT}/jobs} log=$WATCHLOG"
 fi
 
 # ## The mode selects the config, and it is read HERE on purpose
