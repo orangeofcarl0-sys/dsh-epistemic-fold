@@ -340,7 +340,12 @@ export class OpenAiCompatibleAdapter
           ? { promptTokens: this.contextWindow }
           : { promptTokens: this.contextWindow, outputTokens: maxTokens },
       )
-      const response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
+      // The reservation must survive the throw. `stream()` only receives it on the SUCCESS path,
+      // so an error that leaves here without it takes the credential with it and the reserve can
+      // never be settled -- which is exactly how the first version of this fix failed.
+      let response: Response
+      try {
+        response = await this.fetchImpl(`${this.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           // Route-required extras (e.g. `x-opencode-session` on `/zen/go/v1`).
@@ -353,7 +358,14 @@ export class OpenAiCompatibleAdapter
         },
         body: JSON.stringify(body),
         signal: requestSignal,
-      })
+        })
+      } catch (error: unknown) {
+        // Ride the credential out on the error so the caller can settle it.
+        if (error !== null && typeof error === 'object') {
+          ;(error as { reservation?: Reservation | undefined }).reservation = reservation
+        }
+        throw error
+      }
       if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
         if (response.status === 429) this.rateLimitExhausted += 1
         return { response, reservation }
@@ -515,6 +527,28 @@ export class OpenAiCompatibleAdapter
       // A budget refusal is NOT a transport failure. Tagging it apart is what lets the bridge
       // keep it out of `providerFailures` and the agent terminate with its own reason.
       const budget = error instanceof BudgetExhaustedError
+      // A throw out of `requestWithRetry` never reaches the success path, so the credential is
+      // recovered from the error itself.
+      if (reservation === undefined && error !== null && typeof error === 'object') {
+        reservation = (error as { reservation?: Reservation }).reservation
+      }
+      // ## A request that never left this machine cannot have consumed anything
+      //
+      // A reservation is held because the cost of a failed request is UNKNOWN. That is right for a
+      // request that may have been processed, and wrong for one that provably was not: DNS failure,
+      // connection refused, or a connect timeout mean the provider was never reached, so the true
+      // consumption is zero and holding a full `max_tokens` reserve is not conservatism, it is
+      // accounting for spend that cannot exist.
+      //
+      // Measured on the 2026-10-16 run: TEN `fetch failed` requests each stranded a 32,768 output
+      // reservation -- 327,680, or 59% of the output budget -- and the run stopped at 61% of the
+      // fold threshold because of it. A stranded reserve does not merely over-report cost; it ENDS
+      // the episode, because `admit` refuses on charged-plus-reserved.
+      if (!budget && reservation !== undefined && neverReachedProvider(error)) {
+        // `release`, not `settle`: the latter leaves the reserved counters charged.
+        this.budget?.release(reservation)
+        reservation = undefined
+      }
       yield {
         type: 'finish',
         reason: {
@@ -642,4 +676,32 @@ async function readStreamedPayload(response: Response): Promise<WireResponse> {
     }],
     usage,
   } as unknown as WireResponse
+}
+/**
+ * Whether a transport error PROVES the request never reached the provider.
+ *
+ * Deliberately narrow. Only connection-establishment failures qualify: if a socket was opened and
+ * bytes may have been sent, the request could have been processed and its reservation must stand.
+ * `ECONNRESET` and `UND_ERR_SOCKET` are NOT listed for exactly that reason.
+ */
+function neverReachedProvider(error: unknown): boolean {
+  const codes = new Set([
+    'ENOTFOUND',            // DNS could not resolve the host
+    'EAI_AGAIN',            // DNS lookup failed transiently
+    'ECONNREFUSED',         // nothing was listening
+    'UND_ERR_CONNECT_TIMEOUT', // the connection was never established
+    'ERR_INVALID_URL',
+    'ENETUNREACH',
+    'EHOSTUNREACH',
+  ])
+  const seen = new Set<unknown>()
+  let current: unknown = error
+  for (let depth = 0; depth < 4 && current !== null && typeof current === 'object'; depth += 1) {
+    if (seen.has(current)) break
+    seen.add(current)
+    const code = (current as { code?: unknown }).code
+    if (typeof code === 'string' && codes.has(code)) return true
+    current = (current as { cause?: unknown }).cause
+  }
+  return false
 }

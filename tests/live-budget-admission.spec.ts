@@ -204,6 +204,45 @@ describe('the reservation is complete BEFORE the fetch, even with two requests i
   })
 })
 
+describe('a request that never left the machine releases its reserve', () => {
+  const APPROVED = { promptTokens: 131_072, outputTokens: 131_072 }
+
+  function throwing(code: string) {
+    const calls: number[] = []
+    const impl = async () => {
+      calls.push(calls.length + 1)
+      const error = new TypeError('fetch failed')
+      ;(error as { cause?: unknown }).cause = { code }
+      throw error
+    }
+    return { calls, impl }
+  }
+
+  it('RELEASES the reserve when the transport proves the provider was never reached', async () => {
+    // Measured on 2026-10-16: ten `fetch failed` requests stranded 327,680 output -- 59% of the
+    // budget -- and ended the run at 61% of the fold threshold. A DNS failure cannot have consumed
+    // anything, so holding a full max_tokens reserve is not conservatism, it is impossible spend.
+    const budget = new RequestBudget({ ...LIMITS, requests: 10 }, APPROVED)
+    const failing = throwing('ENOTFOUND')
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: failing.impl, budget })
+    const result = await drive(adapter, 4_096)
+    expect(result.failure?.code).toBe('LIVE_TRANSPORT')
+    expect(budget.snapshot().reservedOutputTokens, 'nothing could have been consumed').toBe(0)
+    expect(budget.snapshot().reservedPromptTokens, 'and nothing on the prompt side either').toBe(0)
+    expect(budget.snapshot().requests, 'the attempt is still COUNTED').toBe(1)
+  })
+
+  it('KEEPS the reserve when bytes may have been sent', async () => {
+    // ECONNRESET is deliberately NOT in the pre-send set: a socket was open, so the request could
+    // have been processed and billed. Releasing here would understate spend.
+    const budget = new RequestBudget({ ...LIMITS, requests: 10 }, APPROVED)
+    const failing = throwing('ECONNRESET')
+    const adapter = new OpenAiCompatibleAdapter({ ...BASE, fetchImpl: failing.impl, budget })
+    await drive(adapter, 4_096)
+    expect(budget.snapshot().reservedOutputTokens, 'the cost is genuinely unknown').toBe(4_096)
+  })
+})
+
 describe('the reserve follows the REQUEST, so one failure cannot deadlock the gate', () => {
   const APPROVED = { promptTokens: 131_072, outputTokens: 131_072 }
 

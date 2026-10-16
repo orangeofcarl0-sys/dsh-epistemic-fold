@@ -194,6 +194,26 @@ export class RequestBudget {
     }
     this.outstanding.shift()
   }
+
+  /**
+   * Give a reservation back WITHOUT recording consumption.
+   *
+   * `settle` alone is not enough and the difference matters: it removes the entry from
+   * `outstanding` but leaves `reservedPrompt`/`reservedOutput` inflated, because only `record`
+   * adjusts those. Releasing therefore has to do both, or the budget stays charged for a request
+   * that consumed nothing -- which is exactly the bug the first version of this fix had.
+   *
+   * Use this ONLY when the consumption is known to be zero (a request that never left the
+   * machine). For an unknown cost the reservation must stand.
+   */
+  release(reservation: Reservation | undefined): void {
+    if (reservation === undefined) return
+    const at = this.outstanding.indexOf(reservation)
+    if (at < 0) return
+    this.outstanding.splice(at, 1)
+    this.reservedPrompt -= reservation.promptTokens
+    this.reservedOutput -= reservation.outputTokens
+  }
   record(
     usage: TokenUsageLike | undefined,
     fallback?: TokenUsageLike,

@@ -55,6 +55,46 @@
     "sha256": "90991ec3b0e18354fe234d5965787daa188eb6e10abad0d53cd5aaa32638a91e"
   },
   {
+    "file": "100_PLUGIN_WEB_ONLY.md",
+    "bytes": 2391,
+    "sha256": "24b6c65519bf7757009b5777917463613f27494139f6eab5190866c700153d8e"
+  },
+  {
+    "file": "101_ZEN_FREE_SOLVED.md",
+    "bytes": 3297,
+    "sha256": "00f7cbe9a4bb5ba6e3ebaedbdae715df1c319fa2aa717baf3d0a9f9a71f3a578"
+  },
+  {
+    "file": "102_FREE_TIER_LANE.md",
+    "bytes": 2644,
+    "sha256": "35ff911a6edee0fb2f553f7eb2a61e405938c09ecd12e241d84fe6b170c78c1c"
+  },
+  {
+    "file": "103_STALL_DIAGNOSIS.md",
+    "bytes": 2848,
+    "sha256": "aad6657eff34929412e72c3b53a21549f10483df60f7c6e77b0c4d3631ca54ae"
+  },
+  {
+    "file": "104_STALL_NARROWED.md",
+    "bytes": 3017,
+    "sha256": "01b36ed3fe1cdb0b270284e494971813c03a2eb1d1201cf862db5f25e3bef131"
+  },
+  {
+    "file": "105_STALL_CLOSED.md",
+    "bytes": 2860,
+    "sha256": "e01653ce747232385e7f6d468e992b49e8e34b4b7d59f4cd68707a60f92cde2d"
+  },
+  {
+    "file": "106_FOLD_RUN_RELAUNCHED.md",
+    "bytes": 2238,
+    "sha256": "b1da2287815a6b8b0277ccddf15b8fd3b36f1b5d937f13023b84babe0e9468ab"
+  },
+  {
+    "file": "107_FOLD_RUN_RESULT.md",
+    "bytes": 3325,
+    "sha256": "8c5860fc8fa7666b2fafc46e8fc8edca92eafdd131f12dac19cfc15a233045c4"
+  },
+  {
     "file": "10_LOCAL_AGENT_WORK_ORDER_R0C.md",
     "bytes": 9616,
     "sha256": "b51c15f1b80f54e0d0f882158b16207bb6b1c7c3a7b3b4c93f86e0c5a9ef81aa"
@@ -465,6 +505,41 @@
     "sha256": "adfaca28db1b422cb21f96fc4786a376ccd779ecf83bc124f2b840a1de5b9eaf"
   },
   {
+    "file": "93_RERUN.md",
+    "bytes": 2403,
+    "sha256": "a3095676ddd8bbd2eecbfc82428b40ea2290b6f966d8e72f39c2b563ffbff131"
+  },
+  {
+    "file": "94_RERUN_TRAJECTORY.md",
+    "bytes": 2724,
+    "sha256": "12709af0d3f9e7424abac864ce7c4129771dd4fbb6bcc7b7a88c55091d82a60a"
+  },
+  {
+    "file": "95_RELAUNCH_NO_CAP.md",
+    "bytes": 2446,
+    "sha256": "5797295d81a3e20108ea20f7b91d6bf78fbf87c61a4248d83e45193b820ad799"
+  },
+  {
+    "file": "96_P1_RESULT.md",
+    "bytes": 3421,
+    "sha256": "6f4ef38b4c0b9a1ebb3abe4bb9fb521f7e3e6126fe5ccdaae1c88bd42c522fb1"
+  },
+  {
+    "file": "97_FREE_TIER_BLOCKED.md",
+    "bytes": 2681,
+    "sha256": "d69092b8e5f96b44134571477059b72d40489359533596a55644c91c8c78a988"
+  },
+  {
+    "file": "98_OPENCODE_FREE_PLUGIN.md",
+    "bytes": 3658,
+    "sha256": "d214e0996b26b700146ebabfaac1c3c753b7a54b7ab2ccaec6c43de90027b6e9"
+  },
+  {
+    "file": "99_UPGRADE_AND_REPLICATION.md",
+    "bytes": 3353,
+    "sha256": "4a948a2ff2a0b6f31f0af8cb05af7e663c2a3c620203fa18e5cc21cb210f96a1"
+  },
+  {
     "file": "ARCHITECTURE.md",
     "bytes": 8259,
     "sha256": "32e64d639e893bb01d5c8e024d8999d255f31ddabfc42f11d977918db09e3bdd"
@@ -486,8 +561,8 @@
   },
   {
     "file": "README.md",
-    "bytes": 10704,
-    "sha256": "655bd384bc6bf780d9bb92e49a24bd89f5651d83474a3f188c9f22b6b9ee1c30"
+    "bytes": 11453,
+    "sha256": "98939003a978f554439c10583e703648643aa9daaab79a135d6aeb36a4d2d34e"
   },
   {
     "file": "README.zh.md",
