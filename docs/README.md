@@ -206,6 +206,7 @@ These records document real-host defects and browser/deployment integration. The
 - [119_TEAM_INVESTIGATION.md](119_TEAM_INVESTIGATION.md)
 - [120_WATCHDOG_FIX.md](120_WATCHDOG_FIX.md)
 - [121_NO_ARBITRARY_CAP.md](121_NO_ARBITRARY_CAP.md)
+- [122_CATJAM_WINDOW_MEASURED.md](122_CATJAM_WINDOW_MEASURED.md)
 
 ## How to read old conclusions
 
