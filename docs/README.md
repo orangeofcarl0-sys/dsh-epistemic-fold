@@ -201,6 +201,7 @@ These records document real-host defects and browser/deployment integration. The
 - [111_CONTEXT_BLOCKED_BY_QUOTA.md](111_CONTEXT_BLOCKED_BY_QUOTA.md)
 - [112_CATJAM_RERUN_STALL.md](112_CATJAM_RERUN_STALL.md)
 - [113_STACK_SAMPLE.md](113_STACK_SAMPLE.md)
+- [114_AGENT_STACK.md](114_AGENT_STACK.md)
 
 ## How to read old conclusions
 
