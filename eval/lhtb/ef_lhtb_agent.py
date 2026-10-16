@@ -58,16 +58,23 @@ SHELL_TOOL = "run_shell"
 # is the real budget; this is a safety net so a looping model cannot run forever.
 MAX_TURNS = int(os.environ.get("EF_LHTB_MAX_TURNS", "400"))
 
-# ## The episode's own wall clock
+# ## There is deliberately NO episode wall-clock cap here
 #
-# Every other bound in this loop is a COUNT: MAX_TURNS, MAX_WASTED_ATTEMPTS, and the provider-outage
-# window -- which resets on any success. So an episode that is merely SLOW has no deadline at all, and
-# the only host-side ceiling was harbor's episode budget, measured at 86400 x 3.0 = 72 hours, nine
-# times what `lhtb-ef-sweep-ucs.yaml`'s own comment claims (docs/117 section b).
+# An earlier revision added `EPISODE_WALL_SEC = 14400`. It is removed, and the reason is worth
+# keeping: a wall clock is an ARBITRARY number, and an episode that is merely slow is not a broken
+# episode. Capping it would end productive runs and file the result under a reason that says nothing
+# about the work -- a censored cell with no meaning in it.
 #
-# This is the in-episode half of the fix; `eval/lhtb/watchdog.ts` is the out-of-episode half, now
-# started by `scripts/run-lhtb.sh` rather than only by ad-hoc launchers.
-EPISODE_WALL_SEC = int(os.environ.get("EF_LHTB_EPISODE_WALL_SEC", "14400"))
+# What actually distinguishes a wedged episode from a slow one is PROGRESS, and that is what
+# `eval/lhtb/watchdog.ts` measures: silence since the transcript was last written, combined with what
+# is still running inside the container. Its thresholds are derived from the system's own contracts
+# (watchdog-policy.ts: toolTimeoutSec 900 is the tool's OWN declared timeout, slackSec 300 the grace
+# beyond it, silenceSec 300 'beyond one plausible model call', stuckSec 1800 'silence with nothing
+# running at all') rather than from a number chosen here.
+#
+# The in-lane bound that IS principled stays: `_exec` stops waiting once the call has outlived the
+# timeout it declared for itself, because a component overrunning its own contract is a defect by
+# definition, not a slow episode.
 
 # How many consecutive empty responses end the loop. A single blank completion is
 # an anomaly to nudge past, not a reason to abandon a multi-hour task.
@@ -515,17 +522,8 @@ class EFLhtbAgent(BaseAgent):
         # the case where failures are frequent but never consecutive.
         turn = 0
         wasted_attempts = 0
-        episode_started_at = time.monotonic()
         while turn < MAX_TURNS:
             turn += 1
-            elapsed_sec = time.monotonic() - episode_started_at
-            if elapsed_sec > EPISODE_WALL_SEC:
-                # A wall-clock stop, named as its own reason so the archive can tell it apart from
-                # a turn budget or a provider outage.
-                termination = (
-                    f"episode-wall-clock-exceeded ({int(elapsed_sec)}s of {EPISODE_WALL_SEC}s)"
-                )
-                break
             calls = reply.get("tool_calls") or []
 
             # ## A provider failure is not a model turn

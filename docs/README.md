@@ -205,6 +205,7 @@ These records document real-host defects and browser/deployment integration. The
 - [115_LOCATED_ENV_EXEC.md](115_LOCATED_ENV_EXEC.md)
 - [119_TEAM_INVESTIGATION.md](119_TEAM_INVESTIGATION.md)
 - [120_WATCHDOG_FIX.md](120_WATCHDOG_FIX.md)
+- [121_NO_ARBITRARY_CAP.md](121_NO_ARBITRARY_CAP.md)
 
 ## How to read old conclusions
 
