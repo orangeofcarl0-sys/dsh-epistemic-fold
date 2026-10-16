@@ -200,6 +200,7 @@ These records document real-host defects and browser/deployment integration. The
 - [110_FREE_MODEL_SOLVED.md](110_FREE_MODEL_SOLVED.md)
 - [111_CONTEXT_BLOCKED_BY_QUOTA.md](111_CONTEXT_BLOCKED_BY_QUOTA.md)
 - [112_CATJAM_RERUN_STALL.md](112_CATJAM_RERUN_STALL.md)
+- [113_STACK_SAMPLE.md](113_STACK_SAMPLE.md)
 
 ## How to read old conclusions
 
