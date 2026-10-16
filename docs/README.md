@@ -209,6 +209,7 @@ These records document real-host defects and browser/deployment integration. The
 - [122_CATJAM_WINDOW_MEASURED.md](122_CATJAM_WINDOW_MEASURED.md)
 - [123_OTHER_SWEEP_TASKS.md](123_OTHER_SWEEP_TASKS.md)
 - [124_SWEEP_LAUNCHED.md](124_SWEEP_LAUNCHED.md)
+- [125_NO_CONCURRENCY_PENALTY.md](125_NO_CONCURRENCY_PENALTY.md)
 
 ## How to read old conclusions
 
