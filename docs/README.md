@@ -211,6 +211,7 @@ These records document real-host defects and browser/deployment integration. The
 - [124_SWEEP_LAUNCHED.md](124_SWEEP_LAUNCHED.md)
 - [125_NO_CONCURRENCY_PENALTY.md](125_NO_CONCURRENCY_PENALTY.md)
 - [126_SWEEP_RESULT_AND_RERUN.md](126_SWEEP_RESULT_AND_RERUN.md)
+- [127_WATCHDOG_RESTART.md](127_WATCHDOG_RESTART.md)
 
 ## How to read old conclusions
 

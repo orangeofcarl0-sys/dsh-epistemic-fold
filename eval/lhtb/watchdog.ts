@@ -33,8 +33,9 @@
  * @module eval/lhtb/watchdog
  */
 import { execFile } from 'node:child_process'
+import { writeFileSync } from 'node:fs'
 import { appendFileSync, existsSync, readdirSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { promisify } from 'node:util'
 import {
   classifyCell,
@@ -88,6 +89,8 @@ let roundCounter = 0
 interface WatchedCell {
   readonly label: string
   readonly container: string
+  /** The trial's job directory, so a restart can read the config that actually ran. */
+  readonly jobDir: string
   readonly transcript: string
 }
 
@@ -137,7 +140,7 @@ function discoverCells(root: string): WatchedCell[] {
       const hostSide = join(jobDir, cell, 'ef-transcript.json')
       const transcript = existsSync(hostSide) ? hostSide : mounted
       if (!existsSync(transcript)) continue
-      cells.push({ label: job.replace(/^lhtb-ef-[^-]*-/, '') + '/' + cell, container: containerFor(cell), transcript })
+      cells.push({ label: job.replace(/^lhtb-ef-[^-]*-/, '') + '/' + cell, container: containerFor(cell), jobDir, transcript })
     }
   }
   return cells
@@ -239,6 +242,58 @@ async function reapStuckClients(project: string, minAgeSec: number): Promise<num
   return pids
 }
 
+/**
+ * Relaunch one task's trial after its container was stopped as unrecoverable.
+ *
+ * ## Why the CELL is restarted rather than the daemon
+ *
+ * The obvious repair -- restart `cfg_daemon.py` inside the live container -- cannot work, and the
+ * reason is a property of the task: **the daemon consumes and destroys its own secret on first
+ * start**, so a restart dies before it can listen and the episode is unwinnable. That is already
+ * recorded above and it is why `environment-dead` is terminal.
+ *
+ * What IS recoverable is the EPISODE: a fresh container gets a fresh daemon with a fresh secret.
+ * So the restart unit is the trial, not the process.
+ *
+ * The replacement is launched from the job's OWN `config.json`, so it re-runs the same task with
+ * the same model and environment that the original recorded -- not from anything re-derived here,
+ * which could silently differ from what actually ran.
+ * @param jobDir - the finished trial's job directory.
+ * @param cellLabel - `job/cell`, for the record.
+ * @returns true when a replacement was launched.
+ */
+async function restartCell(jobDir: string, cellLabel: string): Promise<boolean> {
+  if (process.env.EF_WATCH_RESTART !== '1') {
+    record({ event: 'restart-required', cell: cellLabel, launched: false, reason: 'EF_WATCH_RESTART is not 1' })
+    return false
+  }
+  const configPath = join(jobDir, 'config.json')
+  let config: Record<string, unknown>
+  try { config = JSON.parse(readFileSync(configPath, 'utf8')) as Record<string, unknown> } catch (error: unknown) {
+    record({ event: 'restart-config-unreadable', cell: cellLabel, configPath, error: String(error).slice(0, 160) })
+    return false
+  }
+  const task = (config.task ?? {}) as Record<string, unknown>
+  const taskPath = typeof task.path === 'string' ? task.path : ''
+  if (taskPath === '') {
+    record({ event: 'restart-config-incomplete', cell: cellLabel, reason: 'config.task.path is missing' })
+    return false
+  }
+  const harbor = process.env.EF_WATCH_HARBOR ?? 'harbor'
+  const jobName = `${basename(jobDir)}-restart-${Date.now()}`
+  const fresh = { ...config, job_name: jobName, trials_dir: config.trials_dir, n_attempts: 1 }
+  const freshPath = join(jobDir, `restart-${Date.now()}.json`)
+  try {
+    writeFileSync(freshPath, JSON.stringify(fresh, null, 2))
+    await execFileAsync(harbor, ['run', '-c', freshPath], { timeout: 60_000, cwd: process.env.EF_WATCH_CWD ?? undefined })
+    record({ event: 'restart-launched', cell: cellLabel, task: taskPath, jobName })
+    return true
+  } catch (error: unknown) {
+    record({ event: 'restart-launch-failed', cell: cellLabel, task: taskPath, error: String(error).slice(0, 200) })
+    return false
+  }
+}
+
 /** One sampling round. Returns how many cells still had a running container. */
 async function round(thresholds: WatchdogPolicy): Promise<number> {
   if (JOBS_ROOT === '') throw new Error('watchdog: EF_WATCH_JOBS is not set')
@@ -282,9 +337,16 @@ async function round(thresholds: WatchdogPolicy): Promise<number> {
       } catch (error: unknown) {
         record({ event: 'environment-dead-stop-failed', container: cell.container, error: String(error).slice(0, 160) })
       }
+      // ## The restart follows the stop, and only after it
+      //
+      // Order matters: the replacement must not race the container it replaces, because both would
+      // mount the same task and the old one may still hold the daemon's port. Stopping first makes
+      // the restart a repair rather than a second copy.
+      const restarted = await restartCell(cell.jobDir, cell.label)
       record({
         cell: cell.label,
         verdict: 'environment-dead',
+        restarted,
         silentSec,
         reason: service.reason,
         processes: processes.length,
