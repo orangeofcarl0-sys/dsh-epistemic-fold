@@ -499,6 +499,7 @@ CONFIG_TMP="${TMPDIR:-/tmp}/lhtb-ef-${JOB_SUFFIX}.yaml"
 # wrong on every other one.
 sed -e "s/^job_name: .*/job_name: lhtb-ef-${JOB_SUFFIX}/" \
   -e "s|^    model_name: .*|    model_name: openai/${EF_LIVE_MODEL}|" \
+  -e "s/^n_attempts: .*/n_attempts: ${EF_LHTB_ATTEMPTS:-2}/" \
   "${EF_ROOT}/eval/lhtb/${CONFIG_SRC}" > "$CONFIG_TMP"
 
 echo "job: lhtb-ef-${JOB_SUFFIX}"
