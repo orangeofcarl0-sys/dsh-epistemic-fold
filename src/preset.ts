@@ -226,9 +226,12 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
       /** Decide a rebase by amortized break-even under the routed model's prices. */
       rootPolicy: 'economics',
       /**
-       * No LLM call for a checkpoint. The machine state is authoritative and the
-       * narrative was advisory, so an auxiliary call is not needed to carry
-       * DECLARED facts across a fold.
+       * EVERY tier carries the digest now (2026-10-18). A checkpoint whose whole text was the
+       * marker line left the model unable to tell what it was missing, so it could not decide
+       * to recall -- which breaks recoverability one layer up. The tiers differ in their TOKEN
+       * BUDGETS, not in whether the semantic face exists: this rung asks for the smallest
+       * digest. `semanticMode: 'none'` remains available as an explicit zero-LLM choice, and
+       * no product tier selects it.
        */
       semanticMode: 'rationale',
       rationaleHintTokens: ECONOMY_RATIONALE_HINT_TOKENS,
@@ -250,9 +253,10 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
   balanced: {
     name: 'balanced',
     values: {
-      // Identical to economy on admission, rebasing, framing and the semantic
-      // face, so the ONLY difference between the two rungs is retention. That is
-      // what makes a measured difference attributable to it.
+      // Identical to economy on admission, rebasing, framing and the semantic face, and
+      // differing from it in BOTH token budgets: a larger retained tail and a larger digest
+      // hint. Two levers move on this rung, which is why a difference measured against
+      // economy is attributable to the pair rather than to one of them.
       leafAdmission: 'economic',
       rootPolicy: 'economics',
       semanticMode: 'rationale',

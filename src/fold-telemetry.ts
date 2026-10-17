@@ -88,11 +88,12 @@ export interface FoldTelemetry {
    * call HAPPENED; nothing recorded that it then failed, so `quality` and `none` were
    * indistinguishable in the artifact.
    *
-   * The failure is fail-closed by design: `finishError` maps `max-tokens` to an error and
-   * `rationaleOnly` throws, so a rationale that reaches the cap is DISCARDED rather than
-   * truncated. `RATIONALE_MAX_TOKENS` is 400 and `RATIONALE_INSTRUCTION` asks for
-   * "100-400 tokens", so a model that writes the top of its requested range loses the whole
-   * rationale. These two counters are what make that visible.
+   * The failure is fail-closed by design: an empty-text finish throws `UNSUPPORTED_CONTENT`
+   * and the engine's catch sets `semanticText = undefined`, so the checkpoint falls back to
+   * the bare marker. There are TWO budgets and the real one must be a multiple of the hint --
+   * `rationaleHintTokens` is what a tier asks for, `rationaleOutputFor(span)` is what it may
+   * spend -- because the model reasons before it writes. Measured: a 1.28x margin produced no
+   * text at all. These two counters are what make that visible.
    */
   rationaleAttempts: number
   rationaleFailures: number

@@ -502,19 +502,26 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # that asked for none, and the reply budget being 900 tokens for a 204-line answer -- were
         # each diagnosed only by reading code, because the artifact could not distinguish them.
         #
-        # `pressureRegime` and `leafAdmission` are the specific ones: `compactIfNeeded` computes
-        # both (src/engine.ts:1113,1134) and returns null at four different points, so the fold
-        # that declined between batches left no trace of which point it was. `compactBudget` is the
-        # threshold actually used, `lastProviderError`/`lastFinishReason` are the provider's own
-        # words, and `efToolsOffered` is what the model was told it could call.
+        # `pressureRegime` is the specific one: `compactIfNeeded` computes it and returns null at
+        # four different points, so the fold that declined between batches left no trace of which
+        # point it was. `compactBudget` carries the threshold actually used (including
+        # `thresholdTokens`, which is nested there and NOT a top-level key), `lastProviderError` /
+        # `lastFinishReason` are the provider's own words, and `efToolsOffered` is what the model
+        # was told it could call.
+        #
+        # REMOVED 2026-10-18: `leafAdmission`, `postLeafRegime` and `foldReachability` were
+        # whitelisted here and read `null` in 15 of 15 artifacts, because the bridge never emits
+        # them -- `grep` found zero occurrences in eval/tau2/bridge-host.ts. They were added when
+        # this list was widened from 9 keys to 22, on the belief that they carried the WHY of a
+        # declined fold. A whitelist entry for a key that cannot exist reads as coverage.
         "telemetry": {k: telemetry.get(k) for k in
                       ("folds", "roots", "emergencies", "compactionFailures",
                        "compactionFailureKinds", "promptTokensLast", "surfaceNodesLast",
-                       "costTotal", "providerFailures", "pressureRegime", "leafAdmission",
-                       "compactBudget", "thresholdTokens", "lastProviderError",
+                       "costTotal", "providerFailures", "pressureRegime",
+                       "compactBudget", "lastProviderError",
                        "lastFinishReason", "efToolsOffered", "summarizationAttempts",
                        "summarizationRetryExhausted", "billedCalls", "lastLeafDecision",
-                       "lastCompactionError", "postLeafRegime", "foldReachability",
+                       "lastCompactionError",
                        "rationaleAttempts", "rationaleFailures", "rationaleFailureReason", "rationaleChars")},
         # The folds the driver ASKED for and whether each committed. `compact()` returns the
         # delta, and discarding it is why "the fold declined" had to be inferred from `folds`

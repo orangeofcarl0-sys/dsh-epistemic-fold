@@ -104,47 +104,10 @@ import type {
   SummaryResult,
 } from './types.ts'
 
-/**
- * Generation cap for the rationale-only auxiliary call.
- *
- * ## Why this is NOT 400, and why 400 was a trap
- *
- * `RATIONALE_INSTRUCTION` asks the model for "100-400 tokens of terse engineering prose".
- * The cap used to be exactly 400, so a model that wrote the top of the range it was ASKED for
- * finished with `max-tokens`. `finishError` maps that to an error, `rationaleOnly` throws, and
- * the engine's catch sets `semanticText = undefined` -- so the ENTIRE rationale was discarded
- * rather than truncated, and the checkpoint fell back to the bare marker line.
- *
- * Measured 2026-10-18 (`quality`, 252K, arm A, logical), with the new rationale counters:
- *
- *   rationaleAttempts 1   rationaleFailures 1   rationaleFailureReason MAX_TOKENS
- *   rationaleChars 0      checkpoint text = "[EF1 L cp:...]" (47 chars)   accuracy 0.5961
- *
- * Following the instruction and succeeding were mutually exclusive. A cap must sit ABOVE the
- * range a prompt requests; equality makes the top of the requested range unachievable. 1024
- * leaves room for the model to overshoot slightly without losing everything.
- */
-/**
- * Generation cap for the rationale-only auxiliary call.
- *
- * ## Two measured failures, and why the number is now generous rather than tuned
- *
- * The cap was 400 while the instruction asked for "100-400 tokens", so a model writing the top
- * of its requested range finished `max-tokens`; `finishError` turns that into a throw and the
- * WHOLE rationale was discarded. Measured: rationaleFailures 1, reason MAX_TOKENS,
- * rationaleChars 0, checkpoint text 47 characters, accuracy 0.5961.
- *
- * Raising it to 1024 fixed that case (rationaleChars 1432, accuracy 0.6765) but not the
- * no-anchor case, where the instruction asks the rationale to preserve the operative facts of
- * the span: against 100 folded documents that task needs more than 1024 tokens, and the model
- * overshot again. Measured: reason MAX_TOKENS, rationaleChars 0, accuracy 0.6471.
- *
- * The lesson is that a FIXED cap cannot bound a task whose size grows with the folded span.
- * This value is therefore set well above any plausible terse rationale (a 1,043,005-token fold
- * produced a 1,432-character one) so that the model is bounded by the INSTRUCTION, not by a
- * tripwire that discards its work. The instruction still asks for a bounded length; this is
- * the backstop, and a backstop that fires is a lost rationale, not a truncated one.
- */
+// The rationale's generation cap used to live here as `RATIONALE_MAX_TOKENS`, first 400 and then
+// 8192. Both were constants, and `docs/21` section 11.5 had already established that this cost is
+// DERIVED from the folded span rather than carried as one. It now lives in `rationaleOutputFor`
+// (src/rationale.ts), which is where its derivation and its two measured failures are documented.
 
 /**
  * Tokens in the span a fold replaces, estimated from the shadowed messages.
