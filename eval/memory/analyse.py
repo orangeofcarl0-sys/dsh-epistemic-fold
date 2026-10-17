@@ -143,12 +143,22 @@ def analyse(cells: list[dict]) -> dict:
     out["chance_floor"] = round(sum(1.0 / n for n in n_opts) / len(n_opts), 4)
 
     def group(rows_subset, keyfn):
+        # ## The key is stringified, because JSON has no tuple keys
+        #
+        # `retention_by_depth` and `retention_by_warning` group on `(arm, depth)` and
+        # `(arm, warned)`, so the dict this returns was keyed by TUPLES and `json.dumps` refused
+        # the whole analysis at write time: "keys must be str, int, float, bool or None, not
+        # tuple". Every cell had already been measured and scored, and the table still could not
+        # be written -- a bench whose last step cannot run has not run.
+        #
+        # `str((arm, depth))` is deliberate rather than a join: it is unambiguous for any key
+        # shape, and the reader can see it was a tuple.
         g: dict = defaultdict(list)
         for r in rows_subset:
             g[keyfn(r)].append(r)
-        return {k: {"n": len(v), "accuracy": round(acc(v), 4),
-                    "ci95": list(cluster_bootstrap(v, acc)),
-                    "n_facts": len({r["fact"] for r in v})}
+        return {str(k): {"n": len(v), "accuracy": round(acc(v), 4),
+                         "ci95": list(cluster_bootstrap(v, acc)),
+                         "n_facts": len({r["fact"] for r in v})}
                 for k, v in sorted(g.items(), key=lambda kv: str(kv[0]))}
 
     paired = [r for r in rows if r["kind"] in ("extraction", "disambiguation")]

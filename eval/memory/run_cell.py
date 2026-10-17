@@ -513,7 +513,8 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                        "costTotal", "providerFailures", "pressureRegime", "leafAdmission",
                        "compactBudget", "thresholdTokens", "lastProviderError",
                        "lastFinishReason", "efToolsOffered", "summarizationAttempts",
-                       "summarizationRetryExhausted", "billedCalls", "lastLeafDecision")},
+                       "summarizationRetryExhausted", "billedCalls", "lastLeafDecision",
+                       "lastCompactionError", "postLeafRegime", "foldReachability")},
         # The folds the driver ASKED for and whether each committed. `compact()` returns the
         # delta, and discarding it is why "the fold declined" had to be inferred from `folds`
         # staying at 1 while `compactionFailures` stayed at 0.

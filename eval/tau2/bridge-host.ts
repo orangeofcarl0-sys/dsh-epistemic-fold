@@ -2110,7 +2110,25 @@ async function main(): Promise<void> {
           // so closing it for the duration of a manual command is the accurate thing to do
           // rather than weakening the engine's check. `rootCompact` has done exactly this since
           // it was written; `compact` was the one path that had not.
+          // ## A manual fold needs an OPEN turn, and this is the defect that cost arms B and C
+          //
+          // `lastCompactionError` named it exactly: "compactRegion: no open turn -- automatic
+          // compaction events must be enclosed in a turn". The memory driver folds once per probe
+          // batch, and by then the tau2 turn had been closed, so all 20 folds threw before they
+          // reached the span selection. The bridge caught each, counted `compactionFailures`, and
+          // classified it `other` because the message carries no error code -- twenty identical
+          // faults read as twenty unrelated ones, `folds` stayed at 1, and the injected history
+          // never folded: 3,330,304 tokens to the provider, HTTP 413.
+          //
+          // The first attempt at this closed the turn instead, on the theory that
+          // `assertNoActiveCompaction` was rejecting a busy session. That made it strictly worse
+          // (folds 1 -> 0, prompt 3.33M -> 4.35M) because the requirement is the OPPOSITE of the
+          // theory. **The error message was in the artifact the whole time; reading it first would
+          // have replaced a guess with a fact.**
+          const opened = !turnOpen
+          if (opened) openTurn()
           await foldIfNeeded()
+          if (opened) closeTurn()
           const after = foldCounters(engine!)
           const committed = (after.leaves - before.leaves)
             + (after.roots - before.roots)
