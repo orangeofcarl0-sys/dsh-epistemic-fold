@@ -98,26 +98,29 @@ const RATIONALE_INSTRUCTION_NO_ANCHORS = [
  * once the cap allowed it. A span/256 slope reaches 620 tokens at ~159,000 tokens of span,
  * which brackets that observation without pretending to predict it.
  *
- * ## The floor is 4096, and 1024 was measured to be too small
+ * ## The floor is 16384, and both 1024 and 4096 were measured to be too small
  *
- * The two budgets must be far apart, not merely ordered. The instruction HINTS at "200-800
- * tokens"; the real budget has to leave room for the model to think before it writes. At a floor
- * of 1024 -- 1.28x the hint's upper bound -- the model spent the whole budget on reasoning and
- * returned NO text blocks at all. Measured twice, reproducibly:
+ * The two budgets must be far apart, not merely ordered, because the model spends part of the
+ * real budget REASONING before it writes any text. Measured three times:
  *
- *   rationaleFailures 1   reason UNSUPPORTED_CONTENT   rationaleChars 0
- *   accuracy 0.6176, then 0.5490   (against 0.9020 when the budget was 8192)
+ *   real 1024  (hint 800,  1.28x)  chars 0   UNSUPPORTED_CONTENT   accuracy 0.6176, 0.5490
+ *   real 4096  (hint 800,  5.12x)  chars 1824  accuracy 0.9363   -- worked ONCE, then failed
+ *                                                                 3/3 across all three tiers
+ *   real 16384                     the floor below
  *
- * `UNSUPPORTED_CONTENT` is the empty-text check, and it is the wrong failure to be able to reach:
- * the caller asked for a digest and paid for a call that produced nothing usable. 4096 is 5x the
- * hint's ceiling, which is the margin the measurement says is needed.
+ * 4096 is marginal rather than wrong: it sufficed once and then did not, which is what a budget
+ * sitting near the reasoning overhead looks like. 16384 is 10x the largest tier hint (1600), so
+ * the model is bounded by the INSTRUCTION rather than by a tripwire -- and a tripwire here does
+ * not truncate, it discards the entire call: `text.length === 0` throws `UNSUPPORTED_CONTENT`,
+ * the caller pays for a request that produced nothing, and the checkpoint falls back to the
+ * marker line.
  *
  * @param foldSpanTokens - tokens of the span this fold replaces.
  * @returns the output token budget for the auxiliary call.
  */
 export function rationaleOutputFor(foldSpanTokens: number): number {
   const slope = Math.round(Math.max(0, foldSpanTokens) / 256)
-  return Math.min(8192, Math.max(4096, slope))
+  return Math.min(32_768, Math.max(16_384, slope))
 }
 
 export interface RationaleCallResult {
