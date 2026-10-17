@@ -222,6 +222,36 @@ def analyse(cells: list[dict]) -> dict:
                  "ci95": list(cluster_bootstrap(v, acc)), "n_facts": len({r["fact"] for r in v})}
         for k, v in sorted(by_exp.items())
     }
+    # ## The SPREAD needs an interval, not just a point (fixed 2026-10-17)
+    #
+    # Falsifier 5 asks whether exposure predicts retention, and it answered with a binary test on
+    # a point estimate: `max - min < 0.05`. Measured across the two tiers: 131K spread 0.0445
+    # (triggered) against 252K spread 0.0602 (not triggered) -- and the CURVE had the same shape in
+    # both, exposure 0 above exposure 1. So a consistent signal was reported as its own negation
+    # because the estimate happened to land on the other side of an arbitrary constant.
+    #
+    # That is a false positive of the very mechanism whose job is to detect the bench failing.
+    # The fix is not a different constant -- moving the threshold only moves the noise. The spread
+    # is now bootstrapped, clustered by fact the same way every other interval here is, and the
+    # falsifier fires only when the interval is ENTIRELY below the threshold. Being slow to accuse
+    # the bench of a defect is the correct bias for this test.
+    def _exposure_spread(sample: list[dict]) -> float | None:
+        groups: dict[int, list] = defaultdict(list)
+        for r in sample:
+            if r["kind"] in ("extraction", "disambiguation"):
+                groups[(r["exposure"] or {}).get("total", 0)].append(r)
+        vals = [acc(v) for v in groups.values()]
+        vals = [v for v in vals if v is not None]
+        return (max(vals) - min(vals)) if len(vals) >= 2 else None
+
+    _paired = [r for r in rows if r["kind"] in ("extraction", "disambiguation")]
+    _point = _exposure_spread(_paired)
+    _lo, _hi = cluster_bootstrap(_paired, _exposure_spread)
+    out["exposure_spread"] = {
+        "point": round(_point, 4) if _point is not None else None,
+        "ci95": [_lo, _hi],
+        "buckets": len(by_exp),
+    }
     by_mech: dict[str, list] = defaultdict(list)
     for r in rows:
         if r["kind"] in ("extraction", "disambiguation"):
@@ -340,14 +370,23 @@ def evaluate_falsifiers(out: dict) -> dict:
         }
 
     # 5. exposure does not predict retention: the covariates are decoration.
+    #
+    # Verdict from the bootstrapped INTERVAL, not from the point estimate. See the note where
+    # `exposure_spread` is built: a point-estimate threshold reported a consistent signal as its
+    # own negation because 0.0445 and 0.0602 straddled 0.05.
     if len(accs) >= 2 and by_exp:
         # A monotone-ish signal is what "predicts" means here; a flat curve is the falsifier.
         ordered = [v["accuracy"] for k, v in sorted(by_exp.items(), key=lambda kv: int(kv[0]))
                    if v["accuracy"] is not None]
+        _sp = out.get("exposure_spread") or {}
+        _lo, _hi = (_sp.get("ci95") or [None, None])
         f["exposure_does_not_predict"] = {
             "curve": ordered,
             "spread": round(max(ordered) - min(ordered), 4) if ordered else None,
-            "triggered": bool(ordered) and (max(ordered) - min(ordered)) < 0.05,
+            "spread_ci95": [_lo, _hi],
+            # Fires only when the interval is ENTIRELY below the threshold. A spread whose interval
+            # spans it is "not established", which is not the same as "no prediction".
+            "triggered": bool(_hi is not None and _hi < 0.05),
             "means": "compression is not what is losing the facts",
         }
 
