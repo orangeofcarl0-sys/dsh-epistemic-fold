@@ -39,7 +39,7 @@ export {
   DETAIL_PAGE_CHARS,
   EXACT_PAGE_LIMIT,
   SEARCH_BROWSE_CANDIDATES,
-} from './recall.ts'
+} from './recall/recall.ts'
 export type {
   BrowseCandidate,
   RecallDepth,
@@ -52,7 +52,7 @@ export type {
   SearchMatchKind,
   SearchOutcome,
   SourceRange,
-} from './recall.ts'
+} from './recall/recall.ts'
 export { INVENTORY_EXCERPT_CHARS, INVENTORY_LINES, inventoryEntriesOf, inventoryOf } from './inventory.ts'
 export type { InventoryEntry } from './inventory.ts'
 export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './policy.ts'
@@ -128,7 +128,7 @@ export type {
 } from './pressure.ts'
 export { headroomDominates, triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
 export type { BindingConstraint, TriggerBreakdown } from './trigger.ts'
-export { registerRecallTools } from './tools.ts'
+export { registerRecallTools } from './recall/tools.ts'
 export {
   registerEpistemicFoldProjection,
   currentFoldState,

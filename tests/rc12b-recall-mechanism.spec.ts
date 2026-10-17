@@ -29,7 +29,7 @@
 import { describe, expect, it } from 'vitest'
 import { createHarness } from './harness.ts'
 import { growAndFold, seedNarrative, surfaceText } from './recall-loop.ts'
-import { recall, search } from '../src/recall.ts'
+import { recall, search } from '../src/recall/recall.ts'
 import { resolvePreset } from '../src/preset.ts'
 
 const WINDOW = 6_000

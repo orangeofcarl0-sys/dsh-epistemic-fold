@@ -26,9 +26,9 @@ import {
   runSubagentRecall,
   subagentRecallStats,
   SUBAGENT_MAX_FETCHES,
-} from "../src/subagent-recall.ts"
-import type { CheckpointDescriptor, SubagentMessage } from "../src/subagent-recall.ts"
-import { isDerivedAnswer, isRetiredDerived, retireDerivedAnswers } from "../src/subagent-recall.ts"
+} from "../src/recall/subagent-recall.ts"
+import type { CheckpointDescriptor, SubagentMessage } from "../src/recall/subagent-recall.ts"
+import { isDerivedAnswer, isRetiredDerived, retireDerivedAnswers } from "../src/recall/subagent-recall.ts"
 import type { CheckpointBundleV1 } from "../src/types.ts"
 
 function textMessage(role: Message["role"], text: string): Message {

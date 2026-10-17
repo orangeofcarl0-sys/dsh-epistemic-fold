@@ -91,7 +91,7 @@ import {
   summaryRetryPolicy,
   summaryRetryStats,
 } from './summary-retry.ts'
-import { retireDerivedAnswers } from './subagent-recall.ts'
+import { retireDerivedAnswers } from './recall/subagent-recall.ts'
 import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
 import type { FoldTelemetry } from './fold-telemetry.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'

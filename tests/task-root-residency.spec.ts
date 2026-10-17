@@ -35,7 +35,7 @@ import {
 import { createHarness, SIGNAL } from './harness.ts'
 import { selectLeafSpan } from '../src/leaf-policy.ts'
 import { ActiveTaskRootRegistry, resolveActiveTaskRoot, taskRootDigest } from '../src/task-root.ts'
-import { recall } from '../src/recall.ts'
+import { recall } from '../src/recall/recall.ts'
 
 const MODEL = 'test-model'
 

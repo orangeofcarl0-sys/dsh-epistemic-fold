@@ -26,7 +26,7 @@ import {
   SEARCH_EXCERPT_CHARS,
   SEARCH_WHOLE_MESSAGE_CHARS,
   search,
-} from '../src/recall.ts'
+} from '../src/recall/recall.ts'
 import {
   classifyFact,
   classifyRun,

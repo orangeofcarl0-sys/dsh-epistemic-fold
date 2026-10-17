@@ -29,7 +29,7 @@ import {
   DETAIL_PAGE_CHARS,
   recall,
   searchWithDiagnosis,
-} from '../src/recall.ts'
+} from '../src/recall/recall.ts'
 import type { CheckpointBundleV1, FoldBundleStore } from '../src/types.ts'
 
 /**

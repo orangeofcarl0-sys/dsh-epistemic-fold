@@ -39,8 +39,8 @@ import {
   recall,
   search,
   sourceRangeOf,
-} from '../src/recall.ts'
-import type { SearchHit } from '../src/recall.ts'
+} from '../src/recall/recall.ts'
+import type { SearchHit } from '../src/recall/recall.ts'
 import type { CheckpointBundleV1, FoldBundleStore } from '../src/types.ts'
 
 /**

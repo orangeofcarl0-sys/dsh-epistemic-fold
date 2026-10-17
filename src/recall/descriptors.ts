@@ -13,12 +13,12 @@
  * @module dsh-epistemic-fold/descriptors
  */
 
-import type { EventSource } from "./archive-refs.ts"
-import { inventoryOf } from "./inventory.ts"
+import type { EventSource } from "../archive-refs.ts"
+import { inventoryOf } from "../inventory.ts"
 import { archiveMessages, sourceRangeOf } from "./recall.ts"
-import type { CheckpointBundleV1 } from "./types.ts"
+import type { CheckpointBundleV1 } from "../types.ts"
 
-export * from "./inventory.ts"
+export * from "../inventory.ts"
 
 // ---------------------------------------------------------------- descriptors
 

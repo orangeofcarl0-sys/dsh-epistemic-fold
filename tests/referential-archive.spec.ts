@@ -26,7 +26,7 @@ import { join } from 'node:path'
 import { sessionEventSource, resolveArchiveRefs } from '../src/archive-refs.ts'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { canonicalHash } from '../src/hash.ts'
-import { recall, search } from '../src/recall.ts'
+import { recall, search } from '../src/recall/recall.ts'
 import { conversation, createHarness, foldAgent, SIGNAL } from './harness.ts'
 
 /** Fold once with the referential archive on or off. */

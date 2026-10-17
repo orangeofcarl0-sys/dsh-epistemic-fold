@@ -142,7 +142,7 @@ describe('recall isolation (R0-A3)', () => {
     )!
 
     const other = conversation(2)
-    const { recall } = await import('../src/recall.ts')
+    const { recall } = await import('../src/recall/recall.ts')
     expect((await store.verify(other.id, checkpointId)).status).toBe('missing')
     const cross = await recall({ store, sessionId: other.id, checkpointId, depth: 'summary' })
     expect(cross?.unavailable).toBe('bundle not found')

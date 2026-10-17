@@ -26,7 +26,7 @@ import { SessionId } from '@deepseek-ai/dsh-session'
 import type { SessionEvent } from '@deepseek-ai/dsh-session'
 import { FileBundleStore } from '../src/bundle-store.ts'
 import { canonicalHash } from '../src/hash.ts'
-import { recallForeign } from '../src/recall.ts'
+import { recallForeign } from '../src/recall/recall.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 import { conversation, createHarness, foldAgent, SIGNAL } from './harness.ts'
 

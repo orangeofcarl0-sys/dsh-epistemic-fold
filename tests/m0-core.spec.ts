@@ -8,7 +8,7 @@ import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
 import { canonicalHash } from '../src/hash.ts'
-import { recall, search } from '../src/recall.ts'
+import { recall, search } from '../src/recall/recall.ts'
 import { failingStore } from './stores.ts'
 import {
   closedConversation,

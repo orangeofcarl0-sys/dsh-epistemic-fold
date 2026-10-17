@@ -16,7 +16,7 @@ import {
   SIGNAL,
   surfaceMessages,
 } from './harness.ts'
-import { recall } from '../src/recall.ts'
+import { recall } from '../src/recall/recall.ts'
 import { canonicalHash } from '../src/hash.ts'
 import { failingStore, flakyStore } from './stores.ts'
 

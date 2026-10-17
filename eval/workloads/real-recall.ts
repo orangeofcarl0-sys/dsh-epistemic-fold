@@ -34,7 +34,7 @@
 import { createMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { EventRef } from '../../src/state.ts'
-import { EXACT_PAGE_LIMIT } from '../../src/recall.ts'
+import { EXACT_PAGE_LIMIT } from '../../src/recall/recall.ts'
 
 const MODEL = 'workload-model'
 
