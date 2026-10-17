@@ -41,12 +41,19 @@ describe('the compact operation', () => {
 
   it('reports whether a fold actually committed', () => {
     expect(HOST).toMatch(/const committed = \(after\.leaves - before\.leaves\)/u)
-    expect(HOST).toContain('emit({ ok: true, committed, telemetry: await telemetry() })')
+    // The emit also carries a `measure` block now, so the assertion matches the CALL and the
+    // field it must report rather than pinning the exact line -- which is what made this test
+    // fail when that block was added.
+    expect(HOST).toMatch(/emit\(\{ ok: true, committed, telemetry: await telemetry\(\),/u)
   })
 
   it('routes through foldIfNeeded, so it inherits the deadline and the lineage', () => {
     const at = HOST.indexOf("op === 'compact'")
-    const branch = HOST.slice(at, at + 1600)
+    // The branch runs to the NEXT op, not to a fixed character count. A window measured in
+    // characters broke the moment a comment was added above `foldIfNeeded` (1600 -> 4423),
+    // and a test that fails on documentation is testing the wrong thing.
+    const next = HOST.indexOf("} else if (op ===", at + 1)
+    const branch = HOST.slice(at, next === -1 ? undefined : next)
     expect(branch).toContain('await foldIfNeeded()')
     // And it must NOT call compactIfNeeded directly, which would bypass both.
     expect(branch).not.toContain('compactIfNeeded(')

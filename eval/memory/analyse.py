@@ -21,6 +21,7 @@ involved and no network.
 """
 from __future__ import annotations
 
+import ast
 import json
 import random
 import sys
@@ -342,9 +343,16 @@ def evaluate_falsifiers(out: dict) -> dict:
         """
         for k, v in by_depth.items():
             if isinstance(k, str):
+                # `ast.literal_eval`, NOT `json.loads`. The key is `str((arm, depth))`, and
+                # Python's repr uses SINGLE quotes -- so `"['A', 1]"` is not JSON, `json.loads`
+                # raised, and the `continue` below silently skipped every group. Measured
+                # 2026-10-18: `retention_by_depth` held `"('A', 1)"` while this falsifier was
+                # absent from the output entirely, so `tests/memory-falsifiers.spec.ts` read
+                # `null` where it expected a verdict. A falsifier that cannot fire reads as
+                # "checked and clear", which is the failure this docstring already warned about.
                 try:
-                    k = json.loads(k.replace("(", "[").replace(")", "]"))
-                except json.JSONDecodeError:
+                    k = ast.literal_eval(k)
+                except (ValueError, SyntaxError):
                     continue
             if isinstance(k, (list, tuple)) and len(k) == 2 and k[0] == arm and k[1] == d:
                 return v
