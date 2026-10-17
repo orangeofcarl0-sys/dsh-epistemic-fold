@@ -107,7 +107,7 @@ const STEP_MAX_TOKENS = Number(
  *
  * The default of 32_000 was chosen for the tau2 lane (662d468) and inherited by LHTB,
  * so every fold in that lane was priced at `min(32000 x 0.5, 32000 - reserve) = 16_000`
- * tokens (`resolveEfCompactSpec`, `src/policy.ts:386-431`; `thresholdRatio` below).
+ * tokens (`resolveEfCompactSpec`, `src/config/policy.ts:386-431`; `thresholdRatio` below).
  * Measured on the 4.1F round: the task's own working set is 16_471 tokens, so EVERY
  * fold evicted 7-11K tokens of material the agent had just read -- 50-109 folds per
  * cell against step-5's 2-17 on the same threshold, 489K-803K tokens evicted per
@@ -119,7 +119,7 @@ const STEP_MAX_TOKENS = Number(
  *
  * ## The reply budget is NOT reserved, which is a second, latent incoherence
  *
- * `reservedCompletionTokens` (`src/policy.ts:49`) is
+ * `reservedCompletionTokens` (`src/config/policy.ts:49`) is
  * `session.requestHeader()?.config.maxTokens ?? info.defaultMaxTokens ?? 0`, and this
  * lane's adapter publishes no `defaultMaxTokens` (`eval/live/openai-adapter.ts:234-241`
  * returns `context` only). So the reserve is 0 even while `EF_BRIDGE_MAX_TOKENS` asks
@@ -2133,7 +2133,7 @@ async function main(): Promise<void> {
           // ## The turn must be closed around a MANUAL fold, exactly as `rootCompact` does
           //
           // This is the defect that made arms B and C unmeasurable. `compactIfNeeded` opens with
-          // `assertNoActiveCompaction(agent.session)` (src/engine.ts:1099), whose contract is an
+          // `assertNoActiveCompaction(agent.session)` (src/fold/engine.ts:1099), whose contract is an
           // IDLE session, so with the tau2 turn still open every one of the memory driver's 20
           // per-batch folds threw `busy` before it reached the threshold check. The bridge caught
           // each one, counted `compactionFailures`, and classified it `other` because `busy`

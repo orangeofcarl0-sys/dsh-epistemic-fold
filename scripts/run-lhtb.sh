@@ -116,7 +116,7 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 # default is 32_000 -- a value chosen for the tau2 lane (662d468). LHTB inherited it, so
 # a model whose window is at least 250K was folded at
 # `min(32000 x 0.5, 32000 - reserve) = 16_000` tokens (`bridge-host.ts:1400`,
-# `src/policy.ts:386-431`) while THIS task's own working set is 16_471 tokens:
+# `src/config/policy.ts:386-431`) while THIS task's own working set is 16_471 tokens:
 #
 #     instruction.md 1,625   spec.md 1,160   cfg_daemon.py 7,831   cfg_cli.py 1,904
 #     engine.py 1,344        engine_runner.py 688   cfgd_public.json 1,920

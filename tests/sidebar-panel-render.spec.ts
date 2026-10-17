@@ -58,7 +58,7 @@ function installedProfiles(home: string): string[] {
 
 const ROOT = join(import.meta.dirname, '..')
 
-/** The EF projection key the panel reads. Mirrors src/status-projection.ts. */
+/** The EF projection key the panel reads. Mirrors src/status/status-projection.ts. */
 const STATUS_KEY = 'epistemicFold.status'
 
 interface PanelNode {

@@ -18,7 +18,7 @@
  *
  * Exactly the fields RC2 §3 names: mode, current context, archived history,
  * checkpoint count, recalls, folds/roots, and estimated/realized cost. The
- * MODEL is built by `src/status.ts`, which is pure and separately tested; this
+ * MODEL is built by `src/status/status.ts`, which is pure and separately tested; this
  * module's only job is to gather the real inputs and never invent one.
  *
  * @module dsh-epistemic-fold/command

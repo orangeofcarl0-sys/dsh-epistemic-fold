@@ -266,15 +266,17 @@ Several of these were explored or bounded experimentally and were deferred becau
 
 | subsystem | file |
 | --- | --- |
-| compaction engine | `src/engine.ts` |
-| fold candidates / frontier | `src/candidate.ts`, `src/frontier.ts` |
-| bundle storage | `src/bundle-store.ts` |
-| checkpoint compiler / renderer | `src/compiler.ts`, `src/renderer.ts` |
-| deterministic state | `src/state.ts`, `src/authority.ts` |
-| search / recall | `src/recall.ts`, `src/tools.ts` |
-| provider economics | `src/economics-profile.ts`, `src/policy-compiler.ts` |
-| mode presets | `src/preset.ts` |
-| status / commands | `src/status.ts`, `src/command.ts` |
-| client projection / Sidebar | `src/status-projection.ts`, `client.js` |
+| compaction engine | `src/fold/engine.ts` |
+| fold candidates / frontier | `src/fold/candidate.ts`, `src/fold/frontier.ts` |
+| bundle storage | `src/checkpoint/bundle-store.ts` |
+| checkpoint compiler / renderer | `src/checkpoint/compiler.ts`, `src/checkpoint/renderer.ts` |
+| deterministic state | `src/state/state.ts`, `src/state/authority.ts` |
+| search / recall | `src/recall/recall.ts`, `src/recall/tools.ts` |
+| provider economics | `src/policy/economics-profile.ts`, `src/policy/policy-compiler.ts` |
+| mode presets | `src/config/preset.ts` |
+| status / commands | `src/status/status.ts`, `src/status/command.ts` |
+| client projection / Sidebar | `src/status/status-projection.ts`, `client.js` |
 | DSH integration | `src/plugin.ts`, `cordis.patch.yml` |
 | Basic compatibility backend | `src/basic/` |
+
+The six modules at the root of `src/` (`index`, `entry`, `plugin`, `doctor`, `types`, `compat`) are the published and shared surface; everything else lives in one of the seven purpose directories. The migration that produced this layout, and why each directory holds what it does, is `docs/138_LAYOUT_MIGRATION.md`.

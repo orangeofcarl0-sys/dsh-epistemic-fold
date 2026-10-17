@@ -63,9 +63,9 @@ export interface SubagentAnswer {
    *
    * The answer lands on the caller surface as an ordinary `tool/result`, so the fold
    * policy may archive it into the main tree like any other material — and
-   * `tool/result` is an AUTHORITATIVE kind (`src/anchor-service.ts:19-24`), so a later
+   * `tool/result` is an AUTHORITATIVE kind (`src/state/anchor-service.ts:19-24`), so a later
    * reader has no way to tell a derived answer from raw history. A paraphrase then
-   * becomes a source, which is exactly the laundering `src/authority.ts` refuses to
+   * becomes a source, which is exactly the laundering `src/state/authority.ts` refuses to
    * let an anchor do.
    *
    * This field is the mark that makes the distinction recoverable AFTER the fold: it is

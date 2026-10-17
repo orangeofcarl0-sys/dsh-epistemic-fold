@@ -250,7 +250,7 @@ The live tier did produce two decisive results:
    is confirmed against a real provider, not just argued.
 2. **A production bug no keyless test could see**: failure anchors rendered
    without their description, so the model saw that something was
-   unresolved but not what. Fixed in `src/renderer.ts` with a regression
+   unresolved but not what. Fixed in `src/checkpoint/renderer.ts` with a regression
    assertion.
 
 Per docs/11 §21, no production default may change on token economics alone:

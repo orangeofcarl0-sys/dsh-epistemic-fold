@@ -7,7 +7,9 @@
 
 ## 1. What changed
 
-53 flat modules became 6 root modules plus 7 purpose directories.
+54 flat modules became 6 root modules plus 7 purpose directories. (The audit
+says 53 because it was written before proposal C added `ef-keys.ts`; the
+pre-move tree measured at `c1b1f55^` is 54 flat plus `basic/`.)
 
 ~~~
 src/

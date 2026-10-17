@@ -130,7 +130,7 @@ export function isTierModeName(value: unknown): value is TierModeName {
  * field such as `bundleRoot`, because a mode name must not silently redirect
  * where a deployment writes its bundles.
  */
-// DERIVED from `src/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
+// DERIVED from `src/config/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
 // effective-config report prints these and a test pins the sequence.
 const PRESET_KEYS = PRESET_OWNED_KEYS
 

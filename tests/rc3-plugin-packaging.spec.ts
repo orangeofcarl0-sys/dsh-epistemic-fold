@@ -254,7 +254,7 @@ describe('RC3: the package declares a real plugin entry', () => {
 
   it('ships every top-level directory the README documents', async () => {
     // THE DEFECT THIS PINS: the README's repository layout listed
-    // `profiles/economics/`, and `src/economics-profile.ts` calls those files
+    // `profiles/economics/`, and `src/policy/economics-profile.ts` calls those files
     // "the auditable, user-overridable copies" that its built-in constants
     // mirror — but `files` omitted `profiles`, so a consumer following the
     // README to the auditable source found nothing there.
@@ -295,7 +295,7 @@ describe('RC3: the package declares a real plugin entry', () => {
     // silently defaulting either way.
     //
     // The distinction that matters: `profiles/` is shipped because
-    // `src/economics-profile.ts` calls those files "the auditable,
+    // `src/policy/economics-profile.ts` calls those files "the auditable,
     // user-overridable copies" and a consumer follows that reference; `eval/`
     // is not, because it CONSUMES `src/` (it is the evaluation harness) and no
     // consumer-facing document points at it.

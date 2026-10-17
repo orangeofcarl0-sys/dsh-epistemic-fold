@@ -254,7 +254,7 @@ describe('B-5: the plugin Config schema indexes the whole EF-owned vocabulary', 
   })
 
   it('derives every list from the ONE table, so a new key cannot reach only some of them', () => {
-    // Added 2026-10-18 with `src/ef-keys.ts`. Before it, this vocabulary lived in four
+    // Added 2026-10-18 with `src/config/ef-keys.ts`. Before it, this vocabulary lived in four
     // hand-maintained lists and adding ONE key took 14 registration sites; missing the strip
     // list made Basic reject the whole mount (`BasicCompactionConfig: unknown key ...`) rather
     // than fail a test. The guard above checks one direction only, so this checks the derivation:

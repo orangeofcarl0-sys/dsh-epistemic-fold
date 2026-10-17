@@ -513,7 +513,7 @@ export function resolveEfCompactSpec(
 }
 
 /**
- * Every config key EF owns and resolves itself, DERIVED from `src/ef-keys.ts` (2026-10-18).
+ * Every config key EF owns and resolves itself, DERIVED from `src/config/ef-keys.ts` (2026-10-18).
  *
  * Basic validates its config keys STRICTLY, so any EF key reaching the super constructor throws.
  * The literal that used to live here was one of four hand-maintained copies of this vocabulary,

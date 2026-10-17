@@ -107,7 +107,7 @@ import type {
 // The rationale's generation cap used to live here as `RATIONALE_MAX_TOKENS`, first 400 and then
 // 8192. Both were constants, and `docs/21` section 11.5 had already established that this cost is
 // DERIVED from the folded span rather than carried as one. It now lives in `rationaleOutputFor`
-// (src/rationale.ts), which is where its derivation and its two measured failures are documented.
+// (src/checkpoint/rationale.ts), which is where its derivation and its two measured failures are documented.
 
 /**
  * Tokens in the span a fold replaces, estimated from the shadowed messages.
@@ -1109,7 +1109,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * Why the most recent `compactIfNeeded` declined, or null when it did not.
    *
    * Added 2026-10-17 because four different preconditions return the same `null` from this method
-   * (src/engine.ts:1063,1085,1135,1196), and a caller that declines a fold could not tell a full
+   * (src/fold/engine.ts:1063,1085,1135,1196), and a caller that declines a fold could not tell a full
    * surface from an empty measurement. It is TELEMETRY and not a log line: the first attempt at
    * this recorded the reason through `ctx.logger`, which in the bridge writes nowhere the harness
    * reads -- two instrumented runs produced zero output and looked like two non-events.
@@ -1297,7 +1297,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // ## The throw that twenty refusals actually took
         //
         // `selectLeafSpan` throws when the token meter's surface and the session's surface have
-        // diverged (src/leaf-policy.ts:48-51), and that throw was classified `other` because its
+        // diverged (src/fold/leaf-policy.ts:48-51), and that throw was classified `other` because its
         // message carries no error code -- so twenty compaction failures looked like twenty
         // unrelated faults. Named here so the next reader does not have to bisect to find it.
         this.lastLeafDecision = 'span-threw: ' + (error instanceof Error ? error.message : String(error)).slice(0, 200)
@@ -1310,7 +1310,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           + ' retain=' + spec.retainTokens + ' total=' + measurement.totalTokens
         // ## Say WHICH precondition failed, because four of them return the same null
         //
-        // `selectLeafSpan` (src/leaf-policy.ts:47,61,72) returns null for an empty priced
+        // `selectLeafSpan` (src/fold/leaf-policy.ts:47,61,72) returns null for an empty priced
         // node list, a frontier already at the surface end, or no room between the retained
         // tail and the frontier. All three reach here as `null`, so a caller that declines a
         // fold cannot tell a full surface from an empty measurement -- and neither could a

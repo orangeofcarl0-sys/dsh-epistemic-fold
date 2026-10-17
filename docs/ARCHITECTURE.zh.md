@@ -261,15 +261,17 @@ Quality
 
 | 子系统 | 文件 |
 | --- | --- |
-| compaction engine | `src/engine.ts` |
-| fold candidates / frontier | `src/candidate.ts`、`src/frontier.ts` |
-| bundle 存储 | `src/bundle-store.ts` |
-| checkpoint 编译 / 渲染 | `src/compiler.ts`、`src/renderer.ts` |
-| 确定性状态 | `src/state.ts`、`src/authority.ts` |
-| search / recall | `src/recall.ts`、`src/tools.ts` |
-| provider 经济性 | `src/economics-profile.ts`、`src/policy-compiler.ts` |
-| 模式 preset | `src/preset.ts` |
-| status / commands | `src/status.ts`、`src/command.ts` |
-| client projection / Sidebar | `src/status-projection.ts`、`client.js` |
+| compaction engine | `src/fold/engine.ts` |
+| fold candidates / frontier | `src/fold/candidate.ts`、`src/fold/frontier.ts` |
+| bundle 存储 | `src/checkpoint/bundle-store.ts` |
+| checkpoint 编译 / 渲染 | `src/checkpoint/compiler.ts`、`src/checkpoint/renderer.ts` |
+| 确定性状态 | `src/state/state.ts`、`src/state/authority.ts` |
+| search / recall | `src/recall/recall.ts`、`src/recall/tools.ts` |
+| provider 经济性 | `src/policy/economics-profile.ts`、`src/policy/policy-compiler.ts` |
+| 模式 preset | `src/config/preset.ts` |
+| status / commands | `src/status/status.ts`、`src/status/command.ts` |
+| client projection / Sidebar | `src/status/status-projection.ts`、`client.js` |
 | DSH 集成 | `src/plugin.ts`、`cordis.patch.yml` |
 | Basic 兼容 backend | `src/basic/` |
+
+`src/` 根目录下的六个模块（`index`、`entry`、`plugin`、`doctor`、`types`、`compat`）是发布与共享面；其余模块各自归属七个用途目录之一。该布局的迁移过程及各目录的职责划分见 `docs/138_LAYOUT_MIGRATION.md`。

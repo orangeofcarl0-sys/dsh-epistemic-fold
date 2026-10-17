@@ -73,7 +73,7 @@ export interface EffectiveConfig {
 }
 
 /** The keys a tier may own, in report order. */
-// DERIVED from `src/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
+// DERIVED from `src/config/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
 // effective-config report prints these and a test pins the sequence.
 const PRESET_OWNED = PRESET_OWNED_KEYS
 

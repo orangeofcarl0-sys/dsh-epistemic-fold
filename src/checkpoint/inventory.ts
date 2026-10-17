@@ -61,7 +61,7 @@ export const DERIVED_RETIRED_SENTINEL = 'efDerivedRetired'
  * ## Why a TOMBSTONE and not a removal
  *
  * The obvious implementation — drop the message from the archived list — cannot be used.
- * `currentSpanSeqs` (`src/engine.ts:1595-1630`) counts the messages the fold span derives
+ * `currentSpanSeqs` (`src/fold/engine.ts:1595-1630`) counts the messages the fold span derives
  * and THROWS when that disagrees with the archived count, and the throw ends the episode. So
  * a naive drop converts a provenance problem into a lost run.
  *

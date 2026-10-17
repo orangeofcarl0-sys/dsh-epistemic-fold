@@ -41,7 +41,7 @@ window.__ModuleLoader__.load({
     const React = /** @type {typeof import('react')} */ (_require('react'))
     const jsx = /** @type {typeof import('react/jsx-runtime')} */ (_require('react/jsx-runtime'))
 
-    /** The projection key the host registers (mirrors src/status-projection.ts). */
+    /** The projection key the host registers (mirrors src/status/status-projection.ts). */
     const STATUS_KEY = 'epistemicFold.status'
 
     /** The tab id; `betterSidebar` uses it as `SidebarTab.type`. */
@@ -64,7 +64,7 @@ window.__ModuleLoader__.load({
      *
      * ## Why this is a local typedef rather than an import
      *
-     * It MIRRORS `FoldStatusView` in `src/status-projection.ts`, and mirroring is
+     * It MIRRORS `FoldStatusView` in `src/status/status-projection.ts`, and mirroring is
      * the weak part: the host could rename a field, update its own interface, its
      * Zod schema and its view function, and this panel would keep compiling —
      * silently rendering `—` for the row, which is indistinguishable from a
