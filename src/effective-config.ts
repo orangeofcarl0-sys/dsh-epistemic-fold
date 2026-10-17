@@ -19,6 +19,8 @@ import type { DshCapabilities } from './compat.ts'
 import { FOLD_MODE_NAMES, TIERS, isFoldModeName, isTierMode, presetOverrides, tierValuesFor } from './preset.ts'
 import type { TierModeName } from './preset.ts'
 import { resolveEfConfig, DEFAULT_RETAIN_RATIO } from './policy.ts'
+import { PRESET_OWNED_KEYS } from './ef-keys.ts'
+import { DEFAULT_RATIONALE_HINT_TOKENS } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
 import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
 import type { TriggerBreakdown } from './trigger.ts'
@@ -71,21 +73,16 @@ export interface EffectiveConfig {
 }
 
 /** The keys a tier may own, in report order. */
-const PRESET_OWNED = [
-  'leafAdmission',
-  'rootPolicy',
-  'semanticMode',
-  'rationaleHintTokens',
-  'framingMode',
-  'retainRatio',
-] as const
+// DERIVED from `src/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
+// effective-config report prints these and a test pins the sequence.
+const PRESET_OWNED = PRESET_OWNED_KEYS
 
 /** Engine defaults for the tier-owned keys, so `origin` is always knowable. */
 const ENGINE_DEFAULTS: Readonly<Record<string, unknown>> = {
   leafAdmission: 'legacy',
   rootPolicy: 'legacy',
   semanticMode: 'rationale',
-  rationaleHintTokens: 800,
+  rationaleHintTokens: DEFAULT_RATIONALE_HINT_TOKENS,
   framingMode: 'legacy',
   retainRatio: DEFAULT_RETAIN_RATIO,
 }

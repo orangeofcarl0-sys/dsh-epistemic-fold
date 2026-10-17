@@ -30,6 +30,7 @@ import { createAnchorService } from '../src/anchor-service.ts'
 import { EF_CURRENT_STATE_KEY, currentFoldState } from '../src/projection.ts'
 import { recall } from '../src/recall.ts'
 import { efOwnedConfigKeys } from '../src/policy.ts'
+import { EF_KEYS, PRESET_OWNED_KEYS } from '../src/ef-keys.ts'
 import type { EpistemicFoldConfig } from '../src/policy.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 
@@ -250,6 +251,27 @@ describe('B-5: the plugin Config schema indexes the whole EF-owned vocabulary', 
     const declared = new Set(Object.keys(EpistemicFoldPlugin.Config.dict ?? {}))
     const missing = efOwnedConfigKeys().filter(key => !declared.has(key))
     expect(missing, 'EF-owned keys absent from the plugin Config schema').toEqual([])
+  })
+
+  it('derives every list from the ONE table, so a new key cannot reach only some of them', () => {
+    // Added 2026-10-18 with `src/ef-keys.ts`. Before it, this vocabulary lived in four
+    // hand-maintained lists and adding ONE key took 14 registration sites; missing the strip
+    // list made Basic reject the whole mount (`BasicCompactionConfig: unknown key ...`) rather
+    // than fail a test. The guard above checks one direction only, so this checks the derivation:
+    // every list must be exactly what the table says it is.
+    const table = EF_KEYS
+    expect(efOwnedConfigKeys().slice().sort()).toEqual(
+      table.filter(k => k.efOwned).map(k => k.name).sort())
+    expect(PRESET_OWNED_KEYS.slice().sort()).toEqual(
+      table.filter(k => k.presetOwned).map(k => k.name).sort())
+    // And the two dimensions must genuinely differ, or the table is not earning its keep:
+    // `retainRatio` is preset-owned and BASIC-owned, so it must NOT be stripped.
+    expect(PRESET_OWNED_KEYS).toContain('retainRatio')
+    expect(efOwnedConfigKeys()).not.toContain('retainRatio')
+    // Every EF-owned key must also be declared in the schema -- the check above, stated once
+    // more against the table so a key added to the table but not the schema fails HERE.
+    const declared = new Set(Object.keys(EpistemicFoldPlugin.Config.dict ?? {}))
+    expect(table.filter(k => k.efOwned && !declared.has(k.name)).map(k => k.name)).toEqual([])
   })
 
   it('mounts through the schema and the EF-owned keys survive to the engine', async () => {

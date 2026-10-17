@@ -64,6 +64,7 @@
  */
 
 import type { EpistemicFoldConfig } from './policy.ts'
+import { PRESET_OWNED_KEYS } from './ef-keys.ts'
 
 /** Every mode name the engine accepts, including the non-tier defaults. */
 export type FoldModeName = 'legacy' | 'basic' | 'economy' | 'balanced' | 'quality'
@@ -129,14 +130,9 @@ export function isTierModeName(value: unknown): value is TierModeName {
  * field such as `bundleRoot`, because a mode name must not silently redirect
  * where a deployment writes its bundles.
  */
-const PRESET_KEYS = [
-  'leafAdmission',
-  'rootPolicy',
-  'semanticMode',
-  'rationaleHintTokens',
-  'framingMode',
-  'retainRatio',
-] as const
+// DERIVED from `src/ef-keys.ts` (2026-10-18); the report order is pinned there, because the
+// effective-config report prints these and a test pins the sequence.
+const PRESET_KEYS = PRESET_OWNED_KEYS
 
 type PresetKey = (typeof PRESET_KEYS)[number]
 

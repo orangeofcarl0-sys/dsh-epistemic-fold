@@ -17,6 +17,7 @@ import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
 import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'
 import { FOLD_MODE_NAMES, isFoldModeName, resolvePreset } from './preset.ts'
+import { EF_OWNED_CONFIG_KEYS } from './ef-keys.ts'
 import type { FoldModeName } from './preset.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
@@ -201,7 +202,7 @@ const DEFAULT_SEMANTIC_MODE = 'rationale'
 /** Default HINT for the rationale instruction. NOT the generation budget: the real budget is
  * derived from the folded span by `rationaleOutputFor` and is several times larger, because the
  * model spends part of it reasoning before it writes. */
-const DEFAULT_RATIONALE_HINT_TOKENS = 800
+export const DEFAULT_RATIONALE_HINT_TOKENS = 800
 const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
 const DEFAULT_LEAF_ADMISSION: LeafAdmissionMode = 'legacy'
 /**
@@ -512,36 +513,14 @@ export function resolveEfCompactSpec(
 }
 
 /**
- * Every config key EF owns and resolves itself. Basic validates its config keys
- * STRICTLY, so any EF key reaching the super constructor throws — this list is
- * the single place that decides what "EF-owned" means, and `stripEfConfigKeys`
- * is checked against it by a test so a newly added key cannot silently leak
- * through (a real bug found in R0).
+ * Every config key EF owns and resolves itself, DERIVED from `src/ef-keys.ts` (2026-10-18).
  *
- * It lives here rather than in the engine because it is config VOCABULARY: the
- * same question `resolveEfConfig` answers, asked from the other side.
+ * Basic validates its config keys STRICTLY, so any EF key reaching the super constructor throws.
+ * The literal that used to live here was one of four hand-maintained copies of this vocabulary,
+ * and it was the ONE without a real guard: omitting a key made Basic reject the whole mount
+ * (`BasicCompactionConfig: unknown key ...`), while the only test on it checked the wrong
+ * direction. Deriving it from the table means it cannot fall behind.
  */
-const EF_OWNED_CONFIG_KEYS = [
-  'frozenCheckpointTokenBudget',
-  'semanticMode',
-  'rationaleHintTokens',
-  'bundleRoot',
-  'leafAdmission',
-  'minReclaimTokens',
-  'minReclaimRatio',
-  'rootPolicy',
-  'economicsProfiles',
-  'cacheRealizationRate',
-  'paybackHorizonRequests',
-  'framingMode',
-  'mode',
-  'referentialArchive',
-  'allowCrossSessionRecall',
-  'subagentRecall',
-  'subagentRecallThresholdChars',
-  'subagentRecallFetchBudgetChars',
-] as const
-
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
 export function stripEfConfigKeys(config: EpistemicFoldConfig): EpistemicFoldConfig {
   const basic: Record<string, unknown> = { ...config }
