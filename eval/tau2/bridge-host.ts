@@ -455,6 +455,14 @@ interface Telemetry {
    */
   readonly lastCompactionError: string | null
   /**
+   * The engine's own verdict on the last leaf decision, or null before any fold.
+   *
+   * Emitted since 08b3b5e and DECLARED NOWHERE until 2026-10-18 -- `tsc -p tsconfig.eval.json`
+   * reported `'lastLeafDecision' does not exist in type 'Telemetry'`, and no local command ran
+   * that project, so it went unseen while CI ran red.
+   */
+  readonly lastLeafDecision: string | null
+  /**
    * Summarization attempts a truncation forced to be retried, the attempts made in
    * total, and the attempts that truncated on EVERY try.
    *
@@ -750,7 +758,7 @@ function appendIncoming(message: TauMessage | TauMultiTool): number[] {
       content: [{ type: 'text', text: message.content ?? '' }],
       source: { kind: 'user' },
     }), { surfaceOp: 'append' })
-    return active.surface.nodes.filter((s: number) => !before.has(s))
+    return active.surface.nodes.filter(s => !before.has(s))
   }
   if (message.role === 'tool') {
     // tau2 delivers a tool result as its own message carrying the originating
@@ -777,7 +785,7 @@ function appendIncoming(message: TauMessage | TauMultiTool): number[] {
         isError: message.error === true,
       }),
     }, { surfaceOp: 'append' })
-    return active.surface.nodes.filter((s: number) => !before.has(s))
+    return active.surface.nodes.filter(s => !before.has(s))
   }
   throw new Error(`bridge: unsupported incoming role "${message.role}"`)
 }
@@ -2117,7 +2125,10 @@ async function main(): Promise<void> {
           // to tell a shared-session disagreement from a stale-reference one.
           const hostMeasure = ctx!.tokenMeter.measure(session!).totalTokens
           const hostNodes = session!.surface.nodes.length
-          const engineMeasure = engine!.ctx.tokenMeter.measure(session!).totalTokens
+          // `engine.ctx` is `protected` on the base Service class, so this reaches through a
+          // public accessor instead of a cast. The comparison it exists for is real: it tells
+          // a shared-session disagreement from a stale-reference one.
+          const engineMeasure = engine!.tokenMeterFor(session!).totalTokens
           const engineNodes = session!.surface.nodes.length
           // ## The turn must be closed around a MANUAL fold, exactly as `rootCompact` does
           //

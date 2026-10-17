@@ -34,7 +34,7 @@
  */
 import { execFile } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
-import { appendFileSync, existsSync, readdirSync, statSync } from 'node:fs'
+import { appendFileSync, existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { basename, join } from 'node:path'
 import { promisify } from 'node:util'
 import {
@@ -49,7 +49,9 @@ import type { CellProcess, WatchdogPolicy } from './watchdog-policy.ts'
 const execFileAsync = promisify(execFile) as unknown as (
   file: string,
   args: readonly string[],
-  options?: { maxBuffer?: number; timeout?: number },
+  // `cwd` allows `undefined` explicitly: the call site passes a possibly-undefined env value
+  // and the project compiles with exactOptionalPropertyTypes.
+  options?: { maxBuffer?: number; timeout?: number; cwd?: string | undefined },
 ) => Promise<{ stdout: string; stderr: string }>
 
 /** Jobs root holding one directory per sweep, each holding one directory per cell. */

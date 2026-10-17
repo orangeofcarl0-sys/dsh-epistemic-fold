@@ -36,7 +36,7 @@ const SCRIPT = "import sys, json\nsys.path.insert(0, 'eval/memory')\nimport run_
 describe('the exposure chain', () => {
   it('has a SOURCE for the fact -> seq map, which it did not before', () => {
     expect(HOST).toContain('const before = new Set(active.surface.nodes)')
-    expect(HOST).toContain('return active.surface.nodes.filter((s: number) => !before.has(s))')
+    expect(HOST).toContain('return active.surface.nodes.filter(s => !before.has(s))')
     expect(HOST).toContain('seqs: appendedSeqs')
     // The flag is additive and defaulted, so every existing caller keeps the old behaviour;
     // what this line exists for is that `append` is the one call that RETURNS `seqs`.

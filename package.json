@@ -45,10 +45,10 @@
   ],
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "typecheck": "npm run typecheck:src && npm run typecheck:client && npm run typecheck:eval",
     "typecheck:client": "tsc -p tsconfig.client.json",
     "typecheck:eval": "tsc --noEmit -p tsconfig.eval.json",
-    "typecheck:all": "npm run typecheck && npm run typecheck:client && npm run typecheck:eval",
+    "typecheck:all": "npm run typecheck:src && npm run typecheck:client && npm run typecheck:eval",
     "generate-maps": "node scripts/generate-maps.cjs",
     "eval:keyless": "vitest run tests/eval-core.spec.ts tests/eval-corpus.spec.ts tests/eval-longhorizon.spec.ts",
     "eval:longhorizon": "vitest run tests/eval-longhorizon.spec.ts",
@@ -69,7 +69,8 @@
     "preflight": "node scripts/preflight-lib.mjs",
     "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",
     "generate-presets": "node scripts/generate-presets.mjs",
-    "sweep-temp": "node scripts/sweep-temp.mjs"
+    "sweep-temp": "node scripts/sweep-temp.mjs",
+    "typecheck:src": "tsc --noEmit -p tsconfig.json"
   },
   "repository": {
     "type": "git",

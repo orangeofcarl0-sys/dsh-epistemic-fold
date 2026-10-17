@@ -23,7 +23,9 @@ describe('the memory module README', () => {
   const text = readFileSync(README, 'utf8')
 
   it('links only to files that exist', () => {
-    const links = [...text.matchAll(/\]\(([^)]+)\)/gu)].map(m => m[1])
+    // `m[1]` is `string | undefined` under strict null checks; the group is non-optional in the
+    // pattern, so `?? ''` states that rather than casting it away.
+    const links = [...text.matchAll(/\]\(([^)]+)\)/gu)].map(m => m[1] ?? '')
     expect(links.length, 'the README should point somewhere').toBeGreaterThan(0)
     for (const l of links) {
       expect(existsSync(resolve(dirname(README), l)), l + ' must resolve').toBe(true)
@@ -31,7 +33,7 @@ describe('the memory module README', () => {
   })
 
   it('names only files that exist', () => {
-    const named = [...text.matchAll(/`([a-z_]+\.(?:py|json|sh))`/gu)].map(m => m[1])
+    const named = [...text.matchAll(/`([a-z_]+\.(?:py|json|sh))`/gu)].map(m => m[1] ?? '')
     expect(named.length).toBeGreaterThan(0)
     for (const n of new Set(named)) {
       expect(existsSync(join(MEM, n)), n + ' is named but absent').toBe(true)

@@ -413,6 +413,17 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * provenance rule fired: `0` with subagent invocations above zero means answers were
    * produced and none had been folded yet.
    */
+  /**
+   * The token measurement for a session, so a HOST can compare it with its own.
+   *
+   * `ctx` is `protected` on the base Service class, and the tau2 harness needs the engine's own
+   * reading to tell a shared-session disagreement from a stale-reference one. Exposing the one
+   * measurement is narrower than exposing `ctx`, and it removes an `as unknown as` escape.
+   */
+  tokenMeterFor(session: Session): TokenMeasurement {
+    return this.ctx.tokenMeter.measure(session)
+  }
+
   get derivedAnswersRetired(): number {
     return this.telemetry.derivedAnswersRetired
   }
