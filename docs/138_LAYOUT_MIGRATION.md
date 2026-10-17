@@ -80,10 +80,24 @@ became: typecheck, resolver check, a quoted-basename sweep, and the full suite.
 3. a sweep for `'<moved>.ts'` quoted anywhere, to catch category (b)
 4. `npx vitest run` — the full suite, not a subset
 
-Result on the final tree: typecheck green; **1202 passed, 2 failed, 34 skipped**.
-Both failures are environmental and fail identically before the migration:
-`rc3-plugin-packaging` (stale `lib/` build artifact) and `rc7-inplace-drift`
-(installed-DSH drift, 19 rows against a 21-row reference).
+Result on the final tree: typecheck green; **1203 passed, 1 failed, 34 skipped**,
+against **1202 passed, 2 failed** before the migration.
+
+The two failures carried in from the baseline were both about a stale `lib/`
+build artifact, and neither had anything to do with module paths:
+
+- `rc3-plugin-packaging` runs `scripts/preflight-lib.mjs`, which walks `src/`
+  mtimes and compares them with `lib/` outputs. It never names a module.
+- `rc4-sidebar-panel` asserts `lib/client.js` is byte-identical to `client.js`.
+
+`npm run build` cleared both. That was inferred from the preflight logic during
+the independent audit and could not be measured then because the audit was
+read-only; it is measured now.
+
+The one remaining failure is `rc7-inplace-drift`: `cordis.patch.yml` is dated
+2026-10-03 and the reference is the installed DSH dated 2026-10-15, and every
+preset is short exactly two DSH-side rows (`time-context`, `tool-schedule`).
+It is untouched by this migration and is not fixed here.
 
 ## 5. Tooling left behind
 
@@ -94,6 +108,9 @@ Both failures are environmental and fail identically before the migration:
 - `scripts/dev/check-specifiers.mjs` — the independent resolver check.
 - `scripts/dev/repair-specifiers.mjs` — the recovery path for a missed scan list.
 - `tests/src-module.ts` — `readSrcModule(name)`, for assertions about module text.
+- `scripts/dev/fix-citations.mjs` — rewrites comment-level citations of the
+  form `src/<name>.ts` for paths that provably no longer exist. 22 of them in
+  14 files survived every gate above, because a comment is not an import.
 
 ## 6. What this does NOT do
 
