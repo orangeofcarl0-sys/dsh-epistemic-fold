@@ -1211,6 +1211,21 @@ function toolSchemas(): readonly { name: string; description: string; parameters
     description: tool.description ?? '',
     parameters: tool.parameters ?? { type: 'object', properties: {} },
   }))
+  // ## An explicitly EMPTY list means "no tools", and it is honoured (fixed 2026-10-17)
+  //
+  // This merged `ctx.tools.schemas()` unconditionally, so a caller that passed `[]` still received
+  // the runtime's recall tools. Measured: the memory bench passes `[]` (run_cell.py:250,298) and was
+  // offered context_search/context_recall anyway; the model called one, the bench answers no tool
+  // calls anywhere (zero `call_tool` sites in eval/memory), and the unanswered call left an assistant
+  // message with no tool result. The provider rejects that shape, so 19 of 20 probe batches failed
+  // and every run scored 0/204 at every tier.
+  //
+  // The list is NOT simply forwarded, and that distinction is load-bearing: `ef_lhtb_agent.py:444`
+  // passes a NON-empty list (its shell tool) and DEPENDS on the runtime tools being merged -- the
+  // recall tools are executed by the DSH ToolRuntime, not by the lane. Forwarding the list verbatim
+  // would silently strip recall from the lane. So: empty means none, non-empty means these plus the
+  // runtime's. Both callers get what they asked for, and neither gets a silent behaviour change.
+  if (benchmarkTools.length === 0) return []
   const runtime = toolsRuntime()
   const efTools = (runtime?.schemas() ?? []).map(schema => ({
     name: schema.name,
@@ -1921,6 +1936,7 @@ async function telemetry(): Promise<Telemetry> {
     compactionFailures,
     compactionFailureKinds,
     lastCompactionError,
+    lastLeafDecision: engine!.lastLeafDecision ?? null,
     summarizationAttempts: summaryRetryStats.attempts,
     summarizationRetries: summaryRetryStats.retries,
     summarizationRetryExhausted: summaryRetryStats.exhausted,
@@ -2068,12 +2084,24 @@ async function main(): Promise<void> {
           // deadline, the failure containment and the lineage capture rather than
           // duplicating them.
           const before = foldCounters(engine!)
+          // ## Both measurements, at the SAME instant, because they disagreed by 51x
+          //
+          // Measured 2026-10-17: the host reported 3,330,304 tokens after this op while the engine
+          // decided `below-threshold 65192<129024` inside it. Both call
+          // `ctx.tokenMeter.measure(session).totalTokens`. Recording them together is the only way
+          // to tell a shared-session disagreement from a stale-reference one.
+          const hostMeasure = ctx!.tokenMeter.measure(session!).totalTokens
+          const hostNodes = session!.surface.nodes.length
+          const engineMeasure = engine!.ctx.tokenMeter.measure(session!).totalTokens
+          const engineNodes = session!.surface.nodes.length
           await foldIfNeeded()
           const after = foldCounters(engine!)
           const committed = (after.leaves - before.leaves)
             + (after.roots - before.roots)
             + (after.emergencies - before.emergencies)
-          emit({ ok: true, committed, telemetry: await telemetry() })
+          emit({ ok: true, committed, telemetry: await telemetry(),
+            measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
+              engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
         } else if (op === 'rootCompact') {
           // FORCE one ROOT fold, so a harness can exercise that path on demand.
           //

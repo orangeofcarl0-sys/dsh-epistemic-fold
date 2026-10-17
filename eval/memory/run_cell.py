@@ -369,10 +369,23 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
 
     # ## Batched probing (5.3 as corrected)
     #
-    # The requirement is NO FOLD BETWEEN PROBES, and compaction is off for the whole phase, so
-    # the probes are grouped by the documents they need rather than forced into one turn. One
-    # turn was the first design and it made the injection arms impossible: the union of every
-    # probe's needed documents is the entire corpus, 861,703 tokens, which cannot be injected.
+    # The requirement is NO FOLD BETWEEN PROBES, so the probes are grouped by the documents they
+    # need rather than forced into one turn. One turn was the first design and it made the injection
+    # arms impossible: the union of every probe's needed documents is the entire corpus.
+    #
+    # ## Compaction is off WITHIN a batch and ON BETWEEN batches (fixed 2026-10-17)
+    #
+    # It was off for the WHOLE phase, and that is what made arms B and C unmeasurable. Measured:
+    # the sum of the per-batch MINIMAL injections is 1,226,520 tokens = 4.75x a 258,048 window, and
+    # the injections accumulate because the session only grows. Arms B and C therefore sent
+    # 3,330,304 and 3,265,112 tokens and every one of their 20 batches was rejected on window
+    # overflow. **The ratio is 4.75x at every tier**, because the corpus is sized as a multiple of
+    # the window -- so this was never a tier problem and no window could have fixed it.
+    #
+    # Folding between batches is the design's own intent: `orderings.json` exists to vary the input
+    # order precisely so the result can be decoupled from where the folds fell. Off WITHIN a batch
+    # is what keeps the injected set in front of the probes that need it; ON between batches is what
+    # keeps the session bounded.
     batches = probe_batches(key, docs, key["errata"])
     started = time.monotonic()
     all_answers: dict[int, str] = {}
@@ -381,6 +394,7 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     strict = loose = 0
     turn_chars = 0
     reply_heads = []
+    between_batch_folds: list[dict] = []
     for batch in batches:
         if inject:
             # The minimal set for THIS batch, which is what 6.4.1 asks for and what the
@@ -388,13 +402,37 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
             for key_name in batch["docs"]:
                 pid, name = key_name.split("/", 1)
                 doc = next(d for d in docs[pid] if d["name"] == name)
-                bridge.append({"role": "user", "content": doc["text"]})
+                _last_append = bridge.append({"role": "user", "content": doc["text"]})
             for e in batch["errata"]:
-                bridge.append({"role": "user", "content": e["text"]})
+                _last_append = bridge.append({"role": "user", "content": e["text"]})
+            # ## The measurement the HOST reports after the injection
+            #
+            # Recorded because the engine's own view and the provider's payload disagreed by 51x:
+            # `compactIfNeeded` saw 65,192 while the request that reached the provider was
+            # 3,330,304. Both are `tokenMeter.measure(session).totalTokens`, so they can only differ
+            # by WHEN they were taken -- and this is the measurement taken immediately after the
+            # documents go in, which is the earliest point the difference can show.
+            injected_tokens = (_last_append or {}).get("telemetry", {}).get("promptTokensLast")
+        else:
+            injected_tokens = None
         batch_public = {"probes": [p for p in public["probes"]
                                    if p["id"] in {q["id"] for q in batch["probes"]}]}
         turn = score_probes.render_probe_turn(batch_public)
         turn_chars += len(turn)
+        # ## The turn must be SENT, not merely rendered (fixed 2026-10-17)
+        #
+        # This line was missing. `turn` was built, measured by len(), and then never appended, so
+        # the model was asked to answer questions it had never been shown. Every run at every tier
+        # therefore scored 0/204 with `accuracy: null` -- and the failure was provider-independent,
+        # which is what proves it: arm N made 20 SUCCESSFUL calls (probe_provider_failures: 0) and
+        # its recorded reply_head is an acknowledgement of SYSTEM_PUSH, the only thing in its
+        # session. A healthy route, a correct parser, and still 204 unparsed.
+        #
+        # It read as a parse failure for three rounds because the symptom (unparsed 204) is
+        # indistinguishable from one, and because `reply_head` -- which says `(no response)` -- was
+        # not read. **A result artifact that records the evidence and is never read is worth exactly
+        # as much as one that does not.**
+        bridge.append({"role": "user", "content": turn})
         reply, failures = step_with_retry(bridge)
         probe_failures += failures
         text = reply.get("content") or ""
@@ -405,6 +443,26 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         unparsed_all.extend(got["unparsed"])
         strict += got["parsed_strict"]
         loose += got["parsed_loose"]
+        if inject:
+            # ## Fold this batch away before the next one arrives
+            #
+            # `compact()` routes through `foldIfNeeded`, which returns immediately while
+            # `compactionEnabled` is false -- so the fold is enabled for exactly this call and
+            # disabled again, rather than left on to fold the NEXT batch's injection before its
+            # probes can see it.
+            _enabled = bridge.set_compaction(True)
+            after_compact = bridge._send({"op": "compact"})
+            batch_committed = bool(after_compact.get("committed"))
+            bridge.set_compaction(False)
+            between_batch_folds.append({
+                "batch": batch["owner"],
+                "committed": batch_committed,
+                "host_tokens_after_append": injected_tokens,
+                "host_tokens_after_compact": (after_compact or {}).get("telemetry", {}).get("promptTokensLast"),
+                "leaf_decision": (after_compact or {}).get("telemetry", {}).get("lastLeafDecision"),
+                "measure": (after_compact or {}).get("measure"),
+                "set_compaction_returned": _enabled,
+            })
     elapsed = time.monotonic() - started
     parsed = {"answers": all_answers, "unparsed": unparsed_all,
               "parsed_strict": strict, "parsed_loose": loose}
@@ -437,10 +495,29 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                    "unparsed": len(parsed["unparsed"])},
         "score": {k: v for k, v in result.items() if k != "rows"},
         "rows": result["rows"],
+        # ## Widened 2026-10-17, because this whitelist cost three wrong diagnoses
+        #
+        # It kept 9 keys and dropped every field that says WHY something happened. The three
+        # defects found today -- the probe turn never being sent, tools being offered to a caller
+        # that asked for none, and the reply budget being 900 tokens for a 204-line answer -- were
+        # each diagnosed only by reading code, because the artifact could not distinguish them.
+        #
+        # `pressureRegime` and `leafAdmission` are the specific ones: `compactIfNeeded` computes
+        # both (src/engine.ts:1113,1134) and returns null at four different points, so the fold
+        # that declined between batches left no trace of which point it was. `compactBudget` is the
+        # threshold actually used, `lastProviderError`/`lastFinishReason` are the provider's own
+        # words, and `efToolsOffered` is what the model was told it could call.
         "telemetry": {k: telemetry.get(k) for k in
                       ("folds", "roots", "emergencies", "compactionFailures",
                        "compactionFailureKinds", "promptTokensLast", "surfaceNodesLast",
-                       "costTotal", "providerFailures")},
+                       "costTotal", "providerFailures", "pressureRegime", "leafAdmission",
+                       "compactBudget", "thresholdTokens", "lastProviderError",
+                       "lastFinishReason", "efToolsOffered", "summarizationAttempts",
+                       "summarizationRetryExhausted", "billedCalls", "lastLeafDecision")},
+        # The folds the driver ASKED for and whether each committed. `compact()` returns the
+        # delta, and discarding it is why "the fold declined" had to be inferred from `folds`
+        # staying at 1 while `compactionFailures` stayed at 0.
+        "between_batch_folds": between_batch_folds,
         "foldLineage": telemetry.get("foldLineage", []),
         "factSeqs": {k: v for k, v in sorted(fact_seqs.items())},
         "exposure": exposure,

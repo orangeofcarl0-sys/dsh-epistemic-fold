@@ -1048,6 +1048,18 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * @param signal - cancellation forwarded to summarization.
    * @returns the latest summary compaction result, or `null` when none ran.
    */
+  /**
+   * Why the most recent `compactIfNeeded` declined, or null when it did not.
+   *
+   * Added 2026-10-17 because four different preconditions return the same `null` from this method
+   * (src/engine.ts:1063,1085,1135,1196), and a caller that declines a fold could not tell a full
+   * surface from an empty measurement. It is TELEMETRY and not a log line: the first attempt at
+   * this recorded the reason through `ctx.logger`, which in the bridge writes nowhere the harness
+   * reads -- two instrumented runs produced zero output and looked like two non-events.
+   */
+  lastLeafDecision: string | null = null
+
+
   override async compactIfNeeded(
     agent: Agent,
     trigger: CompactionTrigger,
@@ -1058,14 +1070,29 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // virtual dispatch routes back into EF's override, so every divergence
     // point needs its own branch. All five are marked `mode: basic`; see
     // tests/rc7-basic-parity.spec.ts, which is what holds them together.
+    // ## A sentinel, so a stale field cannot read as a live decision
+    //
+    // Measured 2026-10-17: the memory bench's 20 refusals all reported `below-threshold
+    // 65192<129024` while the host measured 1,260,340 on the same session at the same instant.
+    // That value could only be stale -- written by the earlier fold-to-depth -- so the batch-loop
+    // call was returning somewhere that writes nothing. This sentinel makes the entry point
+    // visible, and every exit overwrites it, so a value of 'entered' means the call fell out
+    // through a path with no verdict recorded.
+    this.lastLeafDecision = 'entered basic=' + this.isBasic()
     if (this.isBasic()) return super.compactIfNeeded(agent, trigger, signal)
     const target = routedTarget(agent.session)
-    if (target === undefined) return null
+    // Named 2026-10-17: this is the FIRST early return, before the threshold check, and it was
+    // the one the memory bench's 20 refusals actually took. `lastLeafDecision` kept the value
+    // written by the earlier fold-to-depth, so the artifact reported a threshold decline
+    // (65192 < 129024) that had not been evaluated at all on those calls -- a stale field read as
+    // a live decision.
+    if (target === undefined) { this.lastLeafDecision = 'no-routed-target'; return null }
     const meter = this.ctx.tokenMeter
     let measurement: TokenMeasurement = meter.measure(agent.session)
     const prune = this.ctx.get('toolResultPruner')
 
     if (trigger === 'context-overflow') {
+      this.lastLeafDecision = 'context-overflow'
       return this.recoverFromOverflow(agent, measurement, meter, prune, signal)
     }
 
@@ -1082,13 +1109,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     })
     this.telemetry.thresholdTokens = spec.thresholdTokens
     this.telemetry.compactSpec = spec
-    if (measurement.totalTokens < spec.thresholdTokens) return null
+    if (measurement.totalTokens < spec.thresholdTokens) { this.lastLeafDecision = 'below-threshold ' + measurement.totalTokens + '<' + spec.thresholdTokens; return null }
 
     if (prune !== undefined) {
       prune.pruneSession(agent.session)
       measurement = meter.measure(agent.session)
     }
-    if (measurement.totalTokens < spec.thresholdTokens) return null
+    if (measurement.totalTokens < spec.thresholdTokens) { this.lastLeafDecision = 'below-threshold-after-prune ' + measurement.totalTokens; return null }
 
     // R2-B: the economic admission gate. Structurally legal is not the same as
     // worth doing: a fold whose span barely exceeds the checkpoint it produces
@@ -1136,10 +1163,23 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       // STRUCTURAL handoff: economics has no vote. A frozen-bound surface has
       // been shown to defeat every leaf, so a rebase is the only remaining
       // mechanism and refusing it would mean choosing non-convergence.
+      this.lastLeafDecision = 'frozen-bound'
       return this.handOffFrozenBound(agent, measurement, spec)
     }
 
     if (admissionVerdict !== undefined && !admissionVerdict.admitted) {
+      this.lastLeafDecision = 'economic-refusal ' + JSON.stringify(admissionVerdict).slice(0, 240)
+      // Recorded 2026-10-17: this refusal and its rebase handoff were the last return point
+      // between the threshold check and span selection, and the memory bench's 20 refusals
+      // (folds 1, roots 0, compactionFailures 0, committed false) could only have come from
+      // here. A refusal whose handoff also declines is a surface that grows without bound.
+      this.ctx.logger.warn(
+        '[epistemic-fold] leaf refused on economics: '
+        + `admitted=${admissionVerdict.admitted} `
+        + `totalTokens=${measurement.totalTokens} threshold=${spec.thresholdTokens} `
+        + `reclaim=${JSON.stringify(admissionVerdict.reclaim ?? null)} `
+        + `reason=${admissionVerdict.reason ?? ''}`,
+      )
       // ECONOMIC handoff: the surface is open-bound, so a leaf remains possible
       // — it is merely not worth its framing tax. R2-B measured that refusing a
       // leaf and STOPPING is a regression: the history that is no longer folded
@@ -1194,10 +1234,38 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         agent.session, measurement, spec.retainTokens, undefined, this.protectedPositions(agent.session),
       )
       if (span === null) {
+        this.lastLeafDecision = 'no-span pricedNodes=' + measurement.nodes.length
+          + ' surfaceNodes=' + agent.session.surface.nodes.length
+          + ' firstOpen=' + locateFoldFrontier(agent.session).firstOpenPosition
+          + ' retain=' + spec.retainTokens + ' total=' + measurement.totalTokens
+        // ## Say WHICH precondition failed, because four of them return the same null
+        //
+        // `selectLeafSpan` (src/leaf-policy.ts:47,61,72) returns null for an empty priced
+        // node list, a frontier already at the surface end, or no room between the retained
+        // tail and the frontier. All three reach here as `null`, so a caller that declines a
+        // fold cannot tell a full surface from an empty measurement -- and neither could a
+        // reader of the result. Measured 2026-10-17: the memory bench asked for a fold after
+        // every probe batch and all 20 returned `committed: false` with the session at
+        // 3,330,304 tokens against a 61,931 retain budget, which excludes two of the three
+        // causes and left the third indistinguishable from a metering failure.
+        this.ctx.logger.warn(
+          '[epistemic-fold] leaf span unavailable: '
+          + `pricedNodes=${measurement.nodes.length} `
+          + `surfaceNodes=${agent.session.surface.nodes.length} `
+          + `frontierFirstOpen=${locateFoldFrontier(agent.session).firstOpenPosition} `
+          + `frozenCount=${locateFoldFrontier(agent.session).frozenCount} `
+          + `contiguous=${locateFoldFrontier(agent.session).frozenPrefixContiguous} `
+          + `retainTokens=${spec.retainTokens} totalTokens=${measurement.totalTokens} `
+          + `protected=${this.protectedPositions(agent.session).length}`,
+        )
         if (result === null) return null
         break
       }
       result = await this.compactRegion(span.start, span.end, agent, signal)
+      const _after = meter.measure(agent.session)
+      this.lastLeafDecision = 'fold-attempted span=' + span.start + '..' + span.end
+        + ' resultNull=' + (result === null)
+        + ' tokensBefore=' + measurement.totalTokens + ' tokensAfter=' + _after.totalTokens
       committed += 1
       measurement = meter.measure(agent.session)
       if (measurement.totalTokens < spec.thresholdTokens) {
