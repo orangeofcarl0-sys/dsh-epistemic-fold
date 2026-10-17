@@ -1,8 +1,13 @@
 # 133 - src/ structure audit: dependency graph, clusters, and a risk-ordered regrouping
 
-Status: **ANALYSIS ONLY.** No file under src/ was created, modified, moved or deleted; this document is the
-only write. 2026-10-18. Parent: docs/68 - whose Tier A/B work produced the file list this audit measures -
+Status: **ANALYSIS ONLY** as written. No file under src/ was created, modified, moved or deleted by this
+document. 2026-10-18. Parent: docs/68 - whose Tier A/B work produced the file list this audit measures -
 and whose Tier C (declined) and Tier D (owner decisions) conclusions are **not** reopened here.
+
+> **Executed.** The section 5 tree below was carried out in seven commits, `c1b1f55` through `f74412a`.
+> `docs/138_LAYOUT_MIGRATION.md` is the record: predicted against actual churn per cluster, the gate used,
+> and the two classes of reference this document's "a missed specifier is a compile error" argument in
+> section 7 does not cover. Section 7's count of 366 edits held.
 
 Method: every relative import specifier in src/**/*.ts was extracted by text scan (from './x.ts',
 import './x.ts', export ... from), resolved against the importing file's own directory, and kept only when
