@@ -67,7 +67,7 @@ import type { PendingRebaseIntent, RebaseCause, RebaseIntentRegistry } from './r
 import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from './pressure.ts'
 import type { CapacityRegime, PressureRegime } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
-import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
+import { currentFoldState, EF_CURRENT_STATE_KEY } from './state/projection.ts'
 import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from './renderer.ts'
 import { rationaleOnly, rationaleOutputFor } from './rationale.ts'
 import {
@@ -95,7 +95,7 @@ import { retireDerivedAnswers } from './recall/subagent-recall.ts'
 import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
 import type { FoldTelemetry } from './fold-telemetry.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'
-import type { FoldCurrentState } from './state.ts'
+import type { FoldCurrentState } from './state/state.ts'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,

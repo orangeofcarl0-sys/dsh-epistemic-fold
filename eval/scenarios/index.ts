@@ -13,8 +13,8 @@
 
 import { createUserMessage, createMessage, createToolResultMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { AnchorService } from '../../src/anchor-service.ts'
-import type { EventRef } from '../../src/state.ts'
+import type { AnchorService } from '../../src/state/anchor-service.ts'
+import type { EventRef } from '../../src/state/state.ts'
 import type { BoundaryCase } from '../src/schema.ts'
 
 const MODEL = 'eval-model'

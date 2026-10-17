@@ -134,14 +134,14 @@ export {
   currentFoldState,
   epistemicFoldProjection,
   EF_CURRENT_STATE_KEY,
-} from './projection.ts'
+} from './state/projection.ts'
 export {
   authorityLossRate,
   emptyCurrentState,
   reduceEvent,
   stateKeyText,
   stateStalenessRate,
-} from './state.ts'
+} from './state/state.ts'
 export type {
   Anchor,
   AnchorKind,
@@ -151,11 +151,11 @@ export type {
   FailureState,
   FoldCurrentState,
   StateKey,
-} from './state.ts'
-export { canVerify, groundableDomains, isAuthorityGrounded } from './authority.ts'
-export type { AuthorityDomain, AuthoritativeEventKind } from './authority.ts'
-export { createAnchorService, hostAdmitsPluginEvents } from './anchor-service.ts'
-export type { AnchorDraft, AnchorService, AnchorServiceOptions } from './anchor-service.ts'
+} from './state/state.ts'
+export { canVerify, groundableDomains, isAuthorityGrounded } from './state/authority.ts'
+export type { AuthorityDomain, AuthoritativeEventKind } from './state/authority.ts'
+export { createAnchorService, hostAdmitsPluginEvents } from './state/anchor-service.ts'
+export type { AnchorDraft, AnchorService, AnchorServiceOptions } from './state/anchor-service.ts'
 export {
   encodeCheckpointMarker,
   parseCheckpointMarker,

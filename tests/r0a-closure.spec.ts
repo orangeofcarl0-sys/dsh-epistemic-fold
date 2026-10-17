@@ -10,7 +10,7 @@ import { createUserMessage, ToolCallId, createToolResultMessage } from '@deepsee
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import {
   createAnchorService,
-} from '../src/anchor-service.ts'
+} from '../src/state/anchor-service.ts'
 import {
   normalizeCheckpointRef,
   parseCheckpointMarker,
@@ -28,8 +28,8 @@ import {
   type Session,
 } from './harness.ts'
 import { projectForCheckpoint } from '../src/renderer.ts'
-import { emptyCurrentState } from '../src/state.ts'
-import type { Anchor } from '../src/state.ts'
+import { emptyCurrentState } from '../src/state/state.ts'
+import type { Anchor } from '../src/state/state.ts'
 
 function summaryText(blocks: readonly ContentBlock[]): string {
   return blocks.map(block => block.type === 'text' ? block.text : '').join('\n')
@@ -102,7 +102,7 @@ describe('checkpoint marker protocol (R0-A1, R3-A V2)', () => {
     const { engine, ctx } = await createHarness({ text: 'digest' })
     // Register the projection so folds render through the STRUCTURED path —
     // under the old regex this made checkpoints invisible to the frontier.
-    const { registerEpistemicFoldProjection } = await import('../src/projection.ts')
+    const { registerEpistemicFoldProjection } = await import('../src/state/projection.ts')
     registerEpistemicFoldProjection(ctx)
     const session = conversation(4)
     const nodes = [...session.surface.nodes]
@@ -216,7 +216,7 @@ describe('authority runtime gate (R0-A5)', () => {
 
   it('accepts normative constraints grounded by real user messages', async () => {
     const { engine, ctx } = await createHarness({ text: 'digest' })
-    const { registerEpistemicFoldProjection, currentFoldState } = await import('../src/projection.ts')
+    const { registerEpistemicFoldProjection, currentFoldState } = await import('../src/state/projection.ts')
     registerEpistemicFoldProjection(ctx)
     const session = conversation(2)
     session.append('user/message', createUserMessage({
@@ -301,7 +301,7 @@ describe('semantic profiles and audit metadata (R0-A6)', () => {
       { text: 'should never be called' },
       { efConfig: { semanticMode: 'none' } },
     )
-    const { registerEpistemicFoldProjection } = await import('../src/projection.ts')
+    const { registerEpistemicFoldProjection } = await import('../src/state/projection.ts')
     registerEpistemicFoldProjection(ctx)
     const session = conversation(4)
     const nodes = [...session.surface.nodes]
@@ -324,7 +324,7 @@ describe('semantic profiles and audit metadata (R0-A6)', () => {
 
   it('rationale profile forwards the REAL call envelope into compaction/summary', async () => {
     const { engine, ctx, control } = await createHarness({ text: 'rationale text only' })
-    const { registerEpistemicFoldProjection } = await import('../src/projection.ts')
+    const { registerEpistemicFoldProjection } = await import('../src/state/projection.ts')
     registerEpistemicFoldProjection(ctx)
     const session = conversation(4)
     const nodes = [...session.surface.nodes]

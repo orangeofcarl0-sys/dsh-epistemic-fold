@@ -35,8 +35,8 @@ import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createAnchorService, hostAdmitsPluginEvents } from '../src/anchor-service.ts'
-import { emptyCurrentState, reduceEvent } from '../src/state.ts'
+import { createAnchorService, hostAdmitsPluginEvents } from '../src/state/anchor-service.ts'
+import { emptyCurrentState, reduceEvent } from '../src/state/state.ts'
 import { conversation, toolConversation } from './harness.ts'
 
 const header = (id: string): SessionHeader => ({

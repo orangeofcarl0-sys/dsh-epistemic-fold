@@ -13,8 +13,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { renderStructuredCheckpoint } from '../src/renderer.ts'
-import { emptyCurrentState } from '../src/state.ts'
-import type { FoldCurrentState } from '../src/state.ts'
+import { emptyCurrentState } from '../src/state/state.ts'
+import type { FoldCurrentState } from '../src/state/state.ts'
 import { estimateMessage } from '@deepseek-ai/dsh-token-meter/estimate'
 import { splitLeafCheckpointText } from '../eval/src/token-attribution.ts'
 

@@ -24,7 +24,7 @@
 import { createMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { EventRef } from '../../src/state.ts'
+import type { EventRef } from '../../src/state/state.ts'
 
 const MODEL = 'workload-model'
 

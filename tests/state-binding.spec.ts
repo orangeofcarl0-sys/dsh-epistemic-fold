@@ -26,7 +26,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { canonicalHash } from '../src/hash.ts'
-import { currentFoldState } from '../src/projection.ts'
+import { currentFoldState } from '../src/state/projection.ts'
 import { describeRenderedState } from '../src/renderer.ts'
 import { createHarness, foldAgent, SIGNAL, toolConversation } from './harness.ts'
 import type { Harness } from './harness.ts'

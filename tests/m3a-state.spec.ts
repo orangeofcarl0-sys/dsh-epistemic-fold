@@ -5,15 +5,15 @@
 
 import { describe, expect, it } from 'vitest'
 import { createUserMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
-import { canVerify } from '../src/authority.ts'
+import { canVerify } from '../src/state/authority.ts'
 import {
   authorityLossRate,
   emptyCurrentState,
   stateKeyText,
   stateStalenessRate,
-} from '../src/state.ts'
-import type { Anchor, EventRef, StateKey } from '../src/state.ts'
-import { registerEpistemicFoldProjection, currentFoldState } from '../src/projection.ts'
+} from '../src/state/state.ts'
+import type { Anchor, EventRef, StateKey } from '../src/state/state.ts'
+import { registerEpistemicFoldProjection, currentFoldState } from '../src/state/projection.ts'
 import { projectForCheckpoint, renderStructuredCheckpoint } from '../src/renderer.ts'
 import {
   conversation,
