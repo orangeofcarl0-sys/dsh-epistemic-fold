@@ -13,8 +13,8 @@
 
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import { parseEconomicsProfile } from '../src/policy/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../src/policy/economics-profile.ts'
 
 /** The model every `flash()` call site meant. */
 export const FLASH_PROFILE_ID = 'deepseek-flash-2026-09'

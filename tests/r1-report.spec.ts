@@ -27,7 +27,7 @@ import {
 } from '../eval/src/counterfactual.ts'
 import type { OracleResult } from '../eval/src/counterfactual.ts'
 import { TOKEN_BUCKETS } from '../eval/src/token-attribution.ts'
-import { compileContextPolicy } from '../src/policy-compiler.ts'
+import { compileContextPolicy } from '../src/policy/policy-compiler.ts'
 import { profile } from './economics-fixture.ts'
 import { paretoFrontier, paretoToMarkdown } from '../eval/src/pareto.ts'
 import type { PolicyPoint } from '../eval/src/pareto.ts'

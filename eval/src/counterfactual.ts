@@ -17,8 +17,8 @@
  * @module eval/counterfactual
  */
 
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
-import { modeledCost } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
+import { modeledCost } from '../../src/policy/economics-profile.ts'
 import type { RunAttribution, TokenBucket } from './token-attribution.ts'
 import { TOKEN_BUCKETS } from './token-attribution.ts'
 

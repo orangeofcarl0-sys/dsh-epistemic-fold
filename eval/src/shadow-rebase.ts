@@ -43,7 +43,7 @@
  * @module eval/src/shadow-rebase
  */
 
-import type { ContextPolicyDecision } from '../../src/policy-compiler.ts'
+import type { ContextPolicyDecision } from '../../src/policy/policy-compiler.ts'
 
 /** One shadow evaluation, made after a leaf fold. */
 export interface ShadowSample {

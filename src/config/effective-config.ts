@@ -22,8 +22,8 @@ import { resolveEfConfig, DEFAULT_RETAIN_RATIO } from './policy.ts'
 import { PRESET_OWNED_KEYS } from './ef-keys.ts'
 import { DEFAULT_RATIONALE_HINT_TOKENS } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
-import { triggerBreakdown, triggerBreakdownToText } from '../trigger.ts'
-import type { TriggerBreakdown } from '../trigger.ts'
+import { triggerBreakdown, triggerBreakdownToText } from '../policy/trigger.ts'
+import type { TriggerBreakdown } from '../policy/trigger.ts'
 
 /** One resolved setting, with where it came from. */
 export interface EffectiveSetting {

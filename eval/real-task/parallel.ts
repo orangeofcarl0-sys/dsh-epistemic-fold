@@ -36,7 +36,7 @@ import { runTaskArm } from './driver.ts'
 import { taskRunToText } from './metrics.ts'
 import type { ArmRunResult, ArmSpec, LifecycleScenario } from './driver.ts'
 import type { RealTask } from './tasks.ts'
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
 import { newWorkspace } from './driver.ts'
 import { releaseTemp } from '../tmp.ts'
 

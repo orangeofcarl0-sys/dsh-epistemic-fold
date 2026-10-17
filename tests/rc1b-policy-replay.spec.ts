@@ -16,7 +16,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/policy/economics-profile.ts'
 import { resolveEfConfig } from '../src/config/policy.ts'
 import { checkpointSizeOf, medianGrowth, syntheticTrace, traceFromBaseline } from '../eval/policy-replay/trace.ts'
 import { replayGate, replayPaired, simulate } from '../eval/policy-replay/simulator.ts'

@@ -31,7 +31,7 @@ import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../src/pressure.ts'
+import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../src/policy/pressure.ts'
 import { resolveEfCompactSpec } from '../src/config/policy.ts'
 import { isRebaseMode } from '../src/types.ts'
 

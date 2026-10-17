@@ -8,9 +8,9 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { compileContextPolicy } from '../src/policy-compiler.ts'
-import type { ContextPolicyInput } from '../src/policy-compiler.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
+import { compileContextPolicy } from '../src/policy/policy-compiler.ts'
+import type { ContextPolicyInput } from '../src/policy/policy-compiler.ts'
+import { parseEconomicsProfile } from '../src/policy/economics-profile.ts'
 import { profile } from './economics-fixture.ts'
 
 const flash = profile('deepseek-flash-2026-09')

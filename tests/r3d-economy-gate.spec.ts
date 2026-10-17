@@ -31,7 +31,7 @@ import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-ba
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../src/policy/economics-profile.ts'
 import { profile } from './economics-fixture.ts'
 
 const STEPS = 64

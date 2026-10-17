@@ -28,8 +28,8 @@
  * @module dsh-epistemic-fold/trigger
  */
 
-import { resolveEfCompactSpec } from './config/policy.ts'
-import type { ResolvedEpistemicFoldConfig } from './config/policy.ts'
+import { resolveEfCompactSpec } from '../config/policy.ts'
+import type { ResolvedEpistemicFoldConfig } from '../config/policy.ts'
 
 /** Which bound produced the effective threshold. */
 export type BindingConstraint = 'ratio' | 'headroom'

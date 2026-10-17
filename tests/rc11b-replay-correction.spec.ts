@@ -30,7 +30,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
-import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/policy/economics-profile.ts'
 import { CACHE_SCENARIOS, rationaleInputFor, replayPaired, realizationSet } from '../eval/policy-replay/simulator.ts'
 import type { ReplayPolicy } from '../eval/policy-replay/simulator.ts'
 import { syntheticTrace, traceFromBaseline } from '../eval/policy-replay/trace.ts'

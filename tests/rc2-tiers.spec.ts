@@ -35,7 +35,7 @@ import {
 } from '../src/config/preset.ts'
 import { resolveEfConfig, resolveEfCompactSpec } from '../src/config/policy.ts'
 import { describeEffectiveConfig, effectiveConfigToText } from '../src/config/effective-config.ts'
-import { BUILTIN_ECONOMICS_PROFILES } from '../src/economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES } from '../src/policy/economics-profile.ts'
 
 describe('RC2: the ladder is three tiers, and only three', () => {
   it('exposes exactly economy, balanced, quality, in cost order', () => {

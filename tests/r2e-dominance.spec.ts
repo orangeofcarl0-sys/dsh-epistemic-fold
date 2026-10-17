@@ -35,7 +35,7 @@ import {
   priceArm,
 } from '../eval/src/dominance.ts'
 import type { CacheRealizationAssumption, DominanceRow } from '../eval/src/dominance.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../src/policy/economics-profile.ts'
 import { profile } from './economics-fixture.ts'
 
 /**

@@ -28,7 +28,7 @@ import {
   reduceStatusEvent,
 } from '../src/status/status-projection.ts'
 import type { FoldStatusState } from '../src/status/status-projection.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
+import { parseEconomicsProfile } from '../src/policy/economics-profile.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 

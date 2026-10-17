@@ -41,7 +41,7 @@ import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { classifyPressureRegime, pressureBreakdown } from '../src/pressure.ts'
+import { classifyPressureRegime, pressureBreakdown } from '../src/policy/pressure.ts'
 import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
 
 const ROOT = join(import.meta.dirname, '..')

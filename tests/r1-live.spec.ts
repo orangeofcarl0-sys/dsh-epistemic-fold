@@ -23,7 +23,7 @@
 import { describe, expect, it } from 'vitest'
 import { resolveLiveRoute, redactSecret } from '../eval/live/zcode-config.ts'
 import { mapUsage, OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
-import { compileContextPolicy } from '../src/policy-compiler.ts'
+import { compileContextPolicy } from '../src/policy/policy-compiler.ts'
 import { profile } from './economics-fixture.ts'
 import { LIVE_ENABLED } from './live-gate.ts'
 

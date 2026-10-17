@@ -12,7 +12,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
-import { headroomDominates, triggerBreakdown, triggerBreakdownToText } from '../src/trigger.ts'
+import { headroomDominates, triggerBreakdown, triggerBreakdownToText } from '../src/policy/trigger.ts'
 import { describeEffectiveConfig } from '../src/config/effective-config.ts'
 import {
   distributionOf,

@@ -14,7 +14,7 @@ import {
 import { locateFoldFrontier, readEfCheckpoint } from '../src/fold/frontier.ts'
 import { canonicalJson } from '../src/checkpoint/hash.ts'
 import { frozenCheckpointLoad, selectLeafSpan } from '../src/fold/leaf-policy.ts'
-import { evaluateRootRebase } from '../src/root-policy.ts'
+import { evaluateRootRebase } from '../src/policy/root-policy.ts'
 import {
   closedConversation,
   conversation,

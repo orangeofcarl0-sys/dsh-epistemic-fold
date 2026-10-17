@@ -33,7 +33,7 @@ import {
   parseContextArgs,
   registerContextCommand,
 } from '../src/status/command.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
+import { parseEconomicsProfile } from '../src/policy/economics-profile.ts'
 
 /** A real session with a routed header, so `routedTarget` resolves. */
 function routedSession(): Session {

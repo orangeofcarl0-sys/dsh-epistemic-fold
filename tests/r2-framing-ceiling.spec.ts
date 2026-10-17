@@ -19,7 +19,7 @@ import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
-import { parseEconomicsProfile } from '../src/economics-profile.ts'
+import { parseEconomicsProfile } from '../src/policy/economics-profile.ts'
 import { flash } from './economics-fixture.ts'
 import { parseCheckpointMarker } from '../src/checkpoint/checkpoint-marker.ts'
 

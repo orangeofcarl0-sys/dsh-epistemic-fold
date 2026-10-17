@@ -65,7 +65,7 @@ import { createHarness, SIGNAL } from './harness.ts'
 import { readSrcModule } from './src-module.ts'
 import { selectLeafSpan } from '../src/fold/leaf-policy.ts'
 import { selectCompactableRange } from '../src/basic/region.ts'
-import { assessFoldReachability } from '../src/fold-economics.ts'
+import { assessFoldReachability } from '../src/policy/fold-economics.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 const MODEL = 'test-model'

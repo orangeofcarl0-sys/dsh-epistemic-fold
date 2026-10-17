@@ -32,7 +32,7 @@
  * @module eval/src/certified-profile
  */
 
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
 
 /** How a claim was established. */
 export type EvidenceKind =

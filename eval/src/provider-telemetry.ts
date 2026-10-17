@@ -18,8 +18,8 @@
  */
 
 import type { Session } from '@deepseek-ai/dsh-session'
-import { cacheRealizationRate, effectiveRho, rhoOf } from '../../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
+import { cacheRealizationRate, effectiveRho, rhoOf } from '../../src/policy/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
 
 /** Summed provider-reported usage across one run. */
 export interface ProviderTelemetry {

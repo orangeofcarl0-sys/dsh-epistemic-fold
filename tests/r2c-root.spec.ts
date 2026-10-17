@@ -23,8 +23,8 @@ import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-ba
 import type { BaselineResult } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { compileContextPolicy } from '../src/policy-compiler.ts'
-import { BUILTIN_ECONOMICS_PROFILES, resolveProfile, selectProfile } from '../src/economics-profile.ts'
+import { compileContextPolicy } from '../src/policy/policy-compiler.ts'
+import { BUILTIN_ECONOMICS_PROFILES, resolveProfile, selectProfile } from '../src/policy/economics-profile.ts'
 import { resolveEfConfig } from '../src/config/policy.ts'
 
 interface Arm {

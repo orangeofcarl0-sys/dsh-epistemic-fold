@@ -14,8 +14,8 @@ import {
   leafMarginalReclaim,
   pressureBreakdown,
   summarizePressureHistory,
-} from '../src/pressure.ts'
-import type { PressureSample } from '../src/pressure.ts'
+} from '../src/policy/pressure.ts'
+import type { PressureSample } from '../src/policy/pressure.ts'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'

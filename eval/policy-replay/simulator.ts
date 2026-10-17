@@ -41,10 +41,10 @@ import {
   effectiveRho,
   rhoOf,
   tierFor,
-} from '../../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
-import { leafMarginalReclaim } from '../../src/pressure.ts'
-import { compileContextPolicy } from '../../src/policy-compiler.ts'
+} from '../../src/policy/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
+import { leafMarginalReclaim } from '../../src/policy/pressure.ts'
+import { compileContextPolicy } from '../../src/policy/policy-compiler.ts'
 import { resolveEfCompactSpec, resolveEfConfig } from '../../src/config/policy.ts'
 import type { EpistemicFoldConfig } from '../../src/config/policy.ts'
 import { checkpointSizeOf } from './trace.ts'

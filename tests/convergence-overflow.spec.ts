@@ -36,7 +36,7 @@ import type { Session } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { createHarness, conversation, idleAgent, SIGNAL } from './harness.ts'
 import { parseCheckpointMarker } from '../src/checkpoint/checkpoint-marker.ts'
-import { classifyCapacityRegime, pressureBreakdown } from '../src/pressure.ts'
+import { classifyCapacityRegime, pressureBreakdown } from '../src/policy/pressure.ts'
 import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
 import type { EpistemicFoldEngine } from '../src/fold/engine.ts'
 

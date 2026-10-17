@@ -39,7 +39,7 @@ import { describeEffectiveConfig, effectiveConfigToText } from './config/effecti
 import type { EffectiveConfig } from './config/effective-config.ts'
 import { registerEpistemicFoldProjection } from './state/projection.ts'
 import { registerEpistemicFoldStatus } from './status/status-projection.ts'
-import { BUILTIN_ECONOMICS_PROFILES } from './economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES } from './policy/economics-profile.ts'
 import { registerRecallTools } from './recall/tools.ts'
 import { registerContextCommand } from './status/command.ts'
 import type { LogReader } from './checkpoint/archive-refs.ts'

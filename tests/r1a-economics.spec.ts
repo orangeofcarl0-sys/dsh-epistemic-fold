@@ -22,8 +22,8 @@ import {
   rootBreakEvenRequests,
   selectProfile,
   tierFor,
-} from '../src/economics-profile.ts'
-import type { ContextEconomicsProfile } from '../src/economics-profile.ts'
+} from '../src/policy/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../src/policy/economics-profile.ts'
 import {
   attributeTokens,
   summarizeAttribution,

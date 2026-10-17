@@ -16,8 +16,8 @@ export {
   admitLeafEconomically,
   evaluateEconomicRebase,
   rootRebaseAdvice,
-} from './fold-economics.ts'
-export type { LeafAdmissionVerdict } from './fold-economics.ts'
+} from './policy/fold-economics.ts'
+export type { LeafAdmissionVerdict } from './policy/fold-economics.ts'
 export { createFoldCandidate, FoldCandidateRegistry } from './fold/candidate.ts'
 export { FileBundleStore } from './checkpoint/bundle-store.ts'
 export {
@@ -98,36 +98,36 @@ export {
   rootBreakEvenRequests,
   selectProfile,
   tierFor,
-} from './economics-profile.ts'
+} from './policy/economics-profile.ts'
 export type {
   ContextEconomicsProfile,
   CostBreakdown,
   ObservedUsage,
   PolicyRegime,
   PricingTier,
-} from './economics-profile.ts'
-export { compileContextPolicy } from './policy-compiler.ts'
+} from './policy/economics-profile.ts'
+export { compileContextPolicy } from './policy/policy-compiler.ts'
 export type {
   ContextPolicyDecision,
   ContextPolicyInput,
   PolicyAction,
-} from './policy-compiler.ts'
+} from './policy/policy-compiler.ts'
 export {
   classifyPressureRegime,
   frozenCheckpointCount,
   leafMarginalReclaim,
   pressureBreakdown,
   summarizePressureHistory,
-} from './pressure.ts'
+} from './policy/pressure.ts'
 export type {
   LeafMarginalReclaim,
   PressureBreakdown,
   PressureHistory,
   PressureRegime,
   PressureSample,
-} from './pressure.ts'
-export { headroomDominates, triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
-export type { BindingConstraint, TriggerBreakdown } from './trigger.ts'
+} from './policy/pressure.ts'
+export { headroomDominates, triggerBreakdown, triggerBreakdownToText } from './policy/trigger.ts'
+export type { BindingConstraint, TriggerBreakdown } from './policy/trigger.ts'
 export { registerRecallTools } from './recall/tools.ts'
 export {
   registerEpistemicFoldProjection,

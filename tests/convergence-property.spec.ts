@@ -34,7 +34,7 @@ import type { Session } from '@deepseek-ai/dsh-session'
 
 import { createHarness, conversation, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../src/pressure.ts'
+import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../src/policy/pressure.ts'
 import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
 import type { EpistemicFoldConfig } from '../src/config/policy.ts'
 

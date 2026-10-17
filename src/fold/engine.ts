@@ -49,8 +49,8 @@ import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
 import { assertDshCompatibility } from '../compat.ts'
 import { foldFrameCheckpoint, framingModeFor } from '../checkpoint/framing.ts'
 import type { FramingMode } from '../checkpoint/framing.ts'
-import type { TriggerBreakdown } from '../trigger.ts'
-import { TriggerDiagnostics } from '../trigger-diagnostics.ts'
+import type { TriggerBreakdown } from '../policy/trigger.ts'
+import { TriggerDiagnostics } from '../policy/trigger-diagnostics.ts'
 import {
   ROOT_REBASE_COOLDOWN,
   admitLeafEconomically,
@@ -58,15 +58,15 @@ import {
   describeFoldReachability,
   evaluateEconomicRebase,
   rootRebaseAdvice,
-} from '../fold-economics.ts'
-import type { FoldReachability, LeafAdmissionVerdict } from '../fold-economics.ts'
-import { classifyRegime, resolveProfile, rhoOf } from '../economics-profile.ts'
-import type { ContextPolicyDecision } from '../policy-compiler.ts'
+} from '../policy/fold-economics.ts'
+import type { FoldReachability, LeafAdmissionVerdict } from '../policy/fold-economics.ts'
+import { classifyRegime, resolveProfile, rhoOf } from '../policy/economics-profile.ts'
+import type { ContextPolicyDecision } from '../policy/policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
 import type { PendingRebaseIntent, RebaseCause, RebaseIntentRegistry } from './rebase-intent.ts'
-import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../pressure.ts'
-import type { CapacityRegime, PressureRegime } from '../pressure.ts'
-import { evaluateRootRebase } from '../root-policy.ts'
+import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../policy/pressure.ts'
+import type { CapacityRegime, PressureRegime } from '../policy/pressure.ts'
+import { evaluateRootRebase } from '../policy/root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
 import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
 import { rationaleOnly, rationaleOutputFor } from '../checkpoint/rationale.ts'

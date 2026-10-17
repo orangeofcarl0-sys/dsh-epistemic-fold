@@ -31,7 +31,7 @@
  * @module eval/dominance
  */
 
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
 import type { TokenBucket } from './token-attribution.ts'
 
 /** One arm's measured cost inputs for one workload. */

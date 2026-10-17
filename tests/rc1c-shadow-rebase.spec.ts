@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/economics-profile.ts'
-import { compileContextPolicy } from '../src/policy-compiler.ts'
-import type { ContextPolicyDecision } from '../src/policy-compiler.ts'
+import { BUILTIN_ECONOMICS_PROFILES, resolveProfile } from '../src/policy/economics-profile.ts'
+import { compileContextPolicy } from '../src/policy/policy-compiler.ts'
+import type { ContextPolicyDecision } from '../src/policy/policy-compiler.ts'
 import { isEconomicallyProfitable, summarizeShadow } from '../eval/src/shadow-rebase.ts'
 import type { ShadowSample } from '../eval/src/shadow-rebase.ts'
 import { buildCorpus, SYNTHETIC_RESERVED, SYNTHETIC_WINDOW, STATE_RICH_CHECKPOINT_TOKENS } from '../eval/policy-replay/corpus.ts'

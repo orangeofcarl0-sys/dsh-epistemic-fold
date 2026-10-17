@@ -19,7 +19,7 @@
  * @module eval/policy-replay/report
  */
 
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
 import { replayGate, replayPaired } from './simulator.ts'
 import type { PairedReplay, ReplayPolicy } from './simulator.ts'
 import type { PolicyTrace } from './trace.ts'

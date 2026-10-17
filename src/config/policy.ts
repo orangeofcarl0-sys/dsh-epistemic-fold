@@ -13,8 +13,8 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 // RC7: the config vocabulary comes from EF's own vendored copy of Basic, so the
 // package no longer depends on the host shipping `@deepseek-ai/dsh-compaction-basic`.
 import type { BasicCompactionConfig } from '../basic/types.ts'
-import { BUILTIN_ECONOMICS_PROFILES } from '../economics-profile.ts'
-import type { ContextEconomicsProfile } from '../economics-profile.ts'
+import { BUILTIN_ECONOMICS_PROFILES } from '../policy/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../policy/economics-profile.ts'
 import type { FramingMode } from '../checkpoint/framing.ts'
 import { FOLD_MODE_NAMES, isFoldModeName, resolvePreset } from './preset.ts'
 import { EF_OWNED_CONFIG_KEYS } from './ef-keys.ts'

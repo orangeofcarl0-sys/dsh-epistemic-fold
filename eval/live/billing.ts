@@ -26,8 +26,8 @@
  * @module eval/live/billing
  */
 
-import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
-import { costOf, tierFor } from '../../src/economics-profile.ts'
+import type { ContextEconomicsProfile } from '../../src/policy/economics-profile.ts'
+import { costOf, tierFor } from '../../src/policy/economics-profile.ts'
 
 /**
  * What preceded one main-model request, so `h` can be compared across classes.

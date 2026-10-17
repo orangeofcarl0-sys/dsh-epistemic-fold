@@ -50,8 +50,8 @@ import type { FrozenSummary, PromptExposure } from '../eval/src/metrics.ts'
 import { attributeTokens } from '../eval/src/token-attribution.ts'
 import type { RunAttribution, TokenAttribution } from '../eval/src/token-attribution.ts'
 import { summarizeAttribution } from '../eval/src/token-attribution.ts'
-import { classifyPressureRegime, pressureBreakdown, summarizePressureHistory } from '../src/pressure.ts'
-import type { PressureHistory, PressureSample } from '../src/pressure.ts'
+import { classifyPressureRegime, pressureBreakdown, summarizePressureHistory } from '../src/policy/pressure.ts'
+import type { PressureHistory, PressureSample } from '../src/policy/pressure.ts'
 import type { Harness } from '../tests/harness.ts'
 
 const BENCH_SIGNAL = new AbortController().signal

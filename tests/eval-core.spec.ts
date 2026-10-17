@@ -24,7 +24,7 @@ import { classifyIncident } from '../eval/src/incidents.ts'
 import { baselineToMarkdown, resultsToCsv } from '../eval/src/report.ts'
 import { boundaryCaseSchema, evalRunResultSchema } from '../eval/src/schema.ts'
 import { summarizeAttribution } from '../eval/src/token-attribution.ts'
-import { summarizePressureHistory } from '../src/pressure.ts'
+import { summarizePressureHistory } from '../src/policy/pressure.ts'
 
 describe('metric formulas (spec 09)', () => {
   it('SPN: first divergence, or the shared length when one is a prefix', () => {
