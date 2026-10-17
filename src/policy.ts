@@ -67,6 +67,8 @@ export interface ResolvedEpistemicFoldConfig {
    * Basic is never used for the Rationale slot.
    */
   readonly semanticMode: 'none' | 'rationale'
+  /** Hint budget stated to the model; see `EpistemicFoldConfig.rationaleHintTokens`. */
+  readonly rationaleHintTokens: number
   /** Resolved bundle directory. */
   readonly bundleRoot: string
   /**
@@ -195,6 +197,11 @@ export const DEFAULT_RETAIN_RATIO = 0.16
 const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
+
+/** Default HINT for the rationale instruction. NOT the generation budget: the real budget is
+ * derived from the folded span by `rationaleOutputFor` and is several times larger, because the
+ * model spends part of it reasoning before it writes. */
+const DEFAULT_RATIONALE_HINT_TOKENS = 800
 const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
 const DEFAULT_LEAF_ADMISSION: LeafAdmissionMode = 'legacy'
 /**
@@ -227,6 +234,14 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   frozenCheckpointTokenBudget?: number
   /** Structured-checkpoint semantic face; default `rationale`. */
   semanticMode?: 'none' | 'rationale'
+  /**
+   * The HINT the rationale instruction states, in tokens. Distinct from the REAL budget, which
+   * `rationaleOutputFor` derives from the span; the hint must sit well below it or the model
+   * spends the whole budget reasoning and returns no text (measured: a 1.28x margin produced
+   * `UNSUPPORTED_CONTENT` twice). This is what a TIER varies -- the rungs differ in how much
+   * digest they ask for, not in whether they ask at all.
+   */
+  rationaleHintTokens?: number
   /**
    * Durable bundle directory (R0-B). Loader deployments set this to the
    * profile's persistence root; the default keeps the standalone/dev layout.
@@ -323,6 +338,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (!Number.isInteger(frozenCheckpointTokenBudget) || frozenCheckpointTokenBudget < 0) {
     throw new Error('epistemic-fold: frozenCheckpointTokenBudget must be a non-negative integer')
   }
+  const rationaleHintTokens = expanded.rationaleHintTokens ?? DEFAULT_RATIONALE_HINT_TOKENS
+  if (!Number.isInteger(rationaleHintTokens) || rationaleHintTokens <= 0) {
+    throw new Error('epistemic-fold: rationaleHintTokens must be a positive integer')
+  }
   const semanticMode = expanded.semanticMode ?? DEFAULT_SEMANTIC_MODE
   if (semanticMode !== 'none' && semanticMode !== 'rationale') {
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
@@ -392,6 +411,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     compactionRetries,
     frozenCheckpointTokenBudget,
     semanticMode,
+    rationaleHintTokens,
     bundleRoot,
     leafAdmission,
     minReclaimTokens,
@@ -504,6 +524,7 @@ export function resolveEfCompactSpec(
 const EF_OWNED_CONFIG_KEYS = [
   'frozenCheckpointTokenBudget',
   'semanticMode',
+  'rationaleHintTokens',
   'bundleRoot',
   'leafAdmission',
   'minReclaimTokens',

@@ -114,13 +114,17 @@ describe('RC2: a tier is a named set of values, not a branch', () => {
     expect(presetOverrides('legacy', explicit)).toEqual([])
   })
 
-  it('economy still resolves to EXACTLY the configuration R3/RC1 measured', () => {
-    // The ladder's first rung must not drift from the tested policy, or every
-    // cost figure attributed to it becomes wrong.
+  it('economy resolves to its own configuration, and the digest is part of it now', () => {
+    // UPDATED 2026-10-18. This rung used to be `semanticMode: 'none'`, and its R3/RC1
+    // cost figures were measured that way. The digest is no longer optional on any
+    // rung -- a marker-only checkpoint measured 0.5050 against Basic's 0.8824 because
+    // the model could not tell what it was missing -- so the figures attributed to
+    // THIS rung must be re-measured, and the test now pins what it actually resolves to.
     const resolved = resolveEfConfig({ mode: 'economy' })
     expect(resolved.leafAdmission).toBe('economic')
     expect(resolved.rootPolicy.mode).toBe('economics')
-    expect(resolved.semanticMode).toBe('none')
+    expect(resolved.semanticMode).toBe('rationale')
+    expect(resolved.rationaleHintTokens).toBe(TIERS.economy.values.rationaleHintTokens)
     expect(resolved.framingMode).toBe('system-dedup')
     // Economy does NOT touch retention: it leaves the engine default in place.
     expect(economyPresetValues()).not.toHaveProperty('retainRatio')
@@ -140,36 +144,50 @@ describe('RC2: the rungs differ only in the steadiness levers', () => {
     expect(economy.leafAdmission).toBe(balanced.leafAdmission)
     expect(economy.rootPolicy.mode).toBe(balanced.rootPolicy.mode)
     expect(economy.framingMode).toBe(balanced.framingMode)
-    // The semantic face does NOT move on this rung.
+    // EVERY rung carries the digest now, so this rung's difference is not the
+    // semantic face. A checkpoint whose whole text was the marker line left the
+    // model unable to tell what it was missing, so it could not decide to recall.
     expect(balanced.semanticMode).toBe(economy.semanticMode)
-    expect(balanced.semanticMode).toBe('none')
-    // The one lever, and it moves UP.
+    expect(balanced.semanticMode).toBe('rationale')
+    // Two levers move here: retention and the hint budget. Both are token budgets.
     expect(balanced.retainRatio).toBeGreaterThan(economy.retainRatio)
+    expect(balanced.rationaleHintTokens).toBeGreaterThan(economy.rationaleHintTokens)
   })
 
-  it('balanced and quality differ ONLY in the semantic face', () => {
-    // The top rung adds the rationale call on top of balanced's retention, so a
-    // difference between them is attributable to the semantic face.
+  it('balanced and quality differ ONLY in the hint budget', () => {
+    // The top rung asks for a LARGER digest, not for a digest at all. Retention was
+    // judged to carry no substantive meaning between these two (`QUALITY_RETAIN_RATIO`
+    // IS `BALANCED_RETAIN_RATIO`), so the one lever that moves is the hint budget -- a
+    // token limit, which is what a tier difference should be.
     const balanced = resolved('balanced')
     const quality = resolved('quality')
     expect(balanced.retainRatio).toBe(quality.retainRatio)
     expect(balanced.leafAdmission).toBe(quality.leafAdmission)
     expect(balanced.rootPolicy.mode).toBe(quality.rootPolicy.mode)
     expect(balanced.framingMode).toBe(quality.framingMode)
-    // The one lever.
-    expect(balanced.semanticMode).toBe('none')
-    expect(quality.semanticMode).toBe('rationale')
+    expect(balanced.semanticMode).toBe(quality.semanticMode)
+    expect(balanced.semanticMode).toBe('rationale')
+    // The one lever, and it moves UP.
+    expect(quality.rationaleHintTokens).toBeGreaterThan(balanced.rationaleHintTokens)
   })
 
-  it('RETENTION comes before RATIONALE in the ladder', () => {
-    // The design decision itself, pinned so a later edit cannot silently revert
-    // it: the cheaper rung buys the stronger mechanism.
-    expect(TIERS.balanced.values.retainRatio).toBeGreaterThan(0.16)
-    expect(TIERS.balanced.values.semanticMode).toBe('none')
+  it('the ladder is separated by HINT BUDGET, and every rung carries the digest', () => {
+    // Supersedes the RC2.1 ordering, which made the semantic face the top rung's
+    // distinguishing lever. Measured 2026-10-18: a checkpoint whose whole text was
+    // the marker line (47 chars, `state.anchors = 0`) left the model unable to tell
+    // what it was missing, so it could not decide to recall -- recoverability broke
+    // one layer up. Retention differences between the upper rungs were judged to
+    // carry no substantive meaning, so the rungs are separated by token budgets.
+    expect(TIERS.economy.values.semanticMode).toBe('rationale')
+    expect(TIERS.balanced.values.semanticMode).toBe('rationale')
     expect(TIERS.quality.values.semanticMode).toBe('rationale')
-    // And the top rung does NOT raise retention further, or its difference from
-    // balanced would be two levers rather than one.
-    expect(TIERS.quality.values.retainRatio).toBe(TIERS.balanced.values.retainRatio)
+    // Strictly increasing hints: the one lever, and it is a token limit. Read through
+    // `resolved()` rather than the raw tier table, which is typed `unknown` per key.
+    const economy = resolveEfConfig({ mode: 'economy' })
+    const balanced = resolveEfConfig({ mode: 'balanced' })
+    const quality = resolveEfConfig({ mode: 'quality' })
+    expect(balanced.rationaleHintTokens).toBeGreaterThan(economy.rationaleHintTokens)
+    expect(quality.rationaleHintTokens).toBeGreaterThan(balanced.rationaleHintTokens)
   })
 
   it('the levers are monotone up the ladder, never contradictory', () => {
@@ -338,10 +356,13 @@ describe('RC2: the report tells the truth about origins', () => {
   })
 
   it('an explicit value is reported as `explicit` on every tier', () => {
-    const effective = describeEffectiveConfig({ mode: 'economy', semanticMode: 'rationale' })
-    expect(effective.settings.find(s => s.key === 'semanticMode')?.origin).toBe('explicit')
+    // UPDATED 2026-10-18: `semanticMode` is `rationale` on every rung now, so
+    // overriding it no longer produces an override. The HINT BUDGET is what a tier
+    // owns and a user can still move, so that is the key this pins.
+    const effective = describeEffectiveConfig({ mode: 'economy', rationaleHintTokens: 2000 })
+    expect(effective.settings.find(s => s.key === 'rationaleHintTokens')?.origin).toBe('explicit')
     expect(effective.overrides).toEqual([
-      { key: 'semanticMode', preset: 'none', explicit: 'rationale' },
+      { key: 'rationaleHintTokens', preset: 400, explicit: 2000 },
     ])
   })
 

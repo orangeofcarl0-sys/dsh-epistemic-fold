@@ -77,7 +77,7 @@ describe('RC0-E: the shipped defaults imply a very different regime', () => {
     // the measured regime a property of the preset rather than of the engine.
     const preset = resolvePreset('economy')
     expect(Object.keys(preset).sort()).toEqual(
-      ['framingMode', 'leafAdmission', 'rootPolicy', 'semanticMode'],
+      ['framingMode', 'leafAdmission', 'rationaleHintTokens', 'rootPolicy', 'semanticMode'],
     )
     const resolved = resolveEfConfig({ mode: 'economy' })
     // Headroom and frozen budget are the engine's defaults, untouched.

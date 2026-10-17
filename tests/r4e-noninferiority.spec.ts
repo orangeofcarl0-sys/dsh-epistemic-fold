@@ -99,7 +99,7 @@ describe('R4-E: the four scenario families are distinct and machine-checked', ()
     const preset = resolvePreset('economy')
     // Every key the preset owns must match the arm's config; the arm may add
     // operational knobs (the frozen budget) the preset deliberately does not own.
-    for (const key of ['leafAdmission', 'rootPolicy', 'semanticMode', 'framingMode'] as const) {
+    for (const key of ['leafAdmission', 'rootPolicy', 'rationaleHintTokens', 'semanticMode', 'framingMode'] as const) {
       expect(economy.config[key]).toBe(preset[key])
     }
   })

@@ -594,8 +594,8 @@ describe('RC3: /context mode is the control plane', () => {
     harness.engine.setMode('quality')
     const after = harness.engine.efConfig
     // quality adds the semantic face on top of balanced's retention.
-    expect(before.semanticMode).toBe('none')
-    expect(after.semanticMode).toBe('rationale')
+    expect(before.semanticMode).toBe('rationale')
+    expect(after.rationaleHintTokens).toBeGreaterThan(before.rationaleHintTokens)
     expect(after.retainRatio).toBeGreaterThan(before.retainRatio)
   }, 120_000)
 

@@ -356,27 +356,29 @@ describe('the LHTB host declares its task root through the bridge', () => {
     const folded = telemetryOf(await bridge.send({ op: 'compact' }))
     const delta = provider.calls() - before
     expect(folded.folds, 'a fold really committed').toBeGreaterThan(0)
-    expect(delta, 'and it cost NO provider request, so no summary was asked for').toBe(0)
+    // UPDATED 2026-10-18: every tier carries the digest now, so a fold costs exactly ONE
+    // auxiliary call. The MAIN model call is still never made, which is what this pins.
+    expect(delta, 'and it cost exactly the one digest call').toBe(1)
     expect(folded.summarizationAttempts ?? 0, 'the summarizer was never invoked').toBe(0)
     // The gate is therefore not exercised here; the request count still reconciles.
     expect(folded.budget?.requests, 'the gate counted what actually left').toBe(provider.calls())
   })
 
   it('still refuses the main model call once a spent budget has no requests left', async () => {
-    // The request limit is real even though this fixture's folds are free: the task call must be
-    // refused BEFORE it leaves.
-    const { bridge, provider } = await start({ taskRootMode: 'exact', budget: { requests: 1 } })
+    // The request limit is real: the fold spends one request on its digest, and the task call must
+    // be refused BEFORE it leaves once the rest is gone.
+    const { bridge, provider } = await start({ taskRootMode: 'exact', budget: { requests: 2 } })
     await bridge.send({ op: 'append', message: { role: 'user', content: INSTRUCTION }, taskRoot: true })
     for (let i = 0; i < 6; i += 1) {
       await bridge.send({ op: 'append', message: { role: 'user', content: `filler ${i} ` + 'f'.repeat(6_000) } })
     }
     await bridge.send({ op: 'compact' })
-    expect(provider.calls(), 'the free fold spent nothing').toBe(0)
+    expect(provider.calls(), 'the fold spent exactly its one digest call').toBe(1)
 
     const stepped = telemetryOf(await bridge.send({ op: 'step' }))
-    expect(provider.calls(), 'the first real request was allowed').toBe(1)
+    expect(provider.calls(), 'the first real request was allowed').toBe(2)
     const second = telemetryOf(await bridge.send({ op: 'step' }))
-    expect(provider.calls(), 'and the next one was refused').toBe(1)
+    expect(provider.calls(), 'and the next one was refused').toBe(2)
     expect(second.lastFinishReason).toBe('budget-exhausted')
     expect(second.providerFailures, 'a spent budget is not a provider failure').toBe(0)
     expect(second.budget?.refusals).toBeGreaterThan(0)

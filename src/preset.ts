@@ -133,6 +133,7 @@ const PRESET_KEYS = [
   'leafAdmission',
   'rootPolicy',
   'semanticMode',
+  'rationaleHintTokens',
   'framingMode',
   'retainRatio',
 ] as const
@@ -147,6 +148,19 @@ type PresetKey = (typeof PRESET_KEYS)[number]
  * competes with the headroom reserve for the same window — so this value is
  * CHECKED against every shipped window by the tier suite rather than assumed.
  */
+/**
+ * The hint budget each rung asks its digest for. THIS is what the ladder varies.
+ *
+ * Retention differences were judged to carry no substantive meaning between the upper two rungs
+ * (`QUALITY_RETAIN_RATIO` is `BALANCED_RETAIN_RATIO`), so the rungs are separated by how much
+ * digest they ask for -- a token budget, which is what a tier difference should be. The semantic
+ * face is no longer optional: a checkpoint that carries nothing leaves the model unable to tell
+ * what it is missing, so it cannot decide to recall, which breaks recoverability one layer up.
+ */
+export const ECONOMY_RATIONALE_HINT_TOKENS = 400
+export const BALANCED_RATIONALE_HINT_TOKENS = 800
+export const QUALITY_RATIONALE_HINT_TOKENS = 1600
+
 export const BALANCED_RETAIN_RATIO = 0.24
 
 /**
@@ -216,7 +230,8 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
        * narrative was advisory, so an auxiliary call is not needed to carry
        * DECLARED facts across a fold.
        */
-      semanticMode: 'none',
+      semanticMode: 'rationale',
+      rationaleHintTokens: ECONOMY_RATIONALE_HINT_TOKENS,
       /**
        * No per-checkpoint preamble; the semantics live in one system-prompt
        * section. REQUIRES `ctx.systemPrompt`, and `framingModeFor` REFUSES TO
@@ -240,7 +255,8 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
       // what makes a measured difference attributable to it.
       leafAdmission: 'economic',
       rootPolicy: 'economics',
-      semanticMode: 'none',
+      semanticMode: 'rationale',
+      rationaleHintTokens: BALANCED_RATIONALE_HINT_TOKENS,
       framingMode: 'system-dedup',
       /**
        * Keep a larger recent tail verbatim (1.5x the engine default of 0.16).
@@ -280,6 +296,7 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
        * without it, which weakens rather than supports the case.
        */
       semanticMode: 'rationale',
+      rationaleHintTokens: QUALITY_RATIONALE_HINT_TOKENS,
       framingMode: 'system-dedup',
       // The SAME retention as `balanced`, so the top two rungs differ only in
       // the semantic face and a difference between them is attributable to it.

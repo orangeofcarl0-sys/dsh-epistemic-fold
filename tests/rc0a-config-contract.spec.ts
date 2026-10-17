@@ -149,14 +149,14 @@ describe('RC0-A: the effective configuration is reportable', () => {
 
   it('marks an explicit override as explicit, not as the preset', () => {
     const effective = describeEffectiveConfig(
-      { mode: 'economy', semanticMode: 'rationale' },
+      { mode: 'economy', rationaleHintTokens: 2000 },
       { frameCheckpointSeam: true },
     )
-    const semantic = effective.settings.find(setting => setting.key === 'semanticMode')!
+    const semantic = effective.settings.find(setting => setting.key === 'rationaleHintTokens')!
     expect(semantic.origin).toBe('explicit')
-    expect(semantic.value).toBe('rationale')
+    expect(semantic.value).toBe(2000)
     expect(effective.overrides).toEqual([
-      { key: 'semanticMode', preset: 'none', explicit: 'rationale' },
+      { key: 'rationaleHintTokens', preset: 400, explicit: 2000 },
     ])
   })
 
@@ -196,7 +196,8 @@ describe('RC0-A: the preset still expands identically to writing the keys', () =
     expect(resolvePreset('economy')).toEqual({
       leafAdmission: 'economic',
       rootPolicy: 'economics',
-      semanticMode: 'none',
+      semanticMode: 'rationale',
+      rationaleHintTokens: 400,
       framingMode: 'system-dedup',
     })
   })
@@ -210,7 +211,7 @@ describe('RC0-A: the preset still expands identically to writing the keys', () =
     const session = allWorkloads()[0]!.createSession()
     expect(harness.engine.efConfig.leafAdmission).toBe('economic')
     expect(harness.engine.efConfig.rootPolicy.mode).toBe('economics')
-    expect(harness.engine.efConfig.semanticMode).toBe('none')
+    expect(harness.engine.efConfig.semanticMode).toBe('rationale')
     expect(session.surface.nodes.length).toBeGreaterThan(0)
   }, 120_000)
 })

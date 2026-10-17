@@ -138,7 +138,11 @@ export const SCENARIO_ARMS: readonly ScenarioArm[] = [
     config: {
       leafAdmission: 'economic',
       rootPolicy: 'economics',
-      semanticMode: 'none',
+      // The economy arm carries the digest too now (2026-10-18); the rungs differ in the
+      // HINT budget, not in whether the semantic face exists. Its R3/RC1 cost figures were
+      // measured under `none` and must be re-measured.
+      semanticMode: 'rationale',
+      rationaleHintTokens: 400,
       framingMode: 'system-dedup',
       // Sized so the frozen prefix actually crosses it within the horizon,
       // which is what justifies a rebase. Checkpoints in a compressed window

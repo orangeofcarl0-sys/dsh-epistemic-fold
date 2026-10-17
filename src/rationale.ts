@@ -41,8 +41,9 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
  * (the original rule, which is sound). Without anchors, the rationale is the only carrier and
  * must say what is worth keeping. One instruction cannot do both.
  */
-function rationaleInstruction(anchorCount: number): string {
-  return anchorCount > 0 ? RATIONALE_INSTRUCTION_WITH_ANCHORS : RATIONALE_INSTRUCTION_NO_ANCHORS
+function rationaleInstruction(anchorCount: number, hintTokens: number): string {
+  const base = anchorCount > 0 ? RATIONALE_INSTRUCTION_WITH_ANCHORS : RATIONALE_INSTRUCTION_NO_ANCHORS
+  return base.replace(/\{hint\}/gu, String(hintTokens))
 }
 
 const RATIONALE_INSTRUCTION_WITH_ANCHORS = [
@@ -59,7 +60,7 @@ const RATIONALE_INSTRUCTION_WITH_ANCHORS = [
   '- whether failures are resolved or open',
   'When you need to refer to a specific decision, constraint or failure, cite its anchor id in',
   'square brackets exactly as the machine sections write it -- do not restate its value.',
-  'Output 100-400 tokens of terse engineering prose. Output only the rationale text.',
+  'Output up to {hint} tokens of terse engineering prose. Output only the rationale text.',
 ].join('\n')
 
 /**
@@ -79,7 +80,7 @@ const RATIONALE_INSTRUCTION_NO_ANCHORS = [
   '- corrections or errata that supersede earlier figures',
   '- alternatives considered and rejected',
   'Be concrete and specific: a later reader must be able to act on this without the original.',
-  'Output 200-800 tokens. Output only the rationale text.',
+  'Output up to {hint} tokens. Output only the rationale text.',
 ].join('\n')
 
 /**
@@ -170,6 +171,8 @@ export async function rationaleOnly(options: {
   maxTokens: number
   /** Anchors the machine sections will carry; 0 selects the no-anchor instruction. */
   anchorCount: number
+  /** The tier's HINT budget; the real budget is `maxTokens`, several times larger. */
+  hintTokens: number
   input: { readonly tools?: readonly unknown[]; readonly messages: readonly Message[] }
   agent: Agent
   signal?: AbortSignal | undefined
@@ -180,7 +183,7 @@ export async function rationaleOnly(options: {
     ...options.input.messages,
     deepFreeze({
       role: 'user',
-      content: [{ type: 'text', text: rationaleInstruction(options.anchorCount) }],
+      content: [{ type: 'text', text: rationaleInstruction(options.anchorCount, options.hintTokens) }],
     }),
   ]
   const generateOptions: GenerateOptions = {

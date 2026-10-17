@@ -48,7 +48,7 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
   it('economy fills exactly the policy keys the preset owns', () => {
     const values = economyPresetValues()
     expect(Object.keys(values).sort()).toEqual(
-      ['framingMode', 'leafAdmission', 'rootPolicy', 'semanticMode'],
+      ['framingMode', 'leafAdmission', 'rationaleHintTokens', 'rootPolicy', 'semanticMode'],
     )
     // It must NOT set operational fields: a mode name cannot redirect where a
     // deployment writes bundles.
@@ -59,8 +59,8 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
   it('an explicit setting ALWAYS beats the preset', () => {
     // The rule that makes a preset safe to adopt: a user who names a mode and
     // also sets a field gets their field.
-    const resolved = resolvePreset('economy', { semanticMode: 'rationale', leafAdmission: 'legacy' })
-    expect(resolved.semanticMode).toBe('rationale')
+    const resolved = resolvePreset('economy', { rationaleHintTokens: 2000, leafAdmission: 'legacy' })
+    expect(resolved.rationaleHintTokens).toBe(2000)
     expect(resolved.leafAdmission).toBe('legacy')
     // ...while the keys they did NOT set are still filled in.
     expect(resolved.rootPolicy).toBe('economics')
@@ -74,10 +74,10 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
   })
 
   it('overrides are REPORTED, never enforced', () => {
-    const overrides = presetOverrides('economy', { semanticMode: 'rationale' })
-    expect(overrides).toEqual([{ key: 'semanticMode', preset: 'none', explicit: 'rationale' }])
+    const overrides = presetOverrides('economy', { rationaleHintTokens: 2000 })
+    expect(overrides).toEqual([{ key: 'rationaleHintTokens', preset: 400, explicit: 2000 }])
     // A setting that MATCHES the preset is not an override.
-    expect(presetOverrides('economy', { semanticMode: 'none' })).toEqual([])
+    expect(presetOverrides('economy', { rationaleHintTokens: 400 })).toEqual([])
   })
 
   it('economy resolves to the configuration R3 actually measured', () => {
@@ -86,7 +86,7 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     const resolved = resolveEfConfig({ mode: 'economy' })
     expect(resolved.leafAdmission).toBe('economic')
     expect(resolved.rootPolicy.mode).toBe('economics')
-    expect(resolved.semanticMode).toBe('none')
+    expect(resolved.semanticMode).toBe('rationale')
     expect(resolved.framingMode).toBe('system-dedup')
   })
 
@@ -97,7 +97,7 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     const viaPreset = resolveEfConfig({ mode: 'economy' })
     const byHand = resolveEfConfig({
       leafAdmission: 'economic', rootPolicy: 'economics',
-      semanticMode: 'none', framingMode: 'system-dedup',
+      semanticMode: 'rationale', rationaleHintTokens: 400, framingMode: 'system-dedup',
     })
     expect(viaPreset).toEqual(byHand)
   })

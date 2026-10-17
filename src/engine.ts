@@ -1914,6 +1914,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
             target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
             maxTokens: rationaleOutputFor(foldSpanTokens),
             anchorCount,
+            hintTokens: this.efConfig.rationaleHintTokens,
             input: summarizationInput,
             agent,
             signal,

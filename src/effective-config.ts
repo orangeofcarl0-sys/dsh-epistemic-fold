@@ -75,6 +75,7 @@ const PRESET_OWNED = [
   'leafAdmission',
   'rootPolicy',
   'semanticMode',
+  'rationaleHintTokens',
   'framingMode',
   'retainRatio',
 ] as const
@@ -84,6 +85,7 @@ const ENGINE_DEFAULTS: Readonly<Record<string, unknown>> = {
   leafAdmission: 'legacy',
   rootPolicy: 'legacy',
   semanticMode: 'rationale',
+  rationaleHintTokens: 800,
   framingMode: 'legacy',
   retainRatio: DEFAULT_RETAIN_RATIO,
 }
