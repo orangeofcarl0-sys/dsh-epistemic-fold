@@ -212,6 +212,7 @@ These records document real-host defects and browser/deployment integration. The
 - [125_NO_CONCURRENCY_PENALTY.md](125_NO_CONCURRENCY_PENALTY.md)
 - [126_SWEEP_RESULT_AND_RERUN.md](126_SWEEP_RESULT_AND_RERUN.md)
 - [127_WATCHDOG_RESTART.md](127_WATCHDOG_RESTART.md)
+- [128_RERUN_UNTIL_NORMAL.md](128_RERUN_UNTIL_NORMAL.md)
 
 ## How to read old conclusions
 
