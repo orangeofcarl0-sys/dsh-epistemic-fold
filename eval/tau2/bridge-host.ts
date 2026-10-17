@@ -2094,6 +2094,22 @@ async function main(): Promise<void> {
           const hostNodes = session!.surface.nodes.length
           const engineMeasure = engine!.ctx.tokenMeter.measure(session!).totalTokens
           const engineNodes = session!.surface.nodes.length
+          // ## The turn must be closed around a MANUAL fold, exactly as `rootCompact` does
+          //
+          // This is the defect that made arms B and C unmeasurable. `compactIfNeeded` opens with
+          // `assertNoActiveCompaction(agent.session)` (src/engine.ts:1099), whose contract is an
+          // IDLE session, so with the tau2 turn still open every one of the memory driver's 20
+          // per-batch folds threw `busy` before it reached the threshold check. The bridge caught
+          // each one, counted `compactionFailures`, and classified it `other` because `busy`
+          // carries no error code -- so twenty identical faults read as twenty unrelated ones,
+          // `folds` stayed at 1, and `lastLeafDecision` kept a stale value from the earlier
+          // fold-to-depth. The injected history therefore never folded, grew to 3,330,304 tokens,
+          // and the provider answered HTTP 413.
+          //
+          // The turn is the harness's own bookkeeping for the tau2 exchange, not the session's,
+          // so closing it for the duration of a manual command is the accurate thing to do
+          // rather than weakening the engine's check. `rootCompact` has done exactly this since
+          // it was written; `compact` was the one path that had not.
           await foldIfNeeded()
           const after = foldCounters(engine!)
           const committed = (after.leaves - before.leaves)

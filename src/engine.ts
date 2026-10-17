@@ -1108,6 +1108,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       log: line => this.ctx.logger.info(line),
     })
     this.telemetry.thresholdTokens = spec.thresholdTokens
+    this.lastLeafDecision = 'spec-resolved retries=' + spec.compactionRetries
     this.telemetry.compactSpec = spec
     if (measurement.totalTokens < spec.thresholdTokens) { this.lastLeafDecision = 'below-threshold ' + measurement.totalTokens + '<' + spec.thresholdTokens; return null }
 
@@ -1230,9 +1231,21 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // one committed fold and a reader could not tell how much work was done.
     let committed = 0
     for (let attempt = 0; attempt <= spec.compactionRetries; attempt += 1) {
-      const span = selectLeafSpan(
-        agent.session, measurement, spec.retainTokens, undefined, this.protectedPositions(agent.session),
-      )
+      let span: ReturnType<typeof selectLeafSpan>
+      try {
+        span = selectLeafSpan(
+          agent.session, measurement, spec.retainTokens, undefined, this.protectedPositions(agent.session),
+        )
+      } catch (error: unknown) {
+        // ## The throw that twenty refusals actually took
+        //
+        // `selectLeafSpan` throws when the token meter's surface and the session's surface have
+        // diverged (src/leaf-policy.ts:48-51), and that throw was classified `other` because its
+        // message carries no error code -- so twenty compaction failures looked like twenty
+        // unrelated faults. Named here so the next reader does not have to bisect to find it.
+        this.lastLeafDecision = 'span-threw: ' + (error instanceof Error ? error.message : String(error)).slice(0, 200)
+        throw error
+      }
       if (span === null) {
         this.lastLeafDecision = 'no-span pricedNodes=' + measurement.nodes.length
           + ' surfaceNodes=' + agent.session.surface.nodes.length
