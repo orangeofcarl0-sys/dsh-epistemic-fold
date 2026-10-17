@@ -69,7 +69,7 @@ import type { CapacityRegime, PressureRegime } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from './renderer.ts'
-import { rationaleOnly } from './rationale.ts'
+import { rationaleOnly, rationaleOutputFor } from './rationale.ts'
 import {
   conversationTarget,
   resolveEfConfig,
@@ -145,7 +145,24 @@ import type {
  * tripwire that discards its work. The instruction still asks for a bounded length; this is
  * the backstop, and a backstop that fires is a lost rationale, not a truncated one.
  */
-const RATIONALE_MAX_TOKENS = 8192
+
+/**
+ * Tokens in the span a fold replaces, estimated from the shadowed messages.
+ *
+ * A 4-chars-per-token estimate is deliberate: the exact figure is not needed, because it only
+ * sizes a budget that is clamped to [1024, 8192]. What matters is that the budget GROWS with the
+ * span, which is `docs/21` section 11.5's principle -- the defect being fixed was a fixed 400
+ * against a 1,043,005-token span.
+ */
+function estimateSpanTokens(messages: readonly { readonly content: readonly { readonly type: string; readonly text?: string }[] }[]): number {
+  let chars = 0
+  for (const m of messages) {
+    for (const block of m.content) {
+      if (block.type === 'text' && typeof block.text === 'string') chars += block.text.length
+    }
+  }
+  return Math.round(chars / 4)
+}
 
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
@@ -1884,11 +1901,18 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // Measured: anchors 0 made the old instruction forbid the only content that could
         // exist, leaving a 47-character marker. See rationaleInstruction().
         const anchorCount = machineAnchorCount(mountedState)
+        // The span this fold replaces, for the output budget. Estimated from the shadowed
+        // messages rather than taken from `measurement`, because the span has already been
+        // removed from the surface by the time this hook runs. It only sizes a BUDGET, and
+        // `rationaleOutputFor` clamps to [1024, 8192], so an estimate within 2x changes the
+        // cap only in the middle of that range -- it cannot turn a workable budget into a
+        // tripwire, which is the failure this replaced.
+        const foldSpanTokens = estimateSpanTokens(summarizationInput.messages)
         try {
           const rationale = await rationaleOnly({
             ctx: this.ctx,
             target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
-            maxTokens: RATIONALE_MAX_TOKENS,
+            maxTokens: rationaleOutputFor(foldSpanTokens),
             anchorCount,
             input: summarizationInput,
             agent,

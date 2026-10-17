@@ -82,8 +82,41 @@ const RATIONALE_INSTRUCTION_NO_ANCHORS = [
   'Output 200-800 tokens. Output only the rationale text.',
 ].join('\n')
 
+/**
+ * Output budget for a rationale over a span of this many tokens.
+ *
+ * ## Symmetric with `rationaleInputFor`, and for the same reason
+ *
+ * `docs/21` §11.5 established the principle for the INPUT side: the rationale call receives the
+ * folded span, so its cost must be DERIVED from that span rather than carried as a constant
+ * measured at one window size. The OUTPUT side was left as a constant (`400`) and that is the
+ * defect this function removes.
+ *
+ * A digest of a span grows with the span, but far slower than linearly -- it is a compression.
+ * Measured 2026-10-18: a 1,043,005-token span produced a 2,468-character (~620-token) digest
+ * once the cap allowed it. A span/256 slope reaches 620 tokens at ~159,000 tokens of span,
+ * which brackets that observation without pretending to predict it.
+ *
+ * The floor matters more than the slope: 1024 is above any plausible terse digest, so the model
+ * is bounded by the INSTRUCTION rather than by a tripwire. The ceiling bounds worst-case cost on
+ * a very large fold. Neither end discards work -- see `finishError` on why `max-tokens` now lands
+ * the partial text.
+ *
+ * @param foldSpanTokens - tokens of the span this fold replaces.
+ * @returns the output token budget for the auxiliary call.
+ */
+export function rationaleOutputFor(foldSpanTokens: number): number {
+  const slope = Math.round(Math.max(0, foldSpanTokens) / 256)
+  return Math.min(8192, Math.max(1024, slope))
+}
+
 export interface RationaleCallResult {
   readonly text: string
+  /**
+   * Whether the call stopped at the cap. The text is still landed -- see `finishError` --
+   * and this flag is what keeps a partial digest from being read as a complete one.
+   */
+  readonly truncated: boolean
   /** Exact auxiliary-call envelope, forwarded into `compaction/summary`. */
   readonly provider: string
   readonly model: string
@@ -100,10 +133,21 @@ function finishError(finish: FinishReason): Error | undefined {
     case 'aborted': {
       return new LlmError(finish.failure.message, finish.failure.code, finish.failure)
     }
+    // ## `max-tokens` is NOT an error any more (2026-10-18)
+    //
+    // It used to throw, and the engine's catch set `semanticText = undefined` -- so a rationale
+    // that reached its cap was DISCARDED rather than truncated, and the checkpoint fell back to
+    // the bare marker. Measured: RATIONALE_MAX_TOKENS was 400 while the instruction asked for
+    // "100-400 tokens", so a model writing the top of its requested range lost everything
+    // (rationaleFailures 1, reason MAX_TOKENS, chars 0, arm A 0.5961).
+    //
+    // The fail-closed intent -- never land a half-written digest as if it were complete -- is
+    // served by MARKING the truncation, not by deleting the work. A partial manifest is strictly
+    // better than none: the model can act on some of the facts, and it can call context_recall
+    // for the rest. Once tiers carry DIFFERENT budgets, hitting a cap is expected rather than
+    // exceptional, so discarding would make every small-budget tier degenerate to nothing.
     case 'max-tokens': {
-      const error = new Error('rationale truncated at the token cap') as Error & { code?: string }
-      error.code = 'MAX_TOKENS'
-      return error
+      return undefined
     }
     default:
       return undefined
@@ -149,6 +193,7 @@ export async function rationaleOnly(options: {
   for await (const chunk of ctx.llm.stream(generateOptions)) assembler.push(chunk)
   const error = finishError(assembler.finish)
   if (error !== undefined) throw error
+  const truncated = assembler.finish.kind === 'max-tokens'
 
   const rawOutput = assembler.blocks()
   const text = rawOutput
@@ -160,6 +205,7 @@ export async function rationaleOnly(options: {
   }
   return {
     text,
+    truncated,
     provider: generateOptions.provider,
     model: generateOptions.model,
     maxTokens: options.maxTokens,
