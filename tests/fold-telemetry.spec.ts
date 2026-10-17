@@ -9,7 +9,7 @@
  */
 
 import { describe, expect, it } from "vitest"
-import { createFoldTelemetry, recordFold } from "../src/fold-telemetry.ts"
+import { createFoldTelemetry, recordFold } from "../src/fold/fold-telemetry.ts"
 
 describe("the telemetry record", () => {
   it("starts with every counter zero and every last-observed value unset", () => {

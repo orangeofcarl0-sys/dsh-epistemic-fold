@@ -29,8 +29,8 @@
 
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
-import { locateFoldFrontier } from './frontier.ts'
-import { frozenCheckpointLoad } from './leaf-policy.ts'
+import { locateFoldFrontier } from './fold/frontier.ts'
+import { frozenCheckpointLoad } from './fold/leaf-policy.ts'
 
 /**
  * Total context pressure decomposed by what would actually fix it.

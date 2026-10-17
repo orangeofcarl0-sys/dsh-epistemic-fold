@@ -285,7 +285,7 @@ export async function runPairedBaseline(options: {
       lastThresholdTokens?: number
     }
     if (engineAny.efConfig !== undefined) {
-      const { frozenCheckpointLoad } = await import('../src/leaf-policy.ts')
+      const { frozenCheckpointLoad } = await import('../src/fold/leaf-policy.ts')
       checkpointLoad = frozenCheckpointLoad(session, measurement).tokens
     }
 

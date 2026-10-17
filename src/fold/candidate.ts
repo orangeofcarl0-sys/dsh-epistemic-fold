@@ -7,7 +7,7 @@
 
 import { randomUUID } from 'node:crypto'
 import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
-import type { FoldCandidate, FoldMode } from './types.ts'
+import type { FoldCandidate, FoldMode } from '../types.ts'
 
 /**
  * Registry of pending fold candidates keyed by session identity. A session

@@ -23,11 +23,11 @@
  * @module dsh-epistemic-fold/fold-telemetry
  */
 
-import type { ContextPolicyDecision } from "./policy-compiler.ts"
-import type { EfCompactSpec } from "./policy.ts"
-import type { FoldReachability, LeafAdmissionVerdict } from "./fold-economics.ts"
-import type { CapacityRegime, PressureRegime } from "./pressure.ts"
-import type { evaluateRootRebase } from "./root-policy.ts"
+import type { ContextPolicyDecision } from "../policy-compiler.ts"
+import type { EfCompactSpec } from "../policy.ts"
+import type { FoldReachability, LeafAdmissionVerdict } from "../fold-economics.ts"
+import type { CapacityRegime, PressureRegime } from "../pressure.ts"
+import type { evaluateRootRebase } from "../root-policy.ts"
 
 /** Which mechanism committed a fold. */
 export type FoldKind = "leaf" | "root" | "emergency"

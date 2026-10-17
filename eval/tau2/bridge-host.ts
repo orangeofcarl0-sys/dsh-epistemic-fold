@@ -63,10 +63,10 @@ import type { ToolRuntime } from '@deepseek-ai/dsh-tools'
 // silently escapes typechecking: this file's `'auto'` trigger and a dead local
 // both survived that way. `--experimental-transform-types` runs the `.ts`
 // sources directly, so source imports are also what the process actually loads.
-import { EpistemicFoldEngine } from '../../src/engine.ts'
+import { EpistemicFoldEngine } from '../../src/fold/engine.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/preset.ts'
-import { taskRootDigest } from '../../src/task-root.ts'
+import { taskRootDigest } from '../../src/fold/task-root.ts'
 import type { FoldModeName } from '../../src/preset.ts'
 import { resetSummaryRetryStats, summaryRetryStats } from '../../src/summary-retry.ts'
 import { resetSubagentRecallStats, subagentRecallStats } from '../../src/recall/subagent-recall.ts'

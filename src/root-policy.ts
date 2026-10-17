@@ -10,7 +10,7 @@
 
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
-import { frozenCheckpointLoad } from './leaf-policy.ts'
+import { frozenCheckpointLoad } from './fold/leaf-policy.ts'
 
 /** Telemetry emitted when the frozen prefix grows past its budget. */
 export interface RootRebaseAdvice {

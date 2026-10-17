@@ -62,7 +62,8 @@ import {
   createUserMessage,
 } from '@deepseek-ai/dsh-llm'
 import { createHarness, SIGNAL } from './harness.ts'
-import { selectLeafSpan } from '../src/leaf-policy.ts'
+import { readSrcModule } from './src-module.ts'
+import { selectLeafSpan } from '../src/fold/leaf-policy.ts'
 import { selectCompactableRange } from '../src/basic/region.ts'
 import { assessFoldReachability } from '../src/fold-economics.ts'
 
@@ -272,7 +273,7 @@ describe('the failure count in the message is real', () => {
     //
     // Comments are stripped first: the fix's own doc comment quotes the old
     // expression to explain it, and the prohibition is on emitting it.
-    const source = readFileSync(join(ROOT, 'src', 'engine.ts'), 'utf8')
+    const source = readSrcModule('engine.ts')
       .split('\n')
       .filter(line => !/^\s*(\/\/|\*|\/\*)/u.test(line))
       .join('\n')
@@ -296,7 +297,7 @@ describe('the failure count in the message is real', () => {
     // assigns, and require the classifier to branch on each one. A new code with
     // no branch is the bug, and this fails before a run can produce an
     // unattributable `other`.
-    const engine = readFileSync(join(ROOT, 'src', 'engine.ts'), 'utf8')
+    const engine = readSrcModule('engine.ts')
     const classifier = readFileSync(join(ROOT, 'eval', 'tau2', 'bridge-host.ts'), 'utf8')
     const raised = [...new Set(
       [...engine.matchAll(/\.code = '([A-Z_]+)'/gu)].map(match => match[1]!),

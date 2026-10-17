@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const SCAN_DIRS = ['src', 'tests', 'eval', 'scripts'];
+const SCAN_DIRS = ['src', 'tests', 'eval', 'bench', 'scripts', 'ef-phase7-logs'];
 const SKIP = new Set(['node_modules', '.git', 'dist', 'lib']);
 const EXTS = ['.ts', '.mts', '.cts', '.tsx'];
 

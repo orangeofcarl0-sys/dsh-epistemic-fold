@@ -23,9 +23,9 @@ import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, driveIdleMaintenance, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
-import { createRebaseIntentRegistry } from '../src/rebase-intent.ts'
-import { runIdleRebase, registerIdleRebaseConsumer } from '../src/idle-rebase.ts'
-import type { IdleRebaseAttempt } from '../src/idle-rebase.ts'
+import { createRebaseIntentRegistry } from '../src/fold/rebase-intent.ts'
+import { runIdleRebase, registerIdleRebaseConsumer } from '../src/fold/idle-rebase.ts'
+import type { IdleRebaseAttempt } from '../src/fold/idle-rebase.ts'
 import type { SessionId } from '@deepseek-ai/dsh-session'
 
 const STEPS = 32

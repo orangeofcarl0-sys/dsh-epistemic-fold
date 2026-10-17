@@ -26,8 +26,9 @@ import type { Session } from '@deepseek-ai/dsh-session'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createHarness, SIGNAL } from './harness.ts'
-import { createRebaseIntentRegistry, intentMatchesSession } from '../src/rebase-intent.ts'
-import { SETTLE_ROUND_LIMIT, registerIdleRebaseConsumer } from '../src/idle-rebase.ts'
+import { readSrcModule } from './src-module.ts'
+import { createRebaseIntentRegistry, intentMatchesSession } from '../src/fold/rebase-intent.ts'
+import { SETTLE_ROUND_LIMIT, registerIdleRebaseConsumer } from '../src/fold/idle-rebase.ts'
 import {
   evaluateWindowSafety,
   peakRatioDiagnostic,
@@ -252,7 +253,7 @@ describe('R4-0a: the framing seam is a supported dependency with an explicit con
     // visible. This is checked by construction — the seam is a compile-time
     // dependency of the engine, so the capability check is a version contract,
     // never a runtime property sniff.
-    const source = readFileSync(join(import.meta.dirname, '..', 'src', 'engine.ts'), 'utf8')
+    const source = readSrcModule('engine.ts')
     // No `if ((Basic as any).frameCheckpoint)`-style compatibility shims.
     expect(source).not.toMatch(/Basic[^\n]*as any/u)
     expect(source).not.toMatch(/typeof\s+\(?super\.frameCheckpoint/u)
@@ -382,7 +383,7 @@ describe('R4 §4: the seam is a capability CONTRACT, not a runtime sniff', () =>
     expect(compat).toContain("typeof prototype['frameCheckpoint']")
     // The probe exists in exactly one file.
     for (const file of ['engine.ts', 'plugin.ts', 'framing.ts']) {
-      const source = readFileSync(join(import.meta.dirname, '..', 'src', file), 'utf8')
+      const source = readSrcModule(file)
       expect(source, `${file} must not probe the seam`).not.toContain("prototype['frameCheckpoint']")
     }
   })

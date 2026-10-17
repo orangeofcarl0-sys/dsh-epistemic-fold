@@ -11,9 +11,9 @@ import {
   canonicalHash,
   sha256Hex,
 } from '../src/hash.ts'
-import { locateFoldFrontier, readEfCheckpoint } from '../src/frontier.ts'
+import { locateFoldFrontier, readEfCheckpoint } from '../src/fold/frontier.ts'
 import { canonicalJson } from '../src/hash.ts'
-import { frozenCheckpointLoad, selectLeafSpan } from '../src/leaf-policy.ts'
+import { frozenCheckpointLoad, selectLeafSpan } from '../src/fold/leaf-policy.ts'
 import { evaluateRootRebase } from '../src/root-policy.ts'
 import {
   closedConversation,

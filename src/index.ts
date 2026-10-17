@@ -7,8 +7,8 @@
  * @module dsh-epistemic-fold
  */
 
-export { EpistemicFoldEngine, default } from './engine.ts'
-export type { EpistemicFoldOptions } from './engine.ts'
+export { EpistemicFoldEngine, default } from './fold/engine.ts'
+export type { EpistemicFoldOptions } from './fold/engine.ts'
 export { efOwnedConfigKeys, stripEfConfigKeys } from './policy.ts'
 export {
   FRAMING_FALLBACK_TOKENS,
@@ -18,7 +18,7 @@ export {
   rootRebaseAdvice,
 } from './fold-economics.ts'
 export type { LeafAdmissionVerdict } from './fold-economics.ts'
-export { createFoldCandidate, FoldCandidateRegistry } from './candidate.ts'
+export { createFoldCandidate, FoldCandidateRegistry } from './fold/candidate.ts'
 export { FileBundleStore } from './bundle-store.ts'
 export {
   buildBundle,

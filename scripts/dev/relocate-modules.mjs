@@ -28,7 +28,7 @@ const PLAN = {
            'root-policy', 'trigger', 'trigger-diagnostics'],
 };
 
-const SCAN_DIRS = ['src', 'tests', 'eval', 'scripts'];
+const SCAN_DIRS = ['src', 'tests', 'eval', 'bench', 'scripts', 'ef-phase7-logs'];
 const SKIP = new Set(['node_modules', '.git', 'dist', 'lib', 'basic']);
 const EXTS = ['.ts', '.mts', '.cts', '.tsx'];
 

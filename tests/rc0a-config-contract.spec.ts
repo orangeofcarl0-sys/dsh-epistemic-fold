@@ -19,14 +19,13 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { DSH_SEAM_PROVENANCE, REQUIRED_DSH_RANGE, assertDshCompatibility } from '../src/compat.ts'
 import { framingModeFor } from '../src/framing.ts'
 import { describeEffectiveConfig, effectiveConfigToText } from '../src/effective-config.ts'
 import { resolveEfConfig } from '../src/policy.ts'
 import { resolvePreset } from '../src/preset.ts'
 import { createHarness } from './harness.ts'
+import { readSrcModule } from './src-module.ts'
 import { allWorkloads } from '../eval/workloads/index.ts'
 
 describe('RC0-A: an unknown mode is an error, never a silent legacy run', () => {
@@ -97,11 +96,11 @@ describe('RC0-A: explicit system-dedup with nowhere to put the semantics FAILS',
   it('no silent-fallback branch survives anywhere in the framing path', () => {
     // A structural assertion: the `fallback` field is gone from the return
     // type, so a future edit cannot quietly reintroduce the downgrade.
-    const framing = readFileSync(join(import.meta.dirname, '..', 'src', 'framing.ts'), 'utf8')
+    const framing = readSrcModule('framing.ts')
     expect(framing).not.toContain('fallback?:')
     expect(framing).not.toContain('falling back')
     for (const file of ['engine.ts', 'plugin.ts']) {
-      const source = readFileSync(join(import.meta.dirname, '..', 'src', file), 'utf8')
+      const source = readSrcModule(file)
       expect(source, `${file} must not handle a framing fallback`).not.toContain('resolved.fallback')
     }
   })

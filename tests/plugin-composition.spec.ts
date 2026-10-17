@@ -25,7 +25,7 @@ import { Session } from '@deepseek-ai/dsh-session'
 // The shared DSH runtime mount sequence (docs/68 B-6): one place for the
 // services every harness used to hand-wire.
 import { mountRuntime } from '../eval/src/runtime-mount.ts'
-import { EpistemicFoldEngine } from '../src/engine.ts'
+import { EpistemicFoldEngine } from '../src/fold/engine.ts'
 import { createAnchorService } from '../src/state/anchor-service.ts'
 import { EF_CURRENT_STATE_KEY, currentFoldState } from '../src/state/projection.ts'
 import { recall } from '../src/recall/recall.ts'

@@ -41,7 +41,7 @@ import type { Harness } from './harness.ts'
 import { createAnchorService } from '../src/state/anchor-service.ts'
 import { anchorSourceSeqs } from './anchor-fixture.ts'
 import { ask, probePrompt } from './live-probe.ts'
-import { locateFoldFrontier } from '../src/frontier.ts'
+import { locateFoldFrontier } from '../src/fold/frontier.ts'
 import { driveIdleMaintenance } from '../bench/paired-baseline.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 

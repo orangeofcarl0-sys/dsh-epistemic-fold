@@ -11,9 +11,9 @@
  */
 
 import { isCompactCheckpointSource } from '@deepseek-ai/dsh-compaction'
-import type { FoldMode } from './types.ts'
+import type { FoldMode } from '../types.ts'
 import { SessionSeq, type Session } from '@deepseek-ai/dsh-session'
-import { parseCheckpointMarker } from './checkpoint-marker.ts'
+import { parseCheckpointMarker } from '../checkpoint-marker.ts'
 
 /** Persistent identity of the frontier (plan §10); re-locatable, not a position. */
 export interface FrontierRef {

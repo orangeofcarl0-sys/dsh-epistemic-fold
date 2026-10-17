@@ -23,7 +23,7 @@
 // host build does not ship, and `mode: basic` must reproduce native Basic
 // exactly — which a subclass of the host engine cannot do, because virtual
 // dispatch re-enters EF's own overrides. See src/basic/ and THIRD_PARTY_NOTICES.md.
-import BasicCompactionEngine from './basic/index.ts'
+import BasicCompactionEngine from '../basic/index.ts'
 import { toolPairingBalancedBefore } from '@deepseek-ai/dsh-compaction'
 import { ManualCompactionError } from '@deepseek-ai/dsh-compaction'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
@@ -39,18 +39,18 @@ import {
   renderFallbackCheckpoint,
   renderSemanticCheckpoint,
   splitSummarizationInput,
-} from './compiler.ts'
-import { FileBundleStore } from './bundle-store.ts'
-import { compactSurfaceRegion, selectCompactableRange } from './basic/region.ts'
+} from '../compiler.ts'
+import { FileBundleStore } from '../bundle-store.ts'
+import { compactSurfaceRegion, selectCompactableRange } from '../basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
 import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
-import { assertDshCompatibility } from './compat.ts'
-import { foldFrameCheckpoint, framingModeFor } from './framing.ts'
-import type { FramingMode } from './framing.ts'
-import type { TriggerBreakdown } from './trigger.ts'
-import { TriggerDiagnostics } from './trigger-diagnostics.ts'
+import { assertDshCompatibility } from '../compat.ts'
+import { foldFrameCheckpoint, framingModeFor } from '../framing.ts'
+import type { FramingMode } from '../framing.ts'
+import type { TriggerBreakdown } from '../trigger.ts'
+import { TriggerDiagnostics } from '../trigger-diagnostics.ts'
 import {
   ROOT_REBASE_COOLDOWN,
   admitLeafEconomically,
@@ -58,18 +58,18 @@ import {
   describeFoldReachability,
   evaluateEconomicRebase,
   rootRebaseAdvice,
-} from './fold-economics.ts'
-import type { FoldReachability, LeafAdmissionVerdict } from './fold-economics.ts'
-import { classifyRegime, resolveProfile, rhoOf } from './economics-profile.ts'
-import type { ContextPolicyDecision } from './policy-compiler.ts'
+} from '../fold-economics.ts'
+import type { FoldReachability, LeafAdmissionVerdict } from '../fold-economics.ts'
+import { classifyRegime, resolveProfile, rhoOf } from '../economics-profile.ts'
+import type { ContextPolicyDecision } from '../policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
 import type { PendingRebaseIntent, RebaseCause, RebaseIntentRegistry } from './rebase-intent.ts'
-import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from './pressure.ts'
-import type { CapacityRegime, PressureRegime } from './pressure.ts'
-import { evaluateRootRebase } from './root-policy.ts'
-import { currentFoldState, EF_CURRENT_STATE_KEY } from './state/projection.ts'
-import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from './renderer.ts'
-import { rationaleOnly, rationaleOutputFor } from './rationale.ts'
+import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../pressure.ts'
+import type { CapacityRegime, PressureRegime } from '../pressure.ts'
+import { evaluateRootRebase } from '../root-policy.ts'
+import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
+import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../renderer.ts'
+import { rationaleOnly, rationaleOutputFor } from '../rationale.ts'
 import {
   conversationTarget,
   resolveEfConfig,
@@ -80,29 +80,29 @@ import {
   type EfCompactSpec,
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
-} from './policy.ts'
-import { isBasicMode } from './preset.ts'
-import type { FoldModeName } from './preset.ts'
-import { resolveTargetPolicy } from './basic/config.ts'
-import { summarizeWithLlm } from './basic/summarizer.ts'
+} from '../policy.ts'
+import { isBasicMode } from '../preset.ts'
+import type { FoldModeName } from '../preset.ts'
+import { resolveTargetPolicy } from '../basic/config.ts'
+import { summarizeWithLlm } from '../basic/summarizer.ts'
 import {
   isTruncationFailure,
   summaryRetryBudget,
   summaryRetryPolicy,
   summaryRetryStats,
-} from './summary-retry.ts'
-import { retireDerivedAnswers } from './recall/subagent-recall.ts'
+} from '../summary-retry.ts'
+import { retireDerivedAnswers } from '../recall/subagent-recall.ts'
 import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
 import type { FoldTelemetry } from './fold-telemetry.ts'
-import type { ResolvedConfig, ResolvedTargetPolicy } from './basic/types.ts'
-import type { FoldCurrentState } from './state/state.ts'
+import type { ResolvedConfig, ResolvedTargetPolicy } from '../basic/types.ts'
+import type { FoldCurrentState } from '../state/state.ts'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
   FoldCommitRecordV1,
   SummarizationInput,
   SummaryResult,
-} from './types.ts'
+} from '../types.ts'
 
 // The rationale's generation cap used to live here as `RATIONALE_MAX_TOKENS`, first 400 and then
 // 8192. Both were constants, and `docs/21` section 11.5 had already established that this cost is

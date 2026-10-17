@@ -108,7 +108,7 @@ describe('checkpoint marker protocol (R0-A1, R3-A V2)', () => {
     const nodes = [...session.surface.nodes]
     await engine.compactRegion(nodes[0]!, nodes[3]!, foldAgent(session), SIGNAL)
 
-    const { locateFoldFrontier } = await import('../src/frontier.ts')
+    const { locateFoldFrontier } = await import('../src/fold/frontier.ts')
     const frontier = locateFoldFrontier(session)
     expect(frontier.frozenCount).toBe(1)
     expect(frontier.frozenPrefixContiguous).toBe(true)

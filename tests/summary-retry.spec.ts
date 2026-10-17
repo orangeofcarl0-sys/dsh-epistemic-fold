@@ -34,6 +34,7 @@ import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import { createMessage, createUserMessage } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import { createHarness, MODEL, SIGNAL } from './harness.ts'
+import { readSrcModule } from './src-module.ts'
 import type { SemanticFace } from './harness.ts'
 import {
   isTruncationFailure,
@@ -268,7 +269,7 @@ describe('where the retry must NOT live', () => {
   })
 
   it('routes the `basic` arm through the retry, so no arm is scored for a provider artefact', () => {
-    const source = readFileSync(join(ROOT, 'src', 'engine.ts'), 'utf8')
+    const source = readSrcModule('engine.ts')
     expect(source).toContain(
       'if (this.isBasic()) return await this.summarizeWithTruncationRetry(input, agent, signal)',
     )

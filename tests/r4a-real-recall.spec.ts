@@ -31,7 +31,7 @@ import { flash } from './economics-fixture.ts'
 import { NATIVE_FACT, nativeFactRefs, realRecallCommon, realRecallNative } from '../eval/workloads/real-recall.ts'
 import { createAnchorService } from '../src/state/anchor-service.ts'
 import { recall, search } from '../src/recall/recall.ts'
-import { locateFoldFrontier } from '../src/frontier.ts'
+import { locateFoldFrontier } from '../src/fold/frontier.ts'
 import { parseCheckpointMarker } from '../src/checkpoint-marker.ts'
 
 const WORKLOAD_MODEL = 'workload-model'
