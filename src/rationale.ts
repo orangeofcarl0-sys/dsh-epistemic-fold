@@ -97,26 +97,30 @@ const RATIONALE_INSTRUCTION_NO_ANCHORS = [
  * once the cap allowed it. A span/256 slope reaches 620 tokens at ~159,000 tokens of span,
  * which brackets that observation without pretending to predict it.
  *
- * The floor matters more than the slope: 1024 is above any plausible terse digest, so the model
- * is bounded by the INSTRUCTION rather than by a tripwire. The ceiling bounds worst-case cost on
- * a very large fold. Neither end discards work -- see `finishError` on why `max-tokens` now lands
- * the partial text.
+ * ## The floor is 4096, and 1024 was measured to be too small
+ *
+ * The two budgets must be far apart, not merely ordered. The instruction HINTS at "200-800
+ * tokens"; the real budget has to leave room for the model to think before it writes. At a floor
+ * of 1024 -- 1.28x the hint's upper bound -- the model spent the whole budget on reasoning and
+ * returned NO text blocks at all. Measured twice, reproducibly:
+ *
+ *   rationaleFailures 1   reason UNSUPPORTED_CONTENT   rationaleChars 0
+ *   accuracy 0.6176, then 0.5490   (against 0.9020 when the budget was 8192)
+ *
+ * `UNSUPPORTED_CONTENT` is the empty-text check, and it is the wrong failure to be able to reach:
+ * the caller asked for a digest and paid for a call that produced nothing usable. 4096 is 5x the
+ * hint's ceiling, which is the margin the measurement says is needed.
  *
  * @param foldSpanTokens - tokens of the span this fold replaces.
  * @returns the output token budget for the auxiliary call.
  */
 export function rationaleOutputFor(foldSpanTokens: number): number {
   const slope = Math.round(Math.max(0, foldSpanTokens) / 256)
-  return Math.min(8192, Math.max(1024, slope))
+  return Math.min(8192, Math.max(4096, slope))
 }
 
 export interface RationaleCallResult {
   readonly text: string
-  /**
-   * Whether the call stopped at the cap. The text is still landed -- see `finishError` --
-   * and this flag is what keeps a partial digest from being read as a complete one.
-   */
-  readonly truncated: boolean
   /** Exact auxiliary-call envelope, forwarded into `compaction/summary`. */
   readonly provider: string
   readonly model: string
@@ -193,8 +197,6 @@ export async function rationaleOnly(options: {
   for await (const chunk of ctx.llm.stream(generateOptions)) assembler.push(chunk)
   const error = finishError(assembler.finish)
   if (error !== undefined) throw error
-  const truncated = assembler.finish.kind === 'max-tokens'
-
   const rawOutput = assembler.blocks()
   const text = rawOutput
     .map(block => block.type === 'text' ? block.text : '')
@@ -205,7 +207,6 @@ export async function rationaleOnly(options: {
   }
   return {
     text,
-    truncated,
     provider: generateOptions.provider,
     model: generateOptions.model,
     maxTokens: options.maxTokens,
