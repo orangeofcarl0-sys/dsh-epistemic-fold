@@ -26,8 +26,8 @@ import {
   epistemicFoldStatusProjection,
   EF_STATUS_KEY,
   reduceStatusEvent,
-} from '../src/status-projection.ts'
-import type { FoldStatusState } from '../src/status-projection.ts'
+} from '../src/status/status-projection.ts'
+import type { FoldStatusState } from '../src/status/status-projection.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
 
 const ROOT = join(import.meta.dirname, '..')

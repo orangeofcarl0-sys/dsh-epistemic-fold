@@ -47,12 +47,12 @@
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
-import { locateFoldFrontier } from './frontier.ts'
+import { locateFoldFrontier } from '../frontier.ts'
 import { compactionFailed, requestHeaderReason, toolCallName } from './event-data.ts'
-import { costOf } from './economics-profile.ts'
-import type { ContextEconomicsProfile } from './economics-profile.ts'
-import { isTierModeName } from './preset.ts'
-import type { FoldModeName, TierModeName } from './preset.ts'
+import { costOf } from '../economics-profile.ts'
+import type { ContextEconomicsProfile } from '../economics-profile.ts'
+import { isTierModeName } from '../preset.ts'
+import type { FoldModeName, TierModeName } from '../preset.ts'
 
 /** How a figure was obtained. Printed alongside it so it is never assumed. */
 export type FigureBasis = 'measured' | 'estimated'

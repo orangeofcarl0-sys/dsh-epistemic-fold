@@ -43,7 +43,7 @@ import { describe, expect, it } from 'vitest'
 import { readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { epistemicFoldStatusProjection, reduceStatusEvent } from '../src/status-projection.ts'
+import { epistemicFoldStatusProjection, reduceStatusEvent } from '../src/status/status-projection.ts'
 
 /** Profile directory names under a DSH home, or none when it is not there. */
 function installedProfiles(home: string): string[] {

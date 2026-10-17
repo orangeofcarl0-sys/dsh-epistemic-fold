@@ -26,13 +26,13 @@ import {
   buildContextStatus,
   contextStatusToLine,
   contextStatusToText,
-} from '../src/status.ts'
+} from '../src/status/status.ts'
 import {
   CONTEXT_COMMAND_NAME,
   contextCommandDefinition,
   parseContextArgs,
   registerContextCommand,
-} from '../src/command.ts'
+} from '../src/status/command.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
 
 /** A real session with a routed header, so `routedTarget` resolves. */

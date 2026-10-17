@@ -40,7 +40,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { epistemicFoldStatusProjection } from '../src/status-projection.ts'
+import { epistemicFoldStatusProjection } from '../src/status/status-projection.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 
