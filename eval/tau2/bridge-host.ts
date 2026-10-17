@@ -1455,7 +1455,18 @@ async function modelTurn(maxTokens?: number): Promise<TauAssistant> {
   }
   if (finishReason.startsWith('error:')) {
     providerFailures += 1
+    // ## Redacted at the STORAGE point, not only upstream
+    //
+    // `lastCompactionError` has been redacted here since it was written (see the sibling line
+    // below). `lastProviderError` was not, and it started reaching every result artifact only
+    // after the memory bench's telemetry whitelist was widened from 9 keys to 22. The adapter
+    // redacts its own messages, so the value was probably clean -- but "probably clean" is not a
+    // property to rest a credential on, and the whitelist change is what made it reachable.
+    // Redacting where it is STORED means a future adapter change cannot silently undo it.
     lastProviderError = finishReason.slice('error:'.length)
+      .replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]')
+      .replace(/(authorization|api[-_]?key)["'\s:=]+[^"'\s,}]+/giu, '$1=[redacted]')
+      .slice(0, 400)
     // Close the turn that `rotateTurn` opened, so the lifecycle stays balanced.
     // An empty turn is legal; an unclosed one is not.
     if (turnHasContent) {

@@ -32,6 +32,24 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
 _EF_HEADERS="{\"x-opencode-session\":\"ef-memory-$(date +%s)-$$\"}"
 export EF_LIVE_HEADERS="${EF_LIVE_HEADERS:-$_EF_HEADERS}"
 export EF_BRIDGE_STDERR="${EF_BRIDGE_STDERR:-$EF_HOME/ef-phase7-logs/memory-bridge-stderr.log}"
+
+# ## The window knob is ONE knob, not two (fixed 2026-10-17)
+#
+# `EF_MEMORY_WINDOW` sets the calibration TARGET (run_cell.py:262) while the engine folds against
+# `EF_TAU2_WINDOW` (eval/tau2/bridge-host.ts:131, default 32,000). This script set NEITHER, so a
+# caller that exported only `EF_MEMORY_WINDOW` got a target computed for one window and an engine
+# folding against another -- and the artifact recorded only the first, so a reader could not tell.
+#
+# Measured 2026-10-17: at `EF_MEMORY_WINDOW=258048` with the engine left at its default, the
+# post-fold surface was 11,074 tokens. `retainTokens = 0.24 * W_engine` bounds it from below, so
+# 11,074 implies W_engine <= 46,142 -- the engine was NOT at 258,048. With both set, retain is
+# 61,931 and the surface settles near 65,888, which is consistent.
+#
+# Deriving one from the other is the fix the audit recommended: a caller cannot set half a knob it
+# does not know is split, and an explicit `EF_TAU2_WINDOW` still wins.
+export EF_MEMORY_WINDOW="${EF_MEMORY_WINDOW:-131072}"
+export EF_TAU2_WINDOW="${EF_TAU2_WINDOW:-$EF_MEMORY_WINDOW}"
+echo "window: EF_MEMORY_WINDOW=$EF_MEMORY_WINDOW  EF_TAU2_WINDOW=$EF_TAU2_WINDOW"
 echo "route: $EF_LIVE_BASE_URL model=$EF_LIVE_MODEL"
 
 # The proxy, discovered the same way run-lhtb.sh discovers it: a port that answers.
