@@ -13,7 +13,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
-import { efOwnedConfigKeys, resolveEfConfig } from '../src/policy.ts'
+import { efOwnedConfigKeys, resolveEfConfig } from '../src/config/policy.ts'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-baseline.ts'
 import type { BaselineResult } from '../bench/paired-baseline.ts'

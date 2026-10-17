@@ -18,7 +18,7 @@ import type { FoldBundleStore } from '../types.ts'
 import { CHECKPOINT_MARKER_EXPLANATION, normalizeCheckpointRef } from '../checkpoint/checkpoint-marker.ts'
 import { EXACT_PAGE_LIMIT, recall, recallForeign, search, searchWithDiagnosis } from './recall.ts'
 import type { RecallDepth } from './recall.ts'
-import { routedTarget } from '../policy.ts'
+import { routedTarget } from '../config/policy.ts'
 import {
   completeWithContext,
   describeCheckpoint,

@@ -32,7 +32,7 @@ import { createIdleMaintenanceHook, runPairedBaseline } from '../bench/paired-ba
 import { createHarness, SIGNAL } from './harness.ts'
 import type { Harness } from './harness.ts'
 import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } from '../src/pressure.ts'
-import { resolveEfCompactSpec } from '../src/policy.ts'
+import { resolveEfCompactSpec } from '../src/config/policy.ts'
 import { isRebaseMode } from '../src/types.ts'
 
 const WINDOW = 16_000

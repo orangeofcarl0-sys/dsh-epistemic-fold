@@ -26,8 +26,8 @@ import {
   isFoldModeName,
   presetOverrides,
   resolvePreset,
-} from '../src/preset.ts'
-import { resolveEfConfig } from '../src/policy.ts'
+} from '../src/config/preset.ts'
+import { resolveEfConfig } from '../src/config/policy.ts'
 import {
   economyDefaultEligible,
   summarizeEligibility,

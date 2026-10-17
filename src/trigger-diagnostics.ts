@@ -10,7 +10,7 @@
  * @module dsh-epistemic-fold/trigger-diagnostics
  */
 
-import type { ResolvedEpistemicFoldConfig } from './policy.ts'
+import type { ResolvedEpistemicFoldConfig } from './config/policy.ts'
 import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
 import type { TriggerBreakdown } from './trigger.ts'
 

@@ -51,8 +51,8 @@ import { locateFoldFrontier } from '../fold/frontier.ts'
 import { compactionFailed, requestHeaderReason, toolCallName } from './event-data.ts'
 import { costOf } from '../economics-profile.ts'
 import type { ContextEconomicsProfile } from '../economics-profile.ts'
-import { isTierModeName } from '../preset.ts'
-import type { FoldModeName, TierModeName } from '../preset.ts'
+import { isTierModeName } from '../config/preset.ts'
+import type { FoldModeName, TierModeName } from '../config/preset.ts'
 
 /** How a figure was obtained. Printed alongside it so it is never assumed. */
 export type FigureBasis = 'measured' | 'estimated'

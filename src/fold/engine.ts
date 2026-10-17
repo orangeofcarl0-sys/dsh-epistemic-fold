@@ -80,9 +80,9 @@ import {
   type EfCompactSpec,
   type EpistemicFoldConfig,
   type ResolvedEpistemicFoldConfig,
-} from '../policy.ts'
-import { isBasicMode } from '../preset.ts'
-import type { FoldModeName } from '../preset.ts'
+} from '../config/policy.ts'
+import { isBasicMode } from '../config/preset.ts'
+import type { FoldModeName } from '../config/preset.ts'
 import { resolveTargetPolicy } from '../basic/config.ts'
 import { summarizeWithLlm } from '../basic/summarizer.ts'
 import {

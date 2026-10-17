@@ -52,8 +52,8 @@ import type { ContextEconomicsProfile } from '../economics-profile.ts'
 import { parseCheckpointMarker } from '../checkpoint/checkpoint-marker.ts'
 import { isRebaseMode } from '../types.ts'
 import { compactionFailed, requestHeaderReason, requestHeaderRoute, toolCallName } from './event-data.ts'
-import { isTierModeName } from '../preset.ts'
-import type { FoldModeName } from '../preset.ts'
+import { isTierModeName } from '../config/preset.ts'
+import type { FoldModeName } from '../config/preset.ts'
 
 /** The EF status wire key. */
 export const EF_STATUS_KEY = 'epistemicFold.status' as const

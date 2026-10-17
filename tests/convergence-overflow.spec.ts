@@ -37,7 +37,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import { createHarness, conversation, idleAgent, SIGNAL } from './harness.ts'
 import { parseCheckpointMarker } from '../src/checkpoint/checkpoint-marker.ts'
 import { classifyCapacityRegime, pressureBreakdown } from '../src/pressure.ts'
-import { resolveEfCompactSpec, resolveEfConfig } from '../src/policy.ts'
+import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
 import type { EpistemicFoldEngine } from '../src/fold/engine.ts'
 
 /** `thresholdRatio: 0.9` + `headroomTokens: 0` makes soft == hard. See the module note. */

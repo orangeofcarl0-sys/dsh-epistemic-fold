@@ -25,7 +25,7 @@ import type { FullBillSummary } from '../eval/live/billing.ts'
 import { fullWireWorkloads, runFullWire } from '../eval/live/full-wire.ts'
 import type { FullWireRun } from '../eval/live/full-wire.ts'
 import { flash } from './economics-fixture.ts'
-import { resolvePreset } from '../src/preset.ts'
+import { resolvePreset } from '../src/config/preset.ts'
 import { LIVE_ENABLED } from './live-gate.ts'
 
 /** A real window, so the measured prefix behavior is the production one. */

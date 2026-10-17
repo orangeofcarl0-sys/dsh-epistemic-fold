@@ -41,7 +41,7 @@ import {
 import type { MeterObservation } from '../eval/src/safety-reserve.ts'
 import { buildCorpus } from '../eval/policy-replay/corpus.ts'
 import { triggerBreakdown } from '../src/trigger.ts'
-import { resolveEfConfig } from '../src/policy.ts'
+import { resolveEfConfig } from '../src/config/policy.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
 const WINDOW = Number(process.env.EF_LIVE_WINDOW ?? 131_072)

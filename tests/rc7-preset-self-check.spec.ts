@@ -25,8 +25,8 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
-import { auditPresetSubstitution } from '../src/preset-self-check.ts'
-import type { PresetSubstitutionReport } from '../src/preset-self-check.ts'
+import { auditPresetSubstitution } from '../src/config/preset-self-check.ts'
+import type { PresetSubstitutionReport } from '../src/config/preset-self-check.ts'
 
 /**
  * A minimal stand-in for `AgentPresetRegistry`.

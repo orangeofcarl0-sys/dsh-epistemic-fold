@@ -14,16 +14,16 @@
  * @module dsh-epistemic-fold/effective-config
  */
 
-import { DSH_SEAM_PROVENANCE, framingModeSupported } from './compat.ts'
-import type { DshCapabilities } from './compat.ts'
+import { DSH_SEAM_PROVENANCE, framingModeSupported } from '../compat.ts'
+import type { DshCapabilities } from '../compat.ts'
 import { FOLD_MODE_NAMES, TIERS, isFoldModeName, isTierMode, presetOverrides, tierValuesFor } from './preset.ts'
 import type { TierModeName } from './preset.ts'
 import { resolveEfConfig, DEFAULT_RETAIN_RATIO } from './policy.ts'
 import { PRESET_OWNED_KEYS } from './ef-keys.ts'
 import { DEFAULT_RATIONALE_HINT_TOKENS } from './policy.ts'
 import type { EpistemicFoldConfig } from './policy.ts'
-import { triggerBreakdown, triggerBreakdownToText } from './trigger.ts'
-import type { TriggerBreakdown } from './trigger.ts'
+import { triggerBreakdown, triggerBreakdownToText } from '../trigger.ts'
+import type { TriggerBreakdown } from '../trigger.ts'
 
 /** One resolved setting, with where it came from. */
 export interface EffectiveSetting {

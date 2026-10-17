@@ -19,8 +19,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { judgeRegime, regimeBoundaries, regimeToMarkdown } from '../eval/src/default-regime.ts'
-import { resolvePreset } from '../src/preset.ts'
-import { resolveEfConfig } from '../src/policy.ts'
+import { resolvePreset } from '../src/config/preset.ts'
+import { resolveEfConfig } from '../src/config/policy.ts'
 
 /** The routed model's real window, as the live route reports it. */
 const REAL_WINDOW = 131_072

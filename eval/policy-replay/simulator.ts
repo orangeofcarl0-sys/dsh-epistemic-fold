@@ -45,8 +45,8 @@ import {
 import type { ContextEconomicsProfile } from '../../src/economics-profile.ts'
 import { leafMarginalReclaim } from '../../src/pressure.ts'
 import { compileContextPolicy } from '../../src/policy-compiler.ts'
-import { resolveEfCompactSpec, resolveEfConfig } from '../../src/policy.ts'
-import type { EpistemicFoldConfig } from '../../src/policy.ts'
+import { resolveEfCompactSpec, resolveEfConfig } from '../../src/config/policy.ts'
+import type { EpistemicFoldConfig } from '../../src/config/policy.ts'
 import { checkpointSizeOf } from './trace.ts'
 import type { PolicyTrace } from './trace.ts'
 

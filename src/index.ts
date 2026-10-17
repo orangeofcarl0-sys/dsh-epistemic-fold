@@ -9,7 +9,7 @@
 
 export { EpistemicFoldEngine, default } from './fold/engine.ts'
 export type { EpistemicFoldOptions } from './fold/engine.ts'
-export { efOwnedConfigKeys, stripEfConfigKeys } from './policy.ts'
+export { efOwnedConfigKeys, stripEfConfigKeys } from './config/policy.ts'
 export {
   FRAMING_FALLBACK_TOKENS,
   ROOT_REBASE_COOLDOWN,
@@ -55,13 +55,13 @@ export type {
 } from './recall/recall.ts'
 export { INVENTORY_EXCERPT_CHARS, INVENTORY_LINES, inventoryEntriesOf, inventoryOf } from './checkpoint/inventory.ts'
 export type { InventoryEntry } from './checkpoint/inventory.ts'
-export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './policy.ts'
+export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './config/policy.ts'
 export type {
   EfCompactSpec,
   EpistemicFoldConfig,
   LeafAdmissionMode,
   ResolvedEpistemicFoldConfig,
-} from './policy.ts'
+} from './config/policy.ts'
 export {
   BALANCED_RETAIN_RATIO,
   FOLD_MODE_NAMES,
@@ -76,7 +76,7 @@ export {
   tierLadder,
   tierLadderToText,
   tierValuesFor,
-} from './preset.ts'
+} from './config/preset.ts'
 export type {
   FoldModeName,
   PresetOverride,
@@ -84,7 +84,7 @@ export type {
   TierEvidenceStatus,
   TierModeName,
   TierSummary,
-} from './preset.ts'
+} from './config/preset.ts'
 export {
   cacheRealizationRate,
   classifyRegime,

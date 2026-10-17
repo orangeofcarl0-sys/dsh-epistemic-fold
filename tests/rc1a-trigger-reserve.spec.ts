@@ -11,9 +11,9 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { resolveEfCompactSpec, resolveEfConfig } from '../src/policy.ts'
+import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
 import { headroomDominates, triggerBreakdown, triggerBreakdownToText } from '../src/trigger.ts'
-import { describeEffectiveConfig } from '../src/effective-config.ts'
+import { describeEffectiveConfig } from '../src/config/effective-config.ts'
 import {
   distributionOf,
   judgeReserve,

@@ -21,8 +21,8 @@
  * @module eval/src/default-regime
  */
 
-import { resolveEfCompactSpec, resolveEfConfig } from '../../src/policy.ts'
-import type { EpistemicFoldConfig } from '../../src/policy.ts'
+import { resolveEfCompactSpec, resolveEfConfig } from '../../src/config/policy.ts'
+import type { EpistemicFoldConfig } from '../../src/config/policy.ts'
 
 /** Where each mechanism's engagement threshold sits, in tokens or turns. */
 export interface RegimeBoundaries {

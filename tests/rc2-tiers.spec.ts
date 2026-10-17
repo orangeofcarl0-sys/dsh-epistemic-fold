@@ -32,9 +32,9 @@ import {
   tierLadder,
   tierLadderToText,
   tierValuesFor,
-} from '../src/preset.ts'
-import { resolveEfConfig, resolveEfCompactSpec } from '../src/policy.ts'
-import { describeEffectiveConfig, effectiveConfigToText } from '../src/effective-config.ts'
+} from '../src/config/preset.ts'
+import { resolveEfConfig, resolveEfCompactSpec } from '../src/config/policy.ts'
+import { describeEffectiveConfig, effectiveConfigToText } from '../src/config/effective-config.ts'
 import { BUILTIN_ECONOMICS_PROFILES } from '../src/economics-profile.ts'
 
 describe('RC2: the ladder is three tiers, and only three', () => {

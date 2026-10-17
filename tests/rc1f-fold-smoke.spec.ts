@@ -43,8 +43,8 @@ import { anchorSourceSeqs } from './anchor-fixture.ts'
 import { resolveLiveRoute } from '../eval/live/zcode-config.ts'
 import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
-import { resolveEfCompactSpec, resolveEfConfig } from '../src/policy.ts'
-import { resolvePreset } from '../src/preset.ts'
+import { resolveEfCompactSpec, resolveEfConfig } from '../src/config/policy.ts'
+import { resolvePreset } from '../src/config/preset.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER, MODEL_OPTIONS } from './live-gate.ts'
 
 /** The real routed window, so the trigger arithmetic is the production one. */

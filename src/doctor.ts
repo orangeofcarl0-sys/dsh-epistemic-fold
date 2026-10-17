@@ -36,7 +36,7 @@
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { auditPresetSubstitution } from './preset-self-check.ts'
+import { auditPresetSubstitution } from './config/preset-self-check.ts'
 
 /** Cordis plugin name; the loader uses it in diagnostics. */
 export const name = 'epistemic-fold-doctor'

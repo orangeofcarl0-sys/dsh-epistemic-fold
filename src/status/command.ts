@@ -30,10 +30,10 @@ import type { CommandDefinition } from '@deepseek-ai/dsh-commands'
 import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { buildContextStatus, contextStatusToLine, contextStatusToText } from './status.ts'
 import type { ContextStatus } from './status.ts'
-import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from '../policy.ts'
+import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from '../config/policy.ts'
 import { BUILTIN_ECONOMICS_PROFILES, selectProfile } from '../economics-profile.ts'
-import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from '../preset.ts'
-import type { FoldModeName } from '../preset.ts'
+import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from '../config/preset.ts'
+import type { FoldModeName } from '../config/preset.ts'
 import type { FoldBundleStore } from '../types.ts'
 
 /** The command name, without the leading slash. */

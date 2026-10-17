@@ -42,7 +42,7 @@ import { OpenAiCompatibleAdapter } from '../eval/live/openai-adapter.ts'
 import { BillingRecorder } from '../eval/live/recorder.ts'
 import { summarizeFullBill } from '../eval/live/billing.ts'
 import { flash } from './economics-fixture.ts'
-import { resolvePreset } from '../src/preset.ts'
+import { resolvePreset } from '../src/config/preset.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
 

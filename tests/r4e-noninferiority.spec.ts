@@ -94,7 +94,7 @@ describe('R4-E: the four scenario families are distinct and machine-checked', ()
   })
 
   it('the economy arm IS the R4-F preset, so the tested thing is the shipped thing', async () => {
-    const { resolvePreset } = await import('../src/preset.ts')
+    const { resolvePreset } = await import('../src/config/preset.ts')
     const economy = SCENARIO_ARMS.find(arm => arm.id === 'E4-economy')!
     const preset = resolvePreset('economy')
     // Every key the preset owns must match the arm's config; the arm may add
