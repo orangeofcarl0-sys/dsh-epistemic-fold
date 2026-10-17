@@ -19,16 +19,16 @@ export {
 } from './fold-economics.ts'
 export type { LeafAdmissionVerdict } from './fold-economics.ts'
 export { createFoldCandidate, FoldCandidateRegistry } from './fold/candidate.ts'
-export { FileBundleStore } from './bundle-store.ts'
+export { FileBundleStore } from './checkpoint/bundle-store.ts'
 export {
   buildBundle,
   frameCheckpoint,
   renderFallbackCheckpoint,
   renderSemanticCheckpoint,
   splitSummarizationInput,
-} from './compiler.ts'
-export type { SplitSummarizationInput } from './compiler.ts'
-export { canonicalHash, canonicalJson, sha256Hex } from './hash.ts'
+} from './checkpoint/compiler.ts'
+export type { SplitSummarizationInput } from './checkpoint/compiler.ts'
+export { canonicalHash, canonicalJson, sha256Hex } from './checkpoint/hash.ts'
 export {
   compareCheckpointRecencyDescending,
   recall,
@@ -53,8 +53,8 @@ export type {
   SearchOutcome,
   SourceRange,
 } from './recall/recall.ts'
-export { INVENTORY_EXCERPT_CHARS, INVENTORY_LINES, inventoryEntriesOf, inventoryOf } from './inventory.ts'
-export type { InventoryEntry } from './inventory.ts'
+export { INVENTORY_EXCERPT_CHARS, INVENTORY_LINES, inventoryEntriesOf, inventoryOf } from './checkpoint/inventory.ts'
+export type { InventoryEntry } from './checkpoint/inventory.ts'
 export { resolveEfConfig, resolveEfCompactSpec, DEFAULT_RETAIN_RATIO } from './policy.ts'
 export type {
   EfCompactSpec,
@@ -162,9 +162,9 @@ export {
   normalizeCheckpointRef,
   displayCheckpointRef,
   hasCheckpointMarker,
-} from './checkpoint-marker.ts'
-export type { EfCheckpointMarker } from './checkpoint-marker.ts'
-export { renderStructuredCheckpoint } from './renderer.ts'
+} from './checkpoint/checkpoint-marker.ts'
+export type { EfCheckpointMarker } from './checkpoint/checkpoint-marker.ts'
+export { renderStructuredCheckpoint } from './checkpoint/renderer.ts'
 export type {
   BundleDescriptor,
   BundleVerification,

@@ -42,7 +42,7 @@ import {
   summaryRetryBudget,
   summaryRetryPolicy,
   summaryRetryStats,
-} from '../src/summary-retry.ts'
+} from '../src/checkpoint/summary-retry.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 

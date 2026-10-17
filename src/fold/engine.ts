@@ -39,16 +39,16 @@ import {
   renderFallbackCheckpoint,
   renderSemanticCheckpoint,
   splitSummarizationInput,
-} from '../compiler.ts'
-import { FileBundleStore } from '../bundle-store.ts'
+} from '../checkpoint/compiler.ts'
+import { FileBundleStore } from '../checkpoint/bundle-store.ts'
 import { compactSurfaceRegion, selectCompactableRange } from '../basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
 import { selectLeafSpan } from './leaf-policy.ts'
 import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
 import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
 import { assertDshCompatibility } from '../compat.ts'
-import { foldFrameCheckpoint, framingModeFor } from '../framing.ts'
-import type { FramingMode } from '../framing.ts'
+import { foldFrameCheckpoint, framingModeFor } from '../checkpoint/framing.ts'
+import type { FramingMode } from '../checkpoint/framing.ts'
 import type { TriggerBreakdown } from '../trigger.ts'
 import { TriggerDiagnostics } from '../trigger-diagnostics.ts'
 import {
@@ -68,8 +68,8 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from '../pressure.ts'
 import { evaluateRootRebase } from '../root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
-import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../renderer.ts'
-import { rationaleOnly, rationaleOutputFor } from '../rationale.ts'
+import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import { rationaleOnly, rationaleOutputFor } from '../checkpoint/rationale.ts'
 import {
   conversationTarget,
   resolveEfConfig,
@@ -90,7 +90,7 @@ import {
   summaryRetryBudget,
   summaryRetryPolicy,
   summaryRetryStats,
-} from '../summary-retry.ts'
+} from '../checkpoint/summary-retry.ts'
 import { retireDerivedAnswers } from '../recall/subagent-recall.ts'
 import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
 import type { FoldTelemetry } from './fold-telemetry.ts'

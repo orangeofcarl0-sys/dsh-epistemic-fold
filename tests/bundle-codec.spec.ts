@@ -30,9 +30,9 @@ import {
   decodeBundleFile,
   encodeBundleFile,
   isBundleEnvelope,
-} from '../src/bundle-codec.ts'
-import { FileBundleStore } from '../src/bundle-store.ts'
-import { canonicalHash, canonicalJson } from '../src/hash.ts'
+} from '../src/checkpoint/bundle-codec.ts'
+import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
+import { canonicalHash, canonicalJson } from '../src/checkpoint/hash.ts'
 import type { CheckpointBundleV1 } from '../src/types.ts'
 
 const SESSION = SessionId('session-codec')

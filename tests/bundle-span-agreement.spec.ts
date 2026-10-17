@@ -49,7 +49,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Session } from '@deepseek-ai/dsh-session'
 import { createHarness, conversation, idleAgent, SIGNAL } from './harness.ts'
-import { resolveArchiveRefs, sessionEventSource } from '../src/archive-refs.ts'
+import { resolveArchiveRefs, sessionEventSource } from '../src/checkpoint/archive-refs.ts'
 
 /** Fold once with the automatic pressure path and return the session. */
 async function foldOnce(

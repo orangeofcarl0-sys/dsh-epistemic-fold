@@ -34,7 +34,7 @@
  * @module dsh-epistemic-fold/checkpoint-marker
  */
 
-import type { FoldMode } from './types.ts'
+import type { FoldMode } from '../types.ts'
 
 /** The durable checkpoint identity carried by one surface marker. */
 export interface EfCheckpointMarker {

@@ -41,7 +41,7 @@
 
 import { constants as zlibConstants, zstdCompressSync, zstdDecompressSync } from 'node:zlib'
 import { canonicalJson } from './hash.ts'
-import type { CheckpointBundleV1 } from './types.ts'
+import type { CheckpointBundleV1 } from '../types.ts'
 
 /** Marker on the envelope. Distinct from the bundle's own `format` field. */
 export const BUNDLE_FILE_FORMAT = 'ef-bundle-file'

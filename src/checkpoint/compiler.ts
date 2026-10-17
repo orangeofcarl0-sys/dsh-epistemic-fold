@@ -12,7 +12,7 @@ import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionSeq } from '@deepseek-ai/dsh-session'
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
-import type { ArchiveRef, CheckpointBundleV1, FoldCandidate } from './types.ts'
+import type { ArchiveRef, CheckpointBundleV1, FoldCandidate } from '../types.ts'
 
 export interface SplitSummarizationInput {
   /** Leading `system` message retained ahead of the checkpoint, if present. */

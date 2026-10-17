@@ -4,7 +4,7 @@
  * @module tests/stores
  */
 
-import { FileBundleStore } from '../src/bundle-store.ts'
+import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
 import { makeTemp } from '../eval/tmp.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 

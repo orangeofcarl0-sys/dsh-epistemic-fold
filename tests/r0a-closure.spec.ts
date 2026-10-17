@@ -15,7 +15,7 @@ import {
   normalizeCheckpointRef,
   parseCheckpointMarker,
   encodeCheckpointMarker,
-} from '../src/checkpoint-marker.ts'
+} from '../src/checkpoint/checkpoint-marker.ts'
 import {
   conversation,
   createHarness,
@@ -27,7 +27,7 @@ import {
   toolConversation,
   type Session,
 } from './harness.ts'
-import { projectForCheckpoint } from '../src/renderer.ts'
+import { projectForCheckpoint } from '../src/checkpoint/renderer.ts'
 import { emptyCurrentState } from '../src/state/state.ts'
 import type { Anchor } from '../src/state/state.ts'
 

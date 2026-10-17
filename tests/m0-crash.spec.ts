@@ -17,7 +17,7 @@ import {
   surfaceMessages,
 } from './harness.ts'
 import { recall } from '../src/recall/recall.ts'
-import { canonicalHash } from '../src/hash.ts'
+import { canonicalHash } from '../src/checkpoint/hash.ts'
 import { failingStore, flakyStore } from './stores.ts'
 
 function summaryText(blocks: readonly ContentBlock[]): string {

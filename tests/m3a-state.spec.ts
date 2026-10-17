@@ -14,7 +14,7 @@ import {
 } from '../src/state/state.ts'
 import type { Anchor, EventRef, StateKey } from '../src/state/state.ts'
 import { registerEpistemicFoldProjection, currentFoldState } from '../src/state/projection.ts'
-import { projectForCheckpoint, renderStructuredCheckpoint } from '../src/renderer.ts'
+import { projectForCheckpoint, renderStructuredCheckpoint } from '../src/checkpoint/renderer.ts'
 import {
   conversation,
   createHarness,

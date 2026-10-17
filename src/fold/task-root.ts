@@ -26,7 +26,7 @@
 import type { Message } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import type { Session, SessionId } from '@deepseek-ai/dsh-session'
-import { canonicalHash } from '../hash.ts'
+import { canonicalHash } from '../checkpoint/hash.ts'
 
 /**
  * A host's declaration of which session event carries the current task contract.

@@ -23,7 +23,7 @@ import { describe, expect, it } from 'vitest'
 import { createMessage, createToolResultMessage, createUserMessage, ToolCallId } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import { createHarness, foldAgent, SIGNAL } from './harness.ts'
-import { encodeCheckpointMarker } from '../src/checkpoint-marker.ts'
+import { encodeCheckpointMarker } from '../src/checkpoint/checkpoint-marker.ts'
 import {
   DETAIL_INVENTORY_LINES,
   DETAIL_PAGE_CHARS,

@@ -39,7 +39,7 @@ import type { Message } from '@deepseek-ai/dsh-llm'
 import { deriveEventMessage } from '@deepseek-ai/dsh-session'
 import type { Session, SessionEvent, SessionId } from '@deepseek-ai/dsh-session'
 import { canonicalHash } from './hash.ts'
-import type { ArchiveRef } from './types.ts'
+import type { ArchiveRef } from '../types.ts'
 
 /** Why one ref could not be resolved to the message it named. */
 export type RefFailure =

@@ -33,7 +33,7 @@ import type { Message } from '@deepseek-ai/dsh-llm'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { SessionId as SessionIdType } from '@deepseek-ai/dsh-session'
 import { createHarness, SIGNAL } from './harness.ts'
-import { canonicalHash } from '../src/hash.ts'
+import { canonicalHash } from '../src/checkpoint/hash.ts'
 import {
   compareCheckpointRecencyDescending,
   recall,

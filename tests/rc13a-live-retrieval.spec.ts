@@ -41,7 +41,7 @@ import { BillingRecorder } from '../eval/live/recorder.ts'
 import { summarizeFullBill } from '../eval/live/billing.ts'
 import { flash } from './economics-fixture.ts'
 import { resolvePreset } from '../src/preset.ts'
-import { FOLD_FRAMING_SECTION } from '../src/framing.ts'
+import { FOLD_FRAMING_SECTION } from '../src/checkpoint/framing.ts'
 import { LIVE_ENABLED, LIVE_PROVIDER } from './live-gate.ts'
 
 

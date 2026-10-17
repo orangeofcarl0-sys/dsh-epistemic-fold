@@ -15,7 +15,7 @@
 import { describe, expect, it } from 'vitest'
 import { createHarness } from './harness.ts'
 import type { Session as SessionType } from '@deepseek-ai/dsh-session'
-import { FOLD_FRAMING_SECTION } from '../src/framing.ts'
+import { FOLD_FRAMING_SECTION } from '../src/checkpoint/framing.ts'
 import {
   checkEfCacheContract,
   checkLeafMutatesLate,
@@ -25,7 +25,7 @@ import {
   sharedPrefixLength,
 } from '../eval/src/cache-contract.ts'
 import type { RequestShape } from '../eval/src/cache-contract.ts'
-import { sha256Hex } from '../src/hash.ts'
+import { sha256Hex } from '../src/checkpoint/hash.ts'
 import { allWorkloads, WORKLOAD_MODEL } from '../eval/workloads/index.ts'
 import { runPairedBaseline } from '../bench/paired-baseline.ts'
 import { createIdleMaintenanceHook } from '../bench/paired-baseline.ts'

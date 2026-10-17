@@ -19,7 +19,7 @@ import type {
   CheckpointBundleV1,
   FoldBundleStore,
   FoldCommitRecordV1,
-} from './types.ts'
+} from '../types.ts'
 
 /** File permission bits for bundle files and their per-session directories. */
 const BUNDLE_FILE_MODE = 0o600

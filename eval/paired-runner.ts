@@ -32,7 +32,7 @@ import { registerEpistemicFoldProjection, currentFoldState } from '../src/state/
 import { recall } from '../src/recall/recall.ts'
 import { emptyCurrentState } from '../src/state/state.ts'
 import type { FoldCurrentState } from '../src/state/state.ts'
-import { FileBundleStore } from '../src/bundle-store.ts'
+import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
 import { makeTemp, releaseTemp } from './tmp.ts'
 import { mountRuntime } from './src/runtime-mount.ts'
 import { evaluateOracles, type VerifierWorld } from './src/verifier.ts'

@@ -39,7 +39,7 @@
 import type { Session } from '@deepseek-ai/dsh-session'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import { sha256Hex } from '../src/hash.ts'
+import { sha256Hex } from '../src/checkpoint/hash.ts'
 import {
   frozenSummary as summarizeFrozen,
   invalidatedSuffixTokens as istMetric,

@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
-import { canonicalHash } from '../src/hash.ts'
+import { canonicalHash } from '../src/checkpoint/hash.ts'
 import { recall, search } from '../src/recall/recall.ts'
 import { failingStore } from './stores.ts'
 import {
@@ -185,7 +185,7 @@ describe('B. bundle/archive tests', () => {
       archive: { ...stored!.archive, shadowedMessages: [{ role: 'user', content: [], source: { kind: 'user' } } as unknown as Message] },
     }
     await store.remove(session.id, checkpointId)
-    const { FileBundleStore: Fresh } = await import('../src/bundle-store.ts')
+    const { FileBundleStore: Fresh } = await import('../src/checkpoint/bundle-store.ts')
     const rewritten = new Fresh(store === undefined ? '' : (store as unknown as { root: string }).root)
     await rewritten.write(tampered)
 
@@ -268,7 +268,7 @@ describe('D. lifecycle tests', () => {
     const checkpointId = extractCheckpointId(summaryText(lastCompactionSummary(session)!.summary as ContentBlock[]))!
 
     // "Restart": a brand-new store over the same directory + a restored session object.
-    const { FileBundleStore: Reopened } = await import('../src/bundle-store.ts')
+    const { FileBundleStore: Reopened } = await import('../src/checkpoint/bundle-store.ts')
     const reopened = new Reopened(root)
     const restoredSession = conversation(4) // shape-compatible surface for derive
     void restoredSession

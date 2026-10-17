@@ -21,7 +21,7 @@ import { createHarness, SIGNAL } from './harness.ts'
 import { priceArm } from '../eval/src/dominance.ts'
 import { parseEconomicsProfile } from '../src/economics-profile.ts'
 import { flash } from './economics-fixture.ts'
-import { parseCheckpointMarker } from '../src/checkpoint-marker.ts'
+import { parseCheckpointMarker } from '../src/checkpoint/checkpoint-marker.ts'
 
 const REALIZATION_RATE = 0.91
 const STEPS = 64

@@ -9,11 +9,11 @@
 
 import type { Message } from '@deepseek-ai/dsh-llm'
 import type { SessionId } from '@deepseek-ai/dsh-session'
-import { describeRefFailure, resolveArchiveRefs, resolveArchiveRefsFromLog } from '../archive-refs.ts'
-import type { EventSource, LogReader, ResolveResult } from '../archive-refs.ts'
-import { normalizeCheckpointRef, parseCheckpointMarker } from '../checkpoint-marker.ts'
-import { isFallbackCheckpointLine } from '../compiler.ts'
-import { INVENTORY_EXCERPT_CHARS, inventoryEntriesOf, inventoryOf } from '../inventory.ts'
+import { describeRefFailure, resolveArchiveRefs, resolveArchiveRefsFromLog } from '../checkpoint/archive-refs.ts'
+import type { EventSource, LogReader, ResolveResult } from '../checkpoint/archive-refs.ts'
+import { normalizeCheckpointRef, parseCheckpointMarker } from '../checkpoint/checkpoint-marker.ts'
+import { isFallbackCheckpointLine } from '../checkpoint/compiler.ts'
+import { INVENTORY_EXCERPT_CHARS, inventoryEntriesOf, inventoryOf } from '../checkpoint/inventory.ts'
 import type { BundleVerification, CheckpointBundleV1, FoldBundleStore, RecallPage } from '../types.ts'
 
 /** Maximum messages one exact page may return. */

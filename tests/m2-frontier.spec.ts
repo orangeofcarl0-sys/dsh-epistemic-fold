@@ -10,9 +10,9 @@ import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import {
   canonicalHash,
   sha256Hex,
-} from '../src/hash.ts'
+} from '../src/checkpoint/hash.ts'
 import { locateFoldFrontier, readEfCheckpoint } from '../src/fold/frontier.ts'
-import { canonicalJson } from '../src/hash.ts'
+import { canonicalJson } from '../src/checkpoint/hash.ts'
 import { frozenCheckpointLoad, selectLeafSpan } from '../src/fold/leaf-policy.ts'
 import { evaluateRootRebase } from '../src/root-policy.ts'
 import {

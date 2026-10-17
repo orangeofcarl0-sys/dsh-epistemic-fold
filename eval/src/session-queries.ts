@@ -11,7 +11,7 @@ import {
   toolPairingBalancedBefore,
 } from '@deepseek-ai/dsh-compaction'
 import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
-import { parseCheckpointMarker } from '../../src/checkpoint-marker.ts'
+import { parseCheckpointMarker } from '../../src/checkpoint/checkpoint-marker.ts'
 
 /** Seq of the LAST event matching `type` (and optional predicate), else 0. */
 export function findLastEventSeq(

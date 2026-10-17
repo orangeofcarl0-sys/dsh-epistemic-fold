@@ -25,9 +25,9 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { canonicalHash } from '../src/hash.ts'
+import { canonicalHash } from '../src/checkpoint/hash.ts'
 import { currentFoldState } from '../src/state/projection.ts'
-import { describeRenderedState } from '../src/renderer.ts'
+import { describeRenderedState } from '../src/checkpoint/renderer.ts'
 import { createHarness, foldAgent, SIGNAL, toolConversation } from './harness.ts'
 import type { Harness } from './harness.ts'
 import type { CheckpointBundleV1 } from '../src/types.ts'

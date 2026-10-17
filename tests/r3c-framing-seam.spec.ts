@@ -27,7 +27,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
 import { conversation, createHarness, foldAgent, SIGNAL } from './harness.ts'
 import { EpistemicFoldEngine } from '../src/fold/engine.ts'
-import { foldFrameCheckpoint } from '../src/framing.ts'
+import { foldFrameCheckpoint } from '../src/checkpoint/framing.ts'
 
 /** The exact preamble Basic's `frameSummary` emits. Pinned, not imported. */
 const BASIC_PREAMBLE =

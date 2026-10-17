@@ -20,7 +20,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { DSH_SEAM_PROVENANCE, REQUIRED_DSH_RANGE, assertDshCompatibility } from '../src/compat.ts'
-import { framingModeFor } from '../src/framing.ts'
+import { framingModeFor } from '../src/checkpoint/framing.ts'
 import { describeEffectiveConfig, effectiveConfigToText } from '../src/effective-config.ts'
 import { resolveEfConfig } from '../src/policy.ts'
 import { resolvePreset } from '../src/preset.ts'

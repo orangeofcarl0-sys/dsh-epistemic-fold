@@ -23,7 +23,7 @@ import { Session, SessionId } from '@deepseek-ai/dsh-session'
 export type { Session }
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
-import { FileBundleStore } from '../src/bundle-store.ts'
+import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
 import { CommandRuntime } from '@deepseek-ai/dsh-commands'
 import { EpistemicFoldEngine } from '../src/fold/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'

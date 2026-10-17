@@ -22,7 +22,7 @@ import type { Message } from '@deepseek-ai/dsh-llm'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { TokenMeasurement } from '@deepseek-ai/dsh-token-meter'
 import { estimateToolsTokens } from '@deepseek-ai/dsh-token-meter/estimate'
-import { parseCheckpointMarker } from '../../src/checkpoint-marker.ts'
+import { parseCheckpointMarker } from '../../src/checkpoint/checkpoint-marker.ts'
 
 /** The closed attribution vocabulary (docs/11 §5). */
 export type TokenBucket =

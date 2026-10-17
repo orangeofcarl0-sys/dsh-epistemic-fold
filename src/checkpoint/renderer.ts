@@ -10,8 +10,8 @@
 
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
-import { stateKeyText } from './state/state.ts'
-import type { Anchor, FoldCurrentState } from './state/state.ts'
+import { stateKeyText } from '../state/state.ts'
+import type { Anchor, FoldCurrentState } from '../state/state.ts'
 
 /**
  * One state line: `- [<kind> <id> <stateKey>] <value> (<authority>)`.
