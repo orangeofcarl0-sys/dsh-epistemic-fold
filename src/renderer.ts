@@ -65,6 +65,19 @@ export interface CheckpointPresentation {
   readonly open: Anchor[]
 }
 
+/**
+ * How many anchors the machine sections will carry, without rendering them.
+ *
+ * The rationale's instruction depends on this: with anchors it cites them by id, and with
+ * none it is the sole carrier of the facts. Counted through `projectForCheckpoint` so the
+ * number cannot disagree with what actually renders.
+ */
+export function machineAnchorCount(state: FoldCurrentState | undefined): number {
+  if (state === undefined) return 0
+  const p = projectForCheckpoint(state)
+  return p.current.length + p.evidence.length + p.open.length
+}
+
 export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresentation {
   const seen = new Set<string>()
   const current: Anchor[] = []

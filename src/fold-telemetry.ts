@@ -77,7 +77,29 @@ export interface FoldTelemetry {
    * dropped it, and the archive cannot be asked after the fact.
    */
   derivedAnswersRetired: number
-
+  /**
+   * Rationale auxiliary calls ATTEMPTED, and how many of them FAILED.
+   *
+   * ## Why this counter exists
+   *
+   * Measured 2026-10-18: a `quality` cell (`semanticMode: 'rationale'`) folded 100 documents
+   * into a checkpoint whose ENTIRE text was the 47-character marker line `[EF1 L cp:...]` --
+   * no anchors AND no rationale. `billedCalls` was one higher than the `economy` cell, so the
+   * call HAPPENED; nothing recorded that it then failed, so `quality` and `none` were
+   * indistinguishable in the artifact.
+   *
+   * The failure is fail-closed by design: `finishError` maps `max-tokens` to an error and
+   * `rationaleOnly` throws, so a rationale that reaches the cap is DISCARDED rather than
+   * truncated. `RATIONALE_MAX_TOKENS` is 400 and `RATIONALE_INSTRUCTION` asks for
+   * "100-400 tokens", so a model that writes the top of its requested range loses the whole
+   * rationale. These two counters are what make that visible.
+   */
+  rationaleAttempts: number
+  rationaleFailures: number
+  /** The most recent rationale failure reason, or `undefined` before any fails. */
+  rationaleFailureReason: string | undefined
+  /** Character length of the most recent LANDED rationale; 0 when none landed. */
+  rationaleChars: number
   // ---------------------------------------------------------------- last observed
   /** Pressure threshold resolved by the most recent `compactIfNeeded` (R2-A telemetry). */
   thresholdTokens: number
@@ -145,7 +167,10 @@ export function createFoldTelemetry(): FoldTelemetry {
     emergencyRebases: 0,
     bundleWrites: 0,
     derivedAnswersRetired: 0,
-    thresholdTokens: 0,
+    rationaleAttempts: 0,
+    rationaleFailures: 0,
+    rationaleFailureReason: undefined,
+    rationaleChars: 0,    thresholdTokens: 0,
     compactSpec: undefined,
     leafAdmission: undefined,
     rebaseDecision: undefined,

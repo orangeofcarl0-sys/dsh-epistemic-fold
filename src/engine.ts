@@ -68,7 +68,7 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
-import { describeRenderedState, renderStructuredCheckpoint } from './renderer.ts'
+import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from './renderer.ts'
 import { rationaleOnly } from './rationale.ts'
 import {
   conversationTarget,
@@ -104,8 +104,48 @@ import type {
   SummaryResult,
 } from './types.ts'
 
-/** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
-const RATIONALE_MAX_TOKENS = 400
+/**
+ * Generation cap for the rationale-only auxiliary call.
+ *
+ * ## Why this is NOT 400, and why 400 was a trap
+ *
+ * `RATIONALE_INSTRUCTION` asks the model for "100-400 tokens of terse engineering prose".
+ * The cap used to be exactly 400, so a model that wrote the top of the range it was ASKED for
+ * finished with `max-tokens`. `finishError` maps that to an error, `rationaleOnly` throws, and
+ * the engine's catch sets `semanticText = undefined` -- so the ENTIRE rationale was discarded
+ * rather than truncated, and the checkpoint fell back to the bare marker line.
+ *
+ * Measured 2026-10-18 (`quality`, 252K, arm A, logical), with the new rationale counters:
+ *
+ *   rationaleAttempts 1   rationaleFailures 1   rationaleFailureReason MAX_TOKENS
+ *   rationaleChars 0      checkpoint text = "[EF1 L cp:...]" (47 chars)   accuracy 0.5961
+ *
+ * Following the instruction and succeeding were mutually exclusive. A cap must sit ABOVE the
+ * range a prompt requests; equality makes the top of the requested range unachievable. 1024
+ * leaves room for the model to overshoot slightly without losing everything.
+ */
+/**
+ * Generation cap for the rationale-only auxiliary call.
+ *
+ * ## Two measured failures, and why the number is now generous rather than tuned
+ *
+ * The cap was 400 while the instruction asked for "100-400 tokens", so a model writing the top
+ * of its requested range finished `max-tokens`; `finishError` turns that into a throw and the
+ * WHOLE rationale was discarded. Measured: rationaleFailures 1, reason MAX_TOKENS,
+ * rationaleChars 0, checkpoint text 47 characters, accuracy 0.5961.
+ *
+ * Raising it to 1024 fixed that case (rationaleChars 1432, accuracy 0.6765) but not the
+ * no-anchor case, where the instruction asks the rationale to preserve the operative facts of
+ * the span: against 100 folded documents that task needs more than 1024 tokens, and the model
+ * overshot again. Measured: reason MAX_TOKENS, rationaleChars 0, accuracy 0.6471.
+ *
+ * The lesson is that a FIXED cap cannot bound a task whose size grows with the folded span.
+ * This value is therefore set well above any plausible terse rationale (a 1,043,005-token fold
+ * produced a 1,432-character one) so that the model is bounded by the INSTRUCTION, not by a
+ * tripwire that discards its work. The instruction still asks for a bounded length; this is
+ * the backstop, and a backstop that fires is a lost rationale, not a truncated one.
+ */
+const RATIONALE_MAX_TOKENS = 8192
 
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
@@ -358,6 +398,32 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    */
   get derivedAnswersRetired(): number {
     return this.telemetry.derivedAnswersRetired
+  }
+
+  /**
+   * Rationale auxiliary calls attempted, and how many failed.
+   *
+   * Exposed because a FAILED rationale leaves a checkpoint byte-identical to
+   * `semanticMode: 'none'` -- marker line and nothing else -- so without these the artifact
+   * cannot tell "quality ran and discarded its rationale" from "quality never called out".
+   */
+  get rationaleAttempts(): number {
+    return this.telemetry.rationaleAttempts
+  }
+
+  /** Rationale calls that threw; the difference from `rationaleAttempts` landed a rationale. */
+  get rationaleFailures(): number {
+    return this.telemetry.rationaleFailures
+  }
+
+  /** Most recent rationale failure reason (`MAX_TOKENS`, `UNSUPPORTED_CONTENT`, ...). */
+  get rationaleFailureReason(): string | undefined {
+    return this.telemetry.rationaleFailureReason
+  }
+
+  /** Character length of the most recent LANDED rationale; 0 when none landed. */
+  get rationaleChars(): number {
+    return this.telemetry.rationaleChars
   }
 
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
@@ -1812,16 +1878,24 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
     if (mountedState !== undefined) {
       if (this.efConfig.semanticMode === 'rationale') {
+        this.telemetry.rationaleAttempts += 1
+        // The anchor count decides WHICH instruction the rationale gets: with anchors it
+        // cites them by id; with none it is the only carrier and must preserve the facts.
+        // Measured: anchors 0 made the old instruction forbid the only content that could
+        // exist, leaving a 47-character marker. See rationaleInstruction().
+        const anchorCount = machineAnchorCount(mountedState)
         try {
           const rationale = await rationaleOnly({
             ctx: this.ctx,
             target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
             maxTokens: RATIONALE_MAX_TOKENS,
+            anchorCount,
             input: summarizationInput,
             agent,
             signal,
           })
           semanticText = rationale.text
+          this.telemetry.rationaleChars = rationale.text.length
           semanticMeta = {
             summary: [{ type: 'text', text: rationale.text }],
             provider: rationale.provider,
@@ -1833,6 +1907,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           }
         } catch (error: unknown) {
           if (signal?.aborted === true) throw error
+          // Recorded rather than only swallowed: a discarded rationale leaves a checkpoint
+          // identical to `semanticMode: 'none'`, and before this counter existed the artifact
+          // could not tell the two apart. See `rationaleAttempts` in fold-telemetry.ts.
+          this.telemetry.rationaleFailures += 1
+          this.telemetry.rationaleFailureReason = error instanceof Error
+            ? (error as Error & { code?: string }).code ?? error.message
+            : String(error)
           semanticText = undefined
         }
       }

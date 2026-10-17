@@ -463,6 +463,10 @@ interface Telemetry {
    * and without these counters they read identically after the run.
    */
   readonly summarizationAttempts: number
+  readonly rationaleAttempts: number
+  readonly rationaleFailures: number
+  readonly rationaleFailureReason: string | null
+  readonly rationaleChars: number
   readonly summarizationRetries: number
   readonly summarizationRetryExhausted: number
   /**
@@ -1951,7 +1955,17 @@ async function telemetry(): Promise<Telemetry> {
     summarizationAttempts: summaryRetryStats.attempts,
     summarizationRetries: summaryRetryStats.retries,
     summarizationRetryExhausted: summaryRetryStats.exhausted,
-    providerFailures,
+    // ## The rationale's own outcome, which nothing recorded before
+    //
+    // Measured 2026-10-18: a `quality` cell produced a checkpoint whose whole text was the
+    // 47-character marker `[EF1 L cp:...]` -- no anchors, no rationale -- while `billedCalls`
+    // showed its auxiliary call HAD been made. `summarizationAttempts` stayed 0 because it
+    // counts Basic's summarizer, not EF's rationale. So `quality` and `none` were
+    // indistinguishable in every artifact we hold.
+    rationaleAttempts: engine!.rationaleAttempts,
+    rationaleFailures: engine!.rationaleFailures,
+    rationaleFailureReason: engine!.rationaleFailureReason ?? null,
+    rationaleChars: engine!.rationaleChars,    providerFailures,
     lastProviderError,
     timing: {
       calls: timing.calls,

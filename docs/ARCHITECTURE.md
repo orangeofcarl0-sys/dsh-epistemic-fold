@@ -41,6 +41,11 @@ EF is built around these rules:
 1. **Truth is not rewritten by compaction.**
 2. **Lossy surface reduction happens only after durable provenance exists.**
 3. **Narrative summaries are not authoritative state.**
+   A checkpoint's digest is a MANIFEST of what it holds -- enough for the model to judge
+   whether to recall, never a substitute for the bundle. The two halves of this rule are
+   both load-bearing: a digest that OVERRODE the bundle would break recoverability, and a
+   checkpoint that carried NOTHING would break it too, because a model that cannot tell what
+   it is missing cannot decide to ask for it. See [132](132_CHECKPOINT_MANIFEST.md).
 4. **Unresolved constraints / failures / obligations must not disappear silently.**
 5. **Normal folding advances a monotonic Fold Frontier.**
 6. **Frozen-surface changes use the same compaction transaction path.**
