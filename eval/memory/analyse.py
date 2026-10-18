@@ -424,7 +424,7 @@ def main() -> None:
         raise SystemExit(1)
     out = analyse(cells)
     out["falsifiers"] = evaluate_falsifiers(out)
-    (HERE / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+    (HERE / "analysis.json").write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
     print(f"cells: {out['n_cells']}   scored probes: {out['n_scored_probes']}")
     for arm, types in out["retention_by_type"].items():
         for t, v in types.items():

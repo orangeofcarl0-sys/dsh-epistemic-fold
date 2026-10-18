@@ -638,7 +638,7 @@ def main() -> None:
                        inject, args.limit_docs)
 
     path = Path(args.out) if args.out else (HERE / f"result_{args.mode}_{args.arm}_{args.order}.json")
-    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
     if args.calibrate:
         print(f"calibration {args.arm}/{args.order}: ingested {out['ingested_tokens']} tokens, "
               f"target {out['target_tokens']} ({out['target_frac']:.0%}), "

@@ -165,7 +165,7 @@ def main() -> None:
     ids = [p["id"] for p in key["probes"]]
     parsed = parse_answers(reply, ids)
     result = score(key, parsed)
-    (HERE / "last_score.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    (HERE / "last_score.json").write_text(json.dumps(result, indent=2), encoding="utf-8", newline="\n")
     o = result["overall"]
     print(f"overall: {o['correct']}/{o['scored']} = {o['accuracy']}  "
           f"(chance floor {o['chance_floor']}, unparsed {o['unparsed']})")

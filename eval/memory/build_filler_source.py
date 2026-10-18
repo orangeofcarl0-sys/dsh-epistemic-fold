@@ -432,7 +432,8 @@ def main():
     word_hits = {w: len(re.findall(r"\b" + re.escape(w) + r"\b", pool, re.I)) for w in sorted(word_values)}
     word_hits = {w: n for w, n in word_hits.items() if n}
 
-    POOL.write_text(pool, encoding="utf-8")
+    # LF, per .gitattributes * text=auto eol=lf. See build_corpus.write_atomic for why.
+    POOL.write_text(pool, encoding="utf-8", newline="\n")
     words = re.findall(r"[A-Za-z][A-Za-z'\-]*", pool)
     distinct = {w.lower() for w in words}
     PROVENANCE.write_text(json.dumps({
@@ -462,7 +463,7 @@ def main():
             "categorical_values_present_in_pool": word_hits,
         },
         "packages": used_pkgs,
-    }, indent=2), encoding="utf-8")
+    }, indent=2), encoding="utf-8", newline="\n")
 
     NOTICE.write_text(
         "# filler_source.txt -- provenance and licences\n\n"
@@ -473,6 +474,7 @@ def main():
         + "\nPackages whose licence could not be positively identified were excluded, even though\n"
           "they are the larger part of the available text.\n",
         encoding="utf-8",
+        newline="\n",
     )
 
     print("pool: " + format(len(pool), ",") + " chars (~" + format(len(pool)//4, ",") + " tokens)")

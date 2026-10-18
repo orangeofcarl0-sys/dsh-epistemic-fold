@@ -54,9 +54,16 @@ def write_atomic(path: Path, text: str) -> None:
     # suite runs the generator from one test file while others read the artifacts -- would share
     # one temporary and one could rename a file the other was still filling. A unique name costs
     # nothing and removes the class.
+    # ## newline="\n" is load-bearing, not cosmetic
+    #
+    # .gitattributes pins * text=auto eol=lf, so the working tree must be LF. Path.write_text
+    # translates \n to \r\n on Windows, so every generated artifact was CRLF: byte-different from
+    # the blob git stores, and identical to it only after normalization. git diff therefore said
+    # nothing while git status listed six modified files after every generation -- a tree that
+    # looks dirty when it is not, which is exactly the state a reader cannot act on.
     tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
     try:
-        tmp.write_text(text, encoding="utf-8")
+        tmp.write_text(text, encoding="utf-8", newline="\n")
         # ## Windows: os.replace fails if the destination is OPEN by another process
         #
         # That is a sharing violation, not a problem with the content, and it is why the generator
