@@ -427,6 +427,9 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     declined = 0
     exhausted = False
     since_last_fold = 0
+    # The surface as of the previous append, so each append's growth can be summed into the
+    # increment. See the CONTENT APPENDED note below.
+    prev_surface = 0
     for k in seq:
         # Checked BEFORE the append, so reaching the target does not also append one document
         # that no fold will ever cover. depth 0 is the one case that still ingests without
@@ -442,11 +445,25 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         appended += 1
         surface = bridge.last_telemetry.get("promptTokensLast", 0)
         high_water = max(high_water, surface)
+        # ## The increment is CONTENT APPENDED, not surface growth
+        #
+        # These differ because a fold REMOVES content. Measured 2026-10-18: taking the increment
+        # as (surface - surface_at_last_fold) made a depth-3 cell at 131K reach only TWO folds
+        # and run out of corpus -- each fold drops the surface back to ~23K, so the remaining
+        # documents never re-crossed an increment that was a third of the corpus. Depth 2 and
+        # depth 4 worked, so the defect was not uniform: it read as noise rather than as a bug.
+        #
+        # Summing the per-append growth measures what actually arrived, and a fold resets it, so
+        # every fold is preceded by exactly one increment of new content by construction.
+        grew = surface - prev_surface
+        if grew > 0:
+            since_last_fold += grew
+        prev_surface = surface
         if not ingests_corpus:
             continue
         # depth 0 means "ingest it, do not fold it". Folding is what the depth axis measures, so
         # a cell that asks for none must still receive the corpus rather than an empty session.
-        if depth <= 0 or surface - since_last_fold < increment:
+        if depth <= 0 or since_last_fold < increment:
             continue
         # Enough new content has arrived. Ask for a fold and record what actually happened.
         requested += 1
@@ -456,14 +473,13 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         fold_events.append({
             "fold": requested, "docs_appended": appended,
             "tokens_before": before, "tokens_after": after,
-            "increment_tokens": before - since_last_fold,
+            "increment_tokens": since_last_fold,
             "committed": bool(ok),
         })
         if ok:
             committed += 1
-            # The next wave is measured from the POST-fold surface, so each fold is preceded by
-            # exactly one increment of new content rather than by a cumulative total.
-            since_last_fold = after
+            since_last_fold = 0
+            prev_surface = after
             high_water = max(high_water, after)
         else:
             # Declined while the surface was above the threshold: keep accumulating rather than

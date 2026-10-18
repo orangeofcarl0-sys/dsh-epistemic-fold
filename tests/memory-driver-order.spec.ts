@@ -85,10 +85,15 @@ describe('the memory driver sequence', () => {
     // also sat at 4.2x its window for the whole ingest with zero folds, which only worked because
     // nothing called the model during that phase.
     expect(DRIVER).toContain('increment = int(window_tokens * fold_increment_frac)')
-    expect(DRIVER).toMatch(/if depth <= 0 or surface - since_last_fold < increment:/u)
-    // The next wave is measured from the POST-fold surface, so each fold is preceded by exactly
-    // one increment of new content rather than by a cumulative total.
-    expect(DRIVER).toContain('since_last_fold = after')
+    // The increment is CONTENT APPENDED, summed per append, not surface growth. The two differ
+    // because a fold removes content: measured 2026-10-18, taking the increment as surface growth
+    // made a depth-3 cell reach only two folds and run out of corpus, while depth 2 and depth 4
+    // worked -- a non-uniform defect, which reads as noise rather than as a bug.
+    expect(DRIVER).toMatch(/if depth <= 0 or since_last_fold < increment:/u)
+    expect(DRIVER).toContain('since_last_fold += grew')
+    // A fold resets it, so each fold is preceded by exactly one increment by construction.
+    expect(DRIVER).toContain('since_last_fold = 0')
+    expect(DRIVER).toContain('prev_surface = after')
     // And a target the corpus cannot reach is named before the run rather than discovered after.
     expect(DRIVER).toContain('max_achievable_depth')
     expect(DRIVER).toContain('is unreachable')

@@ -27,7 +27,7 @@ HARBOR_PY="D:/Data and code/xuchengjian/workplace/bench-workspace/lhtb/harbor/.v
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 case "$EF_LIVE_BASE_URL" in
   *api.deepseek.com*) _ef_key_name="${EF_LIVE_KEY_NAME:-DEEPSEEK_API_KEY}"; _ef_model="deepseek-flash" ;;
-  *)                  _ef_key_name="${EF_LIVE_KEY_NAME:-OPENCODE_GO_API_KEY}"; _ef_model="beam-free" ;;
+  *)                  _ef_key_name="${EF_LIVE_KEY_NAME:-OPENCODE_GO_API_KEY}"; _ef_model="deepseek-v4.1-flash" ;;
 esac
 KEY=$("$HARBOR_PY" - "$CREDENTIALS" "$_ef_key_name" <<'PY'
 import re, sys
@@ -40,9 +40,11 @@ PY
 
 export EF_ROOT="$EF_HOME"
 export EF_LIVE_API_KEY="$KEY"
-# step-5-preview-free is no longer served: it answers HTTP 400 "Model is unavailable", so the
-# documented invocation could not run at all. beam-free is the free model the free route
-# actually serves; measured 2026-10-18. An explicit EF_LIVE_MODEL still wins.
+# The zen-route default is deepseek-v4.1-flash, not beam-free. Measured 2026-10-18 on the same
+# route: beam-free answers HTTP 429 "Rate limit exceeded" to a 20-token request, seven times in
+# a row over two minutes -- its quota is spent -- while deepseek-v4.1-flash answers HTTP 200.
+# step-5-preview-free is gone entirely (HTTP 400 "Model is unavailable"). An explicit
+# EF_LIVE_MODEL still wins.
 export EF_LIVE_MODEL="${EF_LIVE_MODEL:-$_ef_model}"
 
 # ## The step reply budget, and why its default was wrong for this bench
