@@ -15,6 +15,7 @@ fact; that property is asserted by build_filler_source.py, not assumed.
 - claude_agent_sdk -- MIT
 - colorama -- BSD License
 - datasets -- Apache 2.0
+- deepseek-harness (vendored) -- MIT
 - dill -- BSD-3-Clause
 - dirhash -- MIT
 - fastuuid -- BSD License

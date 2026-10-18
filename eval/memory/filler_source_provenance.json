@@ -1,18 +1,18 @@
 {
   "register": "technical documentation prose (docstrings), plus a bounded share of source",
   "code_share_target": 0.1,
-  "code_share_actual": 0.0877,
-  "pool_chars": 7233446,
-  "pool_sha256": "f6eb3c5b3aac718b0ae095aa15266067b7acecdf120aeb998dc37b22a408f602",
-  "approx_tokens_chars_over_4": 1808361,
-  "word_tokens": 1004124,
-  "distinct_words": 19275,
-  "type_token_ratio": 0.0192,
+  "code_share_actual": 0.0343,
+  "pool_chars": 18500621,
+  "pool_sha256": "494d69422ea7a79cb38b37097453fee55665012ab1df1d477726991317997eb1",
+  "approx_tokens_chars_over_4": 4625155,
+  "word_tokens": 2245695,
+  "distinct_words": 45412,
+  "type_token_ratio": 0.02022,
   "prose_blocks": 17527,
   "code_blocks": 34,
   "filter": {
     "lines_dropped_field_name": 8,
-    "lines_dropped_probed_value": 11855
+    "lines_dropped_probed_value": 21472
   },
   "asserted_absent": {
     "vocabulary_field_names": true,
@@ -21,18 +21,20 @@
   "narrowed_rule": {
     "why": "20 of 86 probed values are ordinary English words (categorical fields); their absence from real prose is unsatisfiable and unnecessary, because an unbound word is not a competing answer. A field NAME is what binds a value to a fact, so that rule stays strict.",
     "categorical_values_present_in_pool": {
-      "attributes": 484,
-      "configuration": 655,
-      "discussion": 92,
-      "introduction": 2,
-      "limitations": 7,
-      "method": 1973,
-      "options": 566,
-      "properties": 726,
-      "question": 89,
-      "sentence": 33,
-      "settings": 250,
-      "title": 221
+      "appendix": 2,
+      "attributes": 528,
+      "configuration": 1325,
+      "discussion": 102,
+      "imperative": 3,
+      "introduction": 24,
+      "limitations": 67,
+      "method": 2400,
+      "options": 798,
+      "properties": 783,
+      "question": 446,
+      "sentence": 93,
+      "settings": 1470,
+      "title": 1052
     }
   },
   "packages": {
@@ -82,6 +84,7 @@
     "tzdata": "Apache-2.0",
     "websockets": "BSD-3-Clause",
     "xxhash": "BSD-2-Clause",
-    "yarl": "Apache-2.0"
+    "yarl": "Apache-2.0",
+    "deepseek-harness (vendored)": "MIT"
   }
 }

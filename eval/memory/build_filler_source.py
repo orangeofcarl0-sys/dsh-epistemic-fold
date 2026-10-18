@@ -71,6 +71,26 @@ PERMISSIVE = {
 # Structural variety only. Code is adopted in small quantity, by explicit guidance.
 CODE_SHARE = 0.10
 
+# How large the pool needs to be: the 1M tier's requirement, WINDOW * CORPUS_RATIO * 4, with
+# 5% of headroom. 475K needs 7,982,284 and 1M needs 17,616,076, so the stdlib and
+# site-packages pool (7,233,446) could not serve either -- the harness prose closes the gap,
+# and this is where it stops.
+POOL_TARGET_CHARS = int(os.environ.get("EF_MEMORY_POOL_TARGET_CHARS",
+                                       str(int(1048576 * 4.2 * 4 * 1.05))))
+
+# The two hygiene patterns from tests/release-hygiene.spec.ts, applied to the harness source.
+# They are duplicated here on purpose: a test can only REPORT that a published file is dirty,
+# and by then it is committed. The filter has to refuse it first.
+MACHINE_PATH_RE = re.compile(
+    r"(?:[A-Za-z]:[\\/](?:Users|home)[\\/](?!\.\.\.|<)[^\\/\s\"']+"
+    r"|[A-Za-z]:[\\/]dsh\b"
+    r"|(?<![\w:/])/[a-z]/[A-Za-z_][A-Za-z_0-9]{3,})"
+)
+SECRET_RE = re.compile(
+    r"(?:sk-[A-Za-z0-9_-]{20,}|gh[pous]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}"
+    r"|-----BEGIN [A-Z ]*PRIVATE KEY-----)"
+)
+
 
 def load_vocab():
     """Return (field names, numeric probed values, categorical probed values).
@@ -117,8 +137,44 @@ class Filter:
         self.value_re = re.compile(
             r"\b(?:" + "|".join(re.escape(v) for v in sorted(self.values, key=len, reverse=True)) + r")\b"
         )
+        # ## The SAME rules, with an ASCII boundary spelled out
+        #
+        # Python's \b is Unicode-aware and JavaScript's is ASCII-only. In "19秒" Python sees NO
+        # word boundary between the digit and the CJK character, because both are \w; JavaScript
+        # sees one. So a value can pass this builder and still be found by the check that
+        # matters, tests/memory-filler-source.spec.ts, which is JavaScript. English stdlib prose
+        # never exposes the difference; the vendored harness carries CJK documentation, so the
+        # boundary is written out explicitly for that source.
+        self.field_re_ascii = [
+            re.compile(r"(?<![0-9A-Za-z_])" + re.escape(f) + r"(?![0-9A-Za-z_])", re.I)
+            for f in sorted(self.fields)
+        ]
+        self.value_re_ascii = re.compile(
+            r"(?<![0-9A-Za-z_])(?:"
+            + "|".join(re.escape(v) for v in sorted(self.values, key=len, reverse=True))
+            + r")(?![0-9A-Za-z_])"
+        )
         self.dropped_field = 0
         self.dropped_value = 0
+        self.dropped_hygiene = 0
+
+    def keep_strict(self, line):
+        """keep(), plus the two hygiene rules the harness source needs.
+
+        The harness vendors other projects' documentation and tests, which carry machine paths
+        and credential-shaped example strings. Both are asserted by tests/release-hygiene.spec.ts,
+        so they are filtered here rather than rediscovered later.
+        """
+        if MACHINE_PATH_RE.search(line) or SECRET_RE.search(line):
+            self.dropped_hygiene += 1
+            return False
+        if any(rx.search(line) for rx in self.field_re_ascii):
+            self.dropped_field += 1
+            return False
+        if self.value_re_ascii.search(line):
+            self.dropped_value += 1
+            return False
+        return True
 
     def keep(self, line):
         if any(rx.search(line) for rx in self.field_re):
@@ -143,6 +199,77 @@ def docstrings_of(src):
                 out.append(d.strip())
     return out
 
+
+def jsdoc_of(src):
+    """JSDoc blocks, the TypeScript analogue of a Python docstring.
+
+    The vendored harness is MIT and already redistributed in this repository, so its prose is a
+    legitimate addition. Only PROSE is taken -- markdown, and doc comments -- because CODE_SHARE
+    is bounded to 10% for a measured reason: source code is a different register, and background
+    in a different register lets a summariser treat the probed facts as the only real content.
+    """
+    out = []
+    for m in re.finditer(r"/\*\*(.*?)\*/", src, re.S):
+        body = "\n".join(re.sub(r"^\s*\*\s?", "", line) for line in m.group(1).split("\n")).strip()
+        if len(body) > 40:
+            out.append(body)
+    return out
+
+
+def safe_label(rel):
+    """A pool header that is digit-free AND hygiene-clean.
+
+    The header is text the model reads, so it is subject to both rules the body is:
+
+      - digits, because the assertion checks the whole pool and "64" and "2" are probed values.
+      - the release-hygiene patterns, because tests/release-hygiene.spec.ts scans every tracked
+        file and does not exempt a path. An archived note whose name runs the two letters "sk-"
+        straight into a long hyphenated slug matches the credential pattern. That is a false
+        positive, but the test cannot tell one from a real key, and a label is not worth arguing
+        about. Four archived agent notes fall back to a generic label.
+
+    The true path is not lost: it is carried in the provenance record for the source, and the
+    manifest below already records it.
+    """
+    label = "harness/" + re.sub(r"\d+", "#", rel[len("harness/"):])
+    if MACHINE_PATH_RE.search(label) or SECRET_RE.search(label):
+        return "harness/<path>"
+    return label
+
+
+def harness_prose(flt):
+    """Prose from the vendored harness, in a DETERMINISTIC order.
+
+    ## Why this is appended LAST, and why the order is load-bearing
+
+    build_corpus.py truncates this pool to WINDOW * CORPUS_RATIO * 4 characters, so a tier only
+    ever reads a PREFIX of it. The 131K and 252K corpora are the first 2,202,009 and 4,335,206
+    characters, and they are already measured. Appending can therefore only ever be reached by a
+    LARGER window, which is what lets 475K and 1M be added without moving the smaller tiers.
+
+    The order must be sorted rather than left to the filesystem, or the pool -- and every corpus
+    derived from it -- would differ between hosts.
+    """
+    root = Path(os.environ.get("EF_MEMORY_HARNESS", str(HERE.parents[1] / "vendor" / "deepseek-harness")))
+    if not root.is_dir():
+        return [], {}
+    skip = {"node_modules", ".git", "lib", "dist", "__pycache__"}
+    paths = sorted(p for p in root.rglob("*")
+                   if p.is_file() and not (skip & set(p.parts))
+                   and p.suffix in (".md", ".ts", ".tsx", ".js"))
+    out = []
+    for p in paths:
+        try:
+            src = p.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        rel = "harness/" + p.relative_to(root).as_posix()
+        blocks = [src] if p.suffix == ".md" else jsdoc_of(src)
+        for d in blocks:
+            body = "\n".join(line for line in d.split("\n") if flt.keep_strict(line)).strip()
+            if len(body) > 40:
+                out.append((rel, body))
+    return out, {"deepseek-harness (vendored)": "MIT"}
 
 def package_licences(site_packages):
     import importlib.metadata as md
@@ -219,10 +346,42 @@ def main():
         taken.append((rel, take))
         spent += len(take)
 
-    parts, manifest = [], []
+    # ---- 3b. The vendored harness's own prose, APPENDED after everything above.
+    #
+    # The 475K and 1M tiers need a pool of 7,982,284 and 17,616,076 characters
+    # (WINDOW * 4.2 * 4). The stdlib and site-packages reach 7,233,446, which supports up to
+    # about 402k -- so those two tiers could not be generated at all: the check below refuses
+    # rather than emitting a corpus under the four-times rule.
+    #
+    # Appending is what makes this safe. Every smaller tier reads a PREFIX, so the 131K and
+    # 252K corpora are unchanged by this addition and the n=5 measurements taken at those
+    # tiers stay comparable.
+    extra, extra_pkgs = harness_prose(flt)
+    used_pkgs.update(extra_pkgs)
+
+    parts, manifest, total = [], [], 0
     for rel, body in prose + taken:
-        parts.append("\n===== " + rel + " =====\n" + body)
+        chunk = "\n===== " + rel + " =====\n" + body
+        parts.append(chunk)
         manifest.append({"source": rel, "chars": len(body)})
+        total += len(chunk)
+    # Stop once the pool clears the largest tier. Text past that point is never read --
+    # build_corpus.py truncates to WINDOW * CORPUS_RATIO * 4 -- so an uncapped append only makes
+    # the committed artifact bigger. Uncapped it was 38.5M chars against the 17.6M 1M needs.
+    #
+    # The in-pool header is a separator the model READS, so it obeys the same disjointness rule
+    # as the body, and the assertion checks the whole pool. The stdlib and site-packages labels
+    # happen to carry no digits; a repository path does, and "64" and "2" are probed values. So
+    # appended labels are digit-free and the TRUE path stays in the manifest. Existing labels
+    # are left alone, because changing them would move the prefix the 131K and 252K corpora are
+    # cut from.
+    for rel, body in extra:
+        if total >= POOL_TARGET_CHARS:
+            break
+        chunk = "\n===== " + safe_label(rel) + " =====\n" + body
+        parts.append(chunk)
+        manifest.append({"source": rel, "chars": len(body)})
+        total += len(chunk)
     pool = "".join(parts)
 
     # ---- 4. ASSERT the rules, rather than trusting the filter
