@@ -52,23 +52,46 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toContain('bridge.init(SYSTEM_PUSH, [])')
   })
 
-  it('counts COMMITS, and treats depth as the ACHIEVED TOTAL', () => {
-    // Two distinct defects, both of which lose the independent variable.
+  it('counts COMMITS, and reports the depth REACHED beside the depth ASKED FOR', () => {
+    // Three distinct defects, each of which loses the independent variable.
     //
     // compact() returns False when the engine declines, so counting CALLS records a depth the
-    // engine never reached. And the corpus is more than four times the window, so ingestion
-    // alone forces folds: requesting "depth 5" on top of those gives a total that depends on
-    // the corpus rather than the request, and the request barely moves it.
-    expect(DRIVER).toMatch(/if bridge\.compact\(\):\n\s+committed \+= 1/u)
-    expect(DRIVER).toContain('natural = int(bridge.last_telemetry.get("folds") or 0)')
-    // Only the DIFFERENCE is requested, and the guard is not pinned verbatim: the line also
-    // carries the arm check that keeps C and N from being asked to fold a corpus they do not
-    // have, so asserting the exact text made this fail the moment that was added.
-    expect(DRIVER).toMatch(/for _ in range\(max\(0, depth - natural\)/u)
-    // And the three numbers are reported separately, because conflating them is the defect.
-    for (const k of ['depth_target', 'folds_natural', 'folds_requested', 'folds_committed', 'folds_total']) {
+    // engine never reached. The old design then went further and asked for a TOTAL, topping up
+    // the difference, on the stated premise that "the corpus is more than four times the window,
+    // so ingestion alone forces folds".
+    //
+    // Measured, that premise was false: natural folds were 0 in 40 of 40 cells, because append
+    // does not call foldIfNeeded -- only a model call does, and ingestion makes none. So the loop
+    // always asked for exactly 5, the engine committed 1 and CORRECTLY declined the other 4, and
+    // every cell ran at an ACHIEVED depth of 1 while being reported as depth 5. Four of five
+    // requests were provably no-ops.
+    //
+    // The top-up loop is gone. The target is now only a REQUEST, and what the cell reached is
+    // recorded separately -- so a table cannot be labelled with a depth the cell never had.
+    expect(DRIVER).toMatch(/if ok:\n\s+committed \+= 1/u)
+    expect(DRIVER).toContain('declined += 1')
+    expect(DRIVER, 'the top-up loop is the defect, not the fix').not.toContain('max(0, depth - natural)')
+    expect(DRIVER).toContain('"depth_achieved": folds')
+    for (const k of ['depth_target', 'depth_achieved', 'folds_natural', 'folds_requested',
+                     'folds_committed', 'folds_declined', 'folds_total']) {
       expect(DRIVER, k + ' must be reported').toContain('"' + k + '"')
     }
+  })
+
+  it('drives the fold by ARRIVAL, so the folds are sequential', () => {
+    // The pressure this bench exists to measure is that each fold compresses the PREVIOUS fold's
+    // output. One fold applied to a fully populated static surface has no such property, and that
+    // is exactly what the old design produced: append 100 documents, then fold once. The session
+    // also sat at 4.2x its window for the whole ingest with zero folds, which only worked because
+    // nothing called the model during that phase.
+    expect(DRIVER).toContain('increment = int(window_tokens * fold_increment_frac)')
+    expect(DRIVER).toMatch(/if depth <= 0 or surface - since_last_fold < increment:/u)
+    // The next wave is measured from the POST-fold surface, so each fold is preceded by exactly
+    // one increment of new content rather than by a cumulative total.
+    expect(DRIVER).toContain('since_last_fold = after')
+    // And a target the corpus cannot reach is named before the run rather than discovered after.
+    expect(DRIVER).toContain('max_achievable_depth')
+    expect(DRIVER).toContain('is unreachable')
   })
 
   it('retries a provider failure on the probe turn rather than scoring it as a loss', () => {
@@ -108,7 +131,11 @@ describe('the memory driver sequence', () => {
 
   it('asks for no folds from an arm that has no corpus', () => {
     expect(DRIVER).toContain('if ingests_corpus else 0')
-    expect(DRIVER).toMatch(/max\(0, depth - natural\) if ingests_corpus else 0/u)
+    // The arm guard sits before the fold, so C and N cannot be asked to compress a document set
+    // that is already minimal -- and depth 0 still ingests, because that cell is the unfolded
+    // reference rather than an empty session.
+    expect(cellPath('bridge.compact()')).toBeGreaterThan(cellPath('if not ingests_corpus:'))
+    expect(DRIVER).toContain('if ingests_corpus and depth > 0 and committed >= depth:')
   })
 
   it('batches the probes by the documents they need, instead of one turn', () => {

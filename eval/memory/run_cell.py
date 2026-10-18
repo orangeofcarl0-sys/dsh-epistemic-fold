@@ -325,7 +325,7 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
 
 
 def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
-             inject: bool, limit_docs: int | None) -> dict:
+             inject: bool, limit_docs: int | None, fold_increment_frac: float) -> dict:
     orders = load("orderings.json")
     docs = load("documents.json")
     public = load("public_probes.json")
@@ -352,7 +352,6 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     seq = orders[order_name] if ingests_corpus else []
     if limit_docs:
         seq = seq[:limit_docs]
-    appended = 0
     # ## The fact -> seq map, without which exposure is unreachable
     #
     # Section 7.2 computes exposure by joining a fact to the fold lineage, and the lineage records
@@ -360,40 +359,105 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # bridge returns them from `append`; recording them here is what makes the join possible at
     # all. A document states a known set of fields (`states`), so each of those fields inherits
     # the document's seqs.
+    #
+    # ## Arrival drives the fold, not a request count
+    #
+    # The previous design appended the WHOLE corpus and then requested folds until the count
+    # reached `depth`. Measured, that never worked, and the telemetry said so in every cell:
+    #
+    #   - natural folds were 0 in 40 of 40 cells, because `append` does not call foldIfNeeded --
+    #     only a model call does, and ingestion makes none. The design's own stated premise ("the
+    #     corpus is more than four times the window, so ingestion alone forces folds") was false;
+    #     the session sat at 4.2x its window for the whole ingest with zero folds, and only got
+    #     away with it because nothing called the model during that phase.
+    #   - the loop therefore always requested exactly 5, the engine committed 1 and CORRECTLY
+    #     declined the other 4 ("below-threshold 22476<65536"). Four of five requests were
+    #     provably no-ops.
+    #   - so every cell ran at an ACHIEVED depth of 1 while being reported as depth 5. The label
+    #     was the requested value, and it was wrong in every result file and every table.
+    #
+    # Worse, one compression event applied to a static, fully populated surface is not
+    # incremental compression at all: no fold's output is ever folded again, and no content
+    # arrives after a fold that the fold had to anticipate. That is the pressure this bench
+    # exists to measure and it was never applied.
+    #
+    # So a wave is a fixed quantity of NEW CONTENT -- one window, the tier's own scale -- and a
+    # fold is attempted when that much has arrived. Repeating it makes the folds genuinely
+    # sequential: each fold compresses the previous fold's output. Whether the fold COMMITS is
+    # data, not an assumption, and the achieved depth is recorded beside the target so a cell
+    # cannot be labelled with a depth it did not reach.
+    window_tokens = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
+    increment = int(window_tokens * fold_increment_frac)
+    # ## A target the corpus cannot reach is named BEFORE the run, not discovered after it
+    #
+    # Each fold needs one increment of NEW content, so the corpus size bounds the depth: at the
+    # committed 4.2x ratio and an increment of one window, four folds are reachable and a fifth
+    # is not. Saying so here costs one line; saying it only in the artifact is how "depth 5" got
+    # printed for cells that had been folded once.
+    corpus_tokens_est = sum(len(d["text"]) for d in by_key.values()) // 4 if ingests_corpus else 0
+    max_depth = corpus_tokens_est // increment if increment > 0 else 0
+    if ingests_corpus and depth > max_depth:
+        print(f"WARNING: depth {depth} is unreachable. The corpus holds about "
+              f"{corpus_tokens_est:,} tokens and each fold needs {increment:,} of new content, "
+              f"so at most {max_depth} folds can be driven; this cell will report "
+              f"depth_achieved={max_depth}.", file=sys.stderr)
     fact_seqs: dict[str, list[int]] = {}
-    for k in seq:
-        d = by_key.get(k)
-        if d is not None:
-            reply = bridge.append({"role": "user", "content": d["text"]})
-            for f in d.get("states", []):
-                fact_seqs.setdefault(f"{d['project']}.{f}", []).extend(reply.get("seqs") or [])
-            appended += 1
-    # Read AFTER the last append. The first draft read it from the telemetry carried by `init`,
-    # which describes an empty session, so a full corpus reported an ingested size of zero.
-    ingested = bridge.last_telemetry.get("promptTokensLast", 0)
-    ingested_docs = appended
-
-    # ## Depth is the ACHIEVED TOTAL, not the number of requests
-    #
-    # The corpus is more than four times the window (3.2.5), so ingestion alone forces folds: the
-    # surface cannot fit otherwise. Requesting "depth 5" on top of the folds ingestion already
-    # committed would give a total that depends on the corpus rather than on the request, and the
-    # requested depth would barely move it -- which is the independent variable gone.
-    #
-    # So the target is a TOTAL, and the loop asks only for the difference. Natural folds are read
-    # from telemetry rather than inferred, and a corpus that folds more than the target is
-    # reported rather than silently corrected, because "the target was already exceeded before I
-    # asked" is a fact about the cell.
-    # Without a corpus there is nothing to fold, so the target applies only to the arms that
-    # ingested one. Asking C or N for depth would be asking them to compress a document set that
-    # is already minimal.
+    fold_events: list[dict] = []
+    appended = 0
+    high_water = 0
     natural = int(bridge.last_telemetry.get("folds") or 0) if ingests_corpus else 0
     requested = 0
     committed = 0
-    for _ in range(max(0, depth - natural) if ingests_corpus else 0):
+    declined = 0
+    exhausted = False
+    since_last_fold = 0
+    for k in seq:
+        # Checked BEFORE the append, so reaching the target does not also append one document
+        # that no fold will ever cover. depth 0 is the one case that still ingests without
+        # folding: it is the unfolded reference, and the loop must not break before it starts.
+        if ingests_corpus and depth > 0 and committed >= depth:
+            break
+        d = by_key.get(k)
+        if d is None:
+            continue
+        reply = bridge.append({"role": "user", "content": d["text"]})
+        for f in d.get("states", []):
+            fact_seqs.setdefault(f"{d['project']}.{f}", []).extend(reply.get("seqs") or [])
+        appended += 1
+        surface = bridge.last_telemetry.get("promptTokensLast", 0)
+        high_water = max(high_water, surface)
+        if not ingests_corpus:
+            continue
+        # depth 0 means "ingest it, do not fold it". Folding is what the depth axis measures, so
+        # a cell that asks for none must still receive the corpus rather than an empty session.
+        if depth <= 0 or surface - since_last_fold < increment:
+            continue
+        # Enough new content has arrived. Ask for a fold and record what actually happened.
         requested += 1
-        if bridge.compact():
+        before = surface
+        ok = bridge.compact()
+        after = bridge.last_telemetry.get("promptTokensLast", 0)
+        fold_events.append({
+            "fold": requested, "docs_appended": appended,
+            "tokens_before": before, "tokens_after": after,
+            "increment_tokens": before - since_last_fold,
+            "committed": bool(ok),
+        })
+        if ok:
             committed += 1
+            # The next wave is measured from the POST-fold surface, so each fold is preceded by
+            # exactly one increment of new content rather than by a cumulative total.
+            since_last_fold = after
+            high_water = max(high_water, after)
+        else:
+            # Declined while the surface was above the threshold: keep accumulating rather than
+            # pretending the wave did its job. The next attempt carries more pressure.
+            declined += 1
+    else:
+        if ingests_corpus and depth > 0 and committed < depth:
+            exhausted = True
+    ingested = high_water
+    ingested_docs = appended
     folds = natural + committed
 
     # Injection AFTER compaction, so the injected tokens cannot be folded (5.4).
@@ -520,9 +584,23 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # Three separate numbers, because conflating them is how the independent variable
         # disappears: the target, what ingestion forced, and what the request added.
         "depth_target": depth,
+        # ## The depth actually REACHED, which is the treatment; the target is only a request
+        #
+        # These differed in every cell of the previous design -- target 5, achieved 1 -- and the
+        # TARGET was written into the cell block and into every table, so a cell that had been
+        # compressed once was reported as compressed five times. Recording both is what stops the
+        # label from being a claim rather than a measurement.
+        "depth_achieved": folds,
+        "fold_increment_frac": fold_increment_frac,
+        "fold_increment_tokens": increment,
+        "corpus_tokens_estimated": corpus_tokens_est,
+        "max_achievable_depth": max_depth,
         "folds_natural": natural,
         "folds_requested": requested,
         "folds_committed": committed,
+        "folds_declined": declined,
+        "corpus_exhausted": exhausted,
+        "fold_events": fold_events,
         "folds_total": folds,
         "probe_turn_chars": turn_chars, "probe_batches": len(batches),
         "probe_seconds": round(elapsed, 1),
@@ -606,6 +684,10 @@ def main() -> None:
     ap.add_argument("--arm", default="quality", choices=sorted(ARM_SPECS))
     ap.add_argument("--order", default="logical", choices=["random", "temporal", "logical"])
     ap.add_argument("--depth", type=int, default=5)
+    # How much NEW content drives one fold, as a fraction of the window. 1.0 means one window,
+    # which is the tier's own scale -- so the fold cadence is the same experiment at every tier
+    # rather than a token count that means something different at each one.
+    ap.add_argument("--fold-increment-frac", type=float, default=1.0)
     ap.add_argument("--mode", default="A", choices=["A", "B", "C", "N"])
     ap.add_argument("--warned", action="store_true")
     ap.add_argument("--calibrate", action="store_true")
@@ -635,7 +717,7 @@ def main() -> None:
     else:
         inject = args.mode in ("B", "C")
         out = run_cell(args.arm, args.order, args.depth, args.mode, args.warned,
-                       inject, args.limit_docs)
+                       inject, args.limit_docs, args.fold_increment_frac)
 
     path = Path(args.out) if args.out else (HERE / f"result_{args.mode}_{args.arm}_{args.order}.json")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
@@ -648,9 +730,15 @@ def main() -> None:
                   f"tokens={s['tokens']} nodes={s['nodes']}")
     else:
         o = out["score"]["overall"]
-        print(f"cell {args.mode}/{args.arm}/{args.order} depth={args.depth}: "
-              f"folds {out['folds_committed']}/{out['folds_requested']}, "
-              f"accuracy {o['accuracy']} (floor {o['chance_floor']}, unparsed {o['unparsed']})")
+        # The ACHIEVED depth leads, because that is the treatment. A cell that could not reach
+        # its target says so here rather than being reported at a depth it never had.
+        short = "" if out["depth_achieved"] >= out["depth_target"] else "  SHORT-OF-TARGET"
+        print(f"cell {args.mode}/{args.arm}/{args.order}: "
+              f"depth {out['depth_achieved']}/{out['depth_target']} "
+              f"(asked {out['folds_requested']}, declined {out['folds_declined']}, "
+              f"increment {out['fold_increment_tokens']} tokens), "
+              f"accuracy {o['accuracy']} (floor {o['chance_floor']}, "
+              f"unparsed {o['unparsed']}){short}")
     print(f"wrote {path}")
 
 
