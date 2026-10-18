@@ -30,9 +30,25 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { tierFor } from './memory-corpus.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 const MEM = join(ROOT, 'eval', 'memory')
+
+/** The window this test generates at: the generator's default when no env is set. */
+const DEFAULT_WINDOW = 131_072
+
+/**
+ * The generation report for the tier this test just built.
+ *
+ * Read BY WINDOW rather than by a hardcoded directory name, so this file does not carry a second
+ * copy of the tier-to-label mapping that eval/memory/corpus_paths.py owns.
+ */
+function generationReport(): Record<string, any> {
+  const tier = tierFor(DEFAULT_WINDOW)
+  expect(tier, 'the generator must have written a corpus for window ' + DEFAULT_WINDOW).toBeDefined()
+  return tier!.report
+}
 const PY = join(ROOT, '..', 'bench-workspace', 'lhtb', 'harbor', '.venv', 'Scripts', 'python.exe')
 
 const canRun = existsSync(PY) && existsSync(join(MEM, 'build_corpus.py'))
@@ -42,13 +58,13 @@ describe.skipIf(!canRun)('the memory corpus generator', () => {
     // Exit 0 IS the assertion: the generator raises SystemExit on any violation.
     const out = execFileSync(PY, [join(MEM, 'build_corpus.py')], { encoding: 'utf8', timeout: 240000 })
     expect(out).toContain('constraints ok')
-    const report = JSON.parse(readFileSync(join(MEM, 'generation_report.json'), 'utf8'))
+    const report = generationReport()
     const failed = Object.entries(report).filter(([, v]) => !(v as { ok: boolean }).ok)
     expect(failed.map(([k]) => k), 'every declared constraint must hold').toEqual([])
   }, 300000)
 
   it('declares the constraints the design depends on', () => {
-    const report = JSON.parse(readFileSync(join(MEM, 'generation_report.json'), 'utf8'))
+    const report = generationReport()
     for (const key of ['unique_within_type', 'full_vocabulary', 'ring_closed', 'orderings_distinct']) {
       expect(report[key], key + ' must be reported, not assumed').toBeDefined()
     }
@@ -94,7 +110,7 @@ describe.skipIf(!canRun)('the memory corpus generator', () => {
   it('asserts every expected answer is actually STATED somewhere', () => {
     // The general form of the defect above. A probe whose answer is stated nowhere cannot be
     // answered by any arm, and its failure is indistinguishable from a retention failure.
-    const report = JSON.parse(readFileSync(join(MEM, 'generation_report.json'), 'utf8'))
+    const report = generationReport()
     expect(report.answers_are_stated).toBeDefined()
     expect(report.answers_are_stated.ok, report.answers_are_stated.violations?.join('; ')).toBe(true)
   })

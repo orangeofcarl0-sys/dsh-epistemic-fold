@@ -14,6 +14,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { committedTiers } from './memory-corpus.ts'
 
 const ROOT = join(import.meta.dirname, '..')
 const MEM = join(ROOT, 'eval', 'memory')
@@ -33,10 +34,22 @@ describe('the memory module README', () => {
   })
 
   it('names only files that exist', () => {
-    const named = [...text.matchAll(/`([a-z_]+\.(?:py|json|sh))`/gu)].map(m => m[1] ?? '')
+    // A name may be relative to eval/memory, as in corpora/<tier>/documents.json. A `<tier>`
+    // segment is a placeholder for a COMMITTED tier, and is resolved against the tiers that
+    // actually exist: asserting the literal path would be asserting the placeholder.
+    const named = [...text.matchAll(/`([a-z_./<>]+\.(?:py|json|sh))`/gu)].map(m => m[1] ?? '')
     expect(named.length).toBeGreaterThan(0)
     for (const n of new Set(named)) {
-      expect(existsSync(join(MEM, n)), n + ' is named but absent').toBe(true)
+      if (!n.includes('<')) {
+        expect(existsSync(join(MEM, n)), n + ' is named but absent').toBe(true)
+        continue
+      }
+      const tiers = committedTiers()
+      expect(tiers.length, 'a placeholder needs at least one committed tier').toBeGreaterThan(0)
+      for (const t of tiers) {
+        const resolved = n.replace('<tier>', t.label)
+        expect(existsSync(join(MEM, resolved)), resolved + ' is named but absent').toBe(true)
+      }
     }
   })
 

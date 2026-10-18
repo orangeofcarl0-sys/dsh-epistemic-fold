@@ -1,5 +1,5 @@
 /**
- * The corpus size is DERIVED from the window, and the derivation has to be checked.
+ * The corpus size is DERIVED from the window, and every committed tier has to satisfy it.
  *
  * ## What went wrong without this
  *
@@ -25,57 +25,27 @@
  * [4.0, 5.0] works. This test pins both ends, because a corpus that violates either is one whose
  * numbers describe something other than what they claim.
  *
+ * ## Why it now checks EVERY committed tier
+ *
+ * The corpus used to be a single artifact, so this could only assert against whichever tier
+ * happened to be on disk -- and regenerating a different tier to check it was the thing that made
+ * the bench awkward to run. Tiers are committed per-tier now, and the sizing rule is
+ * scale-invariant, so the check is too: EVERY committed tier must clear the four-times floor and
+ * fit its own injection.
+ *
  * @module tests/memory-tier-sizing
  */
 
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { TIERS, committedTiers } from './memory-corpus.ts'
 
-const ROOT = join(import.meta.dirname, '..')
-const MEM = join(ROOT, 'eval', 'memory')
-const reportPath = join(MEM, 'generation_report.json')
+const tiers = committedTiers()
 
-const canRun = existsSync(reportPath)
-const report = canRun ? JSON.parse(readFileSync(reportPath, 'utf8')) : {}
-
-/** The tiers this benchmark targets. */
-const TIERS = [131_072, 258_048, 475_136, 1_048_576]
-
-describe.skipIf(!canRun)('the memory corpus is sized from the window', () => {
-  const sizing = report.sizing ?? {}
-
-  it('reports a sizing block, so the artifact and the parameter cannot silently disagree', () => {
-    expect(sizing.window, 'the window the corpus was built for must be recorded').toBeGreaterThan(0)
-    expect(sizing.corpus_tokens).toBeGreaterThan(0)
-    expect(sizing.ratio_achieved).toBeGreaterThan(0)
-    expect(sizing.ok, 'the generator fails on this, so it must be true here').toBe(true)
-  })
-
-  it('is at least four times the window -- 3.2.5s pressure floor', () => {
-    expect(sizing.ratio_achieved).toBeGreaterThanOrEqual(4)
-  })
-
-  it('leaves room for the tokenizer, the surface, the injection and the reserve', () => {
-    // The ceiling, and the reason it is a budget rather than a ratio. The window must hold the
-    // compressed surface, the injected batch, the rendered probes and the completion reserve, all
-    // scaled by a tokenizer that does not agree with a chars/4 estimate. Exceeding it is SILENT:
-    // the request still succeeds, the provider truncates, and the score describes the budget
-    // rather than the model.
-    const b = sizing.budget
-    expect(b, 'the budget must be recorded, not assumed').toBeDefined()
-    expect(b.probe_turn_over_window, 'the probe turn is the binding case').toBeLessThanOrEqual(1)
-    expect(b.fold_turn_over_window, 'a fold needs room for its own summary budget').toBeLessThanOrEqual(1)
-    expect(b.tokenizer_slack, 'measured 1.02, budgeted 1.05').toBeGreaterThanOrEqual(1)
-    expect(b.completion_reserve).toBeGreaterThan(0)
-  })
-
-  it('keeps the surface target low enough to afford a four-times corpus', () => {
-    // At 0.50 the arithmetic caps the corpus at about 3.2x -- BELOW the four-times floor -- so the
-    // design would be infeasible while every run still appeared to work.
-    const b = sizing.budget
-    expect(b.surface_frac).toBeLessThanOrEqual(0.4)
-    expect(sizing.ratio_achieved).toBeGreaterThanOrEqual(4)
+describe.skipIf(tiers.length === 0)('the memory corpus is sized from the window', () => {
+  it('commits a corpus for every tier this benchmark targets', () => {
+    const windows = tiers.map(t => t.window).sort((a, b) => a - b)
+    expect(windows, 'a missing tier means the bench cannot run it without generating first')
+      .toEqual([...TIERS])
   })
 
   it('derives every tier with the same rule, and every tier fits', () => {
@@ -92,13 +62,42 @@ describe.skipIf(!canRun)('the memory corpus is sized from the window', () => {
     }
   })
 
-  it('records the arithmetic that decides whether a tier is reachable', () => {
-    // The pool is finite, so the larger tiers need a bigger pool. The generator refuses rather
-    // than silently emitting a corpus that is too small to be four times its window -- this pins
-    // the numbers a reader needs to see that coming.
-    expect(sizing.composition_batch_tokens).toBeGreaterThan(0)
-    expect(sizing.tokens_per_document).toBeGreaterThan(0)
-    expect(sizing.documents).toBe(100)
-    expect(sizing.note).toContain('probe turn')
-  })
+  for (const tier of tiers) {
+    describe(tier.label + ' (window ' + tier.window.toLocaleString() + ')', () => {
+      const sizing = tier.report.sizing ?? {}
+
+      it('reports the window it was built for, so artifact and parameter cannot disagree', () => {
+        expect(sizing.window, 'the recorded window must be the tier it lives in').toBe(tier.window)
+        expect(sizing.corpus_tokens).toBeGreaterThan(0)
+        expect(sizing.ratio_achieved).toBeGreaterThan(0)
+        expect(sizing.ok, 'the generator fails on this, so it must be true here').toBe(true)
+      })
+
+      it('is at least four times the window -- 3.2.5s pressure floor', () => {
+        expect(sizing.ratio_achieved).toBeGreaterThanOrEqual(4)
+      })
+
+      it('leaves room for the tokenizer, the surface, the injection and the reserve', () => {
+        // The ceiling, and the reason it is a budget rather than a ratio. The window must hold the
+        // compressed surface, the injected batch, the rendered probes and the completion reserve,
+        // all scaled by a tokenizer that does not agree with a chars/4 estimate. Exceeding it is
+        // SILENT: the request still succeeds, the provider truncates, and the score describes the
+        // budget rather than the model.
+        const b = sizing.budget
+        expect(b, 'the budget must be recorded, not assumed').toBeDefined()
+        expect(b.probe_turn_over_window, 'the probe turn is the binding case').toBeLessThanOrEqual(1)
+        expect(b.fold_turn_over_window, 'a fold needs room for its own summary budget').toBeLessThanOrEqual(1)
+        expect(b.tokenizer_slack, 'measured 1.02, budgeted 1.05').toBeGreaterThanOrEqual(1)
+        expect(b.completion_reserve).toBeGreaterThan(0)
+        expect(b.surface_frac, 'at 0.50 the corpus caps below the four-times floor').toBeLessThanOrEqual(0.4)
+      })
+
+      it('records the arithmetic that decides whether a tier is reachable', () => {
+        expect(sizing.composition_batch_tokens).toBeGreaterThan(0)
+        expect(sizing.tokens_per_document).toBeGreaterThan(0)
+        expect(sizing.documents).toBe(100)
+        expect(sizing.note).toContain('probe turn')
+      })
+    })
+  }
 })

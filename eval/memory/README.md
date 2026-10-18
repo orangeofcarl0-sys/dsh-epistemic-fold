@@ -25,6 +25,16 @@ time, and on a disambiguation probe it cannot.
 
 ## Pipeline
 
+**Running needs no generation.** Every tier this bench targets -- 131k, 252k, 475k and 1m -- is
+committed under `corpora/`, so the commands below work on a fresh clone. Generation is retained
+as the deeper test, and it is the only way to build a tier that is not committed.
+
+    EF_MEMORY_WINDOW=1048576 bash run-memory.sh --mode A --arm quality --order logical --depth 5
+
+The window selects the tier directory. A window with no committed corpus is REFUSED rather than
+silently served another tier's corpus, because a corpus is sized for its window and a 131K corpus
+read at 1M is not a 1M corpus.
+
     python build_corpus.py      # regenerates every derived artifact, or fails on a constraint
     bash run-memory.sh --calibrate --arm quality --order logical   # depth reaching 50% of the window
     bash run-memory.sh --mode A --arm quality --order logical --depth 5
@@ -44,11 +54,17 @@ gets a fast HTTP 400 that reads as "the endpoint is fine".
 | `build_filler_source.py` | vendors the real-text background, and asserts what must not be in it |
 | `filler_source.txt` | the background itself — real documentation prose, used once, never repeated |
 | `filler_source_provenance.json` | where the text came from, under which licences, and the narrowed rule |
-| `documents.json` | 100 documents, 20 projects — sized from the window, see Sizing |
+| `corpora/<tier>/documents.json` | 100 documents, 20 projects — sized from the window, see Sizing |
+| `corpora/<tier>/generation_report.json` | the six constraints, checked rather than assumed |
 | `answer_key.json` | 204 probes **with** expected values — the grader reads this |
 | `public_probes.json` | the same probes with every answer stripped — a run may see only this |
 | `orderings.json` | random, temporal and logical, as explicit sequences |
-| `generation_report.json` | the six constraints, checked rather than assumed |
+| `corpus_paths.py` | where a tier's corpus lives; the only place the layout is decided |
+
+Only the two per-tier files above differ between tiers. Measured, 131K against
+252K: `probes.json`, `answer_key.json`, `public_probes.json`, `orderings.json`,
+`corpus_core.json` and `errata.json` are **byte-identical**, so they live once at this level
+rather than being duplicated four times for content that cannot differ.
 | `run_cell.py` | the driver: ingest, fold to depth, inject, disable compaction, probe, score |
 | `score_probes.py` | renders the probe turn and scores a reply; no model involved |
 | `analyse.py` | the results table and the falsifier evaluation |

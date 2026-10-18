@@ -31,6 +31,7 @@ sys.path.insert(0, str(EF_ROOT / "eval" / "bridge"))
 sys.path.insert(0, str(HERE))
 
 from ef_bridge_client import ARM_SPECS, EpistemicFoldBridge  # noqa: E402
+import corpus_paths  # noqa: E402
 import score_probes  # noqa: E402
 
 # Minimal on purpose (6.9): any instruction to be concise or to summarise changes what the
@@ -242,7 +243,13 @@ def corpus_with_errata(docs: dict, errata: list) -> dict:
 
 
 def load(name: str) -> dict:
-    return json.loads((HERE / name).read_text(encoding="utf-8"))
+    """One corpus artifact, from the tier directory when it is tier-dependent.
+
+    documents.json and generation_report.json differ per window; the other six are byte-identical
+    across tiers and live once at eval/memory/. corpus_paths owns that split, so the driver does
+    not have to know which is which.
+    """
+    return json.loads(corpus_paths.corpus_file(name).read_text(encoding="utf-8"))
 
 
 def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: float) -> dict:
@@ -591,6 +598,10 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
 
 
 def main() -> None:
+    # Refuse BEFORE opening a bridge if this window has no committed corpus. Falling back to
+    # another tier would report a measurement of nothing: the corpus was sized for its window, and
+    # a 131K corpus read at 1M is not a 1M corpus.
+    corpus_paths.require_tier_corpus()
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", default="quality", choices=sorted(ARM_SPECS))
     ap.add_argument("--order", default="logical", choices=["random", "temporal", "logical"])

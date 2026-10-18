@@ -34,6 +34,9 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
+import corpus_paths  # noqa: E402  (the tier layout lives in one place)
 SEED = 20261012
 
 
@@ -880,11 +883,21 @@ def main() -> None:
     # a reader of the file would have seen four constraints and no reason to suspect a fifth.
     # A report that is written at the point of first use is a report that goes stale silently.
     failed = [k for k, v in report.items() if not v.get("ok")]
-    write_atomic(HERE / "generation_report.json", json.dumps(report, indent=2))
+    # ## Two artifacts are per-tier; the rest are shared, and that was measured
+    #
+    # Measured 131K against 252K: documents.json and generation_report.json differ, and probes,
+    # answer_key, public_probes, orderings, corpus_core and errata are byte-identical. So only
+    # those two are written into the tier directory. Duplicating the shared six per tier would be
+    # 3.5x the bytes for content that cannot differ.
+    #
+    # This is what lets every tier be committed at once and run without generating. See
+    # corpus_paths.py for the layout and for why a missing tier must not fall back to another.
+    corpus_paths.tier_dir().mkdir(parents=True, exist_ok=True)
+    write_atomic(corpus_paths.corpus_file("generation_report.json"), json.dumps(report, indent=2))
     if failed:
         print(f"FAILED constraints: {failed}", file=sys.stderr)
         raise SystemExit(1)
-    write_atomic(HERE / "documents.json", json.dumps(docs, indent=2))
+    write_atomic(corpus_paths.corpus_file("documents.json"), json.dumps(docs, indent=2))
     write_atomic(HERE / "probes.json", json.dumps(probes, indent=2))
     write_atomic(HERE / "errata.json", json.dumps(probes["errata"], indent=2))
     write_atomic(HERE / "answer_key.json", json.dumps(key, indent=2))
