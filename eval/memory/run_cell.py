@@ -582,6 +582,23 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                 "measure": (after_compact or {}).get("measure"),
                 "set_compaction_returned": _enabled,
             })
+    # ## Every batch failing is not a score, and must not be written as one
+
+    # Measured 2026-10-18: the DeepSeek account ran out of credit mid-sweep and answered HTTP 402
+    # Insufficient Balance to all 20 batches of every subsequent cell. The driver scored each one
+    # 0.0000 with 204 unparsed, wrote it as a result file, and the sweep launched 53 more cells
+    # that could not possibly succeed -- fifteen minutes of a terminal error being reported as a
+    # measurement. A terminal provider error (401/402/403) cannot be fixed by retrying, and a cell
+    # whose every batch failed measured nothing at all.
+    #
+    # So it exits non-zero instead of writing a result. The runner reads that as a stop signal;
+    # nothing downstream can mistake an empty cell for a low score.
+    if batches and probe_failures >= len(batches):
+        why = str(bridge.last_telemetry.get("lastProviderError"))[:300]
+        print(f"TERMINAL: all {len(batches)} probe batches failed: {why}", file=sys.stderr)
+        bridge.close()
+        raise SystemExit(3)
+
     elapsed = time.monotonic() - started
     parsed = {"answers": all_answers, "unparsed": unparsed_all,
               "parsed_strict": strict, "parsed_loose": loose}

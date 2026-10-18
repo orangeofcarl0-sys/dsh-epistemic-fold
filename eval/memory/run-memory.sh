@@ -12,22 +12,38 @@ cd "$EF_HOME" || exit 1
 CREDENTIALS="${DSH_CREDENTIALS:-$HOME/.dsh/.credentials.yaml}"
 [ -f "$CREDENTIALS" ] || { echo "credential store not found at $CREDENTIALS" >&2; exit 1; }
 HARBOR_PY="D:/Data and code/xuchengjian/workplace/bench-workspace/lhtb/harbor/.venv/Scripts/python.exe"
-KEY=$("$HARBOR_PY" - "$CREDENTIALS" <<'PY'
+
+# ## One variable picks the route, the credential AND the model
+#
+# The free route is the default, and its quota is a hard ceiling rather than a tuning knob.
+# Measured 2026-10-18: after roughly 1,400 calls it answered HTTP 429 seven times in a row over
+# two minutes to 20-token requests -- an exhausted quota, not a per-minute rate limit. Against a
+# quota, concurrency buys nothing: it reaches the ceiling sooner and then every worker stalls.
+#
+# DeepSeek V4.1 Flash is the paid alternative. The two routes need DIFFERENT key names in the
+# store, so choosing a route has to choose a credential too; deriving both from EF_LIVE_BASE_URL
+# is what keeps them from disagreeing. Previously the key name was hardcoded, so pointing this at
+# another provider silently sent the wrong key.
+export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
+case "$EF_LIVE_BASE_URL" in
+  *api.deepseek.com*) _ef_key_name="${EF_LIVE_KEY_NAME:-DEEPSEEK_API_KEY}"; _ef_model="deepseek-flash" ;;
+  *)                  _ef_key_name="${EF_LIVE_KEY_NAME:-OPENCODE_GO_API_KEY}"; _ef_model="beam-free" ;;
+esac
+KEY=$("$HARBOR_PY" - "$CREDENTIALS" "$_ef_key_name" <<'PY'
 import re, sys
 text = open(sys.argv[1], encoding='utf-8').read()
-m = re.search(r'^\s+OPENCODE_GO_API_KEY:\s*(\S+)\s*$', text, re.M)
+m = re.search(r'^\s+' + re.escape(sys.argv[2]) + r':\s*(\S+)\s*$', text, re.M)
 sys.stdout.write(m.group(1) if m else '')
 PY
 )
-[ -n "$KEY" ] || { echo "OPENCODE_GO_API_KEY not present in the credential store" >&2; exit 1; }
+[ -n "$KEY" ] || { echo "$_ef_key_name not present in the credential store" >&2; exit 1; }
 
 export EF_ROOT="$EF_HOME"
-export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
-# `step-5-preview-free` is no longer served: it answers HTTP 400 "Model is
-# unavailable", so the documented invocation could not run at all. `beam-free`
-# is the free model this route actually serves; measured 2026-10-18.
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-beam-free}"
+# step-5-preview-free is no longer served: it answers HTTP 400 "Model is unavailable", so the
+# documented invocation could not run at all. beam-free is the free model the free route
+# actually serves; measured 2026-10-18. An explicit EF_LIVE_MODEL still wins.
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-$_ef_model}"
 
 # ## The step reply budget, and why its default was wrong for this bench
 #
