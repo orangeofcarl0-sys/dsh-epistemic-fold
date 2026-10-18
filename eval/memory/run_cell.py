@@ -325,7 +325,7 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
 
 
 def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
-             inject: bool, limit_docs: int | None, fold_increment_frac: float) -> dict:
+             inject: bool, limit_docs: int | None, fold_increment_frac: float | None) -> dict:
     orders = load("orderings.json")
     docs = load("documents.json")
     public = load("public_probes.json")
@@ -387,20 +387,36 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # data, not an assumption, and the achieved depth is recorded beside the target so a cell
     # cannot be labelled with a depth it did not reach.
     window_tokens = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
-    increment = int(window_tokens * fold_increment_frac)
-    # ## A target the corpus cannot reach is named BEFORE the run, not discovered after it
-    #
-    # Each fold needs one increment of NEW content, so the corpus size bounds the depth: at the
-    # committed 4.2x ratio and an increment of one window, four folds are reachable and a fifth
-    # is not. Saying so here costs one line; saying it only in the artifact is how "depth 5" got
-    # printed for cells that had been folded once.
     corpus_tokens_est = sum(len(d["text"]) for d in by_key.values()) // 4 if ingests_corpus else 0
-    max_depth = corpus_tokens_est // increment if increment > 0 else 0
-    if ingests_corpus and depth > max_depth:
-        print(f"WARNING: depth {depth} is unreachable. The corpus holds about "
-              f"{corpus_tokens_est:,} tokens and each fold needs {increment:,} of new content, "
-              f"so at most {max_depth} folds can be driven; this cell will report "
-              f"depth_achieved={max_depth}.", file=sys.stderr)
+    # ## The increment cannot be a fixed window AND leave depth as the only variable
+    #
+    # A window-sized increment makes depth and CONTENT the same knob. At the committed 4.2x ratio,
+    # a depth-1 cell stops after one window and receives 24 of the 100 documents, then gets scored
+    # on all 204 probes -- so roughly three quarters of them ask about documents it never received,
+    # and the "depth curve" measures how much corpus arrived rather than what repeated compression
+    # costs. The confound is total, not marginal.
+    #
+    # So the cadence is the corpus divided by the depth: every depth ingests the SAME 100
+    # documents, and only the NUMBER of compressions differs. The increment is still a fixed
+    # quantity, still scaled by the tier (it is the tier corpus over the depth), and still not
+    # adaptive -- it is chosen so that depth is the only variable.
+    #
+    # An explicit --fold-increment-frac keeps the window cadence for the other question ("the
+    # session grows by a window between folds"), where the corpus size bounds the reachable depth
+    # and a target beyond it is named BEFORE the run rather than discovered after it.
+    if fold_increment_frac is None:
+        cadence = "corpus/depth"
+        increment = corpus_tokens_est // depth if depth > 0 else 0
+        max_depth = depth
+    else:
+        cadence = format(fold_increment_frac, "g") + " window(s)"
+        increment = int(window_tokens * fold_increment_frac)
+        max_depth = corpus_tokens_est // increment if increment > 0 else 0
+        if ingests_corpus and depth > max_depth:
+            print(f"WARNING: depth {depth} is unreachable at a {cadence} cadence. The corpus holds "
+                  f"about {corpus_tokens_est:,} tokens and each fold needs {increment:,} of new "
+                  f"content, so at most {max_depth} folds can be driven; this cell will report "
+                  f"depth_achieved={max_depth}.", file=sys.stderr)
     fact_seqs: dict[str, list[int]] = {}
     fold_events: list[dict] = []
     appended = 0
@@ -592,6 +608,7 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # label from being a claim rather than a measurement.
         "depth_achieved": folds,
         "fold_increment_frac": fold_increment_frac,
+        "fold_cadence": cadence,
         "fold_increment_tokens": increment,
         "corpus_tokens_estimated": corpus_tokens_est,
         "max_achievable_depth": max_depth,
@@ -684,10 +701,10 @@ def main() -> None:
     ap.add_argument("--arm", default="quality", choices=sorted(ARM_SPECS))
     ap.add_argument("--order", default="logical", choices=["random", "temporal", "logical"])
     ap.add_argument("--depth", type=int, default=5)
-    # How much NEW content drives one fold, as a fraction of the window. 1.0 means one window,
-    # which is the tier's own scale -- so the fold cadence is the same experiment at every tier
-    # rather than a token count that means something different at each one.
-    ap.add_argument("--fold-increment-frac", type=float, default=1.0)
+    # How much NEW content drives one fold, as a fraction of the window. Omitted (the default)
+    # means corpus/depth: every depth ingests the same corpus and only the number of compressions
+    # differs, which is what makes a depth curve a curve. Pass a value for the window cadence.
+    ap.add_argument("--fold-increment-frac", type=float, default=None)
     ap.add_argument("--mode", default="A", choices=["A", "B", "C", "N"])
     ap.add_argument("--warned", action="store_true")
     ap.add_argument("--calibrate", action="store_true")
@@ -736,7 +753,7 @@ def main() -> None:
         print(f"cell {args.mode}/{args.arm}/{args.order}: "
               f"depth {out['depth_achieved']}/{out['depth_target']} "
               f"(asked {out['folds_requested']}, declined {out['folds_declined']}, "
-              f"increment {out['fold_increment_tokens']} tokens), "
+              f"{out['fold_cadence']} cadence, increment {out['fold_increment_tokens']} tokens), "
               f"accuracy {o['accuracy']} (floor {o['chance_floor']}, "
               f"unparsed {o['unparsed']}){short}")
     print(f"wrote {path}")
