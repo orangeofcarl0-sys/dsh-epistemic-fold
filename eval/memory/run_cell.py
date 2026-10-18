@@ -609,11 +609,26 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     #
     # So it exits non-zero instead of writing a result. The runner reads that as a stop signal;
     # nothing downstream can mistake an empty cell for a low score.
+    # ## All batches failing is not a score -- but only SOME such failures are terminal
+
+    # Measured 2026-10-18: a DeepSeek balance ran out mid-sweep and every later cell answered
+    # HTTP 402 to all 20 batches. The driver scored each one 0.0000 with 204 unparsed, wrote it as
+    # a result file, and the sweep launched 53 more cells that could not succeed -- fifteen
+    # minutes of a terminal error reported as a measurement.
+
+    # Measured again at 252K: the `basic` arm holds the whole corpus unfolded, which at a 4.2x
+    # ratio is 1,084,183 tokens against a model context of 1,048,576, so all 20 batches failed on
+    # context length. That is a STRUCTURAL limit of the cell, not a dead route, and stopping the
+    # sweep for it would be wrong -- the other arms run fine in exactly that window.
+
+    # So the two are distinguished. 401/402/403 cannot be retried away and stop the run; anything
+    # else fails this cell only, and no result is written either way, because a cell whose every
+    # batch failed measured nothing.
     if batches and probe_failures >= len(batches):
-        why = str(bridge.last_telemetry.get("lastProviderError"))[:300]
-        print(f"TERMINAL: all {len(batches)} probe batches failed: {why}", file=sys.stderr)
+        why = str(bridge.last_telemetry.get("lastProviderError"))
+        print(f"CELL FAILED: all {len(batches)} probe batches failed: {why[:300]}", file=sys.stderr)
         bridge.close()
-        raise SystemExit(3)
+        raise SystemExit(3 if any(c in why for c in ("HTTP 401", "HTTP 402", "HTTP 403")) else 4)
 
     elapsed = time.monotonic() - started
     parsed = {"answers": all_answers, "unparsed": unparsed_all,
