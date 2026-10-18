@@ -75,8 +75,16 @@ CODE_SHARE = 0.10
 # 5% of headroom. 475K needs 7,982,284 and 1M needs 17,616,076, so the stdlib and
 # site-packages pool (7,233,446) could not serve either -- the harness prose closes the gap,
 # and this is where it stops.
+# ## Derived from the SAME two knobs build_corpus.py uses, not written as literals
+#
+# A literal here can disagree with build_corpus.py silently. EF_MEMORY_CORPUS_RATIO=4.5 is a
+# supported value -- the design allows anything in [4.0, 5.0] -- and at 4.5 the 1M tier needs
+# 18,874,368 characters, which is 373,747 MORE than a hardcoded 4.2 target produces. The tier
+# would simply stop being buildable, and the error would blame filler_source.txt.
+LARGEST_TIER_WINDOW = int(os.environ.get("EF_MEMORY_LARGEST_TIER_WINDOW", "1048576"))
+CORPUS_RATIO = float(os.environ.get("EF_MEMORY_CORPUS_RATIO", "4.2"))
 POOL_TARGET_CHARS = int(os.environ.get("EF_MEMORY_POOL_TARGET_CHARS",
-                                       str(int(1048576 * 4.2 * 4 * 1.05))))
+                                       str(int(LARGEST_TIER_WINDOW * CORPUS_RATIO * 4 * 1.05))))
 
 # The two hygiene patterns from tests/release-hygiene.spec.ts, applied to the harness source.
 # They are duplicated here on purpose: a test can only REPORT that a published file is dirty,
@@ -384,6 +392,21 @@ def main():
         total += len(chunk)
     pool = "".join(parts)
 
+    # ---- 3c. The pool must be able to serve its own target, and that has to be CHECKED
+    #
+    # Without this the builder printed a size and exited 0 however short it was. A short pool then
+    # failed much later, in build_corpus.py, with "the pool is X chars but this window needs Y.
+    # Enlarge filler_source.txt" -- which points the reader at the pool when the cause is a
+    # constant in THIS file. build_corpus.py refuses rather than emitting a corpus under the
+    # four-times rule; this is the same refusal one level up, where the shortfall originates.
+    if len(pool) < POOL_TARGET_CHARS:
+        raise SystemExit(
+            "the pool reached " + format(len(pool), ",") + " chars but its target is "
+            + format(POOL_TARGET_CHARS, ",") + " (window " + format(LARGEST_TIER_WINDOW, ",")
+            + " at ratio " + str(CORPUS_RATIO) + "). The vendored sources did not supply enough "
+            + "prose: add a source, or lower the target and the tiers it must serve."
+        )
+
     # ---- 4. ASSERT the rules, rather than trusting the filter
     fields, numeric, word_values = load_vocab()
     hit_f = sorted({f for f in fields if re.search(r"\b" + re.escape(f) + r"\b", pool, re.I)})
@@ -405,6 +428,10 @@ def main():
         "code_share_target": CODE_SHARE,
         "code_share_actual": round(spent / max(1, len(pool)), 4),
         "pool_chars": len(pool),
+        "pool_target_chars": POOL_TARGET_CHARS,
+        "pool_meets_target": len(pool) >= POOL_TARGET_CHARS,
+        "largest_tier_window": LARGEST_TIER_WINDOW,
+        "corpus_ratio": CORPUS_RATIO,
         "pool_sha256": hashlib.sha256(pool.encode("utf-8")).hexdigest(),
         "approx_tokens_chars_over_4": len(pool) // 4,
         "word_tokens": len(words),
@@ -437,6 +464,9 @@ def main():
     )
 
     print("pool: " + format(len(pool), ",") + " chars (~" + format(len(pool)//4, ",") + " tokens)")
+    print("  target " + format(POOL_TARGET_CHARS, ",") + " chars for window "
+          + format(LARGEST_TIER_WINDOW, ",") + " at ratio " + str(CORPUS_RATIO)
+          + "  reached with " + format(len(pool) - POOL_TARGET_CHARS, ",") + " to spare")
     print("  prose blocks " + format(len(prose), ",") + "   code blocks " + format(len(taken), ",")
           + " (share " + format(spent/max(1,len(pool)), ".3f") + ")")
     print("  word tokens " + format(len(words), ",") + "  distinct " + format(len(distinct), ",")

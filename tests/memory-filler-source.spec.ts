@@ -90,6 +90,21 @@ describe.skipIf(!canRun)('the memory corpus background', () => {
     expect(found, 'a background figure equal to a probed one is a second candidate').toEqual([])
   })
 
+  it('is large enough to serve the largest tier, which is the whole reason it exists', () => {
+    // The corpus is a PREFIX of the pool, cut to WINDOW * ratio * 4. So a pool that is too short
+    // does not fail here -- it fails later, in build_corpus.py, blaming filler_source.txt for a
+    // target that was set in the builder. The 475K and 1M tiers were unbuildable for exactly
+    // that reason before the harness prose was added, and nothing executed the requirement.
+    const target: number = prov.pool_target_chars ?? 0
+    expect(target, 'the provenance must record the target it was built against').toBeGreaterThan(0)
+    expect(
+      pool.length,
+      'the pool is ' + pool.length.toLocaleString() + ' chars but the target is ' +
+        target.toLocaleString(),
+    ).toBeGreaterThanOrEqual(target)
+    expect(prov.pool_meets_target, 'the builder must have checked its own target').toBe(true)
+  })
+
   it('keeps the source-code share bounded, so the register stays documentation', () => {
     // Code is adopted in small quantity by explicit guidance: it is a different register from the
     // probed facts, and a background that is mostly code lets a summariser keep the facts as the
