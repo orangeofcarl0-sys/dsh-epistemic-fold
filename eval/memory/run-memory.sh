@@ -24,7 +24,28 @@ PY
 export EF_ROOT="$EF_HOME"
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 export EF_LIVE_API_KEY="$KEY"
-export EF_LIVE_MODEL="${EF_LIVE_MODEL:-step-5-preview-free}"
+# `step-5-preview-free` is no longer served: it answers HTTP 400 "Model is
+# unavailable", so the documented invocation could not run at all. `beam-free`
+# is the free model this route actually serves; measured 2026-10-18.
+export EF_LIVE_MODEL="${EF_LIVE_MODEL:-beam-free}"
+
+# ## The step reply budget, and why its default was wrong for this bench
+#
+# `STEP_MAX_TOKENS` defaults to 900 (eval/tau2/bridge-host.ts:99) and NEITHER
+# this script NOR run_cell.py ever set it, so every probe ran at 900. On a
+# reasoning model the cap is spent on reasoning AND content together, so the
+# model frequently answered with nothing at all. Measured 2026-10-18, same arm,
+# same window, same route:
+#
+#     EF_BRIDGE_MAX_TOKENS=900   economy  204/204 unparsed  finish=max-tokens
+#     EF_BRIDGE_MAX_TOKENS=8192  economy  204/204 parsed    finish=stop
+#
+# and it moved accuracy, not just the parse rate: economy's mean over n=5 went
+# from ~0.81 at 900 to ~0.90 at 8192. run_cell.py:502 already listed "the reply
+# budget being 900 tokens for a 204-line answer" among three defects the artifact
+# could not diagnose; the whitelist was widened then, the budget itself never was.
+# An explicit EF_BRIDGE_MAX_TOKENS still wins.
+export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-8192}"
 # Built in its own variable first. Inside ${VAR:-...} bash does not process backslash escapes
 # the way the surrounding quoting suggests, and the value that reached the host was not valid
 # JSON -- so the header was silently absent and every request answered HTTP 400

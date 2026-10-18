@@ -44,6 +44,25 @@ SYSTEM_PUSH = (
 SYSTEM_WARNED = SYSTEM_PUSH + " You will be asked to recall specific details, so retain them."
 
 
+# The reply budget for one probe call, and the base the retry escalates from. Read from the
+# same variable run-memory.sh sets, so the driver and the runner cannot disagree about it.
+PROBE_MAX_TOKENS = int(os.environ.get("EF_BRIDGE_MAX_TOKENS", "8192"))
+
+
+def empty_reply(reply: dict) -> bool:
+    """A call that SUCCEEDED and carried no content.
+
+    Distinct from an error, and the old retry could not see it: the HTTP call returned 200 and
+    the model answered with nothing, because it spent the whole output budget on reasoning and
+    finished on max-tokens. Measured 2026-10-18 at the host default of 900 tokens: economy came
+    back 204/204 unparsed. Across a two-window n=5 sweep, 9 of 40 cells were in this state, and
+    every one of them was scored as a total retention failure.
+    """
+    if reply.get("error"):
+        return False
+    return not str(reply.get("content") or "").strip()
+
+
 def retryable(error: str) -> bool:
     """Whether an error could plausibly succeed on a later attempt.
 
@@ -57,25 +76,38 @@ def retryable(error: str) -> bool:
     return False
 
 
-def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0) -> tuple[dict, int]:
-    """One model call, retried through a provider failure.
+def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0,
+                    budget: int = PROBE_MAX_TOKENS) -> tuple[dict, int]:
+    """One model call, retried through a provider failure OR a truncated reply.
 
     The probe turn is the whole measurement, so a 429 that lands on it would report a cell as
     total retention failure when nothing was measured at all. The retry is bounded and backs off,
     and the number of attempts is recorded, because "the provider was busy" and "the model could
     not recall" are different findings.
+
+    An EMPTY reply is a third case, and it needs a different recovery. ef_bridge_client.step
+    documents it: the budget caps reasoning and content together, so the reply arrives empty and
+    finishes max-tokens, and "a nudge cannot recover from it -- the recovery is a bigger budget".
+    So the budget is passed explicitly and RAISED on each empty reply. Retrying at the same
+    budget would reproduce the constraint that truncated it.
     """
     failures = 0
+    reply: dict = {}
+    scale = 1
     for attempt in range(max_attempts):
-        reply = bridge.step()
-        if not reply.get("error"):
-            return reply, failures
-        failures += 1
-        if not retryable(str(reply.get("error"))):
-            # A DETERMINISTIC error is not going to become true. Retrying it spends the whole
-            # backoff budget and, worse, hides the cause: the first plumbing run reported one
-            # provider failure, which read as provider turbulence and was in fact a malformed
-            # header that would have failed identically on every attempt.
+        reply = bridge.step(max_tokens=budget * scale)
+        if reply.get("error"):
+            failures += 1
+            if not retryable(str(reply.get("error"))):
+                # A DETERMINISTIC error is not going to become true. Retrying it spends the whole
+                # backoff budget and, worse, hides the cause: the first plumbing run reported one
+                # provider failure, which read as provider turbulence and was in fact a malformed
+                # header that would have failed identically on every attempt.
+                return reply, failures
+        elif empty_reply(reply):
+            failures += 1
+            scale += 1  # truncation: more room, not another nudge
+        else:
             return reply, failures
         time.sleep(min(base_sleep * (2 ** min(failures, 4)), 120))
     return reply, failures
@@ -514,6 +546,22 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # them -- `grep` found zero occurrences in eval/tau2/bridge-host.ts. They were added when
         # this list was widened from 9 keys to 22, on the belief that they carried the WHY of a
         # declined fold. A whitelist entry for a key that cannot exist reads as coverage.
+        # ADDED 2026-10-18: the TOKEN bill.
+        #
+        # `costTotal` is `realizedCost(recorder.bill, profile)` -- a price computed
+        # under an economics profile, i.e. a modelling choice. This bench runs on a
+        # FREE route, so that dollar figure is not spend and is not comparable
+        # across routes. bridge-host.ts:1922-1925 says so itself:
+        #
+        #   "The price depends on a profile that is a modelling choice; the token
+        #    count is what the provider actually charged for, and it is comparable
+        #    across routes in a way a dollar figure on a free route is not."
+        #
+        # The bridge already emits all five token fields (bridge-host.ts:1996-2000)
+        # and this whitelist was dropping every one of them, so the artifact kept
+        # the non-comparable figure and discarded the comparable one. That is the
+        # same shape of mistake as the entries removed below: a cost report that
+        # cannot answer "what did it spend" in the unit the provider bills in.
         "telemetry": {k: telemetry.get(k) for k in
                       ("folds", "roots", "emergencies", "compactionFailures",
                        "compactionFailureKinds", "promptTokensLast", "surfaceNodesLast",
@@ -522,7 +570,9 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
                        "lastFinishReason", "efToolsOffered", "summarizationAttempts",
                        "summarizationRetryExhausted", "billedCalls", "lastLeafDecision",
                        "lastCompactionError",
-                       "rationaleAttempts", "rationaleFailures", "rationaleFailureReason", "rationaleChars")},
+                       "rationaleAttempts", "rationaleFailures", "rationaleFailureReason", "rationaleChars",
+                       "tokensPrompt", "tokensUncachedInput", "tokensCacheRead",
+                       "tokensOutput", "tokensTotal")},
         # The folds the driver ASKED for and whether each committed. `compact()` returns the
         # delta, and discarding it is why "the fold declined" had to be inferred from `folds`
         # staying at 1 while `compactionFailures` stayed at 0.
