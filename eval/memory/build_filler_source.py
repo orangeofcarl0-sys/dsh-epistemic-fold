@@ -82,9 +82,21 @@ CODE_SHARE = 0.10
 # 18,874,368 characters, which is 373,747 MORE than a hardcoded 4.2 target produces. The tier
 # would simply stop being buildable, and the error would blame filler_source.txt.
 LARGEST_TIER_WINDOW = int(os.environ.get("EF_MEMORY_LARGEST_TIER_WINDOW", "1048576"))
-CORPUS_RATIO = float(os.environ.get("EF_MEMORY_CORPUS_RATIO", "4.2"))
+# ## Sized for the CEILING of the permitted range, not for today's default
+#
+# build_corpus.py accepts any ratio in [4.0, 5.0] -- 4.0 is the four-times rule, 5.0 is where
+# the composition batch stops fitting the window. Sizing the pool for the DEFAULT of 4.2 means
+# the pool serves exactly one point of a range the design says is free to move: at 4.5 the 1M
+# tier needs 18,874,368 chars and a 4.2-sized pool is 373,747 short, so raising a supported knob
+# would strand a tier and require a pool rebuild to recover.
+#
+# Sizing for 5.0 removes the coupling instead of documenting it. The pool is then a property of
+# "the largest tier this bench targets, at the loosest ratio it permits", which is stable under
+# every ratio the design allows. Cost: about 3.5M more chars than the 4.2 default needs, which
+# is the price of not having the pool and the corpus disagree.
+MAX_CORPUS_RATIO = float(os.environ.get("EF_MEMORY_MAX_CORPUS_RATIO", "5.0"))
 POOL_TARGET_CHARS = int(os.environ.get("EF_MEMORY_POOL_TARGET_CHARS",
-                                       str(int(LARGEST_TIER_WINDOW * CORPUS_RATIO * 4 * 1.05))))
+                                       str(int(LARGEST_TIER_WINDOW * MAX_CORPUS_RATIO * 4 * 1.05))))
 
 # The two hygiene patterns from tests/release-hygiene.spec.ts, applied to the harness source.
 # They are duplicated here on purpose: a test can only REPORT that a published file is dirty,
@@ -403,7 +415,7 @@ def main():
         raise SystemExit(
             "the pool reached " + format(len(pool), ",") + " chars but its target is "
             + format(POOL_TARGET_CHARS, ",") + " (window " + format(LARGEST_TIER_WINDOW, ",")
-            + " at ratio " + str(CORPUS_RATIO) + "). The vendored sources did not supply enough "
+            + " at the permitted ceiling ratio " + str(MAX_CORPUS_RATIO) + "). The sources did not supply enough "
             + "prose: add a source, or lower the target and the tiers it must serve."
         )
 
@@ -431,7 +443,7 @@ def main():
         "pool_target_chars": POOL_TARGET_CHARS,
         "pool_meets_target": len(pool) >= POOL_TARGET_CHARS,
         "largest_tier_window": LARGEST_TIER_WINDOW,
-        "corpus_ratio": CORPUS_RATIO,
+        "max_corpus_ratio": MAX_CORPUS_RATIO,
         "pool_sha256": hashlib.sha256(pool.encode("utf-8")).hexdigest(),
         "approx_tokens_chars_over_4": len(pool) // 4,
         "word_tokens": len(words),
@@ -465,7 +477,7 @@ def main():
 
     print("pool: " + format(len(pool), ",") + " chars (~" + format(len(pool)//4, ",") + " tokens)")
     print("  target " + format(POOL_TARGET_CHARS, ",") + " chars for window "
-          + format(LARGEST_TIER_WINDOW, ",") + " at ratio " + str(CORPUS_RATIO)
+          + format(LARGEST_TIER_WINDOW, ",") + " at ceiling ratio " + str(MAX_CORPUS_RATIO)
           + "  reached with " + format(len(pool) - POOL_TARGET_CHARS, ",") + " to spare")
     print("  prose blocks " + format(len(prose), ",") + "   code blocks " + format(len(taken), ",")
           + " (share " + format(spent/max(1,len(pool)), ".3f") + ")")
