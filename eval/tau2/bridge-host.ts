@@ -2224,17 +2224,85 @@ async function main(): Promise<void> {
           // (folds 1 -> 0, prompt 3.33M -> 4.35M) because the requirement is the OPPOSITE of the
           // theory. **The error message was in the artifact the whole time; reading it first would
           // have replaced a guess with a fact.**
-          const opened = !turnOpen
-          if (opened) openTurn()
-          await foldIfNeeded()
-          if (opened) closeTurn()
-          const after = foldCounters(engine!)
-          const committed = (after.leaves - before.leaves)
-            + (after.roots - before.roots)
-            + (after.emergencies - before.emergencies)
-          emit({ ok: true, committed, telemetry: await telemetry(),
-            measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
-              engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
+          // ## basic compresses through its OWN manual entry, and this is not a shortcut
+          //
+          // The driver decides WHEN a compression happens -- that is the design, stated in the
+          // header of run_cell.py -- and for an EF arm `compactIfNeeded` serves it, because the
+          // driver's part cadence is what the threshold sees.
+          //
+          // `basic` is different in kind: `compactIfNeeded` IS its threshold governor. It decides
+          // for itself and declines when it judges there is no pressure, so handing the driver's
+          // request to it means the ENGINE chooses the compression count. Measured 2026-10-19 at
+          // 131K: basic accepted folds 1 and 2 and declined 3 through 6, each with
+          // "summarization produced no text summary content", leaving 388,308 tokens on a
+          // 131,072 window -- 2.96x -- and 153 of 204 probes unparsed because the reply was
+          // truncated. The arm labelled "native summary compaction" had compressed twice and
+          // then stopped, and the artifact reported it as zero commits.
+          //
+          // A FORCED compression is the accurate request, and Basic already has that path:
+          // `compactNow` is what `/compact` calls. It is Basic's own summariser doing the work, so
+          // the arm still measures native summary compaction; only the TRIGGER moves from the
+          // engine to the driver, which is what every arm in this bench is supposed to do.
+          //
+          // Its `committed` cannot come from the EF counters. `foldCounters` counts the EF
+          // engine's leaves, and Basic's compaction runs in the INHERITED implementation, which
+          // never touches them -- so two real folds read as zero commits and the arm looked
+          // inert. The transaction's own result is the observable.
+          if (arm?.engine === 'basic') {
+            const tokensBeforeBasic = ctx!.tokenMeter.measure(session!).totalTokens
+            // The manual path's contract is an IDLE session and it throws `busy` while a turn is
+            // open (region.ts:205-207); the turn is the harness's bookkeeping, not the session's,
+            // so it is closed for the duration exactly as `rootCompact` does.
+            closeTurn()
+            let forced: CompactionResult | null = null
+            let basicRefusal: string | undefined
+            try {
+              const deadline = new AbortController()
+              const timer = FOLD_TIMEOUT_MS > 0 ? setTimeout(() => deadline.abort(), FOLD_TIMEOUT_MS) : undefined
+              try {
+                forced = await engine!.compactNow({
+                  session: session!,
+                  options: { provider: LIVE_PROVIDER, model: 'live' },
+                  runMaintenance: <T,>(task: (signal: AbortSignal) => Promise<T>): Promise<T> => task(deadline.signal),
+                } as never, deadline.signal)
+              } finally {
+                if (timer !== undefined) clearTimeout(timer)
+              }
+            } catch (error) {
+              // A refusal is a RESULT, not a crash: the op exists to drive a fold and report what
+              // happened. The whole cause chain is kept because every failure mode arrives wrapped
+              // in the same `busy` ManualCompactionError, so the outer message alone says only
+              // "requires an idle agent" and names none of them.
+              const chain: string[] = []
+              let node: unknown = error
+              while (node instanceof Error && chain.length < 4) {
+                chain.push(node.message)
+                node = node.cause
+              }
+              basicRefusal = chain.length === 0 ? String(error) : chain.join(' | caused by: ')
+            } finally {
+              openTurn()
+            }
+            const committedBasic = forced === null ? 0 : 1
+            if (committedBasic > 0) recordFoldLineage(before, foldCounters(engine!), forced!, tokensBeforeBasic)
+            emit({ ok: true, committed: committedBasic, forcedFold: true,
+              ...(basicRefusal === undefined ? {} : { refusal: basicRefusal }),
+              telemetry: await telemetry(),
+              measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
+                engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
+          } else {
+            const opened = !turnOpen
+            if (opened) openTurn()
+            await foldIfNeeded()
+            if (opened) closeTurn()
+            const after = foldCounters(engine!)
+            const committed = (after.leaves - before.leaves)
+              + (after.roots - before.roots)
+              + (after.emergencies - before.emergencies)
+            emit({ ok: true, committed, telemetry: await telemetry(),
+              measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
+                engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
+          }
         } else if (op === 'rootCompact') {
           // FORCE one ROOT fold, so a harness can exercise that path on demand.
           //

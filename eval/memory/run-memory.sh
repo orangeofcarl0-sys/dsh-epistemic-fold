@@ -63,7 +63,17 @@ export EF_LIVE_MODEL="${EF_LIVE_MODEL:-$_ef_model}"
 # budget being 900 tokens for a 204-line answer" among three defects the artifact
 # could not diagnose; the whitelist was widened then, the budget itself never was.
 # An explicit EF_BRIDGE_MAX_TOKENS still wins.
-export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-8192}"
+# ## Raised to 32,768 because the bench now runs to the 1M tier
+#
+# 8,192 was measured as sufficient at 131K. It is not at 252K: measured 2026-10-19, a 252K cell
+# at 8,192 came back finish=max-tokens with 102-184 of 204 probes unparsed -- the budget was
+# spent on reasoning before the answer started, and the score described the budget rather than
+# the model. At 32,768 every cell since has finished stop.
+#
+# The default moves rather than staying per-caller because a caller who forgets it gets a
+# SILENTLY truncated cell that still scores, which is the failure mode this bench exists to
+# catch in others. An explicit EF_BRIDGE_MAX_TOKENS still wins.
+export EF_BRIDGE_MAX_TOKENS="${EF_BRIDGE_MAX_TOKENS:-32768}"
 # Built in its own variable first. Inside ${VAR:-...} bash does not process backslash escapes
 # the way the surrounding quoting suggests, and the value that reached the host was not valid
 # JSON -- so the header was silently absent and every request answered HTTP 400
