@@ -1878,9 +1878,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // The span this fold replaces, for the output budget. Estimated from the shadowed
         // messages rather than taken from `measurement`, because the span has already been
         // removed from the surface by the time this hook runs. It only sizes a BUDGET, and
-        // `rationaleOutputFor` clamps to [1024, 8192], so an estimate within 2x changes the
-        // cap only in the middle of that range -- it cannot turn a workable budget into a
-        // tripwire, which is the failure this replaced.
+        // `rationaleOutputFor` clamps to [16_384, 32_768] -- NOT the [1024, 8192] this comment
+        // claimed until 2026-10-19, which was wrong by a factor of sixteen and made the budget
+        // look four times tighter than it is. Inside our span range the estimate cannot move the
+        // cap at all: every fold from 119K to 749K gets the 16,384 floor. The comment is corrected
+        // rather than deleted because the argument it makes still holds -- a 2x error in the
+        // estimate cannot turn a workable budget into a tripwire.
         const foldSpanTokens = estimateSpanTokens(summarizationInput.messages)
         try {
           const rationale = await rationaleOnly({

@@ -90,8 +90,8 @@ describe('the memory driver sequence', () => {
     // Split by cumulative TOKENS, not by document count: documents are not the same size and a
     // part IS a fold's span, so a count-based split gives parts that differ in exactly the
     // quantity being controlled.
-    expect(DRIVER).toContain('boundary = sum(weights) / folds_target')
-    expect(DRIVER).toContain('running >= boundary * (cursor + 1)')
+    expect(DRIVER).toContain('boundary = sum(weights) / folds')
+    expect(DRIVER).toContain('if running >= boundary * (cursor + 1) and cursor < folds - 1:')
     expect(DRIVER).toContain('for part_index, part in enumerate(parts):')
     expect(DRIVER).toContain('increment = corpus_tokens_est // folds_target')
     // Folding is switched off BEFORE the first append and re-enabled for exactly one call per
@@ -104,6 +104,32 @@ describe('the memory driver sequence', () => {
     expect(DRIVER).toContain('bridge.set_compaction(False)')
     // And a part that produced no fold is recorded as such rather than counted.
     expect(DRIVER).toContain('declined += 1')
+  })
+
+  it('sizes each tier by its OWN part count, and the default cannot shadow it', () => {
+    // Two ceilings bind and only one binds per tier: the SURFACE (retained tail + part) against
+    // the tier's simulated window, and the digest call's INPUT (about 1.225x the span) against
+    // the MODEL's context. The second binds only at 1M, where six parts put the digest input at
+    // 88% of a 1,048,576 context and the provider answered one fold in six with a successful
+    // EMPTY completion -- finish=stop, outputTokens=0. Seven takes it to 77%.
+    // The RESOLUTION is exercised for real in memory-batch-loop.spec.ts, which can run the
+    // driver under a fake bridge. Here the shape is pinned, because the shape is what was wrong:
+    // the first version of this change left `--depth` at a numeric default, so `args.depth` was
+    // never None, the per-tier lookup was dead code, and every tier used one count while the
+    // result file still reported a cadence.
+    expect(DRIVER).toContain('TIER_FOLDS: dict[int, int] = {1_048_576: 7}')
+    expect(DRIVER).toContain('DEFAULT_FOLDS = 6')
+    // ## The default must be None, and this is the defect it prevents
+    //
+    // A numeric --depth default makes `args.depth is not None` always true, so the per-tier
+    // lookup is dead code and every tier silently uses one count while the result file still
+    // reports a cadence -- the exact failure the table exists to prevent, wearing the table's
+    // clothes.
+    expect(DRIVER).toContain('ap.add_argument("--depth", type=int, default=None)')
+    expect(DRIVER).toContain('folds = args.depth if args.depth is not None else folds_for_window(window)')
+    // And the split is by cumulative TOKENS, never by document count.
+    expect(DRIVER).toContain('weights = [max(1, len(by_key[k]["text"]) // 4) for k in ingestible]')
+    expect(DRIVER).toContain('def split_into_parts(')
   })
 
   it('gives the regenerable arm a read tool and the compression arms none', () => {

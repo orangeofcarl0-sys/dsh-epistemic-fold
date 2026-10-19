@@ -208,8 +208,30 @@ export async function rationaleOnly(options: {
     .map(block => block.type === 'text' ? block.text : '')
     .join('\n')
     .trim()
+  // ## An empty digest must say WHICH empty it was
+  //
+  // This message used to be the bare string, and that made three different failures
+  // indistinguishable in every artifact they reached: (a) the model spent the whole output
+  // budget on reasoning and finished max-tokens with no content, (b) the model genuinely emitted
+  // nothing, (c) the stream ended early with no blocks. Each needs a different response -- a
+  // bigger budget, a different instruction, or a transport retry -- and the artifact said only
+  // "produced no text content", which reads as (b) for all three.
+  //
+  // Measured 2026-10-19: one fold in six at the 1M tier failed this way with a 16,384-token
+  // budget while its five siblings produced ~444 tokens of content each, so the budget itself
+  // was not obviously the cause and there was no way to tell from the result file. The finish
+  // kind, the assembled block count and the usage cost nothing and are the whole attribution.
   if (text.length === 0) {
-    throw new LlmError('rationale produced no text content', 'UNSUPPORTED_CONTENT')
+    const usage = assembler.usage
+    throw new LlmError(
+      'rationale produced no text content'
+        + ' (finish=' + assembler.finish.kind
+        + ', blocks=' + rawOutput.length
+        + ', outputTokens=' + (usage === undefined ? 'unknown' : usage.outputTokens)
+        + ', inputTokens=' + (usage === undefined ? 'unknown' : usage.inputTokens)
+        + ', maxTokens=' + options.maxTokens + ')',
+      'UNSUPPORTED_CONTENT',
+    )
   }
   return {
     text,

@@ -50,6 +50,62 @@ SYSTEM_WARNED = SYSTEM_PUSH + " You will be asked to recall specific details, so
 PROBE_MAX_TOKENS = int(os.environ.get("EF_BRIDGE_MAX_TOKENS", "8192"))
 
 
+# ## Parts per tier, because two different ceilings bind and only one binds per tier
+#
+# Six is the floor everywhere: five puts the 1M surface past the model's own context.
+# Seven is needed only at 1M, where the digest call's INPUT -- sized by the fold span, not by
+# the tier window -- reaches 86% of the model context and the provider starts answering folds
+# with a successful empty completion. The other tiers sit at 11-39% and are unaffected.
+#
+# Keyed by window tokens, so a new tier is added by naming its number here rather than by
+# inheriting the largest tier's setting.
+TIER_FOLDS: dict[int, int] = {1_048_576: 7}
+DEFAULT_FOLDS = 6
+
+
+def split_into_parts(keys: list[str], weights: list[int], folds: int) -> list[list[str]]:
+    """Cut a corpus into `folds` parts of roughly equal WEIGHT.
+
+    ## Why by weight and not by count
+
+    A part IS a fold's span, and documents are not the same size, so dividing by count gives
+    parts that differ in exactly the quantity being controlled. Measured at 252K: the count
+    split produced spans of 162,533 / 227,128 / 227,023 / 227,167 / 172,646; this one produces
+    119,043 / 183,510 / 183,928 / 172,857 / 183,454 / 171,903.
+
+    ## A pure function, so a tier can be sized WITHOUT running it
+
+    Extracted so the largest tier's split can be checked against its real corpus without a
+    model call -- which matters because that tier is the expensive one. A helper that could
+    only be exercised by spending an hour of provider time would not get exercised.
+
+    `folds <= 0` returns the whole corpus as ONE part: "ingest it, fold none of it" is a
+    legitimate state to measure and it must still receive every document.
+    """
+    if folds <= 0:
+        return [list(keys)]
+    parts: list[list[str]] = [[] for _ in range(folds)]
+    boundary = sum(weights) / folds
+    cursor = 0
+    running = 0
+    for k, w in zip(keys, weights):
+        parts[cursor].append(k)
+        running += w
+        if running >= boundary * (cursor + 1) and cursor < folds - 1:
+            cursor += 1
+    return parts
+
+
+def folds_for_window(window_tokens: int) -> int:
+    """How many equal parts this tier's corpus is folded in.
+
+    A function rather than a constant so the caller cannot pass a window and silently get the
+    default: the whole point of the table is that the largest tier needs a different count, and
+    a lookup that fell back quietly would reintroduce the failure it exists to prevent.
+    """
+    return TIER_FOLDS.get(window_tokens, DEFAULT_FOLDS)
+
+
 def empty_reply(reply: dict) -> bool:
     """A call that SUCCEEDED and carried no content.
 
@@ -495,18 +551,7 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # one build_corpus.py sizes the corpus with, and it only has to be even, not exact.
     ingestible = [k for k in seq if by_key.get(k) is not None]
     weights = [max(1, len(by_key[k]["text"]) // 4) for k in ingestible]
-    if folds_target > 0:
-        parts: list[list[str]] = [[] for _ in range(folds_target)]
-        boundary = sum(weights) / folds_target
-        cursor = 0
-        running = 0
-        for k, w in zip(ingestible, weights):
-            parts[cursor].append(k)
-            running += w
-            if running >= boundary * (cursor + 1) and cursor < folds_target - 1:
-                cursor += 1
-    else:
-        parts = [ingestible]
+    parts = split_into_parts(ingestible, weights, folds_target)
     # folds_target 0 means "ingest the corpus, fold none of it" -- the unfolded state, which is a
     # legitimate thing to measure. It must still RECEIVE every document; an empty session would
     # score zero and read as a total retention failure when nothing had been measured.
@@ -819,20 +864,40 @@ def main() -> None:
     # compression count is the design's, not the engine's. It is not a depth target: depth was
     # never a free axis, because 4.2 windows of corpus can only be folded so many ways, and
     # treating it as one is what produced a depth-1 cell that had to hold 4.2 windows unfolded.
-    # ## Six parts, because five overflows the model's own context at the 1M tier
+    # ## The part count defaults PER TIER, and the tiers differ because two ceilings bind
     #
-    # The corpus is 4.2 windows, so a part is corpus/N and the surface before a fold is
-    # (retained tail + part). At the 1M tier that is:
+    # They are not the same number:
     #
-    #     N=5   part 881,127   surface 1,132,785 = 108% of a 1,048,576 model context  OVER
-    #     N=6   part 734,272   surface   985,930 =  94%                              within
+    #   the SURFACE (retained tail + part) must stay inside the tier's simulated window
+    #   the digest call's INPUT (about 1.225x the span) must stay clear of the MODEL context
     #
-    # Five does not fail as an error -- no model call happens during ingestion -- but the
-    # session would sit past the model's real context, which is a state no deployment can reach.
-    # Six is the smallest count that keeps BOTH the surface and the fold request inside 1M at
-    # the largest tier, and it also brings the 252K surface back inside its own simulated window
-    # (243,007 vs 258,048), which five did not. See docs/139 for the arithmetic.
-    ap.add_argument("--depth", type=int, default=6)
+    # The first binds at 252K: five parts measured +37,715 over the window, six stays inside
+    # (243,007 of 258,048). The second binds ONLY at 1M, because the digest input is sized by
+    # the SPAN (corpus/parts) rather than by the window, so it grows with the tier. The figures
+    # below are this driver's own split over each tier's real corpus, with the digest input taken
+    # as 1.225x the largest part -- a MEASURED overhead, checked against the one tier run at both
+    # counts: for 1M at six parts it predicts 917,505 and the artifact recorded 917,657 (0.02%).
+    #
+    #   tier   6 parts: predicted digest input     measured
+    #   131k           112,940  ( 11% of model)
+    #   252k           221,825  ( 21%)              0 of 6 folds failed
+    #   475k           407,984  ( 39%)
+    #   1m             917,505  ( 88%)              1 of 6 folds failed, twice
+    #
+    # At 1M with six parts the provider answered one fold in six with a SUCCESSFUL EMPTY
+    # completion -- finish=stop, outputTokens=0 -- for a 917,657-token input, 87.5% of the
+    # model's 1,048,576. Not a budget problem and not a transport one: the request succeeded and
+    # carried nothing. Seven parts brings the largest span to 660,835 and the predicted input to
+    # 809,549 (77%), the smallest change that moves the tier out of the observed-failure band.
+    #
+    # The other tiers keep six: their digest inputs are 11-39% of the model context, nowhere near
+    # that band, and raising their count would only shrink the spans they exist to test.
+    #
+    # ## The default is None, and that is load-bearing
+    #
+    # With a numeric default, `args.depth` is never None, the per-tier lookup below is dead, and
+    # every tier silently uses one count -- which is exactly the failure this table prevents.
+    ap.add_argument("--depth", type=int, default=None)
     # ## No --fold-increment-frac: the knob was removed rather than left inert
     #
     # It survived the redesign in name only -- the flag was still parsed and still reached
@@ -878,9 +943,14 @@ def main() -> None:
         if args.mode != "R" and args.fs_root:
             raise SystemExit("--fs-root belongs to --mode R only; a compression arm measured"
                              " with a read tool would be measuring a different arm")
-        out = run_cell(args.arm, args.order, args.depth, args.mode, args.warned,
+        # The part count is the TIER's, resolved here rather than defaulted in the signature:
+        # the 1M tier needs seven and every other tier six, and a signature default would give
+        # every tier the same number while looking like it had chosen one.
+        window = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
+        folds = args.depth if args.depth is not None else folds_for_window(window)
+        out = run_cell(args.arm, args.order, folds, args.mode, args.warned,
                        inject, args.limit_docs,
-                       folds=args.depth, fs_root=args.fs_root)
+                       folds=folds, fs_root=args.fs_root)
 
     path = Path(args.out) if args.out else (HERE / f"result_{args.mode}_{args.arm}_{args.order}.json")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
