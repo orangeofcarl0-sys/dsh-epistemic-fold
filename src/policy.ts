@@ -123,10 +123,34 @@ export interface ResolvedEpistemicFoldConfig {
    * than resolved to something plausible.
    */
   readonly allowCrossSessionRecall: boolean
+  /**
+   * The Thermal Working-Set Observer (RC29).
+   *
+   * `off` (default) — nothing is computed and nothing is logged. An existing
+   * deployment's behavior is byte-identical.
+   * `observe` — each automatic fold decision also computes the working-set
+   * decomposition, the thermal residency reading and the shadow folding
+   * recommendation, and logs them.
+   *
+   * Observation is DIAGNOSTIC ONLY. It cannot change a leaf, root or recall
+   * decision, cannot create a rebase intent, cannot touch the surface, and
+   * cannot issue an LLM call. That is enforced structurally — see
+   * `src/working-set-observer.ts`, which is the only consumer of this flag.
+   */
+  readonly workingSet: WorkingSetMode
 }
 
 /** Leaf admission policy mode (R2-B). */
 export type LeafAdmissionMode = 'legacy' | 'economic'
+
+/**
+ * Working-set observation mode (RC29).
+ *
+ * A two-valued switch rather than a boolean because the flag names a MODE of the
+ * runtime, and the vocabulary leaves room for a future `enforce` without
+ * redefining what `true` meant. Only `off` and `observe` exist today.
+ */
+export type WorkingSetMode = 'off' | 'observe'
 
 /**
  * Root rebase decision mode (R2-C).
@@ -164,6 +188,12 @@ const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
 const DEFAULT_BUNDLE_ROOT = '.epistemic-fold/bundles'
 const DEFAULT_LEAF_ADMISSION: LeafAdmissionMode = 'legacy'
+/**
+ * The working-set observer is OFF by default. Default-off is the whole safety
+ * story: observation adds a reading to the fold decision path, and an
+ * unconfigured deployment must not acquire one by accident. See `WorkingSetMode`.
+ */
+const DEFAULT_WORKING_SET: WorkingSetMode = 'off'
 /**
  * Default reclaim floors. `minReclaimTokens` is set above the ~530-token
  * framing preamble a checkpoint costs, so a fold must reclaim more than the
@@ -238,6 +268,12 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
   allowCrossSessionRecall?: boolean
+  /**
+   * The Thermal Working-Set Observer (RC29). Default `off`; `observe` adds
+   * diagnostic output to each automatic fold decision without changing it. See
+   * `WorkingSetMode`.
+   */
+  workingSet?: WorkingSetMode
 }
 
 /**
@@ -327,6 +363,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
   }
+  const workingSet = expanded.workingSet ?? DEFAULT_WORKING_SET
+  if (workingSet !== 'off' && workingSet !== 'observe') {
+    throw new Error('epistemic-fold: workingSet must be "off" or "observe"')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -342,6 +382,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     framingMode,
     referentialArchive,
     allowCrossSessionRecall,
+    workingSet,
     rootPolicy: {
       mode: rootPolicy,
       profiles: expanded.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
@@ -456,6 +497,7 @@ const EF_OWNED_CONFIG_KEYS = [
   'mode',
   'referentialArchive',
   'allowCrossSessionRecall',
+  'workingSet',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */
