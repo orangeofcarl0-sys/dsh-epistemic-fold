@@ -47,7 +47,11 @@ run_cell() {
   local extra=()
   if [ "$arm" = "regen" ]; then
     mode="R"
-    extra=(--fs-root "eval/memory/corpora/$td")
+    # The MATERIALISED corpus, not the corpus directory: the documents must exist as files the
+    # model can open. Pointing at corpora/<tier> hands it a directory of JSON it cannot address,
+    # and measured 2026-10-19 that produced cells whose own replies say so --
+    # "the path I was given resolves to a directory rather than a file".
+    extra=(--fs-root "eval/memory/regen-env/$td")
   fi
   EF_MEMORY_WINDOW="$tier" EF_TAU2_WINDOW="$tier" \
   EF_BRIDGE_STDERR="$OUT/$td/$arm-$rep.stderr.log" \

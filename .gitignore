@@ -26,3 +26,8 @@ client-instr.js
 eval/memory/last_score.json
 eval/memory/_*.json
 eval/memory/_bundles/
+# The regenerable arm's ENVIRONMENT, derived from the committed corpora by
+# materialize_corpus.py. Generated rather than tracked for the same reason _bundles is:
+# it is a 45 MB projection of data that already lives in corpora/, and a stale copy that
+# diverged from the corpus would measure a different arm than the one under test.
+eval/memory/regen-env/

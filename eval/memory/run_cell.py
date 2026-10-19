@@ -142,9 +142,8 @@ def retryable(error: str) -> bool:
             return True
     return False
 
-
 def step_with_tools(bridge, budget: int = PROBE_MAX_TOKENS,
-                    max_rounds: int = 64) -> tuple[dict, int]:
+                    max_rounds: int = 64) -> tuple[dict, int, dict]:
     """One probe turn, with tool rounds, for the REGENERABLE arm.
 
     That arm's whole premise is UNLIMITED access: the model reads whichever documents it wants,
@@ -152,20 +151,37 @@ def step_with_tools(bridge, budget: int = PROBE_MAX_TOKENS,
     carries tool calls is not an answer -- it is the next round, and the results must be appended
     before the model is asked again.
 
-    The round count is bounded only to keep a runaway loop from holding a cell forever; 64 is
-    far above what a 204-probe turn needs, so hitting it is a finding rather than a limit the
-    reference was measured under. Every other arm calls `step_with_retry` and never comes here,
+    The round count is bounded only to keep a runaway loop from holding a cell forever; 64 is far
+    above what a 204-probe turn needs, so hitting it is a finding rather than a limit the
+    reference was measured under. Every other arm calls step_with_retry and never comes here,
     because they are given no tools at all.
+
+    ## The mechanism is COUNTED, because without that the arm is unfalsifiable
+
+    Tool use IS this arm's mechanism, and the artifact used to record none of it: a cell that
+    scored 1.0 after reading forty documents and a cell that scored 1.0 by guessing were
+    indistinguishable in the result file. Guessing is a live possibility here -- the probes are
+    multiple choice with a 0.25 floor -- so "it scored well" is not evidence that the arm worked
+    as designed.
+
+    Measured 2026-10-19: two cells scored 0 and the only reason the cause was diagnosable is
+    that the model CHOSE to explain that no document could be found. A less forthcoming model
+    would have left the same failure invisible. Counting rounds and calls costs nothing and
+    makes it visible either way; a cell with zero tool calls at a tier that requires reading is
+    now visibly wrong rather than quietly lucky.
     """
     failures = 0
     rounds = 0
+    calls_made = 0
+    truncated = False
     reply: dict = {}
     while rounds < max_rounds:
         reply, f = step_with_retry(bridge, budget=budget)
         failures += f
         calls = reply.get("tool_calls") or []
         if not calls:
-            return reply, failures
+            return reply, failures, {"toolRounds": rounds, "toolCalls": calls_made,
+                                     "toolRoundsExhausted": False}
         for call in calls:
             name = str(call.get("name"))
             raw_args = call.get("arguments")
@@ -179,12 +195,14 @@ def step_with_tools(bridge, budget: int = PROBE_MAX_TOKENS,
                 content = result.get("content") or ""
             except Exception as error:  # a tool failure is data for the next turn
                 content = json.dumps({"error": str(error), "tool": name})
-            # The result belongs to the call the model already made, so it is appended as a
-            # tool message carrying that call id rather than as a new user turn.
+            # The result belongs to the call the model already made, so it is appended as a tool
+            # message carrying that call id rather than as a new user turn.
             bridge.append({"role": "tool", "id": str(call.get("id") or ""),
                            "content": content})
+            calls_made += 1
         rounds += 1
-    return reply, failures
+    return reply, failures, {"toolRounds": rounds, "toolCalls": calls_made,
+                             "toolRoundsExhausted": True}
 
 
 def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0,
@@ -637,6 +655,15 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     turn_chars = 0
     reply_heads = []
     between_batch_folds: list[dict] = []
+    # ## The regenerable arm's mechanism, counted
+    #
+    # Zero here at a tier that requires reading means the arm did not work as designed, whatever
+    # it scored. That distinction is invisible in an accuracy column and is exactly why these are
+    # recorded: the probes are multiple choice, so a guess scores 0.25 and a lucky run scores
+    # well without reading anything.
+    tool_rounds = 0
+    tool_calls_made = 0
+    tool_exhausted_batches = 0
     for batch in batches:
         if inject:
             # The minimal set for THIS batch, which is what 6.4.1 asks for and what the
@@ -678,7 +705,11 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # The regenerable arm gets the tool loop; every other arm has no tools to call and
         # takes the same single call it always did.
         if fs_root is not None:
-            reply, failures = step_with_tools(bridge)
+            reply, failures, tool_stats = step_with_tools(bridge)
+            tool_rounds += tool_stats["toolRounds"]
+            tool_calls_made += tool_stats["toolCalls"]
+            if tool_stats["toolRoundsExhausted"]:
+                tool_exhausted_batches += 1
         else:
             reply, failures = step_with_retry(bridge)
         probe_failures += failures
@@ -780,6 +811,10 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         "probe_turn_chars": turn_chars, "probe_batches": len(batches),
         "probe_seconds": round(elapsed, 1),
         "probe_provider_failures": probe_failures,
+        # The regenerable arm's mechanism. Zero calls at a tier that requires reading means the
+        # arm did not run as designed, whatever it scored.
+        "tool_rounds": tool_rounds, "tool_calls": tool_calls_made,
+        "tool_rounds_exhausted_batches": tool_exhausted_batches,
         # The first 400 characters of the reply, so a parse failure is diagnosable from the
         # result file rather than only from a rerun.
         "reply_head": (reply_heads[0] if reply_heads else ""),
