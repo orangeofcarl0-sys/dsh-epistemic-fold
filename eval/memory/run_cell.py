@@ -379,7 +379,7 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
 
 
 def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
-             inject: bool, limit_docs: int | None, fold_increment_frac: float | None,
+             inject: bool, limit_docs: int | None,
              folds: int = 5, fs_root: str | None = None) -> dict:
     orders = load("orderings.json")
     docs = load("documents.json")
@@ -472,7 +472,6 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     folds_target = folds if ingests_corpus else 0
     increment = corpus_tokens_est // folds_target if folds_target > 0 else 0
     cadence = "corpus/" + str(folds_target)
-    max_depth = folds_target
     fact_seqs: dict[str, list[int]] = {}
     fold_events: list[dict] = []
     appended = 0
@@ -708,11 +707,9 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # compressed once was reported as compressed five times. Recording both is what stops the
         # label from being a claim rather than a measurement.
         "depth_achieved": folds,
-        "fold_increment_frac": fold_increment_frac,
         "fold_cadence": cadence,
         "fold_increment_tokens": increment,
         "corpus_tokens_estimated": corpus_tokens_est,
-        "max_achievable_depth": max_depth,
         "folds_natural": natural,
         "folds_requested": requested,
         "folds_committed": committed,
@@ -808,10 +805,12 @@ def main() -> None:
     # never a free axis, because 4.2 windows of corpus can only be folded so many ways, and
     # treating it as one is what produced a depth-1 cell that had to hold 4.2 windows unfolded.
     ap.add_argument("--depth", type=int, default=5)
-    # How much NEW content drives one fold, as a fraction of the window. Omitted (the default)
-    # means corpus/depth: every depth ingests the same corpus and only the number of compressions
-    # differs, which is what makes a depth curve a curve. Pass a value for the window cadence.
-    ap.add_argument("--fold-increment-frac", type=float, default=None)
+    # ## No --fold-increment-frac: the knob was removed rather than left inert
+    #
+    # It survived the redesign in name only -- the flag was still parsed and still reached
+    # run_cell, while the loop computed its increment from folds_target alone. A flag that is
+    # accepted and ignored is worse than an absent one: a caller can set it, see no error, and
+    # believe the cadence changed. The cadence is now corpus/folds and nothing else.
     ap.add_argument("--mode", default="A", choices=["A", "B", "C", "N", "R"])
     ap.add_argument("--warned", action="store_true")
     ap.add_argument("--calibrate", action="store_true")
@@ -852,7 +851,7 @@ def main() -> None:
             raise SystemExit("--fs-root belongs to --mode R only; a compression arm measured"
                              " with a read tool would be measuring a different arm")
         out = run_cell(args.arm, args.order, args.depth, args.mode, args.warned,
-                       inject, args.limit_docs, args.fold_increment_frac,
+                       inject, args.limit_docs,
                        folds=args.depth, fs_root=args.fs_root)
 
     path = Path(args.out) if args.out else (HERE / f"result_{args.mode}_{args.arm}_{args.order}.json")
