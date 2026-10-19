@@ -78,25 +78,43 @@ describe('the memory driver sequence', () => {
     }
   })
 
-  it('drives the fold by ARRIVAL, so the folds are sequential', () => {
-    // The pressure this bench exists to measure is that each fold compresses the PREVIOUS fold's
-    // output. One fold applied to a fully populated static surface has no such property, and that
-    // is exactly what the old design produced: append 100 documents, then fold once. The session
-    // also sat at 4.2x its window for the whole ingest with zero folds, which only worked because
-    // nothing called the model during that phase.
-    expect(DRIVER).toContain('increment = int(window_tokens * fold_increment_frac)')
-    // The increment is CONTENT APPENDED, summed per append, not surface growth. The two differ
-    // because a fold removes content: measured 2026-10-18, taking the increment as surface growth
-    // made a depth-3 cell reach only two folds and run out of corpus, while depth 2 and depth 4
-    // worked -- a non-uniform defect, which reads as noise rather than as a bug.
-    expect(DRIVER).toMatch(/if depth <= 0 or since_last_fold < increment:/u)
-    expect(DRIVER).toContain('since_last_fold += grew')
-    // A fold resets it, so each fold is preceded by exactly one increment by construction.
-    expect(DRIVER).toContain('since_last_fold = 0')
-    expect(DRIVER).toContain('prev_surface = after')
-    // And a target the corpus cannot reach is named before the run rather than discovered after.
-    expect(DRIVER).toContain('max_achievable_depth')
-    expect(DRIVER).toContain('is unreachable')
+  it('drives a FIXED number of folds over a split corpus, in order', () => {
+    // The design in one test: the corpus is cut into equal parts, one fold is driven after each,
+    // and the count is the design's rather than the engine's.
+    //
+    // The previous version derived the cadence from a depth target, and depth was never a free
+    // axis: 4.2 windows of corpus can only be folded so many ways. A depth-1 cell therefore had
+    // to hold 4.2 windows UNFOLDED before its single fold -- 4.21x past the window it was
+    // simulating -- and at 252K that made one summarisation request 1,042,985 tokens against a
+    // 1,048,576 model context. It did not fail as an error; the provider dropped the socket.
+    expect(DRIVER).toContain('parts = [seq[i * part_size:(i + 1) * part_size]')
+    expect(DRIVER).toContain('for part_index, part in enumerate(parts):')
+    expect(DRIVER).toContain('increment = corpus_tokens_est // folds_target')
+    // Folding is switched off BEFORE the first append and re-enabled for exactly one call per
+    // fold, so the engine never chooses when to compress.
+    const switchOff = DRIVER.indexOf('compaction_on = bridge.set_compaction(False)')
+    const firstAppend = DRIVER.indexOf('reply = bridge.append(')
+    expect(switchOff, 'folding must be off before the corpus starts arriving').toBeGreaterThan(0)
+    expect(switchOff).toBeLessThan(firstAppend)
+    expect(DRIVER).toContain('_enabled = bridge.set_compaction(True)')
+    expect(DRIVER).toContain('bridge.set_compaction(False)')
+    // And a part that produced no fold is recorded as such rather than counted.
+    expect(DRIVER).toContain('declined += 1')
+  })
+
+  it('gives the regenerable arm a read tool and the compression arms none', () => {
+    // The bench's control is regenerable memory, which is a different thing from no compression:
+    // the model must be able to reach the documents freely and repeatedly. That needs the fs seam
+    // mounted and the model-facing read tool registered -- and it must be mounted for THAT arm
+    // only, because a compression arm measured with a read tool is a different arm.
+    expect(DRIVER).toContain('bridge.init(SYSTEM_WARNED if warned else SYSTEM_PUSH, [], fs_root=fs_root)')
+    expect(DRIVER).toContain('def step_with_tools(')
+    expect(DRIVER).toContain('bridge.append({"role": "tool", "id": str(call.get("id") or ""),')
+    expect(DRIVER).toContain('if fs_root is not None:')
+    // Mode R takes no corpus, and a compression mode cannot take an fs root.
+    expect(DRIVER).toContain('ingests_corpus = mode in ("A", "B")')
+    expect(DRIVER).toContain('--mode R is the regenerable arm and needs --fs-root')
+    expect(DRIVER).toContain('a compression arm measured')
   })
 
   it('retries a provider failure on the probe turn rather than scoring it as a loss', () => {
@@ -139,8 +157,8 @@ describe('the memory driver sequence', () => {
     // The arm guard sits before the fold, so C and N cannot be asked to compress a document set
     // that is already minimal -- and depth 0 still ingests, because that cell is the unfolded
     // reference rather than an empty session.
-    expect(cellPath('bridge.compact()')).toBeGreaterThan(cellPath('if not ingests_corpus:'))
-    expect(DRIVER).toContain('if ingests_corpus and depth > 0 and committed >= depth:')
+    expect(cellPath('bridge.compact()')).toBeGreaterThan(cellPath('if not ingests_corpus or folds_target <= 0:'))
+    expect(DRIVER).toContain('if ingests_corpus and folds_target > 0 and committed < folds_target:')
   })
 
   it('batches the probes by the documents they need, instead of one turn', () => {

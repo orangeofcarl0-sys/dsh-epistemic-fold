@@ -61,6 +61,16 @@ def empty_reply(reply: dict) -> bool:
     """
     if reply.get("error"):
         return False
+    # ## A reply carrying TOOL CALLS is not empty, it is a request to act
+    #
+    # The regenerable arm's replies have `content: null` BY DESIGN when the model asks to read
+    # something: the shape is assistant-with-tool_calls, and the text only arrives after the
+    # results are appended. Without this test that reply looks exactly like a truncation, so the
+    # retry re-asks with a bigger budget, the tool calls are never answered, and the session
+    # accumulates unanswered calls until the provider rejects the history. Measured 2026-10-19:
+    # 20 rounds of "N unanswered tool_call(s) filled", and the cell scored 0 with 202 unparsed.
+    if reply.get("tool_calls"):
+        return False
     return not str(reply.get("content") or "").strip()
 
 
@@ -75,6 +85,50 @@ def retryable(error: str) -> bool:
         if marker.lower() in error.lower():
             return True
     return False
+
+
+def step_with_tools(bridge, budget: int = PROBE_MAX_TOKENS,
+                    max_rounds: int = 64) -> tuple[dict, int]:
+    """One probe turn, with tool rounds, for the REGENERABLE arm.
+
+    That arm's whole premise is UNLIMITED access: the model reads whichever documents it wants,
+    as often as it wants, for as many rounds as it wants, and only then answers. So a reply that
+    carries tool calls is not an answer -- it is the next round, and the results must be appended
+    before the model is asked again.
+
+    The round count is bounded only to keep a runaway loop from holding a cell forever; 64 is
+    far above what a 204-probe turn needs, so hitting it is a finding rather than a limit the
+    reference was measured under. Every other arm calls `step_with_retry` and never comes here,
+    because they are given no tools at all.
+    """
+    failures = 0
+    rounds = 0
+    reply: dict = {}
+    while rounds < max_rounds:
+        reply, f = step_with_retry(bridge, budget=budget)
+        failures += f
+        calls = reply.get("tool_calls") or []
+        if not calls:
+            return reply, failures
+        for call in calls:
+            name = str(call.get("name"))
+            raw_args = call.get("arguments")
+            try:
+                parsed = json.loads(raw_args) if isinstance(raw_args, str) else (raw_args or {})
+            except Exception:
+                parsed = {}
+            try:
+                result = bridge._send({"op": "tool", "name": name, "arguments": parsed,
+                                       "callId": str(call.get("id") or "")})
+                content = result.get("content") or ""
+            except Exception as error:  # a tool failure is data for the next turn
+                content = json.dumps({"error": str(error), "tool": name})
+            # The result belongs to the call the model already made, so it is appended as a
+            # tool message carrying that call id rather than as a new user turn.
+            bridge.append({"role": "tool", "id": str(call.get("id") or ""),
+                           "content": content})
+        rounds += 1
+    return reply, failures
 
 
 def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0,
@@ -325,7 +379,8 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
 
 
 def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
-             inject: bool, limit_docs: int | None, fold_increment_frac: float | None) -> dict:
+             inject: bool, limit_docs: int | None, fold_increment_frac: float | None,
+             folds: int = 5, fs_root: str | None = None) -> dict:
     orders = load("orderings.json")
     docs = load("documents.json")
     public = load("public_probes.json")
@@ -334,7 +389,15 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
 
     bridge = EpistemicFoldBridge(arm=arm, bundle_root=str(HERE / "_bundles"),
                                  domain="memory", task_id=f"{mode}-{arm}-{order_name}")
-    bridge.init(SYSTEM_WARNED if warned else SYSTEM_PUSH, [])
+    # ## The REGENERABLE arm mounts DSH's filesystem seam and nothing else
+    #
+    # It is the bench's control, and the README states what that means: "regenerable memory,
+    # not no compression". The documents are files the model may read as often as it likes,
+    # for as many turns as it likes, so nothing is lost to compression OR to having to search
+    # the whole corpus at once in a single window. Passing fs_root mounts `ctx.fs` and registers
+    # the model-facing read tool; passing no tools list keeps every COMPRESSION arm measured
+    # with no tools at all, which is what they have always been.
+    bridge.init(SYSTEM_WARNED if warned else SYSTEM_PUSH, [], fs_root=fs_root)
 
     # ## Which arms get a corpus at all
     #
@@ -348,6 +411,8 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # C still receives the INJECTED documents below, which is what makes it the
     # reading-comprehension ceiling: can the model answer at all when the source is in front of
     # it and nothing else is.
+    # Mode R is the regenerable arm: it receives NO corpus, because its whole point is that the
+    # corpus stays in the environment rather than in the context.
     ingests_corpus = mode in ("A", "B")
     seq = orders[order_name] if ingests_corpus else []
     if limit_docs:
@@ -388,35 +453,26 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # cannot be labelled with a depth it did not reach.
     window_tokens = int(os.environ.get("EF_MEMORY_WINDOW", "131072"))
     corpus_tokens_est = sum(len(d["text"]) for d in by_key.values()) // 4 if ingests_corpus else 0
-    # ## The increment cannot be a fixed window AND leave depth as the only variable
+    # ## The compression loop: a FIXED number of folds over a fixed corpus
     #
-    # A window-sized increment makes depth and CONTENT the same knob. At the committed 4.2x ratio,
-    # a depth-1 cell stops after one window and receives 24 of the 100 documents, then gets scored
-    # on all 204 probes -- so roughly three quarters of them ask about documents it never received,
-    # and the "depth curve" measures how much corpus arrived rather than what repeated compression
-    # costs. The confound is total, not marginal.
+    # The design, stated once:
     #
-    # So the cadence is the corpus divided by the depth: every depth ingests the SAME 100
-    # documents, and only the NUMBER of compressions differs. The increment is still a fixed
-    # quantity, still scaled by the tier (it is the tier corpus over the depth), and still not
-    # adaptive -- it is chosen so that depth is the only variable.
+    #   1. the tier's corpus is fixed and NON-REGENERABLE -- once folded it cannot be re-read
+    #   2. it arrives in a fixed number of equal parts
+    #   3. one fold is driven after each part, so the compression count is FIXED, not emergent
+    #   4. the ENGINE is not permitted to compress on its own at any point
+    #   5. after the last part the probe turn runs, with folding still off
     #
-    # An explicit --fold-increment-frac keeps the window cadence for the other question ("the
-    # session grows by a window between folds"), where the corpus size bounds the reachable depth
-    # and a target beyond it is named BEFORE the run rather than discovered after it.
-    if fold_increment_frac is None:
-        cadence = "corpus/depth"
-        increment = corpus_tokens_est // depth if depth > 0 else 0
-        max_depth = depth
-    else:
-        cadence = format(fold_increment_frac, "g") + " window(s)"
-        increment = int(window_tokens * fold_increment_frac)
-        max_depth = corpus_tokens_est // increment if increment > 0 else 0
-        if ingests_corpus and depth > max_depth:
-            print(f"WARNING: depth {depth} is unreachable at a {cadence} cadence. The corpus holds "
-                  f"about {corpus_tokens_est:,} tokens and each fold needs {increment:,} of new "
-                  f"content, so at most {max_depth} folds can be driven; this cell will report "
-                  f"depth_achieved={max_depth}.", file=sys.stderr)
+    # Five parts is what keeps every fold's span near one part -- about 0.84 of a window at the
+    # committed 4.2x ratio -- instead of near the whole corpus. That matters twice: a fold then
+    # summarises ~0.84W rather than 4.2W, which fits any model context with room to spare, and
+    # the session never has to grow past the window it is simulating. The cadence is therefore
+    # derived from the corpus rather than from a depth target: depth was never a free axis,
+    # because 4.2 windows of corpus can only be folded so many ways.
+    folds_target = folds if ingests_corpus else 0
+    increment = corpus_tokens_est // folds_target if folds_target > 0 else 0
+    cadence = "corpus/" + str(folds_target)
+    max_depth = folds_target
     fact_seqs: dict[str, list[int]] = {}
     fold_events: list[dict] = []
     appended = 0
@@ -426,68 +482,57 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     committed = 0
     declined = 0
     exhausted = False
-    since_last_fold = 0
-    # The surface as of the previous append, so each append's growth can be summed into the
-    # increment. See the CONTENT APPENDED note below.
-    prev_surface = 0
-    for k in seq:
-        # Checked BEFORE the append, so reaching the target does not also append one document
-        # that no fold will ever cover. depth 0 is the one case that still ingests without
-        # folding: it is the unfolded reference, and the loop must not break before it starts.
-        if ingests_corpus and depth > 0 and committed >= depth:
-            break
-        d = by_key.get(k)
-        if d is None:
+    # ## Folding is OFF, and stays off except for the exact calls below
+    #
+    # The engine must not choose when to compress: that would make the fold count depend on the
+    # corpus, the threshold and the provider, so no curve could be drawn. Compaction is enabled
+    # only around each driven fold and revoked immediately, which is also what stops a fold from
+    # consuming the NEXT part before the probes that need it have run.
+    compaction_on = bridge.set_compaction(False)
+    # Split by DOCUMENT rather than by token: a document is the unit that arrives, and the split
+    # is chosen so the parts are as equal as the corpus allows.
+    part_size = (len(seq) + folds_target - 1) // folds_target if folds_target > 0 else len(seq)
+    # folds_target 0 means "ingest the corpus, fold none of it" -- the unfolded state, which is a
+    # legitimate thing to measure. It must still RECEIVE every document; an empty session would
+    # score zero and read as a total retention failure when nothing had been measured.
+    parts = [seq[i * part_size:(i + 1) * part_size] for i in range(max(1, folds_target))] if folds_target > 0 else [seq]
+    for part_index, part in enumerate(parts):
+        for k in part:
+            d = by_key.get(k)
+            if d is None:
+                continue
+            reply = bridge.append({"role": "user", "content": d["text"]})
+            for f in d.get("states", []):
+                fact_seqs.setdefault(f"{d['project']}.{f}", []).extend(reply.get("seqs") or [])
+            appended += 1
+            surface = bridge.last_telemetry.get("promptTokensLast", 0)
+            high_water = max(high_water, surface)
+        if not ingests_corpus or folds_target <= 0:
             continue
-        reply = bridge.append({"role": "user", "content": d["text"]})
-        for f in d.get("states", []):
-            fact_seqs.setdefault(f"{d['project']}.{f}", []).extend(reply.get("seqs") or [])
-        appended += 1
-        surface = bridge.last_telemetry.get("promptTokensLast", 0)
-        high_water = max(high_water, surface)
-        # ## The increment is CONTENT APPENDED, not surface growth
-        #
-        # These differ because a fold REMOVES content. Measured 2026-10-18: taking the increment
-        # as (surface - surface_at_last_fold) made a depth-3 cell at 131K reach only TWO folds
-        # and run out of corpus -- each fold drops the surface back to ~23K, so the remaining
-        # documents never re-crossed an increment that was a third of the corpus. Depth 2 and
-        # depth 4 worked, so the defect was not uniform: it read as noise rather than as a bug.
-        #
-        # Summing the per-append growth measures what actually arrived, and a fold resets it, so
-        # every fold is preceded by exactly one increment of new content by construction.
-        grew = surface - prev_surface
-        if grew > 0:
-            since_last_fold += grew
-        prev_surface = surface
-        if not ingests_corpus:
-            continue
-        # depth 0 means "ingest it, do not fold it". Folding is what the depth axis measures, so
-        # a cell that asks for none must still receive the corpus rather than an empty session.
-        if depth <= 0 or since_last_fold < increment:
-            continue
-        # Enough new content has arrived. Ask for a fold and record what actually happened.
+        # One fold per part. The span is whatever arrived since the previous fold, which is one
+        # part by construction -- measured and recorded rather than assumed.
         requested += 1
-        before = surface
+        before = bridge.last_telemetry.get("promptTokensLast", 0)
+        _enabled = bridge.set_compaction(True)
         ok = bridge.compact()
+        bridge.set_compaction(False)
         after = bridge.last_telemetry.get("promptTokensLast", 0)
         fold_events.append({
-            "fold": requested, "docs_appended": appended,
+            "fold": requested, "part": part_index + 1, "docs_appended": appended,
             "tokens_before": before, "tokens_after": after,
-            "increment_tokens": since_last_fold,
-            "committed": bool(ok),
+            "span_tokens": before - after, "committed": bool(ok),
+            "set_compaction_returned": _enabled,
         })
         if ok:
             committed += 1
-            since_last_fold = 0
-            prev_surface = after
             high_water = max(high_water, after)
         else:
-            # Declined while the surface was above the threshold: keep accumulating rather than
-            # pretending the wave did its job. The next attempt carries more pressure.
+            # A part that produced no fold is a FINDING, not something to paper over: the engine
+            # declined while the surface was above its threshold, which means the corpus and the
+            # policy disagree about whether folding is warranted.
             declined += 1
-    else:
-        if ingests_corpus and depth > 0 and committed < depth:
-            exhausted = True
+    if ingests_corpus and folds_target > 0 and committed < folds_target:
+        exhausted = True
     ingested = high_water
     ingested_docs = appended
     folds = natural + committed
@@ -499,7 +544,10 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
             for d in docs.get(pid, []):
                 bridge.append({"role": "user", "content": d["text"]})
 
-    # Measure a state, do not change one (5.4).
+    # Measure a state, do not change one (5.4). Folding was already disabled before the first
+    # append and each driven fold re-enabled it for exactly one call, so this is a re-assertion
+    # rather than the first switch-off: the probe turn must not fold the compressed state it is
+    # about to measure.
     compaction_on = bridge.set_compaction(False)
 
     # ## Batched probing (5.3 as corrected)
@@ -568,7 +616,12 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # not read. **A result artifact that records the evidence and is never read is worth exactly
         # as much as one that does not.**
         bridge.append({"role": "user", "content": turn})
-        reply, failures = step_with_retry(bridge)
+        # The regenerable arm gets the tool loop; every other arm has no tools to call and
+        # takes the same single call it always did.
+        if fs_root is not None:
+            reply, failures = step_with_tools(bridge)
+        else:
+            reply, failures = step_with_retry(bridge)
         probe_failures += failures
         text = reply.get("content") or ""
         if len(reply_heads) < 2:
@@ -748,12 +801,18 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", default="quality", choices=sorted(ARM_SPECS))
     ap.add_argument("--order", default="logical", choices=["random", "temporal", "logical"])
+    # ## The compression count is FIXED, and this is it
+    #
+    # The corpus is divided into this many equal parts and folded once after each, so the
+    # compression count is the design's, not the engine's. It is not a depth target: depth was
+    # never a free axis, because 4.2 windows of corpus can only be folded so many ways, and
+    # treating it as one is what produced a depth-1 cell that had to hold 4.2 windows unfolded.
     ap.add_argument("--depth", type=int, default=5)
     # How much NEW content drives one fold, as a fraction of the window. Omitted (the default)
     # means corpus/depth: every depth ingests the same corpus and only the number of compressions
     # differs, which is what makes a depth curve a curve. Pass a value for the window cadence.
     ap.add_argument("--fold-increment-frac", type=float, default=None)
-    ap.add_argument("--mode", default="A", choices=["A", "B", "C", "N"])
+    ap.add_argument("--mode", default="A", choices=["A", "B", "C", "N", "R"])
     ap.add_argument("--warned", action="store_true")
     ap.add_argument("--calibrate", action="store_true")
     ap.add_argument("--max-depth", type=int, default=40)
@@ -774,6 +833,11 @@ def main() -> None:
     # build_corpus.py checks the same arithmetic and refuses to emit a corpus that violates it.
     ap.add_argument("--target-frac", type=float, default=0.30)
     ap.add_argument("--limit-docs", type=int, default=None)
+    # The REGENERABLE arm's document root. Passing it mounts DSH's filesystem seam and the
+    # model-facing read tool, so the model can read the corpus instead of receiving it. It is
+    # required for --mode R and refused for every other mode, because a compression arm measured
+    # with a read tool would be measuring a different arm.
+    ap.add_argument("--fs-root", default=None)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -781,8 +845,15 @@ def main() -> None:
         out = run_calibration(args.arm, args.order, args.max_depth, args.target_frac)
     else:
         inject = args.mode in ("B", "C")
+        if args.mode == "R" and not args.fs_root:
+            raise SystemExit("--mode R is the regenerable arm and needs --fs-root: its whole"
+                             " point is that the corpus stays readable in the environment")
+        if args.mode != "R" and args.fs_root:
+            raise SystemExit("--fs-root belongs to --mode R only; a compression arm measured"
+                             " with a read tool would be measuring a different arm")
         out = run_cell(args.arm, args.order, args.depth, args.mode, args.warned,
-                       inject, args.limit_docs, args.fold_increment_frac)
+                       inject, args.limit_docs, args.fold_increment_frac,
+                       folds=args.depth, fs_root=args.fs_root)
 
     path = Path(args.out) if args.out else (HERE / f"result_{args.mode}_{args.arm}_{args.order}.json")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
@@ -795,15 +866,25 @@ def main() -> None:
                   f"tokens={s['tokens']} nodes={s['nodes']}")
     else:
         o = out["score"]["overall"]
-        # The ACHIEVED depth leads, because that is the treatment. A cell that could not reach
-        # its target says so here rather than being reported at a depth it never had.
-        short = "" if out["depth_achieved"] >= out["depth_target"] else "  SHORT-OF-TARGET"
-        print(f"cell {args.mode}/{args.arm}/{args.order}: "
-              f"depth {out['depth_achieved']}/{out['depth_target']} "
-              f"(asked {out['folds_requested']}, declined {out['folds_declined']}, "
-              f"{out['fold_cadence']} cadence, increment {out['fold_increment_tokens']} tokens), "
-              f"accuracy {o['accuracy']} (floor {o['chance_floor']}, "
-              f"unparsed {o['unparsed']}){short}")
+        # The ACHIEVED fold count leads, because that is the treatment. A cell that could not
+        # reach its target says so here rather than being reported at a count it never had.
+        #
+        # The regenerable arm is exempt: it folds NOTHING on purpose, so a shortfall is what it
+        # is supposed to report, and labelling it would read as a failed compression cell.
+        regenerable = args.mode == "R"
+        short = "" if regenerable or out["depth_achieved"] >= out["depth_target"] else "  SHORT-OF-TARGET"
+        if regenerable:
+            print(f"cell {args.mode}/{args.arm}/{args.order}: REGENERABLE (no corpus in context, "
+                  f"no folds, read tool over {args.fs_root}), "
+                  f"accuracy {o['accuracy']} (floor {o['chance_floor']}, "
+                  f"unparsed {o['unparsed']})")
+        else:
+            print(f"cell {args.mode}/{args.arm}/{args.order}: "
+                  f"folds {out['depth_achieved']}/{out['depth_target']} "
+                  f"(asked {out['folds_requested']}, declined {out['folds_declined']}, "
+                  f"{out['fold_cadence']} cadence, increment {out['fold_increment_tokens']} tokens), "
+                  f"accuracy {o['accuracy']} (floor {o['chance_floor']}, "
+                  f"unparsed {o['unparsed']}){short}")
     print(f"wrote {path}")
 
 

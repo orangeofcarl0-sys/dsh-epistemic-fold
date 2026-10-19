@@ -65,6 +65,22 @@ ARM_SPECS: dict[str, dict[str, str]] = {
     "economy": {"label": "economy", "engine": "ef", "mode": "economy", "taskRootMode": "off"},
     "balanced": {"label": "balanced", "engine": "ef", "mode": "balanced", "taskRootMode": "off"},
     "quality": {"label": "quality", "engine": "ef", "mode": "quality", "taskRootMode": "off"},
+    # ## The REGENERABLE arm is the reference, and it is not a compressor
+    #
+    # The bench's README states the control is "regenerable memory, not no compression", and the
+    # two are different: a full-context arm looks like a ceiling and is not one, because the model
+    # must SEARCH the whole corpus and the accuracy lost to that search is charged to the absence
+    # of compression. The denominator then shrinks, retention inflates, and the load penalty is
+    # silently credited to compression.
+    #
+    # So this arm never compresses and never receives the corpus in context. The documents sit in
+    # the environment as ordinary files and the model reads whichever it wants, as often as it
+    # wants, for as many turns as it wants. That is the true reference: information is freely and
+    # repeatably reachable, so nothing is lost to compression OR to search-all-of-it-at-once.
+    #
+    # It is engine "basic" with mode "legacy" only because the bridge must mount SOMETHING; the
+    # difference is enforced by the driver, which appends no corpus and disables folding.
+    "regen": {"label": "regen", "engine": "basic", "mode": "legacy", "taskRootMode": "off"},
 }
 
 
@@ -235,18 +251,27 @@ class EpistemicFoldBridge:
             self.telemetry.append(telemetry)
         return response
 
-    def init(self, policy: str, tools: list[dict[str, Any]]) -> None:
-        """Mount the session and the engine for this episode."""
-        self._send(
-            {
-                "op": "init",
-                "arm": self.spec,
-                "policy": policy,
-                "tools": tools,
-                "taskId": self.task_id,
-                "domain": self.domain,
-            }
-        )
+    def init(self, policy: str, tools: list[dict[str, Any]],
+             fs_root: str | None = None) -> None:
+        """Mount the session and the engine for this episode.
+
+        fs_root is the base directory the REGENERABLE arm's documents live in. Passing it
+        mounts DSH's filesystem seam and registers the model-facing read tool, which is what
+        makes that arm a real reference rather than 'no compression'. Every compression arm
+        leaves it None: they are measured with NO tools, and a tool list that appeared without
+        being asked for would change what they are.
+        """
+        request: dict[str, Any] = {
+            "op": "init",
+            "arm": self.spec,
+            "policy": policy,
+            "tools": tools,
+            "taskId": self.task_id,
+            "domain": self.domain,
+        }
+        if fs_root is not None:
+            request["fsRoot"] = fs_root
+        self._send(request)
 
     def turn_raw(self, message: dict[str, Any]) -> dict[str, Any]:
         """

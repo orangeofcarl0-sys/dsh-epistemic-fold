@@ -108,6 +108,9 @@
     }
   },
   "devDependencies": {
+    "@deepseek-ai/dsh-fs": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-fs-local": "0.2.0-rc.2",
+    "@deepseek-ai/dsh-tool-fs": "0.2.0-rc.2",
     "@types/node": "^26.6.3",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",

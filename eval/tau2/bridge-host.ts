@@ -54,6 +54,14 @@ import { Session, SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
 // `SystemPrompt` and `ToolRuntime` are mounted by the shared helper
 // (`eval/src/runtime-mount.ts`); only the ToolRuntime TYPE is needed here.
 import type { ToolRuntime } from '@deepseek-ai/dsh-tools'
+// ## The filesystem seam, so the REGENERABLE arm can read documents instead of receiving them
+//
+// The bench's control is "regenerable memory", not "no compression": the model must be able to
+// reach the information freely and repeatedly. That needs a real read tool, and DSH already has
+// one -- this import is the whole of the new-tool work. Reimplementing a reader in the bridge
+// would measure a different implementation from the one a deployment ships.
+import { LocalFileSystem } from '@deepseek-ai/dsh-fs-local'
+import * as toolFs from '@deepseek-ai/dsh-tool-fs'
 // The tool-result pruner is imported LAZILY inside the shared mount helper
 // (`eval/src/runtime-mount.ts`), because a static import of a package that is
 // not installed is a bridge that cannot start. See the mount site in `init`.
@@ -1237,7 +1245,19 @@ function toolSchemas(): readonly { name: string; description: string; parameters
   // recall tools are executed by the DSH ToolRuntime, not by the lane. Forwarding the list verbatim
   // would silently strip recall from the lane. So: empty means none, non-empty means these plus the
   // runtime's. Both callers get what they asked for, and neither gets a silent behaviour change.
-  if (benchmarkTools.length === 0) return []
+  // ## An empty benchmark list normally means "no tools", and the REGENERABLE arm is the
+  // exception that has to be named explicitly
+  //
+  // The rule exists because the memory bench passed `[]` and was still offered the runtime's
+  // recall tools, so the model called one, no call site answered it, and the provider rejected
+  // the unanswered shape -- 19 of 20 probe batches failed and every run scored 0/204. "Empty
+  // means none" fixed that and stays true for every COMPRESSION arm.
+  //
+  // The regenerable arm is different in kind: it is given no benchmark tools either, but its
+  // measurement IS the read tool, so returning `[]` here would leave the reference with nothing
+  // to read with. The seam is only mounted for that arm (see `init`), so this flag is exactly
+  // "this episode mounted a filesystem", not a second way to ask for tools.
+  if (benchmarkTools.length === 0 && !fsMounted) return []
   const runtime = toolsRuntime()
   const efTools = (runtime?.schemas() ?? []).map(schema => ({
     name: schema.name,
@@ -1260,6 +1280,15 @@ function toolSchemas(): readonly { name: string; description: string; parameters
  * reach it and it fires once per context: the tool list is needed on every model
  * call, and re-injecting per call would be both wasteful and racy.
  */
+/**
+ * Whether this episode mounted the filesystem seam, and therefore whether an EMPTY benchmark
+ * tool list still means "no tools".
+ *
+ * Per episode, like every other piece of bridge state: the process can outlive one cell, and a
+ * value left over would silently give a compression arm the read tool.
+ */
+let fsMounted = false
+
 let toolsRuntimeRef: ToolRuntime | undefined
 
 /**
@@ -1544,6 +1573,8 @@ async function init(request: {
   readonly tools: readonly TauTool[]
   readonly taskId: string
   readonly domain: string
+  /** Base directory for the regenerable arm's documents; absent means mount no fs at all. */
+  readonly fsRoot?: string
 }): Promise<void> {
   const route = resolveLiveRoute()
   if (route === undefined) throw new Error('bridge: no live route resolved')
@@ -1567,6 +1598,7 @@ async function init(request: {
   // task root as this one's.
   taskRootState = undefined
   compactionEnabled = true
+  fsMounted = false
   roots = 0
   emergencies = 0
   compactionFailures = 0
@@ -1615,6 +1647,37 @@ async function init(request: {
   // it is pinned there and this file is pinned to using it, which is the same
   // guarantee asserted at the site that can actually break it.
   mountRuntime(ctx, { systemPrompt: true, tools: true })
+  // ## The filesystem seam, mounted for the REGENERABLE arm only
+  //
+  // `dsh-tool-fs` registers the model-facing read tool and needs a `ctx.fs` provider;
+  // `dsh-fs-local` is that provider. Both are the packages a deployment ships, so the tool the
+  // model calls here is the production tool rather than a bench-shaped stand-in.
+  //
+  // The base directory is supplied per episode through EF_TAU2_FS_ROOT. When it is absent the
+  // seam is not mounted at all and no read tool is registered, which keeps every compression arm
+  // byte-identical to what it was: those arms are measured with NO tools, and a tool list that
+  // appeared without being asked for would change what they are.
+  fsMounted = request.fsRoot !== undefined
+  if (request.fsRoot !== undefined) {
+    // ## Both Config schemas are applied, because mounting a plugin directly bypasses them
+    //
+    // Cordis applies a plugin's Config schema when the LOADER mounts it; calling the exported
+    // entry point does not. Measured 2026-10-19: without this the bridge rejected its own
+    // defaults twice -- "diffBasisMaxBytes must be a positive safe integer" from fs-local, then
+    // "readLimit must be a positive integer" from tool-fs -- because each validates values the
+    // schema would have filled in, and there were none.
+    //
+    // 0.2.0-rc.2's tool-fs Config carries read-window budgets only: it registers the whole
+    // read/write/edit suite with no per-tool switch. The arm never calls write or edit, and
+    // read_image stays unregistered without an attachment store, so the effective surface is the
+    // read tool this arm needs.
+    const local = new LocalFileSystem(ctx, LocalFileSystem.Config({
+      cwd: request.fsRoot,
+      diffBasisMaxBytes: 10 * 1024 * 1024,
+    }))
+    void local
+    toolFs.apply(ctx, toolFs.Config({}))
+  }
   // ## The tool-result pruner, which production mounts and this harness did not
   //
   // `dsh-base`'s own preset mounts `@deepseek-ai/dsh-compaction-tool-result-pruner`
