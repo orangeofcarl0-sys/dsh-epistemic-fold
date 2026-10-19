@@ -1910,8 +1910,22 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           // identical to `semanticMode: 'none'`, and before this counter existed the artifact
           // could not tell the two apart. See `rationaleAttempts` in fold-telemetry.ts.
           this.telemetry.rationaleFailures += 1
+          // ## BOTH the code and the message, because `code ?? message` discarded the reason
+          //
+          // Measured 2026-10-19: four of five economy cells at a 252K window recorded
+          // `rationaleFailureReason: "LIVE_HTTP"` and nothing else -- no status, no provider
+          // words. `lastProviderError` was separately null, because the rationale call runs
+          // inside the engine and never passes through the host's `modelTurn`, which is the
+          // only writer of that field. So an artifact could say THAT the digest failed and
+          // never WHY, and a failure that removes the whole checkpoint read as a low score.
+          //
+          // `code` is still first because it is the stable, greppable half; the message is
+          // appended rather than replaced so neither can hide the other.
           this.telemetry.rationaleFailureReason = error instanceof Error
-            ? (error as Error & { code?: string }).code ?? error.message
+            ? (() => {
+                const code = (error as Error & { code?: string }).code
+                return code === undefined ? error.message : code + ": " + error.message
+              })()
             : String(error)
           semanticText = undefined
         }
