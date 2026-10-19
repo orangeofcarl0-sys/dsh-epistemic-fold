@@ -380,7 +380,7 @@ def run_calibration(arm: str, order_name: str, max_depth: int, target_frac: floa
 
 def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
              inject: bool, limit_docs: int | None,
-             folds: int = 5, fs_root: str | None = None) -> dict:
+             folds: int = 6, fs_root: str | None = None) -> dict:
     orders = load("orderings.json")
     docs = load("documents.json")
     public = load("public_probes.json")
@@ -488,13 +488,28 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     # only around each driven fold and revoked immediately, which is also what stops a fold from
     # consuming the NEXT part before the probes that need it have run.
     compaction_on = bridge.set_compaction(False)
-    # Split by DOCUMENT rather than by token: a document is the unit that arrives, and the split
-    # is chosen so the parts are as equal as the corpus allows.
-    part_size = (len(seq) + folds_target - 1) // folds_target if folds_target > 0 else len(seq)
+    # ## Split by cumulative TOKENS, not by document count
+    #
+    # Documents are not the same size, so dividing by count gives parts that differ in tokens --
+    # and tokens are the whole point: a part IS a fold's span. The estimate is chars/4, the same
+    # one build_corpus.py sizes the corpus with, and it only has to be even, not exact.
+    ingestible = [k for k in seq if by_key.get(k) is not None]
+    weights = [max(1, len(by_key[k]["text"]) // 4) for k in ingestible]
+    if folds_target > 0:
+        parts: list[list[str]] = [[] for _ in range(folds_target)]
+        boundary = sum(weights) / folds_target
+        cursor = 0
+        running = 0
+        for k, w in zip(ingestible, weights):
+            parts[cursor].append(k)
+            running += w
+            if running >= boundary * (cursor + 1) and cursor < folds_target - 1:
+                cursor += 1
+    else:
+        parts = [ingestible]
     # folds_target 0 means "ingest the corpus, fold none of it" -- the unfolded state, which is a
     # legitimate thing to measure. It must still RECEIVE every document; an empty session would
     # score zero and read as a total retention failure when nothing had been measured.
-    parts = [seq[i * part_size:(i + 1) * part_size] for i in range(max(1, folds_target))] if folds_target > 0 else [seq]
     for part_index, part in enumerate(parts):
         for k in part:
             d = by_key.get(k)
@@ -804,7 +819,20 @@ def main() -> None:
     # compression count is the design's, not the engine's. It is not a depth target: depth was
     # never a free axis, because 4.2 windows of corpus can only be folded so many ways, and
     # treating it as one is what produced a depth-1 cell that had to hold 4.2 windows unfolded.
-    ap.add_argument("--depth", type=int, default=5)
+    # ## Six parts, because five overflows the model's own context at the 1M tier
+    #
+    # The corpus is 4.2 windows, so a part is corpus/N and the surface before a fold is
+    # (retained tail + part). At the 1M tier that is:
+    #
+    #     N=5   part 881,127   surface 1,132,785 = 108% of a 1,048,576 model context  OVER
+    #     N=6   part 734,272   surface   985,930 =  94%                              within
+    #
+    # Five does not fail as an error -- no model call happens during ingestion -- but the
+    # session would sit past the model's real context, which is a state no deployment can reach.
+    # Six is the smallest count that keeps BOTH the surface and the fold request inside 1M at
+    # the largest tier, and it also brings the 252K surface back inside its own simulated window
+    # (243,007 vs 258,048), which five did not. See docs/139 for the arithmetic.
+    ap.add_argument("--depth", type=int, default=6)
     # ## No --fold-increment-frac: the knob was removed rather than left inert
     #
     # It survived the redesign in name only -- the flag was still parsed and still reached

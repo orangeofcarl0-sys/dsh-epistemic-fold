@@ -87,7 +87,11 @@ describe('the memory driver sequence', () => {
     // to hold 4.2 windows UNFOLDED before its single fold -- 4.21x past the window it was
     // simulating -- and at 252K that made one summarisation request 1,042,985 tokens against a
     // 1,048,576 model context. It did not fail as an error; the provider dropped the socket.
-    expect(DRIVER).toContain('parts = [seq[i * part_size:(i + 1) * part_size]')
+    // Split by cumulative TOKENS, not by document count: documents are not the same size and a
+    // part IS a fold's span, so a count-based split gives parts that differ in exactly the
+    // quantity being controlled.
+    expect(DRIVER).toContain('boundary = sum(weights) / folds_target')
+    expect(DRIVER).toContain('running >= boundary * (cursor + 1)')
     expect(DRIVER).toContain('for part_index, part in enumerate(parts):')
     expect(DRIVER).toContain('increment = corpus_tokens_est // folds_target')
     // Folding is switched off BEFORE the first append and re-enabled for exactly one call per
