@@ -106,28 +106,44 @@ def folds_for_window(window_tokens: int) -> int:
     return TIER_FOLDS.get(window_tokens, DEFAULT_FOLDS)
 
 
-def empty_reply(reply: dict) -> bool:
-    """A call that SUCCEEDED and carried no content.
+def empty_kind(reply: dict, finish: str) -> str | None:
+    """Classify a reply that carried no text, or None when it carried some.
 
-    Distinct from an error, and the old retry could not see it: the HTTP call returned 200 and
-    the model answered with nothing, because it spent the whole output budget on reasoning and
-    finished on max-tokens. Measured 2026-10-18 at the host default of 900 tokens: economy came
-    back 204/204 unparsed. Across a two-window n=5 sweep, 9 of 40 cells were in this state, and
-    every one of them was scored as a total retention failure.
+    ## Two different failures, and they need OPPOSITE recoveries
+
+    This used to be a boolean, and the boolean was wrong in a way that costs a whole cell:
+
+      truncated  finish max-tokens. The budget covers reasoning AND content, so a reasoning
+                 model can spend all of it before the answer starts. The recovery is MORE
+                 ROOM; retrying at the same budget reproduces the cap that cut it off.
+
+      silent     finish stop (or anything else). The provider COMPLETED the request and
+                 carried nothing. More room cannot help -- there was no cap to hit -- and
+                 the thing that can help is asking again in different words.
+
+    A nudge cannot fix a truncation (measured 2026-10-18: five identical max-tokens empties
+    ended a multi-hour cell). A bigger budget cannot fix silence, and paying for six of them
+    is exactly the wrong instrument. Measured 2026-10-20 at 475K on the basic arm: three of
+    five cells returned 204/204 unparsed having burned six doubled budgets per batch on a
+    reply that finished stop and was never going to appear with more room.
+
+    The tool-call exemption is kept here rather than in a caller: the regenerable arm's replies
+    have content null BY DESIGN when the model asks to read something, and reading that as a
+    truncation answers the tool calls never and doubles the budget uselessly. Measured
+    2026-10-19: 20 rounds of unanswered-tool_call fill-ins, cell scored 0, 202 unparsed.
     """
     if reply.get("error"):
-        return False
-    # ## A reply carrying TOOL CALLS is not empty, it is a request to act
-    #
-    # The regenerable arm's replies have `content: null` BY DESIGN when the model asks to read
-    # something: the shape is assistant-with-tool_calls, and the text only arrives after the
-    # results are appended. Without this test that reply looks exactly like a truncation, so the
-    # retry re-asks with a bigger budget, the tool calls are never answered, and the session
-    # accumulates unanswered calls until the provider rejects the history. Measured 2026-10-19:
-    # 20 rounds of "N unanswered tool_call(s) filled", and the cell scored 0 with 202 unparsed.
+        return None
     if reply.get("tool_calls"):
-        return False
-    return not str(reply.get("content") or "").strip()
+        return None
+    if str(reply.get("content") or "").strip():
+        return None
+    return "truncated" if finish.endswith("max-tokens") else "silent"
+
+
+def empty_reply(reply: dict, finish: str = "") -> bool:
+    """Whether a successful call carried no text. See empty_kind for the classification."""
+    return empty_kind(reply, finish) is not None
 
 
 def retryable(error: str) -> bool:
@@ -204,27 +220,39 @@ def step_with_tools(bridge, budget: int = PROBE_MAX_TOKENS,
     return reply, failures, {"toolRounds": rounds, "toolCalls": calls_made,
                              "toolRoundsExhausted": True}
 
-
 def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0,
                     budget: int = PROBE_MAX_TOKENS) -> tuple[dict, int]:
-    """One model call, retried through a provider failure OR a truncated reply.
+    """One model call, retried through a provider failure OR a reply that carried no text.
 
     The probe turn is the whole measurement, so a 429 that lands on it would report a cell as
-    total retention failure when nothing was measured at all. The retry is bounded and backs off,
-    and the number of attempts is recorded, because "the provider was busy" and "the model could
-    not recall" are different findings.
+    total retention failure when nothing was measured at all. The retry is bounded and backs
+    off, and the number of attempts is recorded, because the provider being busy and the model
+    failing to recall are different findings.
 
-    An EMPTY reply is a third case, and it needs a different recovery. ef_bridge_client.step
-    documents it: the budget caps reasoning and content together, so the reply arrives empty and
-    finishes max-tokens, and "a nudge cannot recover from it -- the recovery is a bigger budget".
-    So the budget is passed explicitly and RAISED on each empty reply. Retrying at the same
-    budget would reproduce the constraint that truncated it.
+    ## An empty reply is TWO failures, and they need OPPOSITE recoveries
+
+    truncated  finish max-tokens. The budget covers reasoning AND content, so a reasoning model
+               can spend all of it before the answer starts. The recovery is MORE ROOM.
+
+    silent     finish stop. The provider COMPLETED the request and carried nothing. More room
+               cannot help -- there was no cap to hit -- so the only thing left to vary is
+               what was asked, and the recovery is to ask again in different words.
+
+    Treating silence as truncation is not a cosmetic mislabel. Measured 2026-10-20 at 475K on
+    the basic arm: three of five cells returned 204/204 unparsed after burning six DOUBLED
+    budgets per batch on replies that finished stop and were never going to improve with more
+    room. The right instrument was a nudge; the budget was paid six times per batch for
+    nothing.
     """
     failures = 0
     reply: dict = {}
     scale = 1
     for attempt in range(max_attempts):
         reply = bridge.step(max_tokens=budget * scale)
+        # The provider's own word for how the call ENDED. It is the only thing that separates a
+        # cap from a completed-but-empty response, and it is read from telemetry because the
+        # assistant message shape does not carry it.
+        finish = str(bridge.last_telemetry.get("lastFinishReason", ""))
         if reply.get("error"):
             failures += 1
             if not retryable(str(reply.get("error"))):
@@ -233,11 +261,25 @@ def step_with_retry(bridge, max_attempts: int = 6, base_sleep: float = 5.0,
                 # provider failure, which read as provider turbulence and was in fact a malformed
                 # header that would have failed identically on every attempt.
                 return reply, failures
-        elif empty_reply(reply):
-            failures += 1
-            scale += 1  # truncation: more room, not another nudge
         else:
-            return reply, failures
+            kind = empty_kind(reply, finish)
+            if kind is None:
+                return reply, failures
+            failures += 1
+            if kind == "truncated":
+                # More ROOM, because the cap is what cut it off.
+                scale += 1
+                global empty_truncated
+                empty_truncated += 1
+            else:
+                # SILENCE. No cap was hit, so a bigger budget changes nothing and costs a
+                # doubled request. Ask again in different words: the provider completed the
+                # request, so what was asked is the only thing left to vary.
+                global empty_silent
+                empty_silent += 1
+                bridge.append({"role": "user", "content":
+                               "(Your previous reply was empty. Answer the questions above, "
+                               "one per line, in the form id: LETTER.)"})
         time.sleep(min(base_sleep * (2 ** min(failures, 4)), 120))
     return reply, failures
 
@@ -460,6 +502,12 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
     public = load("public_probes.json")
     key = load("answer_key.json")
     by_key = corpus_with_errata(docs, key["errata"])
+
+    # Per cell, not per process: these counters describe THIS measurement, and a bridge process
+    # can serve more than one.
+    global empty_truncated, empty_silent
+    empty_truncated = 0
+    empty_silent = 0
 
     bridge = EpistemicFoldBridge(arm=arm, bundle_root=str(HERE / "_bundles"),
                                  domain="memory", task_id=f"{mode}-{arm}-{order_name}")
@@ -814,6 +862,11 @@ def run_cell(arm: str, order_name: str, depth: int, mode: str, warned: bool,
         # The regenerable arm's mechanism. Zero calls at a tier that requires reading means the
         # arm did not run as designed, whatever it scored.
         "tool_rounds": tool_rounds, "tool_calls": tool_calls_made,
+        # Which empty-reply recovery ran, and how often. A cell that recovered from a cap and a
+        # cell that recovered from silence cost different things; recording neither left both
+        # visible only as an unparsed count, which reads as a retention failure.
+        "empty_truncated_retries": empty_truncated,
+        "empty_silent_retries": empty_silent,
         "tool_rounds_exhausted_batches": tool_exhausted_batches,
         # The first 400 characters of the reply, so a parse failure is diagnosable from the
         # result file rather than only from a rerun.
