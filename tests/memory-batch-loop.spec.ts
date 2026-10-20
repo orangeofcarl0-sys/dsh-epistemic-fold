@@ -53,7 +53,7 @@ describe.skipIf(!canRun)('the driver batch loop', () => {
     // the MODEL's context. The second binds only at 1M, where six parts put the digest input at
     // 88% of a 1,048,576 context and the provider answered one fold in six with a SUCCESSFUL
     // EMPTY completion -- finish=stop, outputTokens=0. Seven takes it to a predicted 77%.
-    const r = run()
+    const r: { folds_by_window: Record<string, number>; split_docs_7: number[] } = run()
     expect(r.folds_by_window['1048576']).toBe(7)
     expect(r.folds_by_window['258048']).toBe(6)
     expect(r.folds_by_window['131072']).toBe(6)
@@ -63,6 +63,6 @@ describe.skipIf(!canRun)('the driver batch loop', () => {
     expect(r.folds_by_window['999999']).toBe(6)
     // And the split really does cut 104 documents into seven parts without losing any.
     expect(r.split_docs_7).toHaveLength(7)
-    expect(r.split_docs_7.reduce((a, b) => a + b, 0)).toBe(104)
+    expect(r.split_docs_7.reduce((a: number, b: number) => a + b, 0)).toBe(104)
   })
 })
