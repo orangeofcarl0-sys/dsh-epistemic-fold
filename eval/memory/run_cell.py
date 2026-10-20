@@ -106,6 +106,16 @@ def folds_for_window(window_tokens: int) -> int:
     return TIER_FOLDS.get(window_tokens, DEFAULT_FOLDS)
 
 
+# ## How each empty-reply recovery ran, for THIS process
+#
+# Module level rather than returned from every call site, because the counters belong to the
+# measurement and not to one call. `run_cell` zeroes them per cell; a driver that reads them
+# without calling run_cell sees zero, which is the honest answer for a cell that never
+# recovered anything.
+empty_truncated = 0
+empty_silent = 0
+
+
 def empty_kind(reply: dict, finish: str) -> str | None:
     """Classify a reply that carried no text, or None when it carried some.
 

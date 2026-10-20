@@ -118,4 +118,12 @@ fi
 if [ "${1:-}" = "--check-route" ]; then
   exec "$HARBOR_PY" "$EF_HOME/eval/memory/check_route.py"
 fi
-exec "$HARBOR_PY" "$EF_HOME/eval/memory/run_cell.py" "$@"
+# ## The DRIVER is selectable, because there is now more than one protocol
+#
+# run_cell.py is the single-phase protocol: ingest everything, then ask every probe. It has
+# no moment at which any content is DONE, so the exit mechanism has nothing to retire and no
+# later probe whose accuracy could show what retiring it cost. phased.py adds that surface.
+#
+# The route, credential, window and budget plumbing above is identical for both -- which is
+# exactly why the selection happens HERE and not by copying this script.
+exec "$HARBOR_PY" "$EF_HOME/eval/memory/${EF_MEMORY_DRIVER:-run_cell.py}" "$@"
