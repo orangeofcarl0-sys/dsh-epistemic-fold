@@ -260,11 +260,16 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
             fresh = [cid for cid in current if cid not in seen_ids]
             if fresh:
                 reply_retire = bridge._send({"op": "retire", "ids": fresh,
-                                             "reason": f"phase {phase['index']} complete"})
+                                             "reason": f"phase {phase['index']} complete",
+                                             "remove": True})
                 outcomes = reply_retire.get("outcomes") or []
                 exit_record = {
                     "retire_requested": len(fresh),
                     "retire_written": reply_retire.get("written"),
+                    # How many were actually REMOVED from the surface. A written-but-not-removed
+                    # retirement is what `conflicts` catches; recording the two separately means the
+                    # artifact distinguishes "the engine refused" from "the removal failed".
+                    "retire_removed": reply_retire.get("removed"),
                     "retire_refused": {o.get("refusal"): 0 for o in outcomes if o.get("refusal")},
                     "retired_ids": fresh,
                 }

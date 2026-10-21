@@ -714,7 +714,17 @@ function emit(value: unknown): void {
 /** Report a failure without ever leaking a credential into the message. */
 function emitError(error: unknown): void {
   const message = error instanceof Error ? error.message : String(error)
-  emit({ ok: false, error: message.replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]') })
+  // ## The STACK, because a message alone cost a full rerun every time
+  //
+  // Every runtime fault in this bridge arrives at the driver as one sentence with no frame, so
+  // locating it means reproducing the whole cell. Measured 2026-10-21: an op failed with
+  // "Cannot read properties of undefined (reading 'content')" and the only way to find which
+  // read it was would have been another run. Four frames name the site and cost a few hundred
+  // bytes on a path that only runs when something is already broken.
+  const stack = error instanceof Error && error.stack !== undefined
+    ? ' | ' + error.stack.split('\n').slice(1, 5).map(line => line.trim()).join(' <- ')
+    : ''
+  emit({ ok: false, error: (message + stack).replace(/sk-[A-Za-z0-9_-]{16,}/gu, '[redacted]') })
 }
 
 /**
@@ -2354,11 +2364,94 @@ async function main(): Promise<void> {
           // first duplicate would abandon the rest silently.
           const retireIds = Array.isArray(request.ids) ? (request.ids as unknown[]).map(String) : []
           const retireReason = typeof request.reason === 'string' ? request.reason : undefined
+          const removeSurface = request.remove === true
           const outcomes = retireIds.map(id => retireCheckpoint(session!, id, retireReason))
+          // ## Removal is a SURFACE REPLACEMENT with an event that projects to NO message
+          //
+          // The SurfaceOp contract allows `replace` only on message-producing events and forbids
+          // it on log-only records, so `ef/retire` cannot carry the removal itself. Measured
+          // 2026-10-21 on a real Session: an empty-content `system/message` with
+          // `{op:'replace', startSeq:node, endSeq:node}` and that node in `sourceEventSeqs` drops
+          // the node -- the surface went [0,1,2,3] -> [0,1,4,3] and node 2 stopped being visible.
+          // `deriveEventMessage` returns null for an empty system message, so the replacement
+          // contributes nothing: the node is gone from the model's view, not substituted.
+          //
+          // `system/message` and not `developer/message`, although both project to null when
+          // empty: `validateSessionEventData` REJECTS developer content, so a persisted log
+          // containing one would fail to reopen. A record that writes cleanly and cannot be read
+          // back is the failure the durable-write check exists to prevent.
+          //
+          // The retire record is written FIRST. If the removal then fails, the record stands and
+          // `conflicts` reports it -- a retirement recorded and not honoured is exactly the state
+          // that count exists to make loud, and hiding it would be worse than the failure.
+          let removed = 0
+          const removalErrors: { checkpointId: string; error: string }[] = []
+          if (removeSurface) {
+            for (const outcome of outcomes) {
+              if (!outcome.written) continue
+              const site = deriveCheckpointResidency(session!).sites
+                .find(candidate => candidate.checkpointId === outcome.checkpointId)
+              if (site?.surfaceSeq === undefined) continue
+              try {
+                // ## The data shape is `{ turn, step, message }`, and the type said so
+                //
+                // The first version passed the bare message and cast the type away. It worked in
+                // an offline probe that never touched the token meter, then crashed in every real
+                // cell: `deriveEventMessage` reads `event.data.message.content` (dsh-session,
+                // deriveEventMessage), so a bare message made `event.data.message` undefined and
+                // the meter threw "Cannot read properties of undefined (reading 'content')" on the
+                // NEXT append. The compile error had named this exact shape and the cast hid it.
+                //
+                // ## The replacement is a TOMBSTONE user message, and node 0 is why
+                //
+                // The first version removed the node outright by replacing it with an
+                // empty-content `system/message`, which projects to null. That works on a surface
+                // node in the middle, and it BROKE EVERY LATER FOLD: the checkpoint sits at surface
+                // node 0, because the system prompt was already folded into it, so replacing it put a
+                // `system/message` at node 0 -- and DSH then treats node 0 as the protected system
+                // prompt. Measured 2026-10-21: folds committed 2 of 8, the surface grew 33,685 ->
+                // 451,941, and every fold after the first removal failed with
+                //
+                //   surface replace: node 0 holds the system prompt and may be rewritten only by
+                //   a system/message over exactly that node
+                //
+                // A checkpoint is a `user/message`, so the fold's own replacement over node 0 could
+                // no longer satisfy that rule. Compression was dead for the rest of the cell.
+                //
+                // A tombstone keeps node 0 a `user/message` and therefore keeps the rule asleep,
+                // while reclaiming the checkpoint's text: a few tokens replace several hundred. It
+                // is a substitution rather than a deletion, and that is the honest trade -- the
+                // model is told earlier context was retired instead of the node silently vanishing.
+                //
+                // What this DOES achieve is the invariant that matters: the checkpoint's marker
+                // leaves the surface, so `deriveCheckpointResidency` reports it retired with
+                // `conflicts: 0` instead of retired-but-still-present.
+                session!.append(
+                  'user/message',
+                  createUserMessage({
+                    content: [{ type: 'text', text: '[context retired]' }],
+                    source: { kind: 'user' },
+                  }),
+                  {
+                    surfaceOp: { op: 'replace' as const, startSeq: site.surfaceSeq, endSeq: site.surfaceSeq },
+                    sourceEventSeqs: [site.surfaceSeq],
+                  } as never,
+                )
+                removed += 1
+              } catch (error) {
+                removalErrors.push({
+                  checkpointId: outcome.checkpointId,
+                  error: error instanceof Error ? error.message : String(error),
+                })
+              }
+            }
+          }
           emit({
             ok: true,
             outcomes,
             written: outcomes.filter(outcome => outcome.written).length,
+            removed,
+            ...(removalErrors.length === 0 ? {} : { removalErrors }),
             report: deriveCheckpointResidency(session!),
             telemetry: await telemetry(),
           })
