@@ -156,8 +156,19 @@ def build_phases(seq: list[str], probes: list[dict], errata: list[dict],
 
 
 
+def _residency(bridge) -> dict:
+    """The bridge's checkpoint residency report, as a plain dict."""
+    return (bridge._send({"op": "checkpoints"}) or {}).get("report") or {}
+
+
+def _checkpoint_ids(bridge) -> list[str]:
+    """Ids of the checkpoints currently on the surface."""
+    report = _residency(bridge)
+    return [site["checkpointId"] for site in (report.get("sites") or []) if site.get("onSurface")]
+
+
 def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: int,
-                    fs_root: str | None) -> dict:
+                    fs_root: str | None, phase_exit: str = "none") -> dict:
     docs = rc.load("documents.json")
     key = rc.load("answer_key.json")
     public = rc.load("public_probes.json")
@@ -174,6 +185,19 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
 
     fold_events: list[dict] = []
     records: list[dict] = []
+    # ## What EXIT would retire, decided by the DRIVER
+    #
+    # Same split as the fold cadence: the engine implements the operation, the driver chooses
+    # the occasion. The driver knows which phase it just probed; the engine cannot know that,
+    # and a retirement inferred by the engine would make the treatment depend on the corpus and
+    # the provider, so no two cells could be compared.
+    #
+    # The ids are diffed against the set observed BEFORE the phase's ingest, so what is retired is
+    # exactly the checkpoints this phase created -- including the content they carry forward from
+    # earlier phases, which is where the cost of retiring shows up.
+    seen_ids: set[str] = set()
+    if phase_exit == "retire":
+        seen_ids = set(_checkpoint_ids(bridge))
     answers: dict[int, str] = {}
     unparsed: list[int] = []
     probe_failures = 0
@@ -224,6 +248,50 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
             unparsed.extend(phase_unparsed)
             probe_failures += failures
 
+        # ## Retire AFTER the probe, never before it
+        #
+        # The phase is measured first and retired second, so the treatment cannot change the
+        # state that was just measured. Retiring before the probe would fold the exit into the
+        # measurement and there would be nothing left to compare against.
+        exit_record: dict = {}
+        reply_retire: dict = {}
+        if phase_exit == "retire":
+            current = _checkpoint_ids(bridge)
+            fresh = [cid for cid in current if cid not in seen_ids]
+            if fresh:
+                reply_retire = bridge._send({"op": "retire", "ids": fresh,
+                                             "reason": f"phase {phase['index']} complete"})
+                outcomes = reply_retire.get("outcomes") or []
+                exit_record = {
+                    "retire_requested": len(fresh),
+                    "retire_written": reply_retire.get("written"),
+                    "retire_refused": {o.get("refusal"): 0 for o in outcomes if o.get("refusal")},
+                    "retired_ids": fresh,
+                }
+                # Refusals counted per reason, because `no-such-checkpoint` (wrong id) and
+                # `already-retired` (asked twice) mean different mistakes and only one of them
+                # is a driver bug.
+                for outcome in outcomes:
+                    reason = outcome.get("refusal")
+                    if reason:
+                        exit_record["retire_refused"][reason] += 1
+                seen_ids = set(current)
+            else:
+                exit_record = {"retire_requested": 0, "retire_written": 0,
+                               "retire_refused": {}, "retired_ids": []}
+            residency = (reply_retire.get("report") if fresh else None) or _residency(bridge)
+            exit_record["residency_after"] = {
+                "resident": residency.get("resident"),
+                "archived": residency.get("archived"),
+                "retired": residency.get("retired"),
+                # Must reach zero once removal exists. Until then it counts retirements that were
+                # recorded and not honoured -- the state in which a measurement would compare a
+                # baseline against a baseline while the artifact called it a treatment.
+                "conflicts": residency.get("conflicts"),
+            }
+        else:
+            seen_ids = set()
+
         # Score JUST this phase, against the probes it was allowed to see. This is the number
         # an exit mechanism has to be judged on: did retiring the previous phase cost THIS one
         # anything?
@@ -243,6 +311,7 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
             "scored": phase_score["overall"]["scored"],
             "unparsed": phase_score["overall"]["unparsed"],
             "provider_failures": phase_failures,
+            **exit_record,
         })
 
     parsed_all = {"answers": answers}
@@ -282,11 +351,12 @@ def main() -> int:
     # Retiring a phase needs checkpoint-level lifecycle, which does not exist: anchors have
     # active/superseded/retired, and a checkpoint written onto the surface has none. A flag that
     # accepted "retire" and quietly did nothing would produce a baseline labelled as a treatment.
-    ap.add_argument("--phase-exit", default="none", choices=["none"])
+    ap.add_argument("--phase-exit", default="none", choices=["none", "retire"])
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    out = run_phased_cell(args.arm, args.order, args.phases, args.parts_per_phase, args.fs_root)
+    out = run_phased_cell(args.arm, args.order, args.phases, args.parts_per_phase, args.fs_root,
+                          args.phase_exit)
     path = Path(args.out) if args.out else (HERE / f"phased_{args.arm}_{args.order}.json")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
 

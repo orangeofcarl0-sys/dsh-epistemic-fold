@@ -70,7 +70,15 @@ export interface CheckpointSite {
   readonly mode: EfCheckpointMarker['mode']
   /** The seq of the `compaction/summary` event that wrote it. */
   readonly seq: SessionSeq
-  /** Whether that seq is still one of the surface's nodes RIGHT NOW. */
+  /**
+   * The surface node's seq, when the model can see this checkpoint.
+   *
+   * Distinct from `seq`: a checkpoint is a `compaction/summary` LOG record at one seq, and the
+   * model-visible node is a `user/message` materialised at a LATER one. Removal has to unhook the
+   * surface node, so the two are carried separately rather than assumed equal.
+   */
+  readonly surfaceSeq?: SessionSeq
+  /** Whether the model can see this checkpoint RIGHT NOW (its marker is on a surface node). */
   readonly onSurface: boolean
   /** The retirement record naming it, if any. */
   readonly retiredBy?: SessionSeq
@@ -100,31 +108,62 @@ function summaryText(event: { readonly data?: unknown }): string | undefined {
   return data.summary.map(block => (block.type === 'text' ? block.text ?? '' : '')).join('')
 }
 
+/** Read the text blocks out of a SURFACE message event's content. */
+function messageText(event: { readonly data?: unknown }): string | undefined {
+  const data = event.data as { content?: readonly { type?: string; text?: string }[] } | undefined
+  if (!Array.isArray(data?.content)) return undefined
+  return data.content.map(block => (block.type === 'text' ? block.text ?? '' : '')).join('')
+}
+
 /**
- * Every checkpoint the session has ever written, in seq order, with its residency.
+ * Every checkpoint the session has ever written, with its residency.
  *
- * Iterates the log rather than the surface, because a checkpoint that has been folded away is
- * still a fact about the session and is exactly what `archived` names. Surface membership is then
- * a lookup, not the enumeration.
+ * ## A checkpoint is TWO events, and the surface is the second one
+ *
+ * Measured 2026-10-20 on a real fold at 131K:
+ *
+ *     seq 24  compaction/start
+ *     seq 25  compaction/summary   <- the fold's record: shadowedSeqs, digest text
+ *     seq 26  user/message         <- THE SURFACE NODE the model actually sees
+ *     seq 27  compaction/end
+ *
+ * The first version enumerated `compaction/summary` events and asked whether THEIR seq was on the
+ * surface. It never is, so every checkpoint read as `archived` and nothing was ever retirable --
+ * eight folds, zero residents, and the phase-exit driver silently retired nothing.
+ *
+ * So residency is read from the SURFACE nodes: each is a message whose text carries the same
+ * marker, and the marker's id is what joins the two events. The log record supplies the fold
+ * history (which seqs it shadowed); the surface node supplies whether the model can still see it.
  */
 export function deriveCheckpointResidency(session: Session): CheckpointResidencyReport {
-  const onSurface = new Set<number>(session.surface.nodes as readonly number[])
+  const surfaceSeqs = session.surface.nodes as readonly number[]
 
-  // ## Two passes, because a retirement is recorded AFTER the checkpoint it retires
-  //
-  // The first version resolved each checkpoint's retirement as it walked past it, and every
-  // retirement therefore looked absent: the record sits at a LATER seq than the summary it
-  // names. Three of the six tests failed on exactly that, which is what they were written for.
+  // Pass 1: retirements. They are recorded AFTER the checkpoint they retire, so they cannot be
+  // resolved while walking past the checkpoint itself.
   const retirements = new Map<string, SessionSeq>()
   for (let seq = 0; seq < session.seq; seq += 1) {
     const event = session.eventAt(seq as never)
     if (event === undefined || event.type !== 'ef/retire') continue
     const data = event.data as EfRetireEventData
-    // First record wins. A checkpoint retired twice retires once, and the second record cannot
-    // move the seq that retired it, which keeps the reading stable if a host replays an op.
     if (!retirements.has(data.checkpointId)) retirements.set(data.checkpointId, seq as SessionSeq)
   }
 
+  // Pass 2: which checkpoint ids the model can see right now. Read from the surface's own nodes,
+  // because that is the definition of resident -- not a count, and not an inference.
+  const residentOn = new Map<string, SessionSeq>()
+  for (const seq of surfaceSeqs) {
+    const event = session.eventAt(seq as never)
+    if (event === undefined) continue
+    const text = messageText(event)
+    if (text === undefined) continue
+    const marker = parseCheckpointMarker(text)
+    if (marker === undefined) continue
+    residentOn.set(marker.checkpointId, seq as SessionSeq)
+  }
+
+  // Pass 3: the fold records, which are what carry an id and a mode. A summary with no EF marker
+  // is Basic's checkpoint: it has no id, so a retirement cannot name it and it is left out rather
+  // than given an invented one.
   const sites: CheckpointSite[] = []
   for (let seq = 0; seq < session.seq; seq += 1) {
     const event = session.eventAt(seq as never)
@@ -132,19 +171,18 @@ export function deriveCheckpointResidency(session: Session): CheckpointResidency
     const text = summaryText(event)
     if (text === undefined) continue
     const marker = parseCheckpointMarker(text)
-    // A summary without EF's marker is BASIC's checkpoint, not EF's. It has no checkpoint id, so
-    // a retirement cannot name it; leaving it out is the honest answer, and inventing an id would
-    // make it addressable by a record that cannot mean it.
     if (marker === undefined) continue
     const retiredBy = retirements.get(marker.checkpointId)
-    const resident = onSurface.has(seq)
+    const surfaceSeq = residentOn.get(marker.checkpointId)
+    const onSurface = surfaceSeq !== undefined
     sites.push({
       checkpointId: marker.checkpointId,
       mode: marker.mode,
       seq: seq as SessionSeq,
-      onSurface: resident,
+      ...(surfaceSeq === undefined ? {} : { surfaceSeq }),
+      onSurface,
       ...(retiredBy === undefined ? {} : { retiredBy }),
-      residency: retiredBy === undefined ? (resident ? 'resident' : 'archived') : 'retired',
+      residency: retiredBy === undefined ? (onSurface ? 'resident' : 'archived') : 'retired',
     })
   }
 
@@ -161,4 +199,70 @@ export function deriveCheckpointResidency(session: Session): CheckpointResidency
     }
   }
   return { sites, resident, archived, retired, conflicts }
+}
+
+/** Why a durable `ef/retire` write was refused. */
+export type RetireRefusal = 'no-such-checkpoint' | 'already-retired'
+
+/** The outcome of one retirement attempt: written, or refused with the reason. */
+export interface RetireOutcome {
+  readonly checkpointId: string
+  readonly written: boolean
+  readonly refusal?: RetireRefusal
+}
+
+/** Construction options for a retirement write. */
+export interface CheckpointRetirementOptions {
+  /**
+   * Whether this deployment may write a plugin-owned durable session event.
+   *
+   * Defaults to true -- the in-memory and test face. The plugin wires the real host capability,
+   * and a deployment that persists sessions on a host without the `ignorable` marker would
+   * otherwise poison every log it writes.
+   */
+  readonly durableWritesAllowed?: () => boolean
+}
+
+/**
+ * Retire one checkpoint: an EXPLICIT operation, recorded in the log.
+ *
+ * ## Two refusals, and both matter
+ *
+ *   no-such-checkpoint  a retirement that names nothing is a no-op wearing the shape of an
+ *                       action. It would let a driver believe it retired a phase while the
+ *                       surface never changed, and the next measurement would compare a
+ *                       baseline against a baseline.
+ *   already-retired     a second retirement cannot move the seq that retired it, so accepting it
+ *                       would make the reading depend on how many times the driver asked.
+ *
+ * Neither is thrown: a caller retiring a LIST needs the per-item answer, and throwing on the
+ * first duplicate would abandon the rest without saying so.
+ *
+ * The write is refused BEFORE the append rather than after it, for the same reason an anchor
+ * declaration is: a log that writes cleanly and cannot be reopened is not a failure that can be
+ * reported after the fact, because by then the damage is durable.
+ */
+export function retireCheckpoint(
+  session: Session,
+  checkpointId: string,
+  reason?: string,
+  options: CheckpointRetirementOptions = {},
+): RetireOutcome {
+  const durableWritesAllowed = options.durableWritesAllowed ?? ((): boolean => true)
+  if (!durableWritesAllowed()) {
+    throw new Error(
+      'epistemic-fold: refusing to append `ef/retire` -- this DSH host cannot mark a plugin-owned'
+      + ' session event `ignorable`, and the persistence read path refuses to reopen a log'
+      + ' containing an unknown event type without that marker. See README, "State ownership".',
+    )
+  }
+  const report = deriveCheckpointResidency(session)
+  const site = report.sites.find(candidate => candidate.checkpointId === checkpointId)
+  if (site === undefined) return { checkpointId, written: false, refusal: 'no-such-checkpoint' }
+  if (site.residency === 'retired') return { checkpointId, written: false, refusal: 'already-retired' }
+  session.append('ef/retire', {
+    checkpointId,
+    ...(reason === undefined ? {} : { reason }),
+  })
+  return { checkpointId, written: true }
 }

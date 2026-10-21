@@ -72,6 +72,12 @@ import * as toolFs from '@deepseek-ai/dsh-tool-fs'
 // both survived that way. `--experimental-transform-types` runs the `.ts`
 // sources directly, so source imports are also what the process actually loads.
 import { EpistemicFoldEngine } from '../../src/fold/engine.ts'
+// ## The checkpoint lifecycle, so the EXIT mechanism has something to name
+//
+// A checkpoint carries no lifecycle of its own, which is why "this phase is done" could not be
+// expressed at all. These two imports are the whole of the wiring: the derivation to see what is
+// on the surface, and the sanctioned writer to retire one of it.
+import { deriveCheckpointResidency, retireCheckpoint } from '../../src/checkpoint/residency.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/config/preset.ts'
 import { taskRootDigest } from '../../src/fold/task-root.ts'
@@ -2303,6 +2309,59 @@ async function main(): Promise<void> {
               measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
                 engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
           }
+        } else if (op === 'events') {
+          // Read raw events by seq, for diagnosing how the surface represents a checkpoint.
+          const wanted = Array.isArray(request.seqs) ? (request.seqs as unknown[]).map(Number) : []
+          const events = wanted.map(seq => {
+            const event = session!.eventAt(seq as never) as unknown as
+              { readonly type?: string; readonly data?: Record<string, unknown> } | undefined
+            return { seq, type: event?.type, data: event?.data }
+          })
+          emit({ ok: true, events })
+        } else if (op === 'checkpoints') {
+          // ## Read the checkpoint lifecycle, so a driver can decide what to retire
+          //
+          // Returns every checkpoint the session ever wrote with its residency: on the surface
+          // (`resident`), folded away by a later checkpoint (`archived`), or explicitly retired.
+          // The `conflicts` count is the one to watch: it counts retired checkpoints STILL on the
+          // surface, which is the state in which a retirement was recorded and not honoured.
+          const report = deriveCheckpointResidency(session!)
+          // The raw seqs, because a residency reading of "everything archived" has two very
+          // different causes -- the checkpoints really are off the surface, or the surface's seq
+          // values are not the seqs this derivation is comparing against -- and no count can
+          // tell them apart.
+          const surfaceSeqs = (session!.surface.nodes as readonly number[]).slice(0, 60)
+          emit({
+            ok: true,
+            report,
+            debug: {
+              surfaceSeqs,
+              eventCount: session!.seq,
+              summarySeqs: report.sites.map(site => site.seq),
+            },
+            telemetry: await telemetry(),
+          })
+        } else if (op === 'retire') {
+          // ## Retire checkpoints by id -- the DRIVER chooses which and when
+          //
+          // Same split as the fold cadence: the engine implements the operation, the driver
+          // chooses the occasion. A retirement inferred by the engine would make the treatment
+          // depend on the corpus and the provider, so no two cells could be compared.
+          //
+          // Each outcome is reported per id rather than thrown, because a driver retiring a list
+          // needs to know which ones were refused and why: `no-such-checkpoint` means the id was
+          // wrong, `already-retired` means the driver asked twice. Failing the whole call on the
+          // first duplicate would abandon the rest silently.
+          const retireIds = Array.isArray(request.ids) ? (request.ids as unknown[]).map(String) : []
+          const retireReason = typeof request.reason === 'string' ? request.reason : undefined
+          const outcomes = retireIds.map(id => retireCheckpoint(session!, id, retireReason))
+          emit({
+            ok: true,
+            outcomes,
+            written: outcomes.filter(outcome => outcome.written).length,
+            report: deriveCheckpointResidency(session!),
+            telemetry: await telemetry(),
+          })
         } else if (op === 'rootCompact') {
           // FORCE one ROOT fold, so a harness can exercise that path on demand.
           //
