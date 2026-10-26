@@ -42,6 +42,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -54,6 +55,70 @@ sys.path.insert(0, str(HERE))
 from ef_bridge_client import EpistemicFoldBridge  # noqa: E402
 import run_cell as rc  # noqa: E402
 import score_probes  # noqa: E402
+
+
+# ## Deterministic fact extraction -- the BENCH's, not EF's
+#
+# The corpus states each fact in a fixed shape ("The retry helper uses max_attempts = 8."), and
+# the errata corrects one in a second fixed shape. Two regexes read both. Nothing here is a
+# model call, deliberately: an LLM deciding what the state says is an LLM deciding what the
+# next fold treats as authoritative, which is the hazard `rationale.ts` exists to keep out of
+# the semantic path.
+#
+# This is a property of THIS CORPUS, and any result that depends on it is a result about
+# structured extraction, not about EF.
+# ## Two statement forms, and neither may match the pooled filler
+#
+# The corpus states a fact one of two ways:
+#
+#     max_attempts = 8.                    assignment form
+#     The on-call retry_budget is 6.       prose form
+#
+# Measured 2026-10-27: matching only the assignment form recovered 62 of the 100
+# coordinates the answer key asks about, because 38 are stated in prose. And the pooled
+# filler source contains real code (`(options, args) = parser.parse_args()`,
+# `(typ, [data]) = <instance>.check()`), so an unanchored `=` match invents facts from
+# sample code -- which is the worst kind of failure here, because it manufactures authority.
+#
+# So the assignment form is anchored to a line with no brackets or commas, and the prose form
+# requires the line to open with `The`.
+_FACT = re.compile(r"^[^=()\[\],]*\b([a-z][a-z0-9_]*)\s*=\s*([^()\[\],]+?)\.\s*$")
+_PROSE = re.compile(r"^The\b[^.]*?\b([a-z][a-z0-9_]*)\s+is\s+([^()\[\],]+?)\.\s*$")
+_ERRATA_FIELD = re.compile(r"\b([a-z][a-z0-9_]*) was previously published as\b")
+# The errata sentence is `The corrected value is 11. The earlier figure is superseded ...`, so
+# stopping at the first period is required -- and a bare `+?` would stop inside `0.29`. The
+# value is either a decimal or a token, then one period.
+_ERRATA_VALUE = re.compile(r"corrected value is\s*(\d+\.\d+|[A-Za-z0-9_-]+)\.")
+_HEADER = re.compile(r"^#\s*([A-Za-z0-9_-]+)\s*")
+
+
+def extract_facts(text: str, doc_key: str) -> list[tuple[str, str, str]]:
+    """(entity, property, value) triples stated by one document.
+
+    The project comes from the document's header line rather than from its path, so a
+    reordering cannot silently attribute facts to the wrong project.
+    """
+    project = project_of(doc_key)
+    # The header names the project for a document, but an errata's header reads
+    # `# ERRATA -- coding-2`, so the header would capture `ERRATA` and attribute the
+    # correction to a project that does not exist. Measured offline before any run.
+    if not doc_key.endswith("/ERRATA.md"):
+        header = _HEADER.match(text.split("\n", 1)[0])
+        if header is not None:
+            project = header.group(1)
+    facts: list[tuple[str, str, str]] = []
+    if doc_key.endswith("/ERRATA.md"):
+        field_match = _ERRATA_FIELD.search(text)
+        value_match = _ERRATA_VALUE.search(text)
+        if field_match is not None and value_match is not None:
+            facts.append((project, field_match.group(1), value_match.group(1)))
+        return facts
+    for line in text.split("\n"):
+        stripped = line.strip()
+        match = _FACT.match(stripped) or _PROSE.match(stripped)
+        if match is not None:
+            facts.append((project, match.group(1), match.group(2).strip()))
+    return facts
 
 
 def _count_kinds(probes: list[dict]) -> dict:
@@ -168,7 +233,8 @@ def _checkpoint_ids(bridge) -> list[str]:
 
 
 def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: int,
-                    fs_root: str | None, phase_exit: str = "none") -> dict:
+                    fs_root: str | None, phase_exit: str = "none",
+                    anchors: bool = False) -> dict:
     docs = rc.load("documents.json")
     key = rc.load("answer_key.json")
     public = rc.load("public_probes.json")
@@ -202,6 +268,7 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
     unparsed: list[int] = []
     probe_failures = 0
     committed_total = 0
+    anchors_declared = 0
     started = time.monotonic()
 
     for phase in phases:
@@ -210,8 +277,20 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
         appended = 0
         for part in parts:
             for doc_key in part:
-                bridge.append({"role": "user", "content": by_key[doc_key]["text"]})
+                reply = bridge.append({"role": "user", "content": by_key[doc_key]["text"]})
                 appended += 1
+                if anchors:
+                    # Each fact is declared against the seq of the message that stated it, so
+                    # provenance is the document itself and the authority gate has something to
+                    # check. A re-statement of the same coordinate SUPERSEDES rather than adding:
+                    # that is the reducer's rule, and it is what bounds the state by coordinate.
+                    source_seq = (reply.get("seqs") or [None])[0]
+                    if source_seq is not None:
+                        for entity, prop, value in extract_facts(by_key[doc_key]["text"], doc_key):
+                            bridge._send({"op": "anchor", "entity": entity,
+                                          "property": prop, "value": value,
+                                          "sourceSeq": source_seq})
+                            anchors_declared += 1
             before = bridge.last_telemetry.get("promptTokensLast", 0)
             enabled = bridge.set_compaction(True)
             ok = bridge.compact()
@@ -316,6 +395,8 @@ def run_phased_cell(arm: str, order_name: str, n_phases: int, parts_per_phase: i
             "scored": phase_score["overall"]["scored"],
             "unparsed": phase_score["overall"]["unparsed"],
             "provider_failures": phase_failures,
+            "anchors_declared": anchors_declared,
+            "coordinates": (bridge._send({"op": "state"}) or {}).get("coordinates"),
             **exit_record,
         })
 
@@ -357,11 +438,14 @@ def main() -> int:
     # active/superseded/retired, and a checkpoint written onto the surface has none. A flag that
     # accepted "retire" and quietly did nothing would produce a baseline labelled as a treatment.
     ap.add_argument("--phase-exit", default="none", choices=["none", "retire"])
+    # Declare the corpus's stated facts as `ef/anchor` coordinates, so the checkpoint has a
+    # bounded representation to render instead of only model prose. See extract_facts.
+    ap.add_argument("--anchors", default="off", choices=["off", "on"])
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     out = run_phased_cell(args.arm, args.order, args.phases, args.parts_per_phase, args.fs_root,
-                          args.phase_exit)
+                          args.phase_exit, args.anchors == "on")
     path = Path(args.out) if args.out else (HERE / f"phased_{args.arm}_{args.order}.json")
     path.write_text(json.dumps(out, indent=2), encoding="utf-8", newline="\n")
 

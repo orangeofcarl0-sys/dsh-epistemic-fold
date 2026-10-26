@@ -79,6 +79,7 @@ import { EpistemicFoldEngine } from '../../src/fold/engine.ts'
 // on the surface, and the sanctioned writer to retire one of it.
 import { deriveCheckpointResidency, retireCheckpoint } from '../../src/checkpoint/residency.ts'
 import { currentFoldState } from '../../src/state/projection.ts'
+import { createAnchorService } from '../../src/state/anchor-service.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/config/preset.ts'
 import { taskRootDigest } from '../../src/fold/task-root.ts'
@@ -2319,6 +2320,38 @@ async function main(): Promise<void> {
             emit({ ok: true, committed, telemetry: await telemetry(),
               measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
                 engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
+          }
+        } else if (op === 'anchor') {
+          // ## Declare one coordinate, so the fold has something bounded to render
+          //
+          // Measured 2026-10-27: this bench's sessions hold ZERO coordinates, so the checkpoint
+          // carries only model prose and grows with the fold count. EF's bounded representation
+          // (one rendered line per live coordinate, displaced values kept in `superseded` and
+          // never rendered) exists and is proved in tests/checkpoint-boundedness.spec.ts -- but
+          // it only engages for content that arrives as `ef/anchor`.
+          //
+          // A `user/message` grounds `normative` authority, so a document's stated fact can be
+          // declared with provenance rather than asserted. The EXTRACTION is the bench's, not
+          // EF's: the corpus states facts in a fixed shape and a regex reads them. That is the
+          // honest form of this experiment and the doc says so -- an LLM extraction pass would
+          // be the rationale.ts hazard in a new place.
+          const declareService = createAnchorService()
+          const draft = {
+            kind: 'constraint',
+            stateKey: {
+              namespace: 'memory',
+              entity: String(request.entity),
+              property: String(request.property),
+            },
+            value: request.value,
+            authority: 'normative',
+            sourceRefs: [{ seq: Number(request.sourceSeq) as never }],
+          }
+          try {
+            const declared = declareService.declare(session!, draft as never)
+            emit({ ok: true, id: declared.id, telemetry: await telemetry() })
+          } catch (error) {
+            emit({ ok: false, error: error instanceof Error ? error.message : String(error) })
           }
         } else if (op === 'state') {
           // ## The deterministic state, counted: the SUBSTRATE of semantic merge
