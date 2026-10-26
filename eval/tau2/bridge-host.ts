@@ -78,6 +78,7 @@ import { EpistemicFoldEngine } from '../../src/fold/engine.ts'
 // expressed at all. These two imports are the whole of the wiring: the derivation to see what is
 // on the surface, and the sanctioned writer to retire one of it.
 import { deriveCheckpointResidency, retireCheckpoint } from '../../src/checkpoint/residency.ts'
+import { currentFoldState } from '../../src/state/projection.ts'
 import { EpistemicFoldPlugin } from '../../src/plugin.ts'
 import { resolvePreset } from '../../src/config/preset.ts'
 import { taskRootDigest } from '../../src/fold/task-root.ts'
@@ -2319,6 +2320,42 @@ async function main(): Promise<void> {
               measure: { hostMeasure, engineMeasure, hostNodes, engineNodes, compactionEnabled,
                 engineSessionSame: (engine as unknown as { ctx?: unknown }).ctx === ctx } })
           }
+        } else if (op === 'state') {
+          // ## The deterministic state, counted: the SUBSTRATE of semantic merge
+          //
+          // EF bounds its state by COORDINATE, not by revision count -- one entry per state key,
+          // with the immediately-previous value kept in `superseded` and deliberately never
+          // rendered. Semantic merge has nothing else to merge on: a checkpoint body is a marker
+          // plus model prose, so the only structured thing a merge could deduplicate is this.
+          //
+          // A corpus that never issues `ef/anchor` produces NO coordinates, which would leave the
+          // prose digest as the sole carrier and the growth unbounded by construction. Counting
+          // here is how that is established rather than assumed.
+          const state = ctx === undefined || session === undefined
+            ? undefined
+            : currentFoldState(ctx, session)
+          const size = (face: Record<string, unknown> | undefined): number =>
+            face === undefined ? 0 : Object.keys(face).length
+          emit({
+            ok: true,
+            mounted: state !== undefined,
+            coordinates: state === undefined
+              ? undefined
+              : {
+                  constraints: size(state.constraints),
+                  stateHeads: size(state.stateHeads),
+                  openFailures: size(state.openFailures),
+                  openObligations: size(state.openObligations),
+                  decisions: size(state.decisions),
+                  evidence: size(state.evidence),
+                  objective: state.objective === undefined ? 0 : 1,
+                  superseded: size(state.superseded),
+                  retiredCount: state.retiredCount,
+                  total: size(state.constraints) + size(state.stateHeads) + size(state.openFailures)
+                    + size(state.openObligations) + size(state.decisions) + size(state.evidence)
+                    + (state.objective === undefined ? 0 : 1),
+                },
+          })
         } else if (op === 'events') {
           // Read raw events by seq, for diagnosing how the surface represents a checkpoint.
           const wanted = Array.isArray(request.seqs) ? (request.seqs as unknown[]).map(Number) : []
