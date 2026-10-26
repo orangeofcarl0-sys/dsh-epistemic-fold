@@ -265,6 +265,11 @@
     "sha256": "61f107a220f04d7eb949a09cc9994cc80255bc1007d69eaaff28524b06ec4ce0"
   },
   {
+    "file": "139_CHECKPOINT_EXIT_MEASURED.md",
+    "bytes": 8786,
+    "sha256": "70673a5412aeab305a366ebf5f006f1203ca6ee3a9896cf22e441d72b96fdcd6"
+  },
+  {
     "file": "13_R1_LIVE_BEHAVIORAL_RESULTS.md",
     "bytes": 6618,
     "sha256": "af10e7566da7d9aa15afecc6df825d9e038d2d5f1558492d42da7b64dac0d5f8"

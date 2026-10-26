@@ -1,4 +1,7 @@
 {
+  "@deepseek-ai/dsh-client-product-analytics/client": [
+    "./vendor/deepseek-harness/packages/client/product-analytics/src/client/index.ts"
+  ],
   "@deepseek-ai/dsh-client-ui-settings-account/client": [
     "./vendor/deepseek-harness/packages/client/ui-settings-account/src/client/index.ts"
   ],

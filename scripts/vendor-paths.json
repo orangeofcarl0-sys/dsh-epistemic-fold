@@ -1,4 +1,16 @@
 {
+  "@deepseek-ai/dsh-client-product-analytics": [
+    "./vendor/deepseek-harness/packages/client/product-analytics/src/index.ts"
+  ],
+  "@deepseek-ai/dsh-client-product-analytics/types": [
+    "./vendor/deepseek-harness/packages/client/product-analytics/src/events.ts"
+  ],
+  "@deepseek-ai/dsh-client-product-analytics/client": [
+    "./vendor/deepseek-harness/packages/client/product-analytics/src/client/index.ts"
+  ],
+  "@deepseek-ai/dsh-otel": [
+    "./vendor/deepseek-harness/packages/telemetry/otel/src"
+  ],
   "@deepseek-ai/dsh-client-ui-settings-account": [
     "./vendor/deepseek-harness/packages/client/ui-settings-account/src/index.ts"
   ],
@@ -55,6 +67,9 @@
   ],
   "@deepseek-ai/dsh/profile-boot": [
     "./vendor/deepseek-harness/apps/cli/src/profile-boot.ts"
+  ],
+  "@deepseek-ai/dsh/lib/bin.js": [
+    "./vendor/deepseek-harness/apps/cli/src/bin.ts"
   ],
   "@deepseek-ai/dsh-browser-use": [
     "./vendor/deepseek-harness/packages/browser-use/browser-use/src/index.ts"
@@ -698,6 +713,9 @@
   "@deepseek-ai/dsh-client-ui-settings-agent-loop": [
     "./vendor/deepseek-harness/packages/client/ui-settings-agent-loop/src"
   ],
+  "@deepseek-ai/dsh-client-ui-settings-session-log": [
+    "./vendor/deepseek-harness/packages/client/ui-settings-session-log/src"
+  ],
   "@deepseek-ai/dsh-client-ui-settings-subagent": [
     "./vendor/deepseek-harness/packages/client/ui-settings-subagent/src"
   ],
@@ -805,6 +823,9 @@
   ],
   "@deepseek-ai/dsh-experimental-ptc-runtime-python": [
     "./vendor/deepseek-harness/packages/experimental/ptc-runtime-python/src"
+  ],
+  "@deepseek-ai/dsh-experimental-schedule-bundle": [
+    "./vendor/deepseek-harness/packages/experimental/schedule-bundle/src/index.ts"
   ],
   "@deepseek-ai/dsh-util-crypto": [
     "./vendor/deepseek-harness/packages/util/crypto/src"
