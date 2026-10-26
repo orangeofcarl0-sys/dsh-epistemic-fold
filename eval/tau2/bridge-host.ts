@@ -2429,7 +2429,30 @@ async function main(): Promise<void> {
                 session!.append(
                   'user/message',
                   createUserMessage({
-                    content: [{ type: 'text', text: '[context retired]' }],
+                    // ## The tombstone must carry the REFERENCE, or exit is data loss in practice
+                    //
+                    // Measured 2026-10-21: after a retirement the archive is byte-identical --
+                    // `context_recall` at depth exact returned the same 23,202 characters and the
+                    // same 16 archived messages before and after, and at depth summary the same
+                    // 466. So retirement does NOT touch the bundle store; recall resolves a
+                    // checkpoint id against the store directly, never through the surface.
+                    //
+                    // But the first tombstone said only `[context retired]`, and that makes the
+                    // content unreachable ANYWAY: the model recalls by `cp:<id>`, the id lived in
+                    // the checkpoint's marker, and the marker is exactly what the tombstone
+                    // replaced. Content present, pointer gone -- which is data loss from the only
+                    // vantage point that matters, the model's.
+                    //
+                    // So the tombstone names the reference. The checkpoint stops being part of the
+                    // working set and stays reachable in one call, which is what `exit` is
+                    // supposed to mean: a visibility change with a retrieval cost, not a
+                    // deletion. The marker pattern does not match this text, so residency still
+                    // reads `retired` and `conflicts` still goes to zero.
+                    content: [{
+                      type: 'text',
+                      text: '[earlier context retired; its archive is still recallable with ref "cp:'
+                        + outcome.checkpointId + '"]',
+                    }],
                     source: { kind: 'user' },
                   }),
                   {

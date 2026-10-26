@@ -112,6 +112,58 @@ more reps:
    through `context_recall` and how many turns it costs, which is a deterministic number
    rather than a sampled one.
 
+## H. The mechanism, measured deterministically (and a defect it exposed)
+
+The accuracy numbers above cannot separate the cost from noise. The mechanism can be measured
+without sampling a score at all, and one probe settled it:
+
+    archive BEFORE retire                       23,202 chars (16 archived messages)
+    retire written 1, removed 1
+    residency after                             resident 0, retired 1, conflicts 0
+    cp id reachable FROM THE SURFACE            c5754f83-389b-4b7e-9a49-0a0ec5363490
+    archive AFTER retire, via that id           23,202 chars
+    identical to before                         True
+
+Two conclusions, both deterministic:
+
+1. **Retirement does not touch the archive.** `context_recall` resolves a checkpoint id
+   against the bundle store directly (`store.verify(sessionId, checkpointId)`), never through
+   the surface, so taking the node off the surface leaves the bundle byte-identical. `exit`
+   is a visibility change with a retrieval cost, NOT a deletion.
+
+2. **The first implementation WAS a deletion in practice, and the probe caught it.** The
+   tombstone said only `[context retired]`. The model recalls by `cp:<id>`; the id lived in
+   the checkpoint's marker; the marker is exactly what the tombstone replaced. Content
+   present, pointer gone -- unreachable from the only vantage point that matters. The accuracy
+   experiment could not have found this: it would have looked like an ordinary cost.
+
+   The tombstone now names the reference:
+
+       [earlier context retired; its archive is still recallable with ref "cp:<id>"]
+
+   The marker pattern does not match that text, so residency still reads `retired` and
+   `conflicts` still reaches zero.
+
+This also re-reads the 2.65-point difference in section D: it is not "the model lost the
+information", it is "the model did not spend the call". Those have very different
+consequences for a long-running agent.
+
+## I. The regime these numbers live in, and why it matters
+
+`cat-jam-free` writes SHORT digests. Measured over the ten 252K cells: `rationaleChars`
+between 789 and 2,645 for eight folds per cell, so 100-330 characters of digest each -- a
+checkpoint of roughly 200-300 tokens including its marker and framing.
+
+That is the smallest regime this bench can produce, and it bounds both numbers in section C:
+checkpoints this cheap cannot cause much growth (hence +2,480 over four phases, not tens of
+thousands) and cannot cost much when removed. A model writing 2,000-token digests would
+enlarge BOTH the benefit and the cost, and nothing here says which grows faster.
+
+The growth curve measured on the paid route (`deepseek-v4.1-flash`) sits in that larger
+regime: +1,024 tokens per fold at 252K for the quality arm, against roughly +310 per
+checkpoint here. The exit experiment should be repeated there before the 84% figure is
+quoted for a deployment.
+
 ## G. Reproduction
 
     EF_MEMORY_DRIVER=phased.py EF_MEMORY_WINDOW=258048 \
