@@ -26,8 +26,22 @@ HARBOR_PY="D:/Data and code/xuchengjian/workplace/bench-workspace/lhtb/harbor/.v
 # another provider silently sent the wrong key.
 export EF_LIVE_BASE_URL="${EF_LIVE_BASE_URL:-https://opencode.ai/zen/go/v1}"
 case "$EF_LIVE_BASE_URL" in
-  *api.deepseek.com*) _ef_key_name="${EF_LIVE_KEY_NAME:-DEEPSEEK_API_KEY}"; _ef_model="deepseek-flash" ;;
-  *)                  _ef_key_name="${EF_LIVE_KEY_NAME:-OPENCODE_GO_API_KEY}"; _ef_model="deepseek-v4.1-flash" ;;
+  *api.deepseek.com*)   _ef_key_name="${EF_LIVE_KEY_NAME:-DEEPSEEK_API_KEY}";   _ef_model="deepseek-flash" ;;
+  # ## OmniGate: a LOCAL proxy, and the only route that answers when the others are spent
+  #
+  # Measured 2026-10-27: the free model answered HTTP 400 "Model is unavailable" and the
+  # opencode Go route answered HTTP 429 GoUsageLimitError with limitName "monthly". This proxy
+  # is registered in the DSH profile (`~/.dsh/profiles/headless/cordis.patch.yml`) with
+  # apiKeyEnv CA2A_API_KEY, so its credential name is fixed by the profile rather than chosen.
+  *127.0.0.1:17866*)    _ef_key_name="${EF_LIVE_KEY_NAME:-CA2A_API_KEY}";        _ef_model="deepseek-v4.1-flash" ;;
+  *)                    _ef_key_name="${EF_LIVE_KEY_NAME:-OPENCODE_GO_API_KEY}"; _ef_model="deepseek-v4.1-flash" ;;
+esac
+
+# A localhost base URL must NOT go through a proxy, and the proxy discovery below would
+# otherwise route it through one: the request would leave the machine and fail. Cleared
+# explicitly for the loopback host so the two settings cannot disagree.
+case "$EF_LIVE_BASE_URL" in
+  *127.0.0.1*|*localhost*) export NO_PROXY="127.0.0.1,localhost${NO_PROXY:+,$NO_PROXY}"; export no_proxy="$NO_PROXY"; EF_USE_PROXY=0 ;;
 esac
 KEY=$("$HARBOR_PY" - "$CREDENTIALS" "$_ef_key_name" <<'PY'
 import re, sys
