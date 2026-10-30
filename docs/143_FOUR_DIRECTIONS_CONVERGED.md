@@ -36,15 +36,32 @@ What DOES replicate across both tiers:
 | 252K | **all four cells** | 166-170 in three, 166/168/169/170/173 and similar in the fourth |
 
 At 252K, composition ids 166-170 fail in EVERY cell including both exit conditions and both
-anchor settings. That is not a treatment effect. It is the PROTOCOL: each phase ingests about
-272K tokens at this tier against a retained tail of roughly 62K, so a phase's content is folded
-away before the next phase's cross-phase probes can use it. At 131K a phase is about 136K and
-the loss is smaller.
+anchor settings. That is not a treatment effect.
 
-So the 252K matrix has a protocol artifact dominating one of five probe channels, and the
-accuracy column at that tier cannot be read as a clean treatment comparison either. The honest
-reading of 252K is the growth column (which is mechanical) and the extraction/disambiguation
-columns (0.95 -> 1.00 under anchors in both exit conditions), not the total.
+**The hypothesis first recorded here -- that a phase's content is folded away before the next
+phase can use it -- is REFUTED by a direct check of the checkpoint.** Measured with anchors on,
+asking the checkpoint what it actually contains at the moment the phase-3 probes run:
+
+    after phase 1: checkpoint 14,051 chars   execution-1 present: no    coding-1: yes
+    after phase 2: checkpoint 21,322 chars   execution-1 present: yes   reasoning-1: no
+    after phase 3: checkpoint 32,115 chars   execution-1 present: yes   reasoning-1: yes
+                                             escalate_after_minutes: yes
+                                             retry_budget: yes   effect_size: yes
+
+Both endpoints of `execution-1 -> reasoning-1` and every field the probe needs are IN the
+checkpoint when that probe is asked. Retention is not the failure. The composition probes need a
+JOIN -- "which study justifies the escalate_after_minutes used by execution-1" -- and the
+checkpoint at that point is 32,115 characters of coordinate lines competing for attention with a
+59-probe turn.
+
+So the 252K ceiling on composition is the join over a large coordinate set, not the protocol and
+not retention. Two consequences, and the first is a correction to the recommendation below:
+
+1. **The protocol does not need fixing.** The phase boundaries deliver what they promise.
+2. **The accuracy column at 252K still is not a clean treatment comparison**, but for a different
+   reason than stated above: anchors make the checkpoint larger, which helps extraction
+   (0.95 -> 1.00) and hurts the join. The growth column remains the mechanical one, and
+   extraction/disambiguation remain the clean channels.
 
 ## C. What each direction actually established
 
@@ -105,12 +122,19 @@ That ordering explains every measurement in this series:
 
 ## F. What a next round should do, in order
 
-1. **Fix the phased protocol's 252K chain break** -- put the cross-phase probes in the phase
-   that still holds both endpoints, or give the phase a retrieval step. Without it, no
-   multi-phase result above 131K is interpretable.
-2. **Run exit at 252K and 475K with the protocol fixed**, n=5, and report the growth column and
-   the mechanism probe. That is the deployable claim: growth suppressed, archive intact.
-3. **Only then** revisit coordinates, with a corpus that does not end with its own fact set.
+1. ~~Fix the phased protocol's 252K chain break.~~ **Withdrawn** -- section B shows the content
+   is present at probe time and the protocol delivers what it promises. The composition ceiling
+   is a join over a 32K-character coordinate set, which is a prompt-density question, not a
+   phase-boundary one.
+2. **Run exit at 252K and 475K** (n=5) and report the growth column and the mechanism probe.
+   That is the deployable claim: growth suppressed, archive intact, and it does not depend on
+   any of the accuracy columns that this bench cannot make clean.
+3. **If composition matters, reduce prompt density rather than change the protocol** -- the
+   join fails against 32,115 characters of coordinate lines, so fewer, better-chosen
+   coordinates per checkpoint would address it. That is a retrieval-ranking problem, which is
+   what the RC29 observer was for.
+4. **Only then** revisit coordinates as an encoding, with a corpus that does not end with its
+   own fact set.
 
 ## G. Reproduce
 
