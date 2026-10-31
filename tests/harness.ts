@@ -50,6 +50,11 @@ export interface SemanticFace {
   mutate?: () => void
   /** Holds the semantic stream open until released (in-flight locking, T20). */
   gate?: Promise<void>
+  /**
+   * Per-call text, for tests that must tell the visible rationale call from the
+   * semantic writer call. Returning `undefined` falls back to `text`.
+   */
+  textFor?: (options: GenerateOptions) => string | undefined
 }
 
 export interface HarnessControl {
@@ -68,7 +73,7 @@ export interface Harness {
   readonly plugin?: EpistemicFoldPlugin
 }
 
-class ControlledAdapter extends LlmAdapter {
+export class ControlledAdapter extends LlmAdapter {
   constructor(
     private readonly contextWindow: number,
     private readonly control: HarnessControl,
@@ -105,7 +110,7 @@ class ControlledAdapter extends LlmAdapter {
       }
       return
     }
-    const text = this.control.semantic.text
+    const text = this.control.semantic.textFor?.(options) ?? this.control.semantic.text
     if (text !== undefined && text.length > 0) {
       yield { type: 'block-start', index: 0, blockType: 'text' }
       yield { type: 'text-delta', index: 0, text }

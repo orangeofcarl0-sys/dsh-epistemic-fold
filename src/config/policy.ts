@@ -7,6 +7,7 @@
  * @module dsh-epistemic-fold/policy
  */
 
+import { dirname, join } from 'node:path'
 import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
@@ -68,6 +69,15 @@ export interface ResolvedEpistemicFoldConfig {
    * Basic is never used for the Rationale slot.
    */
   readonly semanticMode: 'none' | 'rationale'
+  /**
+   * Semantic Continuity: whether a semantic writer runs, and whether what it
+   * proposes may become state. `off` keeps the pre-existing behavior exactly.
+   */
+  readonly semanticContinuity: SemanticContinuityMode
+  /** Token budget for the carried working set; 512-2048 is the measured range. */
+  readonly semanticWorkingSetTokens: number
+  /** Durable semantic journal root; derived next to the bundle root by default. */
+  readonly semanticRoot: string
   /** Hint budget stated to the model; see `EpistemicFoldConfig.rationaleHintTokens`. */
   readonly rationaleHintTokens: number
   /** Resolved bundle directory. */
@@ -164,6 +174,9 @@ export const DEFAULT_SUBAGENT_RECALL_FETCH_BUDGET_CHARS = 120_000
 /** Leaf admission policy mode (R2-B). */
 export type LeafAdmissionMode = 'legacy' | 'economic'
 
+/** Semantic Continuity's three-valued switch. */
+export type SemanticContinuityMode = 'off' | 'shadow' | 'active'
+
 /**
  * Root rebase decision mode (R2-C).
  *
@@ -198,6 +211,11 @@ export const DEFAULT_RETAIN_RATIO = 0.16
 const DEFAULT_HEADROOM_TOKENS = 65_536
 const DEFAULT_FROZEN_BUDGET = 24_000
 const DEFAULT_SEMANTIC_MODE = 'rationale'
+/** Semantic continuity is OFF by default: active mode changes what the model sees. */
+const DEFAULT_SEMANTIC_CONTINUITY: SemanticContinuityMode = 'off'
+const DEFAULT_SEMANTIC_WORKING_SET_TOKENS = 1024
+const SEMANTIC_WORKING_SET_MIN = 128
+const SEMANTIC_WORKING_SET_MAX = 8192
 
 /** Default HINT for the rationale instruction. NOT the generation budget: the real budget is
  * derived from the folded span by `rationaleOutputFor` and is several times larger, because the
@@ -235,6 +253,16 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   frozenCheckpointTokenBudget?: number
   /** Structured-checkpoint semantic face; default `rationale`. */
   semanticMode?: 'none' | 'rationale'
+  /**
+   * Semantic Continuity (`off` | `shadow` | `active`). Defaults to `off`.
+   * `shadow` measures without writing state; `active` commits the validated
+   * deltas after the fold commits.
+   */
+  semanticContinuity?: SemanticContinuityMode
+  /** Working-set token budget for the carried state; 1024 by default. */
+  semanticWorkingSetTokens?: number
+  /** Durable semantic journal directory; `../semantic` next to `bundleRoot`. */
+  semanticRoot?: string
   /**
    * The HINT the rationale instruction states, in tokens. Distinct from the REAL budget, which
    * `rationaleOutputFor` derives from the span; the hint must sit well below it or the model
@@ -347,7 +375,30 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (semanticMode !== 'none' && semanticMode !== 'rationale') {
     throw new Error('epistemic-fold: semanticMode must be "none" or "rationale"')
   }
+  const semanticContinuity = expanded.semanticContinuity ?? DEFAULT_SEMANTIC_CONTINUITY
+  if (semanticContinuity !== 'off' && semanticContinuity !== 'shadow' && semanticContinuity !== 'active') {
+    throw new Error('epistemic-fold: semanticContinuity must be "off", "shadow", or "active"')
+  }
+  // `semanticMode: none` is the explicit zero-LLM profile. A semantic writer IS
+  // an LLM call, so activating one under `none` would upgrade that profile
+  // behind the deployment's back. Refuse at resolution, not at the first fold.
+  if (semanticContinuity !== 'off' && semanticMode !== 'rationale') {
+    throw new Error(
+      'epistemic-fold: semanticContinuity requires semanticMode "rationale" — the semantic writer '
+      + 'shares the rationale call, and semanticMode "none" is the zero-LLM profile it must not upgrade',
+    )
+  }
+  const semanticWorkingSetTokens = expanded.semanticWorkingSetTokens ?? DEFAULT_SEMANTIC_WORKING_SET_TOKENS
+  if (!Number.isInteger(semanticWorkingSetTokens)
+    || semanticWorkingSetTokens < SEMANTIC_WORKING_SET_MIN
+    || semanticWorkingSetTokens > SEMANTIC_WORKING_SET_MAX) {
+    throw new Error(
+      `epistemic-fold: semanticWorkingSetTokens must be an integer in `
+      + `[${SEMANTIC_WORKING_SET_MIN}, ${SEMANTIC_WORKING_SET_MAX}]`,
+    )
+  }
   const bundleRoot = expanded.bundleRoot ?? DEFAULT_BUNDLE_ROOT
+  const semanticRoot = expanded.semanticRoot ?? join(dirname(bundleRoot), 'semantic')
   const leafAdmission = expanded.leafAdmission ?? DEFAULT_LEAF_ADMISSION
   if (leafAdmission !== 'legacy' && leafAdmission !== 'economic') {
     throw new Error('epistemic-fold: leafAdmission must be "legacy" or "economic"')
@@ -412,6 +463,9 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     compactionRetries,
     frozenCheckpointTokenBudget,
     semanticMode,
+    semanticContinuity,
+    semanticWorkingSetTokens,
+    semanticRoot,
     rationaleHintTokens,
     bundleRoot,
     leafAdmission,

@@ -166,6 +166,14 @@ function putFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
 /** Remove one anchor by id from its kind's face; also drops its head. */
 function removeFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
   let next = state
+  // The objective is a single SLOT, not a face. Without this, superseding an
+  // objective left the old one in `state.objective` while the replacement sat
+  // in `stateHeads`, and the renderer emitted the stale objective first.
+  if (anchor.kind === 'objective' && state.objective?.id === anchor.id) {
+    const { objective: _dropped, ...rest } = next
+    void _dropped
+    next = rest
+  }
   const face = ANCHOR_FACE[anchor.kind]
   if (face !== undefined && state[face][anchor.id] !== undefined) {
     const { [anchor.id]: _removed, ...rest } = state[face]
@@ -186,7 +194,15 @@ function removeFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
 /** How the reducer files one anchor into the bounded state faces. */
 function indexAnchor(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
   if (anchor.kind === 'objective') {
-    return { ...state, objective: anchor }
+    // An objective WITH a coordinate is indexed like any other head, so a
+    // revision displaces the previous value into `superseded` instead of
+    // leaving two objectives visible in different views.
+    if (anchor.stateKey === undefined) return { ...state, objective: anchor }
+    return {
+      ...state,
+      objective: anchor,
+      stateHeads: { ...state.stateHeads, [stateKeyText(anchor.stateKey)]: anchor },
+    }
   }
   let next = state
   if (anchor.stateKey !== undefined) {
@@ -290,7 +306,17 @@ function transitionFailure(
     return { ...removeFace(state, head), retiredCount: state.retiredCount + 1 }
   }
   const advanced: Anchor = { ...head, failureState }
-  return { ...state, openFailures: { ...state.openFailures, [anchorId]: advanced } }
+  let next: FoldCurrentState = { ...state, openFailures: { ...state.openFailures, [anchorId]: advanced } }
+  // A failure with a coordinate is ALSO a state head. Advancing only the face
+  // left the head reporting the previous state, so two views of one anchor
+  // disagreed and whichever a reader picked decided the answer.
+  if (head.stateKey !== undefined) {
+    const key = stateKeyText(head.stateKey)
+    if (next.stateHeads[key]?.id === anchorId) {
+      next = { ...next, stateHeads: { ...next.stateHeads, [key]: advanced } }
+    }
+  }
+  return next
 }
 
 /** Retire one anchor by id (verified failures, revoked constraints). */

@@ -195,6 +195,7 @@ export function registerCommandSurface(
   ctx.inject(['commands'], commandCtx => {
     const dispose = registerContextCommand(commandCtx, {
       store: engine.bundleStore,
+      semantic: () => engine.semanticDiagnostics,
       // The RAW config, not the resolved one: `mode` is a naming face the
       // resolver expands and then drops, so the resolved object cannot report
       // which tier a deployment actually asked for.

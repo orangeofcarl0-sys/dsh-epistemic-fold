@@ -95,11 +95,46 @@ import { retireDerivedAnswers } from '../recall/subagent-recall.ts'
 import { createFoldTelemetry, recordFold } from './fold-telemetry.ts'
 import type { FoldTelemetry } from './fold-telemetry.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from '../basic/types.ts'
-import type { FoldCurrentState } from '../state/state.ts'
+import type { EfAnchorEventData, FoldCurrentState } from '../state/state.ts'
+import {
+  DEFAULT_PLUGIN_EVENT_API,
+  appendPluginEvent,
+  pluginEventTransport,
+} from '../state/plugin-events.ts'
+import type { PluginEventApi } from '../state/plugin-events.ts'
+import {
+  FileSemanticJournal,
+  NullSemanticJournal,
+  packetIdOf,
+} from '../semantic/journal.ts'
+import type { SemanticJournal } from '../semantic/journal.ts'
+import { classifyPacket, healthOf, hasCommittedRecord } from '../semantic/commit.ts'
+import { projectSemanticOps, semanticRecordsIn } from '../semantic/record.ts'
+import type { SemanticRecordPayload } from '../semantic/record.ts'
+import { applyOps, planCommit } from '../semantic/plan.ts'
+import { changedAnchors, changedOverflowLine } from '../semantic/changes.ts'
+import { validateDeltas } from '../semantic/validate.ts'
+import { compileWorkingSet } from '../semantic/working-set-compiler.ts'
+import { parseWriterOutput, SEMANTIC_WRITER_INSTRUCTION } from '../semantic/writer.ts'
+import { renderTemporalCheckpoint } from '../checkpoint/renderer.ts'
+import { canonicalHash } from '../checkpoint/hash.ts'
+import { SEMANTIC_SCHEMA_VERSION } from '../semantic/types.ts'
+import type {
+  AcceptedDelta,
+  ReconciliationReport,
+  SemanticAuthority,
+  SemanticDiagnostics,
+  SemanticHealth,
+  SemanticPacket,
+  SemanticRefusal,
+  SemanticWorkingSetReport,
+} from '../semantic/types.ts'
+import type { Message } from '@deepseek-ai/dsh-llm'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
   FoldCommitRecordV1,
+  FoldMode,
   SummarizationInput,
   SummaryResult,
 } from '../types.ts'
@@ -130,6 +165,17 @@ function estimateSpanTokens(messages: readonly { readonly content: readonly { re
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
   readonly bundleStore?: FoldBundleStore
+  /**
+   * Semantic journal override. Defaults to `semanticRoot` when semantic
+   * continuity is configured, and to the null journal otherwise.
+   */
+  readonly semanticJournal?: SemanticJournal
+  /**
+   * The session API used to detect and write plugin records. Defaults to the
+   * installed `@deepseek-ai/dsh-session`; injectable so a test can exercise a
+   * specific host generation (0.2.1 records vs a journal-only host).
+   */
+  readonly pluginEventApi?: PluginEventApi
 }
 
 /**
@@ -161,6 +207,35 @@ interface UnresolvedSpecFor {
  */
 function noContextCapacityMessage(key: string): string {
   return `epistemic-fold: no context capacity for ${key}; configure contextWindow on that adapter model`
+}
+
+/** One fold's semantic plan, including the candidate body it rendered. */
+interface ActiveFoldPlan {
+  readonly text: string
+  readonly renderedState: { readonly digest: string; readonly anchors: number }
+  readonly workingSet: SemanticWorkingSetReport
+  readonly packet?: {
+    readonly proposed: readonly unknown[]
+    readonly accepted: readonly AcceptedDelta[]
+    readonly refused: readonly SemanticRefusal[]
+    readonly deltaParse: 'parsed' | 'absent' | 'malformed'
+    readonly ops: readonly EfAnchorEventData[]
+    readonly handoff: string
+  }
+}
+
+/** Severity order for the two independent health sources. */
+const SEMANTIC_HEALTH_SEVERITY: Readonly<Record<SemanticHealth, number>> = {
+  ready: 0,
+  'archive-only': 1,
+  partial: 2,
+  stale: 3,
+  unavailable: 4,
+}
+
+/** The worse of two health values; neither source may mask the other. */
+function combineSemanticHealth(left: SemanticHealth, right: SemanticHealth): SemanticHealth {
+  return SEMANTIC_HEALTH_SEVERITY[left] >= SEMANTIC_HEALTH_SEVERITY[right] ? left : right
 }
 
 export class EpistemicFoldEngine extends BasicCompactionEngine {
@@ -255,6 +330,35 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** The per-target trigger decomposition reported to the log (RC1-A). */
   private readonly triggers = new TriggerDiagnostics()
 
+  // ---- Semantic Continuity -------------------------------------------------
+  /** Where staged packets live, and (on a journal-authority host) the state record. */
+  private readonly semanticJournal: SemanticJournal
+  /** The session API this deployment writes plugin records through. */
+  private readonly pluginEventApi: PluginEventApi
+  /**
+   * ONE authority per deployment, chosen once: the session log when the host
+   * has `appendPluginRecord`, the journal otherwise. Never both for one packet.
+   */
+  private readonly semanticAuthorityValue: SemanticAuthority
+  /** The last packet (active or shadow), for status/inspection. */
+  private lastSemanticPacketValue: SemanticPacket | undefined
+  /** The last compiled working set's accounting. */
+  private lastWorkingSetValue: SemanticWorkingSetReport | undefined
+  /** Health from the last reconciliation pass. */
+  private reconcileHealthValue: SemanticHealth = 'partial'
+  private reconcileHealthDetail: string | undefined = 'no semantic fold has run yet'
+  /** Health from the last writer call, kept separate so one cannot mask the other. */
+  private writerHealthValue: SemanticHealth = 'ready'
+  private writerHealthDetail: string | undefined
+  private semanticWriterCallsValue = 0
+  private semanticWriterFailuresValue = 0
+  private semanticAcceptedValue = 0
+  private semanticRefusedValue = 0
+  private semanticActivatedValue = 0
+  private semanticReconciledValue = 0
+  /** Serializes activation passes per session; an activation appends to the log. */
+  private readonly semanticChains = new Map<string, Promise<void>>()
+
   constructor(
     ctx: ConstructorParameters<typeof BasicCompactionEngine>[0],
     config: EpistemicFoldConfig = {},
@@ -274,6 +378,35 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // from `bundleRoot` in the config face, honoring the DSH persistence
     // lifecycle (R0-B). Programmatic callers may inject a store directly.
     this.bundles = options.bundleStore ?? new FileBundleStore(this.efConfig.bundleRoot)
+    this.pluginEventApi = options.pluginEventApi ?? DEFAULT_PLUGIN_EVENT_API
+    this.semanticAuthorityValue =
+      pluginEventTransport(this.pluginEventApi) === 'plugin-record' ? 'session-record' : 'journal'
+    this.semanticJournal = options.semanticJournal ?? (
+      this.efConfig.semanticContinuity === 'off'
+        ? new NullSemanticJournal()
+        : new FileSemanticJournal(this.efConfig.semanticRoot)
+    )
+    // Fail at MOUNT, not after an expensive writer call: active mode needs a
+    // durable place to record the commit, and a null journal on a record-less
+    // host would stage packets that can never activate.
+    if (this.efConfig.semanticContinuity === 'active'
+      && this.semanticAuthorityValue === 'journal'
+      && this.semanticJournal instanceof NullSemanticJournal) {
+      throw new Error(
+        'epistemic-fold: semanticContinuity "active" needs a durable semantic journal on this host '
+        + '(no appendPluginRecord and no journal injected). Refusing at mount rather than staging '
+        + 'packets that can never commit. See README, "Semantic Continuity".',
+      )
+    }
+    if (this.efConfig.semanticContinuity !== 'off') {
+      // The post-commit feed. A microtask, because `session.append` rejects a
+      // reentrant append while it publishes, and activation may append a record.
+      this.ctx.on('session/event', (session, event) => {
+        if (event.type !== 'compaction/summary' && event.type !== 'compaction/end') return
+        if (this.efConfig.semanticContinuity !== 'active') return
+        this.scheduleSemanticActivation(session)
+      })
+    }
   }
 
   /**
@@ -323,6 +456,20 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       )
     }
     const next = resolveEfConfig({ ...explicit, mode })
+    // The semantic journal and its authority are constructed once, at mount.
+    // A tier that changed them would leave the engine writing to a journal it
+    // did not open, or reading state from a record plane that was never wired.
+    if (next.semanticContinuity !== this.resolvedConfig.semanticContinuity) {
+      throw new Error(
+        'epistemic-fold: cannot switch semanticContinuity at runtime — it decides whether semantic '
+        + 'state is durably recorded, which is a mount-time decision. Restart with the setting in '
+        + 'config instead.',
+      )
+    }
+    // `semanticRoot` is NOT compared: it is not a tier key, and a re-resolution
+    // from a partial explicit config would differ only because the default
+    // bundle root differs. The journal this engine opened at mount is the one it
+    // keeps writing to either way.
     if (next.framingMode !== this.resolvedConfig.framingMode) {
       throw new Error(
         `epistemic-fold: cannot switch to mode ${JSON.stringify(mode)} at runtime — it changes `
@@ -1813,20 +1960,62 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // own durable checkpoint framing (frameSummary) — the compile hook must
     // return the UNFRAMED body or the surface lands a double-wrapped text.
     const fallbackText = renderFallbackCheckpoint(candidate, shadowedMessages.length)
+
+    // Reconcile BEFORE the state is read. A packet whose fold committed but
+    // whose activation was interrupted must be visible to THIS writer, or the
+    // checkpoint would be computed from a state the log has already moved past.
+    if (this.efConfig.semanticContinuity === 'active') {
+      await this.reconcileSemantics(session)
+    }
     // One registry probe per fold: the structured rendering path and the
     // semantic-mode choice read the same mounted state.
-    const mountedState = this.mountedState(session)
+    const baseState = this.mountedState(session)
+    const mountedState = baseState === undefined
+      ? undefined
+      : await this.semanticStateOf(session, baseState)
+    if (this.efConfig.semanticContinuity === 'active' && mountedState === undefined) {
+      // The deployment asked for semantic state but no projection is mounted.
+      // The fold still runs on the legacy rendering path; saying so is better
+      // than reporting `ready` for a layer that cannot write anything.
+      this.writerHealthValue = 'partial'
+      this.writerHealthDetail =
+        'semantic continuity is active, but no state projection is mounted; no semantic state can be written'
+    }
 
     const publish = async (
       semanticText: string | undefined,
       semanticMeta?: SummaryResult,
+      active?: ActiveFoldPlan,
     ): Promise<SummaryResult> => {
-      // M3a: when the deterministic projection is mounted, the checkpoint is
-      // a structured handoff — machine state first, narrative in Rationale.
-      const stateText = this.structuredStateText(mountedState, candidate.checkpointId, semanticText)
-      const renderedText = stateText ?? (semanticText === undefined
-        ? fallbackText
-        : renderSemanticCheckpoint(candidate, semanticText))
+      let renderedText: string
+      let renderedState: { readonly digest: string; readonly anchors: number } | undefined
+      if (active !== undefined) {
+        // The temporal body was rendered from the CANDIDATE state (committed
+        // state + this packet's resolved ops). Staging before the bundle write
+        // means a crash can leave a staged packet, which only a matching
+        // committed body can activate.
+        renderedText = active.text
+        renderedState = active.renderedState
+        if (active.packet !== undefined) {
+          await this.stageSemanticPacket({
+            session,
+            candidate,
+            orderedSurfaceSeqs,
+            active,
+            ...(semanticMeta === undefined ? {} : { meta: semanticMeta }),
+          })
+        }
+      } else {
+        // M3a: when the deterministic projection is mounted, the checkpoint is
+        // a structured handoff — machine state first, narrative in Rationale.
+        const stateText = this.structuredStateText(
+          mountedState, candidate.checkpointId, semanticText, candidate.mode,
+        )
+        renderedText = stateText ?? (semanticText === undefined
+          ? fallbackText
+          : renderSemanticCheckpoint(candidate, semanticText))
+        renderedState = mountedState === undefined ? undefined : describeRenderedState(mountedState)
+      }
       const bundle = buildBundle({
         candidate,
         orderedSurfaceSeqs,
@@ -1839,9 +2028,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         ...(this.efConfig.referentialArchive ? { referentialArchive: true } : {}),
         // Bind the body to the state it projected. Only when a projection was
         // mounted, because only then is state in the body at all.
-        ...(mountedState === undefined
-          ? {}
-          : { renderedState: describeRenderedState(mountedState) }),
+        ...(renderedState === undefined ? {} : { renderedState }),
       })
       await this.bundles.write(bundle)
       this.telemetry.bundleWrites += 1
@@ -1866,71 +2053,109 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // abort the transaction, never silently downgrade to a fallback (T06).
     let semanticText: string | undefined
     let semanticMeta: SummaryResult | undefined
+    let activePlan: ActiveFoldPlan | undefined
 
     if (mountedState !== undefined) {
-      if (this.efConfig.semanticMode === 'rationale') {
-        this.telemetry.rationaleAttempts += 1
-        // The anchor count decides WHICH instruction the rationale gets: with anchors it
-        // cites them by id; with none it is the only carrier and must preserve the facts.
-        // Measured: anchors 0 made the old instruction forbid the only content that could
-        // exist, leaving a 47-character marker. See rationaleInstruction().
-        const anchorCount = machineAnchorCount(mountedState)
-        // The span this fold replaces, for the output budget. Estimated from the shadowed
-        // messages rather than taken from `measurement`, because the span has already been
-        // removed from the surface by the time this hook runs. It only sizes a BUDGET, and
-        // `rationaleOutputFor` clamps to [16_384, 32_768] -- NOT the [1024, 8192] this comment
-        // claimed until 2026-10-19, which was wrong by a factor of sixteen and made the budget
-        // look four times tighter than it is. Inside our span range the estimate cannot move the
-        // cap at all: every fold from 119K to 749K gets the 16,384 floor. The comment is corrected
-        // rather than deleted because the argument it makes still holds -- a 2x error in the
-        // estimate cannot turn a workable budget into a tripwire.
-        const foldSpanTokens = estimateSpanTokens(summarizationInput.messages)
-        try {
-          const rationale = await rationaleOnly({
-            ctx: this.ctx,
-            target: conversationTarget(agent) ?? { provider: 'unrouted', model: 'unrouted' },
-            maxTokens: rationaleOutputFor(foldSpanTokens),
-            anchorCount,
-            hintTokens: this.efConfig.rationaleHintTokens,
-            input: summarizationInput,
+      const continuity = this.efConfig.semanticContinuity
+      const maxTokens = rationaleOutputFor(estimateSpanTokens(summarizationInput.messages))
+      if (continuity === 'active') {
+        // ONE call: the handoff IS the visible rationale, and the same response
+        // carries the deltas. A second call would double the cost of every fold.
+        const writer = await this.semanticWriterCall({
+          agent,
+          input: summarizationInput,
+          maxTokens,
+          anchorCount: machineAnchorCount(mountedState),
+          hintTokens: this.efConfig.rationaleHintTokens,
+          signal,
+        })
+        if (writer === undefined) {
+          // The fold still needs a body. A state-only temporal checkpoint keeps
+          // the committed state visible; no packet is staged, so nothing this
+          // failed call might have proposed can become state.
+          activePlan = this.compileActiveFold({
+            state: mountedState,
+            foldedSeqs: orderedSurfaceSeqs,
+            checkpointId: candidate.checkpointId,
+            mode: candidate.mode,
+            handoff: undefined,
+          })
+        } else {
+          const parsed = parseWriterOutput(writer.text)
+          const validation = validateDeltas({
+            foldedSeqs: orderedSurfaceSeqs,
+            messages: shadowedMessages,
+            proposed: parsed.proposed,
+          })
+          const plan = planCommit(validation.accepted, { state: mountedState })
+          const candidateState = applyOps(mountedState, plan.ops)
+          activePlan = this.compileActiveFold({
+            state: candidateState,
+            foldedSeqs: orderedSurfaceSeqs,
+            checkpointId: candidate.checkpointId,
+            mode: candidate.mode,
+            handoff: parsed.handoff,
+            packet: {
+              proposed: parsed.proposed,
+              accepted: validation.accepted,
+              refused: validation.refused,
+              deltaParse: parsed.deltaParse,
+              ops: plan.ops,
+              handoff: parsed.handoff,
+            },
+          })
+          semanticText = parsed.handoff.trim().length > 0 ? parsed.handoff : undefined
+          semanticMeta = writer.meta
+          this.telemetry.rationaleChars = parsed.handoff.length
+          this.semanticAcceptedValue += validation.accepted.length
+          this.semanticRefusedValue += validation.refused.length
+          this.writerHealthValue = 'ready'
+          this.writerHealthDetail = undefined
+        }
+      } else if (continuity === 'shadow') {
+        // The VISIBLE body must stay byte-identical to a deployment without
+        // semantic continuity, so it uses the ORIGINAL rationale call.
+        if (this.efConfig.semanticMode === 'rationale') {
+          this.telemetry.rationaleAttempts += 1
+          const rationale = await this.rationaleCall({
             agent,
+            input: summarizationInput,
+            maxTokens,
+            anchorCount: machineAnchorCount(mountedState),
+            hintTokens: this.efConfig.rationaleHintTokens,
             signal,
           })
-          semanticText = rationale.text
-          this.telemetry.rationaleChars = rationale.text.length
-          semanticMeta = {
-            summary: [{ type: 'text', text: rationale.text }],
-            provider: rationale.provider,
-            model: rationale.model,
-            maxTokens: rationale.maxTokens,
-            ...(rationale.usage === undefined ? {} : { usage: rationale.usage }),
-            rawOutput: rationale.rawOutput,
-            llmStreamCall: true,
+          if (rationale !== undefined) {
+            semanticText = rationale.text
+            semanticMeta = rationale.meta
           }
-        } catch (error: unknown) {
-          if (signal?.aborted === true) throw error
-          // Recorded rather than only swallowed: a discarded rationale leaves a checkpoint
-          // identical to `semanticMode: 'none'`, and before this counter existed the artifact
-          // could not tell the two apart. See `rationaleAttempts` in fold-telemetry.ts.
-          this.telemetry.rationaleFailures += 1
-          // ## BOTH the code and the message, because `code ?? message` discarded the reason
-          //
-          // Measured 2026-10-19: four of five economy cells at a 252K window recorded
-          // `rationaleFailureReason: "LIVE_HTTP"` and nothing else -- no status, no provider
-          // words. `lastProviderError` was separately null, because the rationale call runs
-          // inside the engine and never passes through the host's `modelTurn`, which is the
-          // only writer of that field. So an artifact could say THAT the digest failed and
-          // never WHY, and a failure that removes the whole checkpoint read as a low score.
-          //
-          // `code` is still first because it is the stable, greppable half; the message is
-          // appended rather than replaced so neither can hide the other.
-          this.telemetry.rationaleFailureReason = error instanceof Error
-            ? (() => {
-                const code = (error as Error & { code?: string }).code
-                return code === undefined ? error.message : code + ": " + error.message
-              })()
-            : String(error)
-          semanticText = undefined
+        }
+        // A SEPARATE diagnostic call, recorded as such, never visible and never
+        // committed (`ops` stays empty on the packet). Its cost is reported.
+        await this.runShadowWriter({
+          session,
+          agent,
+          input: summarizationInput,
+          messages: shadowedMessages,
+          state: mountedState,
+          foldedSeqs: orderedSurfaceSeqs,
+          checkpointId: candidate.checkpointId,
+          maxTokens,
+          signal,
+        })
+      } else if (this.efConfig.semanticMode === 'rationale') {
+        this.telemetry.rationaleAttempts += 1
+        const rationale = await this.rationaleCall({
+          agent,
+          input: summarizationInput,
+          maxTokens,
+          anchorCount: machineAnchorCount(mountedState),
+          hintTokens: this.efConfig.rationaleHintTokens,
+          signal,
+        })
+        if (rationale !== undefined) {
+          semanticText = rationale.text
+          semanticMeta = rationale.meta
         }
       }
       // semanticMode 'none': no LLM call at all — zero-LLM profile.
@@ -1953,7 +2178,532 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       }
     }
 
-    return await publish(semanticText, semanticMeta)
+    return await publish(semanticText, semanticMeta, activePlan)
+  }
+
+  /**
+   * The ordinary rationale call, with the failure telemetry the pre-existing
+   * path relied on. Kept as one helper so the visible body's behavior cannot
+   * drift between `off`, `shadow`, and the legacy path.
+   */
+  private async rationaleCall(args: {
+    agent: Agent
+    input: SummarizationInput
+    maxTokens: number
+    anchorCount: number
+    hintTokens: number
+    signal?: AbortSignal | undefined
+  }): Promise<{ readonly text: string; readonly meta: SummaryResult } | undefined> {
+    try {
+      const rationale = await rationaleOnly({
+        ctx: this.ctx,
+        target: conversationTarget(args.agent) ?? { provider: 'unrouted', model: 'unrouted' },
+        maxTokens: args.maxTokens,
+        anchorCount: args.anchorCount,
+        hintTokens: args.hintTokens,
+        input: args.input,
+        agent: args.agent,
+        signal: args.signal,
+      })
+      this.telemetry.rationaleChars = rationale.text.length
+      return {
+        text: rationale.text,
+        meta: {
+          summary: [{ type: 'text', text: rationale.text }],
+          provider: rationale.provider,
+          model: rationale.model,
+          maxTokens: rationale.maxTokens,
+          ...(rationale.usage === undefined ? {} : { usage: rationale.usage }),
+          rawOutput: rationale.rawOutput,
+          llmStreamCall: true,
+        },
+      }
+    } catch (error: unknown) {
+      if (args.signal?.aborted === true) throw error
+      this.telemetry.rationaleFailures += 1
+      this.telemetry.rationaleFailureReason = error instanceof Error
+        ? (() => {
+            const code = (error as Error & { code?: string }).code
+            return code === undefined ? error.message : code + ": " + error.message
+          })()
+        : String(error)
+      this.writerHealthValue = 'partial'
+      this.writerHealthDetail = 'rationale call failed; the checkpoint is state-only'
+      return undefined
+    }
+  }
+
+  /**
+   * The combined handoff + deltas call.
+   *
+   * Failure is not a fold failure: the checkpoint still renders from committed
+   * state, and only the proposed deltas are lost. The health note records it.
+   */
+  private async semanticWriterCall(args: {
+    agent: Agent
+    input: SummarizationInput
+    maxTokens: number
+    anchorCount: number
+    hintTokens: number
+    signal?: AbortSignal | undefined
+  }): Promise<{ readonly text: string; readonly meta: SummaryResult } | undefined> {
+    this.semanticWriterCallsValue += 1
+    try {
+      const rationale = await rationaleOnly({
+        ctx: this.ctx,
+        target: conversationTarget(args.agent) ?? { provider: 'unrouted', model: 'unrouted' },
+        maxTokens: args.maxTokens,
+        anchorCount: args.anchorCount,
+        hintTokens: args.hintTokens,
+        instruction: SEMANTIC_WRITER_INSTRUCTION,
+        input: args.input,
+        agent: args.agent,
+        signal: args.signal,
+      })
+      return {
+        text: rationale.text,
+        meta: {
+          summary: [{ type: 'text', text: rationale.text }],
+          provider: rationale.provider,
+          model: rationale.model,
+          maxTokens: rationale.maxTokens,
+          ...(rationale.usage === undefined ? {} : { usage: rationale.usage }),
+          rawOutput: rationale.rawOutput,
+          llmStreamCall: true,
+        },
+      }
+    } catch (error: unknown) {
+      if (args.signal?.aborted === true) throw error
+      this.semanticWriterFailuresValue += 1
+      this.writerHealthValue = 'partial'
+      this.writerHealthDetail = `semantic writer failed: ${error instanceof Error ? error.message : String(error)}`
+      this.ctx.logger.warn(`[epistemic-fold] ${this.writerHealthDetail}`)
+      return undefined
+    }
+  }
+
+  /** The shadow-mode diagnostic pass: measures, never writes state. */
+  private async runShadowWriter(args: {
+    session: Session
+    agent: Agent
+    input: SummarizationInput
+    messages: readonly Message[]
+    state: FoldCurrentState
+    foldedSeqs: readonly number[]
+    checkpointId: string
+    maxTokens: number
+    signal?: AbortSignal | undefined
+  }): Promise<void> {
+    if (this.efConfig.semanticMode !== 'rationale') return
+    const writer = await this.semanticWriterCall({
+      agent: args.agent,
+      input: args.input,
+      maxTokens: args.maxTokens,
+      anchorCount: machineAnchorCount(args.state),
+      hintTokens: this.efConfig.rationaleHintTokens,
+      signal: args.signal,
+    })
+    if (writer === undefined) return
+    const parsed = parseWriterOutput(writer.text)
+    const validation = validateDeltas({
+      foldedSeqs: args.foldedSeqs,
+      messages: args.messages,
+      proposed: parsed.proposed,
+    })
+    const plan = planCommit(validation.accepted, { state: args.state })
+    const bodyDigest = canonicalHash({ shadow: writer.text })
+    const packet: SemanticPacket = {
+      schemaVersion: SEMANTIC_SCHEMA_VERSION,
+      packetId: packetIdOf({
+        sessionId: args.session.id,
+        checkpointId: args.checkpointId,
+        foldedSeqs: args.foldedSeqs,
+        bodyDigest,
+      }),
+      sessionId: args.session.id,
+      checkpointId: args.checkpointId,
+      mode: 'shadow',
+      authority: this.semanticAuthorityValue,
+      status: 'staged',
+      spanDigest: canonicalHash([...args.foldedSeqs]),
+      foldedSeqs: [...args.foldedSeqs],
+      createdAt: Date.now(),
+      stagedAtSeq: Number(args.session.seq),
+      bodyDigest,
+      // NEVER state: a shadow packet carries no operations it could apply.
+      ops: [],
+      plannedOps: plan.ops,
+      handoff: parsed.handoff,
+      deltaParse: parsed.deltaParse,
+      proposed: parsed.proposed,
+      accepted: validation.accepted,
+      refused: validation.refused,
+      writer: {
+        provider: writer.meta.provider,
+        model: writer.meta.model,
+        maxTokens: writer.meta.maxTokens ?? 0,
+        ...(writer.meta.usage === undefined ? {} : { usage: writer.meta.usage }),
+      },
+    }
+    // Deliberately NOT journaled: shadow must not create a file a later active
+    // reconciliation could mistake for a commit intent. The measurement lives
+    // in memory for the status surface.
+    this.lastSemanticPacketValue = packet
+    this.semanticAcceptedValue += validation.accepted.length
+    this.semanticRefusedValue += validation.refused.length
+    this.writerHealthValue = parsed.deltaParse === 'malformed' ? 'partial' : 'ready'
+    this.writerHealthDetail = parsed.deltaParse === 'malformed' ? parsed.parseDetail : undefined
+  }
+
+  /**
+   * Render the temporal body and price its carried working set.
+   *
+   * `state` is the CANDIDATE state: committed state plus this packet's ops.
+   */
+  private compileActiveFold(args: {
+    state: FoldCurrentState
+    foldedSeqs: readonly number[]
+    checkpointId: string
+    mode: FoldMode
+    handoff: string | undefined
+    packet?: ActiveFoldPlan['packet']
+  }): ActiveFoldPlan {
+    const changed = changedAnchors(args.state, args.foldedSeqs)
+    const compiled = compileWorkingSet({
+      state: args.state,
+      // Every changed anchor, including the capped ones: otherwise an omitted
+      // change would reappear under "State from earlier folds" as if it were old.
+      exclude: new Set(changed.all.map(anchor => anchor.id)),
+      budgetTokens: this.efConfig.semanticWorkingSetTokens,
+      estimate: text => this.estimateSemanticText(text),
+    })
+    const overflow = changedOverflowLine(changed.omitted.length) ?? ''
+    const carried = [compiled.text, overflow].filter(part => part.length > 0).join('\n\n')
+    const text = renderTemporalCheckpoint({
+      checkpointId: args.checkpointId,
+      mode: args.mode,
+      changed: changed.shown,
+      workingSetText: carried,
+      ...(args.handoff === undefined ? {} : { rationale: args.handoff }),
+    })
+    const workingSet: SemanticWorkingSetReport = {
+      tokens: compiled.tokens,
+      overflow: compiled.overflow,
+      pinned: compiled.pinned.length,
+      working: compiled.working.length,
+      archived: compiled.omitted.length,
+    }
+    this.lastWorkingSetValue = workingSet
+    return {
+      text,
+      renderedState: describeRenderedState(args.state),
+      workingSet,
+      ...(args.packet === undefined ? {} : { packet: args.packet }),
+    }
+  }
+
+  /**
+   * Record this fold's packet as STAGED — the pre-commit half of the
+   * transaction. Throws when it cannot be written: the body the model is about
+   * to see includes these deltas, and a fold whose state can never be recorded
+   * must not commit as if it could.
+   */
+  private async stageSemanticPacket(args: {
+    session: Session
+    candidate: { readonly checkpointId: string }
+    orderedSurfaceSeqs: readonly number[]
+    active: ActiveFoldPlan
+    meta?: SummaryResult
+  }): Promise<void> {
+    const packet = args.active.packet
+    if (packet === undefined) return
+    const bodyDigest = canonicalHash(args.active.text)
+    const staged: SemanticPacket = {
+      schemaVersion: SEMANTIC_SCHEMA_VERSION,
+      packetId: packetIdOf({
+        sessionId: args.session.id,
+        checkpointId: args.candidate.checkpointId,
+        foldedSeqs: args.orderedSurfaceSeqs,
+        bodyDigest,
+      }),
+      sessionId: args.session.id,
+      checkpointId: args.candidate.checkpointId,
+      mode: 'active',
+      authority: this.semanticAuthorityValue,
+      status: 'staged',
+      spanDigest: canonicalHash([...args.orderedSurfaceSeqs]),
+      foldedSeqs: [...args.orderedSurfaceSeqs],
+      createdAt: Date.now(),
+      stagedAtSeq: Number(args.session.seq),
+      bodyDigest,
+      ops: packet.ops,
+      handoff: packet.handoff,
+      deltaParse: packet.deltaParse,
+      proposed: packet.proposed,
+      accepted: packet.accepted,
+      refused: packet.refused,
+      workingSet: args.active.workingSet,
+      ...(args.meta === undefined ? {} : {
+        writer: {
+          provider: args.meta.provider,
+          model: args.meta.model,
+          maxTokens: args.meta.maxTokens ?? 0,
+          ...(args.meta.usage === undefined ? {} : { usage: args.meta.usage }),
+        },
+      }),
+    }
+    await this.semanticJournal.write(staged)
+    this.lastSemanticPacketValue = staged
+  }
+
+  /**
+   * The semantic view of current state for this fold.
+   *
+   * `session-record` authority: the projection already folded every committed
+   * record, so the session-derived state IS the answer.
+   *
+   * `journal` authority: layer the activated packets over the session-derived
+   * state, in commit order. A `staged` packet whose commit is demonstrable is
+   * applied too — that is the crash case where the fold committed but the
+   * status write did not, and it keeps the checkpoint consistent with the
+   * surface. The status write is a cache, not the truth.
+   */
+  private async semanticStateOf(session: Session, base: FoldCurrentState): Promise<FoldCurrentState> {
+    if (this.efConfig.semanticContinuity !== 'active') return base
+    if (this.semanticAuthorityValue === 'session-record') return base
+    const read = await this.semanticJournal.list(session.id)
+    const applicable = read.packets.filter(packet =>
+      packet.mode === 'active'
+      && packet.authority === 'journal'
+      && (packet.status === 'activated'
+        || (packet.status === 'staged' && classifyPacket(packet, session).status === 'activated')))
+    if (applicable.length === 0) return base
+    return projectSemanticOps(base, applicable.map(packet => packet.ops))
+  }
+
+  /**
+   * Reconcile staged packets against the committed log.
+   *
+   * This is the repair path for every interruption: after the writer, after the
+   * bundle write, after the surface replacement, and after a process restart.
+   * It never guesses: `classifyPacket` requires the exact body digest and the
+   * surface message, and a packet that cannot be proven committed is left
+   * `pending` (still in flight) or marked `abandoned`.
+   */
+  async reconcileSemantics(session: Session): Promise<ReconciliationReport> {
+    const mode = this.efConfig.semanticContinuity
+    if (mode !== 'active') {
+      return {
+        scanned: 0, staged: 0, activated: 0, abandoned: 0, unrepairable: 0,
+        health: mode === 'off' ? 'archive-only' : 'ready',
+        ...(mode === 'off' ? { detail: 'semantic continuity is off' } : {}),
+      }
+    }
+    const authority = this.semanticAuthorityValue
+    let read
+    try {
+      read = await this.semanticJournal.list(session.id)
+    } catch (error: unknown) {
+      this.reconcileHealthValue = 'unavailable'
+      this.reconcileHealthDetail = `semantic journal unreadable: ${error instanceof Error ? error.message : String(error)}`
+      return {
+        scanned: 0, staged: 0, activated: 0, abandoned: 0, unrepairable: 0,
+        health: 'unavailable', detail: this.reconcileHealthDetail,
+      }
+    }
+    const records = authority === 'session-record' ? semanticRecordsIn(session) : []
+    let activated = 0
+    let abandoned = 0
+    let archivedOnly = 0
+    let staged = 0
+    let unrepairable = read.invalid.length
+    let repaired = 0
+    let sawStale = false
+
+    for (const packet of read.packets) {
+      if (packet.mode !== 'active') continue
+      // A packet written under the OTHER authority is not silently reinterpreted.
+      // An upgrade from journal to session-record migrates ACTIVATED packets,
+      // because their state was already part of the fold chain.
+      if (packet.authority !== authority) {
+        if (authority === 'session-record'
+          && packet.authority === 'journal'
+          && packet.status === 'activated'
+          && !hasCommittedRecord(packet.packetId, records)) {
+          this.appendSemanticRecord(session, packet)
+          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
+          repaired += 1
+          continue
+        }
+        unrepairable += 1
+        continue
+      }
+      if (authority === 'session-record' && hasCommittedRecord(packet.packetId, records)) {
+        // Count only the transition. An already-activated packet is re-seen on
+        // every fold; counting it again would make the lifetime counter grow
+        // with the number of reconciliations rather than commits.
+        if (packet.status !== 'activated') {
+          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
+          activated += 1
+        }
+        continue
+      }
+      if (packet.status === 'activated') {
+        if (authority === 'session-record') {
+          // The journal says activated, the log has no record: the log lost the
+          // state (restore from an older copy, a truncated file). Re-append.
+          sawStale = true
+          this.appendSemanticRecord(session, packet)
+          repaired += 1
+          activated += 1
+        }
+        continue
+      }
+      if (packet.status !== 'staged') continue
+      const verdict = classifyPacket(packet, session)
+      switch (verdict.status) {
+        case 'activated':
+          if (authority === 'session-record') this.appendSemanticRecord(session, packet)
+          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
+          activated += 1
+          break
+        case 'archived-only':
+          await this.semanticJournal.setStatus(packet.packetId, 'archived-only', { abandonReason: verdict.detail })
+          archivedOnly += 1
+          break
+        case 'abandoned':
+          await this.semanticJournal.setStatus(packet.packetId, 'abandoned', { abandonReason: verdict.detail })
+          abandoned += 1
+          break
+        case 'pending':
+          staged += 1
+          break
+      }
+    }
+
+    this.semanticActivatedValue += activated
+    this.semanticReconciledValue += repaired
+    const health = healthOf({
+      staged, abandoned, archivedOnly,
+      invalid: read.invalid.length,
+      unrepairable,
+      activated,
+    })
+    if (sawStale) {
+      this.reconcileHealthValue = 'stale'
+      this.reconcileHealthDetail = 'a committed semantic record was missing from the session log and was re-appended'
+    } else {
+      this.reconcileHealthValue = health.health
+      this.reconcileHealthDetail = health.detail
+    }
+    return {
+      scanned: read.packets.length,
+      staged,
+      activated,
+      abandoned,
+      unrepairable,
+      health: this.reconcileHealthValue,
+      ...(this.reconcileHealthDetail === undefined ? {} : { detail: this.reconcileHealthDetail }),
+    }
+  }
+
+  /** Append the durable commit record for one verified packet. */
+  private appendSemanticRecord(session: Session, packet: SemanticPacket): void {
+    const payload: SemanticRecordPayload = {
+      schemaVersion: SEMANTIC_SCHEMA_VERSION,
+      packetId: packet.packetId,
+      checkpointId: packet.checkpointId,
+      foldedSeqs: [...packet.foldedSeqs],
+      bodyDigest: packet.bodyDigest,
+      ops: packet.ops,
+    }
+    appendPluginEvent(session, 'semantic', payload, this.pluginEventApi)
+  }
+
+  /** Serialize activation passes per session; each may append to the log. */
+  private scheduleSemanticActivation(session: Session): void {
+    const key = String(session.id)
+    const previous = this.semanticChains.get(key) ?? Promise.resolve()
+    const next = previous
+      .then(async () => {
+        await this.reconcileSemantics(session)
+      })
+      .catch((error: unknown) => {
+        this.reconcileHealthValue = 'unavailable'
+        this.reconcileHealthDetail = `semantic activation failed: ${error instanceof Error ? error.message : String(error)}`
+        this.ctx.logger.warn(`[epistemic-fold] ${this.reconcileHealthDetail}`)
+      })
+    this.semanticChains.set(key, next)
+    void next.finally(() => {
+      if (this.semanticChains.get(key) === next) this.semanticChains.delete(key)
+    })
+  }
+
+  /** Price one string with the mounted meter, falling back to the labelled heuristic. */
+  private estimateSemanticText(text: string): number {
+    const message = {
+      role: 'user',
+      content: [{ type: 'text', text }],
+      source: { kind: 'user' },
+    } as unknown as Message
+    return this.ctx.tokenMeter.estimateMessage(message)
+  }
+
+  /** The last semantic packet, whichever mode produced it. */
+  get lastSemanticPacket(): SemanticPacket | undefined {
+    return this.lastSemanticPacketValue
+  }
+
+  /** The last compiled working set's accounting. */
+  get lastWorkingSet(): SemanticWorkingSetReport | undefined {
+    return this.lastWorkingSetValue
+  }
+
+  /** Which durable record this deployment uses for semantic state. */
+  get semanticAuthority(): SemanticAuthority {
+    return this.semanticAuthorityValue
+  }
+
+  /** The semantic layer's operational state for a status surface. */
+  get semanticDiagnostics(): SemanticDiagnostics {
+    const mode = this.efConfig.semanticContinuity
+    if (mode === 'off') {
+      return {
+        health: 'archive-only',
+        mode,
+        packets: 0,
+        accepted: 0,
+        refused: 0,
+        committed: 0,
+        reconciled: 0,
+        workingSetTokens: 0,
+        detail: 'semantic continuity is off',
+      }
+    }
+    const health = combineSemanticHealth(this.reconcileHealthValue, this.writerHealthValue)
+    const detail = this.reconcileHealthValue === 'partial'
+      ? this.reconcileHealthDetail
+      : this.writerHealthDetail ?? this.reconcileHealthDetail
+    return {
+      health,
+      mode,
+      packets: this.lastSemanticPacketValue?.accepted.length ?? 0,
+      accepted: this.semanticAcceptedValue,
+      refused: this.semanticRefusedValue,
+      committed: this.semanticActivatedValue,
+      reconciled: this.semanticReconciledValue,
+      workingSetTokens: this.lastWorkingSetValue?.tokens ?? 0,
+      ...(detail === undefined ? {} : { detail }),
+      ...(this.lastSemanticPacketValue === undefined ? {} : { lastPacket: this.lastSemanticPacketValue }),
+    }
+  }
+
+  /** Writer-call counters, kept apart from the rationale call's telemetry. */
+  get semanticWriterStats(): {
+    readonly calls: number
+    readonly failures: number
+  } {
+    return { calls: this.semanticWriterCallsValue, failures: this.semanticWriterFailuresValue }
   }
 
   /**
@@ -2047,9 +2797,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     state: FoldCurrentState | undefined,
     checkpointId: string,
     semanticText: string | undefined,
+    mode: FoldMode,
   ): string | undefined {
     if (state === undefined) return undefined
-    return renderStructuredCheckpoint(state, checkpointId, semanticText)
+    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode)
   }
 
   /**

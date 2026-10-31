@@ -17,6 +17,8 @@ import type { ProjectionDefinition } from '@deepseek-ai/dsh-session-projection'
 import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
 import { emptyCurrentState, reduceEvent } from './state.ts'
 import type { FoldCurrentState } from './state.ts'
+import { efPluginRecordOf } from './plugin-events.ts'
+import { projectSemanticRecords, semanticRecordOf } from '../semantic/record.ts'
 
 /** The EF host projection key (merge-extended below). */
 export const EF_CURRENT_STATE_KEY = 'epistemicFold.current' as const
@@ -66,6 +68,10 @@ export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.curren
   key: EF_CURRENT_STATE_KEY,
   stateSchema: currentStateSchema as unknown as ZodType<FoldCurrentState>,
   /**
+   * BUMPED 2 -> 3 when plugin-record anchors and semantic records entered the
+   * fold. A version-2 row cannot contain them, so reusing one would silently
+   * drop committed semantic state after an upgrade.
+   *
    * BUMPED 1 -> 2 when `superseded` was added.
    *
    * The projection contract is explicit: raise this whenever the serialized
@@ -75,9 +81,22 @@ export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.curren
    * empty — a state that looks valid and has quietly lost the thing this field
    * was added to carry.
    */
-  stateVersion: 2,
+  stateVersion: 3,
   init: () => emptyCurrentState(),
-  apply: (state, event: SessionEvent) => reduceEvent(state, event),
+  apply: (state, event: SessionEvent) => {
+    // A committed semantic record carries already-resolved anchor operations.
+    // Folding it here — with the SAME reducer — is what makes the state survive
+    // a restart without a second state model or a re-resolution pass.
+    const semantic = semanticRecordOf(event)
+    if (semantic !== undefined) return projectSemanticRecords(state, [semantic])
+    // A plugin-record anchor (the 0.2.1 transport) is an `ef/anchor` event in
+    // everything but its envelope type.
+    const record = efPluginRecordOf(event)
+    if (record !== undefined && record.kind === 'anchor') {
+      return reduceEvent(state, { type: 'ef/anchor', seq: record.seq, data: record.data })
+    }
+    return reduceEvent(state, event)
+  },
 }
 
 /**

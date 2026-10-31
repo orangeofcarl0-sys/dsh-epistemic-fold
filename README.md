@@ -298,6 +298,101 @@ The full evidence trail lives in [docs/README.md](docs/README.md).
 
 ---
 
+## Semantic Continuity (opt-in)
+
+History is not state. A checkpoint can archive every message and still lose the
+one unanchored user constraint that matters, because the constraint was never
+declared as an anchor and the summary paraphrased it away. Semantic Continuity
+adds a second, narrower pass over the span a fold is about to replace:
+
+```
+semantic writer (the SAME call as the rationale)
+  -> handoff prose + proposed deltas
+  -> runtime evidence resolution + authority/status gate
+  -> resolved declare/retire plan
+  -> staged packet
+  -> fold commits (surface replacement)
+  -> packet activates
+  -> working-set compiler renders the next checkpoint
+```
+
+The model proposes; the runtime decides. A delta is accepted only when its
+verbatim quote resolves to exactly one committed message in the folded span,
+its kind is grounded by that message's producer (only a real user message can
+ground a constraint; only a tool result can ground a finding), and a `verified`
+claim supplies the exact success line from a cited tool result. A tool result
+that says `npm run lint: PASS` cannot verify "all concurrency bugs are fixed";
+the runtime refuses the generalization rather than quietly downgrading it.
+
+### Modes
+
+```yaml
+- name: dsh-epistemic-fold
+  config:
+    semanticMode: rationale          # the fold still needs its one LLM call
+    semanticContinuity: shadow      # off (default) | shadow | active
+    semanticWorkingSetTokens: 1024  # 128..8192
+    semanticRoot: <profile persistence root>/semantic
+```
+
+- `off` — exactly the pre-existing behavior; no writer, no journal.
+- `shadow` — the visible checkpoint is byte-identical to `off`. A **separate**
+  diagnostic writer call measures what active would have committed, and the
+  packet carries `ops: []`, so it can never change state. The extra call and its
+  usage are reported (`semanticWriterStats`, `/context`).
+- `active` — one call returns both the visible handoff and the deltas. The body
+  is a temporal checkpoint: `Changed in this fold`, then a **budgeted**
+  `State from earlier folds (later checkpoints supersede it)`, then Rationale.
+
+`active` requires `semanticMode: rationale`; the zero-LLM profile is never
+upgraded behind the deployment's back.
+
+### One authority, chosen at startup
+
+| Host | Durable record | State projection |
+|---|---|---|
+| DSH 0.2.1+ (`appendPluginRecord`) | `plugin:epistemic-fold/semantic` in the session log | the EF projection folds the record with the ordinary reducer |
+| Older hosts, or no record writer | the semantic journal file | activated packets are layered over the session-derived state |
+
+A packet records which authority wrote it. The two are never merged for the
+same packet; an upgrade from journal to session-record migrates already-activated
+packets once.
+
+Anchor declarations and checkpoint retirements use the same transport, so
+`ef/anchor` and `ef/retire` no longer have a guaranteed-failing write path on
+0.2.1. On a host with no sanctioned writer, the anchor service still refuses
+**before** the append rather than persisting a log the read path will reject.
+
+### Commit semantics
+
+`staged` is not state. A packet activates only when the committed
+`compaction/summary` carries the **exact body digest** the packet rendered and
+its replacement message is on the surface. A fold rejected by the shrink or
+stability check leaves the packet staged; reconciliation then marks it
+`abandoned`. A crash after the surface replacement is repaired from the log
+(digest + surface), not from a file's existence. Replay is mechanical: the
+packet stores the resolved operations, so it never re-resolves supersession
+against the bounded current state.
+
+### What is measured, and what is not
+
+`npm run eval:semantic` runs the four control arms (native Basic, EF off,
+shadow, active) over six scripted scenarios. The scripted matrix is a
+**pipeline/representation** measurement — the writer is scripted — and it is
+labeled that way. It currently reports:
+
+```
+resolved: B0=1/6 B1=1/6 S1=1/6 S2=6/6   (3 committed folds per arm)
+```
+
+Real-model extraction quality and real-agent continuation behavior are **not**
+measured here: they need `EF_LIVE=1` and a provider. See
+`docs/semantic-continuity/EVALUATION.md` for the exact command and the
+`not executed` marker. Do not read the scripted matrix as a quality claim.
+
+See `docs/semantic-continuity/` for the transaction state machine, the host
+compatibility record, the code review, the integration notes, and the handoff.
+
 ## Product surfaces
 
 ### Runtime command

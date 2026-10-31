@@ -12,6 +12,21 @@ import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
 import { stateKeyText } from '../state/state.ts'
 import type { Anchor, FoldCurrentState } from '../state/state.ts'
+import type { FoldMode } from '../types.ts'
+
+/**
+ * Collapse a value to one line before interpolation.
+ *
+ * A state line is a runtime-authored fact: `- [kind id key] value (authority)`.
+ * A value containing a newline could emit additional lines with that exact
+ * shape, so a model-written statement (or a tool output promoted into a user
+ * anchor) could forge the appearance of a different anchor. Collapsing
+ * whitespace is the renderer's half of that guard; `semantic/validate.ts` has
+ * the other half on the semantic path.
+ */
+function oneLine(value: string): string {
+  return value.replace(/\s+/gu, ' ').trim()
+}
 
 /**
  * One state line: `- [<kind> <id> <stateKey>] <value> (<authority>)`.
@@ -32,7 +47,7 @@ import type { Anchor, FoldCurrentState } from '../state/state.ts'
  */
 function anchorLine(anchor: Anchor): string {
   const key = anchor.stateKey === undefined ? '' : ` ${stateKeyText(anchor.stateKey)}`
-  const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
+  const value = oneLine(typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value))
   return `- [${anchor.kind} ${anchor.id}${key}] ${value} (${anchor.authority})`
 }
 
@@ -44,11 +59,21 @@ function anchorLine(anchor: Anchor): string {
  * id stays (recall and oracles key on it) alongside the value.
  */
 function failureLine(anchor: Anchor): string {
-  const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
+  const value = oneLine(typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value))
   const state = anchor.failureState ?? 'open'
   return value === undefined || value === '{}'
     ? `- [failure] ${anchor.id} (${state})`
     : `- [failure] ${anchor.id} (${state}): ${value}`
+}
+
+/** Exported for the working-set compiler, which renders the same lines. */
+export function renderAnchorLine(anchor: Anchor): string {
+  return anchorLine(anchor)
+}
+
+/** Exported for the working-set compiler, which renders the same lines. */
+export function renderFailureLine(anchor: Anchor): string {
+  return failureLine(anchor)
 }
 
 /**
@@ -172,9 +197,10 @@ export function renderStructuredCheckpoint(
   state: FoldCurrentState,
   checkpointId: string,
   rationale?: string,
+  mode: FoldMode = 'leaf',
 ): string {
   const presentation = projectForCheckpoint(state)
-  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode: 'leaf' })]
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
 
   if (presentation.current.length > 0) {
     lines.push('', 'Current')
@@ -200,6 +226,71 @@ export function renderStructuredCheckpoint(
   if (rationaleText.length > 0) {
     lines.push('', 'Rationale')
     for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
+  }
+
+  return lines.join('\n')
+}
+
+/** One temporal checkpoint's inputs. */
+export interface SemanticCheckpointInput {
+  readonly checkpointId: string
+  /** Which fold produced this body; the marker's mode code comes from it. */
+  readonly mode: FoldMode
+  /** Anchors whose source events lie inside THIS fold's span. */
+  readonly changed: readonly Anchor[]
+  /** The compiled, bounded carried state; empty when nothing is carried. */
+  readonly workingSetText: string
+  readonly rationale?: string
+}
+
+/**
+ * Render a checkpoint whose state sections are TEMPORAL.
+ *
+ * ## The defect this shape fixes
+ *
+ * The original structured body had a `Current` section that rendered the whole
+ * current state. With N folds the surface carried N copies of the same table:
+ * tokens grew with the NUMBER OF FOLDS rather than with the number of facts,
+ * and every older copy asserted values that later folds had replaced. A model
+ * reading a frozen checkpoint from ten folds ago sees `timeout = 30` presented
+ * with the same authority marker as today's `timeout = 45`.
+ *
+ * ## The two sections, and why they are different
+ *
+ * `Changed in this fold` is provenance-scoped: an anchor appears only when its
+ * source events lie inside the span this checkpoint replaces. That set is
+ * disjoint per fold, so repeating it across the chain duplicates nothing.
+ *
+ * `State from earlier folds` is the bounded working set: the still-effective
+ * facts this fold did not touch. The heading states the temporal rule on every
+ * checkpoint, which matters under `legacy` framing where there is no system
+ * section to say it once.
+ *
+ * @param input - the fold's identity, changed anchors, carried state, rationale.
+ * @returns the unframed checkpoint body.
+ */
+export function renderTemporalCheckpoint(input: SemanticCheckpointInput): string {
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId: input.checkpointId, mode: input.mode })]
+
+  if (input.changed.length > 0) {
+    lines.push('', 'Changed in this fold')
+    for (const anchor of input.changed) {
+      lines.push(anchor.kind === 'failure' ? renderFailureLine(anchor) : renderAnchorLine(anchor))
+    }
+  }
+
+  const carried = input.workingSetText.trim()
+  if (carried.length > 0) {
+    // The heading is the temporal contract. It rides on every checkpoint, so it
+    // survives the `legacy` framing mode where no system section exists to say
+    // it once.
+    lines.push('', 'State from earlier folds (later checkpoints supersede it)', carried)
+  }
+
+  const rationale = input.rationale?.trim() ?? ''
+  if (rationale.length > 0) {
+    lines.push('', 'Rationale')
+    for (const line of rationale.split('\n')) lines.push(`- ${line}`)
   }
 
   return lines.join('\n')

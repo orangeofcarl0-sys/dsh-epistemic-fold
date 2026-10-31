@@ -49,6 +49,9 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   // Order matches the lists this replaces, so a report or a test that depends on it is unchanged.
   { name: 'frozenCheckpointTokenBudget', presetOwned: false, efOwned: true },
   { name: 'semanticMode', presetOwned: true, efOwned: true, default: 'rationale' },
+  { name: 'semanticContinuity', presetOwned: false, efOwned: true, default: 'off' },
+  { name: 'semanticWorkingSetTokens', presetOwned: false, efOwned: true, default: 1024 },
+  { name: 'semanticRoot', presetOwned: false, efOwned: true },
   { name: 'rationaleHintTokens', presetOwned: true, efOwned: true, default: 800 },
   { name: 'bundleRoot', presetOwned: false, efOwned: true },
   { name: 'leafAdmission', presetOwned: true, efOwned: true, default: 'legacy' },

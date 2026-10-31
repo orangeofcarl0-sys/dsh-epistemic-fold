@@ -176,6 +176,15 @@ export async function rationaleOnly(options: {
   anchorCount: number
   /** The tier's HINT budget; the real budget is `maxTokens`, several times larger. */
   hintTokens: number
+  /**
+   * Replace the built-in rationale instruction entirely.
+   *
+   * Used by the active semantic writer: it needs one call that returns BOTH the
+   * handoff and the semantic deltas, and a second call would double the cost of
+   * every fold. Shadow mode deliberately does NOT use this — its visible body
+   * must stay byte-identical to a deployment without semantic continuity.
+   */
+  instruction?: string
   input: { readonly tools?: readonly unknown[]; readonly messages: readonly Message[] }
   agent: Agent
   signal?: AbortSignal | undefined
@@ -186,7 +195,7 @@ export async function rationaleOnly(options: {
     ...options.input.messages,
     deepFreeze({
       role: 'user',
-      content: [{ type: 'text', text: rationaleInstruction(options.anchorCount, options.hintTokens) }],
+      content: [{ type: 'text', text: options.instruction ?? rationaleInstruction(options.anchorCount, options.hintTokens) }],
     }),
   ]
   const generateOptions: GenerateOptions = {

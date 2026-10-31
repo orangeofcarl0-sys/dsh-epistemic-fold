@@ -36,6 +36,7 @@
  */
 
 import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
+import { appendEfEvent } from '../state/plugin-events.ts'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
 import type { EfCheckpointMarker } from './checkpoint-marker.ts'
 
@@ -260,9 +261,9 @@ export function retireCheckpoint(
   const site = report.sites.find(candidate => candidate.checkpointId === checkpointId)
   if (site === undefined) return { checkpointId, written: false, refusal: 'no-such-checkpoint' }
   if (site.residency === 'retired') return { checkpointId, written: false, refusal: 'already-retired' }
-  session.append('ef/retire', {
+  appendEfEvent(session, 'retire', {
     checkpointId,
     ...(reason === undefined ? {} : { reason }),
-  })
+  }, { inMemoryFallback: true })
   return { checkpointId, written: true }
 }

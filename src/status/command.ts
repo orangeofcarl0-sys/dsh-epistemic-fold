@@ -34,6 +34,7 @@ import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from '../config/p
 import { BUILTIN_ECONOMICS_PROFILES, selectProfile } from '../policy/economics-profile.ts'
 import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from '../config/preset.ts'
 import type { FoldModeName } from '../config/preset.ts'
+import type { SemanticDiagnostics } from '../semantic/types.ts'
 import type { FoldBundleStore } from '../types.ts'
 
 /** The command name, without the leading slash. */
@@ -127,6 +128,14 @@ export interface ContextCommandDeps {
    * — `/context mode` then reports that rather than pretending to succeed.
    */
   readonly setMode?: (mode: FoldModeName) => FoldModeName
+  /**
+   * Semantic Continuity's operational state, read from the engine.
+   *
+   * Optional for the same reason as `setMode`: a compaction-only deployment
+   * has no engine to ask, and the status then omits the section rather than
+   * claiming the feature is off.
+   */
+  readonly semantic?: () => SemanticDiagnostics
 }
 
 /** Parse the command's own grammar; the handler owns it, the registry does not. */
@@ -233,6 +242,7 @@ export async function gatherStatus(
     ...(profile === undefined ? {} : { profile }),
     ...(usage === undefined ? {} : { usage }),
     ...(isTierModeName(mode) ? { tier: TIERS[mode] } : {}),
+    ...(deps.semantic === undefined ? {} : { semantic: deps.semantic() }),
   })
 }
 

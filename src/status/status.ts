@@ -53,6 +53,7 @@ import { costOf } from '../policy/economics-profile.ts'
 import type { ContextEconomicsProfile } from '../policy/economics-profile.ts'
 import { isTierModeName } from '../config/preset.ts'
 import type { FoldModeName, TierModeName } from '../config/preset.ts'
+import type { SemanticDiagnostics } from '../semantic/types.ts'
 
 /** How a figure was obtained. Printed alongside it so it is never assumed. */
 export type FigureBasis = 'measured' | 'estimated'
@@ -172,6 +173,13 @@ export interface ContextStatus {
   /** The lifecycle facts a long session passes through. */
   readonly lifecycle: ContextLifecycle
   /**
+   * Semantic Continuity's operational state, when the deployment configured it.
+   *
+   * ABSENT means the status caller did not consult the engine, which is not the
+   * same as `off`.
+   */
+  readonly semantic?: SemanticDiagnostics
+  /**
    * `estimated/realized cost`.
    *
    * `estimated` when a profile and an observed token split exist. ABSENT when
@@ -242,6 +250,8 @@ export interface ContextStatusInput {
   }
   /** The priced profile for the routed model, for the cost estimate. */
   readonly profile?: ContextEconomicsProfile
+  /** Semantic Continuity's operational state, when the engine reported one. */
+  readonly semantic?: SemanticDiagnostics
   /**
    * Provider-reported cumulative usage.
    *
@@ -523,6 +533,7 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
     searches: { value: calls.searches, basis: 'measured', note: 'context_search calls in the durable log' },
     folds,
     lifecycle,
+    ...(input.semantic === undefined ? {} : { semantic: input.semantic }),
     ...(cost === undefined ? {} : { cost }),
     ...(cost === undefined || input.profile === undefined
       ? {}
@@ -556,6 +567,18 @@ export function contextStatusToText(status: ContextStatus): string {
   if (status.tierEvidence !== undefined && status.tierEvidence !== 'measured') {
     // The status of the claim is shown to the user, not only to a report.
     lines.push(`  evidence: ${status.tierEvidence.toUpperCase()} — this mode's benefit is not yet measured`)
+  }
+
+  if (status.semantic !== undefined) {
+    const semantic = status.semantic
+    lines.push('')
+    lines.push(`semantic continuity: ${semantic.mode} (${semantic.health})`)
+    lines.push(`  packets         ${semantic.accepted} accepted, ${semantic.refused} refused, `
+      + `${semantic.committed} committed`)
+    if (semantic.workingSetTokens > 0) {
+      lines.push(`  working set     ~${semantic.workingSetTokens} tokens (estimated)`)
+    }
+    if (semantic.detail !== undefined) lines.push(`  ${semantic.detail}`)
   }
 
   lines.push('')
@@ -655,6 +678,7 @@ export function contextStatusToLine(status: ContextStatus): string {
     `folds=${status.folds.leaves.value}`,
     `roots=${status.folds.roots.value}`,
     status.cost === undefined ? 'cost=unknown' : `cost~${status.cost.value.toFixed(4)}`,
+    status.semantic === undefined ? undefined : `semantic=${status.semantic.health}`,
   ].filter((part): part is string => part !== undefined)
   return parts.join(' ')
 }

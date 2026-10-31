@@ -164,7 +164,81 @@ export {
   hasCheckpointMarker,
 } from './checkpoint/checkpoint-marker.ts'
 export type { EfCheckpointMarker } from './checkpoint/checkpoint-marker.ts'
-export { renderStructuredCheckpoint } from './checkpoint/renderer.ts'
+export { renderStructuredCheckpoint, renderTemporalCheckpoint } from './checkpoint/renderer.ts'
+export type { SemanticCheckpointInput } from './checkpoint/renderer.ts'
+
+// ---- Semantic Continuity v1 ------------------------------------------------
+export {
+  EF_PLUGIN_RECORD_TYPES,
+  appendEfEvent,
+  appendPluginEvent,
+  efPluginRecordOf,
+  pluginEventTransport,
+} from './state/plugin-events.ts'
+export type {
+  EfPluginRecord,
+  EfPluginRecordKind,
+  PluginEventApi,
+  PluginEventTransport,
+} from './state/plugin-events.ts'
+export { SEMANTIC_SCHEMA_VERSION } from './semantic/types.ts'
+export type {
+  AcceptedDelta,
+  EpistemicStatus,
+  PacketStatus,
+  ProposedDelta,
+  ReconciliationReport,
+  SemanticAuthority,
+  SemanticDiagnostics,
+  SemanticHealth,
+  SemanticKind,
+  SemanticLifecycle,
+  SemanticMode,
+  SemanticPacket,
+  SemanticRefusal,
+  SemanticRefusalReason,
+  SemanticResidency,
+  SemanticWorkingSetReport,
+} from './semantic/types.ts'
+export { parseWriterOutput, SEMANTIC_MAX_TOKENS, SEMANTIC_WRITER_INSTRUCTION } from './semantic/writer.ts'
+export type { WriterOutput } from './semantic/writer.ts'
+export { citableMessages, messageDigestOf, messageText, resolveEvidence, resolveQuote } from './semantic/evidence.ts'
+export type { CitableMessage, QuoteResolution } from './semantic/evidence.ts'
+export { anchorIdOf, semanticStateKey, validateDeltas } from './semantic/validate.ts'
+export type { ValidateDeltasOptions, ValidationResult } from './semantic/validate.ts'
+export { applyOps, planCommit } from './semantic/plan.ts'
+export type { CommitPlan, PlannedDelta, PlanCommitOptions, ResolvedSupersede } from './semantic/plan.ts'
+export {
+  FileSemanticJournal,
+  NullSemanticJournal,
+  comparePackets,
+  isSemanticPacket,
+  packetIdOf,
+} from './semantic/journal.ts'
+export type { JournalRead, SemanticJournal } from './semantic/journal.ts'
+export { classifyPacket, healthOf, summaryTextOf } from './semantic/commit.ts'
+export type { PacketCommitState } from './semantic/commit.ts'
+export {
+  projectSemanticOps,
+  projectSemanticRecords,
+  semanticRecordOf,
+  semanticRecordPayloadOf,
+  semanticRecordsIn,
+} from './semantic/record.ts'
+export type { SemanticRecordPayload } from './semantic/record.ts'
+export { changedAnchors, changedOverflowLine, MAX_CHANGED_ANCHORS } from './semantic/changes.ts'
+export type { ChangedSelection } from './semantic/changes.ts'
+export {
+  DEFAULT_WORKING_SET_TOKENS,
+  compileWorkingSet,
+  describeWorkingSetCompilation,
+  residencyOf,
+} from './semantic/working-set-compiler.ts'
+export type {
+  CompileWorkingSetOptions,
+  CompiledWorkingSet,
+  WorkingSetEstimateBasis,
+} from './semantic/working-set-compiler.ts'
 export type {
   BundleDescriptor,
   BundleVerification,

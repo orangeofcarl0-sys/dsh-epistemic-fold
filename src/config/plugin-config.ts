@@ -44,6 +44,12 @@ export const EpistemicFoldPluginConfig: z<EpistemicFoldConfig> = z.object({
   modelPolicies: z.array(z.any()),
   frozenCheckpointTokenBudget: z.number(),
   semanticMode: z.union(['none', 'rationale'] as const),
+  // EF-owned: resolveEfConfig validates the enum and the budget range, so a
+  // typed declaration here would add a second validation layer (see the note
+  // on the z.any() block below).
+  semanticContinuity: z.any(),
+  semanticWorkingSetTokens: z.any(),
+  semanticRoot: z.string(),
   bundleRoot: z.string(),
   // The rest of the EF-owned vocabulary (`efOwnedConfigKeys()`). Declared so the
   // schema is a COMPLETE index of the config keys, which
