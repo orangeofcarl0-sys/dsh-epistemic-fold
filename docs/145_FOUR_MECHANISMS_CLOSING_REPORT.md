@@ -11,8 +11,20 @@ including two of my own hypotheses).
 
 ## 1. The deployable claim
 
-Retiring a finished phase's checkpoints removes **71-84% of checkpoint growth** with no
-detectable accuracy cost, at the two tiers above saturation.
+Retiring a finished phase's checkpoints removes **71-84% of the growth of PROSE-SIZED
+checkpoints** with no detectable accuracy cost, at the two tiers above saturation.
+
+The qualifier is not padding. Measured against checkpoint size (docs/146):
+
+| checkpoint kind | tier | reduction |
+|---|---|---|
+| prose digest, ~300 tokens | 252K | 73% |
+| prose digest, ~300 tokens | 475K | 84% |
+| anchored, ~166 coordinate lines | 252K | **33%** |
+
+The larger the checkpoint, the smaller the share exit removes, and the reason is structural:
+exit tombstones the checkpoint NODE, and what survives is the NEXT checkpoint -- which under
+anchors re-renders the whole coordinate set anyway. A big checkpoint's replacement is still big.
 
 | | baseline (n=5) | exit (n=5) |
 |---|---|---|
@@ -59,7 +71,7 @@ state it cannot see is `unknown`, never `cold`.
 
 | direction | verdict |
 |---|---|
-| **exit** | **shipped and measured.** Lifecycle, write path, removal, and a deterministic proof that the archive survives. 71-84% less growth at no detectable cost. |
+| **exit** | **shipped and measured.** Lifecycle, write path, removal, and a deterministic proof that the archive survives. 71-84% less growth for prose-sized checkpoints, ~33% when the state is carried as coordinates, at no detectable cost. |
 | **semantic merge** | **the mechanism was already right; the substrate was missing.** EF bounds state by coordinate and never renders a displaced value. This bench held zero coordinates until they were declared. Once declared they buy accuracy and cost growth -- a bigger constant, not a better slope. |
 | **temperature** | **correct, and inapplicable.** The observer ranks coordinates by demand; this workload's coordinates are the undemotable kind and the content that grows is not a coordinate at all. |
 | **root-leaf** | **never needed.** `context_recall` already expands a root to verbatim leaves; the trigger it lacked is what exit provides, and exit is cheaper. |
@@ -121,6 +133,8 @@ In priority order, and each for a specific reason:
     142  thermal observer on this workload        166/166 pinned; classes all work
     143  four directions converged                252K 2x2; chain-break hypothesis refuted
     144  exit above saturation (n=5)              71% / 84%, no detectable cost
+    146  digest size and exit's benefit            hint is a lever but this model saturates at
+                                                  ~1,200 chars/fold; reduction tracks checkpoint size
 
 Code: `src/checkpoint/residency.ts`, `src/state/thermal.ts`, `eval/memory/phased.py`,
 bridge ops `checkpoints` / `retire` / `state` / `anchor`.

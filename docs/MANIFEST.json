@@ -296,13 +296,18 @@
   },
   {
     "file": "144_EXIT_ABOVE_THE_SATURATED_TIER.md",
-    "bytes": 4268,
-    "sha256": "c5ee577a87d1e8ce581ec08e5c4f49f36568d5cbd8fcdc11eb63ee864411d465"
+    "bytes": 4646,
+    "sha256": "ac44741d7ab34954391c9d122a9898f1233c741a15fc8b78ca20b583c5ddb577"
   },
   {
     "file": "145_FOUR_MECHANISMS_CLOSING_REPORT.md",
-    "bytes": 7626,
-    "sha256": "0c7c9c9a8cea105fad1efd90884d466dfe91e1b6954457f6fc14790e86410bb9"
+    "bytes": 8472,
+    "sha256": "ae041364c4ecdf772963cfd1f164446bdb6f7b1bebbf19b2ed07f4ccf711390c"
+  },
+  {
+    "file": "146_DIGEST_SIZE_AND_EXIT_BENEFIT.md",
+    "bytes": 3454,
+    "sha256": "3341d70fbcffcd54399cb6a1634eb23522d3ebf7d27c4a24558dccef7eb3e513"
   },
   {
     "file": "14_R2_EVALUATION_REPORT.md",

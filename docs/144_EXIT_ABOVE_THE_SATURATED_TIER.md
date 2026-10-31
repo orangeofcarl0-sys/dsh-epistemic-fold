@@ -1,5 +1,10 @@
 # 144 — Exit above the saturated tier: 71-84% less growth, no detectable accuracy cost
 
+> **Scope, added by docs/146.** These percentages are for checkpoints of prose-digest size
+> (~300 tokens, what this model writes). When the state is carried as ~166 rendered coordinate
+> lines the reduction is about 33%: exit tombstones the checkpoint NODE, and the next checkpoint
+> re-renders the whole coordinate set anyway, so a big checkpoint's replacement is still big.
+
 Status: n=5 per arm per tier, OmniGate route (`deepseek-v4.1-flash`), anchors off.
 2026-10-31. Parent `15382fe`.
 
