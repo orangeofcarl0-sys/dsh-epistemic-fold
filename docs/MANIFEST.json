@@ -300,6 +300,11 @@
     "sha256": "c5ee577a87d1e8ce581ec08e5c4f49f36568d5cbd8fcdc11eb63ee864411d465"
   },
   {
+    "file": "145_FOUR_MECHANISMS_CLOSING_REPORT.md",
+    "bytes": 7626,
+    "sha256": "0c7c9c9a8cea105fad1efd90884d466dfe91e1b6954457f6fc14790e86410bb9"
+  },
+  {
     "file": "14_R2_EVALUATION_REPORT.md",
     "bytes": 8834,
     "sha256": "9c64c8fe0ae7f0c6e55dbc81fa83ce3d751c468ae857ab6943c1102f62f30543"
