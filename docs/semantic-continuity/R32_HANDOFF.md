@@ -2,7 +2,8 @@
 
 **Round:** R32, Semantic Commit Integrity & Recovery Hardening
 **Branch:** `rc32-semantic-integrity`
-**Status:** implementation and local verification complete; not pushed.
+**Status:** implementation and local verification complete; branch pushed to
+`origin/rc32-semantic-integrity` (commit `bef473d`).
 
 ---
 
@@ -80,19 +81,38 @@ R32 does not claim a semantic-quality improvement. That is R33.
 ### When a fold says `SEMANTIC STATE INCOMPLETE`
 
 The body names the reason. Do not delete receipts or edit packets to make it
-disappear. The safe steps are:
+disappear. Recovery is an INVESTIGATION, not a directory reset: the journal is
+the sole authority for accepted semantic state, so clearing it does not repair
+the state, it erases the evidence that the state existed.
 
-1. Run one ordinary fold or `/context` to let reconciliation re-read.
-2. Inspect the journal directory with the diagnostic view (`state`, `invalid`,
-   `orphans`, `rejectedReceipts`).
-3. If a file is corrupt or an orphan, move the whole session journal directory
-   aside and let the next fold reconcile from the session log and bundles. Legacy
-   records and v3 packets migrate; a journal-only state that is lost stays lost.
-4. If the parent journal is missing for a fork, restore the parent's journal
-   directory. The child is blocked until the parent seed verifies.
-5. If a receipt proof conflicts with the log, keep both: the log is history, the
-   receipt is the decision. A restore to an older log must not be "repaired" by
-   appending future state.
+1. Leave the journal in place. New semantic commits are already blocked; the
+   fold still archives history and exact recall still works.
+2. Take a complete, byte-identical copy of the session journal directory before
+   changing anything. Record the copy's path and hash in the incident note.
+3. Inspect the journal with the diagnostic view (`state`, `invalid`, `orphans`,
+   `rejectedReceipts`) and name the exact condition:
+   * **orphan receipt** — a receipt names a packet that is not present. Restore
+     the packet it names if a backup exists; otherwise the receipt's decision is
+     still history and must not be treated as a missing receipt.
+   * **corrupt or unreadable packet** — compare it with the session log, the
+     bundle for that checkpoint, and the receipt's `opsDigest`. A packet whose
+     operations do not reproduce the bundle's `state.digest` was changed after
+     the fold and is not recoverable as state.
+   * **proof conflict / older session backup** — the log is history and the
+     receipt is the decision. Preserve both; never "repair" by re-appending
+     future state to an older log.
+   * **partial fork seed** — restore the parent journal. The child re-runs the
+     expected-set seed and completes only what the parent proves.
+4. Unblock only after an explicit recovery decision: restore the missing file,
+   accept the archived-only outcome in writing, or declare the affected
+   semantic state lost. There is no supported step that turns a damaged
+   journal into an empty one.
+5. If, and only if, the session log and bundles cannot establish a consistent
+   history, treat the journal as unrecoverable: keep the copy, start the session
+   with semantic continuity off (or as a new session), and record which
+   semantic state was lost. Do NOT move the directory aside and continue
+   Active — the next fold would report `valid-empty`, which is a lie produced by
+   the recovery procedure itself.
 
 ### What never to do
 
