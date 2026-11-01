@@ -63,7 +63,7 @@ export interface CommitPlan {
 }
 
 /** Every anchor currently visible in any hot face. */
-function visibleAnchors(state: FoldCurrentState): readonly Anchor[] {
+export function visibleAnchors(state: FoldCurrentState): readonly Anchor[] {
   return [
     ...(state.objective === undefined ? [] : [state.objective]),
     ...Object.values(state.constraints),
