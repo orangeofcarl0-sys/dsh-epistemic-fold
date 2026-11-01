@@ -146,4 +146,3 @@ describe('R32 baseline: semantic scope', () => {
       .not.toBe(stateKeyText(result.accepted[1]!.stateKey!))
   })
 })
-

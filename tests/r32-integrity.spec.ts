@@ -225,4 +225,3 @@ describe('R32-A: runtime operation schema', () => {
     expect(result.ok).toBe(true)
   })
 })
-
