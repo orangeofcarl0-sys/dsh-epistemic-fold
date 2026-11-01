@@ -50,6 +50,8 @@ export type SemanticIntegrityFailure =
   | 'receipt-schema'
   | 'receipt-binding'
   | 'ops-digest'
+  /** Operations do not reproduce the state digest their bundle rendered. */
+  | 'ops-state-mismatch'
   | 'proof-mismatch'
   | 'orphan-receipt'
   | 'duplicate-packet'
