@@ -168,5 +168,9 @@ describe('release hygiene: nothing secret is in the history either', () => {
     }
     const leaked = log.split('\n').filter(line => SECRET.test(line))
     expect(leaked.slice(0, 5), 'a credential in history survives every later commit').toEqual([])
-  })
+    // A full-history `git log --all -p` is a subprocess over every ref. Adding
+    // the R34 worktree branch pushed the scan just past the 5s default on this
+    // machine. The timeout is raised rather than the scan narrowed: narrowing
+    // it would stop covering refs, which is the property the test exists for.
+  }, 30_000)
 })

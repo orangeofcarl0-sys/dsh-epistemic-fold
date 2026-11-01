@@ -34,3 +34,4 @@ eval/memory/regen-env/
 
 # R33 runner scratch directories (reports are committed; workspaces are not)
 eval/r33/out/*-work/
+eval/r33/out/self-test-runs/
