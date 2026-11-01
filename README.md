@@ -398,11 +398,43 @@ operations with session events. A semantic commit at seq 100 cannot overwrite a
 raw event at seq 150.
 
 A fork copies the event log through an inclusive boundary and gets a new
-session id. The child journal is seeded with exactly the parent receipts whose
+session id. The child journal is seeded with exactly the parent commits whose
 commit seq is **before** the boundary, each re-proven against the child log.
-Later commits never cross the boundary. If the parent journal directory is not
-present, Active writing is withheld for that child and the checkpoint says so,
-rather than silently starting from an empty state.
+The seed is an expected SET, not "some row exists": a later pass computes
+`expected − actual`, fills each missing packet/receipt, re-reads the journal,
+and verifies every expected commit is present. Later commits never cross the
+boundary. If the parent journal directory is not present, Active writing is
+withheld for that child and the checkpoint says so, rather than silently
+starting from an empty state.
+
+### Integrity and recovery
+
+A readable JSON file is not yet a commit. Every state-application path consumes
+one `ValidatedSemanticCommit`, produced by checking:
+
+1. the packet's runtime schema and every resolved operation;
+2. the native v4 packet id and span digest;
+3. the receipt's session/checkpoint/packet binding and `opsDigest`;
+4. the receipt proof against the packet;
+5. the historical fold against the log, with exact replacement range, source
+   compaction identity, and ordered citations.
+
+A receipt that exists but does not bind is a **rejected receipt**, not a missing
+one. The missing-receipt recovery path is therefore only reachable when no
+decision file exists, never when two records disagree.
+
+Journal presence is three-valued: `valid-empty` (a new session), `ok`, and
+`unreadable` (EACCES/EIO/ENOTDIR). An unreadable or contradictory journal makes
+admission `blocked`: the fold still archives history and exact recall still
+works, but no new semantic packet is staged and the checkpoint body begins with
+`SEMANTIC STATE INCOMPLETE — …`. A benign historical abort (the fold was
+rejected, its packet is abandoned, history intact) is not a block.
+
+The whole checkpoint is priced, not only carried state: `changedTokens`,
+`carriedTokens`, `rationaleTokens`, `framingTokens`, `noticeTokens`,
+`totalCheckpointTokens`, `pinnedOverflow`, and `totalOverflow` travel with the
+packet. Pinned state is never trimmed; an over-budget body renders an explicit
+`checkpoint-over-budget` line instead.
 
 ### What is measured, and what is not
 
