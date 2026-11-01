@@ -214,6 +214,18 @@ export class RequestBudget {
     this.reservedPrompt -= reservation.promptTokens
     this.reservedOutput -= reservation.outputTokens
   }
+
+  /**
+   * Record a rate-limited attempt.
+   *
+   * The ATTEMPT remains counted and its reserve STANDS: a 429 produced no
+   * generation, but its true cost is unknown, and settling unknown usage to
+   * zero is exactly the under-charge `record` is per-dimension about. A retry
+   * is followed by a NEW `admit`, so the next attempt is judged on its own.
+   */
+  retry(reservation: Reservation | undefined): void {
+    this.record(undefined, undefined, { prompt: false, output: false }, reservation)
+  }
   record(
     usage: TokenUsageLike | undefined,
     fallback?: TokenUsageLike,

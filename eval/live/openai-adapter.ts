@@ -367,11 +367,22 @@ export class OpenAiCompatibleAdapter
         throw error
       }
       if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
-        if (response.status === 429) this.rateLimitExhausted += 1
+        if (response.status === 429) {
+          this.rateLimitExhausted += 1
+          // The final throttled attempt also produced no generation; it stays
+          // counted, and its unknown cost keeps its reserve.
+          this.budget?.retry(reservation)
+        }
         return { response, reservation }
       }
       attempt += 1
       this.rateLimitRetries += 1
+      // The 429 attempt was ADMITTED and is counted. It produced no generation,
+      // but its cost is unknown, so its reserve STANDS and the attempt is
+      // recorded as unknown usage. The next attempt must pass admission on its
+      // own. (R33 left these reservations silently outstanding and uncounted;
+      // the explicit `retry` keeps the charge and names the unknown.)
+      this.budget?.retry(reservation)
       await this.sleep(this.retryDelayMs(response, attempt), signal)
     }
   }
@@ -547,7 +558,14 @@ export class OpenAiCompatibleAdapter
       const message = describeTransportError(error)
       // A budget refusal is NOT a transport failure. Tagging it apart is what lets the bridge
       // keep it out of `providerFailures` and the agent terminate with its own reason.
+      //
+      // Recognise the CODE as well as the class: the R33 global ledger is a separate
+      // implementation and throws its own error with the same discriminator. A refusal that
+      // reached this point was thrown BEFORE `fetch`, so it must not be reported as transport,
+      // and its (absent) reservation must not be released as though a socket had failed.
       const budget = error instanceof BudgetExhaustedError
+        || (error !== null && typeof error === 'object'
+          && (error as { code?: unknown }).code === 'BUDGET_EXHAUSTED')
       // A throw out of `requestWithRetry` never reaches the success path, so the credential is
       // recovered from the error itself.
       if (reservation === undefined && error !== null && typeof error === 'object') {
