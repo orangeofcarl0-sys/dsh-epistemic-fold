@@ -99,6 +99,7 @@ declare module '*/r33/src/workspace.mjs' {
   export function runChecker(caseData: any, workspaceRoot: string, options?: any): Promise<any>
   export function runVisibleTests(workspaceRoot: string, timeoutMs?: number, options?: any): Promise<any>
   export function readVerification(workspaceRoot: string): Promise<any>
+  export function workspaceDigest(root: string): Promise<{ digest: string; files: number }>
   export function relativePath(root: string, path: string): string
 }
 
@@ -152,6 +153,39 @@ declare module '*/r33/src/budget.mjs' {
   }
   export function snapshotDelta(before: any, after: any): any
   export function loadLiveGate(manifestPath: string | undefined, env?: Record<string, string | undefined>): Promise<any>
+  export function validateManifest(manifest: unknown): { ok: true; manifest: any } | { ok: false; reason: string }
   export function runStatus(input: any): string
-  export function runQuality(cases: readonly any[]): any
+  export function runQuality(cases: readonly any[], stage?: string): any
+}
+
+declare module '*/r33/src/failures.mjs' {
+  export const OUTCOMES: string[]
+  export const PROVIDER_KINDS: Set<string>
+  export function providerFailureKind(code: string | undefined): string
+  export function providerFailureRecord(input: {
+    code: string | undefined
+    message?: string
+    stage: string
+    writer?: boolean
+  }): {
+    kind: string
+    code: string
+    stage: string
+    writer: boolean
+    message: string
+  }
+  export function emptyFailures(): any
+  export function rowIsProviderBlocked(row: any): boolean
+  export function classifyOutcome(input: {
+    stage?: string
+    valid?: boolean
+    foldValid?: boolean
+    providerFailures?: readonly any[]
+    fatalProviderFailure?: boolean
+    budgetExhausted?: boolean
+    checkerStatus?: string
+    behaviour?: any
+    harnessError?: string
+  }): string
+  export function outcomeCounts(rows: readonly any[]): Record<string, number>
 }

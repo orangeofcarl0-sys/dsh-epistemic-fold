@@ -68,7 +68,7 @@
     "eval:r32-live": "node eval/r32/live-semantic-eval.mjs --check",
     "eval:r32-live-run": "node eval/r32/live-semantic-eval.mjs --run",
     "eval:build": "node scripts/build-eval.mjs",
-    "eval:r33": "vitest run tests/r33-arms.spec.ts tests/r33-dataset.spec.ts tests/r33-writer-observation.spec.ts tests/r33-coverage.spec.ts tests/r33-receipt-window.spec.ts tests/r33-live-entry.spec.ts tests/r33-holdout.spec.ts tests/r331-budget-http.spec.ts tests/r331-isolation.spec.ts tests/r331-scoring.spec.ts tests/r331-live-writer.spec.ts",
+    "eval:r33": "vitest run tests/r33-arms.spec.ts tests/r33-dataset.spec.ts tests/r33-writer-observation.spec.ts tests/r33-coverage.spec.ts tests/r33-receipt-window.spec.ts tests/r33-live-entry.spec.ts tests/r33-holdout.spec.ts tests/r331-budget-http.spec.ts tests/r331-isolation.spec.ts tests/r331-scoring.spec.ts tests/r331-live-writer.spec.ts tests/r35-contract.spec.ts tests/r35-preflight.spec.ts tests/r35-live-failures.spec.ts",
     "eval:r33-compare": "node eval/r33/compare-scores.mjs",
     "eval:r33-holdout": "node eval/r33/freeze.mjs --holdout --verify",
     "eval:r33-freeze": "node eval/r33/freeze.mjs",
@@ -82,7 +82,11 @@
     "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",
     "generate-presets": "node scripts/generate-presets.mjs",
     "sweep-temp": "node scripts/sweep-temp.mjs",
-    "typecheck:src": "tsc --noEmit -p tsconfig.json"
+    "typecheck:src": "tsc --noEmit -p tsconfig.json",
+    "eval:r35": "vitest run tests/r35-contract.spec.ts tests/r35-preflight.spec.ts tests/r35-live-failures.spec.ts",
+    "eval:r35-preflight": "node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json",
+    "eval:r35-writer-only": "node scripts/build-eval.mjs && node eval/r33/live.mjs --run --stage writer-only",
+    "eval:r35-continuation": "node scripts/build-eval.mjs && node eval/r33/live.mjs --run --stage continuation"
   },
   "repository": {
     "type": "git",

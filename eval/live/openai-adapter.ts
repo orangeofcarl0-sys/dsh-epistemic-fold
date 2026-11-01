@@ -588,6 +588,13 @@ export class OpenAiCompatibleAdapter
         this.budget?.release(reservation)
         reservation = undefined
       }
+      // A request that may have been processed without a usage record is an
+      // UNKNOWN charge, not a free one. `record(undefined)` keeps the whole
+      // reserve and increments the unknown counter. A pre-send failure was
+      // already released above and must not be recorded.
+      if (reservation !== undefined) {
+        this.budget?.record(undefined, undefined, { prompt: false, output: false }, reservation)
+      }
       yield {
         type: 'finish',
         reason: {
@@ -603,6 +610,12 @@ export class OpenAiCompatibleAdapter
 
     if (!response.ok) {
       const text = await response.text().catch(() => '')
+      // The final 429 attempt was already recorded as unknown by
+      // `requestWithRetry`; recording it twice would inflate the count.
+      // Every other non-OK response has no usage and keeps its reserve.
+      if (response.status !== 429) {
+        this.budget?.record(undefined, undefined, { prompt: false, output: false }, reservation)
+      }
       yield {
         type: 'finish',
         reason: {

@@ -35,7 +35,7 @@
  */
 
 import { spawn } from 'node:child_process'
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import {
   mkdir,
   mkdtemp,
@@ -351,6 +351,59 @@ export async function listWorkspace(root, options = {}) {
 }
 
 /**
+ * A digest of the workspace's SOURCE contents.
+ *
+ * Used to bind a passing test run to the code it actually exercised. The
+ * `verification.json` artifact is excluded deliberately: it is task metadata,
+ * not source, and writing it after a test run must not make a fresh
+ * verification look stale. Symlinks are not followed, for the same containment
+ * reason `listWorkspace` gives.
+ *
+ * @param {string} root - the agent workspace.
+ * @returns {Promise<{digest:string, files:number}>}
+ */
+export async function workspaceDigest(root) {
+  const entries = []
+  async function walk(directory, prefix) {
+    let listing
+    try {
+      listing = await readdir(directory, { withFileTypes: true })
+    } catch {
+      return
+    }
+    listing.sort((left, right) => left.name.localeCompare(right.name))
+    for (const entry of listing) {
+      if (entry.name === 'node_modules' || entry.name === '.git') continue
+      if (entry.isSymbolicLink()) continue
+      const display = prefix.length === 0 ? entry.name : `${prefix}/${entry.name}`
+      if (entry.isDirectory()) {
+        await walk(join(directory, entry.name), display)
+        continue
+      }
+      if (!entry.isFile() || entry.name === 'verification.json') continue
+      try {
+        entries.push({
+          path: display,
+          content: await readFile(join(directory, entry.name)),
+        })
+      } catch {
+        // A file removed during the walk simply is not part of the digest.
+      }
+    }
+  }
+  await walk(root, '')
+  entries.sort((left, right) => left.path.localeCompare(right.path))
+  const hash = createHash('sha256')
+  for (const entry of entries) {
+    hash.update(entry.path, 'utf8')
+    hash.update('\0', 'utf8')
+    hash.update(entry.content)
+    hash.update('\0', 'utf8')
+  }
+  return { digest: hash.digest('hex'), files: entries.length }
+}
+
+/**
  * The trusted bootstrap that wraps the case checker.
  *
  * It is written OUTSIDE the agent workspace and imported as a separate child
@@ -554,7 +607,13 @@ export async function runChecker(caseData, workspaceRoot, options = {}) {
 
 /** Run the workspace's VISIBLE test command, which the agent may also run. */
 export async function runVisibleTests(workspaceRoot, timeoutMs = 20_000, options = {}) {
-  const result = await runNode(['--test', 'tests'], {
+  // `node --test tests` is NOT a directory selector: Node treats `tests` as a
+  // module entry and fails with MODULE_NOT_FOUND. The previous form therefore
+  // reported every visible suite red, which went unnoticed while the harness
+  // only asked whether a test had been ATTEMPTED. With no path argument Node
+  // discovers `**/*.test.{js,mjs,cjs}` under the cwd, which is the intended
+  // workspace command.
+  const result = await runNode(['--test'], {
     cwd: workspaceRoot,
     env: childEnvironment(),
     timeoutMs,

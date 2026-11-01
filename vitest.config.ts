@@ -90,13 +90,14 @@ export default defineConfig({
     pool: 'forks',
     // This repository's suites already fork child processes (real DSH folds,
     // the bridge, release hygiene), and the R33 arm matrix adds a hidden
-    // checker per case/arm. One fork per logical CPU let the full run exhaust
-    // memory on this machine, which surfaced as `exit 134` and checker result
-    // files that never appeared -- not as assertion failures. Vitest 5 moved
-    // these bounds out of `poolOptions` (that key is now ignored), so they are
-    // top-level. Bounding the pool makes the result reproducible without
-    // narrowing any test.
-    maxWorkers: 4,
+    // checker per case/arm. R34.1 adds live-process tests that spawn the runner
+    // and run real folds with a dry-run adapter. Four workers oversubscribed
+    // this machine: unrelated preflight/heavy tests timed out while the
+    // processor was saturated, and the identity of the timeout moved between
+    // runs. Two workers keeps the same tests and the same assertions while
+    // removing that load-induced variance. Vitest 5 moved these bounds out of
+    // `poolOptions` (that key is now ignored), so they are top-level.
+    maxWorkers: 2,
     minWorkers: 1,
     include: ['src/**/*.spec.ts', 'tests/**/*.spec.ts'],
     // Reclaims each worker's scratch directories on the way out. Without it a

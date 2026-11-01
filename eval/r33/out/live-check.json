@@ -51,6 +51,22 @@
     "N",
     "OR"
   ],
+  "stages": [
+    "writer-only",
+    "continuation"
+  ],
+  "defaultArms": {
+    "writer-only": [
+      "S",
+      "O1"
+    ],
+    "continuation": [
+      "B1",
+      "S",
+      "O1",
+      "O2"
+    ]
+  },
   "followUpTools": [
     "read_file",
     "write_file",
@@ -68,6 +84,7 @@
   },
   "executionKinds": {
     "scripted": "self-test / offline pipeline measurement",
+    "writerOnly": "live writer-only: real EF fold + writer + validator + journal + working set + checkpoint, no follow-up",
     "customToolLoop": "live custom text-JSON loop (not the production DSH agent loop)",
     "productionLoop": "not implemented in this round; live is blocked without authorization"
   },
@@ -75,7 +92,13 @@
     "R33_LIVE=1",
     "--manifest with positive requests/inputTokens/outputTokens/wallClockMs",
     "manifest.maxOutputTokens (per-request bound)",
-    "manifest.route.baseUrlEnv and manifest.route.apiKeyEnv (names, not secrets)"
+    "manifest.route.baseUrlEnv and manifest.route.apiKeyEnv (names, not secrets)",
+    "manifest.stage = writer-only | continuation (optional; default continuation)"
   ],
+  "preflight": {
+    "command": "node eval/r33/live.mjs --preflight --manifest <path>",
+    "requiresProvider": false,
+    "note": "Runs the real fold with a dry-run adapter and records actual maxTokens; reads no credential and makes no request."
+  },
   "note": "--check resolves no credentials and makes no request."
 }

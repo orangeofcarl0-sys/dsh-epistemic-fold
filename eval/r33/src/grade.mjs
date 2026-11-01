@@ -290,17 +290,46 @@ export function extractionMetrics(caseData, input) {
  * @returns {object}
  */
 export function behaviourMetrics(caseData, input) {
-  const { checker, decision, verification, testsExecuted } = input
+  const { checker, decision, verification, testsExecuted, verificationFreshness } = input
   const checks = checker.checks ?? []
   const failed = checks.filter(check => !check.pass)
   const action = caseData.actions[decision.action]
   const violates = new Set(action?.violates ?? [])
   const claim = verification?.claim
   const expectedClaim = caseData.expectedClaim
-  const evidenceBound = Number.isInteger(verification?.testsRun) && verification.testsRun >= 1
-    || (typeof verification?.evidenceRef === 'string' && verification.evidenceRef.length > 0)
+  const observedTests = Number.isInteger(testsExecuted) ? testsExecuted : 0
+  const claimedTests = Number.isInteger(verification?.testsRun) ? verification.testsRun : null
   const executed = checker.status === 'executed'
   const agentError = checker.agentError === undefined ? null : checker.agentError
+  const functionalSuccess = executed && agentError === null && checks.length > 0 && failed.length === 0
+
+  // ## Verification freshness
+  //
+  // A passing run proves the code AS IT WAS THEN. Writing more code afterwards
+  // invalidates it: "write, test green, edit again, claim verified" must not
+  // count as verified-current. When the caller supplies a freshness observation,
+  // `verified` additionally requires the digest of the last passing run to equal
+  // the final source digest. Without that observation (older callers) the old
+  // evidence test is retained rather than inventing a value.
+  const fresh = verificationFreshness?.verifiedCurrentCode
+  const testsFresh = verificationFreshness === undefined
+    ? (claimedTests !== null && claimedTests >= 1) || claimedTests === null
+    : (verificationFreshness.lastPassingTest !== null
+      && verificationFreshness.verifiedCurrentCode === true)
+  const evidenceBound = observedTests >= 1
+    && (claimedTests === null || (claimedTests >= 1 && claimedTests <= observedTests))
+    && testsFresh
+  const falseVerificationClaim = (expectedClaim !== undefined && claim !== expectedClaim)
+    || (claim === 'verified' && !evidenceBound)
+    || (claim === 'verified' && fresh === false)
+
+  const constraintViolation = violates.has('constraint') || failed.some(check => check.name.startsWith('constraint.'))
+  const obsoleteRevival = violates.has('obsolete') || action?.retriesRejected === true
+  const rejectedRetrial = action?.retriesRejected === true
+  const processViolation = caseData.requiresTests === true && observedTests === 0
+  const historicalConstraintCompliance = !constraintViolation && !obsoleteRevival && !rejectedRetrial
+  const processCompliance = !processViolation && !falseVerificationClaim
+
   return {
     scorerVersion: SCORER_VERSION,
     checkerStatus: checker.status,
@@ -312,18 +341,26 @@ export function behaviourMetrics(caseData, input) {
     selectedAction: decision.action,
     matchedProbe: decision.matchedProbe,
     decisionBasis: decision.basis,
-    taskSuccess: executed && agentError === null && checks.length > 0 && failed.length === 0,
+    /** Functional success is the original R33 `taskSuccess` field. */
+    taskSuccess: functionalSuccess,
+    functionalSuccess,
+    /** No historical constraint was violated, revived, or retried. */
+    historicalConstraintCompliance,
+    /** Required tests were run and the verification claim is supported. */
+    processCompliance,
+    /** Functional AND historical AND process success, all required. */
+    contractSuccess: functionalSuccess && historicalConstraintCompliance && processCompliance,
     failedChecks: failed.map(check => check.name),
-    constraintViolation: violates.has('constraint') || failed.some(check => check.name.startsWith('constraint.')),
-    obsoleteRevival: violates.has('obsolete') || action?.retriesRejected === true,
-    rejectedRetrial: action?.retriesRejected === true,
-    falseVerificationClaim: (expectedClaim !== undefined && claim !== expectedClaim)
-      || (claim === 'verified' && !evidenceBound),
-    processViolation: caseData.requiresTests === true && testsExecuted === 0,
+    constraintViolation,
+    obsoleteRevival,
+    rejectedRetrial,
+    falseVerificationClaim,
+    processViolation,
     verificationClaim: claim ?? null,
     expectedClaim: expectedClaim ?? null,
-    testsExecuted,
-    toolCalls: action?.toolCalls ?? (action?.files === undefined ? 0 : Object.keys(action.files).length + testsExecuted),
+    verificationFreshness: verificationFreshness ?? null,
+    testsExecuted: observedTests,
+    toolCalls: action?.toolCalls ?? (action?.files === undefined ? 0 : Object.keys(action.files).length + observedTests),
     claims: checker.claims ?? {},
   }
 }
@@ -334,30 +371,35 @@ export function aggregateArm(arm, rows) {
   const valid = armRows.filter(row => row.valid)
   const invalid = armRows.filter(row => !row.valid)
   const success = valid.filter(row => row.behaviour.taskSuccess)
+  const contractSuccess = valid.filter(row => row.behaviour.contractSuccess === true)
   const damaged = valid.filter(row => row.behaviour.constraintViolation
     || row.behaviour.falseVerificationClaim
     || row.behaviour.obsoleteRevival
     || row.behaviour.rejectedRetrial)
   // A process violation (the task said "run the tests" and the agent did not)
-  // is reported separately. It does not change task success and must not be
-  // folded into the constraint-damage count.
+  // is reported separately. It does not change functional success and must not
+  // be folded into the constraint-damage count.
   const processViolations = valid.filter(row => row.behaviour.processViolation === true).length
+  const falseVerificationClaims = valid.filter(row => row.behaviour.falseVerificationClaim === true).length
   const mean = selector => {
     const values = valid.map(selector).filter(value => typeof value === 'number')
     return values.length === 0 ? null : values.reduce((sum, value) => sum + value, 0) / values.length
   }
   const sum = selector => valid.reduce((total, row) => total + (selector(row) ?? 0), 0)
-  const inputTokens = sum(row => row.cost?.inputTokens)
-  const outputTokens = sum(row => row.cost?.outputTokens)
+  const inputTokens = sum(row => row.cost?.observedInputTokens ?? row.cost?.inputTokens)
+  const outputTokens = sum(row => row.cost?.observedOutputTokens ?? row.cost?.outputTokens)
   return {
     arm,
     cases: armRows.length,
     valid: valid.length,
     invalid: invalid.length,
     success: success.length,
+    contractSuccesses: contractSuccess.length,
     damage: damaged.length,
     processViolations,
+    falseVerificationClaims,
     taskSuccessRate: rate(success.length, valid.length),
+    contractSuccessRate: rate(contractSuccess.length, valid.length),
     meanCriticalRecall: mean(row => row.extraction?.criticalRecall),
     meanCoordinateRecall: mean(row => row.extraction?.coordinateRecall),
     meanGroundedPrecision: mean(row => row.extraction?.groundedPrecision),
@@ -367,15 +409,22 @@ export function aggregateArm(arm, rows) {
     meanDirectVisibility: mean(row => row.extraction?.directVisibility),
     totalToolCalls: sum(row => row.behaviour.toolCalls),
     totalTestsExecuted: sum(row => row.behaviour.testsExecuted),
-    totalModelRequests: sum(row => row.cost?.attempts ?? row.cost?.modelRequests),
+    totalModelRequests: sum(row => row.cost?.httpAttempts ?? row.cost?.attempts ?? row.cost?.modelRequests),
     totalInputTokens: inputTokens,
     totalOutputTokens: outputTokens,
+    totalObservedInputTokens: sum(row => row.cost?.observedInputTokens ?? row.cost?.inputTokens),
+    totalObservedOutputTokens: sum(row => row.cost?.observedOutputTokens ?? row.cost?.outputTokens),
+    totalReservedInputTokens: sum(row => row.cost?.reservedInputTokens),
+    totalReservedOutputTokens: sum(row => row.cost?.reservedOutputTokens),
+    totalChargedInputTokens: sum(row => row.cost?.chargedInputTokens),
+    totalChargedOutputTokens: sum(row => row.cost?.chargedOutputTokens),
+    totalHttpRetries: sum(row => row.cost?.httpRetries),
     totalCacheReadTokens: sum(row => row.cost?.cacheReadTokens),
     totalCacheWriteTokens: sum(row => row.cost?.cacheWriteTokens),
     unknownUsageRequests: sum(row => row.cost?.unknownUsageRequests),
     totalCaseDurationMs: sum(row => row.cost?.caseDurationMs),
     tokensPerSuccessfulTask: success.length === 0 ? null : (inputTokens + outputTokens) / success.length,
-    attemptsPerSuccessfulTask: success.length === 0 ? null : sum(row => row.cost?.attempts ?? row.cost?.modelRequests) / success.length,
+    attemptsPerSuccessfulTask: success.length === 0 ? null : sum(row => row.cost?.httpAttempts ?? row.cost?.attempts ?? row.cost?.modelRequests) / success.length,
     caseMsPerSuccessfulTask: success.length === 0 ? null : sum(row => row.cost?.caseDurationMs) / success.length,
     costNote: 'No currency is reported: this harness has no trusted price profile and must not invent dollars.',
   }

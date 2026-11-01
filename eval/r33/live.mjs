@@ -31,8 +31,8 @@
  */
 
 import { createHash, randomUUID } from 'node:crypto'
-import { access, mkdir, writeFile } from 'node:fs/promises'
-import { homedir } from 'node:os'
+import { access, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { homedir, tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Context } from '@deepseek-ai/cordis'
@@ -65,7 +65,15 @@ import {
   runQuality,
   runStatus,
   snapshotDelta,
+  validateManifest,
 } from './src/budget.mjs'
+import {
+  classifyOutcome,
+  emptyFailures,
+  outcomeCounts,
+  providerFailureKind,
+  providerFailureRecord,
+} from './src/failures.mjs'
 import {
   followUpSystemPrompt,
   fullHistory,
@@ -83,6 +91,7 @@ import {
   readWorkspaceFile,
   runChecker,
   runVisibleTests,
+  workspaceDigest,
   writeWorkspaceFile,
 } from './src/workspace.mjs'
 import {
@@ -98,6 +107,9 @@ const SIGNAL = new AbortController().signal
 const ARMS = ['B1', 'S', 'O1', 'O2']
 const ALL_ARMS = [...ARMS, 'F', 'N', 'OR']
 const FOLLOW_UP_TOOLS = ['read_file', 'write_file', 'list_dir', 'run_tests', 'recall', 'finish']
+const STAGES = ['writer-only', 'continuation']
+const FOLLOW_UP_MAX_TOKENS = 1024
+const MAX_RAW_OUTPUT_CHARS = 512 * 1024
 
 function argValue(flag) {
   const index = process.argv.indexOf(flag)
@@ -164,6 +176,8 @@ class RecordingAdapter extends LlmAdapter {
     let text = ''
     let usage
     let finish
+    let thrown = false
+    const started = Date.now()
     this.lastUsage = undefined
     try {
       for await (const chunk of this.inner.stream(options)) {
@@ -172,24 +186,57 @@ class RecordingAdapter extends LlmAdapter {
         else if (chunk.type === 'finish') finish = chunk.reason
         yield chunk
       }
+    } catch (error) {
+      thrown = true
+      // A budget refusal or a transport throw never becomes a finish chunk.
+      // Record it here, before rethrowing, or a call the engine safely
+      // degrades around would look like it was never attempted.
+      this.log.record({
+        kind: 'provider-failure',
+        writer,
+        purpose: options.purpose ?? null,
+        code: error !== null && typeof error === 'object' && typeof error.code === 'string'
+          ? error.code
+          : 'unknown',
+        message: error instanceof Error ? error.message : String(error),
+      })
+      throw error
     } finally {
       this.lastUsage = usage
+      this.log.record({
+        kind: 'call',
+        writer,
+        purpose: options.purpose ?? null,
+        success: thrown !== true && finish?.kind !== 'error',
+        code: finish?.kind === 'error' ? finish.failure?.code ?? 'unknown' : thrown ? 'thrown' : null,
+        maxTokens: options.maxTokens ?? null,
+        durationMs: Date.now() - started,
+      })
       if (finish?.kind === 'error') {
         this.log.record({
           kind: 'provider-failure',
           writer,
+          purpose: options.purpose ?? null,
           code: finish.failure?.code ?? 'unknown',
           message: finish.failure?.message ?? '',
         })
       }
       if (writer) {
+        // The full response is retained so the run artifact can prove what the
+        // model actually wrote. The report carries a digest and a preview; a
+        // trace copy is capped with an explicit truncation flag rather than
+        // silently losing the tail.
         this.log.record({
           kind: 'writer-call',
           oracle: false,
-          text: text.slice(0, 20_000),
+          text,
           chars: text.length,
           usage: usage ?? null,
+          finish: finish ?? null,
+          failed: finish?.kind === 'error',
           maxTokens: options.maxTokens ?? null,
+          purpose: options.purpose ?? null,
+          durationMs: Date.now() - started,
         })
       }
     }
@@ -241,10 +288,13 @@ class OracleWriterAdapter extends RecordingAdapter {
       basis: this.payload.basis,
       handoff: this.payload.handoff,
       deltas: this.payload.deltas,
-      text: text.slice(0, 20_000),
+      text,
       chars: text.length,
       usage: null,
+      finish: { kind: 'stop' },
       maxTokens: options.maxTokens ?? null,
+      purpose: options.purpose ?? null,
+      durationMs: 0,
     })
     yield { type: 'block-start', index: 0, blockType: 'text' }
     yield { type: 'text-delta', index: 0, text }
@@ -284,6 +334,52 @@ class SelfTestAdapter extends LlmAdapter {
     yield { type: 'text-delta', index: 0, text }
     yield { type: 'block-end', index: 0, block: { type: 'text', text } }
     yield { type: 'usage', usage: { inputTokens: 10, outputTokens: 10 } }
+    yield { type: 'finish', reason: { kind: 'stop' } }
+  }
+}
+
+/**
+ * A no-network adapter that CAPTURES the real call envelope.
+ *
+ * Preflight uses it to run the actual EF fold and record the exact
+ * `GenerateOptions.maxTokens` the production path asks for. It must not be
+ * mistaken for a measurement: it returns deterministic text, and the report
+ * labels the preflight `dry-run`.
+ */
+class DryRunAdapter extends LlmAdapter {
+  constructor(model, caseData, contextWindow) {
+    super()
+    this.model = model
+    this.caseData = caseData
+    this.contextWindow = contextWindow
+    this.calls = []
+  }
+
+  resolveModel(provider, model) {
+    return Promise.resolve({
+      provider,
+      id: model,
+      name: model,
+      context: { contextWindow: this.contextWindow },
+    })
+  }
+
+  async *stream(options) {
+    const writer = isWriterCall(options)
+    this.calls.push({
+      writer,
+      purpose: options.purpose ?? null,
+      maxTokens: options.maxTokens ?? null,
+      estimatedInputTokens: estimateInputTokens(options),
+      contextWindow: this.contextWindow,
+    })
+    const text = writer
+      ? writerReply(this.caseData.writer.handoff, this.caseData.writer.deltas)
+      : `DRY-RUN preflight summary for ${this.caseData.id}; no provider call was made.`
+    yield { type: 'block-start', index: 0, blockType: 'text' }
+    yield { type: 'text-delta', index: 0, text }
+    yield { type: 'block-end', index: 0, block: { type: 'text', text } }
+    yield { type: 'usage', usage: { inputTokens: 0, outputTokens: 0 } }
     yield { type: 'finish', reason: { kind: 'stop' } }
   }
 }
@@ -580,7 +676,7 @@ function parseAction(text) {
   return undefined
 }
 
-async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRoot, maxSteps }) {
+async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRoot, maxSteps, maxTokens = FOLLOW_UP_MAX_TOKENS }) {
   const messages = [{
     role: 'user',
     content: [{ type: 'text', text: `${armContext(arm, caseData, checkpoint)}\n\nBEGIN THE TASK.` }],
@@ -593,20 +689,55 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
   let recallSuccess = 0
   let recallGrounded = 0
   let steps = 0
+  let modelCalls = 0
   let finished = false
   let summary = ''
+  let lastModification = null
+  let lastPassingTest = null
   const trace = []
+  const finalize = async (extra = {}) => {
+    const final = await workspaceDigest(workspaceRoot)
+    const verifiedCurrentCode = lastPassingTest !== null && lastPassingTest.digest === final.digest
+    return {
+      steps,
+      modelCalls,
+      toolCalls,
+      testsExecuted,
+      testRuns,
+      recallAttempts,
+      recallSuccess,
+      recallGrounded,
+      finished,
+      summary,
+      trace,
+      requestedMaxTokens: maxTokens,
+      verificationFreshness: {
+        currentDigest: final.digest,
+        files: final.files,
+        lastModification,
+        lastPassingTest,
+        verifiedCurrentCode,
+        note: verifiedCurrentCode
+          ? 'the last passing visible test ran on the current source digest'
+          : lastPassingTest === null
+            ? 'no visible test passed; there is no fresh verification'
+            : 'the source changed after the last passing test; that run is historical evidence only',
+      },
+      ...extra,
+    }
+  }
   for (; steps < maxSteps; steps += 1) {
     let text = ''
     let usage
     let finishReason
+    modelCalls += 1
     try {
       for await (const chunk of adapter.stream({
         provider: model,
         model,
         system,
         messages,
-        maxTokens: 1024,
+        maxTokens,
         signal: SIGNAL,
       })) {
         if (chunk.type === 'text-delta') text += chunk.text
@@ -615,26 +746,22 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       }
     } catch (error) {
       if (error instanceof BudgetExhausted) throw error
-      return {
-        steps, toolCalls, testsExecuted, testRuns, recallAttempts, recallSuccess, recallGrounded,
-        finished, summary, trace,
+      return finalize({
         providerFailure: error instanceof ProviderFailure
           ? { code: error.code, message: error.message }
           : { code: 'unknown', message: error instanceof Error ? error.message : String(error) },
-      }
+      })
     }
     if (finishReason?.kind === 'error') {
       if (finishReason.failure?.code === 'BUDGET_EXHAUSTED') {
         throw new BudgetExhausted(finishReason.failure?.message ?? 'provider refused by the ledger')
       }
-      return {
-        steps, toolCalls, testsExecuted, testRuns, recallAttempts, recallSuccess, recallGrounded,
-        finished, summary, trace,
+      return finalize({
         providerFailure: {
           code: finishReason.failure?.code ?? 'unknown',
           message: finishReason.failure?.message ?? 'provider returned an error finish',
         },
-      }
+      })
     }
     trace.push({ step: steps, text: text.slice(0, 1000), usage, finishReason })
     const action = parseAction(text)
@@ -665,6 +792,15 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
     }
     if (action.tool === 'write_file') {
       const result = await writeWorkspaceFile(workspaceRoot, action.path, action.content)
+      if (result.ok) {
+        const digest = await workspaceDigest(workspaceRoot)
+        lastModification = {
+          step: steps,
+          tool: 'write_file',
+          path: String(action.path),
+          digest: digest.digest,
+        }
+      }
       messages.push({
         role: 'user',
         content: [{
@@ -687,11 +823,20 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
     if (action.tool === 'run_tests') {
       testsExecuted += 1
       const result = await runVisibleTests(workspaceRoot)
+      const digest = await workspaceDigest(workspaceRoot)
+      if (result.passed) {
+        lastPassingTest = {
+          step: steps,
+          digest: digest.digest,
+          exitCode: result.exitCode,
+        }
+      }
       testRuns.push({
         exitCode: result.exitCode,
         passed: result.passed,
         timedOut: result.timedOut,
         truncated: result.outputTruncated,
+        digest: digest.digest,
       })
       messages.push({
         role: 'user',
@@ -713,38 +858,85 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
     }
     messages.push({ role: 'user', content: [{ type: 'text', text: `TOOL RESULT: unknown tool ${action.tool}` }] })
   }
-  return {
-    steps, toolCalls, testsExecuted, testRuns, recallAttempts, recallSuccess, recallGrounded,
-    finished, summary, trace,
-  }
+  return finalize()
 }
 
-function writerSummary(log, packet, observation, arm) {
+function writerSummary(log, packet, observation, arm, state) {
   const writerEntries = log.entries.filter(entry => entry.kind === 'writer-call')
   const providerEntries = log.entries.filter(entry => entry.kind === 'provider-failure')
   if (arm === 'B1' || arm === 'O2' || arm === 'F' || arm === 'N' || arm === 'OR') {
-    return { applicable: false, reason: 'this arm has no semantic writer', providerFailures: providerEntries }
+    return {
+      applicable: false,
+      reason: 'this arm has no semantic writer',
+      call: 'not-attempted',
+      callStatus: 'not-attempted',
+      protocol: 'not-called',
+      protocolStatus: 'not-called',
+      commitStatus: 'not-applicable',
+      providerFailure: null,
+      rawOutput: null,
+      rawOutputChars: 0,
+      rawOutputDigest: null,
+      actualProviderUsage: null,
+      providerFailures: providerEntries,
+    }
   }
   const entry = writerEntries[writerEntries.length - 1]
+  const writerProviderFailure = providerEntries.find(candidate => candidate.writer === true) ?? null
+  const raw = entry?.text ?? null
+  const rawDigest = raw === null ? null : digestText(raw)
+  const accepted = packet?.accepted?.length ?? observation?.accepted ?? null
+  const refused = packet?.refused?.length ?? observation?.refused ?? null
+  const commitStatus = packet === undefined
+    ? 'no-packet'
+    : packet.deltaParse !== 'parsed'
+      ? 'protocol-not-parsed'
+      : (accepted ?? 0) > 0 && (state?.commits ?? 0) > 0
+        ? 'committed'
+        : (accepted ?? 0) > 0
+          ? 'accepted-but-not-committed'
+          : 'nothing-accepted'
+  const refusalReasons = Array.isArray(packet?.refused)
+    ? packet.refused.map(refusal => refusal.reason ?? 'unknown')
+    : null
   return {
     applicable: true,
-    call: observation?.call ?? (entry === undefined ? 'not-attempted' : 'success'),
+    call: observation?.call
+      ?? (entry?.failed === true ? 'failed' : entry !== undefined ? 'success' : writerProviderFailure !== null ? 'failed' : 'not-attempted'),
+    callStatus: observation?.call
+      ?? (entry?.failed === true ? 'failed' : entry !== undefined ? 'success' : writerProviderFailure !== null ? 'failed' : 'not-attempted'),
     protocol: observation?.protocol ?? packet?.deltaParse ?? 'not-called',
+    protocolStatus: observation?.protocol ?? packet?.deltaParse ?? 'not-called',
     integrity: observation?.integrity ?? null,
     coverage: observation?.coverage ?? 'not-assessed',
     proposed: packet?.proposed?.length ?? observation?.proposed ?? null,
-    accepted: packet?.accepted?.length ?? observation?.accepted ?? null,
-    refused: packet?.refused?.length ?? observation?.refused ?? null,
+    proposedDeltas: packet?.proposed ?? null,
+    accepted,
+    acceptedDeltas: packet?.accepted ?? null,
+    refused,
+    refusedDeltas: packet?.refused ?? null,
+    refusalReasons,
     limitExceeded: observation?.limitExceeded ?? null,
     refusals: observation?.refusals ?? null,
     detail: observation?.detail ?? null,
-    handoff: packet?.handoff ?? null,
-    rawOutput: entry?.text ?? null,
+    handoff: packet?.handoff ?? entry?.handoff ?? null,
+    handoffChars: typeof (packet?.handoff ?? entry?.handoff) === 'string'
+      ? (packet?.handoff ?? entry?.handoff).length
+      : 0,
+    rawOutput: raw === null ? null : raw.slice(0, 4_000),
     rawOutputChars: entry?.chars ?? 0,
+    rawOutputDigest: rawDigest,
+    rawOutputTruncatedInReport: raw !== null && raw.length > 4_000,
+    rawOutputStoredInTrace: raw !== null,
+    actualProviderUsage: entry?.usage ?? null,
+    durationMs: entry?.durationMs ?? null,
+    maxTokens: entry?.maxTokens ?? null,
     oracle: entry?.oracle ?? false,
     oracleBasis: entry?.basis ?? null,
-    acceptedDeltas: packet?.accepted ?? null,
-    refusedDeltas: packet?.refused ?? null,
+    providerFailure: writerProviderFailure,
+    commitStatus,
+    renderedCheckpointDigest: null, // filled by runOne from the actual checkpoint
+    stateDigest: state?.stateDigest ?? null,
     workingSet: packet?.workingSet ?? null,
     providerFailures: providerEntries,
   }
@@ -784,6 +976,7 @@ function selfTestPlan(caseData) {
 async function runOne({
   caseData,
   arm,
+  stage = 'continuation',
   mode,
   live,
   inner,
@@ -813,8 +1006,8 @@ async function runOne({
   const host = await mountHost(adapter, manifest.model, layout, arm === 'S' || arm === 'O1')
   const before = ledger.snapshot()
   const folded = await foldCase(caseData, layout, host, manifest.model)
-  const writer = writerSummary(log, folded.packet, folded.writerObservation, arm)
-  const currentFacts = caseData.gold.filter(fact => fact.current)
+  const writer = writerSummary(log, folded.packet, folded.writerObservation, arm, folded.state)
+  writer.renderedCheckpointDigest = digestText(folded.checkpoint)
   let follow
   let checker = {
     status: 'not-run',
@@ -822,9 +1015,23 @@ async function runOne({
     claims: {},
     exitCode: null,
     timedOut: false,
-    detail: 'the fold did not happen',
+    detail: stage === 'writer-only' ? 'writer-only stage: no follow-up or checker' : 'the fold did not happen',
   }
-  let behaviour
+  let behaviour = stage === 'writer-only'
+    ? {
+      applicable: false,
+      reason: 'writer-only stage: no follow-up agent ran, so no task outcome exists',
+      checkerStatus: 'not-run',
+      taskSuccess: null,
+      functionalSuccess: null,
+      historicalConstraintCompliance: null,
+      processCompliance: null,
+      contractSuccess: null,
+      failedChecks: [],
+      processViolation: false,
+      falseVerificationClaim: false,
+    }
+    : undefined
   let extraction = extractionMetrics(caseData, {
     accepted: undefined,
     refused: undefined,
@@ -833,7 +1040,7 @@ async function runOne({
     anchorValues: [],
     transcript: caseData.transcript,
   })
-  if (folded.fold.valid) {
+  if (folded.fold.valid && stage === 'continuation') {
     follow = await followUp({
       adapter,
       model: manifest.model,
@@ -842,6 +1049,7 @@ async function runOne({
       checkpoint: folded.checkpoint,
       workspaceRoot: layout.workspace,
       maxSteps: manifest.followUpSteps ?? 8,
+      maxTokens: manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS,
     })
     checker = await runChecker(caseData, layout.workspace)
     const verification = await readVerification(layout.workspace)
@@ -850,6 +1058,7 @@ async function runOne({
       decision: { action: 'live-agent', matchedProbe: null, basis: 'model' },
       verification,
       testsExecuted: follow.testsExecuted,
+      verificationFreshness: follow.verificationFreshness,
     })
     const active = arm === 'S' || arm === 'O1'
     extraction = extractionMetrics(caseData, {
@@ -865,27 +1074,111 @@ async function runOne({
   const cost = snapshotDelta(before, after)
   cost.caseDurationMs = Date.now() - caseStarted
   cost.runElapsedMs = after.elapsedMs
-  const valid = folded.fold.valid
-    && follow?.providerFailure === undefined
-    && checker.status === 'executed'
-  const reason = folded.fold.valid
-    ? follow?.providerFailure !== undefined
-      ? `provider-failure: ${follow.providerFailure.code}`
-      : checker.status !== 'executed'
-        ? `checker-${checker.status}`
-        : undefined
-    : 'no-fold'
+  cost.modelRequests = after.used.attempts
+
+  // ONE failure record, built from the actual call log and the actual checker
+  // state. `valid` is measurement validity, never the task outcome.
+  const failures = emptyFailures()
+  const seenProvider = new Set()
+  const addProvider = (record) => {
+    const key = `${record.kind}|${record.code}|${record.stage}|${record.writer}|${record.message}`
+    if (seenProvider.has(key)) return
+    seenProvider.add(key)
+    failures.provider.push(record)
+  }
+  const callEntries = log.entries.filter(candidate => candidate.kind === 'call')
+  const providerCalls = {
+    attempted: callEntries.length,
+    succeeded: callEntries.filter(entry => entry.success === true).length,
+    failed: callEntries.filter(entry => entry.success !== true).length,
+  }
+  for (const entry of log.entries.filter(candidate => candidate.kind === 'provider-failure')) {
+    const record = providerFailureRecord({
+      code: entry.code,
+      message: entry.message,
+      stage: entry.writer ? 'fold-writer' : entry.purpose === 'compaction' ? 'fold' : 'follow-up',
+      writer: entry.writer === true,
+    })
+    if (record.kind === 'budget-exhausted') {
+      failures.budget.push({ ...record, message: entry.message })
+    } else {
+      addProvider(record)
+    }
+  }
+  if (follow?.providerFailure !== undefined) {
+    const record = providerFailureRecord({
+      code: follow.providerFailure.code,
+      message: follow.providerFailure.message,
+      stage: 'follow-up',
+    })
+    if (record.kind === 'budget-exhausted') {
+      failures.budget.push({ ...record, message: follow.providerFailure.message })
+    } else {
+      addProvider(record)
+    }
+  }
+  if (!folded.fold.valid) {
+    failures.fold.push({ kind: 'fold-invalid', detail: 'no complete compaction transaction was observed' })
+  }
+  if (checker.status !== 'executed' && checker.status !== 'not-run') {
+    failures.checker.push({
+      kind: checker.status,
+      detail: checker.detail ?? null,
+      timedOut: checker.timedOut === true,
+    })
+  }
+  if (behaviour !== undefined && stage === 'continuation'
+    && follow?.providerFailure === undefined && checker.status === 'executed') {
+    failures.task = {
+      assessed: true,
+      functionalFailure: behaviour.functionalSuccess === false,
+      historicalConstraintViolation: behaviour.constraintViolation === true
+        || behaviour.obsoleteRevival === true
+        || behaviour.rejectedRetrial === true,
+      processViolation: behaviour.processViolation === true,
+      falseVerificationClaim: behaviour.falseVerificationClaim === true,
+    }
+  }
+  const valid = stage === 'writer-only'
+    ? folded.fold.valid && failures.budget.length === 0
+    : folded.fold.valid
+      && failures.budget.length === 0
+      && follow !== undefined
+      && follow.providerFailure === undefined
+      && checker.status === 'executed'
+  const fatalProviderFailure = (stage === 'continuation' && follow?.providerFailure !== undefined)
+    || (!folded.fold.valid && failures.provider.length > 0)
+  const outcome = classifyOutcome({
+    stage,
+    valid,
+    foldValid: folded.fold.valid,
+    providerFailures: failures.provider,
+    fatalProviderFailure,
+    budgetExhausted: failures.budget.length > 0,
+    checkerStatus: checker.status,
+    behaviour,
+  })
+  failures.outcome = outcome
+  const reason = outcome === 'valid-task-success' || outcome === 'valid-task-failure'
+    || outcome === 'writer-only-measured'
+    ? undefined
+    : outcome
+  const rawWriterText = log.entries.find(entry => entry.kind === 'writer-call')?.text ?? null
   const row = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     caseId: caseData.id,
     riskClass: caseData.riskClass,
     family: caseData.counterfactual?.pair ?? caseData.id,
     arm,
+    stage,
     mode,
     runId,
     replicateId,
     valid,
+    measurementValid: valid,
     ...(reason === undefined ? {} : { reason }),
+    failures,
+    providerCalls,
     fold: folded.fold,
     foldElapsedMs: folded.foldElapsedMs,
     checkpoint: {
@@ -899,7 +1192,8 @@ async function runOne({
     sourceBindings: sourceBindings(caseData, folded.sourceEventSeqs),
     extraction,
     behaviour: behaviour ?? {
-      taskSuccess: false,
+      applicable: false,
+      taskSuccess: null,
       checkerStatus: checker.status,
       failedChecks: [],
       processViolation: false,
@@ -919,15 +1213,30 @@ async function runOne({
   await writeFile(join(layout.trace, 'record.json'), json({
     caseId: caseData.id,
     arm,
+    stage,
     mode,
-    writerRaw: writer.rawOutput,
-    acceptedDeltas: writer.acceptedDeltas,
-    refusedDeltas: writer.refusedDeltas,
+    writerRaw: rawWriterText === null ? null : rawWriterText.slice(0, MAX_RAW_OUTPUT_CHARS),
+    writerRawChars: rawWriterText?.length ?? 0,
+    writerRawDigest: rawWriterText === null ? null : digestText(rawWriterText),
+    writerRawTruncated: rawWriterText !== null && rawWriterText.length > MAX_RAW_OUTPUT_CHARS,
+    writer: {
+      call: writer.call,
+      protocol: writer.protocol,
+      handoff: writer.handoff,
+      acceptedDeltas: writer.acceptedDeltas,
+      refusedDeltas: writer.refusedDeltas,
+      refusalReasons: writer.refusalReasons,
+      commitStatus: writer.commitStatus,
+      stateDigest: writer.stateDigest,
+      actualProviderUsage: writer.actualProviderUsage,
+    },
     checkpoint: folded.checkpoint,
     followTrace: follow?.trace ?? [],
+    verificationFreshness: follow?.verificationFreshness ?? null,
     checker,
     extraction,
     behaviour: row.behaviour,
+    failures,
     state: folded.state,
   }), 'utf8')
   return row
@@ -940,14 +1249,311 @@ async function writeReport(name, report) {
   return path
 }
 
+/**
+ * Persist the AUTHORITATIVE report under the run, and refresh the convenience
+ * copy at `out/live-report.json`.
+ *
+ * R34 wrote only the convenience copy, so a later run silently replaced the
+ * record of an earlier one. The run-scoped report is the experiment record; the
+ * convenience copy may be overwritten.
+ */
+async function writeRunReport({ runRoot, runId, report, latestName }) {
+  const directory = join(runRoot, runId)
+  await mkdir(directory, { recursive: true })
+  const reportPath = join(directory, 'report.json')
+  await writeFile(reportPath, json(report), 'utf8')
+  const latestPath = latestName === undefined || process.env.R35_WRITE_LATEST === '0'
+    ? undefined
+    : await writeReport(latestName, report)
+  return { reportPath, latestPath }
+}
+
+async function pathExists(path) {
+  try {
+    await access(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** What a preflight can prove locally, and what still needs a provider. */
+async function buildAvailability() {
+  const lib = fileURLToPath(new URL('../../lib/plugin.js', import.meta.url))
+  const frontier = fileURLToPath(new URL('../../lib/fold/frontier.js', import.meta.url))
+  const adapter = fileURLToPath(new URL('../live/dist/openai-adapter.js', import.meta.url))
+  return {
+    plugin: await pathExists(lib),
+    frontier: await pathExists(frontier),
+    liveAdapter: await pathExists(adapter),
+    pluginPath: lib,
+    frontierPath: frontier,
+    liveAdapterPath: adapter,
+  }
+}
+
+/**
+ * R34.1-B: a zero-request budget preflight over the REAL fold call path.
+ *
+ * It runs each selected case/arm through the real DSH host and EF fold with a
+ * `DryRunAdapter`, recording the exact `GenerateOptions.maxTokens` the
+ * production writer/rationale path asks for. It reads no route credential and
+ * opens no connection.
+ *
+ * The result names, per case/arm, whether the manifest can actually admit the
+ * requests the fold will make. `unknown-model-capability` is not a pass: it
+ * says the manifest declares no model output ceiling, so only the provider can
+ * confirm the bound.
+ */
+async function runPreflight({ manifest, manifestPath, cases, arms, stage, runRoot }) {
+  const build = await buildAvailability()
+  const contextWindow = manifest.route?.contextWindow ?? 131_072
+  const runId = manifest.runId ?? newRunId('preflight')
+  const runDirectory = join(runRoot, runId)
+  const collision = await pathExists(runDirectory)
+  const declaredModelMax = manifest.route?.maxOutputTokens
+  const followUpSteps = manifest.followUpSteps ?? 8
+  const followUpMaxTokens = manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS
+  const results = []
+  const warnings = []
+
+  if (!build.plugin || !build.frontier) {
+    return {
+      schemaVersion: 1,
+      status: 'preflight-invalid',
+      generatedAt: new Date().toISOString(),
+      manifest: manifestPath,
+      build,
+      error: 'the built plugin is missing; run `npm run build` before preflight',
+      providerRequests: 0,
+      routeCredentials: 'not-read',
+      runId,
+      runIdSource: manifest.runId === undefined ? 'generated' : 'manifest',
+      runDirectory,
+      collision,
+      cases,
+      arms,
+      stage,
+      results,
+      warnings,
+    }
+  }
+
+  const scratch = join(tmpdir(), `r35-preflight-${randomUUID()}`)
+  try {
+    for (const caseData of cases) {
+      for (const arm of arms) {
+        const layout = await createReplicateLayout({
+          root: scratch,
+          runId: 'preflight',
+          caseId: caseData.id,
+          arm,
+          replicateId: 'r1',
+        })
+        await materialize(caseData.workspace.files, layout.workspace)
+        const dry = new DryRunAdapter(manifest.model, caseData, contextWindow)
+        const log = new WriterLog()
+        const adapter = adapterForRun({ base: dry, arm, caseData, ledger: undefined, log, o1Handoff: undefined })
+        const host = await mountHost(adapter, manifest.model, layout, arm === 'S' || arm === 'O1')
+        const folded = await foldCase(caseData, layout, host, manifest.model)
+        const foldCalls = dry.calls
+        const foldMax = foldCalls.reduce((max, call) => Math.max(max, call.maxTokens ?? 0), 0)
+        const followUpCalls = stage === 'continuation' ? followUpSteps : 0
+        const plannedCalls = foldCalls.length + followUpCalls
+        const perRequestBound = Math.max(foldMax, followUpCalls > 0 ? followUpMaxTokens : 0)
+        const reasons = []
+        if (manifest.maxOutputTokens < perRequestBound) {
+          reasons.push({
+            axis: 'per-request-output',
+            detail: `manifest.maxOutputTokens=${manifest.maxOutputTokens} is below the fold's actual maxTokens=${foldMax}`,
+          })
+        }
+        if (manifest.limits.inputTokens < contextWindow) {
+          reasons.push({
+            axis: 'input-reserve',
+            detail: `limits.inputTokens=${manifest.limits.inputTokens} is below one request's conservative input reserve=${contextWindow}`,
+          })
+        }
+        if (manifest.limits.outputTokens < perRequestBound) {
+          reasons.push({
+            axis: 'output-reserve',
+            detail: `limits.outputTokens=${manifest.limits.outputTokens} is below one request's output bound=${perRequestBound}`,
+          })
+        }
+        if (plannedCalls > manifest.limits.requests) {
+          reasons.push({
+            axis: 'requests',
+            detail: `limits.requests=${manifest.limits.requests} is below the ${plannedCalls} planned calls`,
+          })
+        }
+        const modelCapability = declaredModelMax === undefined
+          ? 'unknown-model-capability'
+          : declaredModelMax >= perRequestBound
+            ? 'declared-compatible'
+            : 'declared-incompatible'
+        if (modelCapability === 'declared-incompatible') {
+          reasons.push({
+            axis: 'model-capability',
+            detail: `route.maxOutputTokens=${declaredModelMax} is below the fold's actual maxTokens=${foldMax}`,
+          })
+        }
+        const worstCaseOutput = foldCalls.length * foldMax + followUpCalls * followUpMaxTokens
+        const retryCovered = manifest.limits.requests >= plannedCalls * 4
+        if (manifest.limits.outputTokens < worstCaseOutput) {
+          warnings.push({
+            caseId: caseData.id,
+            arm,
+            axis: 'worst-case-output',
+            detail: `worst-case output charge ${worstCaseOutput} exceeds limits.outputTokens=${manifest.limits.outputTokens}; known usage can still complete, unknown usage will exhaust`,
+          })
+        }
+        if (!retryCovered) {
+          warnings.push({
+            caseId: caseData.id,
+            arm,
+            axis: 'retry-headroom',
+            detail: `limits.requests=${manifest.limits.requests} does not cover worst-case 429 retries (${plannedCalls * 4})`,
+          })
+        }
+        const writerEntry = log.entries.find(entry => entry.kind === 'writer-call')
+        const dryWriter = foldCalls.some(call => call.writer === true)
+        results.push({
+          caseId: caseData.id,
+          arm,
+          verdict: reasons.length > 0
+            ? 'infeasible'
+            : modelCapability === 'unknown-model-capability'
+              ? 'unknown-model-capability'
+              : 'feasible',
+          reasons,
+          foldValid: folded.fold.valid,
+          foldCalls: foldCalls.length,
+          foldCallsDetail: foldCalls,
+          followUpMaxRequests: followUpCalls,
+          plannedRequests: plannedCalls,
+          requestsWithWorstCaseRetries: plannedCalls * 4,
+          perRequestOutputBound: perRequestBound,
+          actualFoldMaxTokens: foldMax,
+          inputReservePerRequest: contextWindow,
+          worstCaseInputCharge: plannedCalls * contextWindow,
+          worstCaseOutputCharge: worstCaseOutput,
+          modelCapability,
+          declaredModelMaxOutputTokens: declaredModelMax ?? null,
+          writerCallStatus: writerEntry?.oracle === true
+            ? 'oracle-conditional (no provider call)'
+            : writerEntry !== undefined || dryWriter
+              ? 'dry-run response'
+              : 'not-attempted',
+          providerCalls: foldCalls.length,
+          writerProtocol: folded.packet?.deltaParse ?? 'not-called',
+          checkpointChars: folded.checkpoint.length,
+          stateDigest: folded.state.stateDigest,
+        })
+      }
+    }
+  } finally {
+    await rm(scratch, { recursive: true, force: true })
+  }
+
+  const infeasible = results.filter(entry => entry.verdict === 'infeasible')
+  const unknownCapability = results.filter(entry => entry.verdict === 'unknown-model-capability')
+  const totalPlannedRequests = results.reduce((total, entry) => total + entry.plannedRequests, 0)
+  const totalWorstCaseRequests = results.reduce((total, entry) => total + entry.requestsWithWorstCaseRetries, 0)
+  const totalWorstCaseInput = results.reduce((total, entry) => total + entry.worstCaseInputCharge, 0)
+  const totalWorstCaseOutput = results.reduce((total, entry) => total + entry.worstCaseOutputCharge, 0)
+  const blocking = []
+  if (collision) {
+    blocking.push({
+      axis: 'run-directory',
+      detail: `the run directory already exists: ${runDirectory}; a run is never resumed by reusing its directory`,
+    })
+  }
+  if (totalPlannedRequests > manifest.limits.requests) {
+    blocking.push({
+      axis: 'total-requests',
+      detail: `the selected plan needs ${totalPlannedRequests} calls but limits.requests=${manifest.limits.requests}`,
+    })
+  }
+  if (blocking.length === 0) {
+    if (totalWorstCaseInput > manifest.limits.inputTokens) {
+      warnings.push({
+        axis: 'total-worst-case-input',
+        detail: `worst-case input charge ${totalWorstCaseInput} exceeds limits.inputTokens=${manifest.limits.inputTokens}; known usage can still complete`,
+      })
+    }
+    if (totalWorstCaseOutput > manifest.limits.outputTokens) {
+      warnings.push({
+        axis: 'total-worst-case-output',
+        detail: `worst-case output charge ${totalWorstCaseOutput} exceeds limits.outputTokens=${manifest.limits.outputTokens}; known usage can still complete`,
+      })
+    }
+    if (totalWorstCaseRequests > manifest.limits.requests) {
+      warnings.push({
+        axis: 'retry-headroom',
+        detail: `limits.requests=${manifest.limits.requests} does not cover worst-case 429 retries (${totalWorstCaseRequests})`,
+      })
+    }
+  }
+  const status = infeasible.length > 0 || blocking.length > 0 ? 'preflight-infeasible' : 'preflight-ok'
+  return {
+    schemaVersion: 1,
+    status,
+    generatedAt: new Date().toISOString(),
+    manifest: manifestPath,
+    manifestModel: manifest.model,
+    manifestMaxOutputTokens: manifest.maxOutputTokens,
+    limits: manifest.limits,
+    stage,
+    runId,
+    runIdSource: manifest.runId === undefined ? 'generated' : 'manifest',
+    runDirectory,
+    collision,
+    dataset: {
+      id: 'r33-semantic-continuity-v2',
+      digest: (await loadDataset()).datasetDigest,
+      cases: cases.length,
+      scorerVersion: SCORER_VERSION,
+    },
+    cases: cases.map(entry => entry.id),
+    arms,
+    build,
+    providerRequests: 0,
+    routeCredentials: 'not-read',
+    isolation: ISOLATION_LEVEL,
+    results,
+    blocking,
+    summary: {
+      feasible: results.filter(entry => entry.verdict === 'feasible').length,
+      infeasible: infeasible.length,
+      unknownModelCapability: unknownCapability.length,
+      blocking: blocking.length,
+      warnings: warnings.length,
+      totalPlannedRequests,
+      totalWorstCaseRequests,
+      totalWorstCaseInputCharge: totalWorstCaseInput,
+      totalWorstCaseOutputCharge: totalWorstCaseOutput,
+    },
+    warnings,
+    unverified: [
+      ...(unknownCapability.length > 0
+        ? ['model output capability and context window (no provider request was made)']
+        : []),
+      'provider latency, availability, and billing',
+    ],
+    note: 'Dry-run: the real DSH fold and EF writer/rationale paths ran with a local adapter. No provider request was made, no credential value was read, and no result here is a model measurement.',
+  }
+}
+
 function selectCases(cases, requested) {
   if (requested === undefined || requested.length === 0) return cases
   const ids = String(requested).split(',').map(id => id.trim()).filter(Boolean)
   return cases.filter(entry => ids.includes(entry.id))
 }
 
-function selectArms(requested) {
-  if (requested === undefined || requested.length === 0) return [...ARMS]
+function selectArms(requested, stage = 'continuation') {
+  if (requested === undefined || requested.length === 0) {
+    return stage === 'writer-only' ? ['S', 'O1'] : [...ARMS]
+  }
   const arms = String(requested).split(',').map(arm => arm.trim()).filter(Boolean)
   for (const arm of arms) {
     if (!ALL_ARMS.includes(arm)) throw new Error(`unknown arm ${arm}; expected one of ${ALL_ARMS.join(', ')}`)
@@ -955,12 +1561,20 @@ function selectArms(requested) {
   return arms
 }
 
+function selectStage(requested) {
+  const stage = requested ?? 'continuation'
+  if (!STAGES.includes(stage)) {
+    throw new Error(`unknown stage ${stage}; expected one of ${STAGES.join(', ')}`)
+  }
+  return stage
+}
+
 function newRunId(prefix) {
   const stamp = new Date().toISOString().replace(/[-:.TZ]/gu, '').slice(0, 14)
   return `${prefix}-${stamp}-${randomUUID().slice(0, 8)}`
 }
 
-async function runScriptedSelfTest(cases, arms) {
+async function runScriptedSelfTest(cases, arms, stage = 'continuation') {
   const runId = newRunId('self-test')
   const runRoot = join(OUT, 'self-test-runs')
   const ledger = new BudgetLedger(
@@ -977,6 +1591,7 @@ async function runScriptedSelfTest(cases, arms) {
       const row = await runOne({
         caseData,
         arm,
+        stage,
         mode: 'self-test',
         live: false,
         inner: undefined,
@@ -984,7 +1599,7 @@ async function runScriptedSelfTest(cases, arms) {
         runRoot,
         runId,
         replicateId: 'r1',
-        manifest: { model: 'r34-self-test', followUpSteps: 12 },
+        manifest: { model: 'r34-self-test', followUpSteps: 12, stage },
         // When S ran first, O1 reuses S's handoff: the controlled intervention
         // replaces only the deltas, and the report labels the basis.
         o1Handoff: arm === 'O1' ? sHandoff : undefined,
@@ -995,12 +1610,15 @@ async function runScriptedSelfTest(cases, arms) {
       if (arm === 'S' && typeof row.writer?.handoff === 'string') sHandoff = row.writer.handoff
     }
   }
-  const quality = runQuality(rows)
-  const status = runStatus({ executed: true, cases: rows, invalid: rows.length === 0 })
+  const quality = runQuality(rows, stage)
+  const status = runStatus({ executed: true, cases: rows, invalid: rows.length === 0, stage })
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     status,
-    executionKind: 'self-test (scripted adapter; verifies plumbing, not model behavior)',
+    stage,
+    executionKind: stage === 'writer-only'
+      ? 'writer-only self-test (scripted adapter; verifies the fold/writer/commit chain, not model behavior)'
+      : 'self-test (scripted adapter; verifies plumbing, not model behavior)',
     generatedAt: new Date().toISOString(),
     runId,
     dataset: {
@@ -1011,11 +1629,15 @@ async function runScriptedSelfTest(cases, arms) {
     },
     arms,
     quality,
+    outcomes: outcomeCounts(rows),
     ledger: ledger.snapshot(),
+    runElapsedMs: ledger.snapshot().elapsedMs,
     rows,
     notes: [
       'No provider request was made.',
-      'The follow-up loop is the custom evaluation harness loop, not the production DSH agent loop.',
+      stage === 'writer-only'
+        ? 'Writer-only: the fold, writer, validator, journal, working set, and checkpoint ran; no agent tool loop ran.'
+        : 'The follow-up loop is the custom evaluation harness loop, not the production DSH agent loop.',
       'The hidden checkers are real, and the folds are real DSH compaction transactions.',
     ],
   }
@@ -1051,31 +1673,75 @@ async function runtimeFromManifest(manifest, ledger) {
   return { inner }
 }
 
-function reportEnvelope({ status, executionKind, manifest, arms, runId, rows, ledger, inner, dataset, notes }) {
-  const quality = runQuality(rows)
+function reportEnvelope({ status, executionKind, stage, manifest, arms, runId, rows, ledger, inner, dataset, notes }) {
+  const quality = runQuality(rows, stage)
+  const snapshot = ledger.snapshot()
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     status,
+    stage,
     executionKind,
     generatedAt: new Date().toISOString(),
     runId,
     dataset,
     model: manifest.model,
+    modelParameters: {
+      temperature: manifest.temperature ?? null,
+      maxOutputTokens: manifest.maxOutputTokens,
+      followUpMaxTokens: manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS,
+      followUpSteps: manifest.followUpSteps ?? 8,
+      contextWindow: manifest.route?.contextWindow ?? 131_072,
+      reasoningSettings: manifest.reasoning ?? null,
+    },
     route: {
       baseUrlEnv: manifest.route?.baseUrlEnv ?? null,
       apiKeyEnv: manifest.route?.apiKeyEnv ?? null,
       headerNames: Object.keys(manifest.route?.headers ?? {}),
       contextWindow: manifest.route?.contextWindow ?? 131_072,
+      maxOutputTokens: manifest.route?.maxOutputTokens ?? null,
     },
     limits: manifest.limits,
     maxOutputTokens: manifest.maxOutputTokens,
     arms,
     isolation: ISOLATION_LEVEL,
     quality,
-    ledger: ledger.snapshot(),
+    outcomes: outcomeCounts(rows),
+    ledger: snapshot,
+    runElapsedMs: snapshot.elapsedMs,
+    retryAccounting: retryAccounting(inner, snapshot),
     provider: liveProvider(inner),
     rows,
     notes,
+  }
+}
+
+/**
+ * Reconcile the adapter's own 429 counter with the ledger's, without adding
+ * one to the other.
+ *
+ * The ledger is the authority: its `retry()` runs inside the adapter at the
+ * moment a throttled attempt is abandoned, so it counts every retry exactly
+ * once. The adapter counter is a cross-check. R34 added the adapter's count to
+ * the ledger AGAIN at the end of the run, which turned two retries into four.
+ */
+function retryAccounting(inner, snapshot) {
+  if (inner === undefined) {
+    return { authority: 'ledger', adapter: null, ledgerRetries: snapshot.used.retries, consistent: null }
+  }
+  const telemetry = typeof inner.rateLimitTelemetry === 'object'
+    ? inner.rateLimitTelemetry
+    : { retries: 0, exhausted: 0 }
+  const adapterExpected = (telemetry.retries ?? 0) + (telemetry.exhausted ?? 0)
+  return {
+    authority: 'ledger',
+    adapter: {
+      retries: telemetry.retries ?? 0,
+      exhausted: telemetry.exhausted ?? 0,
+      expectedLedgerRetries: adapterExpected,
+    },
+    ledgerRetries: snapshot.used.retries,
+    consistent: snapshot.used.retries === adapterExpected,
+    note: 'The ledger counts each throttled HTTP attempt once. The adapter counter is a cross-check only; it is never added to the ledger.',
   }
 }
 
@@ -1097,6 +1763,7 @@ function liveProvider(inner) {
 async function main() {
   const checkOnly = process.argv.includes('--check')
   const selfTest = process.argv.includes('--self-test')
+  const preflight = process.argv.includes('--preflight')
   const frozen = await verifyFrozen()
   if (!frozen.ok) {
     process.stderr.write(`invalid benchmark: ${frozen.reason}\n`)
@@ -1113,6 +1780,7 @@ async function main() {
     cases: cases.length,
     scorerVersion: SCORER_VERSION,
   }
+  const runRoot = process.env.R33_RUN_ROOT ?? join(homedir(), '.r33-runs')
 
   if (checkOnly) {
     const holdoutFrozen = await verifyHoldout()
@@ -1131,10 +1799,16 @@ async function main() {
       caseIds: cases.map(entry => entry.id),
       arms: ARMS,
       allArms: ALL_ARMS,
+      stages: STAGES,
+      defaultArms: {
+        'writer-only': ['S', 'O1'],
+        continuation: ARMS,
+      },
       followUpTools: FOLLOW_UP_TOOLS,
       isolation: ISOLATION_LEVEL,
       executionKinds: {
         scripted: 'self-test / offline pipeline measurement',
+        writerOnly: 'live writer-only: real EF fold + writer + validator + journal + working set + checkpoint, no follow-up',
         customToolLoop: 'live custom text-JSON loop (not the production DSH agent loop)',
         productionLoop: 'not implemented in this round; live is blocked without authorization',
       },
@@ -1143,7 +1817,13 @@ async function main() {
         '--manifest with positive requests/inputTokens/outputTokens/wallClockMs',
         'manifest.maxOutputTokens (per-request bound)',
         'manifest.route.baseUrlEnv and manifest.route.apiKeyEnv (names, not secrets)',
+        'manifest.stage = writer-only | continuation (optional; default continuation)',
       ],
+      preflight: {
+        command: 'node eval/r33/live.mjs --preflight --manifest <path>',
+        requiresProvider: false,
+        note: 'Runs the real fold with a dry-run adapter and records actual maxTokens; reads no credential and makes no request.',
+      },
       note: '--check resolves no credentials and makes no request.',
     }
     const path = await writeReport('live-check.json', audience)
@@ -1151,24 +1831,77 @@ async function main() {
     process.exit(0)
   }
 
+  if (preflight) {
+    const manifestPath = argValue('--manifest')
+    const invalid = async (reason) => {
+      const report = {
+        schemaVersion: 1,
+        status: 'preflight-invalid',
+        reason,
+        manifest: manifestPath ?? null,
+        dataset,
+        generatedAt: new Date().toISOString(),
+        providerRequests: 0,
+        routeCredentials: 'not-read',
+        note: 'No provider request was attempted.',
+      }
+      const path = await writeReport('preflight-report.json', report)
+      process.stdout.write(`${report.status}: ${reason}\n${path}\n`)
+      process.exit(6)
+    }
+    if (typeof manifestPath !== 'string' || manifestPath.length === 0) {
+      await invalid('no --manifest path was provided')
+    }
+    let manifest
+    try {
+      manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+    } catch (error) {
+      await invalid(`manifest unreadable: ${error instanceof Error ? error.message : String(error)}`)
+    }
+    const validated = validateManifest(manifest)
+    if (!validated.ok) await invalid(validated.reason)
+    const stage = selectStage(argValue('--stage') ?? manifest.stage)
+    const selected = selectCases(cases, argValue('--cases') ?? manifest.cases)
+    const arms = selectArms(argValue('--arms') ?? manifest.arms, stage)
+    const report = await runPreflight({
+      manifest,
+      manifestPath,
+      cases: selected,
+      arms,
+      stage,
+      runRoot,
+    })
+    const path = await writeReport('preflight-report.json', report)
+    process.stdout.write(`${report.status}: ${report.summary.feasible} feasible, `
+      + `${report.summary.infeasible} infeasible, ${report.summary.unknownModelCapability} unknown-capability, `
+      + `${report.summary.blocking} blocking\n${path}\n`)
+    process.exit(report.status === 'preflight-ok' ? 0 : 2)
+  }
+
   if (selfTest) {
+    const stage = selectStage(argValue('--stage'))
     const selected = selectCases(cases, argValue('--cases'))
-    const arms = selectArms(argValue('--arms'))
-    const report = await runScriptedSelfTest(selected, arms)
+    const arms = selectArms(argValue('--arms'), stage)
+    const report = await runScriptedSelfTest(selected, arms, stage)
     const path = await writeReport('self-test-report.json', report)
-    process.stdout.write(`${report.status}: ${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed\n${path}\n`)
+    const summary = stage === 'writer-only'
+      ? `${report.quality.validCases}/${report.rows.length} writer measurements valid`
+      : `${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed`
+    process.stdout.write(`${report.status}: ${summary}\n${path}\n`)
     process.exit(STATUS_EXIT_CODE[report.status] ?? 7)
   }
 
   const gate = await loadLiveGate(argValue('--manifest'), process.env)
   if (!gate.ok) {
     const report = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       status: 'not-executed',
       reason: gate.reason,
       dataset,
       cases: cases.length,
+      stage: argValue('--stage') ?? 'continuation',
       generatedAt: new Date().toISOString(),
+      providerRequests: 0,
       note: 'No provider request was attempted.',
     }
     const path = await writeReport('live-report.json', report)
@@ -1176,88 +1909,179 @@ async function main() {
     process.exit(STATUS_EXIT_CODE['not-executed'])
   }
   const manifest = gate.manifest
+  const stage = selectStage(argValue('--stage') ?? manifest.stage)
+  const selected = selectCases(cases, argValue('--cases') ?? manifest.cases)
+  const arms = selectArms(argValue('--arms') ?? manifest.arms, stage)
+  const runId = manifest.runId ?? newRunId('live')
   const ledger = new BudgetLedger(manifest.limits, { maxRequestOutputTokens: manifest.maxOutputTokens })
   const runtime = await runtimeFromManifest(manifest, ledger)
   if (runtime.unavailable !== undefined) {
     const report = {
-      schemaVersion: 2,
+      schemaVersion: 3,
       status: 'provider-unavailable',
       reason: runtime.unavailable,
       dataset,
+      stage,
+      runId,
       generatedAt: new Date().toISOString(),
+      providerRequests: 0,
       note: 'No provider request was attempted.',
     }
-    const path = await writeReport('live-report.json', report)
-    process.stdout.write(`${report.status}: ${report.reason}\n${path}\n`)
+    const paths = await writeRunReport({ runRoot, runId, report, latestName: 'live-report.json' })
+    process.stdout.write(`${report.status}: ${report.reason}\n${paths.reportPath}\n`)
     process.exit(STATUS_EXIT_CODE['provider-unavailable'])
   }
 
-  const selected = selectCases(cases, manifest.cases ?? argValue('--cases'))
-  const arms = selectArms(manifest.arms ?? argValue('--arms'))
-  const runId = manifest.runId ?? newRunId('live')
-  const runRoot = process.env.R33_RUN_ROOT ?? join(homedir(), '.r33-runs')
+  const runStarted = Date.now()
   const rows = []
   let budgetExhausted = false
-  let providerFailureCount = 0
-  for (const caseData of selected) {
-    const handoffs = new Map()
-    for (const arm of arms) {
-      if (budgetExhausted) break
-      try {
-        const row = await runOne({
-          caseData,
-          arm,
-          mode: 'live',
-          live: true,
-          inner: runtime.inner,
-          ledger,
-          runRoot,
-          runId,
-          replicateId: manifest.replicateId ?? 'r1',
-          manifest,
-          o1Handoff: arm === 'O1' ? handoffs.get('S') : undefined,
-          plan: undefined,
-          writerPayload: { handoff: caseData.writer.handoff, deltas: caseData.writer.deltas },
-        })
-        if (arm === 'S' && row.writer?.handoff !== null) handoffs.set('S', row.writer.handoff)
-        if (row.behaviourDetail?.providerFailure !== undefined) providerFailureCount += 1
-        rows.push(row)
-      } catch (error) {
-        if (error instanceof BudgetExhausted) {
-          budgetExhausted = true
-          break
+  let stopReason = null
+  let harnessError = null
+  try {
+    for (const caseData of selected) {
+      const handoffs = new Map()
+      for (const arm of arms) {
+        if (budgetExhausted) break
+        const beforeCase = ledger.snapshot()
+        const caseStarted = Date.now()
+        try {
+          const row = await runOne({
+            caseData,
+            arm,
+            stage,
+            mode: 'live',
+            live: true,
+            inner: runtime.inner,
+            ledger,
+            runRoot,
+            runId,
+            replicateId: manifest.replicateId ?? 'r1',
+            manifest,
+            o1Handoff: arm === 'O1' ? handoffs.get('S') : undefined,
+            plan: undefined,
+            writerPayload: { handoff: caseData.writer.handoff, deltas: caseData.writer.deltas },
+          })
+          if (arm === 'S' && row.writer?.handoff !== null) handoffs.set('S', row.writer.handoff)
+          rows.push(row)
+          if (row.failures?.budget?.length > 0 || row.cost?.budgetRefusals > 0) {
+            budgetExhausted = true
+            stopReason = row.failures?.budget?.[0]?.message ?? 'budget refusal observed inside a safely degraded call'
+            break
+          }
+        } catch (error) {
+          // The case boundary keeps the truth even when the case threw. R34
+          // wrote zero cost here, hiding requests that had already happened.
+          const afterCase = ledger.snapshot()
+          const cost = snapshotDelta(beforeCase, afterCase)
+          cost.caseDurationMs = Date.now() - caseStarted
+          cost.runElapsedMs = afterCase.elapsedMs
+          cost.modelRequests = afterCase.used.attempts
+          const failures = emptyFailures()
+          let outcome
+          if (error instanceof BudgetExhausted) {
+            budgetExhausted = true
+            failures.budget.push({
+              kind: 'budget-exhausted',
+              reason: error.reason ?? 'unknown',
+              message: error.message,
+            })
+            outcome = 'budget-exhausted'
+            stopReason = `budget-exhausted: ${error.reason ?? error.message}`
+          } else {
+            const code = error instanceof ProviderFailure
+              ? error.code
+              : typeof error === 'object' && error !== null && typeof error.code === 'string'
+                ? error.code
+                : 'harness-error'
+            const kind = code === 'harness-error' ? 'harness-error' : providerFailureKind(code)
+            if (kind === 'budget-exhausted') {
+              budgetExhausted = true
+              failures.budget.push({ kind: 'budget-exhausted', message: String(error?.message ?? error) })
+              outcome = 'budget-exhausted'
+              stopReason = `budget-exhausted: ${String(error?.message ?? error)}`
+            } else if (kind.startsWith('provider-')) {
+              failures.provider.push(providerFailureRecord({
+                code,
+                message: error instanceof Error ? error.message : String(error),
+                stage: 'case-boundary',
+              }))
+              outcome = kind
+            } else {
+              failures.harness.push({
+                kind: 'harness-error',
+                message: error instanceof Error ? error.stack ?? error.message : String(error),
+              })
+              outcome = 'harness-error'
+            }
+          }
+          failures.outcome = outcome
+          rows.push({
+            schemaVersion: 3,
+            caseId: caseData.id,
+            arm,
+            stage,
+            mode: 'live',
+            runId,
+            replicateId: manifest.replicateId ?? 'r1',
+            valid: false,
+            measurementValid: false,
+            reason: outcome,
+            failures,
+            providerCalls: {
+              attempted: cost.httpAttempts,
+              succeeded: null,
+              failed: null,
+            },
+            behaviour: {
+              applicable: false,
+              taskSuccess: null,
+              functionalSuccess: null,
+              contractSuccess: null,
+              processViolation: false,
+              falseVerificationClaim: false,
+            },
+            cost,
+          })
+          if (budgetExhausted) break
+          if (outcome === 'harness-error') {
+            harnessError = failures.harness[0]?.message ?? 'harness error'
+            stopReason = harnessError
+            break
+          }
         }
-        rows.push({
-          schemaVersion: 2,
-          caseId: caseData.id,
-          arm,
-          mode: 'live',
-          valid: false,
-          reason: error instanceof Error ? error.message : String(error),
-          behaviour: { taskSuccess: false },
-          providerFailures: error instanceof ProviderFailure ? [error.code] : [],
-          cost: { attempts: 0, inputTokens: 0, outputTokens: 0, caseDurationMs: 0 },
-        })
       }
+      if (budgetExhausted || harnessError !== null) break
     }
-    if (budgetExhausted) break
+  } catch (error) {
+    harnessError = error instanceof Error ? error.stack ?? error.message : String(error)
+    stopReason = harnessError
   }
-  const telemetry = runtime.inner?.rateLimitTelemetry
-  if (telemetry !== undefined) {
-    for (let index = 0; index < (telemetry.retries ?? 0); index += 1) ledger.noteRetry()
-  }
-  const providerUnavailable = rows.length > 0
-    && rows.every(row => row.valid !== true && row.providerFailures?.length > 0)
+  const validRows = rows.filter(row => row.valid === true)
+  const totalProviderSuccesses = rows.reduce((total, row) => total + (row.providerCalls?.succeeded ?? 0), 0)
+  const allRowsHaveProviderFailure = rows.length > 0
+    && rows.every(row => (row.failures?.provider?.length ?? 0) > 0)
+  // A route is unavailable when every observed row has a provider failure and
+  // NO provider call succeeded. A writer failure that the fold safely degraded
+  // around still means the route did not answer; the fold's validity does not
+  // turn an outage into a working treatment. Conversely, one successful call
+  // means the route worked and a later failure is a partial result.
+  const providerUnavailable = !budgetExhausted
+    && allRowsHaveProviderFailure
+    && (validRows.length === 0 || totalProviderSuccesses === 0)
   const status = runStatus({
     executed: true,
     cases: rows,
     budgetExhausted,
     providerUnavailable,
     invalid: false,
+    stage,
   })
   const report = reportEnvelope({
     status,
-    executionKind: 'live custom text-JSON tool loop (not the production DSH agent loop)',
+    executionKind: stage === 'writer-only'
+      ? 'live writer-only: real EF fold, writer, validator, journal, working set, and checkpoint; no follow-up agent'
+      : 'live custom text-JSON tool loop (not the production DSH agent loop)',
+    stage,
     manifest,
     arms,
     runId,
@@ -1266,15 +2090,24 @@ async function main() {
     inner: runtime.inner,
     dataset,
     notes: [
-      `provider failures observed: ${providerFailureCount}`,
+      `stage: ${stage}`,
+      `provider failures observed: ${rows.filter(row => row.failures?.provider?.length > 0).length}`,
+      ...(stopReason === null ? [] : [`stop reason: ${stopReason}`]),
+      ...(harnessError === null ? [] : [`harness error: ${harnessError}`]),
       'Custom tool loop: tool results are user text; recall searches the frozen transcript, not production context_search.',
       'The hidden checker runs outside the agent workspace; the environment is allowlisted.',
       'Same-user code is not sandboxed by the OS; see isolation.osSandbox.',
       'No currency is reported: no trusted price profile was supplied.',
     ],
   })
-  const path = await writeReport('live-report.json', report)
-  process.stdout.write(`${status}: ${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed\n${path}\n`)
+  report.runElapsedMs = Date.now() - runStarted
+  report.stopReason = stopReason
+  report.harnessError = harnessError
+  const paths = await writeRunReport({ runRoot, runId, report, latestName: 'live-report.json' })
+  const summary = stage === 'writer-only'
+    ? `${validRows.length}/${rows.length} writer measurements valid`
+    : `${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed`
+  process.stdout.write(`${status}: ${summary}\n${paths.reportPath}\n`)
   process.exit(STATUS_EXIT_CODE[status] ?? 7)
 }
 

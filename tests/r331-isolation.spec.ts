@@ -195,9 +195,15 @@ describe('R33.1 hidden-checker authority', () => {
   it('reports a hang as checker-timeout, not as a task result', async () => {
     const workspace = await makeTemp('ef-r331-check-timeout-')
     const result = await runChecker(checkerCase(
-      'setTimeout(() => {}, 60_000)',
+      // A top-level await that never settles blocks the bootstrap's import.
+      // The interval is required: an unsettled top-level await with no live
+      // handles makes Node exit with code 13, which is a crash, not a hang.
+      // `setTimeout` did NOT block the import either; the bootstrap wrote
+      // "no result", and the test passed only because the old 100ms deadline
+      // often fired during process startup. That measured startup latency.
+      'await new Promise(() => { setInterval(() => {}, 1_000) })',
       ['a'],
-      100,
+      1_000,
     ), workspace)
     expect(result.status).toBe('checker-timeout')
     expect(result.timedOut).toBe(true)

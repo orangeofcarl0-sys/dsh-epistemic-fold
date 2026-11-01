@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "status": "not-executed",
   "reason": "R33_LIVE is not 1; refusing to spend provider credits",
   "dataset": {
@@ -9,6 +9,8 @@
     "scorerVersion": 2
   },
   "cases": 17,
-  "generatedAt": "2026-11-01T15:05:48.056Z",
+  "stage": "writer-only",
+  "generatedAt": "2026-11-01T17:29:28.400Z",
+  "providerRequests": 0,
   "note": "No provider request was attempted."
 }

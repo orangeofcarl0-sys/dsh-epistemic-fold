@@ -353,20 +353,130 @@ export class BudgetLedger {
   }
 }
 
-/** Subtract two immutable snapshots, per field. Used for one case's cost. */
+/**
+ * Subtract two immutable snapshots, per field. Used for one case's cost.
+ *
+ * `observed` is what the provider reported. `reserved` is the conservative
+ * charge for attempts whose true consumption is unknown, and `charged` is
+ * their sum — the figure admission compares against the limit. They are
+ * published side by side because a report may not present a reserve as a
+ * measurement, nor settle an unknown attempt to zero.
+ */
 export function snapshotDelta(before, after) {
-  const difference = (left, right) => right - left
+  const difference = (left, right) => Math.max(0, right - left)
+  const observedInput = difference(before.observed.inputTokens, after.observed.inputTokens)
+  const observedOutput = difference(before.observed.outputTokens, after.observed.outputTokens)
+  const reservedInput = difference(before.reserved.inputTokens, after.reserved.inputTokens)
+  const reservedOutput = difference(before.reserved.outputTokens, after.reserved.outputTokens)
+  const chargedInput = difference(before.charged.inputTokens, after.charged.inputTokens)
+  const chargedOutput = difference(before.charged.outputTokens, after.charged.outputTokens)
+  const attempts = difference(before.used.attempts, after.used.attempts)
   return {
-    attempts: difference(before.used.attempts, after.used.attempts),
-    inputTokens: difference(before.observed.inputTokens, after.observed.inputTokens),
-    outputTokens: difference(before.observed.outputTokens, after.observed.outputTokens),
+    attempts,
+    /** Every HTTP attempt, including a 429 resend. */
+    httpAttempts: attempts,
+    /** 429 retries charged by the same ledger, never a second counter. */
+    httpRetries: difference(before.used.retries, after.used.retries),
+    // `inputTokens`/`outputTokens` keep their R33 meaning: OBSERVED tokens.
+    // New reports read the explicit names.
+    inputTokens: observedInput,
+    outputTokens: observedOutput,
+    observedInputTokens: observedInput,
+    observedOutputTokens: observedOutput,
+    reservedInputTokens: reservedInput,
+    reservedOutputTokens: reservedOutput,
+    chargedInputTokens: chargedInput,
+    chargedOutputTokens: chargedOutput,
     cacheReadTokens: difference(before.observed.cacheReadTokens, after.observed.cacheReadTokens),
     cacheWriteTokens: difference(before.observed.cacheWriteTokens, after.observed.cacheWriteTokens),
     unknownUsageRequests: difference(before.unknownUsageRequests, after.unknownUsageRequests),
     partialUsageRequests: difference(before.partialUsageRequests, after.partialUsageRequests),
+    budgetRefusals: difference(before.refusals, after.refusals),
     unresolvedAttempts: after.unresolvedAttempts,
     elapsedMs: difference(before.elapsedMs, after.elapsedMs),
+    /** True when unknown usage keeps a conservative charge at this boundary. */
+    chargedIncludesUnknown: reservedInput > 0 || reservedOutput > 0,
   }
+}
+
+/**
+ * Validate a live manifest's SHAPE. Never reads a credential value.
+ *
+ * Kept separate from {@link loadLiveGate} so `--preflight` can validate a
+ * manifest before the operator has authorized any spend, without weakening
+ * the live gate: the gate still requires `R33_LIVE=1` in addition to this.
+ *
+ * @returns {{ok:true, manifest:object}|{ok:false, reason:string}}
+ */
+export function validateManifest(manifest) {
+  if (manifest === null || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    return { ok: false, reason: 'manifest must be a JSON object' }
+  }
+  if (typeof manifest.model !== 'string' || manifest.model.length === 0) {
+    return { ok: false, reason: 'manifest.model is required' }
+  }
+  const limits = manifest.limits
+  if (limits === null || typeof limits !== 'object') return { ok: false, reason: 'manifest.limits is required' }
+  for (const key of ['requests', 'inputTokens', 'outputTokens', 'wallClockMs']) {
+    if (!positiveInteger(limits[key])) {
+      return { ok: false, reason: `manifest.limits.${key} must be a positive integer (0 does not mean unlimited)` }
+    }
+  }
+  if (!positiveInteger(manifest.maxOutputTokens)) {
+    return { ok: false, reason: 'manifest.maxOutputTokens must be a positive integer (the per-request bound)' }
+  }
+  const route = manifest.route
+  if (route === null || typeof route !== 'object') return { ok: false, reason: 'manifest.route is required' }
+  for (const key of ['baseUrlEnv', 'apiKeyEnv']) {
+    if (typeof route[key] !== 'string' || route[key].length === 0) {
+      return { ok: false, reason: `manifest.route.${key} is required (an environment variable NAME, never a secret)` }
+    }
+  }
+  if (route.contextWindow !== undefined && !positiveInteger(route.contextWindow)) {
+    return { ok: false, reason: 'manifest.route.contextWindow must be a positive integer when present' }
+  }
+  if (route.maxOutputTokens !== undefined && !positiveInteger(route.maxOutputTokens)) {
+    return {
+      ok: false,
+      reason: 'manifest.route.maxOutputTokens must be a positive integer when present '
+        + '(the model capability preflight compares against)',
+    }
+  }
+  if (route.headers !== undefined) {
+    if (route.headers === null || typeof route.headers !== 'object' || Array.isArray(route.headers)) {
+      return { ok: false, reason: 'manifest.route.headers must be an object' }
+    }
+    for (const [name, value] of Object.entries(route.headers)) {
+      if (typeof value !== 'string') {
+        return { ok: false, reason: `manifest.route.headers.${name} must be a string` }
+      }
+      if (/^(authorization|proxy-authorization|api-key|x-api-key|x-auth-token|cookie)$/iu.test(name)) {
+        return { ok: false, reason: `manifest.route.headers.${name} would place a credential in the manifest` }
+      }
+    }
+  }
+  if (manifest.stage !== undefined && manifest.stage !== 'writer-only' && manifest.stage !== 'continuation') {
+    return { ok: false, reason: 'manifest.stage must be "writer-only" or "continuation"' }
+  }
+  if (manifest.followUpSteps !== undefined && !positiveInteger(manifest.followUpSteps)) {
+    return { ok: false, reason: 'manifest.followUpSteps must be a positive integer when present' }
+  }
+  if (manifest.followUpMaxTokens !== undefined && !positiveInteger(manifest.followUpMaxTokens)) {
+    return { ok: false, reason: 'manifest.followUpMaxTokens must be a positive integer when present' }
+  }
+  if (manifest.runId !== undefined && (typeof manifest.runId !== 'string' || manifest.runId.length === 0)) {
+    return { ok: false, reason: 'manifest.runId must be a non-empty string when present' }
+  }
+  if (manifest.arms !== undefined) {
+    const allowed = new Set(['B1', 'S', 'O1', 'O2', 'F', 'N', 'OR'])
+    const arms = Array.isArray(manifest.arms) ? manifest.arms : String(manifest.arms).split(',')
+    for (const arm of arms) {
+      if (!allowed.has(String(arm).trim())) {
+        return { ok: false, reason: `manifest.arms names unknown arm ${String(arm)}` }
+      }
+    }
+  }
+  return { ok: true, manifest }
 }
 
 /**
@@ -395,49 +505,7 @@ export async function loadLiveGate(manifestPath, env = process.env) {
   } catch (error) {
     return { ok: false, reason: `manifest unreadable: ${error instanceof Error ? error.message : String(error)}` }
   }
-  if (typeof manifest.model !== 'string' || manifest.model.length === 0) {
-    return { ok: false, reason: 'manifest.model is required' }
-  }
-  const limits = manifest.limits
-  if (limits === null || typeof limits !== 'object') return { ok: false, reason: 'manifest.limits is required' }
-  for (const key of ['requests', 'inputTokens', 'outputTokens', 'wallClockMs']) {
-    if (!positiveInteger(limits[key])) {
-      return { ok: false, reason: `manifest.limits.${key} must be a positive integer (0 does not mean unlimited)` }
-    }
-  }
-  if (!positiveInteger(manifest.maxOutputTokens)) {
-    return { ok: false, reason: 'manifest.maxOutputTokens must be a positive integer (the per-request bound)' }
-  }
-  const route = manifest.route
-  if (route === null || typeof route !== 'object') return { ok: false, reason: 'manifest.route is required' }
-  for (const key of ['baseUrlEnv', 'apiKeyEnv']) {
-    if (typeof route[key] !== 'string' || route[key].length === 0) {
-      return { ok: false, reason: `manifest.route.${key} is required (an environment variable NAME, never a secret)` }
-    }
-  }
-  if (route.headers !== undefined) {
-    if (route.headers === null || typeof route.headers !== 'object' || Array.isArray(route.headers)) {
-      return { ok: false, reason: 'manifest.route.headers must be an object' }
-    }
-    for (const [name, value] of Object.entries(route.headers)) {
-      if (typeof value !== 'string') {
-        return { ok: false, reason: `manifest.route.headers.${name} must be a string` }
-      }
-      if (/^(authorization|proxy-authorization|api-key|x-api-key|x-auth-token|cookie)$/iu.test(name)) {
-        return { ok: false, reason: `manifest.route.headers.${name} would place a credential in the manifest` }
-      }
-    }
-  }
-  if (manifest.arms !== undefined) {
-    const allowed = new Set(['B1', 'S', 'O1', 'O2'])
-    const arms = Array.isArray(manifest.arms) ? manifest.arms : String(manifest.arms).split(',')
-    for (const arm of arms) {
-      if (!allowed.has(String(arm).trim())) {
-        return { ok: false, reason: `manifest.arms names unknown arm ${String(arm)}` }
-      }
-    }
-  }
-  return { ok: true, manifest }
+  return validateManifest(manifest)
 }
 
 /**
@@ -453,13 +521,19 @@ export async function loadLiveGate(manifestPath, env = process.env) {
  * report carries `measurementValid` and `taskSuccessRate` beside the status so
  * no reader can confuse them.
  */
-export function runStatus({ executed, cases, budgetExhausted, providerUnavailable, invalid }) {
+export function runStatus({ executed, cases, budgetExhausted, providerUnavailable, invalid, stage = 'continuation' }) {
   if (!executed) return 'not-executed'
   if (budgetExhausted) return 'budget-exhausted'
   if (providerUnavailable) return 'provider-unavailable'
   if (invalid || cases.length === 0) return 'invalid-benchmark'
   const valid = cases.filter(entry => entry.valid === true)
   if (valid.length === 0) return 'executed-failed'
+  // Writer-only has no task outcome: every valid row is a completed
+  // measurement of the writer, even when the writer's protocol was malformed.
+  // Its quality is reported in `writer`, not folded into task success.
+  if (stage === 'writer-only') {
+    return valid.length < cases.length ? 'executed-partial' : 'executed-success'
+  }
   if (valid.length < cases.length) return 'executed-partial'
   return valid.some(entry => entry.behaviour?.taskSuccess === true)
     ? 'executed-success'
@@ -467,14 +541,22 @@ export function runStatus({ executed, cases, budgetExhausted, providerUnavailabl
 }
 
 /** The two facts a reader must not conflate, computed from the same rows. */
-export function runQuality(cases) {
+export function runQuality(cases, stage = 'continuation') {
   const valid = cases.filter(entry => entry.valid === true)
   const success = valid.filter(entry => entry.behaviour?.taskSuccess === true)
+  const contract = valid.filter(entry => entry.behaviour?.contractSuccess === true)
+  const hasTaskOutcome = stage !== 'writer-only'
   return {
     measurementValid: valid.length > 0,
     validCases: valid.length,
     invalidCases: cases.length - valid.length,
     taskSuccesses: success.length,
-    taskSuccessRate: valid.length === 0 ? null : success.length / valid.length,
+    taskSuccessRate: !hasTaskOutcome || valid.length === 0 ? null : success.length / valid.length,
+    contractSuccesses: contract.length,
+    contractSuccessRate: !hasTaskOutcome || valid.length === 0 ? null : contract.length / valid.length,
+    functionalFailures: valid.filter(entry => entry.failures?.task?.assessed === true
+      && entry.behaviour?.functionalSuccess === false).length,
+    processViolations: valid.filter(entry => entry.behaviour?.processViolation === true).length,
+    falseVerificationClaims: valid.filter(entry => entry.behaviour?.falseVerificationClaim === true).length,
   }
 }
