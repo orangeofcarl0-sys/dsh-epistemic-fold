@@ -49,6 +49,7 @@ export const EpistemicFoldPluginConfig: z<EpistemicFoldConfig> = z.object({
   // on the z.any() block below).
   semanticContinuity: z.any(),
   semanticWorkingSetTokens: z.any(),
+  semanticCheckpointTokens: z.any(),
   semanticRoot: z.string(),
   bundleRoot: z.string(),
   // The rest of the EF-owned vocabulary (`efOwnedConfigKeys()`). Declared so the

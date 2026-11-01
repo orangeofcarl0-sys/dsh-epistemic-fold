@@ -76,6 +76,11 @@ export interface ResolvedEpistemicFoldConfig {
   readonly semanticContinuity: SemanticContinuityMode
   /** Token budget for the carried working set; 512-2048 is the measured range. */
   readonly semanticWorkingSetTokens: number
+  /**
+   * Budget for the COMPLETE checkpoint body (marker, changed delta, carried
+   * state, rationale). Reported, never enforced by deleting pinned state.
+   */
+  readonly semanticCheckpointTokens: number
   /** Durable semantic journal root; derived next to the bundle root by default. */
   readonly semanticRoot: string
   /** Hint budget stated to the model; see `EpistemicFoldConfig.rationaleHintTokens`. */
@@ -216,6 +221,9 @@ const DEFAULT_SEMANTIC_CONTINUITY: SemanticContinuityMode = 'off'
 const DEFAULT_SEMANTIC_WORKING_SET_TOKENS = 1024
 const SEMANTIC_WORKING_SET_MIN = 128
 const SEMANTIC_WORKING_SET_MAX = 8192
+const DEFAULT_SEMANTIC_CHECKPOINT_TOKENS = 4096
+const SEMANTIC_CHECKPOINT_MIN = 512
+const SEMANTIC_CHECKPOINT_MAX = 65_536
 
 /** Default HINT for the rationale instruction. NOT the generation budget: the real budget is
  * derived from the folded span by `rationaleOutputFor` and is several times larger, because the
@@ -261,6 +269,8 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   semanticContinuity?: SemanticContinuityMode
   /** Working-set token budget for the carried state; 1024 by default. */
   semanticWorkingSetTokens?: number
+  /** Whole-checkpoint token budget, for capacity reporting; 4096 by default. */
+  semanticCheckpointTokens?: number
   /** Durable semantic journal directory; `../semantic` next to `bundleRoot`. */
   semanticRoot?: string
   /**
@@ -397,6 +407,15 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
       + `[${SEMANTIC_WORKING_SET_MIN}, ${SEMANTIC_WORKING_SET_MAX}]`,
     )
   }
+  const semanticCheckpointTokens = expanded.semanticCheckpointTokens ?? DEFAULT_SEMANTIC_CHECKPOINT_TOKENS
+  if (!Number.isInteger(semanticCheckpointTokens)
+    || semanticCheckpointTokens < SEMANTIC_CHECKPOINT_MIN
+    || semanticCheckpointTokens > SEMANTIC_CHECKPOINT_MAX) {
+    throw new Error(
+      `epistemic-fold: semanticCheckpointTokens must be an integer in `
+      + `[${SEMANTIC_CHECKPOINT_MIN}, ${SEMANTIC_CHECKPOINT_MAX}]`,
+    )
+  }
   const bundleRoot = expanded.bundleRoot ?? DEFAULT_BUNDLE_ROOT
   const semanticRoot = expanded.semanticRoot ?? join(dirname(bundleRoot), 'semantic')
   const leafAdmission = expanded.leafAdmission ?? DEFAULT_LEAF_ADMISSION
@@ -465,6 +484,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     semanticMode,
     semanticContinuity,
     semanticWorkingSetTokens,
+    semanticCheckpointTokens,
     semanticRoot,
     rationaleHintTokens,
     bundleRoot,

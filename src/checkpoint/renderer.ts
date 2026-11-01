@@ -241,6 +241,61 @@ export interface SemanticCheckpointInput {
   /** The compiled, bounded carried state; empty when nothing is carried. */
   readonly workingSetText: string
   readonly rationale?: string
+  /**
+   * A visible degradation statement (blocked continuity, over-budget
+   * checkpoint). Rendered near the top so it cannot be mistaken for narrative.
+   */
+  readonly notice?: string
+}
+
+/** The exact section strings of a temporal checkpoint, for capacity accounting. */
+export interface TemporalSections {
+  readonly marker: string
+  readonly notice: string
+  readonly changed: string
+  readonly carried: string
+  readonly rationale: string
+}
+
+/**
+ * Build a temporal checkpoint's sections without joining them.
+ *
+ * Capacity accounting prices these exact strings, so the reported components
+ * cannot drift from what actually lands on the surface.
+ *
+ * @param input - the fold's identity, changed anchors, carried state, rationale.
+ * @returns one string per section; an absent section is the empty string.
+ */
+export function renderTemporalSections(input: SemanticCheckpointInput): TemporalSections {
+  const marker = encodeCheckpointMarker({ checkpointId: input.checkpointId, mode: input.mode })
+
+  const noticeText = input.notice?.trim() ?? ''
+  const notice = noticeText.length === 0
+    ? ''
+    : ['Semantic status', ...noticeText.split('\n').map(line => `- ${line}`)].join('\n')
+
+  const changed = input.changed.length === 0
+    ? ''
+    : [
+        'Changed in this fold',
+        ...input.changed.map(anchor =>
+          anchor.kind === 'failure' ? renderFailureLine(anchor) : renderAnchorLine(anchor)),
+      ].join('\n')
+
+  const carriedText = input.workingSetText.trim()
+  // The heading is the temporal contract. It rides on every checkpoint, so it
+  // survives the `legacy` framing mode where no system section exists to say
+  // it once.
+  const carried = carriedText.length === 0
+    ? ''
+    : ['State from earlier folds (later checkpoints supersede it)', carriedText].join('\n')
+
+  const rationaleText = input.rationale?.trim() ?? ''
+  const rationale = rationaleText.length === 0
+    ? ''
+    : ['Rationale', ...rationaleText.split('\n').map(line => `- ${line}`)].join('\n')
+
+  return { marker, notice, changed, carried, rationale }
 }
 
 /**
@@ -270,28 +325,8 @@ export interface SemanticCheckpointInput {
  * @returns the unframed checkpoint body.
  */
 export function renderTemporalCheckpoint(input: SemanticCheckpointInput): string {
-  const lines: string[] = [encodeCheckpointMarker({ checkpointId: input.checkpointId, mode: input.mode })]
-
-  if (input.changed.length > 0) {
-    lines.push('', 'Changed in this fold')
-    for (const anchor of input.changed) {
-      lines.push(anchor.kind === 'failure' ? renderFailureLine(anchor) : renderAnchorLine(anchor))
-    }
-  }
-
-  const carried = input.workingSetText.trim()
-  if (carried.length > 0) {
-    // The heading is the temporal contract. It rides on every checkpoint, so it
-    // survives the `legacy` framing mode where no system section exists to say
-    // it once.
-    lines.push('', 'State from earlier folds (later checkpoints supersede it)', carried)
-  }
-
-  const rationale = input.rationale?.trim() ?? ''
-  if (rationale.length > 0) {
-    lines.push('', 'Rationale')
-    for (const line of rationale.split('\n')) lines.push(`- ${line}`)
-  }
-
-  return lines.join('\n')
+  const sections = renderTemporalSections(input)
+  return [sections.marker, sections.notice, sections.changed, sections.carried, sections.rationale]
+    .filter(section => section.length > 0)
+    .join('\n\n')
 }

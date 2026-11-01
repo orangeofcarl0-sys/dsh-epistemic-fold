@@ -101,6 +101,13 @@ export type FoldAbortReason =
   | 'different-body'
   | 'summary-without-replacement'
   | 'compaction-ended-without-summary'
+  /**
+   * A compaction opened, the process is no longer executing it, and the log
+   * carries neither a summary nor a close marker. Basic's commit block is
+   * synchronous and cannot resume after a restart, so this is a terminated
+   * attempt, not an operation that may still land.
+   */
+  | 'compaction-crashed-open'
 
 /** The proof's verdict. Only `committed` may activate semantic state. */
 export type FoldProofResult =
@@ -159,6 +166,8 @@ interface CompactionSummary {
   readonly seq: number
   readonly compactionId: string
   readonly shadowedSeqs: readonly number[]
+  /** The replacement range the summary itself was built for. */
+  readonly shadowedRange?: { readonly start: number; readonly end: number }
   readonly text: string
   readonly event: SessionEvent
 }
@@ -184,12 +193,20 @@ function numberArray(value: unknown): readonly number[] | undefined {
   return out
 }
 
+function shadowedRangeOf(value: unknown): { readonly start: number; readonly end: number } | undefined {
+  if (value === null || typeof value !== 'object') return undefined
+  const range = value as { start?: unknown; end?: unknown }
+  if (typeof range.start !== 'number' || !Number.isSafeInteger(range.start) || range.start < 0) return undefined
+  if (typeof range.end !== 'number' || !Number.isSafeInteger(range.end) || range.end < 0) return undefined
+  return { start: range.start, end: range.end }
+}
+
 function summariesOf(events: readonly SessionEvent[]): readonly CompactionSummary[] {
   const out: CompactionSummary[] = []
   for (const event of events) {
     const text = summaryTextOf(event)
     if (text === undefined) continue
-    const data = event.data as { compactionId?: unknown; shadowedSeqs?: unknown }
+    const data = event.data as { compactionId?: unknown; shadowedSeqs?: unknown; shadowedRange?: unknown }
     if (typeof data.compactionId !== 'string') continue
     const shadowedSeqs = numberArray(data.shadowedSeqs)
     if (shadowedSeqs === undefined) continue
@@ -197,6 +214,9 @@ function summariesOf(events: readonly SessionEvent[]): readonly CompactionSummar
       seq: Number(event.seq),
       compactionId: data.compactionId,
       shadowedSeqs,
+      ...(shadowedRangeOf(data.shadowedRange) === undefined
+        ? {}
+        : { shadowedRange: shadowedRangeOf(data.shadowedRange)! }),
       text,
       event,
     })
@@ -231,23 +251,58 @@ function endsOf(events: readonly SessionEvent[]): readonly CompactionEnd[] {
   return out
 }
 
-/** Whether a replacement event is the one Basic's commit protocol appends. */
-function isReplacementFor(
+/**
+ * Whether one replacement event is EXACTLY the transaction this summary
+ * requires, or why it is not.
+ *
+ * Basic's `commitCompactionBody` writes, without yielding:
+ *
+ *   surfaceOp:      { op: 'replace', startSeq: shadowedRange.start, endSeq: shadowedRange.end }
+ *   source:         { kind: 'compact-checkpoint', compactionId }
+ *   sourceEventSeqs:[startSeq, summarySeq, ...shadowedSeqs]
+ *
+ * A containment check (`includes`) is not enough: any replacement that cited
+ * the same two events would pass, including one for a different range or a
+ * different compaction. The comparison here is exact, in order, and includes
+ * the checkpoint source's compaction identity.
+ *
+ * @returns `undefined` when the event is the required replacement, else a detail.
+ */
+function replacementProblem(
   session: Session,
   event: SessionEvent | undefined,
   summary: CompactionSummary,
   startSeq: number,
-): boolean {
-  if (event === undefined || event.type !== 'user/message') return false
+): string | undefined {
+  if (event === undefined) return 'the replacement event is absent'
+  if (event.type !== 'user/message') return `seq ${Number(event.seq)} is a ${event.type}, not a checkpoint message`
   const surfaceOp = (event as { surfaceOp?: unknown }).surfaceOp
-  if (surfaceOp === null || typeof surfaceOp !== 'object'
-    || (surfaceOp as { op?: unknown }).op !== 'replace') return false
+  if (surfaceOp === null || typeof surfaceOp !== 'object') return 'the replacement carries no surfaceOp'
+  const op = surfaceOp as { op?: unknown; startSeq?: unknown; endSeq?: unknown }
+  if (op.op !== 'replace') return 'the surface operation is not a replace'
+  const expectedRange = summary.shadowedRange
+  if (expectedRange === undefined) return 'the summary carries no shadowedRange to compare against'
+  if (op.startSeq !== expectedRange.start || op.endSeq !== expectedRange.end) {
+    return `the replacement range ${String(op.startSeq)}..${String(op.endSeq)} is not the summary's `
+      + `${expectedRange.start}..${expectedRange.end}`
+  }
   const message = session.deriveEventMessage(event)
-  if (message === null || message.source.kind !== 'compact-checkpoint') return false
+  if (message === null) return 'the replacement does not derive a message'
+  if (message.source.kind !== 'compact-checkpoint') return 'the replacement source is not a compact-checkpoint'
+  const sourceCompactionId = (message.source as { compactionId?: unknown }).compactionId
+  if (sourceCompactionId !== summary.compactionId) {
+    return `the replacement source names compaction ${String(sourceCompactionId)}, `
+      + `not ${summary.compactionId}`
+  }
   const cited = (event as { sourceEventSeqs?: unknown }).sourceEventSeqs
-  if (!Array.isArray(cited)) return false
-  const seqs = cited.map(value => Number(value))
-  return seqs.includes(startSeq) && seqs.includes(summary.seq)
+  if (!Array.isArray(cited)) return 'the replacement carries no sourceEventSeqs'
+  const expected = [startSeq, summary.seq, ...summary.shadowedSeqs]
+  const actual = cited.map(value => Number(value))
+  if (!sameSeqList(actual, expected)) {
+    return `the replacement cites [${actual.join(',')}], not the transaction's ordered `
+      + `[${expected.join(',')}]`
+  }
+  return undefined
 }
 
 /** The source content hash, reproducing the archive's own retire-then-hash rule. */
@@ -333,7 +388,8 @@ export function proveFoldCommit(
         return {
           status: 'aborted',
           reason: 'compaction-ended-without-summary',
-          detail: `compaction ${own.compactionId} ended at seq ${ended.seq} without a summary for this packet`,
+          detail: `compaction ${own.compactionId} ended at seq ${ended.seq} without a summary for this packet`
+            + (ended.error === undefined ? '' : `: ${ended.error}`),
         }
       }
       const laterSummary = summaries.find(summary =>
@@ -346,12 +402,27 @@ export function proveFoldCommit(
           summarySeq: laterSummary.seq,
         }
       }
+      // An open compaction with no terminal close is only still-runnable while
+      // THIS process is inside it. After a restart Basic's synchronous commit
+      // block cannot resume, so the attempt is terminated rather than
+      // indefinitely `unresolved` (which would keep a stale in-flight packet in
+      // the journal forever).
+      if (options.inFlight !== true) {
+        return {
+          status: 'aborted',
+          reason: 'compaction-crashed-open',
+          detail: `compaction ${own.compactionId} opened at seq ${own.seq} and never wrote a summary; `
+            + 'the transaction cannot resume after a restart',
+        }
+      }
+      return {
+        status: 'unresolved',
+        detail: `compaction ${own.compactionId} is still open and has not written this packet's body`,
+      }
     }
     return {
       status: 'unresolved',
-      detail: own === undefined
-        ? `no exact summary for checkpoint ${subject.checkpointId} and no compaction owns seq ${subject.stagedAtSeq}`
-        : `compaction ${own.compactionId} is still open and has not written this packet's body`,
+      detail: `no exact summary for checkpoint ${subject.checkpointId} and no compaction owns seq ${subject.stagedAtSeq}`,
     }
   }
 
@@ -371,6 +442,20 @@ export function proveFoldCommit(
         status: 'conflict',
         detail: `the committed span ${summary.shadowedSeqs.join(',')} is not the packet's span `
           + `${subject.foldedSeqs.join(',')}`,
+      }
+    }
+    if (summary.shadowedSeqs.length === 0) {
+      return { status: 'conflict', detail: 'the summary replaced an empty span' }
+    }
+    if (summary.shadowedRange === undefined) {
+      return { status: 'conflict', detail: 'the summary carries no shadowedRange' }
+    }
+    if (summary.shadowedRange.start !== summary.shadowedSeqs[0]
+      || summary.shadowedRange.end !== summary.shadowedSeqs[summary.shadowedSeqs.length - 1]) {
+      return {
+        status: 'conflict',
+        detail: `the summary's range ${summary.shadowedRange.start}..${summary.shadowedRange.end} `
+          + 'is not the first and last of its shadowedSeqs',
       }
     }
     const source = sourceDigestOf(session, summary.shadowedSeqs)
@@ -393,7 +478,20 @@ export function proveFoldCommit(
     if (replacement === undefined) {
       // The summary is the last event. In-process this can be the microtask
       // between Basic's two synchronous appends; after a restart it is a
-      // partial commit that can never resume.
+      // partial commit that can never resume. A terminal close marker settles
+      // the question even if a stale in-process `inFlight` marker remains.
+      const closed = ends.find(candidate =>
+        candidate.compactionId === summary.compactionId && candidate.seq > summary.seq)
+      if (closed !== undefined) {
+        return {
+          status: 'aborted',
+          reason: 'summary-without-replacement',
+          detail: 'the summary landed but the transaction closed without a replacement; the bundle is '
+            + 'durable and the fold did not commit'
+            + (closed.error === undefined ? '' : `: ${closed.error}`),
+          summarySeq: summary.seq,
+        }
+      }
       return options.inFlight === true
         ? { status: 'unresolved', detail: `waiting for the replacement after summary seq ${summary.seq}` }
         : {
@@ -404,11 +502,15 @@ export function proveFoldCommit(
             summarySeq: summary.seq,
           }
     }
-    if (!isReplacementFor(session, replacement, summary, start.seq)) {
+    const problem = replacementProblem(session, replacement, summary, start.seq)
+    if (problem !== undefined) {
+      const closed = ends.find(candidate =>
+        candidate.compactionId === summary.compactionId && candidate.seq > summary.seq)
       return {
         status: 'aborted',
         reason: 'summary-without-replacement',
-        detail: `seq ${replacementSeq} is not the replacement this summary requires`,
+        detail: `seq ${replacementSeq} is not the replacement this summary requires: ${problem}`
+          + (closed?.error === undefined ? '' : `; the transaction closed with: ${closed.error}`),
         summarySeq: summary.seq,
       }
     }

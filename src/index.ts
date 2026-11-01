@@ -224,7 +224,30 @@ export {
   packetIdOf,
   packetStatusOf,
 } from './semantic/journal.ts'
-export type { JournalRead, SemanticJournal } from './semantic/journal.ts'
+export type { JournalIssue, JournalRead, JournalReadState, SemanticJournal } from './semantic/journal.ts'
+export {
+  ANCHOR_KINDS,
+  ANCHOR_LIFECYCLES,
+  AUTHORITY_DOMAINS,
+  FAILURE_STATES,
+  isAnchorOp,
+  validateOps,
+} from './semantic/ops.ts'
+export type { OpsValidation, OpsValidationFailure } from './semantic/ops.ts'
+export {
+  packetIdentityProblem,
+  receiptBindingProblem,
+  sameFoldProof,
+  validateSemanticCommit,
+} from './semantic/integrity.ts'
+export type {
+  SemanticCommitValidation,
+  SemanticIntegrityFailure,
+  ValidateSemanticCommitOptions,
+  ValidatedSemanticCommit,
+} from './semantic/integrity.ts'
+export { blockedNotice, mayCommitSemantics } from './semantic/admission.ts'
+export type { ContinuityAdmission } from './semantic/admission.ts'
 export { classifyPacket, healthOf, summaryTextOf } from './semantic/commit.ts'
 export type { ClassifyPacketOptions, PacketCommitState } from './semantic/commit.ts'
 export { proveFoldCommit } from './semantic/proof.ts'
@@ -236,7 +259,7 @@ export type {
   HistoricalFoldProof,
 } from './semantic/proof.ts'
 export { replayWithSemanticCommits } from './semantic/replay.ts'
-export type { SemanticCommit, SemanticReplay } from './semantic/replay.ts'
+export type { SemanticCommit, SemanticReplay, SemanticReplayOptions } from './semantic/replay.ts'
 export {
   projectSemanticOps,
   projectSemanticRecords,
@@ -248,14 +271,19 @@ export type { SemanticRecordPayload } from './semantic/record.ts'
 export { changedAnchors, changedOverflowLine, MAX_CHANGED_ANCHORS } from './semantic/changes.ts'
 export type { ChangedSelection } from './semantic/changes.ts'
 export {
+  DEFAULT_CHECKPOINT_TOKENS,
   DEFAULT_WORKING_SET_TOKENS,
   compileWorkingSet,
+  describeCheckpointCapacity,
   describeWorkingSetCompilation,
+  measureCheckpointCapacity,
   residencyOf,
 } from './semantic/working-set-compiler.ts'
 export type {
+  CheckpointCapacity,
   CompileWorkingSetOptions,
   CompiledWorkingSet,
+  MeasureCheckpointOptions,
   WorkingSetEstimateBasis,
 } from './semantic/working-set-compiler.ts'
 export type {

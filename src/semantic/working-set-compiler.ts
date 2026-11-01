@@ -45,7 +45,12 @@
  */
 
 import type { Anchor, FoldCurrentState } from '../state/state.ts'
-import { renderAnchorLine, renderFailureLine } from '../checkpoint/renderer.ts'
+import {
+  renderAnchorLine,
+  renderFailureLine,
+  renderTemporalSections,
+} from '../checkpoint/renderer.ts'
+import type { FoldMode } from '../types.ts'
 import type { SemanticResidency } from './types.ts'
 
 /** Where the token figure came from. */
@@ -57,6 +62,8 @@ export interface CompiledWorkingSet {
   readonly text: string
   /** Estimated tokens of `text`, excluding the checkpoint marker. */
   readonly tokens: number
+  /** Estimated tokens of the pinned section alone. */
+  readonly pinnedTokens: number
   readonly budgetTokens: number
   /**
    * `true` when PINNED state alone exceeds the budget. The body still contains
@@ -92,6 +99,16 @@ export interface CompileWorkingSetOptions {
 
 /** Default budget: the middle of the range this round intends to test. */
 export const DEFAULT_WORKING_SET_TOKENS = 1024
+
+/**
+ * Default budget for the WHOLE checkpoint, not only carried state.
+ *
+ * The working-set budget answers "how much earlier state may I repeat". It does
+ * not bound the changed delta, the rationale, or the marker/framing, so a fold
+ * could satisfy `WorkingSet.overflow === false` while the complete body was
+ * twice this size. This is the second, honest ceiling.
+ */
+export const DEFAULT_CHECKPOINT_TOKENS = 4096
 
 /**
  * Fallback pricer: four characters per token.
@@ -208,7 +225,8 @@ export function compileWorkingSet(options: CompileWorkingSetOptions): CompiledWo
   // --- Pinned: all of it, or an explicit overflow.
   const pinnedLines = pinned.map(lineOf)
   const pinnedText = section('Pinned (still in force)', pinnedLines)
-  let tokens = pinnedText.length === 0 ? 0 : estimate(pinnedText)
+  const pinnedTokens = pinnedText.length === 0 ? 0 : estimate(pinnedText)
+  let tokens = pinnedTokens
   const overflow = pinnedLines.length > 0 && tokens > budget
 
   // --- Working: fill the BUDGET, newest first. Nothing is dropped silently:
@@ -251,6 +269,7 @@ export function compileWorkingSet(options: CompileWorkingSetOptions): CompiledWo
   return {
     text,
     tokens: text.length === 0 ? 0 : estimate(text),
+    pinnedTokens,
     budgetTokens: budget,
     overflow,
     pinned,
@@ -258,6 +277,93 @@ export function compileWorkingSet(options: CompileWorkingSetOptions): CompiledWo
     omitted,
     estimateBasis: basis,
   }
+}
+
+/** The whole-checkpoint accounting: every section, not only carried state. */
+export interface CheckpointCapacity {
+  readonly changedTokens: number
+  readonly carriedTokens: number
+  readonly rationaleTokens: number
+  readonly framingTokens: number
+  readonly noticeTokens: number
+  /** Measured on the complete body; not the sum of the components. */
+  readonly totalCheckpointTokens: number
+  readonly pinnedTokens: number
+  readonly budgetTokens: number
+  readonly totalBudgetTokens: number
+  /** Pinned state alone exceeds the WORKING-SET budget; it is still shown in full. */
+  readonly pinnedOverflow: boolean
+  /** The complete body exceeds the whole-checkpoint budget. */
+  readonly totalOverflow: boolean
+  readonly estimateBasis: WorkingSetEstimateBasis
+}
+
+/** Options for {@link measureCheckpointCapacity}. */
+export interface MeasureCheckpointOptions {
+  readonly checkpointId: string
+  readonly mode: FoldMode
+  readonly changed: readonly Anchor[]
+  readonly workingSetText: string
+  readonly rationale?: string
+  readonly notice?: string
+  readonly workingSet: CompiledWorkingSet
+  readonly totalBudgetTokens?: number
+  /** Prices one string; the same estimator the working set used. */
+  readonly estimate?: (text: string) => number
+}
+
+/**
+ * Price the COMPLETE checkpoint, using the renderer's own section strings.
+ *
+ * The components are priced separately for diagnosis and the total is measured
+ * on the joined body, because tokenizers are not additive across separators.
+ *
+ * @param options - the exact sections and the budgets they are compared to.
+ * @returns the capacity report; never truncates anything.
+ */
+export function measureCheckpointCapacity(options: MeasureCheckpointOptions): CheckpointCapacity {
+  const estimate = options.estimate ?? charsPerFour
+  const basis: WorkingSetEstimateBasis = options.estimate === undefined
+    ? options.workingSet.estimateBasis
+    : 'token-meter'
+  const sections = renderTemporalSections({
+    checkpointId: options.checkpointId,
+    mode: options.mode,
+    changed: options.changed,
+    workingSetText: options.workingSetText,
+    ...(options.rationale === undefined ? {} : { rationale: options.rationale }),
+    ...(options.notice === undefined ? {} : { notice: options.notice }),
+  })
+  const price = (text: string): number => text.length === 0 ? 0 : estimate(text)
+  const full = [sections.marker, sections.notice, sections.changed, sections.carried, sections.rationale]
+    .filter(section => section.length > 0)
+    .join('\n\n')
+  const totalBudget = options.totalBudgetTokens ?? DEFAULT_CHECKPOINT_TOKENS
+  const totalCheckpointTokens = price(full)
+  return {
+    changedTokens: price(sections.changed),
+    carriedTokens: price(sections.carried),
+    rationaleTokens: price(sections.rationale),
+    framingTokens: price(sections.marker),
+    noticeTokens: price(sections.notice),
+    totalCheckpointTokens,
+    pinnedTokens: options.workingSet.pinnedTokens,
+    budgetTokens: options.workingSet.budgetTokens,
+    totalBudgetTokens: totalBudget,
+    pinnedOverflow: options.workingSet.overflow,
+    totalOverflow: totalCheckpointTokens > totalBudget,
+    estimateBasis: basis,
+  }
+}
+
+/** One-line description for telemetry; counts, never content. */
+export function describeCheckpointCapacity(capacity: CheckpointCapacity): string {
+  return `checkpoint ${capacity.totalCheckpointTokens}/${capacity.totalBudgetTokens} tokens `
+    + `[${capacity.estimateBasis}] changed=${capacity.changedTokens} carried=${capacity.carriedTokens} `
+    + `rationale=${capacity.rationaleTokens} framing=${capacity.framingTokens} `
+    + `notice=${capacity.noticeTokens}`
+    + (capacity.pinnedOverflow ? ' PINNED-OVERFLOW' : '')
+    + (capacity.totalOverflow ? ' TOTAL-OVERFLOW' : '')
 }
 
 /** Render one titled section; an empty list yields an empty string. */

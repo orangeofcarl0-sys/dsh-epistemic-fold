@@ -53,6 +53,23 @@ export function stateKeyText(key: StateKey): string {
   return `${key.namespace}/${key.entity}/${key.property}`
 }
 
+/**
+ * The bounded task identity a semantic anchor belongs to, when it is narrower
+ * than the whole task.
+ *
+ * Stored ON the anchor (and encoded into its state coordinate) so two tasks that
+ * both use a coordinate named `timeout` cannot silently supersede each other.
+ * Every field is optional because most claims are task-wide; absence keeps the
+ * unscoped coordinate, which is what pre-R32 anchors already use.
+ */
+export interface AnchorScope {
+  readonly workspace?: string
+  readonly branch?: string
+  readonly file?: string
+  readonly symbol?: string
+  readonly revision?: string
+}
+
 /** Provenance pointer to one committed session event. */
 export interface EventRef {
   /** Same-session refs omit the id: the fold context implies it. */
@@ -81,6 +98,8 @@ export interface Anchor {
   readonly sourceRefs: readonly EventRef[]
   /** Set when a newer anchor replaced this one at the same state key. */
   readonly supersededBy?: string
+  /** The task identity this claim was scoped to, when it was narrower than the task. */
+  readonly scope?: AnchorScope
 }
 
 /** The bounded current state (RFC §13): heads only, no history lineage. */

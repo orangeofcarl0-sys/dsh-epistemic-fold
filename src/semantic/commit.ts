@@ -84,6 +84,10 @@ export function classifyPacket(
         ...(verdict.detail === undefined ? {} : { detail: verdict.detail }),
       }
     case 'aborted':
+      // Only a summary that landed WITHOUT its replacement leaves a durable
+      // archive nobody saw. Every other abort (another body won, the
+      // transaction closed, or the open transaction died with the process) is
+      // an abandoned attempt, not an archived checkpoint.
       return verdict.reason === 'summary-without-replacement'
         ? { status: 'archived-only', summarySeq: verdict.summarySeq ?? 0, detail: verdict.detail }
         : { status: 'abandoned', detail: verdict.detail }

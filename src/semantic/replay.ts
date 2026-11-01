@@ -9,33 +9,47 @@
  * 150: the replay order would be "history, then all remembered conclusions",
  * not the order the facts entered the log.
  *
- * This module re-folds the log and applies each verified commit's operations
- * immediately after the replacement event at its recorded `commitOrder`. The
- * reducer is the projection's own (`reduceSessionEvent`), so this is a
- * different ORDER, not a second state model.
+ * This module re-folds the log and applies each VERIFIED commit's operations
+ * immediately after the replacement event at its recorded `commitOrder`. It
+ * accepts only `ValidatedSemanticCommit` values, produced by the one integrity
+ * gate in `integrity.ts`; a caller cannot hand it arbitrary operations.
  *
  * @module dsh-epistemic-fold/semantic/replay
  */
 
 import type { Session } from '@deepseek-ai/dsh-session'
 import { emptyCurrentState } from '../state/state.ts'
-import type { EfAnchorEventData, FoldCurrentState } from '../state/state.ts'
+import type { FoldCurrentState } from '../state/state.ts'
 import { reduceSessionEvent } from '../state/projection.ts'
+import type { ValidatedSemanticCommit } from './integrity.ts'
 import { applyOps } from './plan.ts'
 
-/** One verified commit, placed at its historical replacement seq. */
-export interface SemanticCommit {
-  readonly packetId: string
-  readonly atSeq: number
-  readonly ops: readonly EfAnchorEventData[]
-}
+/**
+ * One verified commit, placed at its historical replacement seq.
+ *
+ * Kept as an alias of the integrity value rather than a separate shape: a
+ * second struct with the same fields would invite a call site to construct one
+ * without validation.
+ */
+export type SemanticCommit = ValidatedSemanticCommit
 
 /** The replayed state plus the commits that could not be placed on the log. */
 export interface SemanticReplay {
   readonly state: FoldCurrentState
   readonly applied: readonly SemanticCommit[]
-  /** Commits whose `atSeq` does not exist in this log. Never applied. */
+  /** Commits whose `commitOrder` does not exist in this log. Never applied. */
   readonly unplaced: readonly SemanticCommit[]
+}
+
+/** Options for {@link replayWithSemanticCommits}. */
+export interface SemanticReplayOptions {
+  /**
+   * Fold and apply only through this inclusive seq.
+   *
+   * A fork needs the state at its inherited cut, not at the child's current
+   * tail. `undefined` means the whole log.
+   */
+  readonly uptoSeq?: number
 }
 
 /**
@@ -49,25 +63,30 @@ export interface SemanticReplay {
  *
  * @param session - the log to replay.
  * @param commits - verified commits, already proven against this log.
+ * @param options - an optional inclusive upper bound.
  * @returns the state and a report of commits that could not be placed.
  */
 export function replayWithSemanticCommits(
   session: Session,
   commits: readonly SemanticCommit[],
+  options: SemanticReplayOptions = {},
 ): SemanticReplay {
+  const upto = options.uptoSeq
   const events = session.snapshotEvents()
+    .filter(event => upto === undefined || Number(event.seq) <= upto)
   const seqs = new Set(events.map(event => Number(event.seq)))
   const bySeq = new Map<number, SemanticCommit[]>()
   const applied: SemanticCommit[] = []
   const unplaced: SemanticCommit[] = []
   for (const commit of commits) {
-    if (!seqs.has(commit.atSeq)) {
+    if (upto !== undefined && commit.commitOrder > upto) continue
+    if (!seqs.has(commit.commitOrder)) {
       unplaced.push(commit)
       continue
     }
-    const bucket = bySeq.get(commit.atSeq) ?? []
+    const bucket = bySeq.get(commit.commitOrder) ?? []
     bucket.push(commit)
-    bySeq.set(commit.atSeq, bucket)
+    bySeq.set(commit.commitOrder, bucket)
   }
   for (const bucket of bySeq.values()) {
     bucket.sort((left, right) => left.packetId.localeCompare(right.packetId))
@@ -79,7 +98,7 @@ export function replayWithSemanticCommits(
     const bucket = bySeq.get(Number(event.seq))
     if (bucket === undefined) continue
     for (const commit of bucket) {
-      state = applyOps(state, commit.ops)
+      state = applyOps(state, commit.operations)
       applied.push(commit)
     }
   }

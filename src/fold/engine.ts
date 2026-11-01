@@ -108,15 +108,24 @@ import { semanticRecordsIn } from '../semantic/record.ts'
 import { proveFoldCommit } from '../semantic/proof.ts'
 import type { HistoricalFoldProof } from '../semantic/proof.ts'
 import { replayWithSemanticCommits } from '../semantic/replay.ts'
-import type { SemanticCommit } from '../semantic/replay.ts'
+import { receiptBindingProblem, validateSemanticCommit } from '../semantic/integrity.ts'
+import type {
+  SemanticCommitValidation,
+  ValidatedSemanticCommit,
+} from '../semantic/integrity.ts'
+import type { ContinuityAdmission } from '../semantic/admission.ts'
+import { blockedNotice } from '../semantic/admission.ts'
 import { applyOps, planCommit } from '../semantic/plan.ts'
 import { changedAnchors, changedOverflowLine } from '../semantic/changes.ts'
 import { validateDeltas } from '../semantic/validate.ts'
-import { compileWorkingSet } from '../semantic/working-set-compiler.ts'
+import { compileWorkingSet, measureCheckpointCapacity } from '../semantic/working-set-compiler.ts'
 import { parseWriterOutput, SEMANTIC_WRITER_INSTRUCTION } from '../semantic/writer.ts'
 import { renderTemporalCheckpoint } from '../checkpoint/renderer.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
-import { SEMANTIC_SCHEMA_VERSION } from '../semantic/types.ts'
+import {
+  LEGACY_SEMANTIC_SCHEMA_VERSION,
+  SEMANTIC_SCHEMA_VERSION,
+} from '../semantic/types.ts'
 import type {
   AcceptedDelta,
   ReconciliationReport,
@@ -340,8 +349,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Checkpoints whose fold is executing in THIS process (not after a restart). */
   private readonly inFlightCheckpoints = new Set<string>()
   /**
-   * Forked sessions whose parent semantic seed could not be established.
-   * Active writing is refused for them; the reason is shown in `/context`.
+   * Sessions whose semantic state is not trustworthy ENOUGH to write on top of
+   * (unreadable journal, orphan receipt, packet/receipt contradiction, partial
+   * fork inheritance, unverifiable migration). The reason is shown in the
+   * checkpoint and `/context`; history folds still run.
    */
   private readonly semanticBlocked = new Map<string, string>()
   /** The last compiled working set's accounting. */
@@ -1968,9 +1979,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // One registry probe per fold: the structured rendering path and the
     // semantic-mode choice read the same mounted state.
     const baseState = this.mountedState(session)
-    const mountedState = baseState === undefined
+    const admission = baseState === undefined
       ? undefined
-      : await this.semanticStateOf(session, baseState)
+      : await this.semanticAdmissionOf(session, baseState)
+    const mountedState = admission?.mode === 'active' ? admission.state : baseState
+    // A blocked admission is NOT the same as an empty semantic state. The fold
+    // still commits a deterministic checkpoint and history stays intact, but
+    // it stages no packet and the body must say why.
+    const blockedReason = admission?.mode === 'blocked' ? admission.reason : undefined
     if (this.efConfig.semanticContinuity === 'active' && mountedState === undefined) {
       // The deployment asked for semantic state but no projection is mounted.
       // The fold still runs on the legacy rendering path; saying so is better
@@ -2061,21 +2077,21 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       const continuity = this.efConfig.semanticContinuity
       const maxTokens = rationaleOutputFor(estimateSpanTokens(summarizationInput.messages))
       if (continuity === 'active') {
-        const blocked = this.semanticBlocked.get(String(session.id))
-        if (blocked !== undefined) {
-          // A fork whose parent seed could not be established must not WRITE
-          // new semantic state on top of an incomplete one. The fold still
-          // commits deterministically, and the body names the degradation so
-          // the model is not told the state is complete when it is not.
+        if (blockedReason !== undefined) {
+          // An unreadable or contradictory semantic store must not be written
+          // on top of. The fold still commits deterministically, and the body
+          // names the degradation so the model is not told the state is
+          // complete when it is not.
           activePlan = this.compileActiveFold({
             state: mountedState,
             foldedSeqs: orderedSurfaceSeqs,
             checkpointId: candidate.checkpointId,
             mode: candidate.mode,
-            handoff: `(semantic continuity withheld: ${blocked})`,
+            handoff: `(semantic continuity withheld: ${blockedReason})`,
+            notice: blockedNotice({ mode: 'blocked', reason: blockedReason }) ?? '',
           })
           this.writerHealthValue = 'partial'
-          this.writerHealthDetail = blocked
+          this.writerHealthDetail = blockedReason
         } else {
         // ONE call: the handoff IS the visible rationale, and the same response
         // carries the deltas. A second call would double the cost of every fold.
@@ -2386,6 +2402,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     checkpointId: string
     mode: FoldMode
     handoff: string | undefined
+    /** A degradation statement that must be visible in the body. */
+    notice?: string
     packet?: ActiveFoldPlan['packet']
   }): ActiveFoldPlan {
     const changed = changedAnchors(args.state, args.foldedSeqs)
@@ -2399,19 +2417,69 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     })
     const overflow = changedOverflowLine(changed.omitted.length) ?? ''
     const carried = [compiled.text, overflow].filter(part => part.length > 0).join('\n\n')
-    const text = renderTemporalCheckpoint({
+    const estimate = (text: string): number => this.estimateSemanticText(text)
+    const renderWith = (notice: string | undefined): string => renderTemporalCheckpoint({
       checkpointId: args.checkpointId,
       mode: args.mode,
       changed: changed.shown,
       workingSetText: carried,
       ...(args.handoff === undefined ? {} : { rationale: args.handoff }),
+      ...(notice === undefined || notice.length === 0 ? {} : { notice }),
     })
+    const baseNotice = args.notice?.trim()
+    let text = renderWith(baseNotice)
+    let capacity = measureCheckpointCapacity({
+      checkpointId: args.checkpointId,
+      mode: args.mode,
+      changed: changed.shown,
+      workingSetText: carried,
+      ...(args.handoff === undefined ? {} : { rationale: args.handoff }),
+      ...(baseNotice === undefined || baseNotice.length === 0 ? {} : { notice: baseNotice }),
+      workingSet: compiled,
+      totalBudgetTokens: this.efConfig.semanticCheckpointTokens,
+      estimate,
+    })
+    // A total overrun is REPORTED IN THE BODY, once. It does not trim pinned
+    // state and it does not repeat on every retry: the checkpoint is honest
+    // about its size and remains recoverable.
+    if (capacity.totalOverflow) {
+      const budgetLine =
+        `checkpoint-over-budget: ${capacity.totalCheckpointTokens} tokens against a `
+        + `${capacity.totalBudgetTokens}-token whole-checkpoint budget; pinned state was not trimmed`
+      const notice = [baseNotice, budgetLine].filter(
+        (line): line is string => line !== undefined && line.length > 0,
+      ).join('\n')
+      text = renderWith(notice)
+      capacity = measureCheckpointCapacity({
+        checkpointId: args.checkpointId,
+        mode: args.mode,
+        changed: changed.shown,
+        workingSetText: carried,
+        ...(args.handoff === undefined ? {} : { rationale: args.handoff }),
+        notice,
+        workingSet: compiled,
+        totalBudgetTokens: this.efConfig.semanticCheckpointTokens,
+        estimate,
+      })
+    }
     const workingSet: SemanticWorkingSetReport = {
       tokens: compiled.tokens,
       overflow: compiled.overflow,
       pinned: compiled.pinned.length,
       working: compiled.working.length,
       archived: compiled.omitted.length,
+      changedTokens: capacity.changedTokens,
+      carriedTokens: capacity.carriedTokens,
+      rationaleTokens: capacity.rationaleTokens,
+      framingTokens: capacity.framingTokens,
+      noticeTokens: capacity.noticeTokens,
+      totalCheckpointTokens: capacity.totalCheckpointTokens,
+      pinnedTokens: capacity.pinnedTokens,
+      budgetTokens: capacity.budgetTokens,
+      totalBudgetTokens: capacity.totalBudgetTokens,
+      pinnedOverflow: capacity.pinnedOverflow,
+      totalOverflow: capacity.totalOverflow,
+      estimateBasis: capacity.estimateBasis,
     }
     this.lastWorkingSetValue = workingSet
     return {
@@ -2483,70 +2551,154 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     this.lastSemanticPacketValue = staged
   }
 
-  /**
-   * The semantic view of current state for this fold.
-   *
-   * The journal is the sole authority. Every committed receipt is re-proven
-   * against THIS log — identity, span, source content and body — and then its
-   * operations are replayed at the fold's historical replacement seq, interleaved
-   * with the raw events. A receipt whose proof no longer matches the log is a
-   * CONFLICT: it is not applied, and it is not "repaired" by re-appending
-   * anything. The log may be an older backup; the journal may be newer.
-   *
-   * A packet with no receipt but a provable commit is the cross-store crash
-   * case (session committed, receipt missing). It is read as state; the
-   * reconciler writes the receipt on the next pass.
-   */
-  private async semanticStateOf(session: Session, base: FoldCurrentState): Promise<FoldCurrentState> {
-    if (this.efConfig.semanticContinuity !== 'active') return base
-    // A blocked fork has no trustworthy seed. Showing the child's later local
-    // rows alone would present an incomplete state as the current one.
-    if (this.semanticBlocked.has(String(session.id))) return base
-    let read: JournalRead
-    try {
-      read = await this.semanticJournal.list(session.id)
-    } catch {
-      return base
-    }
-    const commits: SemanticCommit[] = []
-    for (const packet of read.packets) {
-      if (packet.mode !== 'active') continue
-      const receipt = read.receipts.get(packet.packetId)
-      if (receipt !== undefined && receipt.outcome !== 'committed') continue
-      const verdict = await this.proofFor(session, packet)
-      if (verdict.status !== 'committed') continue
-      if (receipt?.outcome === 'committed'
-        && !sameProof(receipt.proof, verdict.proof)) continue
-      commits.push({
-        packetId: packet.packetId,
-        atSeq: verdict.proof.replacementSeq,
-        ops: packet.ops,
-      })
-    }
-    if (commits.length === 0) return base
-    const replay = replayWithSemanticCommits(session, commits)
-    // A receipt that proved committed when written but cannot be placed on
-    // THIS log must not be silently applied at the end. `replay` reports it;
-    // the reconciliation pass turns it into `conflict` health.
-    if (replay.unplaced.length > 0) return base
-    return replay.state
-  }
-
   /** Bundle lookup, verified; a missing/corrupt bundle is simply absent. */
   private async bundleFor(session: Session, checkpointId: string): Promise<CheckpointBundleV1 | undefined> {
     return await this.bundles.read(session.id, checkpointId).catch(() => null) ?? undefined
   }
 
-  /** Prove one packet against the log, with the in-process liveness marker. */
-  private async proofFor(
+  /** One journal read that distinguishes an I/O failure from an empty journal. */
+  private async journalRead(sessionId: SessionId): Promise<{ readonly read: JournalRead } | { readonly error: string }> {
+    try {
+      return { read: await this.semanticJournal.list(sessionId) }
+    } catch (error: unknown) {
+      return {
+        error: `semantic journal unreadable: ${error instanceof Error ? error.message : String(error)}`,
+      }
+    }
+  }
+
+  /**
+   * Validate every active journal row through the ONE integrity gate.
+   *
+   * Surface-level issues (an unreadable directory, a corrupt file, an orphan
+   * receipt, an unmigrated legacy row) are returned as blockers; per-packet
+   * conflicts are the same. Aborted and pending rows are not blockers: a fold
+   * that demonstrably did not commit is a closed historical fact, not damage.
+   */
+  private async validateJournal(session: Session, read: JournalRead): Promise<{
+    readonly entries: readonly {
+      readonly packet: SemanticPacket
+      readonly receipt: SemanticReceipt | undefined
+      readonly validation: SemanticCommitValidation
+    }[]
+    readonly commits: readonly ValidatedSemanticCommit[]
+    readonly blockers: readonly string[]
+    readonly pending: number
+    readonly aborted: number
+  }> {
+    const blockers: string[] = []
+    const entries: {
+      packet: SemanticPacket
+      receipt: SemanticReceipt | undefined
+      validation: SemanticCommitValidation
+    }[] = []
+    const commits: ValidatedSemanticCommit[] = []
+    let pending = 0
+    let aborted = 0
+
+    if (read.state === 'unreadable') {
+      const issue = read.invalid.find(entry => entry.code === 'io')
+      blockers.push(issue?.detail ?? 'the semantic journal directory is unreadable')
+    }
+    for (const issue of read.invalid) {
+      if (issue.code === 'io') continue
+      blockers.push(`${issue.file}: ${issue.detail}`)
+    }
+    for (const [packetId, detail] of read.rejectedReceipts) {
+      blockers.push(`packet ${packetId} has a receipt that does not bind to it: ${detail}`)
+    }
+    // `.v3.json` archives are read-only audit copies. A legacy row is only a
+    // migration obligation when no v4 packet records that it was converted.
+    const migratedLegacyIds = new Set(
+      read.packets
+        .map(packet => packet.legacyPacketId)
+        .filter((id): id is string => id !== undefined),
+    )
+    const unmigrated = read.legacy.filter(packet =>
+      packet.mode === 'active'
+      && (packet.status === 'staged' || packet.status === 'activated')
+      && !migratedLegacyIds.has(packet.packetId))
+    if (unmigrated.length > 0) {
+      blockers.push(
+        `${unmigrated.length} legacy semantic packet(s) could not be verified into the current journal`,
+      )
+    }
+
+    for (const packet of read.packets) {
+      if (packet.mode !== 'active') continue
+      // A receipt that EXISTS but contradicts the packet is not a missing
+      // receipt. Recovery must not overwrite that decision, so the packet never
+      // enters the per-packet validation loop.
+      if (read.rejectedReceipts.has(packet.packetId)) continue
+      const receipt = read.receipts.get(packet.packetId)
+      const bundle = await this.bundleFor(session, packet.checkpointId)
+      const validation = validateSemanticCommit({
+        session,
+        packet,
+        ...(receipt === undefined ? {} : { receipt }),
+        ...(bundle === undefined ? {} : { bundle }),
+        ...(this.inFlightCheckpoints.has(packet.checkpointId) ? { inFlight: true } : {}),
+      })
+      entries.push({ packet, receipt, validation })
+      switch (validation.status) {
+        case 'valid':
+          commits.push(validation.commit)
+          break
+        case 'aborted':
+          aborted += 1
+          break
+        case 'pending':
+          pending += 1
+          break
+        case 'conflict':
+        case 'invalid':
+          blockers.push(
+            `packet ${packet.packetId}: ${validation.detail}`,
+          )
+          break
+      }
+    }
+    return { entries, commits, blockers, pending, aborted }
+  }
+
+  /**
+   * The fold's continuity admission.
+   *
+   * A stale block from a previous pass is deliberately honored: reconciliation
+   * is what clears it, and `summarize` reconciles before asking. What must
+   * NEVER happen is returning `base` silently — a caller that gets `blocked`
+   * has to say so in the checkpoint.
+   */
+  private async semanticAdmissionOf(
     session: Session,
-    packet: SemanticPacket,
-  ): Promise<ReturnType<typeof proveFoldCommit>> {
-    const bundle = await this.bundleFor(session, packet.checkpointId)
-    return proveFoldCommit(packet, session, {
-      ...(this.inFlightCheckpoints.has(packet.checkpointId) ? { inFlight: true } : {}),
-      ...(bundle === undefined ? {} : { bundle }),
-    })
+    base: FoldCurrentState,
+  ): Promise<ContinuityAdmission> {
+    if (this.efConfig.semanticContinuity !== 'active') {
+      return { mode: 'archive-only', reason: 'semantic continuity is off' }
+    }
+    const blocked = this.semanticBlocked.get(String(session.id))
+    if (blocked !== undefined) return { mode: 'blocked', reason: blocked }
+    const listed = await this.journalRead(session.id)
+    if ('error' in listed) {
+      this.semanticBlocked.set(String(session.id), listed.error)
+      return { mode: 'blocked', reason: listed.error }
+    }
+    const validated = await this.validateJournal(session, listed.read)
+    if (validated.blockers.length > 0) {
+      const reason = validated.blockers.slice(0, 3).join('; ')
+      this.semanticBlocked.set(String(session.id), reason)
+      return { mode: 'blocked', reason }
+    }
+    const replay = replayWithSemanticCommits(session, validated.commits)
+    if (replay.unplaced.length > 0) {
+      return {
+        mode: 'blocked',
+        reason: `${replay.unplaced.length} committed semantic packet(s) cannot be placed on this log`,
+      }
+    }
+    // With no commits, the replay is the session projection; returning it is
+    // cheaper and exactly equivalent to `base`.
+    return { mode: 'active', state: validated.commits.length === 0 ? base : replay.state }
   }
 
   /** The immutable decision for one packet. */
@@ -2603,109 +2755,94 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         ...(mode === 'off' ? { detail: 'semantic continuity is off' } : {}),
       }
     }
-    let read: JournalRead
-    try {
-      read = await this.semanticJournal.list(session.id)
-    } catch (error: unknown) {
+    const listed = await this.journalRead(session.id)
+    if ('error' in listed) {
+      this.semanticBlocked.set(String(session.id), listed.error)
       this.reconcileHealthValue = 'unavailable'
-      this.reconcileHealthDetail = `semantic journal unreadable: ${error instanceof Error ? error.message : String(error)}`
+      this.reconcileHealthDetail = listed.error
       return {
         scanned: 0, staged: 0, activated: 0, abandoned: 0, unrepairable: 0,
-        health: 'unavailable', detail: this.reconcileHealthDetail,
+        health: 'unavailable', detail: listed.error,
       }
     }
+    let read = listed.read
 
     // A forked session owns a NEW id, so the journal has no row for it even
     // though its log carries the parent's prefix. Inherit exactly the parent
     // commits that landed BEFORE the fork boundary; never later ones.
     const inherited = await this.inheritForkSemantics(session, read)
-    if (inherited.blocked !== undefined) {
-      this.semanticBlocked.set(String(session.id), inherited.blocked)
-    } else if (inherited.wrote > 0 || inherited.existing > 0) {
-      this.semanticBlocked.delete(String(session.id))
-    }
 
     // Legacy state is a MIGRATION source, never an authority. Convert only what
     // the historical proof and the bundle agree on, then re-read the journal.
     const migration = await this.migrateLegacy(session, read)
     if (migration.wrote > 0 || inherited.wrote > 0) {
-      try {
-        read = await this.semanticJournal.list(session.id)
-      } catch (error: unknown) {
+      const relisted = await this.journalRead(session.id)
+      if ('error' in relisted) {
+        this.semanticBlocked.set(String(session.id), relisted.error)
         this.reconcileHealthValue = 'unavailable'
-        this.reconcileHealthDetail = `semantic journal unreadable after inheritance/migration: ${error instanceof Error ? error.message : String(error)}`
+        this.reconcileHealthDetail = relisted.error
         return {
           scanned: 0, staged: 0, activated: 0, abandoned: 0, unrepairable: 0,
-          health: 'unavailable', detail: this.reconcileHealthDetail,
+          health: 'unavailable', detail: relisted.error,
         }
       }
+      read = relisted.read
+    }
+
+    const validated = await this.validateJournal(session, read)
+    const blockers: string[] = [...validated.blockers]
+    if (inherited.blocked !== undefined) blockers.push(inherited.blocked)
+    if (migration.failed > 0) {
+      blockers.push(`${migration.failed} legacy semantic packet(s) could not be verified (bundle/history missing)`)
     }
 
     let activatedThisPass = 0
     let abandonedThisPass = 0
-    let staged = 0
-    let conflicts = 0
-    let unrepairable = read.invalid.length + migration.failed
+    let receiptWriteFailures = 0
     const receipts = new Map(read.receipts)
 
-    for (const packet of read.packets) {
-      if (packet.mode !== 'active') continue
-      const existing = receipts.get(packet.packetId)
-      const verdict = await this.proofFor(session, packet)
-
-      // A recorded commitment is re-proven on every pass. Once committed it
-      // stays committed while the log carries the proof; if the proof is gone
-      // (older log backup, truncation), the packet becomes a CONFLICT and is
-      // NOT re-appended. "Repairing" a missing record from the journal alone
-      // would inject future state into an earlier session.
-      if (existing?.outcome === 'committed') {
-        if (verdict.status !== 'committed' || !sameProof(existing.proof, verdict.proof)) {
-          conflicts += 1
-          continue
+    for (const { packet, receipt, validation } of validated.entries) {
+      if (validation.status === 'valid') {
+        if (validation.missingReceipt) {
+          const decided = this.decision(packet, 'committed', { proof: validation.commit.proof })
+          try {
+            await this.semanticJournal.writeReceipt(decided)
+          } catch (error: unknown) {
+            receiptWriteFailures += 1
+            blockers.push(
+              `receipt write failed for ${packet.packetId}: `
+              + (error instanceof Error ? error.message : String(error)),
+            )
+            continue
+          }
+          receipts.set(packet.packetId, decided)
+          this.lastSemanticReceiptValue = decided
+          activatedThisPass += 1
         }
         this.inFlightCheckpoints.delete(packet.checkpointId)
         continue
       }
-      if (existing !== undefined) continue
-
-      switch (verdict.status) {
-        case 'committed': {
-          const receipt = this.decision(packet, 'committed', { proof: verdict.proof })
-          try {
-            await this.semanticJournal.writeReceipt(receipt)
-          } catch {
-            unrepairable += 1
-            continue
-          }
-          receipts.set(packet.packetId, receipt)
-          this.lastSemanticReceiptValue = receipt
-          this.inFlightCheckpoints.delete(packet.checkpointId)
-          activatedThisPass += 1
-          break
-        }
-        case 'aborted': {
-          const archivedOnly = verdict.reason === 'summary-without-replacement'
-          const receipt = this.decision(packet, archivedOnly ? 'archived-only' : 'aborted', {
-            reason: verdict.detail,
+      if (validation.status === 'aborted') {
+        if (receipt === undefined) {
+          const archivedOnly = validation.reason === 'summary-without-replacement'
+          const decided = this.decision(packet, archivedOnly ? 'archived-only' : 'aborted', {
+            reason: validation.detail,
           })
           try {
-            await this.semanticJournal.writeReceipt(receipt)
-          } catch {
-            unrepairable += 1
+            await this.semanticJournal.writeReceipt(decided)
+          } catch (error: unknown) {
+            receiptWriteFailures += 1
+            blockers.push(
+              `abort receipt write failed for ${packet.packetId}: `
+              + (error instanceof Error ? error.message : String(error)),
+            )
             continue
           }
-          receipts.set(packet.packetId, receipt)
-          this.lastSemanticReceiptValue = receipt
-          this.inFlightCheckpoints.delete(packet.checkpointId)
+          receipts.set(packet.packetId, decided)
+          this.lastSemanticReceiptValue = decided
           if (!archivedOnly) abandonedThisPass += 1
-          break
         }
-        case 'unresolved':
-          staged += 1
-          break
-        case 'conflict':
-          conflicts += 1
-          break
+        this.inFlightCheckpoints.delete(packet.checkpointId)
       }
     }
 
@@ -2715,29 +2852,38 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     const archivedTotal = allReceipts.filter(receipt => receipt.outcome === 'archived-only').length
     this.semanticActivatedValue += activatedThisPass
     this.semanticReconciledValue += migration.repaired
+    const conflicts = validated.entries.filter(entry =>
+      entry.validation.status === 'conflict' || entry.validation.status === 'invalid').length
     const health = healthOf({
-      staged,
+      staged: validated.pending,
       abandoned: abandonedTotal,
       archivedOnly: archivedTotal,
       invalid: read.invalid.length,
-      unrepairable,
+      unrepairable: migration.failed + receiptWriteFailures,
       activated: committedTotal,
       conflicts,
     })
-    const blocked = this.semanticBlocked.get(String(session.id))
-    if (blocked !== undefined && health.health === 'ready') {
-      this.reconcileHealthValue = 'partial'
-      this.reconcileHealthDetail = blocked
+
+    // The block is a DECISION about whether new semantic state may be written.
+    // A benign historical abort (a fold rejected, its packet aborted, history
+    // intact) never adds a blocker; a contradiction or an unreadable store does.
+    if (blockers.length > 0 || read.state === 'unreadable') {
+      const reason = blockers[0]
+        ?? 'the semantic journal directory is unreadable'
+      this.semanticBlocked.set(String(session.id), reason)
+      this.reconcileHealthValue = read.state === 'unreadable' ? 'unavailable' : 'partial'
+      this.reconcileHealthDetail = reason
     } else {
+      this.semanticBlocked.delete(String(session.id))
       this.reconcileHealthValue = health.health
       this.reconcileHealthDetail = health.detail
     }
     return {
       scanned: read.packets.length + read.legacy.length,
-      staged,
+      staged: validated.pending,
       activated: activatedThisPass,
       abandoned: abandonedThisPass,
-      unrepairable,
+      unrepairable: migration.failed + receiptWriteFailures,
       health: this.reconcileHealthValue,
       ...(this.reconcileHealthDetail === undefined ? {} : { detail: this.reconcileHealthDetail }),
     }
@@ -2772,19 +2918,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     if (parent === undefined) return { wrote: 0, existing: 0 }
     const boundary = Number(session.inheritedEventCount)
     if (boundary <= 0) return { wrote: 0, existing: 0 }
-
-    const alreadyHere = [...read.receipts.values()]
-      .filter(receipt => receipt.outcome === 'committed'
-        && receipt.proof !== undefined
-        && receipt.proof.commitOrder < boundary)
-    if (alreadyHere.length > 0) {
-      // Inheritance already happened in an earlier pass; still verify the
-      // parent is reachable only when there is something to check.
-      return { wrote: 0, existing: alreadyHere.length }
+    if (Number(session.seq) < boundary) {
+      return { wrote: 0, existing: 0, blocked: 'fork child log is shorter than its declared inherited prefix' }
     }
 
-    const hasParent = await this.semanticJournal.hasSession(parent).catch(() => false)
-    if (!hasParent) {
+    const presence = await this.semanticJournal.sessionState(parent)
+    if (presence === 'absent') {
       return {
         wrote: 0,
         existing: 0,
@@ -2792,31 +2931,71 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           + 'so an empty child state cannot be distinguished from lost parent state',
       }
     }
-    let parentRead: JournalRead
-    try {
-      parentRead = await this.semanticJournal.list(parent)
-    } catch (error: unknown) {
+    if (presence === 'unreadable') {
       return {
         wrote: 0,
         existing: 0,
-        blocked: `fork semantic seed unreadable: ${error instanceof Error ? error.message : String(error)}`,
+        blocked: 'fork semantic seed unavailable: the parent journal directory is unreadable',
       }
     }
-    if (parentRead.legacy.some(packet => packet.mode === 'active')) {
+    const parentListed = await this.journalRead(parent)
+    if ('error' in parentListed) {
+      return { wrote: 0, existing: 0, blocked: `fork semantic seed unreadable: ${parentListed.error}` }
+    }
+    const parentRead = parentListed.read
+    if (parentRead.state === 'unreadable') {
+      return { wrote: 0, existing: 0, blocked: 'fork semantic seed unavailable: the parent journal is unreadable' }
+    }
+    if (parentRead.invalid.length > 0) {
       return {
         wrote: 0,
         existing: 0,
-        blocked: 'fork semantic seed unavailable: the parent journal still holds schema-3 packets',
+        blocked: `fork semantic seed unavailable: the parent journal has ${parentRead.invalid.length} `
+          + 'integrity problem(s); run the parent once to repair or quarantine them',
+      }
+    }
+    const migratedParentLegacy = new Set(
+      parentRead.packets
+        .map(packet => packet.legacyPacketId)
+        .filter((id): id is string => id !== undefined),
+    )
+    if (parentRead.legacy.some(packet =>
+      packet.mode === 'active'
+      && (packet.status === 'staged' || packet.status === 'activated')
+      && !migratedParentLegacy.has(packet.packetId))) {
+      return {
+        wrote: 0,
+        existing: 0,
+        blocked: 'fork semantic seed unavailable: the parent journal still holds unmigrated schema-3 packets',
       }
     }
 
-    let wrote = 0
+    // Expected = every parent commit that is proven inside the child prefix.
+    // The proof, not "a child row exists", decides completeness. A parent
+    // packet whose receipt is missing but whose fold is proven is still
+    // inherited (the cross-store crash case).
+    const expected: {
+      readonly parentPacket: SemanticPacket
+      readonly childPacket: SemanticPacket
+      readonly commit: ValidatedSemanticCommit
+    }[] = []
+    const expectedIds = new Set<string>()
     for (const packet of parentRead.packets) {
       if (packet.mode !== 'active') continue
       const receipt = parentRead.receipts.get(packet.packetId)
-      if (receipt?.outcome !== 'committed' || receipt.proof === undefined) continue
-      if (receipt.proof.commitOrder >= boundary) continue
-
+      if (receipt?.outcome === 'committed' && receipt.proof !== undefined
+        && receipt.proof.commitOrder >= boundary) continue
+      if (receipt?.outcome === 'aborted' || receipt?.outcome === 'archived-only') continue
+      if (receipt !== undefined) {
+        const binding = receiptBindingProblem(packet, receipt)
+        if (binding !== undefined) {
+          return {
+            wrote: 0,
+            existing: 0,
+            blocked: `fork semantic seed is internally inconsistent: ${binding.detail}`,
+          }
+        }
+      }
       const childPacket: SemanticPacket = {
         ...packet,
         // A committed packet's identity includes the session; the child is a
@@ -2832,32 +3011,163 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         authority: 'journal',
         status: 'staged',
       }
-      if (read.receipts.has(childPacket.packetId)) continue
-      const proof = proveFoldCommit(childPacket, session)
-      if (proof.status !== 'committed' || proof.proof.commitOrder >= boundary) {
+      const proven = proveFoldCommit(childPacket, session)
+      if (proven.status === 'conflict') {
+        return {
+          wrote: 0,
+          existing: 0,
+          blocked: `fork semantic seed conflicts with the child log: ${proven.detail}`,
+        }
+      }
+      if (proven.status !== 'committed') continue
+      if (proven.proof.commitOrder >= boundary) continue
+      expected.push({
+        parentPacket: packet,
+        childPacket,
+        commit: {
+          packetId: childPacket.packetId,
+          sessionId: String(session.id),
+          checkpointId: childPacket.checkpointId,
+          commitOrder: proven.proof.commitOrder,
+          proof: proven.proof,
+          operations: childPacket.ops,
+        },
+      })
+      expectedIds.add(childPacket.packetId)
+    }
+
+    const childPackets = new Map(read.packets.map(packet => [packet.packetId, packet]))
+    // A committed child row BELOW the boundary that is not in the expected set
+    // claims an inherited commit the parent journal never authorized.
+    for (const [packetId, receipt] of read.receipts) {
+      if (receipt.outcome !== 'committed' || receipt.proof === undefined) continue
+      if (receipt.proof.commitOrder >= boundary) continue
+      if (!expectedIds.has(packetId)) {
+        return {
+          wrote: 0,
+          existing: 0,
+          blocked: `fork child journal holds an inherited commit ${packetId} that the parent does not prove`,
+        }
+      }
+    }
+
+    let wrote = 0
+    let existing = 0
+    for (const entry of expected) {
+      const childId = entry.childPacket.packetId
+      const onDisk = childPackets.get(childId)
+      const receipt = read.receipts.get(childId)
+      if (receipt?.outcome === 'committed') {
+        const validated = validateSemanticCommit({
+          session,
+          packet: onDisk ?? entry.childPacket,
+          receipt,
+        })
+        if (validated.status !== 'valid') {
+          return {
+            wrote,
+            existing,
+            blocked: `fork inherited commit ${childId} no longer validates: `
+              + (validated.status === 'conflict' || validated.status === 'invalid'
+                ? validated.detail
+                : validated.detail),
+          }
+        }
+        existing += 1
+        continue
+      }
+      if (receipt !== undefined) {
         return {
           wrote,
-          existing: 0,
-          blocked: proof.status === 'committed'
-            ? 'fork semantic seed crossed its boundary'
-            : `fork semantic seed not provable in the child log: ${proof.detail}`,
+          existing,
+          blocked: `fork inherited commit ${childId} has a "${receipt.outcome}" receipt; `
+            + 'the parent proves it committed',
+        }
+      }
+      const packet = onDisk ?? entry.childPacket
+      if (canonicalHash(packet.ops) !== canonicalHash(entry.parentPacket.ops)) {
+        return {
+          wrote,
+          existing,
+          blocked: `fork inherited packet ${childId} carries different operations than its parent`,
+        }
+      }
+      const validated = validateSemanticCommit({ session, packet })
+      if (validated.status !== 'valid') {
+        return {
+          wrote,
+          existing,
+          blocked: `fork inherited commit ${childId} is not provable in the child log: `
+            + (validated.status === 'conflict' || validated.status === 'invalid'
+              ? validated.detail
+              : validated.status === 'pending' ? validated.detail : validated.detail),
         }
       }
       try {
-        await this.semanticJournal.write(childPacket)
-        await this.semanticJournal.writeReceipt(
-          this.decision(childPacket, 'committed', { proof: proof.proof }),
-        )
+        if (onDisk === undefined) await this.semanticJournal.write(packet)
+        const decided = this.decision(packet, 'committed', { proof: validated.commit.proof })
+        await this.semanticJournal.writeReceipt(decided)
+        this.lastSemanticReceiptValue = decided
       } catch (error: unknown) {
         return {
           wrote,
-          existing: 0,
+          existing,
           blocked: `fork semantic seed write failed: ${error instanceof Error ? error.message : String(error)}`,
         }
       }
       wrote += 1
     }
-    return { wrote, existing: 0 }
+
+    // Verify the EXPECTED SET, not merely "some inheritance happened". A
+    // partial previous pass (A written, B failed, C never attempted) is
+    // completed here instead of being mistaken for a finished seed.
+    const after = await this.journalRead(session.id)
+    if ('error' in after) {
+      return { wrote, existing, blocked: `fork journal unreadable after seeding: ${after.error}` }
+    }
+    const committedAfter = new Set(
+      [...after.read.receipts.values()]
+        .filter(candidate => candidate.outcome === 'committed')
+        .map(candidate => candidate.packetId),
+    )
+    const missing = expected.filter(entry => !committedAfter.has(entry.childPacket.packetId))
+    if (missing.length > 0) {
+      return {
+        wrote,
+        existing,
+        blocked: `fork inheritance incomplete: ${missing.length} of ${expected.length} expected commit(s) missing`,
+      }
+    }
+
+    // State equivalence at the boundary, when the parent bundle recorded the
+    // state digest. The child prefix is the same log, so replaying it with the
+    // inherited operations must reproduce the parent's digest exactly.
+    for (const entry of expected) {
+      const parentBundle = await this.bundles.read(parent, entry.parentPacket.checkpointId)
+        .catch(() => null)
+      if (parentBundle === null || parentBundle.state === undefined) continue
+      const replay = replayWithSemanticCommits(
+        session,
+        expected.map(candidate => candidate.commit),
+        { uptoSeq: entry.commit.commitOrder },
+      )
+      if (replay.unplaced.length > 0) {
+        return {
+          wrote,
+          existing,
+          blocked: 'fork inherited commits cannot be placed on the child log',
+        }
+      }
+      if (describeRenderedState(replay.state).digest !== parentBundle.state.digest) {
+        return {
+          wrote,
+          existing,
+          blocked: `fork state at commit ${entry.commit.commitOrder} differs from the parent's recorded state`,
+        }
+      }
+    }
+
+    return { wrote, existing }
   }
 
   /**
@@ -2876,69 +3186,86 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     session: Session,
     read: JournalRead,
   ): Promise<{ readonly wrote: number; readonly repaired: number; readonly failed: number }> {
-    const known = new Set([...read.packets, ...read.legacy].map(packet => packet.packetId))
-    const alreadyMigrated = new Set(read.packets.map(packet => packet.packetId))
+    const migratedLegacyIds = new Set(
+      read.packets
+        .map(packet => packet.legacyPacketId)
+        .filter((id): id is string => id !== undefined),
+    )
+    const v4Ids = new Set(read.packets.map(packet => packet.packetId))
     let wrote = 0
     let repaired = 0
     let failed = 0
 
-    const migrate = async (candidate: SemanticPacket, fromRecord: boolean): Promise<void> => {
+    const migrate = async (candidate: SemanticPacket): Promise<void> => {
+      if (migratedLegacyIds.has(candidate.packetId)) return
       const bundle = await this.bundleFor(session, candidate.checkpointId)
       if (bundle === undefined) {
         failed += 1
         return
       }
       const sourceDigest = bundle.archive.logicalHash
-      const verdict = proveFoldCommit({ ...candidate, sourceDigest }, session, { bundle })
-      if (verdict.status === 'conflict' || verdict.status === 'unresolved') {
-        failed += 1
+      const packetId = packetIdOf({
+        sessionId: session.id,
+        checkpointId: candidate.checkpointId,
+        foldedSeqs: candidate.foldedSeqs,
+        bodyDigest: candidate.bodyDigest,
+      })
+      if (v4Ids.has(packetId)) {
+        migratedLegacyIds.add(candidate.packetId)
         return
       }
       const packet: SemanticPacket = {
         ...candidate,
         schemaVersion: SEMANTIC_SCHEMA_VERSION,
+        // The v3 id was produced by a different algorithm and cannot satisfy
+        // the v4 identity check. The converted row gets a v4 id; the original
+        // is kept as audit provenance so its `.v3.json` archive is not treated
+        // as an outstanding migration forever.
+        packetId,
+        legacyPacketId: candidate.packetId,
         authority: 'journal',
         status: 'staged',
+        spanDigest: canonicalHash([...candidate.foldedSeqs]),
         sourceDigest,
-        ...(fromRecord ? { spanDigest: canonicalHash([...candidate.foldedSeqs]) } : {}),
+      }
+      const validation = validateSemanticCommit({ session, packet, bundle })
+      if (validation.status === 'conflict' || validation.status === 'invalid'
+        || validation.status === 'pending') {
+        failed += 1
+        return
       }
       try {
         await this.semanticJournal.write(packet)
-        const receipt = verdict.status === 'committed'
-          ? this.decision(packet, 'committed', { proof: verdict.proof })
+        const receipt = validation.status === 'valid'
+          ? this.decision(packet, 'committed', { proof: validation.commit.proof })
           : this.decision(
               packet,
-              verdict.reason === 'summary-without-replacement' ? 'archived-only' : 'aborted',
-              { reason: verdict.detail },
+              validation.reason === 'summary-without-replacement' ? 'archived-only' : 'aborted',
+              { reason: validation.detail },
             )
         await this.semanticJournal.writeReceipt(receipt)
       } catch {
         failed += 1
         return
       }
-      known.add(packet.packetId)
-      alreadyMigrated.add(packet.packetId)
+      migratedLegacyIds.add(candidate.packetId)
       wrote += 1
-      if (verdict.status === 'committed') repaired += 1
+      if (validation.status === 'valid') repaired += 1
     }
 
     for (const legacy of read.legacy) {
       if (legacy.mode !== 'active') continue
       if (legacy.status !== 'staged' && legacy.status !== 'activated') continue
-      // A `.v3.json` archive sits beside the v4 file it became. The id is what
-      // says the migration already happened; re-running it would either be a
-      // no-op or collide with the immutable v4 packet.
-      if (alreadyMigrated.has(legacy.packetId) || read.receipts.has(legacy.packetId)) continue
-      await migrate(legacy, false)
+      await migrate(legacy)
     }
 
     // Session records: the old session-record authority. A record carries ops
     // but not the span identity, so the span digest is derived from its
     // `foldedSeqs`; the source digest must come from the bundle.
     for (const record of semanticRecordsIn(session)) {
-      if (known.has(record.payload.packetId)) continue
+      if (migratedLegacyIds.has(record.payload.packetId)) continue
       const packet: SemanticPacket = {
-        schemaVersion: SEMANTIC_SCHEMA_VERSION,
+        schemaVersion: LEGACY_SEMANTIC_SCHEMA_VERSION,
         packetId: record.payload.packetId,
         sessionId: session.id,
         checkpointId: record.payload.checkpointId,
@@ -2957,7 +3284,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         accepted: [],
         refused: [],
       }
-      await migrate(packet, true)
+      await migrate(packet)
     }
 
     return { wrote, repaired, failed }
@@ -3249,24 +3576,6 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
     return span
   }
-}
-
-/**
- * Whether a recorded proof and a freshly re-derived proof describe the same
- * commit. The receipt is immutable, so this is how a later log is checked
- * against it: identity and commit position must still agree.
- */
-function sameProof(recorded: HistoricalFoldProof | undefined, fresh: HistoricalFoldProof): boolean {
-  if (recorded === undefined) return false
-  return recorded.sessionId === fresh.sessionId
-    && recorded.checkpointId === fresh.checkpointId
-    && recorded.compactionId === fresh.compactionId
-    && recorded.startSeq === fresh.startSeq
-    && recorded.summarySeq === fresh.summarySeq
-    && recorded.replacementSeq === fresh.replacementSeq
-    && recorded.bodyDigest === fresh.bodyDigest
-    && recorded.sourceDigest === fresh.sourceDigest
-    && recorded.commitOrder === fresh.commitOrder
 }
 
 export default EpistemicFoldEngine

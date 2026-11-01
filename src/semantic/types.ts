@@ -338,6 +338,15 @@ export interface SemanticPacket {
    */
   readonly sourceDigest?: string
   /**
+   * The schema-3 packet id this v4 row was migrated from, when it was.
+   *
+   * v3 ids were produced by a different identity algorithm, so they cannot be
+   * recomputed as v4 ids. Recording the origin is what lets the reconciler say
+   * "this legacy packet has already been converted" without treating the
+   * `.v3.json` audit archive as an outstanding migration forever.
+   */
+  readonly legacyPacketId?: string
+  /**
    * The RESOLVED commit plan, in application order.
    *
    * Declares and retires are resolved at staging time against the projected
@@ -428,13 +437,33 @@ export interface SemanticReceipt {
  */
 export type PacketStatus = 'staged' | 'activated' | 'abandoned' | 'archived-only'
 
-/** One compiled working set's accounting. */
+/**
+ * One compiled working set's accounting, plus the COMPLETE checkpoint's cost.
+ *
+ * `tokens`/`overflow` describe the carried-state budget only. A checkpoint can
+ * satisfy that and still be far over the whole-body budget through changed
+ * deltas, rationale, or framing, so the full component breakdown travels with
+ * the packet instead of being inferred later.
+ */
 export interface SemanticWorkingSetReport {
   readonly tokens: number
   readonly overflow: boolean
   readonly pinned: number
   readonly working: number
   readonly archived: number
+  readonly changedTokens: number
+  readonly carriedTokens: number
+  readonly rationaleTokens: number
+  readonly framingTokens: number
+  readonly noticeTokens: number
+  readonly totalCheckpointTokens: number
+  readonly pinnedTokens: number
+  readonly budgetTokens: number
+  readonly totalBudgetTokens: number
+  readonly pinnedOverflow: boolean
+  readonly totalOverflow: boolean
+  /** `token-meter` when measured with the mounted meter; `chars-per-4` otherwise. */
+  readonly estimateBasis: 'token-meter' | 'chars-per-4'
 }
 
 /**

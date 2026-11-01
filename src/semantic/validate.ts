@@ -119,15 +119,36 @@ export const SEMANTIC_NAMESPACE = 'semantic'
  * though both become `decision` anchors. Two claims about the same thing of the
  * same kind supersede each other; different kinds do not.
  *
+ * ## Scope is part of the coordinate
+ *
+ * Two tasks can both name `timeout` and mean different limits. Without a scope
+ * discriminator, the second declare lands on the same coordinate as the first
+ * and silently displaces it — a cross-task memory overwrite that no proposal
+ * author intended. When the writer supplies a scope, a stable digest of it joins
+ * the entity, so the two claims occupy different coordinates and cannot
+ * supersede each other. An UNSCOPED claim keeps the unscoped coordinate, which
+ * is what every pre-R32 anchor uses; without a trustworthy task identity the
+ * runtime cannot invent a distinction, and the limitation is documented rather
+ * than guessed at.
+ *
  * This is the only place a semantic coordinate is constructed, so the journal's
  * `(kind, subjectKey)` and the reducer's `stateKeyText` cannot drift.
  *
  * @param kind - the semantic kind.
  * @param subjectKey - the claimed coordinate.
+ * @param scope - the task identity, when the claim is narrower than the task.
  * @returns the durable state key.
  */
-export function semanticStateKey(kind: SemanticKind, subjectKey: string): StateKey {
-  return { namespace: SEMANTIC_NAMESPACE, entity: kind, property: subjectKey }
+export function semanticStateKey(
+  kind: SemanticKind,
+  subjectKey: string,
+  scope?: SemanticScope,
+): StateKey {
+  return {
+    namespace: SEMANTIC_NAMESPACE,
+    entity: scope === undefined ? kind : `${kind}#${canonicalHash(scope)}`,
+    property: subjectKey,
+  }
 }
 
 /** Whether one cited kind is empirical or procedural ground. */
@@ -316,6 +337,7 @@ function deltaIdentity(input: {
   statement: string
   status: EpistemicStatus
   evidenceSeqs: readonly number[]
+  scope?: SemanticScope
 }): string {
   return canonicalHash({
     kind: input.kind,
@@ -323,6 +345,8 @@ function deltaIdentity(input: {
     statement: input.statement,
     status: input.status,
     evidenceSeqs: [...input.evidenceSeqs].sort((left, right) => left - right),
+    // Omitted for an unscoped delta, so pre-R32 identities stay byte-identical.
+    ...(input.scope === undefined ? {} : { scope: input.scope }),
   })
 }
 
@@ -482,14 +506,15 @@ function validateOne(
   })
   if ('detail' in verification) return refuse('verification-unscoped', verification.detail)
 
+  const scope = normalizeScope(proposal.scope)
   const deltaId = deltaIdentity({
     kind,
     subjectKey,
     statement,
     status: granted.granted,
     evidenceSeqs: resolved.evidence.map(entry => entry.seq),
+    ...(scope === undefined ? {} : { scope }),
   })
-  const scope = normalizeScope(proposal.scope)
   return {
     index,
     deltaId,
@@ -501,7 +526,7 @@ function validateOne(
     evidence: resolved.evidence,
     authority,
     anchorKind: rule.anchorKind,
-    stateKey: rule.anchorKind === undefined ? undefined : semanticStateKey(kind, subjectKey),
+    stateKey: rule.anchorKind === undefined ? undefined : semanticStateKey(kind, subjectKey, scope),
     ...(rule.failureState === undefined ? {} : { failureState: rule.failureState }),
     supersedes: stringList(proposal.supersedes),
     dependsOn: stringList(proposal.dependsOn),

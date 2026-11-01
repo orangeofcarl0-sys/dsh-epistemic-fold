@@ -51,6 +51,7 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   { name: 'semanticMode', presetOwned: true, efOwned: true, default: 'rationale' },
   { name: 'semanticContinuity', presetOwned: false, efOwned: true, default: 'off' },
   { name: 'semanticWorkingSetTokens', presetOwned: false, efOwned: true, default: 1024 },
+  { name: 'semanticCheckpointTokens', presetOwned: false, efOwned: true, default: 4096 },
   { name: 'semanticRoot', presetOwned: false, efOwned: true },
   { name: 'rationaleHintTokens', presetOwned: true, efOwned: true, default: 800 },
   { name: 'bundleRoot', presetOwned: false, efOwned: true },

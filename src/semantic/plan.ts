@@ -26,9 +26,10 @@
  * @module dsh-epistemic-fold/semantic/plan
  */
 
-import type { Anchor, EfAnchorEventData, FoldCurrentState, StateKey } from '../state/state.ts'
+import type { Anchor, AnchorScope, EfAnchorEventData, FoldCurrentState, StateKey } from '../state/state.ts'
 import { stateKeyText } from '../state/state.ts'
 import { reduceEvent } from '../state/state.ts'
+import { canonicalHash } from '../checkpoint/hash.ts'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import { anchorIdOf, rejectedApproachValue } from './validate.ts'
 import type { AcceptedDelta } from './types.ts'
@@ -74,6 +75,13 @@ function visibleAnchors(state: FoldCurrentState): readonly Anchor[] {
   ]
 }
 
+/** Whether two claims belong to the same task scope (both absent = yes). */
+export function sameScope(left: AnchorScope | undefined, right: AnchorScope | undefined): boolean {
+  if (left === undefined && right === undefined) return true
+  if (left === undefined || right === undefined) return false
+  return canonicalHash(left) === canonicalHash(right)
+}
+
 /**
  * Find the anchor a target names.
  *
@@ -82,12 +90,24 @@ function visibleAnchors(state: FoldCurrentState): readonly Anchor[] {
  * (which is the `property` of a semantic coordinate). The bare subject is
  * matched ONLY among semantic coordinates, so a proposal cannot retire an
  * unrelated user anchor by naming its value.
+ *
+ * A bare subject is additionally matched only within the PROPOSAL'S scope. Two
+ * tasks can name the same `timeout`; letting a repo-A proposal resolve the bare
+ * word to repo-B's anchor would retire another task's contract by coincidence.
+ * An explicit anchor id or exact stateKeyText is still an explicit reference and
+ * is honored regardless of scope.
  */
-function findTarget(state: FoldCurrentState, target: string): Anchor | undefined {
+function findTarget(
+  state: FoldCurrentState,
+  target: string,
+  scope: AnchorScope | undefined,
+): Anchor | undefined {
   for (const anchor of visibleAnchors(state)) {
     if (anchor.id === target) return anchor
     if (anchor.stateKey !== undefined && stateKeyText(anchor.stateKey) === target) return anchor
-    if (anchor.stateKey?.namespace === 'semantic' && anchor.stateKey.property === target) return anchor
+    if (anchor.stateKey?.namespace === 'semantic'
+      && anchor.stateKey.property === target
+      && sameScope(anchor.scope, scope)) return anchor
   }
   return undefined
 }
@@ -152,15 +172,21 @@ export function planCommit(
         continue
       }
       const sibling = accepted.find(candidate =>
-        candidate.stateKey !== undefined && candidate.subjectKey === target
-        && candidate.stateKey.namespace === stateKey.namespace)
+        // A bare target may equal the declaring delta's own subject. That is a
+        // reference to the EXISTING value at this coordinate, not a request to
+        // retire the claim being made: including the delta itself made
+        // `supersedes: ['timeout']` retire its own freshly declared anchor.
+        candidate.deltaId !== delta.deltaId
+        && candidate.stateKey !== undefined && candidate.subjectKey === target
+        && candidate.stateKey.namespace === stateKey.namespace
+        && sameScope(candidate.scope, delta.scope))
       if (sibling !== undefined) {
         const siblingId = anchorIdOf(sibling.deltaId)
         resolved.push({ target, anchorId: siblingId, via: 'other-coordinate' })
         supersededHere.add(siblingId)
         continue
       }
-      const found = findTarget(options.state, target)
+      const found = findTarget(options.state, target, delta.scope)
       if (found === undefined) {
         unresolvedTargets.add(target)
         resolved.push({ target, via: 'unknown' })
@@ -190,6 +216,7 @@ export function planCommit(
       lifecycle: 'active',
       ...(delta.failureState === undefined ? {} : { failureState: delta.failureState }),
       sourceRefs: delta.evidence.map(entry => ({ seq: SessionSeq(entry.seq) })),
+      ...(delta.scope === undefined ? {} : { scope: delta.scope }),
     }
     declares.push({ op: 'declare', anchor })
     if (delta.kind === 'failure' && delta.grantedStatus === 'verified' && delta.evidence.length > 0) {

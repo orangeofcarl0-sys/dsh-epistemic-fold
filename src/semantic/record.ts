@@ -24,6 +24,7 @@ import type { FoldCurrentState } from '../state/state.ts'
 import { efPluginRecordOf } from '../state/plugin-events.ts'
 import type { EfPluginRecord } from '../state/plugin-events.ts'
 import type { EfAnchorEventData } from '../state/state.ts'
+import { isAnchorOp } from './ops.ts'
 import { LEGACY_SEMANTIC_RECORD_VERSION, SEMANTIC_SCHEMA_VERSION } from './types.ts'
 import { applyOps } from './plan.ts'
 
@@ -67,29 +68,6 @@ export function semanticRecordPayloadOf(value: unknown): SemanticRecordPayload |
     bodyDigest: payload.bodyDigest,
     ops: payload.ops,
   }
-}
-
-/** One resolved operation, structurally validated. */
-function isAnchorOp(value: unknown): value is EfAnchorEventData {
-  if (value === null || typeof value !== 'object') return false
-  const op = value as Partial<EfAnchorEventData>
-  if (op.op === 'declare') {
-    const anchor = op.anchor
-    return anchor !== null && typeof anchor === 'object'
-      && typeof anchor.id === 'string'
-      && typeof anchor.kind === 'string'
-      && anchor.stateKey !== undefined
-      && typeof anchor.stateKey === 'object'
-      && (anchor.lifecycle === 'active' || anchor.lifecycle === 'superseded' || anchor.lifecycle === 'retired')
-      && Array.isArray(anchor.sourceRefs)
-  }
-  if (op.op === 'transition') {
-    return typeof op.anchorId === 'string'
-      && (op.failureState === 'open' || op.failureState === 'investigating'
-        || op.failureState === 'resolved' || op.failureState === 'verified')
-  }
-  if (op.op === 'retire') return typeof op.anchorId === 'string'
-  return false
 }
 
 /** Read one committed event as a semantic record, or `undefined`. */
