@@ -1,5 +1,10 @@
 # Semantic Continuity v1 — code review
 
+> **R31 supersedes the authority and commit-evidence sections of this review.**
+> The v3 findings here remain the R30 record. The production design is now the
+> immutable journal + historical fold proof described in `R31_SOURCE_AUDIT.md`,
+> `R31_COMMIT_PROOF.md`, and `R31_PERSISTENCE.md`.
+
 Audit of the semantic layer as integrated into the restructured main line
 (`origin/main` @ `93b6666`, branch `rc30-semantic-continuity`). Every finding
 below was reproduced before it was fixed; the "pinned by" column names the test

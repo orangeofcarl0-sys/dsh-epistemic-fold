@@ -1,5 +1,9 @@
 # Evaluation
 
+> **R31 adds a new evaluation record.** This v3 document's unit counts and
+> commit-predicate tests are historical. Current results, including the real
+> JSONL process restart and 10/30/100 measurements, are in `R31_EVALUATION.md`.
+
 This document separates six kinds of evidence. They are not interchangeable, and
 none of the scripted results is a claim about real-model quality.
 

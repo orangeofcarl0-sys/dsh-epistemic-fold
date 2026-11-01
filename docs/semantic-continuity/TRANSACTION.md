@@ -1,5 +1,10 @@
 # Semantic Continuity — the transaction
 
+> **R31 supersedes this document's commit predicate.** v3 activated only when
+> the replacement was on the CURRENT surface. v4 proves the historical fold
+> transaction and treats residency as a separate fact. See
+> `R31_COMMIT_PROOF.md` and `R31_PERSISTENCE.md`.
+
 This document states what the implementation actually commits, and when. The
 short version: **a staged packet is not state, and a fold is not committed
 because a file exists.** State changes only after the model-visible surface has

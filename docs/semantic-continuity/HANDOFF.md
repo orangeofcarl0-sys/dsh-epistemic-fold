@@ -1,5 +1,9 @@
 # Handoff
 
+> **R31 supersedes the readiness and rollback guidance below.** Use
+> `R31_HANDOFF.md` for the current Active-mode verdict, gates, migration, fork
+> limits, and blockers.
+
 ## What is ready
 
 | Surface | State | Evidence |

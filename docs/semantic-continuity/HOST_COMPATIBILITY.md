@@ -1,5 +1,9 @@
 # Host compatibility
 
+> **R31 supersedes the two-authority model described below.** The journal is now
+> the sole semantic authority; `plugin:epistemic-fold/semantic` records are a
+> migration source. See `R31_PERSISTENCE.md` and `R31_EVALUATION.md` §7.
+
 The claim this round had to establish: **can Active mode persist and recover on
 the DSH host that actually runs this machine?** It was answered by probing the
 installed packages, not by reading a version table.
