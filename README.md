@@ -488,6 +488,29 @@ are 0 provider requests. See `docs/semantic-continuity/R34_EVALUATOR_AUDIT.md`,
 `R34_REAL_MODEL_RESULTS.md`, and `R34_HANDOFF.md`. The scripted 15/17 is still
 not a model result.
 
+### R34.1 / R35 — live evidence closure
+
+R34.1 closed the blockers that would have made a paid pilot unreadable: retry
+telemetry is no longer added to the ledger twice, every row has one
+provider/budget/fold/checker/task failure record, a case that throws still keeps
+the cost of the requests it made, per-case usage separates observed, reserved,
+and charged tokens, and the report is written under the run ID. A zero-request
+`--preflight` runs the real fold with a dry-run adapter, captures the actual
+16,384-token writer floor, refuses an incompatible manifest or a reused run
+directory, and reads no credential. `--stage writer-only` runs the real
+writer/validator/journal/working-set/checkpoint chain without a follow-up agent,
+and `--stage continuation` measures functional success, historical constraint
+compliance, process compliance, contract success, and verification freshness.
+
+The R35 real-model writer and behavioural pilots are **blocked / not executed**:
+0 provider requests, 0 tokens. A local mock-provider end-to-end test verifies
+`429, 429, 200` as 3 attempts and 2 retries in the final report; a writer HTTP
+failure is classified as a provider failure while the fold safely degrades; a
+follow-up failure preserves the earlier cost; and a run whose tasks all fail the
+hidden checker is a valid negative result, not a harness failure. See
+`docs/semantic-continuity/R35_LIVE_PREFLIGHT.md`, `R35_DECISION.md`, and
+`R35_HANDOFF.md`. The scripted pipeline numbers remain offline controls only.
+
 See `docs/semantic-continuity/` for the transaction state machine, the host
 compatibility record, the code review, the integration notes, and the handoff.
 
