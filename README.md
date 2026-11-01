@@ -452,6 +452,23 @@ measured here: they need `EF_LIVE=1` and a provider. See
 `docs/semantic-continuity/EVALUATION.md` for the exact command and the
 `not executed` marker. Do not read the scripted matrix as a quality claim.
 
+### R33 behavioral evaluation
+
+`eval/r33/` freezes 17 cases (5 counterfactual pairs and 7 diagnostic singles)
+and runs Basic, EF-off, Semantic Active, oracle-delta, oracle-visible,
+oracle-retrieval, full-history, null and false-memory arms against real folds
+and independent hidden checkers. The offline sweep reports:
+
+```
+S 15/17   B1/B0 7/17   O1 16/17   O2/OR/F 17/17   N 3/17   fault detected 8/8
+```
+
+This is a **scripted writer + scripted agent** pipeline measurement, not a model
+result. The two Active failures are a writer omission (`H1`) and the 12-delta
+per-fold limit (`F4`); the oracle arms localize each one. The live S-vs-O2 run is
+implemented with one global budget and is **not executed** in this round. See
+`docs/semantic-continuity/R33_HANDOFF.md` and `eval/r33/README.md`.
+
 See `docs/semantic-continuity/` for the transaction state machine, the host
 compatibility record, the code review, the integration notes, and the handoff.
 
