@@ -2,6 +2,10 @@
  * R31-C3/C6/C4: the v4 journal is prepared packets + immutable receipts,
  * ordered by verified commit seq.
  *
+ * R32 adds a native v4 identity: a packet file whose id is not the hash of its
+ * own body/span is not admitted. The fixtures therefore derive real ids instead
+ * of inventing friendly ones; that is the contract the journal now enforces.
+ *
  * @module tests/semantic-journal-v4
  */
 
@@ -10,9 +14,12 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import { makeTemp } from '../eval/tmp.ts'
+import { canonicalHash } from '../src/checkpoint/hash.ts'
 import {
   FileSemanticJournal,
   isSemanticPacket,
+  opsDigestOf,
+  packetIdOf,
   packetStatusOf,
 } from '../src/semantic/journal.ts'
 import {
@@ -23,23 +30,26 @@ import type { HistoricalFoldProof } from '../src/semantic/proof.ts'
 import type { SemanticPacket, SemanticReceipt } from '../src/semantic/types.ts'
 
 const sessionId = SessionId('journal-v4')
+const FOLDED = [1, 2]
 
-function packet(id: string, options: { readonly stagedAtSeq?: number } = {}): SemanticPacket {
+function packet(name: string, options: { readonly stagedAtSeq?: number } = {}): SemanticPacket {
+  const checkpointId = `cp-${name}`
+  const bodyDigest = `body-${name}`
   return {
     schemaVersion: SEMANTIC_SCHEMA_VERSION,
-    packetId: id,
+    packetId: packetIdOf({ sessionId, checkpointId, foldedSeqs: FOLDED, bodyDigest }),
     sessionId,
-    checkpointId: `cp-${id}`,
+    checkpointId,
     mode: 'active',
     authority: 'journal',
     status: 'staged',
-    spanDigest: 'span',
-    foldedSeqs: [1, 2],
+    spanDigest: canonicalHash(FOLDED),
+    foldedSeqs: [...FOLDED],
     createdAt: 999,
     stagedAtSeq: options.stagedAtSeq ?? 10,
-    bodyDigest: `body-${id}`,
+    bodyDigest,
     sourceDigest: 'source',
-    ops: [{ op: 'retire', anchorId: `anchor-${id}` }],
+    ops: [{ op: 'retire', anchorId: `anchor-${name}` }],
     handoff: '',
     deltaParse: 'absent',
     proposed: [],
@@ -48,35 +58,35 @@ function packet(id: string, options: { readonly stagedAtSeq?: number } = {}): Se
   }
 }
 
-function proof(commitOrder: number): HistoricalFoldProof {
+function proofFor(packet: SemanticPacket, commitOrder: number): HistoricalFoldProof {
   return {
     proofVersion: 1,
     sessionId: String(sessionId),
-    checkpointId: `cp-${commitOrder}`,
+    checkpointId: packet.checkpointId,
     compactionId: `compaction-${commitOrder}`,
     startSeq: commitOrder - 2,
     summarySeq: commitOrder - 1,
     replacementSeq: commitOrder,
-    shadowedSeqs: [1, 2],
-    spanDigest: 'span',
-    sourceDigest: 'source',
-    bodyDigest: `body-${commitOrder}`,
+    shadowedSeqs: [...packet.foldedSeqs],
+    spanDigest: packet.spanDigest,
+    sourceDigest: packet.sourceDigest ?? 'source',
+    bodyDigest: packet.bodyDigest,
     summaryDigest: 'summary',
     commitOrder,
     unclosed: false,
   }
 }
 
-function receipt(packetId: string, order: number): SemanticReceipt {
+function receipt(packet: SemanticPacket, order: number): SemanticReceipt {
   return {
     kind: 'receipt',
     schemaVersion: SEMANTIC_SCHEMA_VERSION,
-    packetId,
+    packetId: packet.packetId,
     sessionId,
-    checkpointId: `cp-${packetId}`,
+    checkpointId: packet.checkpointId,
     outcome: 'committed',
-    proof: proof(order),
-    opsDigest: 'ops',
+    proof: proofFor(packet, order),
+    opsDigest: opsDigestOf(packet),
     decidedAt: 1,
   }
 }
@@ -89,7 +99,13 @@ describe('R31-C3: prepared packets and receipts are immutable', () => {
     await journal.write(first)
     await journal.write(first)
     await expect(journal.write({ ...first, bodyDigest: 'changed' }))
-      .rejects.toThrow(/immutable/u)
+      .rejects.toThrow(/immutable|identity/u)
+  })
+
+  it('refuses a packet whose id is not its v4 identity', async () => {
+    const journal = new FileSemanticJournal(await makeTemp('ef-journal-'))
+    await expect(journal.write({ ...packet('p1'), packetId: 'friendly-name' }))
+      .rejects.toThrow(/identity/u)
   })
 
   it('refuses to journal a packet that already carries a decision', async () => {
@@ -100,18 +116,29 @@ describe('R31-C3: prepared packets and receipts are immutable', () => {
 
   it('refuses a receipt for a packet that does not exist', async () => {
     const journal = new FileSemanticJournal(await makeTemp('ef-journal-'))
-    await expect(journal.writeReceipt(receipt('missing', 10)))
+    await expect(journal.writeReceipt(receipt(packet('missing'), 10)))
       .rejects.toThrow(/no prepared packet/u)
+  })
+
+  it('refuses a receipt that commits different operations than its packet', async () => {
+    const journal = new FileSemanticJournal(await makeTemp('ef-journal-'))
+    const target = packet('p1')
+    await journal.write(target)
+    await expect(journal.writeReceipt({ ...receipt(target, 10), opsDigest: 'not-the-ops' }))
+      .rejects.toThrow(/opsDigest/u)
   })
 
   it('accepts an identical receipt twice and refuses a different decision', async () => {
     const root = await makeTemp('ef-journal-')
     const journal = new FileSemanticJournal(root)
-    await journal.write(packet('p1'))
-    const decision = receipt('p1', 10)
+    const target = packet('p1')
+    await journal.write(target)
+    const decision = receipt(target, 10)
     await journal.writeReceipt(decision)
     await journal.writeReceipt(decision)
-    await expect(journal.writeReceipt({ ...decision, outcome: 'aborted' }))
+    // A schema-valid but DIFFERENT decision is still refused by the immutable
+    // writer; the outcome swap alone would be rejected earlier as malformed.
+    await expect(journal.writeReceipt({ ...decision, decidedAt: 2 }))
       .rejects.toThrow(/immutable/u)
 
     const read = await journal.list(sessionId)
@@ -131,19 +158,21 @@ describe('R31-C4: replay order is commit order, not wall time', () => {
     const earlier = { ...packet('earlier', { stagedAtSeq: 99 }), createdAt: 100_000 }
     await journal.write(later)
     await journal.write(earlier)
-    await journal.writeReceipt({ ...receipt('later', 50), decidedAt: 1 })
-    await journal.writeReceipt({ ...receipt('earlier', 20), decidedAt: 999_999 })
+    await journal.writeReceipt({ ...receipt(later, 50), decidedAt: 1 })
+    await journal.writeReceipt({ ...receipt(earlier, 20), decidedAt: 999_999 })
     const read = await journal.list(sessionId)
-    expect(read.packets.map(entry => entry.packetId)).toEqual(['earlier', 'later'])
+    expect(read.packets.map(entry => entry.packetId)).toEqual([earlier.packetId, later.packetId])
   })
 
   it('sorts a receipt-less packet after every committed one', async () => {
     const journal = new FileSemanticJournal(await makeTemp('ef-journal-'))
-    await journal.write(packet('staged', { stagedAtSeq: 1 }))
-    await journal.write(packet('committed', { stagedAtSeq: 999 }))
-    await journal.writeReceipt(receipt('committed', 50))
+    const staged = packet('staged', { stagedAtSeq: 1 })
+    const committed = packet('committed', { stagedAtSeq: 999 })
+    await journal.write(staged)
+    await journal.write(committed)
+    await journal.writeReceipt(receipt(committed, 50))
     const read = await journal.list(sessionId)
-    expect(read.packets.map(entry => entry.packetId)).toEqual(['committed', 'staged'])
+    expect(read.packets.map(entry => entry.packetId)).toEqual([committed.packetId, staged.packetId])
   })
 })
 
@@ -154,6 +183,8 @@ describe('R31-C7: legacy files are readable but never applied directly', () => {
     await mkdir(dir, { recursive: true })
     const legacy = {
       ...packet('legacy'),
+      // A v3 id is not a v4 identity; the migration re-derives it.
+      packetId: 'legacy',
       schemaVersion: LEGACY_SEMANTIC_SCHEMA_VERSION,
       status: 'activated',
     }
@@ -174,9 +205,10 @@ describe('R31-C7: legacy files are readable but never applied directly', () => {
   it('reports a corrupt receipt instead of silently ignoring it', async () => {
     const root = await makeTemp('ef-journal-')
     const journal = new FileSemanticJournal(root)
-    await journal.write(packet('p1'))
+    const target = packet('p1')
+    await journal.write(target)
     const dir = join(root, String(sessionId))
-    const path = join(dir, 'p1.receipt.json')
+    const path = join(dir, `${target.packetId}.receipt.json`)
     await writeFile(path, JSON.stringify({
       kind: 'receipt-file',
       schemaVersion: SEMANTIC_SCHEMA_VERSION,

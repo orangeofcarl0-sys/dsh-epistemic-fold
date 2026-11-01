@@ -29,6 +29,7 @@ class ObservedJournal implements SemanticJournal {
   async write(): Promise<void> {}
   async writeReceipt(): Promise<void> {}
   async hasSession(): Promise<boolean> { return false }
+  async sessionState(): Promise<'absent'> { return 'absent' }
 
   async list(): Promise<JournalRead> {
     this.lists += 1
@@ -40,7 +41,15 @@ class ObservedJournal implements SemanticJournal {
         this.failNextList = false
         throw new Error('journal read failed')
       }
-      return { packets: [], receipts: new Map(), legacy: [], invalid: [] }
+      return {
+        packets: [],
+        receipts: new Map(),
+        legacy: [],
+        invalid: [],
+        orphans: [],
+        rejectedReceipts: new Map(),
+        state: 'ok',
+      }
     } finally {
       this.activeLists -= 1
     }

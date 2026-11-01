@@ -14,11 +14,15 @@
 
 import { describe, expect, it } from 'vitest'
 import { randomUUID } from 'node:crypto'
+import { readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { createMessage, createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionId } from '@deepseek-ai/dsh-session'
 import { locateFoldFrontier } from '../src/fold/frontier.ts'
 import { FileSemanticJournal } from '../src/semantic/journal.ts'
+import type { ContinuityAdmission } from '../src/semantic/admission.ts'
+import { emptyCurrentState } from '../src/state/state.ts'
+import type { FoldCurrentState } from '../src/state/state.ts'
 import {
   MODEL,
   SIGNAL,
@@ -130,6 +134,139 @@ async function harness(): Promise<{ readonly h: Harness; readonly root: string; 
   )
   return { h, root, box }
 }
+
+/** The engine's admission, for state assertions without running a fold. */
+async function admissionOf(
+  h: Harness,
+  session: Session,
+): Promise<ContinuityAdmission> {
+  const internal = h.engine as unknown as {
+    semanticAdmissionOf(session: Session, base: FoldCurrentState): Promise<ContinuityAdmission>
+  }
+  return await internal.semanticAdmissionOf(session, emptyCurrentState())
+}
+
+/** A parent with two committed semantic folds, and a child forked through B. */
+async function twoCommitFork(): Promise<{
+  readonly h: Harness
+  readonly root: string
+  readonly parent: Session
+  readonly child: Session
+  readonly childJournal: FileSemanticJournal
+  readonly committed: readonly { readonly packetId: string; readonly commitOrder: number }[]
+}> {
+  const { h, root, box } = await harness()
+  const parent = h.ctx.sessions.create(SessionId(`parent-${randomUUID()}`), { meta: { cwd: root } })
+  seedConversation(parent)
+
+  box.text = writerReply('A', [constraint('alpha', 'Constraint alpha from fold A.', 'fixture user 1')])
+  await foldOpen(h, parent)
+  appendClosedTurn(parent, 3, 'Second parent phase.')
+  box.text = writerReply('B', [constraint('beta', 'Constraint beta from fold B.', 'Second parent phase')])
+  await foldOpen(h, parent)
+  const boundary = h.engine.lastSemanticReceipt?.proof?.replacementSeq
+  if (boundary === undefined) throw new Error('parent fold B has no proof')
+
+  const child = h.ctx.sessions.fork(parent, boundary as never, SessionId(`child-${randomUUID()}`))
+  const childJournal = new FileSemanticJournal(join(root, 'semantic'))
+  const first = await h.engine.reconcileSemantics(child)
+  expect(first.health).toBe('ready')
+  const read = await childJournal.list(child.id)
+  const committed = [...read.receipts.values()]
+    .filter(receipt => receipt.outcome === 'committed' && receipt.proof !== undefined)
+    .map(receipt => ({ packetId: receipt.packetId, commitOrder: receipt.proof!.commitOrder }))
+    .sort((left, right) => left.commitOrder - right.commitOrder)
+  expect(committed).toHaveLength(2)
+  return { h, root, parent, child, childJournal, committed }
+}
+
+describe('R32-C: fork inheritance is idempotent and complete', () => {
+  it('fills the missing second commit after a partial first receipt', async () => {
+    const { h, root, child, childJournal, committed } = await twoCommitFork()
+    const later = committed[1]!
+    const dir = join(root, 'semantic', String(child.id))
+    await rm(join(dir, `${later.packetId}.json`))
+    await rm(join(dir, `${later.packetId}.receipt.json`))
+
+    const partial = await childJournal.list(child.id)
+    expect(partial.receipts.size).toBe(1)
+
+    const repaired = await h.engine.reconcileSemantics(child)
+    expect(repaired.health).toBe('ready')
+    const after = await childJournal.list(child.id)
+    const restored = [...after.receipts.values()].filter(receipt => receipt.outcome === 'committed')
+    expect(restored).toHaveLength(2)
+    expect(restored.some(receipt => receipt.packetId === later.packetId)).toBe(true)
+
+    const admission = await admissionOf(h, child)
+    expect(admission.mode).toBe('active')
+    if (admission.mode === 'active') {
+      expect(Object.values(admission.state.constraints).map(anchor => anchor.value))
+        .toEqual(expect.arrayContaining(['Constraint alpha from fold A.', 'Constraint beta from fold B.']))
+    }
+  }, 60_000)
+
+  it('writes only the missing receipt when the second packet survived', async () => {
+    const { h, root, child, childJournal, committed } = await twoCommitFork()
+    const later = committed[1]!
+    const dir = join(root, 'semantic', String(child.id))
+    await rm(join(dir, `${later.packetId}.receipt.json`))
+    const partial = await childJournal.list(child.id)
+    expect(partial.packets.some(packet => packet.packetId === later.packetId)).toBe(true)
+    expect(partial.receipts.has(later.packetId)).toBe(false)
+
+    const repaired = await h.engine.reconcileSemantics(child)
+    expect(repaired.health).toBe('ready')
+    const after = await childJournal.list(child.id)
+    expect(after.receipts.get(later.packetId)?.outcome).toBe('committed')
+  }, 60_000)
+
+  it('is idempotent: a repeated pass writes no new files and does not change state', async () => {
+    const { h, root, child } = await twoCommitFork()
+    const dir = join(root, 'semantic', String(child.id))
+    const beforeFiles = (await readdir(dir)).sort()
+    const before = await admissionOf(h, child)
+    expect(before.mode).toBe('active')
+
+    const report = await h.engine.reconcileSemantics(child)
+    expect(report.health).toBe('ready')
+    expect(report.activated).toBe(0)
+    expect((await readdir(dir)).sort()).toEqual(beforeFiles)
+    const after = await admissionOf(h, child)
+    expect(after).toEqual(before)
+  }, 60_000)
+
+  it('blocks rather than guessing when the parent journal disappears', async () => {
+    const { h, root, parent, child, childJournal } = await twoCommitFork()
+    const parentDir = join(root, 'semantic', String(parent.id))
+    await rm(parentDir, { recursive: true, force: true })
+
+    const report = await h.engine.reconcileSemantics(child)
+    expect(report.health).toBe('partial')
+    expect(report.detail).toMatch(/parent journal directory is not present/u)
+    const read = await childJournal.list(child.id)
+    // No NEW commit was fabricated from the surviving child rows.
+    expect(read.receipts.size).toBe(2)
+  }, 60_000)
+
+  it('blocks when a parent packet no longer agrees with its receipt source digest', async () => {
+    const { h, root, parent, child } = await twoCommitFork()
+    const parentJournal = new FileSemanticJournal(join(root, 'semantic'))
+    const parentRead = await parentJournal.list(parent.id)
+    const first = parentRead.packets[0]
+    if (first === undefined) throw new Error('parent has no packet')
+    const path = join(root, 'semantic', String(parent.id), `${first.packetId}.json`)
+    const parsed = JSON.parse(await readFile(path, 'utf8')) as { packet: Record<string, unknown> }
+    await writeFile(path, JSON.stringify({
+      ...parsed,
+      packet: { ...parsed.packet, sourceDigest: 'a-different-archive' },
+    }, null, 2), 'utf8')
+
+    const report = await h.engine.reconcileSemantics(child)
+    expect(report.health).toBe('partial')
+    expect(report.detail).toMatch(/internally inconsistent/u)
+  }, 60_000)
+})
 
 describe('R31-D4: a child inherits A and B, never C', () => {
   it('seeds commits before the fork boundary and excludes later ones', async () => {

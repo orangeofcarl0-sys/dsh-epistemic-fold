@@ -26,7 +26,8 @@ import { canonicalHash } from '../src/checkpoint/hash.ts'
 import { buildBundle } from '../src/checkpoint/compiler.ts'
 import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
 import { retireDerivedAnswers } from '../src/checkpoint/inventory.ts'
-import { FileSemanticJournal } from '../src/semantic/journal.ts'
+import { FileSemanticJournal, packetIdOf } from '../src/semantic/journal.ts'
+import type { ContinuityAdmission } from '../src/semantic/admission.ts'
 import { emptyCurrentState, stateKeyText } from '../src/state/state.ts'
 import type { EfAnchorEventData, FoldCurrentState } from '../src/state/state.ts'
 import { createHarness } from './harness.ts'
@@ -155,9 +156,15 @@ function packetFor(
     const derived = fixture.session.deriveEventMessage(event)
     if (derived !== null) messages.push(derived)
   }
+  const bodyDigest = canonicalHash(fixture.body)
   return {
     schemaVersion: options.schemaVersion ?? SEMANTIC_SCHEMA_VERSION,
-    packetId: `packet-${randomUUID()}`,
+    packetId: packetIdOf({
+      sessionId: fixture.session.id,
+      checkpointId: CHECKPOINT,
+      foldedSeqs: fixture.span,
+      bodyDigest,
+    }),
     sessionId: fixture.session.id,
     checkpointId: CHECKPOINT,
     mode: 'active',
@@ -167,7 +174,7 @@ function packetFor(
     foldedSeqs: [...fixture.span],
     createdAt: 1,
     stagedAtSeq: fixture.startSeq - 1,
-    bodyDigest: canonicalHash(fixture.body),
+    bodyDigest,
     ...(options.sourceDigest === undefined
       ? { sourceDigest: canonicalHash(retireDerivedAnswers(messages).messages) }
       : { sourceDigest: options.sourceDigest }),
@@ -193,15 +200,24 @@ function engineFor(parts: Composite) {
   })
 }
 
-/** Read the engine's semantic view without running a fold. */
+/** Read the engine's semantic admission without running a fold. */
+async function admissionOf(
+  engine: { reconcileSemantics(session: HarnessSession): Promise<unknown> },
+  session: HarnessSession,
+): Promise<ContinuityAdmission> {
+  const internal = engine as unknown as {
+    semanticAdmissionOf(session: HarnessSession, base: FoldCurrentState): Promise<ContinuityAdmission>
+  }
+  return await internal.semanticAdmissionOf(session, emptyCurrentState())
+}
+
+/** The state a caller may use; a blocked admission is never a complete state. */
 async function semanticStateOf(
   engine: { reconcileSemantics(session: HarnessSession): Promise<unknown> },
   session: HarnessSession,
 ): Promise<FoldCurrentState> {
-  const internal = engine as unknown as {
-    semanticStateOf(session: HarnessSession, base: FoldCurrentState): Promise<FoldCurrentState>
-  }
-  return await internal.semanticStateOf(session, emptyCurrentState())
+  const admission = await admissionOf(engine, session)
+  return admission.mode === 'active' ? admission.state : emptyCurrentState()
 }
 
 describe('R31-C5: cross-store recovery is fail-closed', () => {
@@ -269,9 +285,11 @@ describe('R31-C5: cross-store recovery is fail-closed', () => {
     const h = await engineFor(parts)
     const report = await h.engine.reconcileSemantics(other as unknown as HarnessSession)
     expect(report.health).toBe('partial')
-    expect(report.detail).toMatch(/no valid proof/u)
+    expect(report.detail).toMatch(/cannot prove|no valid proof/u)
     expect(other.seq).toBe(before)
 
+    const admission = await admissionOf(h.engine, other as unknown as HarnessSession)
+    expect(admission.mode).toBe('blocked')
     const state = await semanticStateOf(h.engine, other as unknown as HarnessSession)
     expect(state.constraints['semantic-timeout']).toBeUndefined()
     expect(state.stateHeads[stateKeyText({

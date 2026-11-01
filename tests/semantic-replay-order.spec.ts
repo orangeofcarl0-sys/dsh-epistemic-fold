@@ -14,6 +14,7 @@ import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { stateKeyText } from '../src/state/state.ts'
 import type { Anchor, EfAnchorEventData } from '../src/state/state.ts'
 import { replayWithSemanticCommits } from '../src/semantic/replay.ts'
+import type { ValidatedSemanticCommit } from '../src/semantic/integrity.ts'
 
 const KEY = { namespace: 'semantic', entity: 'decision', property: 'strategy' }
 
@@ -50,6 +51,37 @@ function appendRaw(session: Session, id: string, value: string): number {
   return seq
 }
 
+/** The integrity gate is what produces this in production; replay never reads the proof. */
+function commit(
+  packetId: string,
+  commitOrder: number,
+  operations: readonly EfAnchorEventData[],
+): ValidatedSemanticCommit {
+  return {
+    packetId,
+    sessionId: 'replay-session',
+    checkpointId: `cp-${packetId}`,
+    commitOrder,
+    proof: {
+      proofVersion: 1,
+      sessionId: 'replay-session',
+      checkpointId: `cp-${packetId}`,
+      compactionId: `compaction-${packetId}`,
+      startSeq: commitOrder - 2,
+      summarySeq: commitOrder - 1,
+      replacementSeq: commitOrder,
+      shadowedSeqs: [0],
+      spanDigest: 'span',
+      sourceDigest: 'source',
+      bodyDigest: 'body',
+      summaryDigest: 'summary',
+      commitOrder,
+      unclosed: false,
+    },
+    operations,
+  }
+}
+
 describe('R31-C4: interleaved replay', () => {
   it('a later raw event wins over an earlier semantic commit (not the reverse)', () => {
     const session = sessionWithEvents()
@@ -58,7 +90,7 @@ describe('R31-C4: interleaved replay', () => {
     expect(raw).toBe(3)
 
     const replayed = replayWithSemanticCommits(session, [
-      { packetId: 'p-early', atSeq: commitAt, ops: [declare('semantic-early', 'semantic value, earlier')] },
+      commit('p-early', commitAt, [declare('semantic-early', 'semantic value, earlier')]),
     ])
     const head = replayed.state.stateHeads[stateKeyText(KEY)]
     expect(head?.id).toBe('raw-after')
@@ -74,7 +106,7 @@ describe('R31-C4: interleaved replay', () => {
     expect(latest).toBe(4)
 
     const replayed = replayWithSemanticCommits(session, [
-      { packetId: 'p-late', atSeq: latest, ops: [declare('semantic-late', 'semantic value, later')] },
+      commit('p-late', latest, [declare('semantic-late', 'semantic value, later')]),
     ])
     const head = replayed.state.stateHeads[stateKeyText(KEY)]
     expect(head?.id).toBe('semantic-late')
@@ -84,8 +116,8 @@ describe('R31-C4: interleaved replay', () => {
   it('two commits at one seq are ordered by packet id, not by array order', () => {
     const session = sessionWithEvents()
     const replayed = replayWithSemanticCommits(session, [
-      { packetId: 'b', atSeq: 1, ops: [declare('b-anchor', 'from b')] },
-      { packetId: 'a', atSeq: 1, ops: [declare('a-anchor', 'from a')] },
+      commit('b', 1, [declare('b-anchor', 'from b')]),
+      commit('a', 1, [declare('a-anchor', 'from a')]),
     ])
     // 'a' applies before 'b', so b is the current head regardless of input order.
     expect(replayed.state.stateHeads[stateKeyText(KEY)]?.id).toBe('b-anchor')
@@ -95,7 +127,7 @@ describe('R31-C4: interleaved replay', () => {
   it('a commit whose seq is absent is reported and never applied', () => {
     const session = sessionWithEvents()
     const replayed = replayWithSemanticCommits(session, [
-      { packetId: 'ghost', atSeq: 10_000, ops: [declare('ghost-anchor', 'not history')] },
+      commit('ghost', 10_000, [declare('ghost-anchor', 'not history')]),
     ])
     expect(replayed.unplaced.map(commit => commit.packetId)).toEqual(['ghost'])
     expect(replayed.state.stateHeads[stateKeyText(KEY)]).toBeUndefined()

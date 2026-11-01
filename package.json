@@ -65,6 +65,8 @@
     "eval:rc0-live": "vitest run tests/rc0c-full-wire-billing.spec.ts",
     "eval:rc1": "vitest run tests/rc1a-trigger-reserve.spec.ts tests/rc1b-policy-replay.spec.ts tests/rc1c-shadow-rebase.spec.ts tests/rc1d-cache-contract.spec.ts tests/rc1e-cache-microbench.spec.ts tests/rc11a-certification-semantics.spec.ts tests/rc11b-replay-correction.spec.ts tests/rc12a-recall-loop.spec.ts tests/rc12b-recall-mechanism.spec.ts",
     "eval:rc1-live": "vitest run tests/rc1a-live-reserve.spec.ts tests/rc1e-live-cache.spec.ts tests/rc1f-fold-smoke.spec.ts tests/rc11c-live-smokes.spec.ts tests/rc12a-recall-loop.spec.ts",
+    "eval:r32-live": "node eval/r32/live-semantic-eval.mjs --check",
+    "eval:r32-live-run": "node eval/r32/live-semantic-eval.mjs --run",
     "build": "node scripts/build-plugin.mjs",
     "preflight": "node scripts/preflight-lib.mjs",
     "prepare": "node scripts/build-plugin.mjs && node scripts/generate-presets.mjs",

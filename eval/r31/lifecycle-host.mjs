@@ -129,22 +129,51 @@ function conversation(session, turns) {
   session.append('turn/start', { turn: turns + 1 })
 }
 
-function appendClosedTurn(session, turn, userText, assistantText) {
+/**
+ * The session's open turn/step, or the next turn when the tail is closed.
+ *
+ * A forked child ends with the fork's synthetic `turn/end`; a restored parent
+ * may end inside an open turn. Hard-coding a turn number is what made the first
+ * fork run write `step/start` without a matching `turn/start`.
+ */
+function turnState(session) {
+  let turn = 0
+  let open = false
+  let step = 0
+  for (const event of session.snapshotEvents()) {
+    if (event.type === 'turn/start') {
+      turn = Number(event.data.turn)
+      open = true
+      step = 0
+    } else if (event.type === 'step/start') {
+      step = Number(event.data.step)
+    } else if (event.type === 'step/end') {
+      step = 0
+    } else if (event.type === 'turn/end') {
+      open = false
+    }
+  }
+  return { turn: open ? turn : turn + 1, step: step + 1, open }
+}
+
+function appendClosedTurn(session, userText, assistantText) {
+  const state = turnState(session)
+  if (!state.open) session.append('turn/start', { turn: state.turn })
   session.append('user/message', userMessage(`${userText} ${FILLER}`), { surfaceOp: 'append' })
-  session.append('step/start', { turn, step: 1 })
+  session.append('step/start', { turn: state.turn, step: state.step })
   session.append('assistant/message', {
     stream: [],
-    turn,
-    step: 1,
+    turn: state.turn,
+    step: state.step,
     message: createMessage({
       role: 'assistant',
       content: [{ type: 'text', text: `${assistantText} ${FILLER}` }],
       source: { kind: 'model', provider: MODEL, model: MODEL },
     }),
   }, { surfaceOp: 'append' })
-  session.append('step/end', { turn, step: 1 })
-  session.append('turn/end', { turn, reason: { kind: 'completed' } })
-  session.append('turn/start', { turn: turn + 1 })
+  session.append('step/end', { turn: state.turn, step: state.step })
+  session.append('turn/end', { turn: state.turn, reason: { kind: 'completed' } })
+  session.append('turn/start', { turn: state.turn + 1 })
 }
 
 async function mount() {
@@ -188,11 +217,13 @@ async function outcome(payload) {
 async function journalView(id) {
   const viewed = await new FileSemanticJournal(join(root, 'semantic')).list(SessionId(id))
   return {
+    state: viewed.state,
     packets: viewed.packets.map(packet => ({
       packetId: packet.packetId,
       checkpointId: packet.checkpointId,
       status: packet.status,
       sourceDigest: packet.sourceDigest,
+      legacyPacketId: packet.legacyPacketId,
     })),
     receipts: [...viewed.receipts.values()].map(receipt => ({
       packetId: receipt.packetId,
@@ -201,6 +232,8 @@ async function journalView(id) {
       commitOrder: receipt.proof?.commitOrder,
     })),
     legacy: viewed.legacy.length,
+    orphans: viewed.orphans,
+    rejectedReceipts: [...viewed.rejectedReceipts.keys()],
     invalid: viewed.invalid,
   }
 }
@@ -264,9 +297,19 @@ if (mode === 'read') {
   const handle = await ctx.sessionPersistence.open(SessionId(sessionId), 'write')
   const stored = await handle.read(0)
   const header = handle.header
+  // The OFFICIAL resume shape: the stored log is the seed, the inherited cut
+  // travels beside it, and the lineage fields survive. Dropping `isSeeded`,
+  // `parentSession`, or `inheritedEventCount` here would make a forked child
+  // look like an unrelated session with a copied prefix.
   const session = ctx.sessions.create(SessionId(sessionId), {
     seed: [...stored.events],
-    meta: { cwd: root, createdAt: header.createdAt },
+    meta: {
+      cwd: root,
+      createdAt: header.createdAt,
+      isSeeded: header.isSeeded,
+      ...(header.parentSession === undefined ? {} : { parentSession: header.parentSession }),
+    },
+    inheritedEventCount: Number(handle.inheritedEventCount),
   })
   // DSH's restored Session appends a local `session/end-seed` marker during
   // construction, before the store's publication hooks exist. The persistence
@@ -288,7 +331,7 @@ if (mode === 'read') {
     console.error('EV17', JSON.stringify(session.eventAt(17)?.type), JSON.stringify(session.eventAt(17)?.data)?.slice(0, 200))
     ctx.on('session/event', (_session, event) => console.error('EV', event.seq, event.type))
   }
-  appendClosedTurn(session, 3, 'Second phase starts here. Keep the timeout.', 'Noted.')
+  appendClosedTurn(session, 'Second phase starts here. Keep the timeout.', 'Noted.')
   adapter.reply = writerReply('Carrying the recorded state into the second phase.', [{
     kind: 'decision',
     subjectKey: 'phase-two',
@@ -323,13 +366,21 @@ if (mode === 'read') {
   await outcome({
     mode,
     replayedEvents: stored.events.length,
-    storedHeader: { id: String(header.id), version: header.version, createdAt: header.createdAt },
+    storedHeader: {
+      id: String(header.id),
+      version: header.version,
+      createdAt: header.createdAt,
+      isSeeded: header.isSeeded,
+      parentSession: header.parentSession === undefined ? undefined : String(header.parentSession),
+      inheritedEventCount: Number(handle.inheritedEventCount),
+    },
     reconcile,
     diagnosticsBefore: {
       health: diagnosticsBefore.health,
       committed: diagnosticsBefore.committed,
       reconciled: diagnosticsBefore.reconciled,
       detail: diagnosticsBefore.detail,
+      blockedNotice: body.includes('SEMANTIC STATE INCOMPLETE'),
     },
     body,
     surfaceNodes: [...session.surface.nodes],
@@ -349,6 +400,56 @@ if (mode === 'read') {
     files: await readdir(join(root, 'semantic', sessionId)).catch(() => []),
   })
   await handle.close()
+  process.exit(0)
+}
+
+if (mode === 'fork') {
+  const childId = process.argv[5]
+  if (childId === undefined) {
+    console.error('usage: lifecycle-host.mjs fork <root> <parentId> <childId> [boundary]')
+    process.exit(2)
+  }
+  const ctx = await mount()
+  const handle = await ctx.sessionPersistence.open(SessionId(sessionId), 'write')
+  const stored = await handle.read(0)
+  const header = handle.header
+  const parent = ctx.sessions.create(SessionId(sessionId), {
+    seed: [...stored.events],
+    meta: {
+      cwd: root,
+      createdAt: header.createdAt,
+      isSeeded: header.isSeeded,
+      ...(header.parentSession === undefined ? {} : { parentSession: header.parentSession }),
+    },
+    inheritedEventCount: Number(handle.inheritedEventCount),
+  })
+  const localSeedEvents = parent.snapshotEvents().slice(stored.events.length)
+  if (localSeedEvents.length > 0) await handle.append([...localSeedEvents])
+  // Mounting the plugin is what makes the parent journal reachable to a child
+  // through the same engine that will later reconcile it.
+  void new EpistemicFoldPlugin(ctx, config)
+  // `seq` is the NEXT append position; a fork boundary is an inclusive seq.
+  const boundary = process.argv[6] === undefined ? Number(parent.seq) - 1 : Number(process.argv[6])
+  const child = ctx.sessions.fork(parent, boundary, SessionId(childId))
+  const childHandle = await ctx.sessionPersistence.create(child.header, {
+    inheritedEventCount: Number(child.inheritedEventCount),
+  })
+  await childHandle.append([...child.snapshotEvents()])
+  await childHandle.flush()
+  await childHandle.close()
+  await ctx.sessions.flush(parent)
+  await handle.flush()
+  await handle.close()
+  await outcome({
+    mode,
+    parent: sessionId,
+    child: childId,
+    boundary,
+    inheritedEventCount: Number(child.inheritedEventCount),
+    childSeq: Number(child.seq),
+    childEvents: child.snapshotEvents().length,
+    journal: await journalView(sessionId),
+  })
   process.exit(0)
 }
 
