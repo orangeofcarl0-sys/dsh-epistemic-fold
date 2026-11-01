@@ -4,17 +4,20 @@ This directory is the R33 instrument. It asks whether correctly committed
 semantic state changes what a follow-up agent does, not whether the journal is
 well-formed.
 
-**Current status:** offline arms and the frozen dataset are complete. The live
-model run is **not executed** (no explicit budget permission or resolved route).
-The scripted results are a pipeline measurement, **not a model result**.
+**Current status:** R33.1 closed the evaluator defects; dataset v2 and the
+separate holdout are frozen. The live model run is **not executed** (no explicit
+budget permission, route, or authorization). The scripted results are a pipeline
+measurement, **not a model result**.
 
 ## Quick start
 
 ```bash
 npm run eval:r33-verify       # manifest matches every case
-npm run eval:r33              # offline arms + R33-0 tests (25 tests)
+node eval/r33/freeze.mjs --holdout --verify
+npm run eval:r33              # offline arms + integrity tests (62 tests)
 npm run eval:r33-live-check   # interface only; no credentials
-npm run eval:r33-self-test    # real fold/tool-loop plumbing; scripted adapter
+npm run eval:r33-self-test    # four arms, real fold/tool-loop, scripted adapter
+npm run eval:build            # only for a live --run
 ```
 
 Reports are written to `eval/r33/out/`. `out/*-work/` is scratch and ignored.
@@ -40,40 +43,55 @@ Reports are written to `eval/r33/out/`. `out/*-work/` is scratch and ignored.
 
 ## Arms
 
-`B0` Basic, `B1` EF off, `S` Active, `O1` oracle delta, `O2` oracle facts,
-`OR` oracle evidence, `F` full history, `N` null, `FM` false-memory fault.
+Primary live arms: `B1` EF off, `S` Active, `O1` oracle delta, `O2` oracle
+current facts. Optional controls: `B0` Basic, `OR` oracle evidence, `F` full
+history, `N` null, `FM` false-memory fault.
 
 B0/B1 commit no semantic state; their extraction metrics are `null`, not 0.
-O1 goes through the real validator and per-fold limit; it is not a bypass.
+O1 goes through the real validator, planner, journal, working set, and per-fold
+limit; it is not a text-injection bypass. When S runs first, O1 reuses S's
+handoff and records `oracleBasis: s-conditional`.
 
 ## Dataset
 
-17 cases, 5 counterfactual pairs, 7 diagnostic singles. Risk classes:
-persistent constraint, decision override, negative knowledge, validation
-boundary, cross-phase dependency, authority/scope, retrieval trigger, and
-history-independent controls.
+Development set `r33-semantic-continuity-v2`: 17 cases, 5 counterfactual pairs,
+7 diagnostic singles, digest `407148f0…87f`. The separate holdout
+`r33-semantic-continuity-holdout-v1` (2 cases, digest `af22eb7a…663`) is frozen
+and **not executed**.
+
+Risk classes: persistent constraint, decision override, negative knowledge,
+validation boundary, cross-phase dependency, authority/scope, retrieval trigger,
+and history-independent controls.
 
 To add a case:
 
-1. Add `cases/<id>/case.json`, `workspace/`, `actions/<name>/`, `check.mjs`.
+1. Add `cases/<id>/case.json`, `workspace/`, `actions/<name>/`, `check.mjs`, with
+   `checker.expectedChecks` and `requiresTests`.
 2. `npm run eval:r33-freeze`.
 3. Run `npm run eval:r33`.
 
 The schema refuses a history-dependent case if its workspace contains a gold
-quote or needle. The checker must print one `R33_RESULT {json}` line with named
-checks.
+quote or needle, refuses a quote absent from ANY authoritative `sourceRef`, and
+refuses a normative fact with no user source. The checker must print one
+`R33_RESULT {json}` line; the harness reads only the last marker from a trusted
+bootstrap, validates the declared checks, and never trusts stdout.
 
 ## Live run
 
 ```bash
-R33_LIVE=1 \
-EF_LIVE_BASE_URL=... EF_LIVE_API_KEY=... \
-node eval/r33/live.mjs --run --manifest live-manifest.json
+npm run eval:build
+R33_LIVE=1 R34_LIVE_BASE_URL=... R34_LIVE_API_KEY=... \
+node eval/r33/live.mjs --run --manifest eval/r33/live-manifest.example.json
 ```
 
-The manifest must contain a model, route env-var names, and positive request,
-input-token, output-token and wall-clock limits. `0` is refused, not unlimited.
-One ledger covers the fold's writer call, every follow-up turn, and every retry.
+The manifest must contain a model, `maxOutputTokens`, route env-var NAMES, and
+positive request, input-token, output-token and wall-clock limits. `0` is
+refused, not unlimited. One ledger is admitted immediately before every HTTP
+attempt, including a 429 resend; partial/unknown usage keeps its reserve.
+
+The manifest may not embed an authorization/api-key/cookie header. `--check`
+resolves no credentials; `--run` without `R33_LIVE=1` exits 3 and makes no
+request.
 
 Exit codes: `0` success, `2` partial, `3` not-executed, `4` budget-exhausted,
 `5` provider-unavailable, `6` invalid-benchmark, `7` failed.

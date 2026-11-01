@@ -1,8 +1,8 @@
 # R33 offline arm report
 
-- dataset: `2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26` (17 frozen cases)
+- dataset: `407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f` (17 frozen cases)
 - execution: `scripted-writer + scripted-follow-up (pipeline measurement, not a model result)`
-- generated: 2026-11-01T12:13:52.422Z
+- generated: 2026-11-01T15:05:14.004Z
 
 This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It is not a model result.
 
@@ -20,18 +20,18 @@ This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It i
 | N | 17/17 | 3 | 14 | 0.176 | n/a | n/a | n/a | n/a | n/a |
 | FM | 8/8 | 0 | 8 | 0.000 | 0.875 | 1.000 | 0.000 | 0.875 | 0.875 |
 
-## Task-level comparisons (left vs right)
+## Task-level treatment comparisons (baseline -> treatment)
 
-| left | right | pairs | left-only (damage) | right-only (rescue) | both | neither |
+| baseline | treatment | pairs | rescue | damage | both | neither |
 |---|---|---:|---:|---:|---:|---:|
-| S | B1 | 17 | 8 | 0 | 7 | 2 |
-| S | B0 | 17 | 8 | 0 | 7 | 2 |
-| O1 | S | 17 | 1 | 0 | 15 | 1 |
-| O2 | O1 | 17 | 1 | 0 | 16 | 0 |
-| F | S | 17 | 2 | 0 | 15 | 0 |
-| S | N | 17 | 12 | 0 | 3 | 2 |
-| O1 | B1 | 17 | 9 | 0 | 7 | 1 |
-| OR | B1 | 17 | 10 | 0 | 7 | 0 |
+| B1 | S | 17 | 8 | 0 | 7 | 2 |
+| B0 | S | 17 | 8 | 0 | 7 | 2 |
+| S | O1 | 17 | 1 | 0 | 15 | 1 |
+| O1 | O2 | 17 | 1 | 0 | 16 | 0 |
+| S | F | 17 | 2 | 0 | 15 | 0 |
+| N | S | 17 | 12 | 0 | 3 | 2 |
+| B1 | O1 | 17 | 9 | 0 | 7 | 1 |
+| B1 | OR | 17 | 10 | 0 | 7 | 0 |
 
 ## Per-case rows
 

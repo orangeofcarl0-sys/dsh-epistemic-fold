@@ -1,7 +1,22 @@
 {
   "status": "interface-ok",
-  "datasetDigest": "2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26",
-  "cases": 17,
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+    "cases": 17,
+    "scorerVersion": 2
+  },
+  "holdout": {
+    "id": "r33-semantic-continuity-holdout-v1",
+    "verified": true,
+    "digest": "af22eb7a91155507998750f0428be8bb7c6285696179128a75e83f3eeaada663",
+    "cases": [
+      "HOLD-A",
+      "HOLD-B"
+    ],
+    "executed": false,
+    "note": "frozen for a future blind run; no model has seen it"
+  },
   "caseIds": [
     "A1",
     "A2",
@@ -22,8 +37,19 @@
     "H1"
   ],
   "arms": [
+    "B1",
     "S",
+    "O1",
     "O2"
+  ],
+  "allArms": [
+    "B1",
+    "S",
+    "O1",
+    "O2",
+    "F",
+    "N",
+    "OR"
   ],
   "followUpTools": [
     "read_file",
@@ -33,9 +59,23 @@
     "recall",
     "finish"
   ],
+  "isolation": {
+    "environment": "allowlist",
+    "filesystem": "path-checked-workspace",
+    "checker": "trusted-bootstrap-result-file",
+    "osSandbox": "none",
+    "note": "Same-user code can still access other local files and attack the checker process. Not an adversarial sandbox."
+  },
+  "executionKinds": {
+    "scripted": "self-test / offline pipeline measurement",
+    "customToolLoop": "live custom text-JSON loop (not the production DSH agent loop)",
+    "productionLoop": "not implemented in this round; live is blocked without authorization"
+  },
   "runRequires": [
     "R33_LIVE=1",
-    "--manifest with positive requests/inputTokens/outputTokens/wallClockMs"
+    "--manifest with positive requests/inputTokens/outputTokens/wallClockMs",
+    "manifest.maxOutputTokens (per-request bound)",
+    "manifest.route.baseUrlEnv and manifest.route.apiKeyEnv (names, not secrets)"
   ],
   "note": "--check resolves no credentials and makes no request."
 }

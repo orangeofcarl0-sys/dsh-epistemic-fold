@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-01T15:06:23.152Z",
+  "old": {
+    "scorerVersion": 1,
+    "datasetId": "r33-semantic-continuity-v1",
+    "datasetDigest": "2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26",
+    "report": "frozen/v1/reports/offline-report.json"
+  },
+  "new": {
+    "scorerVersion": 2,
+    "datasetId": "r33-semantic-continuity-v2",
+    "datasetDigest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+    "report": "out/offline-report.json"
+  },
+  "arms": [
+    {
+      "arm": "B0",
+      "before": {
+        "success": 7,
+        "damage": 10,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 7,
+        "damage": 10,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "B1",
+      "before": {
+        "success": 7,
+        "damage": 10,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 7,
+        "damage": 10,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "F",
+      "before": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "FM",
+      "before": {
+        "success": 0,
+        "damage": 8,
+        "meanCriticalRecall": 0.875,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.875,
+        "meanDirectVisibility": 0.875
+      },
+      "after": {
+        "success": 0,
+        "damage": 8,
+        "meanCriticalRecall": 0.875,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.875,
+        "meanDirectVisibility": 0.875
+      }
+    },
+    {
+      "arm": "N",
+      "before": {
+        "success": 3,
+        "damage": 14,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 3,
+        "damage": 14,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "O1",
+      "before": {
+        "success": 16,
+        "damage": 1,
+        "meanCriticalRecall": 0.9925925925925926,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.9948717948717949,
+        "meanDirectVisibility": 0.9948717948717949
+      },
+      "after": {
+        "success": 16,
+        "damage": 1,
+        "meanCriticalRecall": 0.9925925925925926,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.9948717948717949,
+        "meanDirectVisibility": 0.9948717948717949
+      }
+    },
+    {
+      "arm": "O2",
+      "before": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "OR",
+      "before": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      },
+      "after": {
+        "success": 17,
+        "damage": 0,
+        "meanCriticalRecall": null,
+        "meanGroundedPrecision": null,
+        "meanFalseNormativeRate": null,
+        "meanCurrentStateAccuracy": null,
+        "meanDirectVisibility": null
+      }
+    },
+    {
+      "arm": "S",
+      "before": {
+        "success": 15,
+        "damage": 2,
+        "meanCriticalRecall": 0.9259259259259259,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.9282051282051282,
+        "meanDirectVisibility": 0.9282051282051282
+      },
+      "after": {
+        "success": 15,
+        "damage": 2,
+        "meanCriticalRecall": 0.9259259259259259,
+        "meanGroundedPrecision": 1,
+        "meanFalseNormativeRate": 0,
+        "meanCurrentStateAccuracy": 0.9282051282051282,
+        "meanDirectVisibility": 0.9282051282051282
+      }
+    }
+  ],
+  "changed": [],
+  "note": "The old report is preserved verbatim. This record explains every changed number; it does not replace the old one."
+}

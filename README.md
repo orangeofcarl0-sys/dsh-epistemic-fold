@@ -469,6 +469,25 @@ per-fold limit (`F4`); the oracle arms localize each one. The live S-vs-O2 run i
 implemented with one global budget and is **not executed** in this round. See
 `docs/semantic-continuity/R33_HANDOFF.md` and `eval/r33/README.md`.
 
+### R33.1 / R34 — evaluator integrity and the live pilot
+
+R33.1 closed the instrument defects R33 found: the global budget is now charged
+per real HTTP attempt (including 429 retries), snapshots are immutable,
+partial/unknown usage keeps its reserve, child processes get an environment
+allowlist, each replicate gets a fresh workspace, the hidden checker cannot be
+spoofed by import-time output, gold quotes bind to their cited sources,
+same-coordinate counter-claims no longer score as correct, and a missing receipt
+without a state witness fails closed. Dataset v2 is
+`r33-semantic-continuity-v2` (`407148f0…87f`); a separate holdout
+`r33-semantic-continuity-holdout-v1` (`af22eb7a…663`) is frozen and unexecuted.
+
+The R34 live entry implements real B1/S/O1/O2 arms through the real fold host;
+`--self-test` passes 68/68 with a scripted adapter. The live model run is
+**blocked**: no explicit authorization, route, or budget was supplied, so there
+are 0 provider requests. See `docs/semantic-continuity/R34_EVALUATOR_AUDIT.md`,
+`R34_REAL_MODEL_RESULTS.md`, and `R34_HANDOFF.md`. The scripted 15/17 is still
+not a model result.
+
 See `docs/semantic-continuity/` for the transaction state machine, the host
 compatibility record, the code review, the integration notes, and the handoff.
 
