@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "id": "F4",
+  "riskClass": "authority-scope",
+  "historyIndependent": false,
+  "counterfactual": null,
+  "title": "Thirteen important rules, thirteen deltas, a twelve-delta fold",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Release note 1 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 1: Reject a row with no id."
+    },
+    {
+      "role": "user",
+      "text": "Release note 2 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 2: Reject a row with no name."
+    },
+    {
+      "role": "user",
+      "text": "Release note 3 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 3: Reject an id below 1."
+    },
+    {
+      "role": "user",
+      "text": "Release note 4 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 4: Reject a name longer than 40 characters."
+    },
+    {
+      "role": "user",
+      "text": "Release note 5 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 5: Trim surrounding whitespace from name."
+    },
+    {
+      "role": "user",
+      "text": "Release note 6 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 6: Default status to new when absent."
+    },
+    {
+      "role": "user",
+      "text": "Release note 7 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 7: Reject status 'deleted' when tombstone is false."
+    },
+    {
+      "role": "user",
+      "text": "Release note 8 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 8: Reject a negative amount."
+    },
+    {
+      "role": "user",
+      "text": "Release note 9 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 9: Round amount to two decimal places."
+    },
+    {
+      "role": "user",
+      "text": "Release note 10 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 10: Uppercase currency."
+    },
+    {
+      "role": "user",
+      "text": "Release note 11 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 11: Reject an unknown currency (only USD and EUR)."
+    },
+    {
+      "role": "user",
+      "text": "Release note 12 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 12: Reject an empty currency."
+    },
+    {
+      "role": "user",
+      "text": "Release note 13 for the migration review. This note is recorded for the frozen evaluator and is not repeated in the workspace. The rule follows. Rule 13: Reject an amount above 1000000."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Apply every recorded release rule to `validateRow` and run the visible tests.",
+  "writer": {
+    "handoff": "The release rules were captured; the per-fold limit decides how many become state.",
+    "deltas": [
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-1",
+        "statement": "Rule 1: Reject a row with no id.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 1: Reject a row with no id."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-2",
+        "statement": "Rule 2: Reject a row with no name.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 2: Reject a row with no name."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-3",
+        "statement": "Rule 3: Reject an id below 1.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 3: Reject an id below 1."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-4",
+        "statement": "Rule 4: Reject a name longer than 40 characters.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 4: Reject a name longer than 40 characters."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-5",
+        "statement": "Rule 5: Trim surrounding whitespace from name.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 5: Trim surrounding whitespace from name."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-6",
+        "statement": "Rule 6: Default status to new when absent.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 6: Default status to new when absent."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-7",
+        "statement": "Rule 7: Reject status 'deleted' when tombstone is false.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 7: Reject status 'deleted' when tombstone is false."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-8",
+        "statement": "Rule 8: Reject a negative amount.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 8: Reject a negative amount."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-9",
+        "statement": "Rule 9: Round amount to two decimal places.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 9: Round amount to two decimal places."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-10",
+        "statement": "Rule 10: Uppercase currency.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 10: Uppercase currency."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-11",
+        "statement": "Rule 11: Reject an unknown currency (only USD and EUR).",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 11: Reject an unknown currency (only USD and EUR)."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-12",
+        "statement": "Rule 12: Reject an empty currency.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 12: Reject an empty currency."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "rule-13",
+        "statement": "Rule 13: Reject an amount above 1000000.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Rule 13: Reject an amount above 1000000."
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "F4-rule-1",
+      "kind": "constraint",
+      "subjectKey": "rule-1",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "Rule 1: Reject a row with no id.",
+      "statement": "Rule 1: Reject a row with no id.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 1:",
+      "expectedBehavior": "Apply rule 1."
+    },
+    {
+      "factId": "F4-rule-2",
+      "kind": "constraint",
+      "subjectKey": "rule-2",
+      "sourceRefs": [
+        1
+      ],
+      "quote": "Rule 2: Reject a row with no name.",
+      "statement": "Rule 2: Reject a row with no name.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 2:",
+      "expectedBehavior": "Apply rule 2."
+    },
+    {
+      "factId": "F4-rule-3",
+      "kind": "constraint",
+      "subjectKey": "rule-3",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "Rule 3: Reject an id below 1.",
+      "statement": "Rule 3: Reject an id below 1.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 3:",
+      "expectedBehavior": "Apply rule 3."
+    },
+    {
+      "factId": "F4-rule-4",
+      "kind": "constraint",
+      "subjectKey": "rule-4",
+      "sourceRefs": [
+        3
+      ],
+      "quote": "Rule 4: Reject a name longer than 40 characters.",
+      "statement": "Rule 4: Reject a name longer than 40 characters.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 4:",
+      "expectedBehavior": "Apply rule 4."
+    },
+    {
+      "factId": "F4-rule-5",
+      "kind": "constraint",
+      "subjectKey": "rule-5",
+      "sourceRefs": [
+        4
+      ],
+      "quote": "Rule 5: Trim surrounding whitespace from name.",
+      "statement": "Rule 5: Trim surrounding whitespace from name.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 5:",
+      "expectedBehavior": "Apply rule 5."
+    },
+    {
+      "factId": "F4-rule-6",
+      "kind": "constraint",
+      "subjectKey": "rule-6",
+      "sourceRefs": [
+        5
+      ],
+      "quote": "Rule 6: Default status to new when absent.",
+      "statement": "Rule 6: Default status to new when absent.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 6:",
+      "expectedBehavior": "Apply rule 6."
+    },
+    {
+      "factId": "F4-rule-7",
+      "kind": "constraint",
+      "subjectKey": "rule-7",
+      "sourceRefs": [
+        6
+      ],
+      "quote": "Rule 7: Reject status 'deleted' when tombstone is false.",
+      "statement": "Rule 7: Reject status 'deleted' when tombstone is false.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 7:",
+      "expectedBehavior": "Apply rule 7."
+    },
+    {
+      "factId": "F4-rule-8",
+      "kind": "constraint",
+      "subjectKey": "rule-8",
+      "sourceRefs": [
+        7
+      ],
+      "quote": "Rule 8: Reject a negative amount.",
+      "statement": "Rule 8: Reject a negative amount.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 8:",
+      "expectedBehavior": "Apply rule 8."
+    },
+    {
+      "factId": "F4-rule-9",
+      "kind": "constraint",
+      "subjectKey": "rule-9",
+      "sourceRefs": [
+        8
+      ],
+      "quote": "Rule 9: Round amount to two decimal places.",
+      "statement": "Rule 9: Round amount to two decimal places.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 9:",
+      "expectedBehavior": "Apply rule 9."
+    },
+    {
+      "factId": "F4-rule-10",
+      "kind": "constraint",
+      "subjectKey": "rule-10",
+      "sourceRefs": [
+        9
+      ],
+      "quote": "Rule 10: Uppercase currency.",
+      "statement": "Rule 10: Uppercase currency.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 10:",
+      "expectedBehavior": "Apply rule 10."
+    },
+    {
+      "factId": "F4-rule-11",
+      "kind": "constraint",
+      "subjectKey": "rule-11",
+      "sourceRefs": [
+        10
+      ],
+      "quote": "Rule 11: Reject an unknown currency (only USD and EUR).",
+      "statement": "Rule 11: Reject an unknown currency (only USD and EUR).",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 11:",
+      "expectedBehavior": "Apply rule 11."
+    },
+    {
+      "factId": "F4-rule-12",
+      "kind": "constraint",
+      "subjectKey": "rule-12",
+      "sourceRefs": [
+        11
+      ],
+      "quote": "Rule 12: Reject an empty currency.",
+      "statement": "Rule 12: Reject an empty currency.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "Rule 12:",
+      "expectedBehavior": "Apply rule 12."
+    },
+    {
+      "factId": "F4-rule-13",
+      "kind": "constraint",
+      "subjectKey": "rule-13",
+      "sourceRefs": [
+        12
+      ],
+      "quote": "Rule 13: Reject an amount above 1000000.",
+      "statement": "Rule 13: Reject an amount above 1000000.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "Rule 13:",
+      "expectedBehavior": "Apply rule 13."
+    }
+  ],
+  "actionMeta": {
+    "apply-all-13": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "apply-12": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": [
+        "constraint"
+      ]
+    },
+    "apply-0": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "constraint"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "Rule 13:",
+          "Rule 13"
+        ],
+        "action": "apply-all-13"
+      },
+      {
+        "contextIncludesAny": [
+          "Rule 1:",
+          "Rule 1"
+        ],
+        "action": "apply-12"
+      }
+    ],
+    "default": "apply-0"
+  },
+  "forbiddenAction": "apply-0"
+}

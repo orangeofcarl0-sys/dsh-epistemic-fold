@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "id": "B1",
+  "riskClass": "decision-override",
+  "historyIndependent": false,
+  "counterfactual": {
+    "pair": "B",
+    "variant": "override-to-outbox"
+  },
+  "title": "A later user requirement overrides the adopted in-memory decision",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Decision: use an in-memory queue for the scheduler. It is simpler and the process is short-lived."
+    },
+    {
+      "role": "assistant",
+      "text": "Adopting the in-memory queue."
+    },
+    {
+      "role": "user",
+      "text": "New requirement: switch the scheduler to a durable outbox. Every enqueue must be appended to the injected storage before it is acknowledged. The in-memory decision is withdrawn."
+    },
+    {
+      "role": "assistant",
+      "text": "Switching to the durable outbox."
+    },
+    {
+      "role": "tool",
+      "name": "read",
+      "text": "src/scheduler.mjs currently returns mode: memory and has no storage dependency."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+  "writer": {
+    "handoff": "The queue decision changed after the storage dependency became required.",
+    "deltas": [
+      {
+        "kind": "decision",
+        "subjectKey": "scheduler-queue",
+        "statement": "The scheduler uses an in-memory queue.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "use an in-memory queue for the scheduler"
+          }
+        ]
+      },
+      {
+        "kind": "decision",
+        "subjectKey": "scheduler-queue",
+        "statement": "The scheduler must use a durable outbox; every enqueue is appended to storage before acknowledgement.",
+        "status": "claimed",
+        "supersedes": [
+          "scheduler-queue"
+        ],
+        "evidence": [
+          {
+            "quote": "switch the scheduler to a durable outbox"
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "B1-memory",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "use an in-memory queue for the scheduler",
+      "statement": "The scheduler uses an in-memory queue.",
+      "criticality": "medium",
+      "current": false,
+      "visibleNeedle": "in-memory queue",
+      "expectedBehavior": "Do not keep the withdrawn in-memory decision."
+    },
+    {
+      "factId": "B1-outbox",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "switch the scheduler to a durable outbox",
+      "statement": "The scheduler must use a durable outbox; every enqueue is appended to storage before acknowledgement.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "durable outbox",
+      "supersedesFactId": "B1-memory",
+      "expectedBehavior": "Append every enqueue to the injected storage."
+    }
+  ],
+  "actionMeta": {
+    "use-outbox": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "use-memory": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "obsolete"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludes": "durable outbox",
+        "action": "use-outbox"
+      }
+    ],
+    "default": "use-memory"
+  },
+  "falseMemory": {
+    "statement": "The scheduler must keep an in-memory queue and must not call storage.",
+    "contextIncludes": "keep an in-memory queue",
+    "action": "use-memory"
+  },
+  "forbiddenAction": "use-memory"
+}

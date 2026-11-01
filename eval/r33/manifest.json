@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "datasetId": "r33-semantic-continuity-v1",
+  "frozenAt": "2026-11-01T12:01:05.794Z",
+  "caseCount": 17,
+  "counts": {
+    "persistent-constraint": 2,
+    "decision-override": 2,
+    "negative-knowledge": 2,
+    "validation-boundary": 2,
+    "cross-phase-dependency": 2,
+    "authority-scope": 4,
+    "history-independent": 2,
+    "retrieval-trigger": 1
+  },
+  "datasetDigest": "d13917cf211f24be05bdd6f768f7343b54f2ab3f67a80841ac685b8e2d532d2a",
+  "cases": [
+    {
+      "id": "A1",
+      "riskClass": "persistent-constraint",
+      "digest": "fa390586992e836b31e22ae266ba185ae69dc6d99eccd56853d6231fa290c00b"
+    },
+    {
+      "id": "A2",
+      "riskClass": "persistent-constraint",
+      "digest": "149b1ddc6fa33330f3e15e4ad4b35e3afea1514da129e58429c7bfeeaab193ad"
+    },
+    {
+      "id": "B1",
+      "riskClass": "decision-override",
+      "digest": "29fbac29123431594e267567307f8cfc76eb98fd0e4d68225ede04db2c5c94f0"
+    },
+    {
+      "id": "B2",
+      "riskClass": "decision-override",
+      "digest": "55240bb9530062245c91d850d3c90856d7f7989b716511a66a2c63b0837a9554"
+    },
+    {
+      "id": "C1",
+      "riskClass": "negative-knowledge",
+      "digest": "3fbe82aca8ffec73736f496a5139bef81cce664a93c13180b039ff2e201068ce"
+    },
+    {
+      "id": "C2",
+      "riskClass": "negative-knowledge",
+      "digest": "30d73ab210eaf1c561935f0b0e84255983396ab735b1c8568ad6582d0db508c1"
+    },
+    {
+      "id": "D1",
+      "riskClass": "validation-boundary",
+      "digest": "f9eb0c1d5a0167c6475377cbd1a97f875e8dd48f5ed341c86c9319985e7a034c"
+    },
+    {
+      "id": "D2",
+      "riskClass": "validation-boundary",
+      "digest": "709778d4e2c731b355618b41db6555b1832bec4c114c0bc53ed27c44f7f21754"
+    },
+    {
+      "id": "E1",
+      "riskClass": "cross-phase-dependency",
+      "digest": "afd0641bccd1e6b93e4d01c7459a244656ba3a87a8393e442565a5e6455c1076"
+    },
+    {
+      "id": "E2",
+      "riskClass": "cross-phase-dependency",
+      "digest": "9909ebe3bd80c85236691740df5f398bdbca8dafca9c643ece54bea229028e6d"
+    },
+    {
+      "id": "F1",
+      "riskClass": "authority-scope",
+      "digest": "e2224d4746a6cff3d33fb653327f49adc51b4b622a560d15c8d249109b81aac8"
+    },
+    {
+      "id": "F2",
+      "riskClass": "authority-scope",
+      "digest": "28d9597850d3bc749d397d74dad68c12a56fb7e52298f71e1460e7b5be5f0394"
+    },
+    {
+      "id": "F3",
+      "riskClass": "authority-scope",
+      "digest": "703997d50835716d2a7eba2374dd6accc7b76452da22d48f23667b5e181b0368"
+    },
+    {
+      "id": "F4",
+      "riskClass": "authority-scope",
+      "digest": "6534efdac4f043090b29be31a46b49b62628e749e6502d1a6590955b334ca9dc"
+    },
+    {
+      "id": "G1",
+      "riskClass": "history-independent",
+      "digest": "2b52a10660fe8c4a802a230e9cbb18525b2e5496b48e2928e5c57984abf12fda"
+    },
+    {
+      "id": "G2",
+      "riskClass": "history-independent",
+      "digest": "38ea079cc0204d96d01b9f6d7e37633ee8d4f223a2abcf5f6e6941cf684dcc4a"
+    },
+    {
+      "id": "H1",
+      "riskClass": "retrieval-trigger",
+      "digest": "3b069c58170ad7d4fc73786e0f31835811ecac48a0f48cfd3a21b520fee2846c"
+    }
+  ]
+}

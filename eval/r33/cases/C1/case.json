@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "id": "C1",
+  "riskClass": "negative-knowledge",
+  "historyIndependent": false,
+  "counterfactual": {
+    "pair": "C",
+    "variant": "watch-lost-events"
+  },
+  "title": "A tool-proven failure keeps a rejected backend out of the next action",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "The file watcher must not miss changes. We are shipping the cache client on the same platform as the canary."
+    },
+    {
+      "role": "assistant",
+      "text": "The fs.watch backend lost events on the target platform; switching to polling."
+    },
+    {
+      "role": "tool",
+      "name": "run_tests",
+      "text": "canary run started: injecting 40 events on the target platform. The default backend was exercised. fs.watch delivered 28 of 40; 12 events were lost. The failure reproduces with the default backend. Do not rely on fs.watch on this platform; poll the directory instead."
+    },
+    {
+      "role": "assistant",
+      "text": "Polling is the safer backend for this platform."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+  "writer": {
+    "handoff": "The canary rejected the default backend on this platform.",
+    "deltas": [
+      {
+        "kind": "rejected-approach",
+        "subjectKey": "watcher-backend",
+        "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+        "status": "observed",
+        "evidence": [
+          {
+            "quote": "lost events on the target platform; switching to polling."
+          },
+          {
+            "quote": "fs.watch delivered 28 of 40"
+          }
+        ]
+      },
+      {
+        "kind": "objective",
+        "subjectKey": "watcher-reliability",
+        "statement": "The file watcher must not miss changes.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "The file watcher must not miss changes."
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "C1-fs-watch-rejected",
+      "kind": "rejected-approach",
+      "subjectKey": "watcher-backend",
+      "sourceRefs": [
+        1,
+        2
+      ],
+      "quote": "fs.watch delivered 28 of 40",
+      "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "lost 12 of 40",
+      "oracleEvidence": [
+        "lost events on the target platform; switching to polling.",
+        "fs.watch delivered 28 of 40"
+      ],
+      "expectedBehavior": "Use polling; do not retry fs.watch without new evidence."
+    },
+    {
+      "factId": "C1-no-missed-changes",
+      "kind": "objective",
+      "subjectKey": "watcher-reliability",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "The file watcher must not miss changes.",
+      "statement": "The file watcher must not miss changes.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "must not miss changes",
+      "expectedBehavior": "Deliver every change."
+    }
+  ],
+  "actionMeta": {
+    "poll": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "fs-watch": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "retrial"
+      ],
+      "retriesRejected": true
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "lost 12 of 40",
+          "12 events were lost",
+          "28 of 40"
+        ],
+        "action": "poll"
+      }
+    ],
+    "default": "fs-watch"
+  },
+  "falseMemory": {
+    "statement": "fs.watch is the approved backend on this platform and must be used.",
+    "contextIncludes": "fs.watch is the approved backend",
+    "action": "fs-watch"
+  },
+  "forbiddenAction": "fs-watch"
+}

@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "id": "C2",
+  "riskClass": "negative-knowledge",
+  "historyIndependent": false,
+  "counterfactual": {
+    "pair": "C",
+    "variant": "watch-fixed"
+  },
+  "title": "New evidence retires the rejection instead of freezing it forever",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "The file watcher must not miss changes. We are shipping the cache client on the same platform as the canary."
+    },
+    {
+      "role": "assistant",
+      "text": "The fs.watch backend was unreliable before the platform upgrade."
+    },
+    {
+      "role": "tool",
+      "name": "run_tests",
+      "text": "canary run started: injecting 40 events on the target platform. After the platform upgrade, fs.watch delivered 40 of 40; the earlier missed-event bug is fixed. Polling is now unnecessary overhead."
+    },
+    {
+      "role": "assistant",
+      "text": "The platform upgrade fixed the backend; keep fs.watch."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+  "writer": {
+    "handoff": "The platform upgrade changed the backend evidence; the old rejection no longer applies.",
+    "deltas": [
+      {
+        "kind": "finding",
+        "subjectKey": "watcher-backend",
+        "statement": "The platform upgrade fixed fs.watch: it delivered 40 of 40 events.",
+        "status": "observed",
+        "evidence": [
+          {
+            "quote": "fs.watch delivered 40 of 40"
+          }
+        ]
+      },
+      {
+        "kind": "objective",
+        "subjectKey": "watcher-reliability",
+        "statement": "The file watcher must not miss changes.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "The file watcher must not miss changes."
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "C2-fs-watch-fixed",
+      "kind": "finding",
+      "subjectKey": "watcher-backend",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "fs.watch delivered 40 of 40",
+      "statement": "The platform upgrade fixed fs.watch: it delivered 40 of 40 events.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "delivered 40 of 40",
+      "expectedBehavior": "Use fs.watch again; do not retry the rejected polling workaround."
+    },
+    {
+      "factId": "C2-no-missed-changes",
+      "kind": "objective",
+      "subjectKey": "watcher-reliability",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "The file watcher must not miss changes.",
+      "statement": "The file watcher must not miss changes.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "must not miss changes",
+      "expectedBehavior": "Deliver every change."
+    }
+  ],
+  "actionMeta": {
+    "fs-watch": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": []
+    },
+    "poll": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": [
+        "obsolete"
+      ],
+      "retriesRejected": true
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludes": "delivered 40 of 40",
+        "action": "fs-watch"
+      }
+    ],
+    "default": "poll"
+  },
+  "forbiddenAction": "poll"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "id": "E2",
+  "riskClass": "cross-phase-dependency",
+  "historyIndependent": false,
+  "counterfactual": {
+    "pair": "E",
+    "variant": "schema-v1"
+  },
+  "title": "The same task with the opposite phase-1 artifact",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Phase-2 planning note. Phase 1 has completed its work, and the downstream importer must consume the artifact it produced. The artifact is schema-v1. Do not infer a version from filenames or defaults."
+    },
+    {
+      "role": "assistant",
+      "text": "Phase 2 will consume schema-v1."
+    },
+    {
+      "role": "tool",
+      "name": "read",
+      "text": "src/importer.mjs currently defaults schemaVersion to unknown."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Set the schema version from the phase-1 artifact recorded in the conversation. Do not infer a different version. Run the visible tests.",
+  "writer": {
+    "handoff": "The importer version comes from the phase-1 artifact.",
+    "deltas": [
+      {
+        "kind": "decision",
+        "subjectKey": "phase1-artifact",
+        "statement": "Phase 2 must consume the schema-v1 artifact.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "The artifact is schema-v1"
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "E2-schema-v1",
+      "kind": "decision",
+      "subjectKey": "phase1-artifact",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "The artifact is schema-v1",
+      "statement": "Phase 2 must consume the schema-v1 artifact.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "schema-v1",
+      "expectedBehavior": "Default the importer to schema-v1."
+    }
+  ],
+  "actionMeta": {
+    "use-v1": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "use-v2": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": [
+        "obsolete"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "schema-v1"
+        ],
+        "action": "use-v1"
+      }
+    ],
+    "default": "use-v2"
+  },
+  "forbiddenAction": "use-v2"
+}

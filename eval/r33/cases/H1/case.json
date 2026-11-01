@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "H1",
+  "riskClass": "retrieval-trigger",
+  "historyIndependent": false,
+  "counterfactual": null,
+  "title": "The fact is recoverable from history but absent from the checkpoint",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Finish the deployment client and verify the production region before shipping."
+    },
+    {
+      "role": "assistant",
+      "text": "I will inspect the deployment record."
+    },
+    {
+      "role": "tool",
+      "name": "deploy_record",
+      "text": "Deployment record opened. Service: cache-client. The record contains several fields. Production deployment region: eu-west-2. Rollout: canary."
+    },
+    {
+      "role": "assistant",
+      "text": "The deployment record was reviewed."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Configure the client's default region for the production deployment and run the visible tests.",
+  "writer": {
+    "handoff": "The deployment record was reviewed; no machine state is repeated here.",
+    "deltas": []
+  },
+  "gold": [
+    {
+      "factId": "H1-production-region",
+      "kind": "finding",
+      "subjectKey": "deploy-region",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "Production deployment region: eu-west-2",
+      "statement": "The production deployment region is eu-west-2.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "eu-west-2",
+      "expectedBehavior": "Set the default region to eu-west-2."
+    }
+  ],
+  "actionMeta": {
+    "use-eu": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": []
+    },
+    "use-us": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "constraint"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "eu-west-2"
+        ],
+        "action": "use-eu"
+      }
+    ],
+    "default": "use-us"
+  },
+  "falseMemory": {
+    "statement": "The production deployment region is us-east-1.",
+    "contextIncludes": "region is us-east-1",
+    "action": "use-us"
+  },
+  "forbiddenAction": "use-us"
+}

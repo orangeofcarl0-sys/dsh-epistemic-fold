@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "G1",
+  "riskClass": "history-independent",
+  "historyIndependent": true,
+  "counterfactual": null,
+  "title": "An ordinary task whose specification is entirely in the README",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Implement the README requirement for timeoutMs in the config loader."
+    },
+    {
+      "role": "assistant",
+      "text": "Acknowledged."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Implement the `timeoutMs` option exactly as README specifies, and run the visible tests.",
+  "writer": {
+    "handoff": "The README owns the timeout default; no historical fact is needed.",
+    "deltas": []
+  },
+  "gold": [
+    {
+      "factId": "G1-timeout-spec",
+      "kind": "objective",
+      "subjectKey": "timeoutMs",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "Implement the README requirement for timeoutMs",
+      "statement": "Implement the README timeoutMs requirement.",
+      "criticality": "low",
+      "current": true,
+      "visibleNeedle": "timeoutMs",
+      "expectedBehavior": "Implement the README default of 500."
+    }
+  ],
+  "actionMeta": {
+    "implement": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "wrong": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "constraint"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "timeoutMs"
+        ],
+        "action": "implement"
+      }
+    ],
+    "default": "wrong"
+  },
+  "forbiddenAction": "wrong"
+}

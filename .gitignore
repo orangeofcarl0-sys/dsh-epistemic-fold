@@ -31,3 +31,6 @@ eval/memory/_bundles/
 # it is a 45 MB projection of data that already lives in corpora/, and a stale copy that
 # diverged from the corpus would measure a different arm than the one under test.
 eval/memory/regen-env/
+
+# R33 runner scratch directories (reports are committed; workspaces are not)
+eval/r33/out/*-work/

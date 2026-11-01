@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "id": "B2",
+  "riskClass": "decision-override",
+  "historyIndependent": false,
+  "counterfactual": {
+    "pair": "B",
+    "variant": "keep-memory"
+  },
+  "title": "The same task, with the outbox explicitly rejected instead",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Decision: use an in-memory queue for the scheduler. It is simpler and the process is short-lived."
+    },
+    {
+      "role": "assistant",
+      "text": "Adopting the in-memory queue."
+    },
+    {
+      "role": "user",
+      "text": "A durable outbox was proposed, but we are rejecting it: the storage dependency is unavailable in this deployment. Keep the in-memory queue."
+    },
+    {
+      "role": "assistant",
+      "text": "Keeping the in-memory queue."
+    },
+    {
+      "role": "tool",
+      "name": "read",
+      "text": "src/scheduler.mjs currently returns mode: memory and has no storage dependency."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+  "writer": {
+    "handoff": "The in-memory queue remains the effective decision; the outbox was rejected for this deployment.",
+    "deltas": [
+      {
+        "kind": "decision",
+        "subjectKey": "scheduler-queue",
+        "statement": "The scheduler keeps an in-memory queue.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "use an in-memory queue for the scheduler"
+          }
+        ]
+      },
+      {
+        "kind": "rejected-approach",
+        "subjectKey": "scheduler-outbox",
+        "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "we are rejecting it"
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "B2-memory",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "sourceRefs": [
+        0,
+        2
+      ],
+      "quote": "use an in-memory queue for the scheduler",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "in-memory queue",
+      "expectedBehavior": "Keep the in-memory queue and do not add a storage dependency."
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "kind": "rejected-approach",
+      "subjectKey": "scheduler-outbox",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "we are rejecting it",
+      "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "rejected",
+      "expectedBehavior": "Do not retry the rejected outbox without new evidence."
+    }
+  ],
+  "actionMeta": {
+    "use-memory": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": []
+    },
+    "use-outbox": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": [
+        "retrial"
+      ],
+      "retriesRejected": true
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "rejected:",
+          "rejecting it"
+        ],
+        "action": "use-memory"
+      }
+    ],
+    "default": "use-outbox"
+  },
+  "forbiddenAction": "use-outbox"
+}

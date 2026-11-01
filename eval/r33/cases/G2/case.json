@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "id": "G2",
+  "riskClass": "history-independent",
+  "historyIndependent": true,
+  "counterfactual": null,
+  "title": "A second task that needs no memory at all",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Implement the README requirement for the v2 field."
+    },
+    {
+      "role": "assistant",
+      "text": "Acknowledged."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Implement the `v2` field exactly as README specifies, and run the visible tests.",
+  "writer": {
+    "handoff": "The README owns the field; no historical fact is needed.",
+    "deltas": []
+  },
+  "gold": [
+    {
+      "factId": "G2-v2-spec",
+      "kind": "objective",
+      "subjectKey": "v2",
+      "sourceRefs": [
+        0
+      ],
+      "quote": "Implement the README requirement for the v2 field",
+      "statement": "Implement the README v2 requirement.",
+      "criticality": "low",
+      "current": true,
+      "visibleNeedle": "v2",
+      "expectedBehavior": "Return v2: 2."
+    }
+  ],
+  "actionMeta": {
+    "implement": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "wrong": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "constraint"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "v2"
+        ],
+        "action": "implement"
+      }
+    ],
+    "default": "wrong"
+  },
+  "forbiddenAction": "wrong"
+}

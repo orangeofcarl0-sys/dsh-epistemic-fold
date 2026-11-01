@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "id": "F3",
+  "riskClass": "authority-scope",
+  "historyIndependent": false,
+  "counterfactual": null,
+  "title": "Two scoped decisions share a subjectKey without colliding",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Requirement for the release branch: the timeout is 30 seconds."
+    },
+    {
+      "role": "assistant",
+      "text": "Recorded for release."
+    },
+    {
+      "role": "user",
+      "text": "Requirement for the experiment branch: the timeout is 60 seconds."
+    },
+    {
+      "role": "assistant",
+      "text": "Recorded for experiment."
+    },
+    {
+      "role": "tool",
+      "name": "read",
+      "text": "src/config.mjs currently returns 60 for every branch."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. "
+    }
+  ],
+  "task": "Set the release-branch timeout from the recorded requirement and run the visible tests.",
+  "writer": {
+    "handoff": "The two branches carry different timeout values.",
+    "deltas": [
+      {
+        "kind": "constraint",
+        "subjectKey": "timeout",
+        "scope": {
+          "branch": "release"
+        },
+        "statement": "The release branch timeout is 30 seconds.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Requirement for the release branch: the timeout is 30 seconds."
+          }
+        ]
+      },
+      {
+        "kind": "constraint",
+        "subjectKey": "timeout",
+        "scope": {
+          "branch": "experiment"
+        },
+        "statement": "The experiment branch timeout is 60 seconds.",
+        "status": "claimed",
+        "evidence": [
+          {
+            "quote": "Requirement for the experiment branch: the timeout is 60 seconds."
+          }
+        ]
+      }
+    ]
+  },
+  "gold": [
+    {
+      "factId": "F3-release-timeout",
+      "kind": "constraint",
+      "subjectKey": "timeout",
+      "scope": {
+        "branch": "release"
+      },
+      "sourceRefs": [
+        0
+      ],
+      "quote": "Requirement for the release branch: the timeout is 30 seconds.",
+      "statement": "The release branch timeout is 30 seconds.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "30 seconds",
+      "expectedBehavior": "timeoutFor(\"release\") must return 30."
+    },
+    {
+      "factId": "F3-experiment-timeout",
+      "kind": "constraint",
+      "subjectKey": "timeout",
+      "scope": {
+        "branch": "experiment"
+      },
+      "sourceRefs": [
+        2
+      ],
+      "quote": "Requirement for the experiment branch: the timeout is 60 seconds.",
+      "statement": "The experiment branch timeout is 60 seconds.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "60 seconds",
+      "expectedBehavior": "timeoutFor(\"experiment\") must return 60."
+    }
+  ],
+  "actionMeta": {
+    "scoped": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": []
+    },
+    "unscoped": {
+      "testsExecuted": 1,
+      "toolCalls": 1,
+      "violates": [
+        "constraint"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "30 seconds"
+        ],
+        "action": "scoped"
+      }
+    ],
+    "default": "unscoped"
+  },
+  "falseMemory": {
+    "statement": "The release branch timeout is 60 seconds.",
+    "contextIncludes": "release branch timeout is 60",
+    "action": "unscoped"
+  },
+  "forbiddenAction": "unscoped"
+}
