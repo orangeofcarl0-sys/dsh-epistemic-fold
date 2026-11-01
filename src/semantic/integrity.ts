@@ -52,6 +52,15 @@ export type SemanticIntegrityFailure =
   | 'ops-digest'
   /** Operations do not reproduce the state digest their bundle rendered. */
   | 'ops-state-mismatch'
+  /**
+   * A missing receipt with no readable bundle state digest.
+   *
+   * The repair of the cross-store crash window is allowed only when an
+   * INDEPENDENT witness says what state the committed checkpoint rendered.
+   * Without it, the packet's own operations are the only description of the
+   * state, and trusting them is exactly the hole `ops-state-mismatch` closes.
+   */
+  | 'missing-state-witness'
   | 'proof-mismatch'
   | 'orphan-receipt'
   | 'duplicate-packet'

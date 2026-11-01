@@ -2710,14 +2710,30 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         ...(bundle === undefined ? {} : { bundle }),
         ...(this.inFlightCheckpoints.has(packet.checkpointId) ? { inFlight: true } : {}),
       })
-      entries.push({ packet, receipt, validation })
+      const entry = { packet, receipt, validation }
+      entries.push(entry)
       switch (validation.status) {
-        case 'valid':
+        case 'valid': {
+          // A missing receipt is repairable ONLY with an independent witness of
+          // the state the committed checkpoint rendered. The bundle's
+          // `state.digest` is that witness. Without it the packet's own `ops`
+          // are the sole description of the state, and a packet tampered in the
+          // crash window would be promoted on its own word. v1 bundles have no
+          // digest; they are refused here rather than trusted on shape alone.
+          if (validation.missingReceipt && bundle?.state?.digest === undefined) {
+            const detail = `packet ${packet.packetId} has no receipt and no readable bundle `
+              + 'state digest; the missing-receipt repair requires an independent witness, '
+              + 'so the packet is not promoted to committed state'
+            entry.validation = { status: 'conflict', code: 'missing-state-witness', detail }
+            blockers.push(detail)
+            break
+          }
           if (bundle?.state !== undefined) {
             expectations.push({ packetId: packet.packetId, digest: bundle.state.digest })
           }
           commits.push(validation.commit)
           break
+        }
         case 'aborted':
           aborted += 1
           break

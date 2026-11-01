@@ -132,6 +132,13 @@ async function exists(path: string): Promise<boolean> {
   return await access(path).then(() => true, () => false)
 }
 
+function bundlePath(frame: Frame): string {
+  const packet = frame.h.engine.lastSemanticPacket!
+  // `createHarness` passes an explicit FileBundleStore rooted at `h.root`, which
+  // takes precedence over `efConfig.bundleRoot` in the engine constructor.
+  return join(frame.h.root, String(frame.session.id), `bundle-${packet.checkpointId}.json`)
+}
+
 describe('missing-receipt recovery window', () => {
   it('still repairs a missing receipt when the operations are the committed ones', async () => {
     const frame = await committedFrame()
@@ -171,5 +178,31 @@ describe('missing-receipt recovery window', () => {
     // The next fold is visibly blocked rather than writing on top of it.
     const notice = frame.h.engine.semanticDiagnostics.detail ?? ''
     expect(notice).toContain('operations that produce state')
+  })
+
+  it('fails closed when a missing receipt has no bundle state witness', async () => {
+    const frame = await committedFrame()
+    await rm(frame.receiptPath)
+    // R33.1-D1: the committed fold, the prepared packet, and no receipt, but
+    // the bundle that carried the rendered-state digest is gone too. The
+    // packet's own ops are then the only description of the state, so the
+    // repair must not promote them.
+    await rm(bundlePath(frame))
+    const report = await frame.h.engine.reconcileSemantics(frame.session)
+    expect(await exists(frame.receiptPath)).toBe(false)
+    expect(report.health).not.toBe('ready')
+    expect(report.detail).toContain('no readable bundle state digest')
+    expect(frame.h.engine.semanticDiagnostics.health).not.toBe('ready')
+    expect(frame.h.engine.semanticDiagnostics.detail ?? '').toContain('independent witness')
+  })
+
+  it('fails closed when the bundle witness is corrupt rather than absent', async () => {
+    const frame = await committedFrame()
+    await rm(frame.receiptPath)
+    await writeFile(bundlePath(frame), 'this is not a bundle envelope', 'utf8')
+    const report = await frame.h.engine.reconcileSemantics(frame.session)
+    expect(await exists(frame.receiptPath)).toBe(false)
+    expect(report.health).not.toBe('ready')
+    expect(report.detail).toContain('no readable bundle state digest')
   })
 })

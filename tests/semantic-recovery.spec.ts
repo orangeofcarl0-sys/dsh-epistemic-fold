@@ -27,6 +27,8 @@ import { buildBundle } from '../src/checkpoint/compiler.ts'
 import { FileBundleStore } from '../src/checkpoint/bundle-store.ts'
 import { retireDerivedAnswers } from '../src/checkpoint/inventory.ts'
 import { FileSemanticJournal, packetIdOf } from '../src/semantic/journal.ts'
+import { replayWithSemanticCommits } from '../src/semantic/replay.ts'
+import { applyOps, visibleAnchors } from '../src/semantic/plan.ts'
 import type { ContinuityAdmission } from '../src/semantic/admission.ts'
 import { emptyCurrentState, stateKeyText } from '../src/state/state.ts'
 import type { EfAnchorEventData, FoldCurrentState } from '../src/state/state.ts'
@@ -120,7 +122,11 @@ async function composite(): Promise<Composite> {
   }
 }
 
-async function writeBundleFor(fixture: CommittedFixture, store: FileBundleStore): Promise<string> {
+async function writeBundleFor(
+  fixture: CommittedFixture,
+  store: FileBundleStore,
+  options: { readonly includeState?: boolean } = {},
+): Promise<string> {
   const messages: Message[] = []
   for (const seq of fixture.span) {
     const event = fixture.session.eventAt(SessionSeq(seq))
@@ -129,6 +135,18 @@ async function writeBundleFor(fixture: CommittedFixture, store: FileBundleStore)
     if (derived === null) throw new Error('fixture event derives no message')
     messages.push(derived)
   }
+  // A CURRENT bundle records the state its body rendered. The R31 fixture
+  // omitted it, which is why R33.1's fail-closed rule initially rejected a
+  // legitimate missing-receipt recovery. Compute the state the packet's ops
+  // produce so the fixture describes a real current-format fold.
+  const base = replayWithSemanticCommits(fixture.session, []).state
+  const candidate = applyOps(base, [...OPS])
+  const renderedState = options.includeState === false
+    ? undefined
+    : {
+        digest: canonicalHash(candidate),
+        anchors: visibleAnchors(candidate).length,
+      }
   const bundle = buildBundle({
     candidate: {
       checkpointId: CHECKPOINT,
@@ -140,6 +158,7 @@ async function writeBundleFor(fixture: CommittedFixture, store: FileBundleStore)
     orderedSurfaceSeqs: fixture.span.map(seq => SessionSeq(seq)),
     shadowedMessages: messages,
     renderedText: fixture.body,
+    ...(renderedState === undefined ? {} : { renderedState }),
   })
   await store.write(bundle)
   return bundle.archive.logicalHash
@@ -240,6 +259,26 @@ describe('R31-C5: cross-store recovery is fail-closed', () => {
 
     const state = await semanticStateOf(h.engine, fixture.session as unknown as HarnessSession)
     expect(state.constraints['semantic-timeout']?.value).toBe('The timeout is 30 seconds.')
+  })
+
+  it('fails closed when a legacy bundle has no state witness', async () => {
+    const parts = await composite()
+    const fixture = committedFold()
+    // Old bundles have no `state.digest`. The packet's own ops are then the
+    // only description of the rendered state, so a missing-receipt repair must
+    // NOT promote them: this is the D1 fail-closed limit, documented rather
+    // than silently trusted.
+    const sourceDigest = await writeBundleFor(fixture, parts.store, { includeState: false })
+    const packet = packetFor(fixture, { sourceDigest })
+    await parts.journal.write(packet)
+
+    const h = await engineFor(parts)
+    const report = await h.engine.reconcileSemantics(fixture.session as unknown as HarnessSession)
+    expect(report.activated).toBe(0)
+    expect(report.health).not.toBe('ready')
+    expect(report.detail).toContain('no readable bundle state digest')
+    const read = await parts.journal.list(fixture.session.id)
+    expect(read.receipts.get(packet.packetId)).toBeUndefined()
   })
 
   it('marks a committed receipt with no log proof as conflict and never re-appends', async () => {
