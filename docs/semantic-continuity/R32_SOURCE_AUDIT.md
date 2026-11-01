@@ -299,6 +299,7 @@ src/index.ts                        public R32 surface
 eval/r31/lifecycle-host.mjs         official resume shape, fork mode, fault output
 eval/r32/live-semantic-eval.mjs     NEW  R33 live entry (interface only)
 package.json                        eval:r32-live entries
+vitest.config.ts                    skip absent vendor alias targets
 ```
 
 Tests:
@@ -332,11 +333,12 @@ commits.
 515b032 test(harness): fall back when a vendored alias target is absent
 ```
 
-The source commit is deliberately one interlocking change: the runtime
+The main source commit is deliberately one interlocking change: the runtime
 validator, journal reader, replay signature, and engine admission must move
 together or the tree does not compile and, worse, the journal reader could
-admit rows the replay signature cannot safely consume. Tests and docs are
-separate commits. The final verification note is a follow-up docs commit.
+admit rows the replay signature cannot safely consume. Two small follow-ups
+correct the reconciliation count and the test-harness alias fallback. Tests and
+docs are separate commits.
 
 ## 5. Baseline reproduction evidence
 
