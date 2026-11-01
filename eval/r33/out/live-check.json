@@ -1,0 +1,41 @@
+{
+  "status": "interface-ok",
+  "datasetDigest": "d13917cf211f24be05bdd6f768f7343b54f2ab3f67a80841ac685b8e2d532d2a",
+  "cases": 17,
+  "caseIds": [
+    "A1",
+    "A2",
+    "B1",
+    "B2",
+    "C1",
+    "C2",
+    "D1",
+    "D2",
+    "E1",
+    "E2",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "G1",
+    "G2",
+    "H1"
+  ],
+  "arms": [
+    "S",
+    "O2"
+  ],
+  "followUpTools": [
+    "read_file",
+    "write_file",
+    "list_dir",
+    "run_tests",
+    "recall",
+    "finish"
+  ],
+  "runRequires": [
+    "R33_LIVE=1",
+    "--manifest with positive requests/inputTokens/outputTokens/wallClockMs"
+  ],
+  "note": "--check resolves no credentials and makes no request."
+}

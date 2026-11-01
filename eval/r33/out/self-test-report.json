@@ -1,0 +1,2276 @@
+{
+  "schemaVersion": 1,
+  "status": "executed-success",
+  "executionKind": "self-test (scripted adapter; verifies plumbing, not model behavior)",
+  "generatedAt": "2026-11-01T12:03:42.092Z",
+  "rows": [
+    {
+      "caseId": "A1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "checkpointChars": 782,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.object-form",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-string-api",
+            "pass": true
+          },
+          {
+            "name": "constraint.callers-still-work",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/callers.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/config.mjs\",\"content\":\"export function loadConfig(input) {\\n  const path = typeof input === 'string' ? input : input.path\\n  const retries = typeof input === 'string' ? 2 : (input.retries ?? 2)\\n  return { source: path, retries, timeoutMs: 1000 }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 660
+      }
+    },
+    {
+      "caseId": "A2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "checkpointChars": 769,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 6,
+        "claims": {},
+        "steps": 5,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.object-form",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-string-removed",
+            "pass": true
+          },
+          {
+            "name": "constraint.callers-migrated",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/callers.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/callers.mjs\",\"content\":\"import { loadConfig } from './config.mjs'\\n\\nexport function runCallers(loader = loadConfig) {\\n  return loader({ path: 'config.json' })\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/config.mjs\",\"content\":\"export function loadConfig(input) {\\n  if (typeof input !== 'object' || input === null) {\\n    throw new TypeError('loadConfig requires an object: { path, retries }')\\n  }\\n  const { path, retries = 2 } = input\\n  return { source: path, retries, timeoutMs: 1000 }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 5,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 447
+      }
+    },
+    {
+      "caseId": "B1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "checkpointChars": 810,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.fifo",
+            "pass": true
+          },
+          {
+            "name": "decision.durable-outbox",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/scheduler.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/scheduler.mjs\",\"content\":\"export function createScheduler(options = {}) {\\n  const tasks = []\\n  return {\\n    mode: 'outbox',\\n    async enqueue(task) {\\n      if (options.storage?.append !== undefined) await options.storage.append(task)\\n      tasks.push(task)\\n      return { queued: true, durable: options.storage?.append !== undefined }\\n    },\\n    async drain() {\\n      return tasks.splice(0, tasks.length)\\n    },\\n  }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 442
+      }
+    },
+    {
+      "caseId": "B2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "checkpointChars": 810,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.fifo",
+            "pass": true
+          },
+          {
+            "name": "decision.in-memory",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/scheduler.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/scheduler.mjs\",\"content\":\"export function createScheduler(options = {}) {\\n  const tasks = []\\n  return {\\n    mode: 'memory',\\n    async enqueue(task) {\\n      tasks.push(task)\\n      return { queued: true }\\n    },\\n    async drain() {\\n      return tasks.splice(0, tasks.length)\\n    },\\n  }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 465
+      }
+    },
+    {
+      "caseId": "C1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 698,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.delivers-change",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/watcher.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/watcher.mjs\",\"content\":\"export function watchChanges({ fs, dir, onEvent, intervalMs = 5 }) {\\n  let seen = new Set(fs.readdir(dir))\\n  const timer = setInterval(() => {\\n    const next = new Set(fs.readdir(dir))\\n    for (const name of next) {\\n      if (!seen.has(name)) onEvent({ type: 'add', name })\\n    }\\n    seen = next\\n  }, intervalMs)\\n  timer.unref?.()\\n  return { close: () => clearInterval(timer) }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 580
+      }
+    },
+    {
+      "caseId": "C2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 698,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.delivers-change",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/watcher.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/watcher.mjs\",\"content\":\"export function watchChanges({ fs, dir, onEvent }) {\\n  const watcher = fs.watch(dir, event => onEvent(event))\\n  return { close: () => watcher.close?.() }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 545
+      }
+    },
+    {
+      "caseId": "D1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 663,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": "not-verified",
+        "expectedClaim": "not-verified",
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "state.observation",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-known",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-accuracy",
+            "pass": true
+          },
+          {
+            "name": "constraint.tests-or-evidence",
+            "pass": true
+          },
+          {
+            "name": "constraint.evidence-bound",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/migrate.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"verification.json\",\"content\":\"{\\n  \\\"testsRun\\\": 1,\\n  \\\"testsPassed\\\": 0,\\n  \\\"claim\\\": \\\"not-verified\\\"\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 467
+      }
+    },
+    {
+      "caseId": "D2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 663,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": "verified",
+        "expectedClaim": "verified",
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "state.observation",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-known",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-accuracy",
+            "pass": true
+          },
+          {
+            "name": "constraint.tests-or-evidence",
+            "pass": true
+          },
+          {
+            "name": "constraint.evidence-bound",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/migrate.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"verification.json\",\"content\":\"{\\n  \\\"testsRun\\\": 0,\\n  \\\"testsPassed\\\": 1,\\n  \\\"claim\\\": \\\"verified\\\",\\n  \\\"evidenceRef\\\": \\\"run-7\\\"\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 467
+      }
+    },
+    {
+      "caseId": "E1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 15,
+        "summarySeq": 16,
+        "replacementSeq": 17,
+        "endSeq": 18
+      },
+      "checkpointChars": 659,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.rows-preserved",
+            "pass": true
+          },
+          {
+            "name": "dependency.artifact-version",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/importer.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/importer.mjs\",\"content\":\"export function importRows(rows, options = {}) {\\n  return { schemaVersion: options.schemaVersion ?? 'schema-v2', rows: rows.map(row => ({ ...row })) }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 481
+      }
+    },
+    {
+      "caseId": "E2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 15,
+        "summarySeq": 16,
+        "replacementSeq": 17,
+        "endSeq": 18
+      },
+      "checkpointChars": 659,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.rows-preserved",
+            "pass": true
+          },
+          {
+            "name": "dependency.artifact-version",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/importer.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/importer.mjs\",\"content\":\"export function importRows(rows, options = {}) {\\n  return { schemaVersion: options.schemaVersion ?? 'schema-v1', rows: rows.map(row => ({ ...row })) }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 455
+      }
+    },
+    {
+      "caseId": "F1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 705,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.v2",
+            "pass": true
+          },
+          {
+            "name": "functionality.version",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-preserved",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/api.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/api.mjs\",\"content\":\"export function legacyAdapter() {\\n  return { legacy: true }\\n}\\n\\nexport function publicApi() {\\n  return { version: 1, v2: 2 }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 442
+      }
+    },
+    {
+      "caseId": "F2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 705,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "functionality.v2",
+            "pass": true
+          },
+          {
+            "name": "functionality.version",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-removed",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/api.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/api.mjs\",\"content\":\"export function publicApi() {\\n  return { version: 1, v2: 2 }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 447
+      }
+    },
+    {
+      "caseId": "F3",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "checkpointChars": 694,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "scope.release",
+            "pass": true
+          },
+          {
+            "name": "scope.experiment",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/config.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/config.mjs\",\"content\":\"export function timeoutFor(branch) {\\n  return branch === 'release' ? 30 : 60\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 442
+      }
+    },
+    {
+      "caseId": "F4",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 43,
+        "summarySeq": 44,
+        "replacementSeq": 45,
+        "endSeq": 46
+      },
+      "checkpointChars": 2105,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 13,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "rule.1-no-id",
+            "pass": true
+          },
+          {
+            "name": "rule.2-no-name",
+            "pass": true
+          },
+          {
+            "name": "rule.3-id-range",
+            "pass": true
+          },
+          {
+            "name": "rule.4-name-length",
+            "pass": true
+          },
+          {
+            "name": "rule.5-trim",
+            "pass": true
+          },
+          {
+            "name": "rule.6-default-status",
+            "pass": true
+          },
+          {
+            "name": "rule.7-tombstone",
+            "pass": true
+          },
+          {
+            "name": "rule.8-negative-amount",
+            "pass": true
+          },
+          {
+            "name": "rule.9-round-amount",
+            "pass": true
+          },
+          {
+            "name": "rule.10-uppercase-currency",
+            "pass": true
+          },
+          {
+            "name": "rule.11-known-currency",
+            "pass": true
+          },
+          {
+            "name": "rule.12-empty-currency",
+            "pass": true
+          },
+          {
+            "name": "rule.13-amount-max",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/validate.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/validate.mjs\",\"content\":\"export function validateRow(input) {\\n  const errors = []\\n  const row = { ...input }\\n  if (row.id === undefined || row.id === null) errors.push('id')\\n  if (row.name === undefined || row.name === null) errors.push('name')\\n  if (typeof row.id === 'number' && row.id < 1) errors.push('id-range')\\n  if (typeof row.name === 'string' && row.name.length > 40) errors.push('name-length')\\n  if (typeof row.name === 'string') row.name = row.name.trim()\\n  if (row.status === undefined) row.status = 'new'\\n  if (row.status === 'deleted' && row.tombstone !== true) errors.push('tombstone')\\n  if (typeof row.amount === 'number' && row.amount < 0) errors.push('amount-negative')\\n  if (typeof row.amount === 'number') row.amount = Math.round(row.amount * 100) / 100\\n  if (typeof row.currency === 'string') row.currency = row.currency.toUpperCase()\\n  if (row.currency !== undefined && !['USD', 'EUR'].includes(row.currency)) errors.push('currency'",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 446
+      }
+    },
+    {
+      "caseId": "G1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 10,
+        "summarySeq": 11,
+        "replacementSeq": 12,
+        "endSeq": 13
+      },
+      "checkpointChars": 532,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "readme.default-500",
+            "pass": true
+          },
+          {
+            "name": "readme.explicit-value",
+            "pass": true
+          },
+          {
+            "name": "readme.source-preserved",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/config.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/config.mjs\",\"content\":\"export function loadConfig(input) {\\n  const path = typeof input === 'string' ? input : input.path\\n  return { source: path, timeoutMs: typeof input === 'string' ? 500 : (input.timeoutMs ?? 500) }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 452
+      }
+    },
+    {
+      "caseId": "G2",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 10,
+        "summarySeq": 11,
+        "replacementSeq": 12,
+        "endSeq": 13
+      },
+      "checkpointChars": 514,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "readme.v2",
+            "pass": true
+          },
+          {
+            "name": "readme.version",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/api.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/api.mjs\",\"content\":\"export function publicApi() {\\n  return { version: 1, v2: 2 }\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 438
+      }
+    },
+    {
+      "caseId": "H1",
+      "arm": "O2",
+      "mode": "self-test",
+      "valid": true,
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "checkpointChars": 672,
+      "extraction": {
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "checkerStatus": "executed",
+        "selectedAction": "live-agent",
+        "matchedProbe": null,
+        "decisionBasis": "model",
+        "taskSuccess": true,
+        "failedChecks": [],
+        "constraintViolation": false,
+        "obsoleteRevival": false,
+        "rejectedRetrial": false,
+        "falseVerificationClaim": false,
+        "verificationClaim": null,
+        "expectedClaim": null,
+        "testsExecuted": 1,
+        "toolCalls": 5,
+        "claims": {},
+        "steps": 4,
+        "finished": true,
+        "summary": "self-test complete",
+        "recallAttempts": 0,
+        "recallSuccess": 0,
+        "checkerChecks": [
+          {
+            "name": "region.production",
+            "pass": true
+          }
+        ],
+        "trace": [
+          {
+            "step": 0,
+            "text": "{\"tool\":\"list_dir\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 1,
+            "text": "{\"tool\":\"read_file\",\"path\":\"src/client.mjs\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 2,
+            "text": "{\"tool\":\"write_file\",\"path\":\"src/client.mjs\",\"content\":\"export function defaultRegion() {\\n  return 'eu-west-2'\\n}\\n\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 3,
+            "text": "{\"tool\":\"run_tests\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          },
+          {
+            "step": 4,
+            "text": "{\"tool\":\"finish\",\"summary\":\"self-test complete\"}",
+            "usage": {
+              "inputTokens": 10,
+              "outputTokens": 10
+            },
+            "finishReason": {
+              "kind": "stop"
+            }
+          }
+        ]
+      },
+      "cost": {
+        "modelRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "wallClockMs": 475
+      }
+    }
+  ],
+  "summary": {
+    "cases": 17,
+    "valid": 17,
+    "success": 17
+  }
+}
