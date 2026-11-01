@@ -36,7 +36,7 @@
  */
 
 import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
-import { appendEfEvent } from '../state/plugin-events.ts'
+import { appendEfEvent, efPluginRecordOf } from '../state/plugin-events.ts'
 import { parseCheckpointMarker } from './checkpoint-marker.ts'
 import type { EfCheckpointMarker } from './checkpoint-marker.ts'
 
@@ -100,6 +100,15 @@ export interface CheckpointResidencyReport {
    * baseline -- the exact silent failure this report exists to make loud.
    */
   readonly conflicts: number
+  /**
+   * Retirement records that named no checkpoint, or whose payload was not an object with a
+   * non-empty `checkpointId`.
+   *
+   * They are REFUSED, never applied. A malformed record is a data condition, not an absence, so
+   * counting it keeps the reading honest: a consumer can tell "no retirement" from "a retirement
+   * this build could not understand".
+   */
+  readonly invalidRetirements: number
 }
 
 /** Read the summary text out of a `compaction/summary` event, or undefined when it has none. */
@@ -114,6 +123,60 @@ function messageText(event: { readonly data?: unknown }): string | undefined {
   const data = event.data as { content?: readonly { type?: string; text?: string }[] } | undefined
   if (!Array.isArray(data?.content)) return undefined
   return data.content.map(block => (block.type === 'text' ? block.text ?? '' : '')).join('')
+}
+
+/**
+ * Read every checkpoint retirement in one log, whichever transport wrote it.
+ *
+ * ## One reader, because two writers already exist
+ *
+ * `retireCheckpoint` writes through `appendEfEvent`, which on DSH 0.2.1 is
+ * `appendPluginRecord` (`plugin:epistemic-fold/retire`) and on the in-memory
+ * face is a raw `ef/retire`. Before this reader existed, the derivation scanned
+ * only `ef/retire`: the write succeeded, and the checkpoint still read as
+ * resident. Every consumer now goes through `efPluginRecordOf`, so a new
+ * transport cannot be missed by one call site while the others keep working.
+ *
+ * The record is the authority, not its prose. A payload that is not an object
+ * with a non-empty `checkpointId` is REFUSED and counted; it is never coerced
+ * into a retirement of some guessed id. The first valid record wins, so a
+ * duplicate retirement cannot move the seq that retired the checkpoint (and
+ * therefore cannot make the reading depend on how often a driver asked).
+ *
+ * A journal does not appear here: checkpoint residency is a fact about the
+ * session's surface, and an external file cannot prove a surface operation.
+ * Journal-held retirement receipts are verified against this log before use
+ * (see PERSISTENCE.md) and never independently retire anything.
+ *
+ * @param session - the session whose log is read.
+ * @returns the first valid retirement per checkpoint id, plus the refused count.
+ */
+export function readCheckpointRetirements(session: Session): {
+  readonly byCheckpoint: ReadonlyMap<string, SessionSeq>
+  readonly invalid: number
+} {
+  const byCheckpoint = new Map<string, SessionSeq>()
+  let invalid = 0
+  for (let seq = 0; seq < session.seq; seq += 1) {
+    const event = session.eventAt(seq as never)
+    if (event === undefined) continue
+    // Pass the loop seq explicitly: a structural test double need not carry
+    // `seq` on every event, while a real SessionEvent already does.
+    const record = efPluginRecordOf({ ...event, seq })
+    if (record === undefined || record.kind !== 'retire') continue
+    const data = record.data
+    if (data === null || typeof data !== 'object') {
+      invalid += 1
+      continue
+    }
+    const checkpointId = (data as { readonly checkpointId?: unknown }).checkpointId
+    if (typeof checkpointId !== 'string' || checkpointId.length === 0) {
+      invalid += 1
+      continue
+    }
+    if (!byCheckpoint.has(checkpointId)) byCheckpoint.set(checkpointId, seq as SessionSeq)
+  }
+  return { byCheckpoint, invalid }
 }
 
 /**
@@ -141,13 +204,7 @@ export function deriveCheckpointResidency(session: Session): CheckpointResidency
 
   // Pass 1: retirements. They are recorded AFTER the checkpoint they retire, so they cannot be
   // resolved while walking past the checkpoint itself.
-  const retirements = new Map<string, SessionSeq>()
-  for (let seq = 0; seq < session.seq; seq += 1) {
-    const event = session.eventAt(seq as never)
-    if (event === undefined || event.type !== 'ef/retire') continue
-    const data = event.data as EfRetireEventData
-    if (!retirements.has(data.checkpointId)) retirements.set(data.checkpointId, seq as SessionSeq)
-  }
+  const retirements = readCheckpointRetirements(session)
 
   // Pass 2: which checkpoint ids the model can see right now. Read from the surface's own nodes,
   // because that is the definition of resident -- not a count, and not an inference.
@@ -173,7 +230,7 @@ export function deriveCheckpointResidency(session: Session): CheckpointResidency
     if (text === undefined) continue
     const marker = parseCheckpointMarker(text)
     if (marker === undefined) continue
-    const retiredBy = retirements.get(marker.checkpointId)
+    const retiredBy = retirements.byCheckpoint.get(marker.checkpointId)
     const surfaceSeq = residentOn.get(marker.checkpointId)
     const onSurface = surfaceSeq !== undefined
     sites.push({
@@ -199,7 +256,14 @@ export function deriveCheckpointResidency(session: Session): CheckpointResidency
       if (site.onSurface) conflicts += 1
     }
   }
-  return { sites, resident, archived, retired, conflicts }
+  return {
+    sites,
+    resident,
+    archived,
+    retired,
+    conflicts,
+    invalidRetirements: retirements.invalid,
+  }
 }
 
 /** Why a durable `ef/retire` write was refused. */

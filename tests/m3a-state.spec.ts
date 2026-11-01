@@ -9,6 +9,7 @@ import { canVerify } from '../src/state/authority.ts'
 import {
   authorityLossRate,
   emptyCurrentState,
+  reduceEvent,
   stateKeyText,
   stateStalenessRate,
 } from '../src/state/state.ts'
@@ -507,5 +508,75 @@ describe('M3a: unverified completion refuses hot verification', () => {
     // the reducer level (validated upstream by canVerify).
     transition(session, 'failure:call-1', 'verified', [])
     expect(currentFoldState(ctx, session).openFailures['failure:call-1']!.failureState).toBe('open')
+  })
+})
+
+describe('R31-A2: one logical anchor, one retirement', () => {
+  const objectiveKey: StateKey = { namespace: 'task', entity: 'root', property: 'objective' }
+
+  function declared(state = emptyCurrentState(), id = 'objective-a') {
+    return reduceEvent(state, {
+      type: 'ef/anchor',
+      seq: 0,
+      data: {
+        op: 'declare',
+        anchor: anchor({
+          kind: 'objective',
+          stateKey: objectiveKey,
+          value: 'ship the migration',
+          authority: 'normative',
+          sourceRefs: [{ seq: 1 as never }],
+          id,
+        }),
+      },
+    })
+  }
+
+  it('counts an objective indexed in BOTH the slot and the heads map exactly once', () => {
+    let state = declared()
+    // Precondition: the same anchor really is visible in two views. If this
+    // ever stops being true the test below would pass for the wrong reason.
+    expect(state.objective?.id).toBe('objective-a')
+    expect(state.stateHeads[stateKeyText(objectiveKey)]?.id).toBe('objective-a')
+
+    state = reduceEvent(state, { type: 'ef/anchor', seq: 1, data: { op: 'retire', anchorId: 'objective-a' } })
+    expect(state.objective).toBeUndefined()
+    expect(state.stateHeads[stateKeyText(objectiveKey)]).toBeUndefined()
+    expect(state.retiredCount).toBe(1)
+  })
+
+  it('does not count a repeated retirement again', () => {
+    let state = declared()
+    state = reduceEvent(state, { type: 'ef/anchor', seq: 1, data: { op: 'retire', anchorId: 'objective-a' } })
+    const retired = state
+    state = reduceEvent(state, { type: 'ef/anchor', seq: 2, data: { op: 'retire', anchorId: 'objective-a' } })
+    expect(state).toBe(retired)
+    expect(state.retiredCount).toBe(1)
+  })
+
+  it('retiring a superseded objective cannot remove the replacement head', () => {
+    let state = declared()
+    state = reduceEvent(state, {
+      type: 'ef/anchor',
+      seq: 1,
+      data: {
+        op: 'declare',
+        anchor: anchor({
+          kind: 'objective',
+          stateKey: objectiveKey,
+          value: 'ship it without the migration',
+          authority: 'normative',
+          sourceRefs: [{ seq: 2 as never }],
+          id: 'objective-b',
+        }),
+      },
+    })
+    expect(state.retiredCount).toBe(1) // the displacement, not a retirement
+    expect(state.stateHeads[stateKeyText(objectiveKey)]?.id).toBe('objective-b')
+
+    state = reduceEvent(state, { type: 'ef/anchor', seq: 2, data: { op: 'retire', anchorId: 'objective-a' } })
+    expect(state.stateHeads[stateKeyText(objectiveKey)]?.id).toBe('objective-b')
+    expect(state.objective?.id).toBe('objective-b')
+    expect(state.retiredCount).toBe(1)
   })
 })

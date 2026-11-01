@@ -44,6 +44,20 @@ const retire = (checkpointId: string) => ({
   data: { checkpointId, reason: 'phase complete' },
 })
 
+/** The DSH 0.2.1 transport: a `plugin:` record marked ignorable. */
+const pluginRetire = (checkpointId: string) => ({
+  type: 'plugin:epistemic-fold/retire',
+  ignorable: true,
+  data: { checkpointId, reason: 'phase complete' },
+})
+
+/** A record whose payload cannot name a checkpoint. */
+const malformedRetire = () => ({
+  type: 'plugin:epistemic-fold/retire',
+  ignorable: true,
+  data: { checkpointId: '' },
+})
+
 function fakeSession(events: readonly FakeEvent[], surface: readonly number[]) {
   return {
     seq: events.length,
@@ -98,6 +112,49 @@ describe('checkpoint residency', () => {
     const report = deriveCheckpointResidency(fakeSession([summary('a'), retire('a'), retire('a')], []))
     expect(report.retired).toBe(1)
     expect(report.sites[0]?.retiredBy).toBe(1)
+  })
+
+  it('reads a retirement written through the 0.2.1 plugin-record transport', () => {
+    // The writer and the reader used to disagree: `retireCheckpoint` wrote
+    // `plugin:epistemic-fold/retire`, while this derivation scanned only
+    // `ef/retire`. The write returned success and the checkpoint still read as
+    // resident -- a retirement that was recorded and never observed.
+    const report = deriveCheckpointResidency(fakeSession([summary('a'), node('a'), pluginRetire('a')], [1]))
+    expect(report.retired).toBe(1)
+    expect(report.sites[0]).toMatchObject({ residency: 'retired', retiredBy: 2, onSurface: true })
+    expect(report.conflicts).toBe(1)
+  })
+
+  it('treats the old raw and new plugin records as ONE domain, first valid record wins', () => {
+    const both = fakeSession([
+      summary('a'),
+      node('a'),
+      retire('a'),
+      pluginRetire('a'),
+      pluginRetire('a'),
+    ], [1])
+    const report = deriveCheckpointResidency(both)
+    expect(report.retired).toBe(1)
+    expect(report.sites[0]?.residency).toBe('retired')
+    expect(report.sites[0]?.retiredBy).toBe(2)
+    expect(report.invalidRetirements).toBe(0)
+  })
+
+  it('REFUSES a malformed retirement record and reports it, rather than guessing an id', () => {
+    const report = deriveCheckpointResidency(fakeSession([summary('a'), malformedRetire()], []))
+    expect(report.retired).toBe(0)
+    expect(report.sites[0]?.residency).toBe('archived')
+    expect(report.invalidRetirements).toBe(1)
+  })
+
+  it('does NOT call a removed node retired when no valid retirement exists', () => {
+    // Removal is a surface operation, not a retirement. Without the record the
+    // only defensible reading is `archived`: the checkpoint left because a
+    // later fold folded it, which is a different fact with a different recoverable path.
+    const report = deriveCheckpointResidency(fakeSession([summary('a'), node('a')], []))
+    expect(report.sites[0]?.residency).toBe('archived')
+    expect(report.retired).toBe(0)
+    expect(report.conflicts).toBe(0)
   })
 })
 

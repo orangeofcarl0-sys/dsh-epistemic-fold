@@ -322,13 +322,17 @@ function transitionFailure(
 /** Retire one anchor by id (verified failures, revoked constraints). */
 function retireAnchor(state: FoldCurrentState, anchorId: string): FoldCurrentState {
   let next = state
-  let removed = 0
-  // The objective is a single slot, not a face.
+  let found = false
+  // The objective is a single slot, not a face. It may ALSO be indexed in
+  // `stateHeads`; both are views of ONE logical anchor, so removing both is
+  // correct but counting both is not. `retiredCount` counts anchors that left
+  // hot state, not index entries removed — otherwise retiring one objective
+  // inflated the count by two and every later consumer read two retirements.
   if (next.objective?.id === anchorId) {
     const { objective: _dropped, ...rest } = next
     void _dropped
     next = rest
-    removed += 1
+    found = true
   }
   for (const face of ALL_FACES) {
     const anchor = next[face][anchorId]
@@ -336,17 +340,17 @@ function retireAnchor(state: FoldCurrentState, anchorId: string): FoldCurrentSta
       // removeFace clears both the face entry and the matching head, so the
       // same anchor can never be counted twice.
       next = removeFace(next, anchor)
-      removed += 1
+      found = true
     }
   }
   for (const head of Object.values(next.stateHeads)) {
     if (head.id === anchorId) {
       next = removeFace(next, head)
-      removed += 1
+      found = true
       break
     }
   }
-  return removed === 0 ? state : { ...next, retiredCount: next.retiredCount + removed }
+  return found ? { ...next, retiredCount: next.retiredCount + 1 } : state
 }
 
 /**

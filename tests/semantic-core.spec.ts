@@ -21,7 +21,7 @@ import { citableMessages, resolveQuote } from '../src/semantic/evidence.ts'
 import { validateDeltas } from '../src/semantic/validate.ts'
 import { applyOps, planCommit } from '../src/semantic/plan.ts'
 import { compileWorkingSet } from '../src/semantic/working-set-compiler.ts'
-import { changedAnchors } from '../src/semantic/changes.ts'
+import { changedAnchors, changedOverflowLine } from '../src/semantic/changes.ts'
 import { parseWriterOutput } from '../src/semantic/writer.ts'
 import { emptyCurrentState, stateKeyText } from '../src/state/state.ts'
 import type { Anchor, FoldCurrentState } from '../src/state/state.ts'
@@ -389,9 +389,76 @@ describe('working set and temporal rendering', () => {
       sourceRefs: [{ seq: 1 as never }],
     }))
     const changed = changedAnchors(stateWith(anchors), [1], 5)
-    expect(changed.shown).toHaveLength(5)
+    // The cap applies to the WORKING anchors: the one pinned constraint is
+    // rendered on top of the five-decision quota, and the replacement is first.
+    expect(changed.shown).toHaveLength(6)
+    expect(changed.pinned).toHaveLength(1)
+    expect(changed.working).toHaveLength(5)
     expect(changed.all).toHaveLength(30)
-    expect(changed.omitted).toHaveLength(25)
+    expect(changed.omitted).toHaveLength(24)
     expect(changed.shown[0]!.id).toBe('a-29')
+  })
+
+  it('R31-A3: never caps still-binding pinned constraints, even past the quota', () => {
+    // The defect: 30 pinned changed anchors against a quota of 24 rendered 24,
+    // omitted 6, and the engine excluded all 30 from the carried state. The six
+    // omitted contracts then existed only behind a generic retrieval pointer.
+    const pinned: Anchor[] = Array.from({ length: 30 }, (_, index) => ({
+      id: `pinned-${index}`,
+      kind: 'constraint',
+      stateKey: { namespace: 'semantic', entity: 'constraint', property: `pinned-${index}` },
+      value: `hard constraint ${index}`,
+      authority: 'normative',
+      lifecycle: 'active',
+      sourceRefs: [{ seq: 2 as never }],
+    }))
+    const changed = changedAnchors(stateWith(pinned), [2])
+    expect(changed.pinned).toHaveLength(30)
+    expect(changed.shown).toHaveLength(30)
+    expect(changed.omitted).toHaveLength(0)
+    expect(changed.all).toHaveLength(30)
+  })
+
+  it('R31-A3: pinned do not consume the working quota, and working overflow is explicit', () => {
+    const pinned: Anchor[] = Array.from({ length: 30 }, (_, index) => ({
+      id: `pin-${index}`,
+      kind: 'constraint',
+      stateKey: { namespace: 'semantic', entity: 'constraint', property: `pin-${index}` },
+      value: `contract ${index}`,
+      authority: 'normative',
+      lifecycle: 'active',
+      sourceRefs: [{ seq: 3 as never }],
+    }))
+    const working: Anchor[] = Array.from({ length: 30 }, (_, index) => ({
+      id: `work-${index}`,
+      kind: 'decision',
+      stateKey: { namespace: 'semantic', entity: 'decision', property: `work-${index}` },
+      value: `decision ${index}`,
+      authority: 'decision',
+      lifecycle: 'active',
+      sourceRefs: [{ seq: 3 as never }],
+    }))
+    const changed = changedAnchors(stateWith([...pinned, ...working]), [3], 24)
+    expect(changed.pinned).toHaveLength(30)
+    expect(changed.working).toHaveLength(24)
+    expect(changed.shown).toHaveLength(54)
+    expect(changed.omitted).toHaveLength(6)
+    expect(changedOverflowLine(changed.omitted.length)).toContain('+6 more')
+  })
+
+  it('R31-A3: an all-working change set still obeys the quota and reports the rest', () => {
+    const working: Anchor[] = Array.from({ length: 30 }, (_, index) => ({
+      id: `w-${index}`,
+      kind: 'decision',
+      stateKey: { namespace: 'semantic', entity: 'decision', property: `w-${index}` },
+      value: `decision ${index}`,
+      authority: 'decision',
+      lifecycle: 'active',
+      sourceRefs: [{ seq: 4 as never }],
+    }))
+    const changed = changedAnchors(stateWith(working), [4], 24)
+    expect(changed.pinned).toHaveLength(0)
+    expect(changed.shown).toHaveLength(24)
+    expect(changed.omitted).toHaveLength(6)
   })
 })

@@ -60,9 +60,13 @@ function provenancePosition(anchor: Anchor): number {
 
 /** The changed set, split at the cap. */
 export interface ChangedSelection {
-  /** The anchors the section renders, after the cap. */
+  /** The anchors the section renders: every changed pinned anchor, then the working cap. */
   readonly shown: readonly Anchor[]
-  /** Effective anchors the cap left out; the caller renders an overflow line. */
+  /** Changed anchors that are still in force. Never capped; the cap cannot drop a contract. */
+  readonly pinned: readonly Anchor[]
+  /** The changed working anchors the election shows. */
+  readonly working: readonly Anchor[]
+  /** Effective WORKING anchors the cap left out; the caller renders an overflow line. */
   readonly omitted: readonly Anchor[]
   /** Every changed anchor, including the omitted ones. Used to exclude them from carried state. */
   readonly all: readonly Anchor[]
@@ -71,10 +75,24 @@ export interface ChangedSelection {
 /**
  * Select the anchors whose provenance lies inside one folded span.
  *
+ * ## Pinned and working do not share one quota
+ *
+ * A single global cap is the defect this signature exists to prevent: with 30
+ * still-binding pinned constraints changed in a root fold, a cap of 24 showed
+ * 24 of them, omitted 6, and the caller excluded ALL 30 from the carried
+ * working set — so the 6 omitted contracts were neither in the delta section
+ * nor in the carried state, only behind a generic retrieval pointer. A hard
+ * constraint that is still in force is not a candidate for a token quota.
+ *
+ * The cap therefore limits only the WORKING (droppable) anchors. Pinned state
+ * is always rendered; if it is expensive, the working-set compiler reports the
+ * overflow instead of the selector hiding it. The omitted working anchors are
+ * counted explicitly, so "not shown" never means "silently deleted".
+ *
  * @param state - the candidate state AFTER this packet's operations.
  * @param foldedSeqs - surface seqs of the span being replaced.
- * @param cap - maximum anchors carried in the section; `MAX_CHANGED_ANCHORS` by default.
- * @returns the rendered set and the anchors left out by the cap.
+ * @param cap - maximum WORKING anchors rendered; `MAX_CHANGED_ANCHORS` by default.
+ * @returns the rendered set, the pinned set, and the working anchors left out by the cap.
  */
 export function changedAnchors(
   state: FoldCurrentState,
@@ -84,16 +102,24 @@ export function changedAnchors(
   const inside = new Set(foldedSeqs)
   const changed = anchorsOf(state).filter(anchor =>
     anchor.sourceRefs.some(ref => inside.has(Number(ref.seq))))
-  changed.sort((left, right) => {
-    // Pinned first: a contract that changed in this fold is the least
-    // droppable line in the section.
-    const leftPinned = residencyOf(left) === 'pinned' ? 0 : 1
-    const rightPinned = residencyOf(right) === 'pinned' ? 0 : 1
-    return leftPinned - rightPinned
-      || provenancePosition(right) - provenancePosition(left)
-      || left.id.localeCompare(right.id)
-  })
-  return { shown: changed.slice(0, cap), omitted: changed.slice(cap), all: changed }
+  const pinned: Anchor[] = []
+  const droppable: Anchor[] = []
+  for (const anchor of changed) {
+    if (residencyOf(anchor) === 'pinned') pinned.push(anchor)
+    else droppable.push(anchor)
+  }
+  const order = (left: Anchor, right: Anchor): number =>
+    provenancePosition(right) - provenancePosition(left) || left.id.localeCompare(right.id)
+  pinned.sort(order)
+  droppable.sort(order)
+  const shownWorking = droppable.slice(0, Math.max(0, cap))
+  return {
+    shown: [...pinned, ...shownWorking],
+    pinned,
+    working: shownWorking,
+    omitted: droppable.slice(Math.max(0, cap)),
+    all: changed,
+  }
 }
 
 /**

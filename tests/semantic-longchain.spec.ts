@@ -214,8 +214,11 @@ describe('root truncation and pinned overflow', () => {
     const state = applyOps(emptyCurrentState(), planCommit([pinnedInSpan, ...many], { state: emptyCurrentState() }).ops)
 
     const changed = changedAnchors(state, [1], 24)
-    expect(changed.shown).toHaveLength(24)
-    expect(changed.omitted).toHaveLength(77) // 101 changed, 24 shown
+    // The quota applies to WORKING anchors: the pinned contract is rendered on
+    // top of the 24 changed items the cap allows, so nothing binding is dropped.
+    expect(changed.shown).toHaveLength(25)
+    expect(changed.pinned).toHaveLength(1)
+    expect(changed.omitted).toHaveLength(76) // 100 working changed, 24 shown
     // Pinned first: the user's contract can never be the item the cap drops.
     expect(changed.shown[0]!.id).toBe(`semantic-${pinnedInSpan.deltaId.slice(0, 32)}`)
     expect(changedOverflowLine(changed.omitted.length)).toContain('more changed item(s) not shown')
