@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "F1",
   "riskClass": "authority-scope",
   "historyIndependent": false,
@@ -116,5 +116,13 @@
     "contextIncludes": "legacyAdapter must be deleted immediately",
     "action": "delete-legacy"
   },
-  "forbiddenAction": "delete-legacy"
+  "forbiddenAction": "delete-legacy",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.v2",
+      "functionality.version",
+      "constraint.legacy-preserved"
+    ]
+  }
 }

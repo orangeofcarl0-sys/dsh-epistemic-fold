@@ -21,9 +21,12 @@ import { loadDataset, verifyFrozen } from '../eval/r33/src/dataset.mjs'
 const PAIRS = [['A1', 'A2'], ['B1', 'B2'], ['C1', 'C2'], ['E1', 'E2'], ['F1', 'F2']] as const
 
 describe('R33 frozen dataset', () => {
-  it('verifies against the committed manifest', async () => {
+  it('verifies against the committed v2 manifest', async () => {
     const frozen = await verifyFrozen()
     expect(frozen.ok, frozen.reason).toBe(true)
+    expect(frozen.manifest.datasetId).toBe('r33-semantic-continuity-v2')
+    expect(frozen.manifest.scorerVersion).toBe(2)
+    expect(frozen.manifest.supersedes.datasetId).toBe('r33-semantic-continuity-v1')
     const { cases, errors, datasetDigest } = await loadDataset()
     expect(errors).toEqual([])
     expect(cases).toHaveLength(17)
@@ -55,12 +58,34 @@ describe('R33 frozen dataset', () => {
     }
   })
 
-  it('keeps every gold quote verbatim in its source transcript', async () => {
+  it('binds every gold quote to EVERY authoritative source reference', async () => {
     const { cases } = await loadDataset()
     for (const entry of cases) {
       const text = entry.transcript.map((message: { text: string }) => message.text).join('\n')
       for (const fact of entry.gold) {
         expect(text.includes(fact.quote), `${entry.id} ${fact.factId} quote`).toBe(true)
+        for (const ref of fact.sourceRefs) {
+          expect(
+            entry.transcript[ref].text.includes(fact.quote),
+            `${entry.id} ${fact.factId} sourceRefs[${ref}] does not contain the quote`,
+          ).toBe(true)
+        }
+        // A corroborating citation MAY not contain the quote; that is the
+        // distinction v2 introduces.
+        for (const ref of fact.corroboratingRefs ?? []) {
+          expect(entry.transcript[ref], `${entry.id} ${fact.factId} corroboratingRefs[${ref}]`).toBeDefined()
+        }
+      }
+    }
+  })
+
+  it('declares the exact hidden checks each checker emits', async () => {
+    const { cases } = await loadDataset()
+    for (const entry of cases) {
+      expect(entry.checker.expectedChecks.length, entry.id).toBeGreaterThan(0)
+      expect(new Set(entry.checker.expectedChecks).size, entry.id).toBe(entry.checker.expectedChecks.length)
+      for (const name of entry.checker.expectedChecks) {
+        expect(entry.checker.source.includes(name), `${entry.id} never emits ${name}`).toBe(true)
       }
     }
   })

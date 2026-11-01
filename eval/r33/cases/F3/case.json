@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "F3",
   "riskClass": "authority-scope",
   "historyIndependent": false,
@@ -132,5 +132,12 @@
     "contextIncludes": "release branch timeout is 60",
     "action": "unscoped"
   },
-  "forbiddenAction": "unscoped"
+  "forbiddenAction": "unscoped",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "scope.release",
+      "scope.experiment"
+    ]
+  }
 }

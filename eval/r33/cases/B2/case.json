@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "B2",
   "riskClass": "decision-override",
   "historyIndependent": false,
@@ -69,15 +69,17 @@
       "kind": "decision",
       "subjectKey": "scheduler-queue",
       "sourceRefs": [
-        0,
-        2
+        0
       ],
       "quote": "use an in-memory queue for the scheduler",
       "statement": "The scheduler keeps an in-memory queue.",
       "criticality": "high",
       "current": true,
       "visibleNeedle": "in-memory queue",
-      "expectedBehavior": "Keep the in-memory queue and do not add a storage dependency."
+      "expectedBehavior": "Keep the in-memory queue and do not add a storage dependency.",
+      "corroboratingRefs": [
+        2
+      ]
     },
     {
       "factId": "B2-outbox-rejected",
@@ -121,5 +123,12 @@
     ],
     "default": "use-outbox"
   },
-  "forbiddenAction": "use-outbox"
+  "forbiddenAction": "use-outbox",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.fifo",
+      "decision.in-memory"
+    ]
+  }
 }

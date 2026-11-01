@@ -1,0 +1,5 @@
+{
+  "name": "holdout-cache-client",
+  "private": true,
+  "type": "module"
+}

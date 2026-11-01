@@ -20,10 +20,18 @@ import { join, dirname, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { digestOf, canonicalJson } from './canonical.mjs'
 import { validateCase, CASE_SCHEMA_VERSION } from './schema.mjs'
+import { SCORER_VERSION } from './grade.mjs'
 
 export const CASES_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'cases')
 export const MANIFEST_PATH = join(dirname(fileURLToPath(import.meta.url)), '..', 'manifest.json')
-export const DATASET_ID = 'r33-semantic-continuity-v1'
+export const DATASET_ID = 'r33-semantic-continuity-v2'
+/** A separately frozen holdout, never used to design the v2 instrument. */
+export const HOLDOUT_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'holdout', 'cases')
+export const HOLDOUT_MANIFEST_PATH = join(dirname(fileURLToPath(import.meta.url)), '..', 'holdout', 'manifest.json')
+export const HOLDOUT_ID = 'r33-semantic-continuity-holdout-v1'
+/** The R33 dataset whose bytes and reports are preserved for audit. */
+export const DATASET_V1 = 'r33-semantic-continuity-v1'
+export const DATASET_V1_GIT = 'ad3020df0e22587f78490c19550fe6986f55af3f'
 
 const SKIP = new Set(['.git', 'node_modules', '__pycache__'])
 
@@ -56,8 +64,8 @@ export async function readTree(root) {
 }
 
 /** List case ids that have a `case.json`, in sorted order. */
-export async function listCaseIds() {
-  const entries = await readdir(CASES_ROOT, { withFileTypes: true })
+export async function listCaseIds(root = CASES_ROOT) {
+  const entries = await readdir(root, { withFileTypes: true })
   return entries
     .filter(entry => entry.isDirectory())
     .map(entry => entry.name)
@@ -65,8 +73,8 @@ export async function listCaseIds() {
 }
 
 /** Assemble one case directory into the shape `validateCase` expects. */
-export async function loadCase(id) {
-  const root = join(CASES_ROOT, id)
+export async function loadCase(id, casesRoot = CASES_ROOT) {
+  const root = join(casesRoot, id)
   const metadata = JSON.parse(await readFile(join(root, 'case.json'), 'utf8'))
   const workspace = { files: await readTree(join(root, 'workspace')) }
   const actions = {}
@@ -101,13 +109,13 @@ export async function loadCase(id) {
  *
  * @returns {Promise<{cases:object[], errors:object[], datasetDigest:string}>}
  */
-export async function loadDataset() {
-  const ids = await listCaseIds()
+async function loadFrom(casesRoot, datasetId) {
+  const ids = await listCaseIds(casesRoot)
   const cases = []
   const errors = []
   for (const id of ids) {
     try {
-      const assembled = await loadCase(id)
+      const assembled = await loadCase(id, casesRoot)
       const verdict = validateCase(assembled)
       if (!verdict.ok) {
         errors.push({ caseId: id, code: verdict.code, detail: verdict.detail })
@@ -120,37 +128,70 @@ export async function loadDataset() {
   }
   const datasetDigest = digestOf({
     schemaVersion: CASE_SCHEMA_VERSION,
-    datasetId: DATASET_ID,
+    datasetId,
     cases: cases.map(entry => ({ id: entry.id, digest: entry.digest })),
   })
   return { cases, errors, datasetDigest }
 }
 
-/** Write the manifest after a successful validation. */
-export async function freezeDataset(now = new Date()) {
-  const { cases, errors, datasetDigest } = await loadDataset()
+export async function loadDataset() {
+  return await loadFrom(CASES_ROOT, DATASET_ID)
+}
+
+/** Load the separately frozen holdout, never mixed into the v2 digest. */
+export async function loadHoldoutDataset() {
+  return await loadFrom(HOLDOUT_ROOT, HOLDOUT_ID)
+}
+
+async function writeFrozenManifest({ now, datasetId, manifestPath, loaded, supersedes }) {
+  const { cases, errors, datasetDigest } = loaded
   if (errors.length > 0) return { ok: false, errors }
   const counts = {}
   for (const entry of cases) counts[entry.riskClass] = (counts[entry.riskClass] ?? 0) + 1
   const manifest = {
     schemaVersion: CASE_SCHEMA_VERSION,
-    datasetId: DATASET_ID,
+    datasetId,
+    scorerVersion: SCORER_VERSION,
     frozenAt: now.toISOString(),
     caseCount: cases.length,
     counts,
     datasetDigest,
+    ...(supersedes === undefined ? {} : { supersedes }),
     cases: cases
       .map(entry => ({ id: entry.id, riskClass: entry.riskClass, digest: entry.digest }))
       .sort((left, right) => left.id.localeCompare(right.id)),
   }
-  await writeFile(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
   return { ok: true, manifest }
 }
 
-/** Verify a dataset against a previously frozen manifest. */
-export async function verifyFrozen(manifestPath = MANIFEST_PATH) {
+/** Write the manifest after a successful validation. */
+export async function freezeDataset(now = new Date()) {
+  return await writeFrozenManifest({
+    now,
+    datasetId: DATASET_ID,
+    manifestPath: MANIFEST_PATH,
+    loaded: await loadDataset(),
+    supersedes: { datasetId: DATASET_V1, gitCommit: DATASET_V1_GIT },
+  })
+}
+
+/** Freeze the separate holdout. It has no `supersedes` link to the dev set. */
+export async function freezeHoldout(now = new Date()) {
+  return await writeFrozenManifest({
+    now,
+    datasetId: HOLDOUT_ID,
+    manifestPath: HOLDOUT_MANIFEST_PATH,
+    loaded: await loadHoldoutDataset(),
+  })
+}
+
+async function verifyAgainst({ manifestPath, datasetId, loaded }) {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
-  const { cases, errors, datasetDigest } = await loadDataset()
+  if (manifest.datasetId !== datasetId) {
+    return { ok: false, reason: `manifest names ${manifest.datasetId}, expected ${datasetId}` }
+  }
+  const { cases, errors, datasetDigest } = loaded
   if (errors.length > 0) return { ok: false, reason: 'schema errors', errors }
   const byId = new Map(cases.map(entry => [entry.id, entry]))
   for (const frozen of manifest.cases) {
@@ -163,4 +204,22 @@ export async function verifyFrozen(manifestPath = MANIFEST_PATH) {
   if (cases.length !== manifest.caseCount) return { ok: false, reason: 'case count changed' }
   if (datasetDigest !== manifest.datasetDigest) return { ok: false, reason: 'dataset digest changed' }
   return { ok: true, manifest, datasetDigest, canonical: canonicalJson(manifest) }
+}
+
+/** Verify a dataset against a previously frozen manifest. */
+export async function verifyFrozen(manifestPath = MANIFEST_PATH) {
+  return await verifyAgainst({
+    manifestPath,
+    datasetId: DATASET_ID,
+    loaded: await loadDataset(),
+  })
+}
+
+/** Verify the separately frozen holdout. */
+export async function verifyHoldout(manifestPath = HOLDOUT_MANIFEST_PATH) {
+  return await verifyAgainst({
+    manifestPath,
+    datasetId: HOLDOUT_ID,
+    loaded: await loadHoldoutDataset(),
+  })
 }

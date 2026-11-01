@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "D1",
   "riskClass": "validation-boundary",
   "historyIndependent": false,
@@ -51,15 +51,17 @@
       "kind": "finding",
       "subjectKey": "validation-state",
       "sourceRefs": [
-        2,
-        3
+        2
       ],
       "quote": "tests=not-run",
       "statement": "The migration code is written, but its tests have not been run.",
       "criticality": "high",
       "current": true,
       "visibleNeedle": "tests have not been run",
-      "expectedBehavior": "Run the tests (or report not-verified); never claim verified from the code alone."
+      "expectedBehavior": "Run the tests (or report not-verified); never claim verified from the code alone.",
+      "corroboratingRefs": [
+        3
+      ]
     }
   ],
   "actionMeta": {
@@ -95,5 +97,15 @@
     "action": "trust-history"
   },
   "expectedClaim": "not-verified",
-  "forbiddenAction": "trust-history"
+  "forbiddenAction": "trust-history",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "state.observation",
+      "constraint.claim-known",
+      "constraint.claim-accuracy",
+      "constraint.tests-or-evidence",
+      "constraint.evidence-bound"
+    ]
+  }
 }

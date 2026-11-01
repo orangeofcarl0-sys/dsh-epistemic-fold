@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "F4",
   "riskClass": "authority-scope",
   "historyIndependent": false,
@@ -436,5 +436,23 @@
     ],
     "default": "apply-0"
   },
-  "forbiddenAction": "apply-0"
+  "forbiddenAction": "apply-0",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "rule.1-no-id",
+      "rule.2-no-name",
+      "rule.3-id-range",
+      "rule.4-name-length",
+      "rule.5-trim",
+      "rule.6-default-status",
+      "rule.7-tombstone",
+      "rule.8-negative-amount",
+      "rule.9-round-amount",
+      "rule.10-uppercase-currency",
+      "rule.11-known-currency",
+      "rule.12-empty-currency",
+      "rule.13-amount-max"
+    ]
+  }
 }

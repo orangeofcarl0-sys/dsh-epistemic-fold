@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 2,
+  "datasetId": "r33-semantic-continuity-holdout-v1",
+  "scorerVersion": 2,
+  "frozenAt": "2026-11-01T14:47:20.295Z",
+  "caseCount": 2,
+  "counts": {
+    "persistent-constraint": 1,
+    "retrieval-trigger": 1
+  },
+  "datasetDigest": "af22eb7a91155507998750f0428be8bb7c6285696179128a75e83f3eeaada663",
+  "cases": [
+    {
+      "id": "HOLD-A",
+      "riskClass": "persistent-constraint",
+      "digest": "de875b28b89c8b67d79fb8290f6e183ecca48b8a2ca18456a1ce48a617de5eaa"
+    },
+    {
+      "id": "HOLD-B",
+      "riskClass": "retrieval-trigger",
+      "digest": "11b94631e4ddfb8d96f59f0d50fd08e907d0477201c9af7b70349a7eeb9a6261"
+    }
+  ]
+}

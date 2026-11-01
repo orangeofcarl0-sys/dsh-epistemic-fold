@@ -1,0 +1,5 @@
+{
+  "name": "holdout-settings",
+  "private": true,
+  "type": "module"
+}

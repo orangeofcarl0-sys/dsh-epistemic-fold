@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "id": "HOLD-B",
+  "riskClass": "retrieval-trigger",
+  "historyIndependent": false,
+  "title": "A tool-result artifact holds the only copy of the release values",
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Implement the cache client. First inspect the recorded phase-1 artifact."
+    },
+    {
+      "role": "assistant",
+      "text": "Inspecting the artifact."
+    },
+    {
+      "role": "tool",
+      "name": "read",
+      "text": "artifact: cache ttl: 45s; transport: polling; scope: release."
+    },
+    {
+      "role": "user",
+      "text": "Use the values recorded in that artifact; do not guess them."
+    },
+    {
+      "role": "assistant",
+      "text": "Implementation log: the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture. the cache client was reviewed against the frozen fixture."
+    }
+  ],
+  "task": "Create `createClient()` in `src/client.mjs` so it returns `{ ttlMs, transport }` using the recorded phase-1 artifact. Run the visible tests before you finish.",
+  "writer": {
+    "handoff": "The cache client still needs implementation.",
+    "deltas": []
+  },
+  "gold": [
+    {
+      "factId": "HOLD-B-ttl",
+      "kind": "artifact",
+      "subjectKey": "cache-ttl",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "cache ttl: 45s",
+      "statement": "The recorded cache TTL is 45 seconds.",
+      "criticality": "high",
+      "current": true,
+      "visibleNeedle": "45 seconds",
+      "expectedBehavior": "Use 45000 as ttlMs."
+    },
+    {
+      "factId": "HOLD-B-transport",
+      "kind": "artifact",
+      "subjectKey": "cache-transport",
+      "sourceRefs": [
+        2
+      ],
+      "quote": "transport: polling",
+      "statement": "The recorded cache transport is polling.",
+      "criticality": "medium",
+      "current": true,
+      "visibleNeedle": "transport is polling",
+      "expectedBehavior": "Use 'polling' as transport."
+    }
+  ],
+  "actionMeta": {
+    "use-artifact": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": []
+    },
+    "guess": {
+      "testsExecuted": 1,
+      "toolCalls": 2,
+      "violates": [
+        "obsolete"
+      ]
+    }
+  },
+  "decision": {
+    "probes": [
+      {
+        "contextIncludesAny": [
+          "45 seconds",
+          "45s",
+          "transport is polling"
+        ],
+        "action": "use-artifact"
+      }
+    ],
+    "default": "guess"
+  },
+  "falseMemory": {
+    "statement": "The recorded artifact says the cache TTL is 30 seconds.",
+    "contextIncludes": "30 seconds",
+    "action": "guess"
+  },
+  "forbiddenAction": "guess",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.create-client",
+      "artifact.ttl",
+      "artifact.transport"
+    ]
+  }
+}

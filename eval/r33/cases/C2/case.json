@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "C2",
   "riskClass": "negative-knowledge",
   "historyIndependent": false,
@@ -113,5 +113,11 @@
     ],
     "default": "poll"
   },
-  "forbiddenAction": "poll"
+  "forbiddenAction": "poll",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.delivers-change"
+    ]
+  }
 }

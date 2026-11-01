@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "B1",
   "riskClass": "decision-override",
   "historyIndependent": false,
@@ -125,5 +125,12 @@
     "contextIncludes": "keep an in-memory queue",
     "action": "use-memory"
   },
-  "forbiddenAction": "use-memory"
+  "forbiddenAction": "use-memory",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.fifo",
+      "decision.durable-outbox"
+    ]
+  }
 }

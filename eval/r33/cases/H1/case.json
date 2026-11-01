@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "H1",
   "riskClass": "retrieval-trigger",
   "historyIndependent": false,
@@ -79,5 +79,11 @@
     "contextIncludes": "region is us-east-1",
     "action": "use-us"
   },
-  "forbiddenAction": "use-us"
+  "forbiddenAction": "use-us",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "region.production"
+    ]
+  }
 }

@@ -1,7 +1,8 @@
 {
-  "schemaVersion": 1,
-  "datasetId": "r33-semantic-continuity-v1",
-  "frozenAt": "2026-11-01T12:10:07.073Z",
+  "schemaVersion": 2,
+  "datasetId": "r33-semantic-continuity-v2",
+  "scorerVersion": 2,
+  "frozenAt": "2026-11-01T14:50:15.910Z",
   "caseCount": 17,
   "counts": {
     "persistent-constraint": 2,
@@ -13,92 +14,96 @@
     "history-independent": 2,
     "retrieval-trigger": 1
   },
-  "datasetDigest": "2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26",
+  "datasetDigest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+  "supersedes": {
+    "datasetId": "r33-semantic-continuity-v1",
+    "gitCommit": "ad3020df0e22587f78490c19550fe6986f55af3f"
+  },
   "cases": [
     {
       "id": "A1",
       "riskClass": "persistent-constraint",
-      "digest": "fa390586992e836b31e22ae266ba185ae69dc6d99eccd56853d6231fa290c00b"
+      "digest": "642bd3c1f93e550c7a1553b425eef0548991269cffd12bfbd182dadc1dd03c3b"
     },
     {
       "id": "A2",
       "riskClass": "persistent-constraint",
-      "digest": "149b1ddc6fa33330f3e15e4ad4b35e3afea1514da129e58429c7bfeeaab193ad"
+      "digest": "14f0bd9e97867c587aeab2114dbe9b982721ddff718e0df70a9b0a85abb4bd0e"
     },
     {
       "id": "B1",
       "riskClass": "decision-override",
-      "digest": "29fbac29123431594e267567307f8cfc76eb98fd0e4d68225ede04db2c5c94f0"
+      "digest": "c75350cb62cced17a642a07c2cfd268da1339210008a1e0abaa6213c477c8766"
     },
     {
       "id": "B2",
       "riskClass": "decision-override",
-      "digest": "55240bb9530062245c91d850d3c90856d7f7989b716511a66a2c63b0837a9554"
+      "digest": "4a7c173eac9cd8a23a448ddf07053c9170e1d41a4816a317bdf4318f81939284"
     },
     {
       "id": "C1",
       "riskClass": "negative-knowledge",
-      "digest": "3fbe82aca8ffec73736f496a5139bef81cce664a93c13180b039ff2e201068ce"
+      "digest": "c62af2d52cf8cae23885793433fec4b6d0ee395e219852209860de8fec83f171"
     },
     {
       "id": "C2",
       "riskClass": "negative-knowledge",
-      "digest": "30d73ab210eaf1c561935f0b0e84255983396ab735b1c8568ad6582d0db508c1"
+      "digest": "d60999f8cc430d63290af409216ae1eeb93c681b8eaa6c85d64a5a40d2b7d2e9"
     },
     {
       "id": "D1",
       "riskClass": "validation-boundary",
-      "digest": "f9eb0c1d5a0167c6475377cbd1a97f875e8dd48f5ed341c86c9319985e7a034c"
+      "digest": "1422d9207af5c9a575987e6ddaf2373defce012aa0ce0c50d152315aaf017210"
     },
     {
       "id": "D2",
       "riskClass": "validation-boundary",
-      "digest": "db593b0790f2f75c462040b9c2f17f72fce67247f2b7421a03bd4a179ee107fb"
+      "digest": "59550df50465d7d58d5982b070bd8b3d6c20d950b6d6c94e1b1677535216c7d9"
     },
     {
       "id": "E1",
       "riskClass": "cross-phase-dependency",
-      "digest": "afd0641bccd1e6b93e4d01c7459a244656ba3a87a8393e442565a5e6455c1076"
+      "digest": "7a6fe241ee9da5b1445fd5237bdc9bc84b69bf94b01230ecc99d03516b6637f5"
     },
     {
       "id": "E2",
       "riskClass": "cross-phase-dependency",
-      "digest": "9909ebe3bd80c85236691740df5f398bdbca8dafca9c643ece54bea229028e6d"
+      "digest": "b2cc1cc9cb635e362360fbced828d51c4555e619d5b41c8e08cf886d834d2d73"
     },
     {
       "id": "F1",
       "riskClass": "authority-scope",
-      "digest": "e2224d4746a6cff3d33fb653327f49adc51b4b622a560d15c8d249109b81aac8"
+      "digest": "f9e09e24c0cb9171f7eece477ae309a6b1eb16982cca79a4012d6158ef552490"
     },
     {
       "id": "F2",
       "riskClass": "authority-scope",
-      "digest": "28d9597850d3bc749d397d74dad68c12a56fb7e52298f71e1460e7b5be5f0394"
+      "digest": "afa5f956e90e02ae048c68ed500cda126e9b89fd7c96fcafda35942b9e201ec2"
     },
     {
       "id": "F3",
       "riskClass": "authority-scope",
-      "digest": "703997d50835716d2a7eba2374dd6accc7b76452da22d48f23667b5e181b0368"
+      "digest": "f86bb461607335943421dd8af7ecc270e14c4ad4588a8fc8463e46ff5fbb17b4"
     },
     {
       "id": "F4",
       "riskClass": "authority-scope",
-      "digest": "6534efdac4f043090b29be31a46b49b62628e749e6502d1a6590955b334ca9dc"
+      "digest": "c62bd9792ad6fdc9e67cba3b7b711bd964c7770a192be141aa81352c60061ec7"
     },
     {
       "id": "G1",
       "riskClass": "history-independent",
-      "digest": "2b52a10660fe8c4a802a230e9cbb18525b2e5496b48e2928e5c57984abf12fda"
+      "digest": "bbdd3c7776fe601c574d41b7dd224e62774279a1be9aa1414745dde211e609de"
     },
     {
       "id": "G2",
       "riskClass": "history-independent",
-      "digest": "38ea079cc0204d96d01b9f6d7e37633ee8d4f223a2abcf5f6e6941cf684dcc4a"
+      "digest": "ded3ce98704fb0fc250bafab9233d758f28cef4192c0034aa1451c2be88b05f5"
     },
     {
       "id": "H1",
       "riskClass": "retrieval-trigger",
-      "digest": "3b069c58170ad7d4fc73786e0f31835811ecac48a0f48cfd3a21b520fee2846c"
+      "digest": "f80d08ac6010d6a9acf7b6aa5af2d1229fcb12b7331cb3f47cba03e3c0103f11"
     }
   ]
 }

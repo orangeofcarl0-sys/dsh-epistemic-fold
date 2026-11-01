@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "A1",
   "riskClass": "persistent-constraint",
   "historyIndependent": false,
@@ -99,5 +99,13 @@
     "contextIncludes": "string form must be removed",
     "action": "rename-api"
   },
-  "forbiddenAction": "rename-api"
+  "forbiddenAction": "rename-api",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.object-form",
+      "constraint.legacy-string-api",
+      "constraint.callers-still-work"
+    ]
+  }
 }

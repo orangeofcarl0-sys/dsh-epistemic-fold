@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "F2",
   "riskClass": "authority-scope",
   "historyIndependent": false,
@@ -111,5 +111,13 @@
     ],
     "default": "keep-legacy"
   },
-  "forbiddenAction": "keep-legacy"
+  "forbiddenAction": "keep-legacy",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.v2",
+      "functionality.version",
+      "constraint.legacy-removed"
+    ]
+  }
 }

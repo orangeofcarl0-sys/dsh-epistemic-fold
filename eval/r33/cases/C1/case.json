@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "C1",
   "riskClass": "negative-knowledge",
   "historyIndependent": false,
@@ -68,7 +68,6 @@
       "kind": "rejected-approach",
       "subjectKey": "watcher-backend",
       "sourceRefs": [
-        1,
         2
       ],
       "quote": "fs.watch delivered 28 of 40",
@@ -80,7 +79,10 @@
         "lost events on the target platform; switching to polling.",
         "fs.watch delivered 28 of 40"
       ],
-      "expectedBehavior": "Use polling; do not retry fs.watch without new evidence."
+      "expectedBehavior": "Use polling; do not retry fs.watch without new evidence.",
+      "corroboratingRefs": [
+        1
+      ]
     },
     {
       "factId": "C1-no-missed-changes",
@@ -130,5 +132,11 @@
     "contextIncludes": "fs.watch is the approved backend",
     "action": "fs-watch"
   },
-  "forbiddenAction": "fs-watch"
+  "forbiddenAction": "fs-watch",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.delivers-change"
+    ]
+  }
 }

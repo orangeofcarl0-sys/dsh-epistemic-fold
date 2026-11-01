@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "status": "not-executed",
+  "reason": "R33_LIVE is not 1; refusing to spend provider credits",
+  "datasetDigest": "2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26",
+  "cases": 17,
+  "generatedAt": "2026-11-01T12:13:29.352Z",
+  "note": "No provider request was attempted."
+}

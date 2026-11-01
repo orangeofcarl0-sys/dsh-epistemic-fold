@@ -1,18 +1,26 @@
 /**
- * R33 case schema validation.
+ * R33.1 case schema validation.
  *
  * The dataset is frozen before any model runs, so the validator is deliberately
- * strict about the parts that make a case CAUSAL: a gold fact must cite a real
- * transcript entry and quote text that is actually there, every decision probe
- * must name an existing action, and a history-dependent case must not leak its
- * gold into the workspace the follow-up agent can read.
+ * strict about the parts that make a case CAUSAL:
+ *
+ *  - a gold fact must cite real transcript entries and its `quote` must occur
+ *    in EVERY message its authoritative `sourceRefs` names (v1 only required it
+ *    somewhere in the transcript, which allowed a citation that did not contain
+ *    the quoted evidence);
+ *  - the cited roles must be able to ground the claim: a user-level constraint
+ *    cannot be grounded only by an assistant message, and an empirical finding
+ *    needs a tool result;
+ *  - the checker must declare its exact check names, so a missing, duplicated,
+ *    or invented check is detectable rather than silently scored;
+ *  - a history-dependent case must not leak its gold into the workspace.
  *
  * A failed validation is `invalid-benchmark`, never a silently skipped case.
  *
  * @module eval/r33/src/schema
  */
 
-export const CASE_SCHEMA_VERSION = 1
+export const CASE_SCHEMA_VERSION = 2
 
 export const RISK_CLASSES = [
   'persistent-constraint',
@@ -24,6 +32,15 @@ export const RISK_CLASSES = [
   'retrieval-trigger',
   'history-independent',
 ]
+
+/** Kinds whose authority cannot be a model's own narrative. */
+const AUTHORITY_REQUIRED = {
+  constraint: 'user',
+  objective: 'user',
+  obligation: 'user',
+  finding: 'tool',
+  'experience-candidate': 'tool',
+}
 
 const ROLES = new Set(['user', 'assistant', 'tool'])
 const KINDS = new Set([
@@ -44,6 +61,10 @@ function transcriptText(transcript) {
   return transcript.map(entry => entry.text).join('\n')
 }
 
+function validRef(ref, length) {
+  return Number.isInteger(ref) && ref >= 0 && ref < length
+}
+
 /**
  * Validate one case.
  *
@@ -58,7 +79,15 @@ export function validateCase(raw) {
   if (!string(data.id)) return fail(id, 'id', 'required')
   if (!RISK_CLASSES.includes(data.riskClass)) return fail(id, 'riskClass', `unknown class ${data.riskClass}`)
   if (typeof data.historyIndependent !== 'boolean') return fail(id, 'historyIndependent', 'required')
+  if (typeof data.requiresTests !== 'boolean') return fail(id, 'requiresTests', 'boolean required')
   if (!string(data.task)) return fail(id, 'task', 'required')
+  if (data.counterfactual !== undefined && data.counterfactual !== null) {
+    const pair = data.counterfactual
+    if (pair === null || typeof pair !== 'object') return fail(id, 'counterfactual', 'object required')
+    if (!string(pair.pair) || !string(pair.variant)) {
+      return fail(id, 'counterfactual', 'pair and variant are required strings')
+    }
+  }
 
   const transcript = data.transcript
   if (!Array.isArray(transcript) || transcript.length === 0) return fail(id, 'transcript', 'non-empty array required')
@@ -88,16 +117,52 @@ export function validateCase(raw) {
       return fail(id, `${where}.sourceRefs`, 'non-empty array required')
     }
     for (const ref of fact.sourceRefs) {
-      if (!Number.isInteger(ref) || ref < 0 || ref >= transcript.length) {
+      if (!validRef(ref, transcript.length)) {
         return fail(id, `${where}.sourceRefs`, `index ${ref} is outside the transcript`)
       }
     }
     if (!string(fact.quote)) return fail(id, `${where}.quote`, 'required')
     if (!text.includes(fact.quote)) return fail(id, `${where}.quote`, 'quote is not verbatim in the transcript')
-    if (!Array.isArray(fact.sourceRefs) || fact.sourceRefs.length === 0) return fail(id, where, 'sourceRefs required')
+    // The v1 validator stopped there. A citation only had to point at SOME
+    // message, so a gold fact could name a corroborating message that did not
+    // contain the evidence it quoted. The quote now binds to every citation.
+    for (const ref of fact.sourceRefs) {
+      if (!transcript[ref].text.includes(fact.quote)) {
+        return fail(
+          id,
+          `${where}.sourceRefs`,
+          `sourceRefs entry ${ref} does not contain the gold quote; move corroboration to corroboratingRefs`,
+        )
+      }
+    }
+    const roles = fact.sourceRefs.map(ref => transcript[ref].role)
+    const requiredRole = AUTHORITY_REQUIRED[fact.kind]
+    if (requiredRole !== undefined && !roles.includes(requiredRole)) {
+      return fail(
+        id,
+        `${where}.sourceRefs`,
+        `a ${fact.kind} must cite a ${requiredRole} source; cited roles are ${roles.join(', ')}`,
+      )
+    }
+    if (fact.corroboratingRefs !== undefined) {
+      if (!Array.isArray(fact.corroboratingRefs)) {
+        return fail(id, `${where}.corroboratingRefs`, 'array required when present')
+      }
+      for (const ref of fact.corroboratingRefs) {
+        if (!validRef(ref, transcript.length)) {
+          return fail(id, `${where}.corroboratingRefs`, `index ${ref} is outside the transcript`)
+        }
+      }
+    }
     if (typeof fact.current !== 'boolean') return fail(id, `${where}.current`, 'boolean required')
     if (!string(fact.visibleNeedle)) return fail(id, `${where}.visibleNeedle`, 'required')
     if (!string(fact.expectedBehavior)) return fail(id, `${where}.expectedBehavior`, 'required')
+    if (fact.expectedStatus !== undefined && !string(fact.expectedStatus)) {
+      return fail(id, `${where}.expectedStatus`, 'non-empty string required when present')
+    }
+    if (fact.supersedesFactId !== undefined && !string(fact.supersedesFactId)) {
+      return fail(id, `${where}.supersedesFactId`, 'non-empty string required when present')
+    }
     if (fact.scope !== undefined) {
       if (fact.scope === null || typeof fact.scope !== 'object' || Array.isArray(fact.scope)) {
         return fail(id, `${where}.scope`, 'object required when present')
@@ -207,6 +272,18 @@ export function validateCase(raw) {
   }
   if (!checker.source.includes('R33_RESULT')) {
     return fail(id, 'checker.source', 'must emit an R33_RESULT JSON line')
+  }
+  if (!Array.isArray(checker.expectedChecks) || checker.expectedChecks.length === 0) {
+    return fail(id, 'checker.expectedChecks', 'non-empty array required')
+  }
+  const names = new Set()
+  for (const [index, name] of checker.expectedChecks.entries()) {
+    if (!string(name)) return fail(id, `checker.expectedChecks[${index}]`, 'non-empty string required')
+    if (names.has(name)) return fail(id, `checker.expectedChecks[${index}]`, `duplicate check ${name}`)
+    names.add(name)
+    if (!checker.source.includes(name)) {
+      return fail(id, `checker.expectedChecks[${index}]`, `the checker source never names ${name}`)
+    }
   }
 
   return { ok: true, case: data }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "G1",
   "riskClass": "history-independent",
   "historyIndependent": true,
@@ -65,5 +65,13 @@
     ],
     "default": "wrong"
   },
-  "forbiddenAction": "wrong"
+  "forbiddenAction": "wrong",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "readme.default-500",
+      "readme.explicit-value",
+      "readme.source-preserved"
+    ]
+  }
 }

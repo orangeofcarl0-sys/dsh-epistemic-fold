@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "A2",
   "riskClass": "persistent-constraint",
   "historyIndependent": false,
@@ -95,5 +95,13 @@
     ],
     "default": "keep-api"
   },
-  "forbiddenAction": "keep-api"
+  "forbiddenAction": "keep-api",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.object-form",
+      "constraint.legacy-string-removed",
+      "constraint.callers-migrated"
+    ]
+  }
 }

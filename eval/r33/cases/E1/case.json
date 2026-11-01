@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "E1",
   "riskClass": "cross-phase-dependency",
   "historyIndependent": false,
@@ -90,5 +90,12 @@
     "contextIncludes": "artifact is schema-v1",
     "action": "use-v1"
   },
-  "forbiddenAction": "use-v1"
+  "forbiddenAction": "use-v1",
+  "requiresTests": true,
+  "checker": {
+    "expectedChecks": [
+      "functionality.rows-preserved",
+      "dependency.artifact-version"
+    ]
+  }
 }
