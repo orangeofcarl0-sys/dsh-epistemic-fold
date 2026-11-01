@@ -1,8 +1,8 @@
 # R33 offline arm report
 
-- dataset: `d13917cf211f24be05bdd6f768f7343b54f2ab3f67a80841ac685b8e2d532d2a` (17 frozen cases)
+- dataset: `2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26` (17 frozen cases)
 - execution: `scripted-writer + scripted-follow-up (pipeline measurement, not a model result)`
-- generated: 2026-11-01T12:06:35.669Z
+- generated: 2026-11-01T12:13:52.422Z
 
 This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It is not a model result.
 
@@ -12,8 +12,8 @@ This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It i
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | B0 | 17/17 | 7 | 10 | 0.412 | n/a | n/a | n/a | n/a | n/a |
 | B1 | 17/17 | 7 | 10 | 0.412 | n/a | n/a | n/a | n/a | n/a |
-| S | 17/17 | 15 | 2 | 0.882 | 0.926 | 1.000 | 0.000 | 0.862 | 0.862 |
-| O1 | 17/17 | 16 | 1 | 0.941 | 0.993 | 1.000 | 0.000 | 0.928 | 0.928 |
+| S | 17/17 | 15 | 2 | 0.882 | 0.926 | 1.000 | 0.000 | 0.928 | 0.928 |
+| O1 | 17/17 | 16 | 1 | 0.941 | 0.993 | 1.000 | 0.000 | 0.995 | 0.995 |
 | O2 | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
 | OR | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
 | F | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
@@ -99,8 +99,8 @@ This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It i
 | D1 | FM | no | trust-history | constraint.claim-accuracy, constraint.tests-or-evidence, constraint.evidence-bound | 1.000 | 1.000 | 650 |
 | D2 | B0 | no | claim-unverified | constraint.claim-accuracy | n/a | n/a | 594 |
 | D2 | B1 | no | claim-unverified | constraint.claim-accuracy | n/a | n/a | 663 |
-| D2 | S | yes | carry-verification | - | 1.000 | 0.000 | 623 |
-| D2 | O1 | yes | carry-verification | - | 1.000 | 0.000 | 623 |
+| D2 | S | yes | carry-verification | - | 1.000 | 1.000 | 623 |
+| D2 | O1 | yes | carry-verification | - | 1.000 | 1.000 | 623 |
 | D2 | O2 | yes | carry-verification | - | n/a | n/a | 663 |
 | D2 | OR | yes | carry-verification | - | n/a | n/a | 663 |
 | D2 | F | yes | carry-verification | - | n/a | n/a | 663 |

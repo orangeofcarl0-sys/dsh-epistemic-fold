@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "executed-success",
   "executionKind": "self-test (scripted adapter; verifies plumbing, not model behavior)",
-  "generatedAt": "2026-11-01T12:03:42.092Z",
+  "generatedAt": "2026-11-01T12:11:26.874Z",
   "rows": [
     {
       "caseId": "A1",
@@ -133,7 +133,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 660
+        "wallClockMs": 729
       }
     },
     {
@@ -276,7 +276,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 447
+        "wallClockMs": 478
       }
     },
     {
@@ -404,7 +404,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 442
+        "wallClockMs": 454
       }
     },
     {
@@ -532,7 +532,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 465
+        "wallClockMs": 463
       }
     },
     {
@@ -656,7 +656,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 580
+        "wallClockMs": 606
       }
     },
     {
@@ -920,7 +920,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 467
+        "wallClockMs": 546
       }
     },
     {
@@ -1060,7 +1060,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 467
+        "wallClockMs": 507
       }
     },
     {
@@ -1188,7 +1188,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 481
+        "wallClockMs": 465
       }
     },
     {
@@ -1316,7 +1316,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 455
+        "wallClockMs": 466
       }
     },
     {
@@ -1448,7 +1448,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 442
+        "wallClockMs": 474
       }
     },
     {
@@ -1580,7 +1580,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 447
+        "wallClockMs": 468
       }
     },
     {
@@ -1708,7 +1708,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 442
+        "wallClockMs": 513
       }
     },
     {
@@ -1880,7 +1880,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 446
+        "wallClockMs": 600
       }
     },
     {
@@ -2012,7 +2012,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 452
+        "wallClockMs": 485
       }
     },
     {
@@ -2140,7 +2140,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 438
+        "wallClockMs": 509
       }
     },
     {
@@ -2264,7 +2264,7 @@
         "cacheReadTokens": 0,
         "cacheWriteTokens": 0,
         "unknownUsage": 0,
-        "wallClockMs": 475
+        "wallClockMs": 463
       }
     }
   ],

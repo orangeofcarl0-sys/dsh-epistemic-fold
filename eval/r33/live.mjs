@@ -284,8 +284,8 @@ async function mountHost(adapter, model, root, arm) {
   new SystemPrompt(ctx, {})
   new ToolRuntime(ctx)
   ctx.llm.registerAdapter([model], adapter)
-  const { default: EpistemicFoldPlugin } = await import('../../src/plugin.js')
-  const { locateFoldFrontier } = await import('../../src/fold/frontier.js')
+  const { default: EpistemicFoldPlugin } = await import('../../lib/plugin.js')
+  const { locateFoldFrontier } = await import('../../lib/fold/frontier.js')
   const plugin = new EpistemicFoldPlugin(ctx, {
     auto: false,
     bundleRoot: join(root, 'bundles'),

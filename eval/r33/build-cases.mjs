@@ -887,7 +887,7 @@ await emitCase({
     statement: 'The migration tests passed on revision run-7.',
     criticality: 'high',
     current: true,
-    visibleNeedle: 'evidence=run-7',
+    visibleNeedle: 'revision run-7',
     expectedBehavior: 'Carry the verified claim only with its evidence reference.',
   }],
   actionMeta: {

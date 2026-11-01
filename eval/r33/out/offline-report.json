@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "status": "executed-success",
   "executionKind": "scripted-writer + scripted-follow-up (pipeline measurement, not a model result)",
-  "datasetDigest": "d13917cf211f24be05bdd6f768f7343b54f2ab3f67a80841ac685b8e2d532d2a",
+  "datasetDigest": "2666e70f0cdba13bc3c756ff086b3566f51c0a9b595ecd9495859f73c0c21f26",
   "caseCount": 17,
-  "generatedAt": "2026-11-01T12:06:35.669Z",
+  "generatedAt": "2026-11-01T12:13:52.422Z",
   "environment": {
     "node": "v24.14.1",
     "platform": "win32",
@@ -29,8 +29,8 @@
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2277,
-      "costPerSuccessfulTask": 325.2857142857143
+      "totalWallClockMs": 2360,
+      "costPerSuccessfulTask": 337.14285714285717
     },
     {
       "arm": "B1",
@@ -50,8 +50,8 @@
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2440,
-      "costPerSuccessfulTask": 348.57142857142856
+      "totalWallClockMs": 2477,
+      "costPerSuccessfulTask": 353.85714285714283
     },
     {
       "arm": "S",
@@ -64,15 +64,15 @@
       "meanCriticalRecall": 0.9259259259259259,
       "meanGroundedPrecision": 1,
       "meanFalseNormativeRate": 0,
-      "meanCurrentStateAccuracy": 0.8615384615384616,
-      "meanDirectVisibility": 0.8615384615384616,
+      "meanCurrentStateAccuracy": 0.9282051282051282,
+      "meanDirectVisibility": 0.9282051282051282,
       "totalToolCalls": 29,
       "totalTestsExecuted": 16,
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2842,
-      "costPerSuccessfulTask": 189.46666666666667
+      "totalWallClockMs": 2858,
+      "costPerSuccessfulTask": 190.53333333333333
     },
     {
       "arm": "O1",
@@ -85,39 +85,18 @@
       "meanCriticalRecall": 0.9925925925925926,
       "meanGroundedPrecision": 1,
       "meanFalseNormativeRate": 0,
-      "meanCurrentStateAccuracy": 0.9282051282051282,
-      "meanDirectVisibility": 0.9282051282051282,
+      "meanCurrentStateAccuracy": 0.9948717948717949,
+      "meanDirectVisibility": 0.9948717948717949,
       "totalToolCalls": 29,
       "totalTestsExecuted": 16,
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2851,
-      "costPerSuccessfulTask": 178.1875
+      "totalWallClockMs": 2897,
+      "costPerSuccessfulTask": 181.0625
     },
     {
       "arm": "O2",
-      "cases": 17,
-      "valid": 17,
-      "invalid": 0,
-      "success": 17,
-      "damage": 0,
-      "taskSuccessRate": 1,
-      "meanCriticalRecall": null,
-      "meanGroundedPrecision": null,
-      "meanFalseNormativeRate": null,
-      "meanCurrentStateAccuracy": null,
-      "meanDirectVisibility": null,
-      "totalToolCalls": 29,
-      "totalTestsExecuted": 16,
-      "totalModelRequests": 0,
-      "totalInputTokens": 0,
-      "totalOutputTokens": 0,
-      "totalWallClockMs": 2426,
-      "costPerSuccessfulTask": 142.7058823529412
-    },
-    {
-      "arm": "OR",
       "cases": 17,
       "valid": 17,
       "invalid": 0,
@@ -138,6 +117,27 @@
       "costPerSuccessfulTask": 145.64705882352942
     },
     {
+      "arm": "OR",
+      "cases": 17,
+      "valid": 17,
+      "invalid": 0,
+      "success": 17,
+      "damage": 0,
+      "taskSuccessRate": 1,
+      "meanCriticalRecall": null,
+      "meanGroundedPrecision": null,
+      "meanFalseNormativeRate": null,
+      "meanCurrentStateAccuracy": null,
+      "meanDirectVisibility": null,
+      "totalToolCalls": 29,
+      "totalTestsExecuted": 16,
+      "totalModelRequests": 0,
+      "totalInputTokens": 0,
+      "totalOutputTokens": 0,
+      "totalWallClockMs": 2472,
+      "costPerSuccessfulTask": 145.41176470588235
+    },
+    {
       "arm": "F",
       "cases": 17,
       "valid": 17,
@@ -155,8 +155,8 @@
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2426,
-      "costPerSuccessfulTask": 142.7058823529412
+      "totalWallClockMs": 2394,
+      "costPerSuccessfulTask": 140.8235294117647
     },
     {
       "arm": "N",
@@ -176,8 +176,8 @@
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 2462,
-      "costPerSuccessfulTask": 820.6666666666666
+      "totalWallClockMs": 2416,
+      "costPerSuccessfulTask": 805.3333333333334
     },
     {
       "arm": "FM",
@@ -197,7 +197,7 @@
       "totalModelRequests": 0,
       "totalInputTokens": 0,
       "totalOutputTokens": 0,
-      "totalWallClockMs": 1372,
+      "totalWallClockMs": 1355,
       "costPerSuccessfulTask": null
     }
   ],
@@ -394,7 +394,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 137
+        "wallClockMs": 143
       },
       "inspector": {
         "contextChars": 888,
@@ -458,7 +458,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 152
+        "wallClockMs": 165
       },
       "inspector": {
         "contextChars": 959,
@@ -535,7 +535,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 161
+        "wallClockMs": 157
       },
       "inspector": {
         "contextChars": 869,
@@ -612,7 +612,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 149
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 869,
@@ -676,7 +676,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 127
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 358,
@@ -740,7 +740,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 125
+        "wallClockMs": 156
       },
       "inspector": {
         "contextChars": 1103,
@@ -804,7 +804,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 2337,
@@ -870,7 +870,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 122
+        "wallClockMs": 128
       },
       "inspector": {
         "contextChars": 161,
@@ -939,7 +939,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 152
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 978,
@@ -1003,7 +1003,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 117
       },
       "inspector": {
         "contextChars": 875,
@@ -1067,7 +1067,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 129
+        "wallClockMs": 134
       },
       "inspector": {
         "contextChars": 946,
@@ -1144,7 +1144,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 155
+        "wallClockMs": 176
       },
       "inspector": {
         "contextChars": 866,
@@ -1221,7 +1221,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 155
+        "wallClockMs": 164
       },
       "inspector": {
         "contextChars": 866,
@@ -1285,7 +1285,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 132
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 387,
@@ -1349,7 +1349,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 135
+        "wallClockMs": 141
       },
       "inspector": {
         "contextChars": 1084,
@@ -1413,7 +1413,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 133
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 2368,
@@ -1480,7 +1480,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 139
+        "wallClockMs": 128
       },
       "inspector": {
         "contextChars": 161,
@@ -1544,7 +1544,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 128
       },
       "inspector": {
         "contextChars": 852,
@@ -1608,7 +1608,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 134
       },
       "inspector": {
         "contextChars": 923,
@@ -1685,7 +1685,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 159
+        "wallClockMs": 152
       },
       "inspector": {
         "contextChars": 813,
@@ -1762,7 +1762,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 160
+        "wallClockMs": 151
       },
       "inspector": {
         "contextChars": 813,
@@ -1826,7 +1826,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 380,
@@ -1890,7 +1890,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 136
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 1103,
@@ -1954,7 +1954,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 137
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 2305,
@@ -2020,7 +2020,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 134
       },
       "inspector": {
         "contextChars": 97,
@@ -2089,7 +2089,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 155
+        "wallClockMs": 161
       },
       "inspector": {
         "contextChars": 926,
@@ -2153,7 +2153,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 143
       },
       "inspector": {
         "contextChars": 852,
@@ -2217,7 +2217,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 166
+        "wallClockMs": 132
       },
       "inspector": {
         "contextChars": 923,
@@ -2294,7 +2294,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 156
+        "wallClockMs": 153
       },
       "inspector": {
         "contextChars": 983,
@@ -2371,7 +2371,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 160
+        "wallClockMs": 172
       },
       "inspector": {
         "contextChars": 983,
@@ -2435,7 +2435,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 124
+        "wallClockMs": 160
       },
       "inspector": {
         "contextChars": 376,
@@ -2499,7 +2499,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 136
       },
       "inspector": {
         "contextChars": 1132,
@@ -2563,7 +2563,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 136
+        "wallClockMs": 132
       },
       "inspector": {
         "contextChars": 2263,
@@ -2629,7 +2629,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 139
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 97,
@@ -2695,7 +2695,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 253
+        "wallClockMs": 251
       },
       "inspector": {
         "contextChars": 740,
@@ -2761,7 +2761,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 250
+        "wallClockMs": 253
       },
       "inspector": {
         "contextChars": 809,
@@ -2838,7 +2838,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 283
+        "wallClockMs": 282
       },
       "inspector": {
         "contextChars": 936,
@@ -2915,7 +2915,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 285
+        "wallClockMs": 280
       },
       "inspector": {
         "contextChars": 936,
@@ -2979,7 +2979,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 272
+        "wallClockMs": 268
       },
       "inspector": {
         "contextChars": 363,
@@ -3043,7 +3043,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 270
+        "wallClockMs": 263
       },
       "inspector": {
         "contextChars": 1027,
@@ -3107,7 +3107,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 252
+        "wallClockMs": 261
       },
       "inspector": {
         "contextChars": 2386,
@@ -3173,7 +3173,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 252
+        "wallClockMs": 250
       },
       "inspector": {
         "contextChars": 95,
@@ -3242,7 +3242,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 280
+        "wallClockMs": 279
       },
       "inspector": {
         "contextChars": 1047,
@@ -3308,7 +3308,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 205
+        "wallClockMs": 222
       },
       "inspector": {
         "contextChars": 740,
@@ -3374,7 +3374,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 203
+        "wallClockMs": 216
       },
       "inspector": {
         "contextChars": 809,
@@ -3451,7 +3451,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 249
+        "wallClockMs": 232
       },
       "inspector": {
         "contextChars": 938,
@@ -3528,7 +3528,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 244
+        "wallClockMs": 267
       },
       "inspector": {
         "contextChars": 938,
@@ -3656,7 +3656,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 219
+        "wallClockMs": 221
       },
       "inspector": {
         "contextChars": 985,
@@ -3720,7 +3720,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 222
+        "wallClockMs": 215
       },
       "inspector": {
         "contextChars": 2308,
@@ -3786,7 +3786,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 218
+        "wallClockMs": 222
       },
       "inspector": {
         "contextChars": 95,
@@ -3854,7 +3854,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 124
       },
       "inspector": {
         "contextChars": 832,
@@ -3922,7 +3922,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 134
+        "wallClockMs": 141
       },
       "inspector": {
         "contextChars": 901,
@@ -3999,7 +3999,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 155
+        "wallClockMs": 159
       },
       "inspector": {
         "contextChars": 888,
@@ -4076,7 +4076,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 160
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 888,
@@ -4140,7 +4140,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 132
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 414,
@@ -4204,7 +4204,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 139
+        "wallClockMs": 133
       },
       "inspector": {
         "contextChars": 1044,
@@ -4268,7 +4268,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 128
       },
       "inspector": {
         "contextChars": 2366,
@@ -4336,7 +4336,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 134
       },
       "inspector": {
         "contextChars": 222,
@@ -4407,7 +4407,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 153
+        "wallClockMs": 159
       },
       "inspector": {
         "contextChars": 1002,
@@ -4473,7 +4473,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 120
+        "wallClockMs": 121
       },
       "inspector": {
         "contextChars": 832,
@@ -4539,7 +4539,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 132
       },
       "inspector": {
         "contextChars": 901,
@@ -4584,8 +4584,8 @@
         "falseNormativeRate": null,
         "falseNormative": 0,
         "acceptedNormative": 0,
-        "currentStateAccuracy": 0,
-        "directVisibility": 0,
+        "currentStateAccuracy": 1,
+        "directVisibility": 1,
         "counts": {
           "gold": 1,
           "matched": 1,
@@ -4616,7 +4616,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 148
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 861,
@@ -4661,8 +4661,8 @@
         "falseNormativeRate": null,
         "falseNormative": 0,
         "acceptedNormative": 0,
-        "currentStateAccuracy": 0,
-        "directVisibility": 0,
+        "currentStateAccuracy": 1,
+        "directVisibility": 1,
         "counts": {
           "gold": 1,
           "matched": 1,
@@ -4693,7 +4693,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 158
+        "wallClockMs": 161
       },
       "inspector": {
         "contextChars": 861,
@@ -4757,7 +4757,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 132
       },
       "inspector": {
         "contextChars": 396,
@@ -4821,7 +4821,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 131
+        "wallClockMs": 127
       },
       "inspector": {
         "contextChars": 1031,
@@ -4885,7 +4885,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 134
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 2361,
@@ -4951,7 +4951,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 131
+        "wallClockMs": 139
       },
       "inspector": {
         "contextChars": 222,
@@ -5017,7 +5017,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 115
+        "wallClockMs": 122
       },
       "inspector": {
         "contextChars": 743,
@@ -5083,7 +5083,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 127
+        "wallClockMs": 130
       },
       "inspector": {
         "contextChars": 810,
@@ -5160,7 +5160,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 149
+        "wallClockMs": 151
       },
       "inspector": {
         "contextChars": 775,
@@ -5237,7 +5237,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 155
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 775,
@@ -5301,7 +5301,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 309,
@@ -5564,7 +5564,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 154
+        "wallClockMs": 144
       },
       "inspector": {
         "contextChars": 853,
@@ -5630,7 +5630,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 117
+        "wallClockMs": 121
       },
       "inspector": {
         "contextChars": 743,
@@ -5696,7 +5696,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 127
+        "wallClockMs": 139
       },
       "inspector": {
         "contextChars": 810,
@@ -5773,7 +5773,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 146
+        "wallClockMs": 155
       },
       "inspector": {
         "contextChars": 775,
@@ -5850,7 +5850,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 150
+        "wallClockMs": 149
       },
       "inspector": {
         "contextChars": 775,
@@ -5914,7 +5914,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 127
+        "wallClockMs": 124
       },
       "inspector": {
         "contextChars": 309,
@@ -5978,7 +5978,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 153
+        "wallClockMs": 134
       },
       "inspector": {
         "contextChars": 925,
@@ -6042,7 +6042,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 127
       },
       "inspector": {
         "contextChars": 2199,
@@ -6108,7 +6108,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 169
+        "wallClockMs": 127
       },
       "inspector": {
         "contextChars": 135,
@@ -6174,7 +6174,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 117
       },
       "inspector": {
         "contextChars": 799,
@@ -6319,7 +6319,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 160
+        "wallClockMs": 167
       },
       "inspector": {
         "contextChars": 827,
@@ -6396,7 +6396,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 172
+        "wallClockMs": 162
       },
       "inspector": {
         "contextChars": 827,
@@ -6524,7 +6524,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 1012,
@@ -6588,7 +6588,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 139
+        "wallClockMs": 130
       },
       "inspector": {
         "contextChars": 2363,
@@ -6652,7 +6652,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 143
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 147,
@@ -6721,7 +6721,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 169
+        "wallClockMs": 151
       },
       "inspector": {
         "contextChars": 958,
@@ -6787,7 +6787,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 120
+        "wallClockMs": 112
       },
       "inspector": {
         "contextChars": 799,
@@ -6853,7 +6853,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 868,
@@ -6932,7 +6932,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 148
+        "wallClockMs": 160
       },
       "inspector": {
         "contextChars": 808,
@@ -7009,7 +7009,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 147
+        "wallClockMs": 152
       },
       "inspector": {
         "contextChars": 808,
@@ -7073,7 +7073,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 154
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 325,
@@ -7137,7 +7137,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 996,
@@ -7201,7 +7201,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 2293,
@@ -7267,7 +7267,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 125
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 147,
@@ -7331,7 +7331,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 117
+        "wallClockMs": 115
       },
       "inspector": {
         "contextChars": 726,
@@ -7472,7 +7472,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 149
+        "wallClockMs": 156
       },
       "inspector": {
         "contextChars": 988,
@@ -7549,7 +7549,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 146
+        "wallClockMs": 153
       },
       "inspector": {
         "contextChars": 988,
@@ -7613,7 +7613,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 139
       },
       "inspector": {
         "contextChars": 320,
@@ -7677,7 +7677,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 123
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 1024,
@@ -7741,7 +7741,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 124
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 2106,
@@ -7876,7 +7876,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 157
+        "wallClockMs": 153
       },
       "inspector": {
         "contextChars": 1073,
@@ -7954,7 +7954,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 117
+        "wallClockMs": 144
       },
       "inspector": {
         "contextChars": 2111,
@@ -8032,7 +8032,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 144
       },
       "inspector": {
         "contextChars": 2198,
@@ -8114,7 +8114,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 154
+        "wallClockMs": 158
       },
       "inspector": {
         "contextChars": 2248,
@@ -8196,7 +8196,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 154
+        "wallClockMs": 156
       },
       "inspector": {
         "contextChars": 2248,
@@ -8260,7 +8260,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 131
+        "wallClockMs": 128
       },
       "inspector": {
         "contextChars": 921,
@@ -8324,7 +8324,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 142
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 2928,
@@ -8388,7 +8388,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 140
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 4316,
@@ -8466,7 +8466,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 134
+        "wallClockMs": 126
       },
       "inspector": {
         "contextChars": 77,
@@ -8530,7 +8530,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 120
+        "wallClockMs": 144
       },
       "inspector": {
         "contextChars": 571,
@@ -8594,7 +8594,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 121
       },
       "inspector": {
         "contextChars": 636,
@@ -8668,7 +8668,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 167
+        "wallClockMs": 149
       },
       "inspector": {
         "contextChars": 574,
@@ -8742,7 +8742,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 146
+        "wallClockMs": 157
       },
       "inspector": {
         "contextChars": 737,
@@ -8870,7 +8870,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 124
       },
       "inspector": {
         "contextChars": 772,
@@ -8934,7 +8934,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 136
       },
       "inspector": {
         "contextChars": 1929,
@@ -8998,7 +8998,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 88,
@@ -9062,7 +9062,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 118
+        "wallClockMs": 117
       },
       "inspector": {
         "contextChars": 545,
@@ -9126,7 +9126,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 132
       },
       "inspector": {
         "contextChars": 610,
@@ -9200,7 +9200,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 152
+        "wallClockMs": 150
       },
       "inspector": {
         "contextChars": 556,
@@ -9274,7 +9274,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 159
+        "wallClockMs": 152
       },
       "inspector": {
         "contextChars": 705,
@@ -9338,7 +9338,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 125
+        "wallClockMs": 137
       },
       "inspector": {
         "contextChars": 247,
@@ -9402,7 +9402,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 749,
@@ -9466,7 +9466,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 125
+        "wallClockMs": 129
       },
       "inspector": {
         "contextChars": 1903,
@@ -9530,7 +9530,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 126
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 80,
@@ -9596,7 +9596,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 117
+        "wallClockMs": 119
       },
       "inspector": {
         "contextChars": 713,
@@ -9662,7 +9662,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 125
       },
       "inspector": {
         "contextChars": 782,
@@ -9741,7 +9741,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 151
+        "wallClockMs": 147
       },
       "inspector": {
         "contextChars": 584,
@@ -9818,7 +9818,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 151
+        "wallClockMs": 159
       },
       "inspector": {
         "contextChars": 751,
@@ -9882,7 +9882,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 124
+        "wallClockMs": 131
       },
       "inspector": {
         "contextChars": 269,
@@ -9946,7 +9946,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 139
+        "wallClockMs": 135
       },
       "inspector": {
         "contextChars": 925,
@@ -10010,7 +10010,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 130
+        "wallClockMs": 123
       },
       "inspector": {
         "contextChars": 2181,
@@ -10076,7 +10076,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 128
+        "wallClockMs": 122
       },
       "inspector": {
         "contextChars": 94,
@@ -10145,7 +10145,7 @@
         "modelRequests": 0,
         "inputTokens": 0,
         "outputTokens": 0,
-        "wallClockMs": 152
+        "wallClockMs": 154
       },
       "inspector": {
         "contextChars": 674,
