@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import ts from 'typescript'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -25,6 +25,13 @@ const dirPrefixAliases: Array<{ find: RegExp; replacement: string }> = []
 for (const [key, targets] of Object.entries(map)) {
   if (key.includes('*') || targets.length === 0) continue
   const target = targets[0]!
+  // The vendor tsconfig names every workspace path, including packages the
+  // vendored 0.1.7 tree does not ship (the native system addons). An alias to a
+  // missing file does not "fall back": Vite fails the whole import graph. Skip
+  // it so the installed package resolves normally. The drift itself is not
+  // hidden — the package-version tests still report it — only the loader
+  // failure is avoided.
+  if (!existsSync(resolve(root, target))) continue
   const absolute = posix(resolve(root, target))
   if (/\.(ts|json|css)$/.test(target)) {
     fileAliases.push({ find: new RegExp(`^${escape(key)}$`), replacement: absolute })
