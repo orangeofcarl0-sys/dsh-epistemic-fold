@@ -54,6 +54,7 @@ import type { ContextEconomicsProfile } from '../policy/economics-profile.ts'
 import { isTierModeName } from '../config/preset.ts'
 import type { FoldModeName, TierModeName } from '../config/preset.ts'
 import type { SemanticDiagnostics } from '../semantic/types.ts'
+import { describeWriterObservation } from '../semantic/observation.ts'
 
 /** How a figure was obtained. Printed alongside it so it is never assumed. */
 export type FigureBasis = 'measured' | 'estimated'
@@ -575,6 +576,11 @@ export function contextStatusToText(status: ContextStatus): string {
     lines.push(`semantic continuity: ${semantic.mode} (${semantic.health})`)
     lines.push(`  packets         ${semantic.accepted} accepted, ${semantic.refused} refused, `
       + `${semantic.committed} committed`)
+    if (semantic.writer !== undefined) {
+      // Four axes on one line: `integrity=ready` with `coverage=not-assessed`
+      // must not read as "the writer extracted everything".
+      lines.push(`  ${describeWriterObservation(semantic.writer)}`)
+    }
     if (semantic.workingSetTokens > 0) {
       lines.push(`  working set     ~${semantic.workingSetTokens} tokens (estimated)`)
     }

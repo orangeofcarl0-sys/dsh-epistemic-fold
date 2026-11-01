@@ -107,7 +107,8 @@ import { healthOf } from '../semantic/commit.ts'
 import { semanticRecordsIn } from '../semantic/record.ts'
 import { proveFoldCommit } from '../semantic/proof.ts'
 import type { HistoricalFoldProof } from '../semantic/proof.ts'
-import { replayWithSemanticCommits } from '../semantic/replay.ts'
+import { replayWithSemanticCommits, verifyCommitStateDigests } from '../semantic/replay.ts'
+import type { CommitStateExpectation } from '../semantic/replay.ts'
 import { receiptBindingProblem, validateSemanticCommit } from '../semantic/integrity.ts'
 import type {
   SemanticCommitValidation,
@@ -120,6 +121,8 @@ import { changedAnchors, changedOverflowLine } from '../semantic/changes.ts'
 import { validateDeltas } from '../semantic/validate.ts'
 import { compileWorkingSet, measureCheckpointCapacity } from '../semantic/working-set-compiler.ts'
 import { parseWriterOutput, SEMANTIC_WRITER_INSTRUCTION } from '../semantic/writer.ts'
+import { observeWriter } from '../semantic/observation.ts'
+import type { WriterObservation } from '../semantic/observation.ts'
 import { renderTemporalCheckpoint } from '../checkpoint/renderer.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
 import {
@@ -363,6 +366,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Health from the last writer call, kept separate so one cannot mask the other. */
   private writerHealthValue: SemanticHealth = 'ready'
   private writerHealthDetail: string | undefined
+  /**
+   * The last writer's four independent observations. `writerHealthValue` is a
+   * severity for the status surface; this is the evidence behind it.
+   */
+  private writerObservationValue: WriterObservation | undefined
   private semanticWriterCallsValue = 0
   private semanticWriterFailuresValue = 0
   private semanticAcceptedValue = 0
@@ -1994,6 +2002,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       this.writerHealthValue = 'partial'
       this.writerHealthDetail =
         'semantic continuity is active, but no state projection is mounted; no semantic state can be written'
+      this.recordWriterObservation(observeWriter({
+        call: 'not-attempted',
+        protocol: 'not-called',
+        unavailable: true,
+        detail: this.writerHealthDetail,
+      }))
     }
 
     const publish = async (
@@ -2090,8 +2104,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
             handoff: `(semantic continuity withheld: ${blockedReason})`,
             notice: blockedNotice({ mode: 'blocked', reason: blockedReason }) ?? '',
           })
-          this.writerHealthValue = 'partial'
-          this.writerHealthDetail = blockedReason
+          this.recordWriterObservation(observeWriter({
+            call: 'not-attempted',
+            protocol: 'not-called',
+            conflict: true,
+            detail: blockedReason,
+          }))
         } else {
         // ONE call: the handoff IS the visible rationale, and the same response
         // carries the deltas. A second call would double the cost of every fold.
@@ -2143,8 +2161,24 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           this.telemetry.rationaleChars = parsed.handoff.length
           this.semanticAcceptedValue += validation.accepted.length
           this.semanticRefusedValue += validation.refused.length
-          this.writerHealthValue = 'ready'
-          this.writerHealthDetail = undefined
+          // The protocol outcome and the health are recorded by ONE helper:
+          // R32 assigned `ready` unconditionally here, so an `absent` or
+          // `malformed` protocol reported exactly like a complete extraction.
+          this.recordWriterObservation(observeWriter({
+            call: 'success',
+            ...(parsed.deltaParse === 'parsed' ? {} : { protocol: parsed.deltaParse }),
+            proposed: parsed.proposed.length,
+            accepted: validation.accepted,
+            refused: validation.refused,
+            ...(parsed.deltaParse === 'parsed' ? {} : { detail: parsed.parseDetail }),
+            ...(validation.refused.some(refusal => refusal.reason === 'limit-exceeded')
+              ? {
+                detail: `${validation.refused.filter(refusal => refusal.reason === 'limit-exceeded').length} `
+                  + 'proposal(s) were not considered because the per-fold delta limit was reached; '
+                  + 'coverage is not established',
+              }
+              : {}),
+          }))
         }
         }
       } else if (continuity === 'shadow') {
@@ -2269,6 +2303,31 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   }
 
   /**
+   * Record one writer observation and derive the status severity from it.
+   *
+   * Severity and evidence are written together so no call site can update one
+   * without the other. The severity is a COARSE projection: `conflict` and
+   * `unavailable` both mean "do not write state", which is what the status
+   * surface needs, while the observation keeps the distinction for a report.
+   */
+  private recordWriterObservation(observation: WriterObservation): void {
+    this.writerObservationValue = observation
+    // `conflict` and `partial` both mean "new state cannot be trusted", which
+    // is what the coarse health expresses; the observation keeps them distinct.
+    // Mapping conflict to `unavailable` would say the whole layer cannot be
+    // READ, which is stronger than an inconsistent journal row.
+    this.writerHealthValue = observation.integrity === 'ready'
+      ? 'ready'
+      : observation.integrity === 'unavailable' ? 'unavailable' : 'partial'
+    this.writerHealthDetail = observation.detail
+  }
+
+  /** The evidence behind {@link semanticWriterStats}; absent before any writer path. */
+  get semanticWriterObservation(): WriterObservation | undefined {
+    return this.writerObservationValue
+  }
+
+  /**
    * The combined handoff + deltas call.
    *
    * Failure is not a fold failure: the checkpoint still renders from committed
@@ -2312,6 +2371,10 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       this.semanticWriterFailuresValue += 1
       this.writerHealthValue = 'partial'
       this.writerHealthDetail = `semantic writer failed: ${error instanceof Error ? error.message : String(error)}`
+      this.recordWriterObservation(observeWriter({
+        call: 'failed',
+        detail: this.writerHealthDetail,
+      }))
       this.ctx.logger.warn(`[epistemic-fold] ${this.writerHealthDetail}`)
       return undefined
     }
@@ -2387,8 +2450,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     this.lastSemanticPacketValue = packet
     this.semanticAcceptedValue += validation.accepted.length
     this.semanticRefusedValue += validation.refused.length
-    this.writerHealthValue = parsed.deltaParse === 'malformed' ? 'partial' : 'ready'
-    this.writerHealthDetail = parsed.deltaParse === 'malformed' ? parsed.parseDetail : undefined
+    this.recordWriterObservation(observeWriter({
+      call: 'success',
+      ...(parsed.deltaParse === 'parsed' ? {} : { protocol: parsed.deltaParse }),
+      proposed: parsed.proposed.length,
+      accepted: validation.accepted,
+      refused: validation.refused,
+      ...(parsed.deltaParse === 'parsed' ? {} : { detail: parsed.parseDetail }),
+    }))
   }
 
   /**
@@ -2593,6 +2662,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       validation: SemanticCommitValidation
     }[] = []
     const commits: ValidatedSemanticCommit[] = []
+    /** Bundle state digests, so operations are bound to what was rendered. */
+    const expectations: CommitStateExpectation[] = []
     let pending = 0
     let aborted = 0
 
@@ -2642,6 +2713,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       entries.push({ packet, receipt, validation })
       switch (validation.status) {
         case 'valid':
+          if (bundle?.state !== undefined) {
+            expectations.push({ packetId: packet.packetId, digest: bundle.state.digest })
+          }
           commits.push(validation.commit)
           break
         case 'aborted':
@@ -2658,7 +2732,30 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           break
       }
     }
-    return { entries, commits, blockers, pending, aborted }
+    // Bind every commit's OPERATIONS to the state its checkpoint rendered. The
+    // packet id binds the body, the source digest binds the archive, and the
+    // receipt binds the operations' hash — but nothing bound those operations
+    // to the state that was actually shown. A packet tampered in the
+    // missing-receipt crash window would otherwise be repaired into state the
+    // model never saw.
+    let verified = commits
+    if (expectations.length > 0) {
+      const stateCheck = verifyCommitStateDigests(session, commits, expectations)
+      for (const mismatch of stateCheck.mismatches) {
+        const entry = entries.find(candidate =>
+          candidate.validation.status === 'valid'
+          && candidate.validation.commit.packetId === mismatch.packetId)
+        if (entry === undefined) continue
+        const detail = `packet ${mismatch.packetId} carries operations that produce state `
+          + `${mismatch.actual.slice(0, 12)}, but its checkpoint rendered ${mismatch.expected.slice(0, 12)}; `
+          + 'the operations were not the ones committed with that body'
+        entry.validation = { status: 'conflict', code: 'ops-state-mismatch', detail }
+        blockers.push(detail)
+      }
+      verified = entries.flatMap(candidate =>
+        candidate.validation.status === 'valid' ? [candidate.validation.commit] : [])
+    }
+    return { entries, commits: verified, blockers, pending, aborted }
   }
 
   /**
@@ -3387,6 +3484,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       reconciled: this.semanticReconciledValue,
       workingSetTokens: this.lastWorkingSetValue?.tokens ?? 0,
       ...(detail === undefined ? {} : { detail }),
+      ...(this.writerObservationValue === undefined ? {} : { writer: this.writerObservationValue }),
       ...(this.lastSemanticPacketValue === undefined ? {} : { lastPacket: this.lastSemanticPacketValue }),
     }
   }

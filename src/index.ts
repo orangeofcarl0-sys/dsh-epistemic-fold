@@ -207,6 +207,15 @@ export type {
 } from './semantic/types.ts'
 export { parseWriterOutput, SEMANTIC_MAX_TOKENS, SEMANTIC_WRITER_INSTRUCTION } from './semantic/writer.ts'
 export type { WriterOutput } from './semantic/writer.ts'
+export { describeWriterObservation, observeWriter } from './semantic/observation.ts'
+export type {
+  ObserveWriterInput,
+  RefusalCounts,
+  SemanticRuntimeIntegrity,
+  WriterCallOutcome,
+  WriterObservation,
+  WriterProtocolOutcome,
+} from './semantic/observation.ts'
 export { citableMessages, messageDigestOf, messageText, resolveEvidence, resolveQuote } from './semantic/evidence.ts'
 export type { CitableMessage, QuoteResolution } from './semantic/evidence.ts'
 export { anchorIdOf, semanticStateKey, validateDeltas } from './semantic/validate.ts'

@@ -39,6 +39,8 @@
  * @module dsh-epistemic-fold/semantic/types
  */
 
+import type { WriterObservation } from './observation.ts'
+
 import type { SessionId } from '@deepseek-ai/dsh-session'
 import type { AuthorityDomain } from '../state/authority.ts'
 import type { AnchorKind, EfAnchorEventData, FailureState, StateKey } from '../state/state.ts'
@@ -484,6 +486,12 @@ export type SemanticHealth =
 /** What the engine knows about the semantic layer right now. */
 export interface SemanticDiagnostics {
   readonly health: SemanticHealth
+  /**
+   * The last fold's writer observation, when a writer path ran (or was
+   * withheld). The four axes are independent; in particular `integrity: ready`
+   * does NOT mean the writer extracted every action-critical fact.
+   */
+  readonly writer?: WriterObservation
   /** Why the health is not `ready`; absent when it is. */
   readonly detail?: string
   readonly mode: SemanticMode

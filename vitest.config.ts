@@ -71,13 +71,20 @@ const standardDecoratorPlugin = () => ({
 })
 
 // zod must be a SINGLE physical copy: the EF projection's schema types unify
-// with the vendored session-projection's zod@4.4.3.
+// with the vendored session-projection's zod@4.4.3. A worktree that does not
+// carry the gitignored vendor tree (every worktree except the one that
+// materialized it) falls back to the installed copy rather than aliasing a
+// path Vite cannot resolve.
 const vendorZod = posix(resolve(root, 'vendor/deepseek-harness/node_modules/.pnpm/zod@4.4.3/node_modules/zod'))
+const zodAlias = existsSync(vendorZod) ? vendorZod : undefined
 
 export default defineConfig({
   plugins: [standardDecoratorPlugin()],
   resolve: {
-    alias: [{ find: /^zod$/, replacement: vendorZod }, ...fileAliases, ...dirExactAliases, ...dirPrefixAliases],
+    alias: [
+      ...(zodAlias === undefined ? [] : [{ find: /^zod$/, replacement: zodAlias }]),
+      ...fileAliases, ...dirExactAliases, ...dirPrefixAliases,
+    ],
   },
   test: {
     pool: 'forks',
