@@ -60,7 +60,21 @@ import type { AnchorKind, EfAnchorEventData, FailureState, StateKey } from '../s
  * twice-superseded value revive. Version 3 stores the resolution, so replay is
  * mechanical and independent of the bounded state. Older versions are ignored.
  */
-export const SEMANTIC_SCHEMA_VERSION = 3
+export const SEMANTIC_SCHEMA_VERSION = 4
+
+/**
+ * The previous packet schema.
+ *
+ * v3 packets carry resolved ops and a body digest but NO source-content digest
+ * and no commit proof. They are read only by the migration path, and conversion
+ * requires a verified bundle (see PERSISTENCE.md). They are never applied
+ * directly: a v3 packet cannot prove that the bytes it describes are still the
+ * bytes the fold archived.
+ */
+export const LEGACY_SEMANTIC_SCHEMA_VERSION = 3
+
+/** The previous semantic RECORD schema (the `plugin:epistemic-fold/semantic` payload). */
+export const LEGACY_SEMANTIC_RECORD_VERSION = 3
 
 /**
  * What kind of semantic state a delta proposes.
@@ -302,7 +316,7 @@ export interface SemanticPacket {
    */
   readonly stagedAtSeq: number
   /**
-   * `canonicalHash` of the EXACT checkpoint body this packet was rendered into.
+   * `canonicalHash` of the exact checkpoint body this packet was rendered into.
    *
    * The commit predicate matches the committed `compaction/summary` text to
    * this digest. A retried fold that produced different prose therefore leaves
@@ -310,6 +324,19 @@ export interface SemanticPacket {
    * becomes state.
    */
   readonly bodyDigest: string
+  /**
+   * `canonicalHash` of the archived SOURCE messages (after the fold's
+   * deterministic derived-answer retirement).
+   *
+   * This is the archive's own `logicalHash`, not a second serialization rule.
+   * It binds the packet to the content the fold actually archived, so a log
+   * restored with different events at the same seqs is a CONFLICT rather than a
+   * silent re-activation of state that belongs to another history.
+   *
+   * Absent only on a v3 packet. Such a packet is never applied directly; the
+   * migration computes the value from the bundle and the log.
+   */
+  readonly sourceDigest?: string
   /**
    * The RESOLVED commit plan, in application order.
    *
@@ -362,6 +389,34 @@ export interface SemanticPacket {
 
 /** The durable authority a deployment uses for semantic state. */
 export type SemanticAuthority = 'session-record' | 'journal'
+
+/**
+ * A committed decision about one prepared packet.
+ *
+ * The receipt is IMMUTABLE and separate from the prepared packet. A packet can
+ * be read and re-evaluated many times (in flight, after a restart, after a log
+ * restore); the decision that made its operations state is written once, with
+ * the historical fold proof that justified it. There is no `staged` receipt:
+ * "no receipt yet" is the staged state, and rewriting a receipt to say
+ * something else is exactly the mutation this separation prevents.
+ */
+export interface SemanticReceipt {
+  readonly kind: 'receipt'
+  readonly schemaVersion: number
+  readonly packetId: string
+  readonly sessionId: SessionId
+  readonly checkpointId: string
+  /** `committed` applies ops; the other two are final non-activations. */
+  readonly outcome: 'committed' | 'aborted' | 'archived-only'
+  /** Present exactly for `committed`. */
+  readonly proof?: import('./proof.ts').HistoricalFoldProof
+  /** `canonicalHash(ops)`, so a packet/receipt pairing is checkable. */
+  readonly opsDigest: string
+  /** Wall-clock decision time, for diagnostics only; replay never sorts on it. */
+  readonly decidedAt: number
+  /** Why an abort happened. */
+  readonly reason?: string
+}
 
 /**
  * A packet's commit lifecycle.

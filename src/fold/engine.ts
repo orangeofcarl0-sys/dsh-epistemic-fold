@@ -97,20 +97,18 @@ import type { FoldTelemetry } from './fold-telemetry.ts'
 import type { ResolvedConfig, ResolvedTargetPolicy } from '../basic/types.ts'
 import type { EfAnchorEventData, FoldCurrentState } from '../state/state.ts'
 import {
-  DEFAULT_PLUGIN_EVENT_API,
-  appendPluginEvent,
-  pluginEventTransport,
-} from '../state/plugin-events.ts'
-import type { PluginEventApi } from '../state/plugin-events.ts'
-import {
   FileSemanticJournal,
   NullSemanticJournal,
+  opsDigestOf,
   packetIdOf,
 } from '../semantic/journal.ts'
-import type { SemanticJournal } from '../semantic/journal.ts'
-import { classifyPacket, healthOf, hasCommittedRecord } from '../semantic/commit.ts'
-import { projectSemanticOps, semanticRecordsIn } from '../semantic/record.ts'
-import type { SemanticRecordPayload } from '../semantic/record.ts'
+import type { JournalRead, SemanticJournal } from '../semantic/journal.ts'
+import { healthOf } from '../semantic/commit.ts'
+import { semanticRecordsIn } from '../semantic/record.ts'
+import { proveFoldCommit } from '../semantic/proof.ts'
+import type { HistoricalFoldProof } from '../semantic/proof.ts'
+import { replayWithSemanticCommits } from '../semantic/replay.ts'
+import type { SemanticCommit } from '../semantic/replay.ts'
 import { applyOps, planCommit } from '../semantic/plan.ts'
 import { changedAnchors, changedOverflowLine } from '../semantic/changes.ts'
 import { validateDeltas } from '../semantic/validate.ts'
@@ -126,6 +124,7 @@ import type {
   SemanticDiagnostics,
   SemanticHealth,
   SemanticPacket,
+  SemanticReceipt,
   SemanticRefusal,
   SemanticWorkingSetReport,
 } from '../semantic/types.ts'
@@ -170,12 +169,6 @@ export interface EpistemicFoldOptions {
    * continuity is configured, and to the null journal otherwise.
    */
   readonly semanticJournal?: SemanticJournal
-  /**
-   * The session API used to detect and write plugin records. Defaults to the
-   * installed `@deepseek-ai/dsh-session`; injectable so a test can exercise a
-   * specific host generation (0.2.1 records vs a journal-only host).
-   */
-  readonly pluginEventApi?: PluginEventApi
 }
 
 /**
@@ -331,17 +324,26 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   private readonly triggers = new TriggerDiagnostics()
 
   // ---- Semantic Continuity -------------------------------------------------
-  /** Where staged packets live, and (on a journal-authority host) the state record. */
+  /** Where prepared packets and commit receipts live; the AUTHORITY for semantic state. */
   private readonly semanticJournal: SemanticJournal
-  /** The session API this deployment writes plugin records through. */
-  private readonly pluginEventApi: PluginEventApi
   /**
-   * ONE authority per deployment, chosen once: the session log when the host
-   * has `appendPluginRecord`, the journal otherwise. Never both for one packet.
+   * ONE authority per deployment: the journal. The session log supplies the raw
+   * history and the historical fold proof; it no longer carries semantic state
+   * records of its own. Legacy `plugin:epistemic-fold/semantic` records are
+   * MIGRATION sources, verified and converted, never an independent authority.
    */
-  private readonly semanticAuthorityValue: SemanticAuthority
+  private readonly semanticAuthorityValue: SemanticAuthority = 'journal'
   /** The last packet (active or shadow), for status/inspection. */
   private lastSemanticPacketValue: SemanticPacket | undefined
+  /** The last decision written for an active packet. */
+  private lastSemanticReceiptValue: SemanticReceipt | undefined
+  /** Checkpoints whose fold is executing in THIS process (not after a restart). */
+  private readonly inFlightCheckpoints = new Set<string>()
+  /**
+   * Forked sessions whose parent semantic seed could not be established.
+   * Active writing is refused for them; the reason is shown in `/context`.
+   */
+  private readonly semanticBlocked = new Map<string, string>()
   /** The last compiled working set's accounting. */
   private lastWorkingSetValue: SemanticWorkingSetReport | undefined
   /** Health from the last reconciliation pass. */
@@ -378,24 +380,20 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // from `bundleRoot` in the config face, honoring the DSH persistence
     // lifecycle (R0-B). Programmatic callers may inject a store directly.
     this.bundles = options.bundleStore ?? new FileBundleStore(this.efConfig.bundleRoot)
-    this.pluginEventApi = options.pluginEventApi ?? DEFAULT_PLUGIN_EVENT_API
-    this.semanticAuthorityValue =
-      pluginEventTransport(this.pluginEventApi) === 'plugin-record' ? 'session-record' : 'journal'
     this.semanticJournal = options.semanticJournal ?? (
       this.efConfig.semanticContinuity === 'off'
         ? new NullSemanticJournal()
         : new FileSemanticJournal(this.efConfig.semanticRoot)
     )
     // Fail at MOUNT, not after an expensive writer call: active mode needs a
-    // durable place to record the commit, and a null journal on a record-less
-    // host would stage packets that can never activate.
+    // durable place to record the commit. The journal is the sole authority, so
+    // a null journal can stage nothing that would ever activate.
     if (this.efConfig.semanticContinuity === 'active'
-      && this.semanticAuthorityValue === 'journal'
       && this.semanticJournal instanceof NullSemanticJournal) {
       throw new Error(
-        'epistemic-fold: semanticContinuity "active" needs a durable semantic journal on this host '
-        + '(no appendPluginRecord and no journal injected). Refusing at mount rather than staging '
-        + 'packets that can never commit. See README, "Semantic Continuity".',
+        'epistemic-fold: semanticContinuity "active" needs a durable semantic journal; '
+        + 'refusing at mount rather than staging packets that can never commit. '
+        + 'See README, "Semantic Continuity".',
       )
     }
     if (this.efConfig.semanticContinuity !== 'off') {
@@ -1996,15 +1994,6 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // committed body can activate.
         renderedText = active.text
         renderedState = active.renderedState
-        if (active.packet !== undefined) {
-          await this.stageSemanticPacket({
-            session,
-            candidate,
-            orderedSurfaceSeqs,
-            active,
-            ...(semanticMeta === undefined ? {} : { meta: semanticMeta }),
-          })
-        }
       } else {
         // M3a: when the deterministic projection is mounted, the checkpoint is
         // a structured handoff — machine state first, narrative in Rationale.
@@ -2030,6 +2019,19 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // mounted, because only then is state in the body at all.
         ...(renderedState === undefined ? {} : { renderedState }),
       })
+      if (active?.packet !== undefined) {
+        await this.stageSemanticPacket({
+          session,
+          candidate,
+          orderedSurfaceSeqs,
+          active,
+          // The archive's OWN content identity, not a second hashing rule. The
+          // proof re-derives the source from the log and compares this value,
+          // so a restored log with different events at the same seqs conflicts.
+          sourceDigest: bundle.archive.logicalHash,
+          ...(semanticMeta === undefined ? {} : { meta: semanticMeta }),
+        })
+      }
       await this.bundles.write(bundle)
       this.telemetry.bundleWrites += 1
       this.lastPublishedBundle = bundle
@@ -2059,6 +2061,22 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       const continuity = this.efConfig.semanticContinuity
       const maxTokens = rationaleOutputFor(estimateSpanTokens(summarizationInput.messages))
       if (continuity === 'active') {
+        const blocked = this.semanticBlocked.get(String(session.id))
+        if (blocked !== undefined) {
+          // A fork whose parent seed could not be established must not WRITE
+          // new semantic state on top of an incomplete one. The fold still
+          // commits deterministically, and the body names the degradation so
+          // the model is not told the state is complete when it is not.
+          activePlan = this.compileActiveFold({
+            state: mountedState,
+            foldedSeqs: orderedSurfaceSeqs,
+            checkpointId: candidate.checkpointId,
+            mode: candidate.mode,
+            handoff: `(semantic continuity withheld: ${blocked})`,
+          })
+          this.writerHealthValue = 'partial'
+          this.writerHealthDetail = blocked
+        } else {
         // ONE call: the handoff IS the visible rationale, and the same response
         // carries the deltas. A second call would double the cost of every fold.
         const writer = await this.semanticWriterCall({
@@ -2111,6 +2129,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           this.semanticRefusedValue += validation.refused.length
           this.writerHealthValue = 'ready'
           this.writerHealthDetail = undefined
+        }
         }
       } else if (continuity === 'shadow') {
         // The VISIBLE body must stay byte-identical to a deployment without
@@ -2323,13 +2342,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       sessionId: args.session.id,
       checkpointId: args.checkpointId,
       mode: 'shadow',
-      authority: this.semanticAuthorityValue,
+      authority: 'journal',
       status: 'staged',
       spanDigest: canonicalHash([...args.foldedSeqs]),
       foldedSeqs: [...args.foldedSeqs],
       createdAt: Date.now(),
       stagedAtSeq: Number(args.session.seq),
       bodyDigest,
+      sourceDigest: canonicalHash(retireDerivedAnswers(args.messages).messages),
       // NEVER state: a shadow packet carries no operations it could apply.
       ops: [],
       plannedOps: plan.ops,
@@ -2413,6 +2433,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     candidate: { readonly checkpointId: string }
     orderedSurfaceSeqs: readonly number[]
     active: ActiveFoldPlan
+    sourceDigest: string
     meta?: SummaryResult
   }): Promise<void> {
     const packet = args.active.packet
@@ -2429,13 +2450,14 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       sessionId: args.session.id,
       checkpointId: args.candidate.checkpointId,
       mode: 'active',
-      authority: this.semanticAuthorityValue,
+      authority: 'journal',
       status: 'staged',
       spanDigest: canonicalHash([...args.orderedSurfaceSeqs]),
       foldedSeqs: [...args.orderedSurfaceSeqs],
       createdAt: Date.now(),
       stagedAtSeq: Number(args.session.seq),
       bodyDigest,
+      sourceDigest: args.sourceDigest,
       ops: packet.ops,
       handoff: packet.handoff,
       deltaParse: packet.deltaParse,
@@ -2453,32 +2475,98 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       }),
     }
     await this.semanticJournal.write(staged)
+    // The fold may still be inside Basic's synchronous summary/replacement
+    // block when a post-append reconcile runs. This marker distinguishes that
+    // in-process window from a restart, where a summary with no replacement can
+    // never be completed.
+    this.inFlightCheckpoints.add(staged.checkpointId)
     this.lastSemanticPacketValue = staged
   }
 
   /**
    * The semantic view of current state for this fold.
    *
-   * `session-record` authority: the projection already folded every committed
-   * record, so the session-derived state IS the answer.
+   * The journal is the sole authority. Every committed receipt is re-proven
+   * against THIS log — identity, span, source content and body — and then its
+   * operations are replayed at the fold's historical replacement seq, interleaved
+   * with the raw events. A receipt whose proof no longer matches the log is a
+   * CONFLICT: it is not applied, and it is not "repaired" by re-appending
+   * anything. The log may be an older backup; the journal may be newer.
    *
-   * `journal` authority: layer the activated packets over the session-derived
-   * state, in commit order. A `staged` packet whose commit is demonstrable is
-   * applied too — that is the crash case where the fold committed but the
-   * status write did not, and it keeps the checkpoint consistent with the
-   * surface. The status write is a cache, not the truth.
+   * A packet with no receipt but a provable commit is the cross-store crash
+   * case (session committed, receipt missing). It is read as state; the
+   * reconciler writes the receipt on the next pass.
    */
   private async semanticStateOf(session: Session, base: FoldCurrentState): Promise<FoldCurrentState> {
     if (this.efConfig.semanticContinuity !== 'active') return base
-    if (this.semanticAuthorityValue === 'session-record') return base
-    const read = await this.semanticJournal.list(session.id)
-    const applicable = read.packets.filter(packet =>
-      packet.mode === 'active'
-      && packet.authority === 'journal'
-      && (packet.status === 'activated'
-        || (packet.status === 'staged' && classifyPacket(packet, session).status === 'activated')))
-    if (applicable.length === 0) return base
-    return projectSemanticOps(base, applicable.map(packet => packet.ops))
+    // A blocked fork has no trustworthy seed. Showing the child's later local
+    // rows alone would present an incomplete state as the current one.
+    if (this.semanticBlocked.has(String(session.id))) return base
+    let read: JournalRead
+    try {
+      read = await this.semanticJournal.list(session.id)
+    } catch {
+      return base
+    }
+    const commits: SemanticCommit[] = []
+    for (const packet of read.packets) {
+      if (packet.mode !== 'active') continue
+      const receipt = read.receipts.get(packet.packetId)
+      if (receipt !== undefined && receipt.outcome !== 'committed') continue
+      const verdict = await this.proofFor(session, packet)
+      if (verdict.status !== 'committed') continue
+      if (receipt?.outcome === 'committed'
+        && !sameProof(receipt.proof, verdict.proof)) continue
+      commits.push({
+        packetId: packet.packetId,
+        atSeq: verdict.proof.replacementSeq,
+        ops: packet.ops,
+      })
+    }
+    if (commits.length === 0) return base
+    const replay = replayWithSemanticCommits(session, commits)
+    // A receipt that proved committed when written but cannot be placed on
+    // THIS log must not be silently applied at the end. `replay` reports it;
+    // the reconciliation pass turns it into `conflict` health.
+    if (replay.unplaced.length > 0) return base
+    return replay.state
+  }
+
+  /** Bundle lookup, verified; a missing/corrupt bundle is simply absent. */
+  private async bundleFor(session: Session, checkpointId: string): Promise<CheckpointBundleV1 | undefined> {
+    return await this.bundles.read(session.id, checkpointId).catch(() => null) ?? undefined
+  }
+
+  /** Prove one packet against the log, with the in-process liveness marker. */
+  private async proofFor(
+    session: Session,
+    packet: SemanticPacket,
+  ): Promise<ReturnType<typeof proveFoldCommit>> {
+    const bundle = await this.bundleFor(session, packet.checkpointId)
+    return proveFoldCommit(packet, session, {
+      ...(this.inFlightCheckpoints.has(packet.checkpointId) ? { inFlight: true } : {}),
+      ...(bundle === undefined ? {} : { bundle }),
+    })
+  }
+
+  /** The immutable decision for one packet. */
+  private decision(
+    packet: SemanticPacket,
+    outcome: SemanticReceipt['outcome'],
+    detail?: { readonly proof?: HistoricalFoldProof; readonly reason?: string },
+  ): SemanticReceipt {
+    return {
+      kind: 'receipt',
+      schemaVersion: SEMANTIC_SCHEMA_VERSION,
+      packetId: packet.packetId,
+      sessionId: packet.sessionId,
+      checkpointId: packet.checkpointId,
+      outcome,
+      ...(detail?.proof === undefined ? {} : { proof: detail.proof }),
+      opsDigest: opsDigestOf(packet),
+      decidedAt: Date.now(),
+      ...(detail?.reason === undefined ? {} : { reason: detail.reason }),
+    }
   }
 
   /**
@@ -2486,11 +2574,27 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    *
    * This is the repair path for every interruption: after the writer, after the
    * bundle write, after the surface replacement, and after a process restart.
-   * It never guesses: `classifyPacket` requires the exact body digest and the
-   * surface message, and a packet that cannot be proven committed is left
-   * `pending` (still in flight) or marked `abandoned`.
+   * It never guesses: the proof requires the exact body, the transaction
+   * identity, the span and the source content. A packet that cannot be proven
+   * committed is left staged (in flight or unresolved) or given an immutable
+   * abort receipt.
+   *
+   * ## One serialization boundary per session
+   *
+   * Reconciliation writes durable receipts, so two passes that both see the
+   * same staged packet must not both decide it. Both the fold's own pre-write
+   * reconciliation and the post-commit event feed enter through THIS method;
+   * `reconcileSemanticsUnlocked` is never called directly.
+   *
+   * @param session - the session whose journal and log are reconciled.
+   * @returns the pass's report, after it has run to completion.
    */
   async reconcileSemantics(session: Session): Promise<ReconciliationReport> {
+    return this.runSemanticLocked(session, () => this.reconcileSemanticsUnlocked(session))
+  }
+
+  /** The reconciliation body; callers MUST hold the per-session boundary. */
+  private async reconcileSemanticsUnlocked(session: Session): Promise<ReconciliationReport> {
     const mode = this.efConfig.semanticContinuity
     if (mode !== 'active') {
       return {
@@ -2499,8 +2603,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         ...(mode === 'off' ? { detail: 'semantic continuity is off' } : {}),
       }
     }
-    const authority = this.semanticAuthorityValue
-    let read
+    let read: JournalRead
     try {
       read = await this.semanticJournal.list(session.id)
     } catch (error: unknown) {
@@ -2511,132 +2614,390 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         health: 'unavailable', detail: this.reconcileHealthDetail,
       }
     }
-    const records = authority === 'session-record' ? semanticRecordsIn(session) : []
-    let activated = 0
-    let abandoned = 0
-    let archivedOnly = 0
+
+    // A forked session owns a NEW id, so the journal has no row for it even
+    // though its log carries the parent's prefix. Inherit exactly the parent
+    // commits that landed BEFORE the fork boundary; never later ones.
+    const inherited = await this.inheritForkSemantics(session, read)
+    if (inherited.blocked !== undefined) {
+      this.semanticBlocked.set(String(session.id), inherited.blocked)
+    } else if (inherited.wrote > 0 || inherited.existing > 0) {
+      this.semanticBlocked.delete(String(session.id))
+    }
+
+    // Legacy state is a MIGRATION source, never an authority. Convert only what
+    // the historical proof and the bundle agree on, then re-read the journal.
+    const migration = await this.migrateLegacy(session, read)
+    if (migration.wrote > 0 || inherited.wrote > 0) {
+      try {
+        read = await this.semanticJournal.list(session.id)
+      } catch (error: unknown) {
+        this.reconcileHealthValue = 'unavailable'
+        this.reconcileHealthDetail = `semantic journal unreadable after inheritance/migration: ${error instanceof Error ? error.message : String(error)}`
+        return {
+          scanned: 0, staged: 0, activated: 0, abandoned: 0, unrepairable: 0,
+          health: 'unavailable', detail: this.reconcileHealthDetail,
+        }
+      }
+    }
+
+    let activatedThisPass = 0
+    let abandonedThisPass = 0
     let staged = 0
-    let unrepairable = read.invalid.length
-    let repaired = 0
-    let sawStale = false
+    let conflicts = 0
+    let unrepairable = read.invalid.length + migration.failed
+    const receipts = new Map(read.receipts)
 
     for (const packet of read.packets) {
       if (packet.mode !== 'active') continue
-      // A packet written under the OTHER authority is not silently reinterpreted.
-      // An upgrade from journal to session-record migrates ACTIVATED packets,
-      // because their state was already part of the fold chain.
-      if (packet.authority !== authority) {
-        if (authority === 'session-record'
-          && packet.authority === 'journal'
-          && packet.status === 'activated'
-          && !hasCommittedRecord(packet.packetId, records)) {
-          this.appendSemanticRecord(session, packet)
-          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
-          repaired += 1
+      const existing = receipts.get(packet.packetId)
+      const verdict = await this.proofFor(session, packet)
+
+      // A recorded commitment is re-proven on every pass. Once committed it
+      // stays committed while the log carries the proof; if the proof is gone
+      // (older log backup, truncation), the packet becomes a CONFLICT and is
+      // NOT re-appended. "Repairing" a missing record from the journal alone
+      // would inject future state into an earlier session.
+      if (existing?.outcome === 'committed') {
+        if (verdict.status !== 'committed' || !sameProof(existing.proof, verdict.proof)) {
+          conflicts += 1
           continue
         }
-        unrepairable += 1
+        this.inFlightCheckpoints.delete(packet.checkpointId)
         continue
       }
-      if (authority === 'session-record' && hasCommittedRecord(packet.packetId, records)) {
-        // Count only the transition. An already-activated packet is re-seen on
-        // every fold; counting it again would make the lifetime counter grow
-        // with the number of reconciliations rather than commits.
-        if (packet.status !== 'activated') {
-          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
-          activated += 1
-        }
-        continue
-      }
-      if (packet.status === 'activated') {
-        if (authority === 'session-record') {
-          // The journal says activated, the log has no record: the log lost the
-          // state (restore from an older copy, a truncated file). Re-append.
-          sawStale = true
-          this.appendSemanticRecord(session, packet)
-          repaired += 1
-          activated += 1
-        }
-        continue
-      }
-      if (packet.status !== 'staged') continue
-      const verdict = classifyPacket(packet, session)
+      if (existing !== undefined) continue
+
       switch (verdict.status) {
-        case 'activated':
-          if (authority === 'session-record') this.appendSemanticRecord(session, packet)
-          await this.semanticJournal.setStatus(packet.packetId, 'activated', { activatedAt: Date.now() })
-          activated += 1
+        case 'committed': {
+          const receipt = this.decision(packet, 'committed', { proof: verdict.proof })
+          try {
+            await this.semanticJournal.writeReceipt(receipt)
+          } catch {
+            unrepairable += 1
+            continue
+          }
+          receipts.set(packet.packetId, receipt)
+          this.lastSemanticReceiptValue = receipt
+          this.inFlightCheckpoints.delete(packet.checkpointId)
+          activatedThisPass += 1
           break
-        case 'archived-only':
-          await this.semanticJournal.setStatus(packet.packetId, 'archived-only', { abandonReason: verdict.detail })
-          archivedOnly += 1
+        }
+        case 'aborted': {
+          const archivedOnly = verdict.reason === 'summary-without-replacement'
+          const receipt = this.decision(packet, archivedOnly ? 'archived-only' : 'aborted', {
+            reason: verdict.detail,
+          })
+          try {
+            await this.semanticJournal.writeReceipt(receipt)
+          } catch {
+            unrepairable += 1
+            continue
+          }
+          receipts.set(packet.packetId, receipt)
+          this.lastSemanticReceiptValue = receipt
+          this.inFlightCheckpoints.delete(packet.checkpointId)
+          if (!archivedOnly) abandonedThisPass += 1
           break
-        case 'abandoned':
-          await this.semanticJournal.setStatus(packet.packetId, 'abandoned', { abandonReason: verdict.detail })
-          abandoned += 1
-          break
-        case 'pending':
+        }
+        case 'unresolved':
           staged += 1
+          break
+        case 'conflict':
+          conflicts += 1
           break
       }
     }
 
-    this.semanticActivatedValue += activated
-    this.semanticReconciledValue += repaired
+    const allReceipts = [...receipts.values()]
+    const committedTotal = allReceipts.filter(receipt => receipt.outcome === 'committed').length
+    const abandonedTotal = allReceipts.filter(receipt => receipt.outcome === 'aborted').length
+    const archivedTotal = allReceipts.filter(receipt => receipt.outcome === 'archived-only').length
+    this.semanticActivatedValue += activatedThisPass
+    this.semanticReconciledValue += migration.repaired
     const health = healthOf({
-      staged, abandoned, archivedOnly,
+      staged,
+      abandoned: abandonedTotal,
+      archivedOnly: archivedTotal,
       invalid: read.invalid.length,
       unrepairable,
-      activated,
+      activated: committedTotal,
+      conflicts,
     })
-    if (sawStale) {
-      this.reconcileHealthValue = 'stale'
-      this.reconcileHealthDetail = 'a committed semantic record was missing from the session log and was re-appended'
+    const blocked = this.semanticBlocked.get(String(session.id))
+    if (blocked !== undefined && health.health === 'ready') {
+      this.reconcileHealthValue = 'partial'
+      this.reconcileHealthDetail = blocked
     } else {
       this.reconcileHealthValue = health.health
       this.reconcileHealthDetail = health.detail
     }
     return {
-      scanned: read.packets.length,
+      scanned: read.packets.length + read.legacy.length,
       staged,
-      activated,
-      abandoned,
+      activated: activatedThisPass,
+      abandoned: abandonedThisPass,
       unrepairable,
       health: this.reconcileHealthValue,
       ...(this.reconcileHealthDetail === undefined ? {} : { detail: this.reconcileHealthDetail }),
     }
   }
 
-  /** Append the durable commit record for one verified packet. */
-  private appendSemanticRecord(session: Session, packet: SemanticPacket): void {
-    const payload: SemanticRecordPayload = {
-      schemaVersion: SEMANTIC_SCHEMA_VERSION,
-      packetId: packet.packetId,
-      checkpointId: packet.checkpointId,
-      foldedSeqs: [...packet.foldedSeqs],
-      bodyDigest: packet.bodyDigest,
-      ops: packet.ops,
+  /**
+   * Seed a forked session's journal from the parent prefix.
+   *
+   * DSH forks copy the EVENT LOG through an inclusive boundary and give the
+   * child a new session id. The parent's journal directory is therefore not
+   * reachable by `list(childId)`, and a naive active child would start with an
+   * empty state — silently losing every constraint the parent had established.
+   *
+   * The seed is bounded and proven, not copied on trust:
+   *
+   *   - only parent receipts whose `commitOrder < inheritedEventCount`;
+   *   - each is re-proven against the CHILD's log (the inherited prefix is the
+   *     same events, so a valid parent commit is a valid child commit);
+   *   - the source-content digest is re-derived, so a fork at a cut that
+   *     changed the prefix refuses rather than grants;
+   *   - a commit after the cut is never inherited.
+   *
+   * An absent parent journal directory is NOT treatable as "no state": the
+   * engine cannot distinguish that from a lost journal. The fork is then marked
+   * blocked, active writing is withheld for it, and `/context` names the reason.
+   */
+  private async inheritForkSemantics(
+    session: Session,
+    read: JournalRead,
+  ): Promise<{ readonly wrote: number; readonly existing: number; readonly blocked?: string }> {
+    const parent = session.header.parentSession
+    if (parent === undefined) return { wrote: 0, existing: 0 }
+    const boundary = Number(session.inheritedEventCount)
+    if (boundary <= 0) return { wrote: 0, existing: 0 }
+
+    const alreadyHere = [...read.receipts.values()]
+      .filter(receipt => receipt.outcome === 'committed'
+        && receipt.proof !== undefined
+        && receipt.proof.commitOrder < boundary)
+    if (alreadyHere.length > 0) {
+      // Inheritance already happened in an earlier pass; still verify the
+      // parent is reachable only when there is something to check.
+      return { wrote: 0, existing: alreadyHere.length }
     }
-    appendPluginEvent(session, 'semantic', payload, this.pluginEventApi)
+
+    const hasParent = await this.semanticJournal.hasSession(parent).catch(() => false)
+    if (!hasParent) {
+      return {
+        wrote: 0,
+        existing: 0,
+        blocked: 'fork semantic seed unavailable: the parent journal directory is not present, '
+          + 'so an empty child state cannot be distinguished from lost parent state',
+      }
+    }
+    let parentRead: JournalRead
+    try {
+      parentRead = await this.semanticJournal.list(parent)
+    } catch (error: unknown) {
+      return {
+        wrote: 0,
+        existing: 0,
+        blocked: `fork semantic seed unreadable: ${error instanceof Error ? error.message : String(error)}`,
+      }
+    }
+    if (parentRead.legacy.some(packet => packet.mode === 'active')) {
+      return {
+        wrote: 0,
+        existing: 0,
+        blocked: 'fork semantic seed unavailable: the parent journal still holds schema-3 packets',
+      }
+    }
+
+    let wrote = 0
+    for (const packet of parentRead.packets) {
+      if (packet.mode !== 'active') continue
+      const receipt = parentRead.receipts.get(packet.packetId)
+      if (receipt?.outcome !== 'committed' || receipt.proof === undefined) continue
+      if (receipt.proof.commitOrder >= boundary) continue
+
+      const childPacket: SemanticPacket = {
+        ...packet,
+        // A committed packet's identity includes the session; the child is a
+        // different session, so it gets its own id rather than aliasing the
+        // parent's row.
+        packetId: packetIdOf({
+          sessionId: session.id,
+          checkpointId: packet.checkpointId,
+          foldedSeqs: packet.foldedSeqs,
+          bodyDigest: packet.bodyDigest,
+        }),
+        sessionId: session.id,
+        authority: 'journal',
+        status: 'staged',
+      }
+      if (read.receipts.has(childPacket.packetId)) continue
+      const proof = proveFoldCommit(childPacket, session)
+      if (proof.status !== 'committed' || proof.proof.commitOrder >= boundary) {
+        return {
+          wrote,
+          existing: 0,
+          blocked: proof.status === 'committed'
+            ? 'fork semantic seed crossed its boundary'
+            : `fork semantic seed not provable in the child log: ${proof.detail}`,
+        }
+      }
+      try {
+        await this.semanticJournal.write(childPacket)
+        await this.semanticJournal.writeReceipt(
+          this.decision(childPacket, 'committed', { proof: proof.proof }),
+        )
+      } catch (error: unknown) {
+        return {
+          wrote,
+          existing: 0,
+          blocked: `fork semantic seed write failed: ${error instanceof Error ? error.message : String(error)}`,
+        }
+      }
+      wrote += 1
+    }
+    return { wrote, existing: 0 }
   }
 
-  /** Serialize activation passes per session; each may append to the log. */
-  private scheduleSemanticActivation(session: Session): void {
+  /**
+   * Convert legacy v3 packets and session records into journal receipts.
+   *
+   * A migration is an AUTHORITATIVE GRANT, so it needs all five facts:
+   * session identity, source content identity (the verified bundle's logical
+   * hash), a historical fold proof, valid operations, and an order. A checkpoint
+   * whose bundle is missing or corrupt is NOT migrated: without the archive
+   * there is no way to show that the ops describe the bytes that committed.
+   *
+   * Idempotent: prepared packet and receipt writes are immutable, and a packet
+   * already present in the journal is skipped.
+   */
+  private async migrateLegacy(
+    session: Session,
+    read: JournalRead,
+  ): Promise<{ readonly wrote: number; readonly repaired: number; readonly failed: number }> {
+    const known = new Set([...read.packets, ...read.legacy].map(packet => packet.packetId))
+    const alreadyMigrated = new Set(read.packets.map(packet => packet.packetId))
+    let wrote = 0
+    let repaired = 0
+    let failed = 0
+
+    const migrate = async (candidate: SemanticPacket, fromRecord: boolean): Promise<void> => {
+      const bundle = await this.bundleFor(session, candidate.checkpointId)
+      if (bundle === undefined) {
+        failed += 1
+        return
+      }
+      const sourceDigest = bundle.archive.logicalHash
+      const verdict = proveFoldCommit({ ...candidate, sourceDigest }, session, { bundle })
+      if (verdict.status === 'conflict' || verdict.status === 'unresolved') {
+        failed += 1
+        return
+      }
+      const packet: SemanticPacket = {
+        ...candidate,
+        schemaVersion: SEMANTIC_SCHEMA_VERSION,
+        authority: 'journal',
+        status: 'staged',
+        sourceDigest,
+        ...(fromRecord ? { spanDigest: canonicalHash([...candidate.foldedSeqs]) } : {}),
+      }
+      try {
+        await this.semanticJournal.write(packet)
+        const receipt = verdict.status === 'committed'
+          ? this.decision(packet, 'committed', { proof: verdict.proof })
+          : this.decision(
+              packet,
+              verdict.reason === 'summary-without-replacement' ? 'archived-only' : 'aborted',
+              { reason: verdict.detail },
+            )
+        await this.semanticJournal.writeReceipt(receipt)
+      } catch {
+        failed += 1
+        return
+      }
+      known.add(packet.packetId)
+      alreadyMigrated.add(packet.packetId)
+      wrote += 1
+      if (verdict.status === 'committed') repaired += 1
+    }
+
+    for (const legacy of read.legacy) {
+      if (legacy.mode !== 'active') continue
+      if (legacy.status !== 'staged' && legacy.status !== 'activated') continue
+      // A `.v3.json` archive sits beside the v4 file it became. The id is what
+      // says the migration already happened; re-running it would either be a
+      // no-op or collide with the immutable v4 packet.
+      if (alreadyMigrated.has(legacy.packetId) || read.receipts.has(legacy.packetId)) continue
+      await migrate(legacy, false)
+    }
+
+    // Session records: the old session-record authority. A record carries ops
+    // but not the span identity, so the span digest is derived from its
+    // `foldedSeqs`; the source digest must come from the bundle.
+    for (const record of semanticRecordsIn(session)) {
+      if (known.has(record.payload.packetId)) continue
+      const packet: SemanticPacket = {
+        schemaVersion: SEMANTIC_SCHEMA_VERSION,
+        packetId: record.payload.packetId,
+        sessionId: session.id,
+        checkpointId: record.payload.checkpointId,
+        mode: 'active',
+        authority: 'journal',
+        status: 'staged',
+        spanDigest: canonicalHash([...record.payload.foldedSeqs]),
+        foldedSeqs: [...record.payload.foldedSeqs],
+        createdAt: record.seq,
+        stagedAtSeq: record.seq,
+        bodyDigest: record.payload.bodyDigest,
+        ops: record.payload.ops,
+        handoff: '',
+        deltaParse: 'absent',
+        proposed: [],
+        accepted: [],
+        refused: [],
+      }
+      await migrate(packet, true)
+    }
+
+    return { wrote, repaired, failed }
+  }
+
+  /**
+   * Serialize every task that may mutate semantic state for one session.
+   *
+   * A chained promise (`tails`) rather than a mutex framework: the only
+   * requirement is that one session's reconciliation passes cannot overlap,
+   * and a tail per session is exactly that. The stored value is always a
+   * RESOLVED tail, so one failed pass cannot reject the next one's turn.
+   */
+  private runSemanticLocked<T>(session: Session, task: () => Promise<T>): Promise<T> {
     const key = String(session.id)
     const previous = this.semanticChains.get(key) ?? Promise.resolve()
-    const next = previous
-      .then(async () => {
-        await this.reconcileSemantics(session)
-      })
+    const run = previous.then(() => task(), () => task())
+    const tail = run.then(() => undefined, () => undefined)
+    this.semanticChains.set(key, tail)
+    void tail.finally(() => {
+      if (this.semanticChains.get(key) === tail) this.semanticChains.delete(key)
+    })
+    return run
+  }
+
+  /**
+   * Schedule one activation pass from the session event feed.
+   *
+   * `session.append` rejects a reentrant append while it publishes, so the pass
+   * is queued and the listener returns immediately. The public entry point
+   * supplies the serialization; this method only reports a failure.
+   */
+  private scheduleSemanticActivation(session: Session): void {
+    void this.reconcileSemantics(session)
+      .then(() => undefined)
       .catch((error: unknown) => {
         this.reconcileHealthValue = 'unavailable'
         this.reconcileHealthDetail = `semantic activation failed: ${error instanceof Error ? error.message : String(error)}`
         this.ctx.logger.warn(`[epistemic-fold] ${this.reconcileHealthDetail}`)
       })
-    this.semanticChains.set(key, next)
-    void next.finally(() => {
-      if (this.semanticChains.get(key) === next) this.semanticChains.delete(key)
-    })
   }
 
   /** Price one string with the mounted meter, falling back to the labelled heuristic. */
@@ -2652,6 +3013,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** The last semantic packet, whichever mode produced it. */
   get lastSemanticPacket(): SemanticPacket | undefined {
     return this.lastSemanticPacketValue
+  }
+
+  /** The last immutable decision written for an active packet. */
+  get lastSemanticReceipt(): SemanticReceipt | undefined {
+    return this.lastSemanticReceiptValue
   }
 
   /** The last compiled working set's accounting. */
@@ -2883,6 +3249,24 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
     return span
   }
+}
+
+/**
+ * Whether a recorded proof and a freshly re-derived proof describe the same
+ * commit. The receipt is immutable, so this is how a later log is checked
+ * against it: identity and commit position must still agree.
+ */
+function sameProof(recorded: HistoricalFoldProof | undefined, fresh: HistoricalFoldProof): boolean {
+  if (recorded === undefined) return false
+  return recorded.sessionId === fresh.sessionId
+    && recorded.checkpointId === fresh.checkpointId
+    && recorded.compactionId === fresh.compactionId
+    && recorded.startSeq === fresh.startSeq
+    && recorded.summarySeq === fresh.summarySeq
+    && recorded.replacementSeq === fresh.replacementSeq
+    && recorded.bodyDigest === fresh.bodyDigest
+    && recorded.sourceDigest === fresh.sourceDigest
+    && recorded.commitOrder === fresh.commitOrder
 }
 
 export default EpistemicFoldEngine

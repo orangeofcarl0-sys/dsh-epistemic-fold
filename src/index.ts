@@ -181,7 +181,11 @@ export type {
   PluginEventApi,
   PluginEventTransport,
 } from './state/plugin-events.ts'
-export { SEMANTIC_SCHEMA_VERSION } from './semantic/types.ts'
+export {
+  LEGACY_SEMANTIC_RECORD_VERSION,
+  LEGACY_SEMANTIC_SCHEMA_VERSION,
+  SEMANTIC_SCHEMA_VERSION,
+} from './semantic/types.ts'
 export type {
   AcceptedDelta,
   EpistemicStatus,
@@ -195,6 +199,7 @@ export type {
   SemanticLifecycle,
   SemanticMode,
   SemanticPacket,
+  SemanticReceipt,
   SemanticRefusal,
   SemanticRefusalReason,
   SemanticResidency,
@@ -212,12 +217,26 @@ export {
   FileSemanticJournal,
   NullSemanticJournal,
   comparePackets,
+  isLegacySemanticPacket,
   isSemanticPacket,
+  isSemanticReceipt,
+  opsDigestOf,
   packetIdOf,
+  packetStatusOf,
 } from './semantic/journal.ts'
 export type { JournalRead, SemanticJournal } from './semantic/journal.ts'
 export { classifyPacket, healthOf, summaryTextOf } from './semantic/commit.ts'
-export type { PacketCommitState } from './semantic/commit.ts'
+export type { ClassifyPacketOptions, PacketCommitState } from './semantic/commit.ts'
+export { proveFoldCommit } from './semantic/proof.ts'
+export type {
+  FoldAbortReason,
+  FoldProofOptions,
+  FoldProofResult,
+  FoldProofSubject,
+  HistoricalFoldProof,
+} from './semantic/proof.ts'
+export { replayWithSemanticCommits } from './semantic/replay.ts'
+export type { SemanticCommit, SemanticReplay } from './semantic/replay.ts'
 export {
   projectSemanticOps,
   projectSemanticRecords,

@@ -124,6 +124,20 @@ function withoutCheckpointId(text: string): string {
   return text.replace(/cp:[0-9a-f-]+/gu, 'cp:<id>')
 }
 
+/**
+ * A packet's lifecycle is carried by its RECEIPT, not by the prepared packet.
+ * The prepared file is immutable and always `staged` by construction.
+ */
+function statusOf(
+  read: { readonly receipts: ReadonlyMap<string, { readonly outcome: string }> },
+  packet: { readonly packetId: string },
+): string {
+  const receipt = read.receipts.get(packet.packetId)
+  if (receipt === undefined) return 'staged'
+  if (receipt.outcome === 'committed') return 'activated'
+  return receipt.outcome === 'aborted' ? 'abandoned' : 'archived-only'
+}
+
 describe('active mode: a committed fold becomes state', () => {
   it('stages, commits, activates, and carries the state into the next checkpoint', async () => {
     const { h, root, box } = await semanticHarness('active')
@@ -148,9 +162,11 @@ describe('active mode: a committed fold becomes state', () => {
     const read = await journal.list(session.id)
     expect(read.invalid).toHaveLength(0)
     expect(read.packets).toHaveLength(1)
-    expect(read.packets[0]!.status).toBe('activated')
+    expect(statusOf(read, read.packets[0]!)).toBe('activated')
+    expect(read.receipts.get(read.packets[0]!.packetId)?.proof?.replacementSeq).toBeTypeOf('number')
     expect(read.packets[0]!.mode).toBe('active')
     expect(read.packets[0]!.ops.length).toBeGreaterThan(0)
+    expect(read.packets[0]!.sourceDigest).toBeTypeOf('string')
 
     // The next fold starts a new span; its carried section must show the state
     // the previous fold committed, not re-emit it as "changed".
@@ -179,9 +195,10 @@ describe('active mode: a committed fold becomes state', () => {
     expect(second).toContain('The timeout is 60 seconds.')
     expect(second).not.toContain('The timeout is 30 seconds.')
 
-    const packets = (await new FileSemanticJournal(join(root, 'semantic')).list(session.id)).packets
+    const read = await new FileSemanticJournal(join(root, 'semantic')).list(session.id)
+    const packets = read.packets
     expect(packets).toHaveLength(2)
-    expect(packets.every(packet => packet.status === 'activated')).toBe(true)
+    expect(packets.every(packet => statusOf(read, packet) === 'activated')).toBe(true)
   })
 })
 
@@ -203,9 +220,10 @@ describe('transaction safety', () => {
       .rejects.toThrow(/not smaller/u)
     await h.engine.reconcileSemantics(session)
 
-    const packets = (await new FileSemanticJournal(join(root, 'semantic')).list(session.id)).packets
-    expect(packets).toHaveLength(1)
-    expect(packets[0]!.status).toBe('abandoned')
+    const read = await new FileSemanticJournal(join(root, 'semantic')).list(session.id)
+    expect(read.packets).toHaveLength(1)
+    expect(statusOf(read, read.packets[0]!)).toBe('abandoned')
+    expect(read.receipts.get(read.packets[0]!.packetId)?.reason).toMatch(/without a summary|ended/u)
 
     // A following fold must not carry the abandoned value.
     appendClosedTurn(session, 3, 'A fresh phase.', 'Ready.')
@@ -255,8 +273,8 @@ describe('transaction safety', () => {
 
     expect(body).toContain('The timeout is 60 seconds.')
     expect(body).not.toContain('The timeout is 30 seconds.')
-    const packets = (await new FileSemanticJournal(join(root, 'semantic')).list(session.id)).packets
-    expect(packets.filter(packet => packet.status === 'activated')).toHaveLength(3)
+    const read = await new FileSemanticJournal(join(root, 'semantic')).list(session.id)
+    expect(read.packets.filter(packet => statusOf(read, packet) === 'activated')).toHaveLength(3)
   })
 })
 

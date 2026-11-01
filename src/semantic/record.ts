@@ -24,7 +24,7 @@ import type { FoldCurrentState } from '../state/state.ts'
 import { efPluginRecordOf } from '../state/plugin-events.ts'
 import type { EfPluginRecord } from '../state/plugin-events.ts'
 import type { EfAnchorEventData } from '../state/state.ts'
-import { SEMANTIC_SCHEMA_VERSION } from './types.ts'
+import { LEGACY_SEMANTIC_RECORD_VERSION, SEMANTIC_SCHEMA_VERSION } from './types.ts'
 import { applyOps } from './plan.ts'
 
 /** The payload written as `plugin:epistemic-fold/semantic`. */
@@ -49,7 +49,11 @@ export interface SemanticRecordPayload {
 export function semanticRecordPayloadOf(value: unknown): SemanticRecordPayload | undefined {
   if (value === null || typeof value !== 'object') return undefined
   const payload = value as Partial<SemanticRecordPayload>
-  if (payload.schemaVersion !== SEMANTIC_SCHEMA_VERSION) return undefined
+  // v3 is the legacy record schema; v4 is accepted for forward-compatible
+  // readers even though the journal is now the sole state authority (a record
+  // is still useful as a MIGRATION source, never as an independent authority).
+  if (payload.schemaVersion !== LEGACY_SEMANTIC_RECORD_VERSION
+    && payload.schemaVersion !== SEMANTIC_SCHEMA_VERSION) return undefined
   if (typeof payload.packetId !== 'string' || typeof payload.bodyDigest !== 'string') return undefined
   if (typeof payload.checkpointId !== 'string') return undefined
   if (!Array.isArray(payload.foldedSeqs) || payload.foldedSeqs.some(seq => typeof seq !== 'number')) return undefined

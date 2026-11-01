@@ -347,32 +347,62 @@ the runtime refuses the generalization rather than quietly downgrading it.
 `active` requires `semanticMode: rationale`; the zero-LLM profile is never
 upgraded behind the deployment's back.
 
-### One authority, chosen at startup
+### One authority: the EF journal
 
-| Host | Durable record | State projection |
-|---|---|---|
-| DSH 0.2.1+ (`appendPluginRecord`) | `plugin:epistemic-fold/semantic` in the session log | the EF projection folds the record with the ordinary reducer |
-| Older hosts, or no record writer | the semantic journal file | activated packets are layered over the session-derived state |
+| Store | What it owns |
+|---|---|
+| DSH session log | Canonical history, anchor events, checkpoint retirements, and the **historical fold-commit proof** |
+| EF semantic journal | Immutable prepared packets and immutable commit receipts — the sole authority for accepted semantic state |
+| State projection | A replay of raw events with each verified commit's operations applied at its historical replacement seq |
 
-A packet records which authority wrote it. The two are never merged for the
-same packet; an upgrade from journal to session-record migrates already-activated
-packets once.
+The session log no longer carries semantic state records. Legacy
+`plugin:epistemic-fold/semantic` records are read only by the migration path:
+each is converted into a journal receipt only after its fold proof, source
+content digest, and bundle agree. There is never a second authority deciding
+the same packet.
 
-Anchor declarations and checkpoint retirements use the same transport, so
-`ef/anchor` and `ef/retire` no longer have a guaranteed-failing write path on
-0.2.1. On a host with no sanctioned writer, the anchor service still refuses
-**before** the append rather than persisting a log the read path will reject.
+Anchor declarations and checkpoint retirements use the sanctioned
+`plugin:` record transport where the host has one, and the raw in-memory event
+where it does not. Both transports are read by the same domain reader, so a
+retirement cannot be written through one spelling and missed by the other. On a
+host with no sanctioned writer, the anchor service refuses **before** the
+append rather than persisting a log the read path will reject.
 
 ### Commit semantics
 
-`staged` is not state. A packet activates only when the committed
-`compaction/summary` carries the **exact body digest** the packet rendered and
-its replacement message is on the surface. A fold rejected by the shrink or
-stability check leaves the packet staged; reconciliation then marks it
-`abandoned`. A crash after the surface replacement is repaired from the log
-(digest + surface), not from a file's existence. Replay is mechanical: the
-packet stores the resolved operations, so it never re-resolves supersession
-against the bounded current state.
+`staged` is not state. A prepared packet becomes state only when its receipt
+records a **historical fold proof**:
+
+- the summary's marker names this checkpoint and its exact body digest;
+- `compaction/start` and `compaction/summary` share one compaction id;
+- the summary's `shadowedSeqs` equal the packet's span, in order;
+- the source messages still re-derive to the packet's `sourceDigest` (the
+  bundle's own logical hash);
+- the immediately following replacement event exists in the log, is a
+  `compact-checkpoint`, and cites that start and summary.
+
+The CURRENT surface is irrelevant to that verdict: a checkpoint folded away by
+a later fold still committed. `compaction/end` is a closure marker; a missing or
+failed close does not erase a replacement that already landed, and the proof
+records it as `unclosed` / `endError`.
+
+A summary without its replacement is **not** state. A packet whose fold wrote a
+different body, or whose compaction ended without a summary, gets an immutable
+abort receipt. A journal receipt whose proof no longer exists in the log (an
+older session backup, a truncated file) is a **conflict**: it is not applied and
+nothing is re-appended. The reverse crash — session committed, receipt missing —
+is repaired by re-proving the log and writing the receipt.
+
+Replay uses the proof's commit seq, never wall time, and interleaves the
+operations with session events. A semantic commit at seq 100 cannot overwrite a
+raw event at seq 150.
+
+A fork copies the event log through an inclusive boundary and gets a new
+session id. The child journal is seeded with exactly the parent receipts whose
+commit seq is **before** the boundary, each re-proven against the child log.
+Later commits never cross the boundary. If the parent journal directory is not
+present, Active writing is withheld for that child and the checkpoint says so,
+rather than silently starting from an empty state.
 
 ### What is measured, and what is not
 

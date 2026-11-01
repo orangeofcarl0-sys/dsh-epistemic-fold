@@ -18,7 +18,6 @@ import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
 import { emptyCurrentState, reduceEvent } from './state.ts'
 import type { FoldCurrentState } from './state.ts'
 import { efPluginRecordOf } from './plugin-events.ts'
-import { projectSemanticRecords, semanticRecordOf } from '../semantic/record.ts'
 
 /** The EF host projection key (merge-extended below). */
 export const EF_CURRENT_STATE_KEY = 'epistemicFold.current' as const
@@ -68,6 +67,14 @@ export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.curren
   key: EF_CURRENT_STATE_KEY,
   stateSchema: currentStateSchema as unknown as ZodType<FoldCurrentState>,
   /**
+   * BUMPED 3 -> 4 when semantic state moved to the journal.
+   *
+   * A version-3 row folded `plugin:epistemic-fold/semantic` records directly.
+   * A journal-authority deployment now replays those operations at their
+   * historical commit positions, interleaved with session events. Reusing a
+   * version-3 row would apply the same operations twice (or at the wrong
+   * order), so the row is discarded and re-folded.
+   *
    * BUMPED 2 -> 3 when plugin-record anchors and semantic records entered the
    * fold. A version-2 row cannot contain them, so reusing one would silently
    * drop committed semantic state after an upgrade.
@@ -81,22 +88,31 @@ export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.curren
    * empty — a state that looks valid and has quietly lost the thing this field
    * was added to carry.
    */
-  stateVersion: 3,
+  stateVersion: 4,
   init: () => emptyCurrentState(),
-  apply: (state, event: SessionEvent) => {
-    // A committed semantic record carries already-resolved anchor operations.
-    // Folding it here — with the SAME reducer — is what makes the state survive
-    // a restart without a second state model or a re-resolution pass.
-    const semantic = semanticRecordOf(event)
-    if (semantic !== undefined) return projectSemanticRecords(state, [semantic])
-    // A plugin-record anchor (the 0.2.1 transport) is an `ef/anchor` event in
-    // everything but its envelope type.
-    const record = efPluginRecordOf(event)
-    if (record !== undefined && record.kind === 'anchor') {
-      return reduceEvent(state, { type: 'ef/anchor', seq: record.seq, data: record.data })
-    }
-    return reduceEvent(state, event)
-  },
+  apply: reduceSessionEvent,
+}
+
+/**
+ * Fold one committed session event into the deterministic state.
+ *
+ * Exported because the engine replays the same events when it must INTERLEAVE
+ * journal commits at their historical seqs. A second implementation would be a
+ * second state model; this is the one reducer, called from two places.
+ *
+ * Semantic commit records are deliberately NOT folded here. They are a legacy
+ * source that the reconciler migrates into journal receipts, and the journal
+ * replay applies their operations at the fold's commit position — not at the
+ * log position where the old record happened to be appended.
+ */
+export function reduceSessionEvent(state: FoldCurrentState, event: SessionEvent): FoldCurrentState {
+  // A plugin-record anchor (the 0.2.1 transport) is an `ef/anchor` event in
+  // everything but its envelope type.
+  const record = efPluginRecordOf(event)
+  if (record !== undefined && record.kind === 'anchor') {
+    return reduceEvent(state, { type: 'ef/anchor', seq: record.seq, data: record.data })
+  }
+  return reduceEvent(state, event)
 }
 
 /**

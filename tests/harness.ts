@@ -29,6 +29,7 @@ import { EpistemicFoldEngine } from '../src/fold/engine.ts'
 import EpistemicFoldPlugin from '../src/plugin.ts'
 import type { EpistemicFoldConfig } from '../src/config/policy.ts'
 import { registerEpistemicFoldProjection } from '../src/state/projection.ts'
+import type { SemanticJournal } from '../src/semantic/journal.ts'
 import type { FoldBundleStore } from '../src/types.ts'
 import { makeTemp } from '../eval/tmp.ts'
 import { mountRuntime, mountToolResultPruner } from '../eval/src/runtime-mount.ts'
@@ -137,6 +138,12 @@ export async function createHarness(
     efConfig?: EpistemicFoldConfig
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
+    /**
+     * Inject the semantic journal; defaults to the engine's file journal under
+     * `semanticRoot`. A test that must observe serialization or fail a read
+     * wraps the real journal rather than replacing the store under test.
+     */
+    semanticJournal?: SemanticJournal
     /**
      * Mount the deterministic EF current-state projection. Off by default so
      * the M0/M2 legacy rendering path stays exercised; the structured
@@ -286,7 +293,10 @@ export async function createHarness(
   }
   const engine = (options.engine === 'basic'
     ? new BasicCompactionEngine(ctx, { auto: false, ...(options.efConfig ?? {}) })
-    : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, { bundleStore: store })) as EpistemicFoldEngine
+    : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, {
+        bundleStore: store,
+        ...(options.semanticJournal === undefined ? {} : { semanticJournal: options.semanticJournal }),
+      })) as EpistemicFoldEngine
   return { ctx, engine, store, root, control }
 }
 

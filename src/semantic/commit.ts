@@ -2,36 +2,26 @@
  * Commit evidence: deciding whether a staged semantic packet's fold actually
  * committed, and what its absence means.
  *
- * ## The commit point is the SURFACE, not the summary
+ * The proof itself lives in `proof.ts`. This module is the adapter between that
+ * verdict and the packet lifecycle the engine journals. It deliberately keeps
+ * the historical distinction the old classifier lost:
  *
- * Basic appends `compaction/summary` and then the replacement `user/message`
- * in one synchronous block. A summary that exists while its checkpoint message
- * is not on the surface means the replacement failed: the bundle is durable
- * but the model never saw that body, so its semantic state must not become
- * state either. A summary alone is therefore `archived-only`, not `activated`.
- *
- * ## Digest, not similarity
- *
- * The packet records the `canonicalHash` of the exact body it rendered. A fold
- * retried by the truncation path may produce a different body under the same
- * checkpoint id; only the body that actually landed may activate. Matching the
- * marker alone would activate prose the model never saw.
- *
- * ## Absence is a verdict, but only with evidence
- *
- * A packet staged at `stagedAtSeq` whose fold left the log longer with no
- * matching summary is `abandoned`. A packet at the log's current end is
- * `pending`: the fold may still be in flight, or the process died between the
- * write and the commit. Guessing "abandoned" there would discard a state the
- * next commit might prove.
+ *   activated     replacement landed; historical commit is proven
+ *   archived-only summary landed but the replacement never did
+ *   abandoned     the fold wrote another body, or ended without this one
+ *   pending       not enough evidence yet (in flight, or no owning compaction)
+ *   conflict      evidence exists but contradicts the packet; never activate
  *
  * @module dsh-epistemic-fold/semantic/commit
  */
 
-import { SessionSeq } from '@deepseek-ai/dsh-session'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import { canonicalHash } from '../checkpoint/hash.ts'
+import type { Session } from '@deepseek-ai/dsh-session'
+import type { CheckpointBundleV1 } from '../types.ts'
+import { proveFoldCommit } from './proof.ts'
+import type { HistoricalFoldProof } from './proof.ts'
 import type { SemanticHealth, SemanticPacket } from './types.ts'
+
+export { summaryTextOf } from './proof.ts'
 
 /** One packet's relationship to the session log. */
 export type PacketCommitState =
@@ -39,8 +29,10 @@ export type PacketCommitState =
     readonly status: 'activated'
     /** Seq of the `compaction/summary` that carried this body. */
     readonly summarySeq: number
-    /** Seq of the replacement `user/message` on the surface. */
+    /** Seq of the replacement `user/message`, historically. Residency is irrelevant. */
     readonly messageSeq: number
+    readonly proof: HistoricalFoldProof
+    readonly detail?: string
   }
   | {
     readonly status: 'archived-only'
@@ -55,37 +47,17 @@ export type PacketCommitState =
     readonly status: 'pending'
     readonly detail: string
   }
+  | {
+    readonly status: 'conflict'
+    readonly detail: string
+  }
 
-/** The model-visible text of a `compaction/summary` event, or undefined. */
-export function summaryTextOf(event: { readonly type: string; readonly data: unknown }): string | undefined {
-  if (event.type !== 'compaction/summary') return undefined
-  const data = event.data as { summary?: unknown }
-  if (!Array.isArray(data.summary)) return undefined
-  return data.summary.map(block => {
-    if (block === null || typeof block !== 'object') return ''
-    const typed = block as { type?: unknown; text?: unknown }
-    return typed.type === 'text' && typeof typed.text === 'string' ? typed.text : ''
-  }).join('\n')
-}
-
-/** Whether one event seq is on the model-visible surface. */
-function onSurface(session: Session, seq: number): boolean {
-  return session.surface.nodes.some(node => Number(node) === seq)
-}
-
-/**
- * The checkpoint message immediately after a summary, when it is a real
- * compaction checkpoint AND the surface holds it.
- *
- * `immediately after` is exact, not heuristic: Basic appends the two events in
- * one synchronous block with nothing between them.
- */
-function committedCheckpointAfter(session: Session, summarySeq: number): number | undefined {
-  const next = session.eventAt(SessionSeq(summarySeq + 1))
-  if (next === undefined || next.type !== 'user/message') return undefined
-  const message = session.deriveEventMessage(next)
-  if (message === null || message.source.kind !== 'compact-checkpoint') return undefined
-  return onSurface(session, Number(next.seq)) ? Number(next.seq) : undefined
+/** Options for {@link classifyPacket}. */
+export interface ClassifyPacketOptions {
+  /** The fold is still executing in this process (summary may be mid-block). */
+  readonly inFlight?: boolean
+  /** A verified bundle, used for source identity and legacy migration. */
+  readonly bundle?: CheckpointBundleV1
 }
 
 /**
@@ -93,53 +65,41 @@ function committedCheckpointAfter(session: Session, summarySeq: number): number 
  *
  * @param packet - the packet as it was staged.
  * @param session - the live (or reopened) session.
+ * @param options - in-process liveness and an optional verified bundle.
  * @returns the commit verdict.
  */
-export function classifyPacket(packet: SemanticPacket, session: Session): PacketCommitState {
-  const events: readonly SessionEvent[] = session.snapshotEvents()
-  let markerSeen = false
-  for (const event of events) {
-    const text = summaryTextOf(event)
-    if (text === undefined) continue
-    if (text.includes(`cp:${packet.checkpointId}`)) markerSeen = true
-    if (canonicalHash(text) !== packet.bodyDigest) continue
-    const messageSeq = committedCheckpointAfter(session, Number(event.seq))
-    if (messageSeq === undefined) {
+export function classifyPacket(
+  packet: SemanticPacket,
+  session: Session,
+  options: ClassifyPacketOptions = {},
+): PacketCommitState {
+  const verdict = proveFoldCommit(packet, session, options)
+  switch (verdict.status) {
+    case 'committed':
       return {
-        status: 'archived-only',
-        summarySeq: Number(event.seq),
-        detail: 'the summary landed but its checkpoint message is not on the surface; '
-          + 'the bundle is durable and the fold did not commit',
+        status: 'activated',
+        summarySeq: verdict.proof.summarySeq,
+        messageSeq: verdict.proof.replacementSeq,
+        proof: verdict.proof,
+        ...(verdict.detail === undefined ? {} : { detail: verdict.detail }),
       }
-    }
-    return { status: 'activated', summarySeq: Number(event.seq), messageSeq }
-  }
-  if (markerSeen) {
-    return {
-      status: 'abandoned',
-      detail: 'a summary for this checkpoint carries a DIFFERENT body; a retry won and this '
-        + 'body was never visible',
-    }
-  }
-  if (session.seq > packet.stagedAtSeq) {
-    return {
-      status: 'abandoned',
-      detail: `the log advanced from seq ${packet.stagedAtSeq} to ${session.seq} without a `
-        + 'summary for this body',
-    }
-  }
-  return {
-    status: 'pending',
-    detail: `waiting for commit evidence after seq ${packet.stagedAtSeq}`,
+    case 'aborted':
+      return verdict.reason === 'summary-without-replacement'
+        ? { status: 'archived-only', summarySeq: verdict.summarySeq ?? 0, detail: verdict.detail }
+        : { status: 'abandoned', detail: verdict.detail }
+    case 'unresolved':
+      return { status: 'pending', detail: verdict.detail }
+    case 'conflict':
+      return { status: 'conflict', detail: verdict.detail }
   }
 }
 
 /**
  * Whether a committed semantic record exists for this packet.
  *
- * Only used on the `session-record` authority, where the record IS the commit
- * record. A record's presence proves activation because it is appended only
- * after `classifyPacket` returned `activated`.
+ * Only used by the legacy session-record reader. A record's presence does NOT
+ * prove activation by itself: it is accepted only after the historical proof
+ * agrees, and `proveFoldCommit` is the authority for that.
  */
 export function hasCommittedRecord(
   packetId: string,
@@ -152,8 +112,9 @@ export function hasCommittedRecord(
  * Fold per-packet verdicts into one health value.
  *
  * Precedence is deliberate: an unreadable packet outranks a pending one (it
- * cannot be repaired by waiting), and any activation gap makes the layer
- * `partial` rather than `ready` even when everything else is fine.
+ * cannot be repaired by waiting), a contradiction outranks a pending packet
+ * (waiting cannot remove it), and any activation gap makes the layer `partial`
+ * rather than `ready` even when everything else is fine.
  */
 export function healthOf(input: {
   readonly staged: number
@@ -162,11 +123,18 @@ export function healthOf(input: {
   readonly invalid: number
   readonly unrepairable: number
   readonly activated: number
+  readonly conflicts?: number
 }): { readonly health: SemanticHealth; readonly detail?: string } {
   if (input.invalid > 0 || input.unrepairable > 0) {
     return {
       health: 'partial',
       detail: `${input.invalid + input.unrepairable} semantic packet(s) could not be read or applied`,
+    }
+  }
+  if ((input.conflicts ?? 0) > 0) {
+    return {
+      health: 'partial',
+      detail: `${input.conflicts} committed packet(s) have no valid proof in the session log`,
     }
   }
   if (input.staged > 0) {
