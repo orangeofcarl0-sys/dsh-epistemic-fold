@@ -26,11 +26,11 @@ Gate status (R32):
 
 | Gate | Result | Evidence |
 |---|---|---|
-| G1 Integrity | **PASS** | unified validator, 47 R32 tests, 122 semantic tests |
+| G1 Integrity | **PASS** | unified validator, 47 R32 tests; 169-test combined semantic/R32 group |
 | G2 Fail-Closed | **PASS** | unreadable/invalid/orphan/rejected-receipt admission; blocked folds keep history |
 | G3 Idempotent Recovery | **PASS** | repeated fork/reconcile, real-process fault matrix |
 | G4 Proof & Budget | **PASS** | exact replacement fields; whole-checkpoint accounting |
-| G5 Real-Host Regression | **PASS (with known drift)** | real JSONL restart/fault matrix; Off/Shadow/Basic/Root/Exit/Recall green except the 3 pre-existing vendor drift assertions |
+| G5 Real-Host Regression | **PASS (with known drift)** | real JSONL restart/fault matrix; 1356 passed / 3 drift / 3 load timeouts; timeout files pass 19/19 alone |
 
 R32 does not claim a semantic-quality improvement. That is R33.
 

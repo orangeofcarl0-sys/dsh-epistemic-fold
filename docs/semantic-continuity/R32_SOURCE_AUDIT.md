@@ -325,8 +325,18 @@ together to preserve a single buildable authority; tests and docs are separate
 commits.
 
 ```text
-<filled by the commit step — see R32_HANDOFF / review package>
+9d4c84d fix(semantic): bind state to validated commits and fail closed
+3bc3e29 test(runtime): certify R32 integrity, recovery, fork and capacity
+70807d0 docs(semantic): R32 closure and R33 handoff
+18c40d9 fix(semantic): count invalid rows in the reconciliation report
+515b032 test(harness): fall back when a vendored alias target is absent
 ```
+
+The source commit is deliberately one interlocking change: the runtime
+validator, journal reader, replay signature, and engine admission must move
+together or the tree does not compile and, worse, the journal reader could
+admit rows the replay signature cannot safely consume. Tests and docs are
+separate commits. The final verification note is a follow-up docs commit.
 
 ## 5. Baseline reproduction evidence
 
@@ -352,3 +362,20 @@ Passed on R31:
 
 The temporary worktree was removed and `git worktree list` is back to the three
 sanctioned trees. The primary checkout was never modified.
+
+### Environment repair (not product code)
+
+Removing the temporary worktree followed a shared `node_modules` junction and
+cleared that ignored dependency directory. It was restored with `npm ci` from
+the existing lockfile; the install's `prepare` step regenerated
+`cordis.patch.yml`, which was restored to `HEAD` immediately.
+
+The vendored 0.1.7 tree also lacks
+`native/system/packages/entry/tsconfig.json` even though its
+`session-persistence-jsonl` package references that project. A minimal
+`tsconfig.json` was added to the IGNORED vendor tree so the loader can follow
+the reference and resolve the installed `@deepseek-ai/node-addon-system`
+package. The committed `vitest.config.ts` change additionally skips any vendor
+alias whose target does not exist, instead of failing the whole import graph.
+Neither change touches product code or hides the vendor version; the three
+package-version drift tests still report it.

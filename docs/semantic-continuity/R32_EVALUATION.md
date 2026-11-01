@@ -15,10 +15,20 @@ base       6607149c087a99a9392c7171263dc05624488b58
 node       v24.14.1
 npm        11.11.0
 vitest     5.0.5 (win32-x64)
+vite       8.3.5 (the lockfile's line; vitest accepts 6/7/8)
 installed  DSH 0.2.1-rc.3
 vendor     DSH 0.1.7-rc.2
 os         Windows 10.0.26200 x64
 ```
+
+Environment repair, not product code: the shared `node_modules` was restored
+with `npm ci` after an accidental junction cleanup, and the ignored 0.1.7 vendor
+tree was missing `native/system/packages/entry/tsconfig.json` even though its
+`session-persistence-jsonl` tsconfig references that project. A minimal
+`tsconfig.json` was added in the ignored vendor tree, and the committed
+`vitest.config.ts` now skips a vendor alias whose target is absent rather than
+failing the whole import graph. The three package-version drift tests still
+report the drift; nothing is masked.
 
 Commands:
 
@@ -74,15 +84,16 @@ tests/r32-process-faults.spec.ts          5 passed
                                          47 passed / 0 failed
 ```
 
-The semantic regression group (all `semantic-*.spec.ts`, `m3a-state`,
-`checkpoint-residency`, `eval-semantic`, including the 10/30/100 real-fold
-long-run) reported:
+The combined final semantic/R32 group (all `semantic-*.spec.ts`, all eight
+`r32-*.spec.ts`, `m3a-state`, `checkpoint-residency`, `eval-semantic`, including
+the 10/30/100 real-fold long-run) reported:
 
 ```text
-16 files, 122 tests passed / 0 failed
+24 files, 169 tests passed / 0 failed
 ```
 
-`tests/r32-perf.spec.ts` is skipped unless `EF_R32_PERF=1`.
+`tests/r32-perf.spec.ts` is skipped unless `EF_R32_PERF=1`; its measured run is
+§4.
 
 ### 2.4 Full suite after R32
 
@@ -93,17 +104,32 @@ reported:
 1345 passed / 8 failed / 66 skipped
 ```
 
-Of the 8 failures:
+Of the 8 failures, 3 were the stable pre-existing drift assertions, 1 was
+test-generated `docs/MANIFEST.json` churn (restored to `HEAD`), and 4 were
+five-second timeouts. No R32 test failed.
 
-* 3 stable pre-existing drift assertions;
-* 1 `docs-manifest` failure caused by test-generated churn in
-  `docs/MANIFEST.json` (the file was truncated/corrupted by an earlier test
-  run, not by R32 source). It was restored to `HEAD`.
-* 4 five-second timeouts (`release-hygiene` history scan and three
-  `task-root-bridge` process tests).
+The final run, after the docs files were restored, the vendor project-reference
+repair, and a fresh build:
 
-No R32 test failed. A final clean full-suite run is recorded in §7 after the
-docs files were restored and the build was refreshed.
+```text
+1356 passed / 6 failed / 66 skipped   (1428 total)
+```
+
+The 6 failures are:
+
+| File | Cause | Alone |
+|---|---|---|
+| `bridge-loads.spec.ts` | pre-existing DSH version drift | fails |
+| `rc3-plugin-packaging.spec.ts` | pre-existing DSH version drift | fails |
+| `rc7-inplace-drift.spec.ts` | pre-existing preset row drift | fails |
+| `release-hygiene.spec.ts` | 5s timeout on the history scan | **passes** (4.7s) |
+| `task-root-bridge.spec.ts` | 5s timeout under load | **passes** (9/9) |
+| `preset-backend-specifier.spec.ts` | 5s timeout under load | **passes** (5/5) |
+
+The three timeout files were re-run together and passed 19/19 tests, so they
+are load-induced, not R32 regressions. `persistence-compat` was a loader
+failure caused by the missing vendor project reference; after the repair it
+passes 10/10.
 
 ## 3. Baseline reproduction evidence
 
@@ -145,9 +171,9 @@ on disk. Heap delta was measured without forced GC.
 
 | commits | events | journal bytes | reconcile ms | proof calls | history scans | source re-derivations | heap delta |
 |---:|---:|---:|---:|---:|---:|---:|---:|
-| 30 | 151 | 59,778 | 92.0 | 31 | 31 | 90 | +4,108,136 |
-| 100 | 501 | 199,848 | 316.4 | 101 | 101 | 300 | +2,204,960 |
-| 300 | 1,501 | 601,647 | 1,028.0 | 301 | 301 | 900 | −20,535,408 |
+| 30 | 151 | 59,778 | 108.9 | 31 | 31 | 90 | +4,270,904 |
+| 100 | 501 | 199,848 | 380.7 | 101 | 101 | 300 | +2,107,688 |
+| 300 | 1,501 | 601,647 | 1,401.1 | 301 | 301 | 900 | −20,164,664 |
 
 Observations:
 
@@ -155,9 +181,9 @@ Observations:
   the legacy-record reader in the same pass. History scans equal proof calls.
 * Source re-derivations = `3N`: two source messages plus the replacement
   message per packet.
-* Duration from 100 → 300 is ~3.25× for 3× commits and 3× events. The repeated
+* Duration from 100 → 300 is ~3.68× for 3× commits and 3× events. The repeated
   history scan is `O(N²)` in principle, but at these sizes the per-pass cost is
-  dominated by journal file I/O and stays ~1.0 s at 300 commits.
+  dominated by journal file I/O and stays ~1.4 s at 300 commits.
 * Heap deltas are noisy and the 300-commit figure is negative because the
   runtime GC'd during the pass. No forced GC was used, so heap delta is reported
   as measured, not as a peak.
@@ -235,8 +261,27 @@ of live-model semantic quality.
 
 ## 7. Final clean run
 
-*(Updated after the final build/typecheck/preflight/suite runs. See the report
-at the end of the round for the exact command output.)*
+Executed after the last source/doc change and a fresh build:
+
+```text
+npm run typecheck        PASS  (src + client + eval)
+npm run build            PASS  (77 modules)
+npm run preflight        PASS  (lib present and current)
+
+npx vitest run
+  1356 passed / 6 failed / 66 skipped  (1428 tests, 159 files)
+  failures: 3 pre-existing drift + 3 load-induced 5s timeouts
+  timeout files alone: 19 passed / 19
+
+semantic + R32 group
+  24 files, 169 passed / 0 failed
+
+EF_R32_PERF=1 npx vitest run tests/r32-perf.spec.ts
+  1 passed; numbers in §4
+
+node eval/r32/live-semantic-eval.mjs --check
+  interface-ok, 4 scenarios; live run NOT executed
+```
 
 ## 8. What these results do NOT establish
 
