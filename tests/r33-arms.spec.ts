@@ -47,11 +47,12 @@ import {
 } from '../eval/r33/src/context.mjs'
 import { applyAction, materialize, readVerification, runChecker } from '../eval/r33/src/workspace.mjs'
 import {
+  SCORER_VERSION,
   aggregateArm,
   behaviourMetrics,
+  compareTreatment,
   extractionMetrics,
   pairedBootstrap,
-  pairwise,
 } from '../eval/r33/src/grade.mjs'
 
 type Arm = 'B0' | 'B1' | 'S' | 'O1' | 'O2' | 'OR' | 'F' | 'N' | 'FM'
@@ -206,13 +207,17 @@ function appendTask(session: HarnessSession, task: string): void {
   }), { surfaceOp: 'append' })
 }
 
-function deltaOf(fact: any): Record<string, unknown> {
+function deltaOf(fact: any, caseData: any): Record<string, unknown> {
   const quotes: readonly string[] = fact.oracleEvidence ?? [fact.quote]
+  // A claim grounded in a tool result is an OBSERVATION; grounding in user or
+  // assistant speech stays a CLAIM. The oracle must use the same authority rule
+  // the validator applies, or a correct oracle delta would be refused/reviewed.
+  const groundedInTool = fact.sourceRefs.some((ref: number) => caseData.transcript[ref]?.role === 'tool')
   return {
     kind: fact.kind,
     subjectKey: fact.subjectKey,
     statement: fact.statement,
-    status: fact.kind === 'finding' ? 'observed' : 'claimed',
+    status: fact.kind === 'finding' || groundedInTool ? 'observed' : 'claimed',
     evidence: quotes.map(quote => ({ quote })),
     ...(fact.scope === undefined ? {} : { scope: fact.scope }),
   }
@@ -226,12 +231,12 @@ function oracleDeltas(caseData: any): readonly Record<string, unknown>[] {
   for (const old of superseded) {
     const replacement = current.find((fact: any) => fact.supersedesFactId === old.factId)
     if (replacement === undefined) continue
-    deltas.push(deltaOf(old))
-    deltas.push({ ...deltaOf(replacement), supersedes: [old.subjectKey] })
+    deltas.push(deltaOf(old, caseData))
+    deltas.push({ ...deltaOf(replacement, caseData), supersedes: [old.subjectKey] })
   }
   for (const fact of current) {
     const already = deltas.some(delta => delta.statement === fact.statement)
-    if (!already) deltas.push(deltaOf(fact))
+    if (!already) deltas.push(deltaOf(fact, caseData))
   }
   return deltas
 }
@@ -288,6 +293,7 @@ async function stateValues(root: string, session: HarnessSession): Promise<reado
 interface Row {
   readonly caseId: string
   readonly riskClass: string
+  readonly family: string
   readonly arm: Arm
   readonly valid: boolean
   readonly reason?: string
@@ -296,10 +302,10 @@ interface Row {
   readonly extraction: any
   readonly behaviour: any
   readonly cost: {
-    readonly modelRequests: number
+    readonly attempts: number
     readonly inputTokens: number
     readonly outputTokens: number
-    readonly wallClockMs: number
+    readonly caseDurationMs: number
   }
   readonly inspector: {
     readonly contextChars: number
@@ -326,7 +332,14 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
   const refused = packet === undefined ? undefined : packet.refused
   const writer = arm === 'S' || arm === 'O1' ? h.engine.semanticWriterObservation : undefined
   const anchors = await stateValues(runRoot, session)
-  const extraction = extractionMetrics(caseData, { accepted, refused, writer, checkpoint, anchorValues: anchors })
+  const extraction = extractionMetrics(caseData, {
+    accepted,
+    refused,
+    writer,
+    checkpoint,
+    anchorValues: anchors,
+    transcript: caseData.transcript,
+  })
 
   let context: string
   if (arm === 'N') context = caseData.task
@@ -339,6 +352,7 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
       return {
         caseId: caseData.id,
         riskClass: caseData.riskClass,
+        family: caseData.counterfactual?.pair ?? caseData.id,
         arm,
         valid: false,
         reason: 'no false-memory injection defined for this case',
@@ -346,7 +360,7 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
         checkpointChars: checkpoint.length,
         extraction,
         behaviour: { taskSuccess: false },
-        cost: { modelRequests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: Date.now() - started },
+        cost: { attempts: 0, inputTokens: 0, outputTokens: 0, caseDurationMs: Date.now() - started },
         inspector: { contextChars: 0, decision: null, action: 'none', checkerStatus: 'not-run' },
         diagnostic: true,
       }
@@ -386,6 +400,7 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
     return {
       caseId: caseData.id,
       riskClass: caseData.riskClass,
+      family: caseData.counterfactual?.pair ?? caseData.id,
       arm,
       valid: false,
       reason: `no-fold: ${fold.reason ?? 'unknown'}`,
@@ -393,7 +408,7 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
       checkpointChars: checkpoint.length,
       extraction,
       behaviour,
-      cost: { modelRequests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: elapsed },
+      cost: { attempts: 0, inputTokens: 0, outputTokens: 0, caseDurationMs: elapsed },
       inspector: { contextChars: context.length, decision, action: decision.action, checkerStatus: checker.status },
       diagnostic: arm === 'FM',
     }
@@ -401,13 +416,14 @@ async function runArm(arm: Arm, caseData: any, caseRoot: string): Promise<Row> {
   return {
     caseId: caseData.id,
     riskClass: caseData.riskClass,
+    family: caseData.counterfactual?.pair ?? caseData.id,
     arm,
     valid: true,
     fold,
     checkpointChars: checkpoint.length,
     extraction,
     behaviour,
-    cost: { modelRequests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: elapsed },
+    cost: { attempts: 0, inputTokens: 0, outputTokens: 0, caseDurationMs: elapsed },
     inspector: { contextChars: context.length, decision, action: decision.action, checkerStatus: checker.status },
     diagnostic: arm === 'FM',
   }
@@ -432,11 +448,11 @@ function markdown(report: any): string {
   for (const entry of report.arms) {
     lines.push(`| ${entry.arm} | ${entry.valid}/${entry.cases} | ${entry.success} | ${entry.damage} | ${fmt(entry.taskSuccessRate)} | ${fmt(entry.meanCriticalRecall)} | ${fmt(entry.meanGroundedPrecision)} | ${fmt(entry.meanFalseNormativeRate)} | ${fmt(entry.meanCurrentStateAccuracy)} | ${fmt(entry.meanDirectVisibility)} |`)
   }
-  lines.push('', '## Task-level comparisons (left vs right)', '')
-  lines.push('| left | right | pairs | left-only (damage) | right-only (rescue) | both | neither |')
+  lines.push('', '## Task-level treatment comparisons (baseline -> treatment)', '')
+  lines.push('| baseline | treatment | pairs | rescue | damage | both | neither |')
   lines.push('|---|---|---:|---:|---:|---:|---:|')
   for (const comparison of report.comparisons) {
-    lines.push(`| ${comparison.left} | ${comparison.right} | ${comparison.valid} | ${comparison.leftOnly} | ${comparison.rightOnly} | ${comparison.both} | ${comparison.neither} |`)
+    lines.push(`| ${comparison.baselineArm} | ${comparison.treatmentArm} | ${comparison.valid} | ${comparison.rescue} | ${comparison.damage} | ${comparison.both} | ${comparison.neither} |`)
   }
   lines.push('', '## Per-case rows', '')
   lines.push('| case | arm | success | action | failed checks | critical recall | current state | checkpoint chars |')
@@ -470,20 +486,24 @@ describe('R33 frozen semantic-continuity arms', () => {
       arm !== 'FM' || rows.some(row => row.arm === 'FM'))
     const arms = applicableArms.map(arm => aggregateArm(arm, rows))
     const comparisons = [
-      pairwise(rows, 'S', 'B1'),
-      pairwise(rows, 'S', 'B0'),
-      pairwise(rows, 'O1', 'S'),
-      pairwise(rows, 'O2', 'O1'),
-      pairwise(rows, 'F', 'S'),
-      pairwise(rows, 'S', 'N'),
-      pairwise(rows, 'O1', 'B1'),
-      pairwise(rows, 'OR', 'B1'),
+      // Baseline -> treatment. `rescue` is treatment-success/baseline-failure,
+      // `damage` is the reverse; the API names both roles so this cannot invert.
+      compareTreatment({ rows, baselineArm: 'B1', treatmentArm: 'S' }),
+      compareTreatment({ rows, baselineArm: 'B0', treatmentArm: 'S' }),
+      compareTreatment({ rows, baselineArm: 'S', treatmentArm: 'O1' }),
+      compareTreatment({ rows, baselineArm: 'O1', treatmentArm: 'O2' }),
+      compareTreatment({ rows, baselineArm: 'S', treatmentArm: 'F' }),
+      compareTreatment({ rows, baselineArm: 'N', treatmentArm: 'S' }),
+      compareTreatment({ rows, baselineArm: 'B1', treatmentArm: 'O1' }),
+      compareTreatment({ rows, baselineArm: 'B1', treatmentArm: 'OR' }),
     ]
     const report = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       status: 'executed-success',
+      scorerVersion: SCORER_VERSION,
       executionKind: 'scripted-writer + scripted-follow-up (pipeline measurement, not a model result)',
       datasetDigest,
+      datasetId: frozen.manifest.datasetId,
       caseCount: cases.length,
       generatedAt: new Date().toISOString(),
       environment: {
@@ -494,15 +514,31 @@ describe('R33 frozen semantic-continuity arms', () => {
       arms,
       comparisons,
       bootstrap: {
-        'S-vs-B1': pairedBootstrap(rows, 'S', 'B1'),
-        'O1-vs-S': pairedBootstrap(rows, 'O1', 'S'),
-        'O2-vs-O1': pairedBootstrap(rows, 'O2', 'O1'),
+        'S-vs-B1': pairedBootstrap(rows, {
+          baselineArm: 'B1', treatmentArm: 'S', clusterBy: row => row.family,
+        }),
+        'O1-vs-S': pairedBootstrap(rows, {
+          baselineArm: 'S', treatmentArm: 'O1', clusterBy: row => row.family,
+        }),
+        'O2-vs-O1': pairedBootstrap(rows, {
+          baselineArm: 'O1', treatmentArm: 'O2', clusterBy: row => row.family,
+        }),
       },
       diagnostic: {
-        falseMemoryRows: rows.filter(row => row.arm === 'FM').length,
-        falseMemoryDetected: rows.filter(row => row.arm === 'FM'
-          && (row.behaviour.constraintViolation || row.behaviour.obsoleteRevival || row.behaviour.rejectedRetrial
-            || row.behaviour.falseVerificationClaim)).length,
+        // C4: the three false-memory questions are reported separately. This
+        // arm is FM-1 (wrong-context action sensitivity). FM-2 is deterministic
+        // and lives in tests/r331-false-memory.spec.ts. FM-3 needs a real agent.
+        falseMemory: {
+          'fm-1': {
+            rows: rows.filter(row => row.arm === 'FM').length,
+            detected: rows.filter(row => row.arm === 'FM'
+              && (row.behaviour.constraintViolation || row.behaviour.obsoleteRevival
+                || row.behaviour.rejectedRetrial || row.behaviour.falseVerificationClaim)).length,
+            meaning: 'checker/action sensitivity to a false fact already visible in context',
+          },
+          'fm-2': 'deterministic validator admission test (tests/r331-false-memory.spec.ts)',
+          'fm-3': 'not executed: a real agent resisting conflicting memory requires the live tier',
+        },
         noFoldRows: rows.filter(row => !row.valid).length,
       },
       rows,
@@ -523,8 +559,9 @@ describe('R33 frozen semantic-continuity arms', () => {
     expect(badChecker).toEqual([])
     // The fault arm must be DETECTED: the grader has to see wrong memory as a
     // violation, not just as a different successful action.
-    expect(report.diagnostic.falseMemoryRows).toBeGreaterThan(0)
-    expect(report.diagnostic.falseMemoryDetected).toBe(report.diagnostic.falseMemoryRows)
+    expect(report.diagnostic.falseMemory['fm-1'].rows).toBeGreaterThan(0)
+    expect(report.diagnostic.falseMemory['fm-1'].detected)
+      .toBe(report.diagnostic.falseMemory['fm-1'].rows)
     // B0 and B1 must not silently become semantic arms.
     expect(arms.find(entry => entry.arm === 'B0').meanCriticalRecall).toBeNull()
     expect(arms.find(entry => entry.arm === 'B1').meanCriticalRecall).toBeNull()
@@ -549,8 +586,8 @@ describe('R33 frozen semantic-continuity arms', () => {
     expect(caseIds('N', row => row.behaviour.taskSuccess)).toEqual(['F1', 'G1', 'G2'])
     // The baseline loses the two mechanisms, and S rescues them without damage.
     const sVsB1 = comparisons[0]!
-    expect(sVsB1.leftOnly).toBeGreaterThan(0)
-    expect(sVsB1.rightOnly).toBe(0)
+    expect(sVsB1.rescue).toBeGreaterThan(0)
+    expect(sVsB1.damage).toBe(0)
     expect(arms.find(entry => entry.arm === 'S').success)
       .toBeGreaterThan(arms.find(entry => entry.arm === 'B1').success)
     // The new diagnostics are what make the two failures legible.
