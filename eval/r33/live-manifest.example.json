@@ -1,0 +1,20 @@
+{
+  "model": "REPLACE_WITH_THE_ROUTE_MODEL_ID",
+  "maxOutputTokens": 8192,
+  "limits": {
+    "requests": 200,
+    "inputTokens": 4000000,
+    "outputTokens": 400000,
+    "wallClockMs": 1800000
+  },
+  "route": {
+    "baseUrlEnv": "R34_LIVE_BASE_URL",
+    "apiKeyEnv": "R34_LIVE_API_KEY",
+    "contextWindow": 131072
+  },
+  "cases": "A1,C1,D2,F1,H1",
+  "arms": "B1,S,O1,O2",
+  "followUpSteps": 8,
+  "replicateId": "r1",
+  "note": "Environment variable NAMES only. Never put a credential value or an authorization header in this file. R33_LIVE=1 is required separately."
+}
