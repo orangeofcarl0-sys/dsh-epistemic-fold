@@ -81,7 +81,7 @@ Offline S (scripted writer; pipeline measurement):
 * grounded precision: **1.000**.
 * current-state accuracy: **0.928**.
 * direct visibility: **0.928**.
-* Accepted deltas: 26 across the 15 applicable cases; 3 refusals total:
+* Accepted deltas: 30 across the 15 applicable cases; 3 refusals total:
   1 `limit-exceeded` (F4), 2 `authority-ungrounded` (F1/F2).
 * S's two case failures:
   * **H1** — writer proposed 0; the gold fact existed only in a tool record.
@@ -232,7 +232,61 @@ R34 must not add a second memory system to compensate for a writer omission and
 a 12-delta limit. If no live budget is available, R34 should not expand
 production code; it should stop at the offline instrument and say so.
 
-## 16. Gate status
+## 16. Verification results (actual)
+
+Two dependency graphs were measured, because the answer differs:
+
+### Vendored graph (the R32-comparable one)
+
+`vendor/deepseek-harness` is a local symlink to the same vendored tree the R32
+worktree uses (gitignored; not part of the commit). With it:
+
+```
+Test Files  4 failed | 137 passed | 24 skipped (165)
+Tests       4 failed | 1383 passed | 66 skipped (1453)
+```
+
+The four failures:
+
+* `tests/bridge-loads.spec.ts` — known vendor/host drift.
+* `tests/rc3-plugin-packaging.spec.ts` — known vendor/host drift.
+* `tests/rc7-inplace-drift.spec.ts` — known vendor/host drift.
+* `tests/release-hygiene.spec.ts` — a 5 s test timeout under full-suite load;
+  it passes alone (5/5, 8.1 s).
+
+All **25 R33 tests pass** in this run, including the arms suite.
+
+### Installed-only graph (vendor absent)
+
+Without the vendored tree, `vitest.config.ts` falls back to the installed
+`@deepseek-ai/dsh-*` 0.2.1-rc.3 packages. The same run produced:
+
+```
+Test Files  10 failed | 131 passed | 24 skipped (165)
+Tests       13 failed | 1370 passed | 70 skipped (1453)
+```
+
+The nine extra failures are host-drift assertions that expect the vendored
+0.1.7 event transport (`ef/anchor`) rather than the installed 0.2.1 sanctioned
+plugin transport, plus one 5 s timeout. The same tests pass on the R32 worktree
+and pass here with the vendored graph. They are **not** R33 regressions, and
+they are not evidence that the installed 0.2.x line is unsupported by the
+product code — the product code adapts to the host; the tests are written
+against one graph.
+
+The mixed-resolution result is not reported as a single-version compatibility
+proof. The supported declarations remain those in `R32_HANDOFF.md`.
+
+### Typecheck, build, preflight
+
+```
+npm run typecheck   OK (src, client, eval)
+npm run build       OK (78 modules; lib/ current)
+npm run preflight   OK (lib/ present and current)
+npm run eval:r33-verify   OK (17 cases; digest 2666e70f…)
+```
+
+## 17. Gate status
 
 | Gate | Result | Evidence |
 |---|---|---|
