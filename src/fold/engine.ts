@@ -2859,7 +2859,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       abandoned: abandonedTotal,
       archivedOnly: archivedTotal,
       invalid: read.invalid.length,
-      unrepairable: migration.failed + receiptWriteFailures,
+      unrepairable: read.invalid.length + migration.failed + receiptWriteFailures,
       activated: committedTotal,
       conflicts,
     })
@@ -2883,7 +2883,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       staged: validated.pending,
       activated: activatedThisPass,
       abandoned: abandonedThisPass,
-      unrepairable: migration.failed + receiptWriteFailures,
+      unrepairable: read.invalid.length + migration.failed + receiptWriteFailures,
       health: this.reconcileHealthValue,
       ...(this.reconcileHealthDetail === undefined ? {} : { detail: this.reconcileHealthDetail }),
     }
