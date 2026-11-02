@@ -14,11 +14,22 @@ W0 prompt digest      1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf
 W1 prompt digest      61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3
 R35 worktree          untouched; run archive read-only
 R36 provider requests 0
+R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0
 Push                  not authorized, not performed
 ```
 
 The primary worktree and the R30–R35 worktrees were not reset, cleaned, or
 overwritten. The new worktree was created from the verified R35 HEAD.
+
+Commit map:
+
+```text
+af6e533  fix(eval): score verification at the final state and calibrate the loop
+1e36ca8  feat(semantic): version the writer contract and align W1 with the validator
+0b354b1  feat(eval): audit R35 evidence and add the P1 parser ablation
+d3fc6e0  feat(eval): certify benchmark feasibility and freeze R36 conditions
+7b25ea0  docs(eval): publish R36 evidence, decision, and handoff
+```
 
 ## What changed
 
@@ -95,13 +106,37 @@ npm run eval:r36-conditions  # freeze prompt/parser/validator/harness digests
 npm run eval:r36-manifests   # rewrite the 10 condition manifests
 npm run eval:r36-gates       # gate status; exits non-zero only on a failed gate
 
-npm run eval:r36-tests       # 22 R36 tests
+npm run eval:r36-tests       # 25 R36 tests
 npm run eval:r33             # 94 targeted R33/R34.1/R35 tests
 npm run typecheck
 ```
 
 Note: `npm run eval:r33` needs `npm run eval:build` first in a fresh worktree;
 without the built adapter, the live-entry tests stop at "adapter not built".
+
+## Verification at this HEAD
+
+```text
+Typecheck                 pass (src, client, eval)
+Targeted R33/R34.1/R35    94/94 pass
+R36 tests                 25/25 pass
+Full suite                1467 passed, 12 failed, 70 skipped
+```
+
+The 12 full-suite failures are the pre-existing environment/DSH-drift set, not
+R36 failures:
+
+- 4 need the absent `vendor/deepseek-harness` checkout
+  (`bridge-loads`, `rc3-plugin-packaging`, two `rc7-vendored-basic`).
+- 8 are installed-vs-vendored DSH differences
+  (`checkpoint-residency` x2, `eval-corpus`, `p0-regressions`,
+  `persistence-compat` x2, `plugin-composition`, `rc7-inplace-drift`).
+
+R35 recorded a different baseline count because its worktree had a generated
+`cordis.patch.yml` and a different installed DSH line. The R36 worktree restored
+the tracked file, so `rc7-inplace-drift` joins the visible drift set. No R36
+test fails. The full-suite run regenerates `eval/r33/out/*` and
+`docs/MANIFEST.json`; those test-generated changes were restored to `HEAD`.
 
 ## Artifacts
 
