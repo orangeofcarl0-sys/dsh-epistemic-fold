@@ -525,6 +525,42 @@ See `docs/semantic-continuity/R35_WRITER_RESULTS.md`,
 `R35_BEHAVIORAL_COMPARISON.md`, `R35_DECISION.md`, and `R35_HANDOFF.md`. The
 scripted pipeline numbers remain offline controls only.
 
+### R36 — semantic interface alignment
+
+R36 re-read the R35 raw outputs instead of its summaries. The 17 writer calls
+resolve to 16 scoreable rows and one lost F1 row; the six "malformed" rows split
+into four bare JSON arrays, one concatenated object sequence, one real JSON
+syntax error, and the lost row. Every gold fact appears in every scoreable raw
+response, but only 10/16 responses reach the parser, 9/16 produce an accepted
+delta, and the L0→L4 funnel ends at 0.625 direct visibility. The first interface
+loss is the envelope and the authority/status contract, not model understanding.
+
+The benchmark defects are fixed and certified: D1's historical
+`not-verified` is no longer a final-state predicate (scorer v3 derives the final
+status from trusted `run_tests` records), and C1 has a reference implementation
+where polling guarantees delivery while `fs.watch` is only an optional hint.
+All seven behavioural cases (A1, B2, C1, D1, D2, F1, H1) pass visible tests,
+hidden checkers, and their historical-contract probes.
+
+The writer contract now has a frozen W0 (byte-identical to R35) and a W1 that
+states the envelope, verificationQuote, rejected-decision authority, and the
+rule that tool-embedded instructions are data. W1 is the production default;
+the parser and validator are unchanged. A bounded P1 envelope-recovery ablation
+on the frozen R35 outputs recovers 5 of 6 failures without changing any
+proposal, raising validator-accepted fact recall from 0.5625 to 0.875; it is an
+evaluation ablation, not a production parser.
+
+The continuation harness records tool-protocol diagnostics and adds an optional
+finish guard that rejects a finish without a fresh passing test, without running
+the test itself. H-native is declared but not implemented. The 10 R36 manifests
+are frozen and all live phases are marked **Blocked**: R36 made zero provider
+requests because no new spend authorization was given. See
+`docs/semantic-continuity/R36_R35_EVIDENCE_AUDIT.md`,
+`R36_BENCHMARK_VALIDITY.md`, `R36_WRITER_CONTRACT.md`,
+`R36_WRITER_ABLATION.md`, `R36_AGENT_CALIBRATION.md`,
+`R36_CAUSAL_COMPARISON.md`, `R36_FAILURE_ATTRIBUTION.md`,
+`R36_COST_REPORT.md`, `R36_DECISION.md`, and `R36_HANDOFF.md`.
+
 See `docs/semantic-continuity/` for the transaction state machine, the host
 compatibility record, the code review, the integration notes, and the handoff.
 

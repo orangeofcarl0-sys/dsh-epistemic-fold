@@ -4,16 +4,20 @@ This directory is the R33 instrument. It asks whether correctly committed
 semantic state changes what a follow-up agent does, not whether the journal is
 well-formed.
 
-**Current status:** R34.1 closed the live-accounting, failure-classification,
-preflight, writer-only, contract, and report-persistence blockers. The R35
-writer-only stage ran on `deepseek-v4.1-flash`: 16 scored outputs, 10/16 protocol
-parsed, 8/8 gold facts present in raw output, 6/8 fully committed, 0 false
-normative claims accepted. The first bottleneck is writer protocol/schema
-conformance. The B1/S continuation ran three replicates; r2 is excluded because
-its fallback used an empty checkpoint. Across the 9 valid B1/S pairs every pair
-is `neither` (no rescue, no damage), and the agent's process compliance
-dominated. The scripted results are a pipeline measurement, **not a model
-result**.
+**Current status:** R36 closed the R35 evidence and the D1/C1 benchmark
+validity problems. The R35 writer evidence is reconstructed as 17 attempts / 16
+scoreable rows / 1 lost row: 10/16 protocol parsed, every gold fact present in
+raw output, 9/16 accepted, and the L0→L4 funnel ending at 0.625 direct
+visibility. The six protocol failures are four bare arrays, one concatenated
+object sequence, and one real syntax error. The D1 scorer is now temporal
+(scorer v3), C1 is certified with a polling-plus-hint reference, and 7/7
+behavioural cases pass visible, hidden, and historical checks. W1 aligns the
+writer prompt with the validator; W0 is frozen byte-for-byte. A P1
+envelope-recovery ablation raises accepted-fact recall from 0.5625 to 0.875
+without changing any proposal. R36 made **zero** provider requests: the live
+W1-P0, O2 calibration, and B1/S manifests are `blocked`. The R35 B1/S result
+remains 9 valid pairs, all `neither`, and is not an equivalence result. The
+scripted results are a pipeline measurement, **not a model result**.
 
 ## Quick start
 
@@ -21,6 +25,8 @@ result**.
 npm run eval:r33-verify       # manifest matches every case
 node eval/r33/freeze.mjs --holdout --verify
 npm run eval:r33              # R33 + R34.1 + R35 targeted tests (94 tests)
+npm run eval:r36-tests        # R36 audit/benchmark/writer/harness tests (22 tests)
+npm run eval:r36              # deterministic R36 audit, ablation, certification, gates
 npm run eval:r33-live-check   # interface only; no credentials
 node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json
 npm run eval:r33-self-test    # four arms, real fold/tool-loop, scripted adapter
