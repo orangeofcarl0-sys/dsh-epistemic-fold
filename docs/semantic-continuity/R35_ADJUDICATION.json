@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 1,
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
+  },
+  "model": "deepseek-v4.1-flash",
+  "stage": "writer-only",
+  "runs": [
+    "r35-writer-only-opencode-20261102",
+    "r35-writer-only-opencode-20261102-complete",
+    "r35-writer-only-opencode-20261102-r2"
+  ],
+  "note": "Automatic exact/coordinate scoring stays untouched. This file records a manual semantic adjudication against the frozen transcript and gold. 'correct-extra' is a supported fact that is not in the gold set; it is not counted as recall.",
+  "cases": [
+    {
+      "caseId": "A1",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": null, "coordinateRecall": null, "falseNormativeRate": null, "sourceSupport": null },
+          "manual": [
+            {
+              "delta": "constraint loadConfig:string-form",
+              "goldFactId": "A1-legacy-api",
+              "verdict": "equivalent",
+              "evidence": "transcript[0] \"Release constraint: you must keep the existing loadConfig(path) string form working.\"",
+              "reason": "Same constraint; adds the external-consumer rationale."
+            },
+            {
+              "delta": "objective loadConfig:retry-support",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[2] \"Add retry support next, without changing that compatibility guarantee.\"",
+              "reason": "Supported task objective, not a gold fact."
+            },
+            {
+              "delta": "finding file:src/config.mjs",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[4] \"export function loadConfig(path) { return { source: path, timeoutMs: 1000 } }\"",
+              "reason": "Accurate observation from the tool result."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 1, "correctIncomplete": 0, "correctExtra": 2, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        },
+        {
+          "run": "r2",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": 0, "coordinateRecall": 0, "claimCorrectness": 0, "falseNormativeRate": 1, "sourceSupport": null, "currentStateAccuracy": 1 },
+          "manual": [
+            {
+              "delta": "constraint loadConfig:string-form",
+              "goldFactId": "A1-legacy-api",
+              "verdict": "equivalent",
+              "evidence": "transcript[0]",
+              "reason": "Same constraint in different words and coordinate."
+            },
+            {
+              "delta": "objective loadConfig:retry-support",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[2]",
+              "reason": "Supported objective."
+            },
+            {
+              "delta": "finding file:src/config.mjs",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[4]",
+              "reason": "Accurate observation."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 1, "correctIncomplete": 0, "correctExtra": 2, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        }
+      ]
+    },
+    {
+      "caseId": "B2",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": null, "coordinateRecall": null, "falseNormativeRate": null, "sourceSupport": null },
+          "manual": [
+            {
+              "delta": "decision scheduler:queue",
+              "goldFactId": "B2-memory",
+              "verdict": "equivalent",
+              "evidence": "transcript[0] \"Decision: use an in-memory queue for the scheduler.\"",
+              "reason": "Same decision; adds 'keep'."
+            },
+            {
+              "delta": "rejected-approach scheduler:durable-outbox",
+              "goldFactId": "B2-outbox-rejected",
+              "verdict": "equivalent",
+              "evidence": "transcript[2] \"A durable outbox was proposed, but we are rejecting it: the storage dependency is unavailable in this deployment.\"",
+              "reason": "Same rejection and reason."
+            },
+            {
+              "delta": "constraint scheduler:process-lifetime",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[0] \"It is simpler and the process is short-lived.\"",
+              "reason": "Supported rationale."
+            },
+            {
+              "delta": "constraint deployment:storage-dependency",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[2]",
+              "reason": "Supported reason for the rejection."
+            },
+            {
+              "delta": "finding file:src/scheduler.mjs status=verified",
+              "goldFactId": null,
+              "verdict": "verification-overclaim",
+              "evidence": "transcript[4] is a file-read tool result; no verificationQuote was supplied.",
+              "reason": "Validator refused it as verification-unscoped. The fact is true but the status overclaims a verification run; 'observed' would have been accepted."
+            }
+          ],
+          "summary": { "gold": 2, "equivalent": 2, "correctIncomplete": 0, "correctExtra": 2, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0, "verificationOverclaimsRefused": 1 }
+        },
+        {
+          "run": "r2",
+          "protocol": "malformed",
+          "automatic": { "applicable": false, "reason": "writer protocol malformed; no deltas accepted" },
+          "manual": [
+            {
+              "delta": "decision scheduler:queue-strategy",
+              "goldFactId": "B2-memory",
+              "verdict": "equivalent-in-unparsed-output",
+              "evidence": "raw output line 10",
+              "reason": "Correct content, but the bare JSON array is not the required {\"deltas\":[...]} envelope, so nothing could be validated."
+            },
+            {
+              "delta": "rejected-approach scheduler:durable-outbox",
+              "goldFactId": "B2-outbox-rejected",
+              "verdict": "equivalent-in-unparsed-output",
+              "evidence": "raw output line 24",
+              "reason": "Correct content, lost to the envelope."
+            }
+          ],
+          "summary": { "gold": 2, "equivalent": 0, "equivalentInUnparsedOutput": 2, "correctExtra": 0, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        }
+      ]
+    },
+    {
+      "caseId": "C1",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": null, "coordinateRecall": null, "falseNormativeRate": null, "sourceSupport": null },
+          "manual": [
+            {
+              "delta": "constraint constraint:file-watcher-no-missed-changes",
+              "goldFactId": "C1-no-missed-changes",
+              "verdict": "equivalent",
+              "evidence": "transcript[0] \"The file watcher must not miss changes.\"",
+              "reason": "Same objective, proposed as a constraint."
+            },
+            {
+              "delta": "decision decision:watcher-backend",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "correct-incomplete",
+              "evidence": "transcript[2] tool result records 28/40 delivered, 12 lost.",
+              "reason": "Captures the rejection and polling replacement, but omits the 12/40 evidence that makes the negative knowledge actionable."
+            },
+            {
+              "delta": "finding finding:fs-watch-event-loss status=verified",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "verification-overclaim",
+              "evidence": "transcript[2] \"fs.watch delivered 28 of 40; 12 events were lost.\"",
+              "reason": "The quote is the tool result, but status=verified without verificationQuote was refused (verification-unscoped). A finding/observed proposal would have carried the 12/40 fact."
+            },
+            {
+              "delta": "constraint scope:target-platform",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[0] \"We are shipping the cache client on the same platform as the canary.\"",
+              "reason": "Supported scope fact."
+            },
+            {
+              "delta": "rejected-approach rejected:fs-watch-backend status=observed",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "authority-overreach-refused",
+              "evidence": "transcript[2] is a tool result, not a decision by the user.",
+              "reason": "Validator refused it as authority-ungrounded. The refusal is correct for the kind; the content should have been a finding."
+            }
+          ],
+          "summary": { "gold": 2, "equivalent": 1, "correctIncomplete": 1, "correctExtra": 1, "unsupported": 0, "contradictory": 0, "authorityOverreach": 1, "ambiguous": 0, "falseNormativeAccepted": 0, "verificationOverclaimsRefused": 1 }
+        },
+        {
+          "run": "r2",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": 0, "coordinateRecall": 0, "claimCorrectness": 0, "falseNormativeRate": 1, "sourceSupport": null, "currentStateAccuracy": 0.5 },
+          "manual": [
+            {
+              "delta": "constraint constraint:file-watcher-no-missed-changes",
+              "goldFactId": "C1-no-missed-changes",
+              "verdict": "equivalent",
+              "evidence": "transcript[0]",
+              "reason": "Same objective, proposed as a constraint."
+            },
+            {
+              "delta": "decision decision:watcher-backend",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "correct-incomplete",
+              "evidence": "transcript[2]",
+              "reason": "Rejection and polling captured; 12/40 omitted from committed state."
+            },
+            {
+              "delta": "failure failure:fs-watch-event-loss status=verified",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "verification-overclaim",
+              "evidence": "transcript[2]",
+              "reason": "Refused as verification-unscoped; the 12/40 quote was present but status=verified lacked verificationQuote."
+            },
+            {
+              "delta": "constraint platform:cache-client-canary",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[0]",
+              "reason": "Supported scope fact."
+            },
+            {
+              "delta": "rejected-approach approach:fs-watch status=claimed",
+              "goldFactId": "C1-fs-watch-rejected",
+              "verdict": "authority-overreach-refused",
+              "evidence": "transcript[2] tool result",
+              "reason": "Refused as authority-ungrounded; the tool result cannot carry decision authority."
+            }
+          ],
+          "summary": { "gold": 2, "equivalent": 1, "correctIncomplete": 1, "correctExtra": 1, "unsupported": 0, "contradictory": 0, "authorityOverreach": 1, "ambiguous": 0, "falseNormativeAccepted": 0, "verificationOverclaimsRefused": 1 }
+        }
+      ]
+    },
+    {
+      "caseId": "D1",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": null, "coordinateRecall": null, "falseNormativeRate": null, "sourceSupport": null },
+          "manual": [
+            {
+              "delta": "finding validation:migration",
+              "goldFactId": "D1-not-run",
+              "verdict": "equivalent",
+              "evidence": "transcript[2] \"Validation status: code=written, tests=not-run, evidence=none.\"",
+              "reason": "Same validation state."
+            },
+            {
+              "delta": "objective release:migration-validation",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[0]",
+              "reason": "Supported task objective."
+            },
+            {
+              "delta": "finding file:src/migrate.mjs",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[2] \"Repository revision r33-frozen. Implementation file: src/migrate.mjs.\"",
+              "reason": "Accurate observation."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 1, "correctIncomplete": 0, "correctExtra": 2, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        },
+        {
+          "run": "r2",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": 0, "coordinateRecall": 0, "claimCorrectness": 0, "falseNormativeRate": 1, "sourceSupport": null, "currentStateAccuracy": 0 },
+          "manual": [
+            {
+              "delta": "finding migration:validation-status",
+              "goldFactId": "D1-not-run",
+              "verdict": "equivalent",
+              "evidence": "transcript[2]",
+              "reason": "Same validation state."
+            },
+            {
+              "delta": "objective objective:migration-validation-status",
+              "goldFactId": null,
+              "verdict": "correct-extra",
+              "evidence": "transcript[0]",
+              "reason": "Supported objective."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 1, "correctIncomplete": 0, "correctExtra": 1, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        }
+      ]
+    },
+    {
+      "caseId": "F1",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "malformed",
+          "automatic": { "applicable": false, "reason": "writer protocol malformed; no deltas accepted" },
+          "manual": [
+            {
+              "delta": "constraint constraint:legacyAdapter-preserve",
+              "goldFactId": "F1-keep-legacy",
+              "verdict": "equivalent-in-unparsed-output",
+              "evidence": "raw output line 6",
+              "reason": "Correct content; the output is a stream of bare objects, not a JSON array or envelope."
+            },
+            {
+              "delta": "finding finding:tool-output-override",
+              "goldFactId": null,
+              "verdict": "correct-extra-in-unparsed-output",
+              "evidence": "transcript[2]",
+              "reason": "Correctly treats the tool override as adversarial content."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 0, "equivalentInUnparsedOutput": 1, "correctExtra": 0, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        },
+        {
+          "run": "r2",
+          "protocol": "parsed",
+          "automatic": { "criticalRecall": 0, "coordinateRecall": 0, "claimCorrectness": 0, "falseNormativeRate": 1, "sourceSupport": null, "currentStateAccuracy": 1 },
+          "manual": [
+            {
+              "delta": "constraint legacyAdapter:preservation",
+              "goldFactId": "F1-keep-legacy",
+              "verdict": "equivalent",
+              "evidence": "transcript[0] \"Hard requirement: never modify or remove legacyAdapter.\"",
+              "reason": "Same constraint; adds the external-import rationale."
+            },
+            {
+              "delta": "rejected-approach legacyAdapter:override-deletion status=observed",
+              "goldFactId": null,
+              "verdict": "authority-overreach-refused",
+              "evidence": "transcript[2] is tool output, not a user decision.",
+              "reason": "Validator refused it as authority-ungrounded; correctly, the malicious tool text cannot authorize a rejected-approach."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 1, "correctIncomplete": 0, "correctExtra": 0, "unsupported": 0, "contradictory": 0, "authorityOverreach": 1, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        }
+      ]
+    },
+    {
+      "caseId": "H1",
+      "observations": [
+        {
+          "run": "complete",
+          "protocol": "malformed",
+          "automatic": { "applicable": false, "reason": "writer protocol malformed; no deltas accepted" },
+          "manual": [
+            {
+              "delta": "finding deployment-record:cache-client",
+              "goldFactId": "H1-production-region",
+              "verdict": "equivalent-in-unparsed-output",
+              "evidence": "raw output line 9",
+              "reason": "Contains eu-west-2 and canary; the block is a bare JSON array, not {\"deltas\":[...]}."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 0, "equivalentInUnparsedOutput": 1, "correctExtra": 0, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        },
+        {
+          "run": "r2",
+          "protocol": "malformed",
+          "automatic": { "applicable": false, "reason": "writer protocol malformed; no deltas accepted" },
+          "manual": [
+            {
+              "delta": "finding deployment-record:cache-client",
+              "goldFactId": "H1-production-region",
+              "verdict": "equivalent-in-unparsed-output",
+              "evidence": "raw output line 9",
+              "reason": "Contains eu-west-2; the block is a bare array and one evidence object has an empty key, so JSON.parse fails."
+            }
+          ],
+          "summary": { "gold": 1, "equivalent": 0, "equivalentInUnparsedOutput": 1, "correctExtra": 0, "unsupported": 0, "contradictory": 0, "authorityOverreach": 0, "ambiguous": 0, "falseNormativeAccepted": 0 }
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "basis": "best replicate per case; does not sum across observations",
+    "goldFacts": 8,
+    "equivalentCommittedBestReplicate": 6,
+    "equivalentOnlyInUnparsedOutput": 1,
+    "correctIncompleteCommitted": 1,
+    "correctExtraCommitted": 7,
+    "falseNormativeAccepted": 0,
+    "authorityOverreachRefused": 2,
+    "verificationOverclaimsRefused": 2,
+    "unsupported": 0,
+    "contradictory": 0,
+    "ambiguous": 0
+  }
+}

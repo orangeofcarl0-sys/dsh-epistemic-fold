@@ -6,17 +6,17 @@
 R34.1 evaluation integrity closure:  complete
 explicit spend authorization:        received (opencode / deepseek-v4.1-flash)
 route resolution:                    resolved from the ZCode config
-R35 live writer-only pilot:          attempted; provider-unavailable
-R35 behavioural comparison:          blocked / not executed
-provider requests in this round:     16 (12 writer + 4 probes), 0 successes
-provider tokens observed:            0
+R35 live writer-only pilot:          executed (3 runs, 16 scored rows)
+R35 behavioural comparison:          executed (3 runs; 9 valid complete pairs)
+provider requests in this round:     612 (596 successful HTTP responses)
+provider tokens observed:            466,125 input / 151,484 output + 318,464 cache read
 ```
 
-The instrument is ready to run, and an authorized pilot was attempted on
-2026-11-01/02. The route answered every real writer call with
-`HTTP 401 api_key_expired`, so no writer output was measured. This document
-records the preflight, the authorization, the probe evidence, and the exact
-point at which the attempt stopped.
+The instrument is ready and has run. The first authorized route was expired; a
+refreshed key was supplied outside the repository and the probe succeeded. The
+writer-only runs then executed on the six cases. This document records the
+preflight, the authorization, the dead-route phase, the repaired-route probe,
+and the exact run parameters.
 
 ## What R34.1 fixes
 
@@ -239,6 +239,65 @@ eval/r35/runs/r35-writer-only-provider-auth-20261102/report.json
 No writer raw output, protocol, delta, refusal, or checkpoint semantics were
 observed. The six “fold measurements” are the deterministic EF fold path around
 a failed writer; they are not model behavior.
+
+## Route repaired: the real writer runs
+
+A refreshed key was supplied as a file outside the repository. It was read into
+the runner's memory, passed to the child only as `R35_LIVE_API_KEY`, and never
+printed, serialized into the manifest, or written to a report.
+
+### Probe
+
+```text
+base URL          https://opencode.ai/zen/go/v1
+model             deepseek-v4.1-flash
+requested tokens  16,384
+finish            stop
+usage             37 input / 12 output
+text              "ready"
+```
+
+The full 16,384-token writer bound is accepted, so the production floor is
+usable. The credential-expiry condition is gone.
+
+### Runs
+
+| Run | Stage | Cases | Arms | Writer calls | Scored rows | Status |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| `...-20261102` | writer-only | 6 | S,O1 | 5 | 9 | partial (pre-fix fold abort) |
+| `...-20261102-complete` | writer-only | 6 | S,O1 | 6 | 12 | executed-success |
+| `...-20261102-r2` | writer-only | 6 | S,O1 | 6 | 12 | executed-success |
+
+The two complete runs used 6,077 input and 13,240/13,526 output tokens
+respectively; r2 also read 1,920 cached prompt tokens. There were no provider
+failures, no retries, and no unknown-usage attempts.
+
+```text
+protocol parsed              10 / 16 scored rows
+gold facts in raw output     8 / 8
+gold facts committed         6 / 8 full, 1 partial, 1 unparsed
+false normative accepted     0
+```
+
+The details, raw outputs, refusals, and manual adjudication are in
+`R35_WRITER_RESULTS.md`. The writer-stage result is not a task or behavioural
+result.
+
+### Continuation
+
+The same route ran B1/S/O1/O2 with the custom text-JSON tool loop and the hidden
+checkers:
+
+```text
+r1  162 requests, 18/24 valid,  7 task, 3 contract
+r2  209 requests, 24/24 valid, 10 task, 6 contract (fallback rows invalid)
+r3  207 requests, 24/24 valid,  4 task, 0 contract (authoritative)
+```
+
+Across the 9 valid B1/S pairs (r1 3, r3 6): 0 rescue, 0 damage, 9 neither. r2 is
+excluded because its fallback used an empty checkpoint. The dominant bottleneck
+is the agent's process compliance, not semantic memory. The details are in
+`R35_BEHAVIORAL_COMPARISON.md`.
 
 ## What the preflight does not prove
 

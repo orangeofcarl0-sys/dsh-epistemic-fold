@@ -5,18 +5,22 @@ semantic state changes what a follow-up agent does, not whether the journal is
 well-formed.
 
 **Current status:** R34.1 closed the live-accounting, failure-classification,
-preflight, writer-only, contract, and report-persistence blockers. The R35 live
-writer pilot was authorized and attempted, but the route returned HTTP 401
-`api_key_expired` on every real writer call in both pilot runs; the run is
-recorded as `provider-unavailable` with 0 completed writer calls. The scripted
-results are a pipeline measurement, **not a model result**.
+preflight, writer-only, contract, and report-persistence blockers. The R35
+writer-only stage ran on `deepseek-v4.1-flash`: 16 scored outputs, 10/16 protocol
+parsed, 8/8 gold facts present in raw output, 6/8 fully committed, 0 false
+normative claims accepted. The first bottleneck is writer protocol/schema
+conformance. The B1/S continuation ran three replicates; r2 is excluded because
+its fallback used an empty checkpoint. Across the 9 valid B1/S pairs every pair
+is `neither` (no rescue, no damage), and the agent's process compliance
+dominated. The scripted results are a pipeline measurement, **not a model
+result**.
 
 ## Quick start
 
 ```bash
 npm run eval:r33-verify       # manifest matches every case
 node eval/r33/freeze.mjs --holdout --verify
-npm run eval:r33              # R33 + R34.1 + R35 targeted tests (91 tests)
+npm run eval:r33              # R33 + R34.1 + R35 targeted tests (94 tests)
 npm run eval:r33-live-check   # interface only; no credentials
 node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json
 npm run eval:r33-self-test    # four arms, real fold/tool-loop, scripted adapter

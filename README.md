@@ -502,19 +502,28 @@ writer/validator/journal/working-set/checkpoint chain without a follow-up agent,
 and `--stage continuation` measures functional success, historical constraint
 compliance, process compliance, contract success, and verification freshness.
 
-The R35 real-model writer pilot was authorized and attempted on
-`opencode` / `deepseek-v4.1-flash`, but the route returned HTTP 401
-`api_key_expired` on every real writer call in both pilot runs. The corrected
-run is recorded as **provider-unavailable**: 12 writer attempts plus 4 probes
-over the round, 0 completions, 0 observed tokens, and six local O1 oracle
-controls per run. No real-model writer or behavioural result exists. A
-local mock-provider end-to-end test verifies `429, 429, 200` as 3 attempts and 2
-retries in the final report; a writer HTTP failure is classified as a provider
-failure while the fold safely degrades; a follow-up failure preserves the
-earlier cost; and a run whose tasks all fail the hidden checker is a valid
-negative result, not a harness failure. See
-`docs/semantic-continuity/R35_LIVE_PREFLIGHT.md`, `R35_DECISION.md`, and
-`R35_HANDOFF.md`. The scripted pipeline numbers remain offline controls only.
+The R35 real-model writer pilot ran on `opencode` / `deepseek-v4.1-flash` after
+the first route's key expired. Sixteen real writer outputs were scored across
+three runs. The writer extracted every critical fact in the six-case set at
+least once (8/8 in raw output), but only 10/16 responses used the required
+envelope and only 6/8 gold facts were fully committed. The first bottleneck is
+writer protocol/schema conformance, not semantic coverage. No false normative
+claim was accepted; two verification overclaims and two authority-overreach
+proposals were refused. The automatic exact scorer reports 0 recall because the
+model paraphrases and uses its own coordinates; a preserved manual adjudication
+against the frozen transcript finds the facts equivalent. The B1/S
+continuation then ran three replicates; r2 is excluded because its fallback used
+an empty checkpoint. Across the 9 valid B1/S pairs (r1 3, r3 6), every pair is
+`neither`: no rescue and no damage, with agent process non-compliance dominating
+the contract failures. There is no evidence that EF Active beats EF Off on this
+set. A local mock-provider end-to-end test
+verifies `429, 429, 200` as 3 attempts and 2 retries in the final report; a
+writer HTTP failure is classified as a provider failure while the fold safely
+degrades; a follow-up failure preserves the earlier cost; and a run whose tasks
+all fail the hidden checker is a valid negative result, not a harness failure.
+See `docs/semantic-continuity/R35_WRITER_RESULTS.md`,
+`R35_BEHAVIORAL_COMPARISON.md`, `R35_DECISION.md`, and `R35_HANDOFF.md`. The
+scripted pipeline numbers remain offline controls only.
 
 See `docs/semantic-continuity/` for the transaction state machine, the host
 compatibility record, the code review, the integration notes, and the handoff.

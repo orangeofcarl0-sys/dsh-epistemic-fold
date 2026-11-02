@@ -2,17 +2,34 @@
 
 ## Status
 
-The first authorized live attempt failed before any semantic behavior could be
-observed: 12 real writer calls over two runs, 12 HTTP 401 `api_key_expired`,
-0 writer outputs, 0 tokens. Four route probes failed the same way. The earliest
-confirmable failure is **provider authentication** — not the writer prompt, the
-validator, the journal, or the agent. No real-model semantic failure can be
-attributed yet.
+The route was repaired and the writer ran on six real cases in three runs. There
+were no provider failures in those runs. The first observed failures are at the
+**writer protocol and schema boundary**, not at retrieval, the working set, or
+the agent:
 
-This document records that first real failure, the instrument defect it exposed,
-and the local counterexamples that prove each distinction.
+```text
+H1  protocol malformed in 2/2 runs; the correct eu-west-2 fact is present in
+    the raw output both times.
+B2  protocol malformed in 1/3 runs (bare JSON array); the parsed run commits
+    both gold facts.
+F1  protocol malformed in 1/2 scored runs (bare object stream); the parsed run
+    commits the gold constraint and refuses the malicious override.
+C1  the 12/40 event-loss fact is tool-proven and present in the raw output, but
+    the writer proposed it as status=verified without verificationQuote and as a
+    rejected-approach resting on tool evidence; the validator refused both, so
+    the fact never entered committed state.
+```
 
-## 0. The first real failure: authentication, not semantics
+No false normative claim entered committed state. The earliest failure is the
+writer's envelope, status, or kind choice, not the validator's decision.
+
+The earlier authentication failure is retained below as history.
+
+## 0. The first real failure: authentication, not semantics (history)
+
+Before the route was repaired, 12 real writer calls over two runs and 4 route
+probes failed. The earliest confirmable failure was **provider authentication**
+— not the writer prompt, the validator, the journal, or the agent.
 
 ```text
 historical fact
@@ -51,6 +68,122 @@ writerMeasurements(rows)             real calls vs oracle controls
 
 The corrected run is `provider-unavailable` with 0/6 real writer calls
 completed. The superseded report remains in the run archive as evidence.
+
+## 0.1 The real writer failures
+
+### H1 — envelope, not coverage
+
+```text
+transcript[2] "Production deployment region: eu-west-2."
+  -> writer raw output contains "eu-west-2" (both runs)
+  -> <deltas> contains a bare JSON array, not {"deltas":[...]}
+  -> parseWriterOutput: malformed
+  -> no proposal reaches the validator
+  -> no state is committed
+```
+
+This is the earliest failure: the writer's serialization. The fact was extracted
+correctly; the envelope was wrong. H1 is the strongest counterexample to a
+retrieval or working-set explanation, because the model never got that far.
+
+### B2 and F1 — unstable envelope
+
+- B2 r1 used the object envelope and committed both gold facts; B2 r2 used a
+  bare array and committed nothing. The semantic content was equivalent in both.
+- F1 r1 streamed bare objects (not an array or envelope) and committed nothing;
+  F1 r2 used the envelope, committed the legacyAdapter constraint, and the
+  validator refused the override-based rejected-approach correctly.
+
+The protocol failure is intermittent on B2 and F1, and stable on A1/C1/D1.
+A one-run protocol rate would have mischaracterized all three.
+
+### C1 — writer kind/status, then validator
+
+```text
+tool result: "fs.watch delivered 28 of 40; 12 events were lost."
+  -> writer proposed finding:fs-watch-event-loss status=verified
+     without verificationQuote
+  -> validator refused: verification-unscoped
+  -> writer proposed rejected-approach:fs-watch-backend
+     with the tool result as evidence
+  -> validator refused: authority-ungrounded
+  -> committed state keeps "must not miss changes" and "poll instead"
+  -> the 12/40 evidence is not in committed state
+```
+
+The validator is doing its job: a tool result is not decision authority, and
+`verified` requires a verification quote. The earliest confirmable failure is
+the writer's choice to encode tool-proven negative knowledge as a normative
+rejected-approach and a verified finding without the required field. The correct
+shape for the tool fact is `finding`/`observed`; that shape would have committed
+the 12/40 evidence.
+
+### B2 — a verification overclaim on an extra fact
+
+The writer proposed a true file-read finding (`src/scheduler.mjs returns mode:
+memory`) with `status: "verified"` and no `verificationQuote`. The validator
+refused it as `verification-unscoped`. The gold facts were already committed, so
+this refusal cost no recall; it is the correct handling of an overclaim.
+
+### What is not a failure
+
+The automatic scorer's `falseNormativeRate = 1` in r2 does not mean the writer
+made false normative claims. It means the accepted deltas used different
+coordinates from the gold, so exact matching classified supported statements as
+unsupported. Manual adjudication finds no false normative claim accepted:
+A1's constraint, C1's objective, D1's finding, and F1's constraint are all
+supported by the transcript. The scorer stays unchanged; the raw output and the
+adjudication are the evidence.
+
+## 0.2 The task-stage failures
+
+### B2 — process, not memory
+
+Every arm (B1, S, O1, O2) passes the functional checker in every run and fails
+the contract because no visible test was run. The memory policy is not the
+difference. The earliest measurable failure is the agent's process: it finished
+without executing the visible suite.
+
+### C1 — task/agent, not memory
+
+Every arm fails `functionality.delivers-change` in every run, including O1 with
+the oracle deltas committed. The agent did not deliver the required change even
+when the semantic state was correct. The task is a code-change task; the custom
+loop's action choice is the bottleneck.
+
+### D1 — false verification, not memory
+
+Every arm fails, and three of four arms (S, O1, O2) make a false verification
+claim. The agent writes a verification state the workspace does not support. The
+contract metric records it. This is an agent-claim failure.
+
+### H1 — the one writer-aligned failure, not stable
+
+- r1: S committed only the objective; the region was refused as `verified`
+  without `verificationQuote`; the S checkpoint lacked `eu-west-2`; the agent
+  failed `region.production`; O1/O2 succeeded.
+- r2: S's fold refused and the fallback ran with an empty checkpoint due to a
+  harness defect; that row is excluded from the pair count. B1 succeeded in that
+  replicate; the S failure is not a clean full-history comparison.
+- r3: S's writer protocol was malformed; B1, S, O1, and O2 all failed
+  `region.production`. Even the oracle arms did not rescue the task.
+
+The H1 chain is the best writer-attribution evidence in r1, but it is not stable
+across replicates. The r3 oracle failure shows that agent/task variance can
+dominate the writer effect.
+
+### A1/F1 — mixed
+
+A1's S row succeeded in r1 and failed in r2/r3; in r1 the writer was malformed,
+so the success came from the workspace/task, not semantic memory. F1's B1 and S
+both passed in r2; in r3 every arm failed. These cases do not separate the arms.
+
+### The dominant measurable failure
+
+Across the three continuation runs, process violations (12/18, 13/24, 22/24) and
+false verification claims (3, 4, 4) dominate. The memory policy is not the
+binding constraint on this dataset. The contract metric, not the functional
+checker, is what exposes it.
 
 ## 1. A retry counted twice
 
@@ -125,15 +258,15 @@ actual attempt count and charged reserve.
 ## 6. What is still unattributed
 
 ```text
-whether a real writer follows the protocol at all
-writer omission on a real model
-real protocol malformation
-real unsupported normative claims
-real verification overclaim
-real retrieval failure
-real cost per successful task
+real retrieval-trigger failure
+production DSH agent loop behaviour
+Handoff-Only / Delta-Only ablation
+whether a writer-contract fix changes contract success
+a larger-sample paired difference
 ```
 
-These require a working provider route. The authorized attempt died at
-authentication, before any of them could be observed. No prompt, gold, or writer
-change was made in anticipation of what that run might show.
+The writer-side and task-stage failures are now attributed: protocol envelope,
+status/kind choice, validator refusal of overclaims, agent process
+non-compliance, and task/agent behaviour. The retrieval-trigger and production
+loop remain untested. No prompt, gold, or writer change was made after seeing
+the outputs; the evidence is preserved first.

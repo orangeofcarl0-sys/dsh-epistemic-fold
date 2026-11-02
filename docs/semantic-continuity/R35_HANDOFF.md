@@ -12,7 +12,7 @@ Dataset digest    407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c8
 Holdout           r33-semantic-continuity-holdout-v1
 Holdout digest    af22eb7a91155507998750f0428be8bb7c6285696179128a75e83f3eeaada663
 Scorer            v2
-Live status       provider-unavailable (16 requests: 12 writer + 4 probes; 0 successful)
+Live status       writer-only executed (16 scored rows); continuation executed (9 valid pairs)
 ```
 
 The primary worktree and the R30–R34 worktrees are untouched. R34's commits and
@@ -49,15 +49,21 @@ or resetting the R34 one.
   real writer calls separately from oracle controls.
 - `eval/r35/run-authorized.mjs` resolves the route from the ZCode config, keeps
   the key in the child environment only, runs preflight then the pilot, and
-  writes per-run artifacts.
+  writes per-run artifacts. An explicit `R35_REPLICATE_ID` labels repeated runs.
+- A fold whose summary is not smaller than its span is recorded as
+  `fold-refused`, its raw writer output is preserved, and the run continues.
+  Before the fix, one such case aborted every remaining case.
+- Writer-only extraction is scored from the parsed/committed packet, not left at
+  "this arm commits no semantic deltas". `runQuality` adds
+  `writerExtraction`, aggregated over real writer rows only.
 
 ## Commands
 
 ```bash
 npm run build                    # rebuild lib/ (gitignored)
 npm run eval:build               # rebuild eval/live/dist for live.mjs
-npm run eval:r33                 # R33 + R34.1 + R35 targeted suites (91 tests)
-npm run eval:r35                 # only the new R35 tests (29 tests)
+npm run eval:r33                 # R33 + R34.1 + R35 targeted suites (94 tests)
+npm run eval:r35                 # only the new R35 tests (32 tests)
 npm run eval:r33-verify          # dataset digest
 node eval/r33/freeze.mjs --holdout --verify
 
@@ -76,8 +82,8 @@ environment-variable names the manifest declares.
 
 ### Evaluation-integrity closure
 
-- Targeted R33/R34.1/R35 suites: 14 files, 91 tests passed.
-- Full suite: 1451 passed, 3 failed, 66 skipped. All three failures are the
+- Targeted R33/R34.1/R35 suites: 14 files, 94 tests passed.
+- Full suite: 1454 passed, 3 failed, 66 skipped. All three failures are the
   known installed-vs-vendored DSH drift assertions (`bridge-loads`,
   `rc3-plugin-packaging`, `rc7-inplace-drift`); no R33/R34.1/R35 test fails.
 - Typecheck: source, client, and eval all pass.
@@ -103,39 +109,62 @@ environment-variable names the manifest declares.
 
 ### Live model experiment
 
-The user authorized spend on `opencode` / `deepseek-v4.1-flash` with the key in
-the ZCode configuration. The authorized runner resolved:
+The user authorized spend on `opencode` / `deepseek-v4.1-flash`. The first
+authorized route was expired: 12 writer calls and 4 probes returned HTTP 401
+`api_key_expired` / `ECONNREFUSED`. That phase is retained as
+`provider-unavailable` evidence, not as a writer result. A refreshed key was
+then supplied outside the repository; the probe returned `stop` at the 16,384
+output bound, and the writer-only stage ran on the six cases.
 
 ```text
-provider:      5c7f8d75-e85e-4de5-9b27-e2b59eab1c7a
-base URL:      https://opencode.ai/zen/go/v1
-model:         deepseek-v4.1-flash
-contextWindow: 1,048,576
-writer bound:  32,768 requested (16,384 actual floor)
+probe:                 37 input / 12 output, finish=stop, max_tokens=16,384 accepted
+writer runs:           3 (5 + 6 + 6 calls)
+scored rows:           16
+protocol parsed:       10 / 16
+gold facts in raw:     8 / 8
+gold facts committed:  6 / 8 full, 1 partial, 1 unparsed
+false normative:       0 accepted
+verification overclaims refused: 2
+authority-overreach refused:     2
+provider failures:     0 in the scored runs
+observed tokens:       17,280 input / 40,841 output + 1,920 cache read
+writer-run wall clock: 431,168 ms
 ```
 
-Route probes and the pilot both failed at authentication:
+The writer extracted every critical fact at least once. The first bottleneck is
+the response envelope: H1 was malformed in both runs and its correct `eu-west-2`
+fact never reached the validator; B2 and F1 were malformed in one run each. The
+second is the writer's status/kind choice: C1's 12/40 tool-proven failure was
+refused because it was proposed as `verified` without `verificationQuote` and as
+a `rejected-approach` on tool evidence. The validator correctly refused every
+overclaim and authority-overreach proposal.
+
+The automatic exact scorer reports 0 recall because the model paraphrases and
+uses its own coordinates. Manual adjudication against the frozen transcript finds
+the facts equivalent; the original score and the adjudication are both preserved.
+See `R35_WRITER_RESULTS.md` and `R35_ADJUDICATION.json`.
+
+### Continuation
+
+Three B1/S/O1/O2 continuation runs used the custom text-JSON tool loop and the
+hidden checkers:
 
 ```text
-real writer attempts:      12 over two runs (6 per run)
-real writer completions:   0
-provider responses:        12 x HTTP 401 api_key_expired + 4 failed probes
-observed tokens:           0
-unknown-usage attempts:    12
-charged reserve:           12,582,912 input / 196,608 output (two runs)
-oracle controls:           6 per run, all committed
-fold measurements:         12 / 12 valid per run
-authoritative run status:  provider-unavailable (exit 5)
+run  valid  task  contract  process violations  false verification  requests
+r1   18/24   7       3            12                   3             162
+r2   24/24  10       6            13                   4             209
+r3   24/24   4       0            22                   4             207
 ```
 
-The three OpenCode config entries all returned `api_key_expired`; the local proxy
-returned `ECONNREFUSED`; no alternate key was present in the environment. No key
-value was logged or persisted. The first run of the pilot
-(`r35-writer-only-provider-auth-20261101`) was misreported as `executed-success`
-because oracle controls suppressed the provider-unavailable check. The corrected
-run (`...-20261102`) is the authoritative record.
+r1 lost three B1/O2 rows to a fold-refusal abort. r2 introduced a fallback but
+passed an empty checkpoint to the follow-up; every r2 B1/S pair is therefore
+excluded. r3 fixes the fallback to the uncompressed transcript and is the
+authoritative complete-pair run.
 
-There is still no real-model writer or behavioural result.
+Across the 9 valid B1/S pairs (r1 3, r3 6): 0 rescue, 0 damage, 0 both, 9
+neither. The dominant measured bottleneck is the agent's process compliance, not
+semantic memory delivery. The full breakdown is in
+`R35_BEHAVIORAL_COMPARISON.md`.
 
 ## Known limits
 
@@ -150,25 +179,27 @@ There is still no real-model writer or behavioural result.
 - No currency is reported; no trusted price profile exists.
 - Scripted and mock results are instrument checks, not model behaviour.
 
-## Next step (requires the user)
+## Next step
 
-The spend authorization is in hand; the blocking input is now a working
-credential or route:
+The live evidence is saved and frozen. The next work is not another memory
+subsystem; it is the two bottlenecks the data actually shows:
 
-1. Replace the expired OpenCode key with a non-expired one, or start the local
-   proxy at `http://127.0.0.1:7866/v1`.
-2. Re-run `R35_PROBE=1 node eval/r35/run-authorized.mjs` to confirm a minimal
-   request succeeds before the pilot.
-3. Run `--preflight`; resolve every `infeasible` or `unknown-model-capability`
-   that the provider can answer.
-4. Run `--stage writer-only` on the six cases.
-5. Save raw output, protocol, proposals, refusals, commit state, source support,
-   and usage before changing any writer prompt.
-6. Only then run `--stage continuation` for B1/S/O1/O2.
+1. **Writer contract.** Enforce and test the response envelope
+   (`{"deltas":[...]}`), the `verified` + `verificationQuote` rule, and the
+   `rejected-approach` authority rule. The writer produced correct content that
+   the validator could not accept: H1/C1 tool facts marked `verified`, and C1
+   negative knowledge encoded as a normative rejected-approach on tool evidence.
+2. **Agent process compliance.** The custom loop often finishes without running
+   the visible tests and sometimes claims a verification it does not have. The
+   contract metric already detects this; the loop or the task prompt must require
+   the process, not just reward the functional checker.
+3. **Then** a larger paired run (more cases and replicates, family-aware
+   analysis) to test whether the writer-contract fix changes contract success.
 
-Do not start R35 product changes before that evidence exists. No MemoryOS,
-vector database, Experience Bank, knowledge graph, second compaction engine, or
-active prefetcher is justified by the current evidence.
+Do not change the frozen dataset, gold, or hidden checkers to make the numbers
+look better. Do not count the r2 fallback rows as a full-history baseline. No
+MemoryOS, vector database, Experience Bank, knowledge graph, second compaction
+engine, or active prefetcher is justified by the current evidence.
 
 ## Review package
 
