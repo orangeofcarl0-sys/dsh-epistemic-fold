@@ -1,0 +1,1087 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02T16:59:58.605Z",
+  "dataset": {
+    "id": "r33-semantic-continuity-v2"
+  },
+  "rows": [
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "A1",
+      "rawAvailable": true,
+      "rawDigest": "418aa05684f7bf9b8a6c257730fa443a651ca01d991ca596b6e89450cb55a70c",
+      "rawChars": 1562,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 3,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "B2",
+      "rawAvailable": true,
+      "rawDigest": "f92400738e7d1f7ed4e5abcf46f3d7e4a766c7ba82323bebf1d851aad4d88874",
+      "rawChars": 2250,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 5,
+        "validatorAccepted": 4,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "decision": 1,
+          "constraint": 2,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "B2-memory",
+            "B2-outbox-rejected"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 5,
+        "validatorAccepted": 4,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "decision": 1,
+          "constraint": 2,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "B2-memory",
+            "B2-outbox-rejected"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 4,
+        "refused": 1,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "C1",
+      "rawAvailable": true,
+      "rawDigest": "960be13f8fd5672263964ddc225484d62f17cf066c2f6671607577864ac4ccfc",
+      "rawChars": 3013,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 5,
+        "validatorAccepted": 3,
+        "validatorRefused": 2,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1,
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 2,
+          "recall": 0.5,
+          "matchedIds": [
+            "C1-no-missed-changes"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 5,
+        "validatorAccepted": 3,
+        "validatorRefused": 2,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1,
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 2,
+          "recall": 0.5,
+          "matchedIds": [
+            "C1-no-missed-changes"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 3,
+        "refused": 2,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "D1",
+      "rawAvailable": true,
+      "rawDigest": "ba0be514413d68757e1737739cde7e9e62819401157c683893067c6e26571f64",
+      "rawChars": 1888,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "finding": 2
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "D1-not-run"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "finding": 2
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "D1-not-run"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 3,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "F1",
+      "rawAvailable": true,
+      "rawDigest": "17bf8f7f8225ce3728cf35760649c1f0244ea97ae5e5b8314a2cc405b97dba84",
+      "rawChars": 2572,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 1,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "recovered",
+        "category": "bare-json-object",
+        "recovery": "object-sequence",
+        "detail": "4 concatenated top-level object(s), not one {\"deltas\":[...]} object",
+        "proposed": 4,
+        "validatorAccepted": 4,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "finding": 2,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "F1-keep-legacy"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": false
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "replicateId": "r1",
+      "caseId": "H1",
+      "rawAvailable": true,
+      "rawDigest": "15c23a4611a3884dbefa27aeb4a6bf741fc8a97293f8ac7faff5905fcf685519",
+      "rawChars": 2529,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 1,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "recovered",
+        "category": "bare-json-array",
+        "recovery": "bare-array",
+        "detail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposed": 5,
+        "validatorAccepted": 5,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "constraint": 1,
+          "finding": 3
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "H1-production-region"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": false
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "A1",
+      "rawAvailable": true,
+      "rawDigest": "5b9adc1c1421663818b3af08a0205f767d2f4038261754941afefba22bd71a9c",
+      "rawChars": 1681,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 3,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "B2",
+      "rawAvailable": true,
+      "rawDigest": "31b4a0ca3414e182c0192cf132f1072a54bd4065666c7bab2289afed87707ad7",
+      "rawChars": 2382,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 2,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "recovered",
+        "category": "bare-json-array",
+        "recovery": "bare-array",
+        "detail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposed": 4,
+        "validatorAccepted": 4,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "decision": 1,
+          "rejected-approach": 1,
+          "constraint": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "B2-memory",
+            "B2-outbox-rejected"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": false
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "C1",
+      "rawAvailable": true,
+      "rawDigest": "27e2ae4f1b5a13a095201df679eaef5ec183d6619b2aa847a346e0abe81b4d79",
+      "rawChars": 2455,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 5,
+        "validatorAccepted": 3,
+        "validatorRefused": 2,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1,
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 2,
+          "recall": 0.5,
+          "matchedIds": [
+            "C1-no-missed-changes"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 5,
+        "validatorAccepted": 3,
+        "validatorRefused": 2,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1,
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 2,
+          "recall": 0.5,
+          "matchedIds": [
+            "C1-no-missed-changes"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 3,
+        "refused": 2,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "D1",
+      "rawAvailable": true,
+      "rawDigest": "51ff8ec8bb24fa91359f7b1a8621b5360d60ea757e5a6e153baecf591121f588",
+      "rawChars": 1430,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 2,
+        "validatorAccepted": 2,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "D1-not-run"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 2,
+        "validatorAccepted": 2,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "D1-not-run"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 2,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "F1",
+      "rawAvailable": true,
+      "rawDigest": "fc18fca7b70d114d4eaf01c2e1d440e6fbef6081cd0f416eba25f865db622496",
+      "rawChars": 2406,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 2,
+        "validatorAccepted": 1,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "constraint": 1
+        },
+        "refusedByReason": {
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "F1-keep-legacy"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 2,
+        "validatorAccepted": 1,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "constraint": 1
+        },
+        "refusedByReason": {
+          "authority-ungrounded": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "F1-keep-legacy"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 1,
+        "refused": 1,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "replicateId": "r2",
+      "caseId": "H1",
+      "rawAvailable": true,
+      "rawDigest": "3173b2260c6dff7a32a00dc954572fbf16a390ac1913dcf1b14f8e2fc5f4c095",
+      "rawChars": 2358,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 1,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "unrecovered",
+        "category": "invalid-json-syntax",
+        "recovery": null,
+        "detail": "Expected ':' after property name in JSON at position 603 (line 2 column 251)",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 1,
+          "recall": 0,
+          "matchedIds": []
+        },
+        "contentPreserved": false,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "caseId": "A1",
+      "rawAvailable": true,
+      "rawDigest": "d18d4a7aebe58fad0142777336fb048dd0963c16d65c172da7f10a9c63188d52",
+      "rawChars": 2335,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 4,
+        "validatorAccepted": 4,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1,
+          "decision": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 4,
+        "validatorAccepted": 4,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "constraint": 1,
+          "objective": 1,
+          "finding": 1,
+          "decision": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "A1-legacy-api"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 4,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "caseId": "B2",
+      "rawAvailable": true,
+      "rawDigest": "a45bd4d33fa4b1cdbed58c8e172b2994d495f605d7410442ac1b27f1146a08de",
+      "rawChars": 2071,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 2,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "recovered",
+        "category": "bare-json-array",
+        "recovery": "bare-array",
+        "detail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposed": 4,
+        "validatorAccepted": 4,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "decision": 1,
+          "constraint": 1,
+          "rejected-approach": 1,
+          "finding": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "B2-memory",
+            "B2-outbox-rejected"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": false
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "caseId": "C1",
+      "rawAvailable": true,
+      "rawDigest": "29a10cf4c4c88fcfc0b525b7de4c8f62feaae27cee2ad3cf9d370e5ba9697048",
+      "rawChars": 2233,
+      "rawFactRecall": {
+        "matched": 2,
+        "gold": 2,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "parsed",
+        "proposed": 5,
+        "validatorAccepted": 4,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "C1-fs-watch-rejected",
+            "C1-no-missed-changes"
+          ]
+        }
+      },
+      "p1": {
+        "status": "parsed-p0",
+        "category": "parsed",
+        "recovery": "none",
+        "detail": null,
+        "proposed": 5,
+        "validatorAccepted": 4,
+        "validatorRefused": 1,
+        "acceptedByKind": {
+          "constraint": 2,
+          "decision": 1,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {
+          "verification-unscoped": 1
+        },
+        "acceptedFactRecall": {
+          "matched": 2,
+          "gold": 2,
+          "recall": 1,
+          "matchedIds": [
+            "C1-fs-watch-rejected",
+            "C1-no-missed-changes"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": true
+      },
+      "actualRun": {
+        "writerProtocol": "parsed",
+        "commitStatus": "committed",
+        "accepted": 4,
+        "refused": 1,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    },
+    {
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "caseId": "D1",
+      "rawAvailable": true,
+      "rawDigest": "f35a45fb22e80be9f08b93161b18d5f89bc57820b751d0419ae64485d9575d36",
+      "rawChars": 2271,
+      "rawFactRecall": {
+        "matched": 1,
+        "gold": 1,
+        "recall": 1
+      },
+      "p0": {
+        "protocolStatus": "malformed",
+        "proposed": 0,
+        "validatorAccepted": 0,
+        "validatorRefused": 0,
+        "acceptedByKind": {},
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 0,
+          "gold": 1,
+          "recall": 0,
+          "matchedIds": []
+        }
+      },
+      "p1": {
+        "status": "recovered",
+        "category": "bare-json-array",
+        "recovery": "bare-array",
+        "detail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposed": 3,
+        "validatorAccepted": 3,
+        "validatorRefused": 0,
+        "acceptedByKind": {
+          "objective": 1,
+          "finding": 1,
+          "rejected-approach": 1
+        },
+        "refusedByReason": {},
+        "acceptedFactRecall": {
+          "matched": 1,
+          "gold": 1,
+          "recall": 1,
+          "matchedIds": [
+            "D1-not-run"
+          ]
+        },
+        "contentPreserved": true,
+        "equalsP0Proposals": false
+      },
+      "actualRun": {
+        "writerProtocol": "malformed",
+        "commitStatus": "protocol-not-parsed",
+        "accepted": 0,
+        "refused": 0,
+        "foldValid": true
+      },
+      "projectedCommit": "not-measured: P1 did not run the journal/fold transaction"
+    }
+  ],
+  "summary": {
+    "scoreableAttempts": 16,
+    "lostAttempts": 0,
+    "p0": {
+      "parsed": 10,
+      "proposed": 37,
+      "validatorAccepted": 30,
+      "validatorRefused": 7,
+      "acceptedFactRecallMean": 0.5625,
+      "categories": {
+        "parsed": 10,
+        "malformed": 6
+      }
+    },
+    "p1": {
+      "structurallyAvailable": 15,
+      "recovered": 5,
+      "alreadyParsed": 10,
+      "unrecovered": 1,
+      "recoveryKinds": {
+        "object-sequence": 1,
+        "bare-array": 4
+      },
+      "proposed": 57,
+      "validatorAccepted": 50,
+      "validatorRefused": 7,
+      "acceptedFactRecallMean": 0.875,
+      "contentPreserved": true,
+      "contentChanged": 0,
+      "refusedByReason": {
+        "verification-unscoped": 4,
+        "authority-ungrounded": 3
+      }
+    },
+    "deltas": {
+      "structurallyRecovered": 5,
+      "validatorAcceptedDelta": 20,
+      "validatorRefusedDelta": 0,
+      "contentChanged": 0
+    },
+    "note": "P1 is an ablation. It does not commit, and projectedCommit is deliberately not measured. Every recovered delta passed through the real validator; syntax-damaged or truncated output is not repaired."
+  }
+}

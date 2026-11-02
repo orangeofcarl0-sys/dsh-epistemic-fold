@@ -1,0 +1,66 @@
+<handoff>
+Chose the simpler scheduler queue because the process is short-lived and operational complexity is not justified. The main alternative, a durable outbox, was considered and rejected: it requires a storage dependency that this deployment cannot provide, so adopting it would add an unavailable dependency rather than improve reliability. The trade-off is acceptable because persistence would increase deployment risk without a usable backend. Next, proceed with the simpler queue design, avoid revisiting outbox work for this deployment, and validate scheduler behavior under expected short-lived workloads. No storage-backed queue work is planned.
+</handoff>
+
+<deltas>
+[
+  {
+    "kind": "decision",
+    "subjectKey": "scheduler:queue-strategy",
+    "statement": "Use an in-memory queue for the scheduler.",
+    "status": "claimed",
+    "evidence": [
+      {
+        "quote": "Decision: use an in-memory queue for the scheduler. It is simpler and the process is short-lived."
+      }
+    ],
+    "supersedes": [],
+    "dependsOn": [],
+    "rulesOut": []
+  },
+  {
+    "kind": "rejected-approach",
+    "subjectKey": "scheduler:durable-outbox",
+    "statement": "A durable outbox was rejected because the storage dependency is unavailable in this deployment.",
+    "status": "claimed",
+    "evidence": [
+      {
+        "quote": "A durable outbox was proposed, but we are rejecting it: the storage dependency is unavailable in this deployment."
+      }
+    ],
+    "supersedes": [],
+    "dependsOn": [
+      "constraint:storage-dependency-unavailable"
+    ],
+    "rulesOut": []
+  },
+  {
+    "kind": "constraint",
+    "subjectKey": "constraint:storage-dependency-unavailable",
+    "statement": "The storage dependency is unavailable in this deployment.",
+    "status": "claimed",
+    "evidence": [
+      {
+        "quote": "the storage dependency is unavailable in this deployment"
+      }
+    ],
+    "supersedes": [],
+    "dependsOn": [],
+    "rulesOut": []
+  },
+  {
+    "kind": "finding",
+    "subjectKey": "file:src/scheduler.mjs",
+    "statement": "The scheduler implementation returns mode: memory and has no storage dependency.",
+    "status": "observed",
+    "evidence": [
+      {
+        "quote": "src/scheduler.mjs currently returns mode: memory and has no storage dependency."
+      }
+    ],
+    "supersedes": [],
+    "dependsOn": [],
+    "rulesOut": []
+  }
+]
+</deltas>

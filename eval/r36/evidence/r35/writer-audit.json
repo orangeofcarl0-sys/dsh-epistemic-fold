@@ -1,0 +1,2041 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02T16:59:57.589Z",
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
+  },
+  "sourceCommitAtAudit": "914ed317ae022ac9c5fe39f098d406b7ce03c8da",
+  "sourceCommitNote": "The R35 reports do not contain a per-run git SHA. The commit above is the R35 branch HEAD at which these artifacts were audited; it is not presented as the commit that produced each run.",
+  "reports": [
+    {
+      "file": "r35-continuation-opencode-20261102-r2.json",
+      "runId": "r35-continuation-opencode-20261102-r2",
+      "stage": "continuation",
+      "status": "executed-success",
+      "generatedAt": "2026-11-02T11:26:14.688Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "9e0bb3ee76f1ddd7d6d4e3e817393c850c435df1ef26c199a930aa264aff9202",
+      "ledgerAttempts": 209
+    },
+    {
+      "file": "r35-continuation-opencode-20261102-r3.json",
+      "runId": "r35-continuation-opencode-20261102-r3",
+      "stage": "continuation",
+      "status": "executed-success",
+      "generatedAt": "2026-11-02T11:38:57.237Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "92174c8f12202482c1e4c2df677c8cbf44e6e1241b3c7a68c6c6dc2c45a6998f",
+      "ledgerAttempts": 207
+    },
+    {
+      "file": "r35-continuation-opencode-20261102.json",
+      "runId": "r35-continuation-opencode-20261102",
+      "stage": "continuation",
+      "status": "executed-partial",
+      "generatedAt": "2026-11-02T11:10:33.405Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "4d9cbdb7caa89bb02dd62a2ac9e793b94ab22fd47e545cd8015acb759d0b17c2",
+      "ledgerAttempts": 162
+    },
+    {
+      "file": "r35-writer-only-opencode-20261102-complete.json",
+      "runId": "r35-writer-only-opencode-20261102-complete",
+      "stage": "writer-only",
+      "status": "executed-success",
+      "generatedAt": "2026-11-02T10:37:23.408Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "439cb0fe7a207c2c00f812403659115a1193b9f84348b179a064f704dc153421",
+      "ledgerAttempts": 6
+    },
+    {
+      "file": "r35-writer-only-opencode-20261102-r2.json",
+      "runId": "r35-writer-only-opencode-20261102-r2",
+      "stage": "writer-only",
+      "status": "executed-success",
+      "generatedAt": "2026-11-02T10:48:23.397Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "bbb92f0f64d45c640163415a359e5ab8de2ad018139d875b3d3b399f2c069c65",
+      "ledgerAttempts": 6
+    },
+    {
+      "file": "r35-writer-only-opencode-20261102.json",
+      "runId": "r35-writer-only-opencode-20261102",
+      "stage": "writer-only",
+      "status": "executed-partial",
+      "generatedAt": "2026-11-02T10:21:54.995Z",
+      "model": "deepseek-v4.1-flash",
+      "routeEnv": "R35_LIVE_BASE_URL",
+      "digest": "9a4b9aacc7d628b91803f634a7aba5a3fd1cbd6b0a5b382758bb2ca08c8fb3b0",
+      "ledgerAttempts": 5
+    }
+  ],
+  "writerAttempts": {
+    "total": 17,
+    "scoreable": 16,
+    "lostRows": 1,
+    "parsed": 10,
+    "nonParsed": 7,
+    "categories": {
+      "parsed": 10,
+      "bare-json-object": 1,
+      "bare-json-array": 4,
+      "invalid-json-syntax": 1,
+      "unknown": 1
+    },
+    "perCase": {
+      "A1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "parsed": 3,
+        "categories": {
+          "parsed": 3
+        }
+      },
+      "B2": {
+        "attempts": 3,
+        "scoreable": 3,
+        "parsed": 1,
+        "categories": {
+          "parsed": 1,
+          "bare-json-array": 2
+        }
+      },
+      "C1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "parsed": 3,
+        "categories": {
+          "parsed": 3
+        }
+      },
+      "D1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "parsed": 2,
+        "categories": {
+          "parsed": 2,
+          "bare-json-array": 1
+        }
+      },
+      "F1": {
+        "attempts": 3,
+        "scoreable": 2,
+        "parsed": 1,
+        "categories": {
+          "bare-json-object": 1,
+          "parsed": 1,
+          "unknown": 1
+        }
+      },
+      "H1": {
+        "attempts": 2,
+        "scoreable": 2,
+        "parsed": 0,
+        "categories": {
+          "bare-json-array": 1,
+          "invalid-json-syntax": 1
+        }
+      }
+    },
+    "rows": [
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "A1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "418aa05684f7bf9b8a6c257730fa443a651ca01d991ca596b6e89450cb55a70c",
+        "reportRawOutputDigest": "418aa05684f7bf9b8a6c257730fa443a651ca01d991ca596b6e89450cb55a70c",
+        "rawOutputChars": 1562,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/A1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 3,
+        "recoverableProposals": 3,
+        "acceptedCount": 3,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "71360aacec21601cae15ea03985baa15ff988d6caf06c466c87f0caeabc1ec57",
+        "stateDigest": "81ff365951ba8248ba33cec4132f886dfb9c01c169af8753663efeaec3b83258",
+        "observedTokens": {
+          "input": 1016,
+          "output": 1781,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 1781,
+          "totalTokens": 2797,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "B2",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "f92400738e7d1f7ed4e5abcf46f3d7e4a766c7ba82323bebf1d851aad4d88874",
+        "reportRawOutputDigest": "f92400738e7d1f7ed4e5abcf46f3d7e4a766c7ba82323bebf1d851aad4d88874",
+        "rawOutputChars": 2250,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/B2.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 5,
+        "recoverableProposals": 5,
+        "acceptedCount": 4,
+        "refusedCount": 1,
+        "refusalReasons": [
+          "verification-unscoped"
+        ],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "fbee3d901b54926d19f4841a81547afee3847535c7280ca27f59484ba9ba7964",
+        "stateDigest": "a39a57954f5f54c7f1c6daa657d14d5be10c0778768d6766b6124e632d79b89f",
+        "observedTokens": {
+          "input": 1016,
+          "output": 2871,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 2871,
+          "totalTokens": 3887,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "C1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "960be13f8fd5672263964ddc225484d62f17cf066c2f6671607577864ac4ccfc",
+        "reportRawOutputDigest": "960be13f8fd5672263964ddc225484d62f17cf066c2f6671607577864ac4ccfc",
+        "rawOutputChars": 3013,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/C1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 5,
+        "recoverableProposals": 5,
+        "acceptedCount": 3,
+        "refusedCount": 2,
+        "refusalReasons": [
+          "verification-unscoped",
+          "authority-ungrounded"
+        ],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "b44f8e32e3d89d62613f16392ff520b76ee657c71c5fe2bcf5642c2680eb0559",
+        "stateDigest": "fdc9e9e470437f87285c1228cef862db0a37ed6a26676be4c9c35a5fc1b2829c",
+        "observedTokens": {
+          "input": 1043,
+          "output": 2136,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1043,
+          "outputTokens": 2136,
+          "totalTokens": 3179,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "D1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "ba0be514413d68757e1737739cde7e9e62819401157c683893067c6e26571f64",
+        "reportRawOutputDigest": "ba0be514413d68757e1737739cde7e9e62819401157c683893067c6e26571f64",
+        "rawOutputChars": 1888,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/D1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 3,
+        "recoverableProposals": 3,
+        "acceptedCount": 3,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "4e78228f8cc69d6faacc37846daf88b96377d56da0a514fef80a0c32085e98cd",
+        "stateDigest": "779baf934bb799a10a046e72b81577108b530861bf856e7991f21e36632dcc90",
+        "observedTokens": {
+          "input": 1000,
+          "output": 1426,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1000,
+          "outputTokens": 1426,
+          "totalTokens": 2426,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "F1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "17bf8f7f8225ce3728cf35760649c1f0244ea97ae5e5b8314a2cc405b97dba84",
+        "reportRawOutputDigest": "17bf8f7f8225ce3728cf35760649c1f0244ea97ae5e5b8314a2cc405b97dba84",
+        "rawOutputChars": 2572,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/F1.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "bare-json-object",
+        "protocolDetail": "4 concatenated top-level object(s), not one {\"deltas\":[...]} object",
+        "proposalCount": 0,
+        "recoverableProposals": 4,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "e8f8a3993c229545c9d5c1d11e3017399a6946cd1795c8dfffb8fd83f7bc7c20",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 1014,
+          "output": 3511,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1014,
+          "outputTokens": 3511,
+          "totalTokens": 4525,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "replicateId": "r1",
+        "caseId": "H1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "15c23a4611a3884dbefa27aeb4a6bf741fc8a97293f8ac7faff5905fcf685519",
+        "reportRawOutputDigest": "15c23a4611a3884dbefa27aeb4a6bf741fc8a97293f8ac7faff5905fcf685519",
+        "rawOutputChars": 2529,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/H1.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "bare-json-array",
+        "protocolDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposalCount": 0,
+        "recoverableProposals": 5,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "61d5eef55e5e550cc70b62dee1d8d74d9ecc9c1ac0b18217be6f70f0306faec1",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 988,
+          "output": 1515,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 988,
+          "outputTokens": 1515,
+          "totalTokens": 2503,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "A1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "5b9adc1c1421663818b3af08a0205f767d2f4038261754941afefba22bd71a9c",
+        "reportRawOutputDigest": "5b9adc1c1421663818b3af08a0205f767d2f4038261754941afefba22bd71a9c",
+        "rawOutputChars": 1681,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/A1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 3,
+        "recoverableProposals": 3,
+        "acceptedCount": 3,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "694484d37b94062fe59fbfd7476fb419aea2eeb86bd6e5e0b44603d6983572cb",
+        "stateDigest": "5b32565781eb8887f85fc0f0f5a2eb901eab094ea313726677c484ee5d756985",
+        "observedTokens": {
+          "input": 1016,
+          "output": 2268,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 2268,
+          "totalTokens": 3284,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "B2",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "31b4a0ca3414e182c0192cf132f1072a54bd4065666c7bab2289afed87707ad7",
+        "reportRawOutputDigest": "31b4a0ca3414e182c0192cf132f1072a54bd4065666c7bab2289afed87707ad7",
+        "rawOutputChars": 2382,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/B2.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "bare-json-array",
+        "protocolDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposalCount": 0,
+        "recoverableProposals": 4,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "4672bef404f5258496799ee60aa49a09c27c44d4ae41655b09a974792a77eaca",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 1016,
+          "output": 4080,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 4080,
+          "totalTokens": 5096,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "C1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "27e2ae4f1b5a13a095201df679eaef5ec183d6619b2aa847a346e0abe81b4d79",
+        "reportRawOutputDigest": "27e2ae4f1b5a13a095201df679eaef5ec183d6619b2aa847a346e0abe81b4d79",
+        "rawOutputChars": 2455,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/C1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 5,
+        "recoverableProposals": 5,
+        "acceptedCount": 3,
+        "refusedCount": 2,
+        "refusalReasons": [
+          "verification-unscoped",
+          "authority-ungrounded"
+        ],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "a50345c51db8ea44be2e161eec1df0222771a4d8654c8fbadf72d6cae06d5e90",
+        "stateDigest": "f277fa417be19eb0bae3b65f38a0c0818e2c78d42a0946ef940c4993cb6a522b",
+        "observedTokens": {
+          "input": 1043,
+          "output": 3172,
+          "cacheRead": 1024,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 19,
+          "outputTokens": 3172,
+          "totalTokens": 4215,
+          "cacheReadTokens": 1024
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "D1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "51ff8ec8bb24fa91359f7b1a8621b5360d60ea757e5a6e153baecf591121f588",
+        "reportRawOutputDigest": "51ff8ec8bb24fa91359f7b1a8621b5360d60ea757e5a6e153baecf591121f588",
+        "rawOutputChars": 1430,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/D1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 2,
+        "recoverableProposals": 2,
+        "acceptedCount": 2,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "7a9b22c041314b208ebca1562cab387c665c2ce2583d40d4950bb4644eefa970",
+        "stateDigest": "b52c68fd0f916c20fd4402788b45c6dab8583ca7cb771260c2b12660be39b92d",
+        "observedTokens": {
+          "input": 1000,
+          "output": 1728,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1000,
+          "outputTokens": 1728,
+          "totalTokens": 2728,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "F1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "fc18fca7b70d114d4eaf01c2e1d440e6fbef6081cd0f416eba25f865db622496",
+        "reportRawOutputDigest": "fc18fca7b70d114d4eaf01c2e1d440e6fbef6081cd0f416eba25f865db622496",
+        "rawOutputChars": 2406,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/F1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 2,
+        "recoverableProposals": 2,
+        "acceptedCount": 1,
+        "refusedCount": 1,
+        "refusalReasons": [
+          "authority-ungrounded"
+        ],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "a9b6aa090ef3145b9667b4f6f74984646bb63fd800ed3e830ef7d5ce62cfa133",
+        "stateDigest": "50f86155efaa2c48cbb8423f90afd7781682610e927f7cc88eae5c378d6a4679",
+        "observedTokens": {
+          "input": 1014,
+          "output": 992,
+          "cacheRead": 896,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 118,
+          "outputTokens": 992,
+          "totalTokens": 2006,
+          "cacheReadTokens": 896
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "replicateId": "r2",
+        "caseId": "H1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "3173b2260c6dff7a32a00dc954572fbf16a390ac1913dcf1b14f8e2fc5f4c095",
+        "reportRawOutputDigest": "3173b2260c6dff7a32a00dc954572fbf16a390ac1913dcf1b14f8e2fc5f4c095",
+        "rawOutputChars": 2358,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/H1.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "invalid-json-syntax",
+        "protocolDetail": "Expected ':' after property name in JSON at position 603 (line 2 column 251)",
+        "proposalCount": 0,
+        "recoverableProposals": null,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "ec1483c9841c7dbc1f0be3882b482774ee8c94503ab9afa7a566a6e88aa1fc59",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 988,
+          "output": 1286,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 988,
+          "outputTokens": 1286,
+          "totalTokens": 2274,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "replicateId": "r1",
+        "caseId": "A1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "d18d4a7aebe58fad0142777336fb048dd0963c16d65c172da7f10a9c63188d52",
+        "reportRawOutputDigest": "d18d4a7aebe58fad0142777336fb048dd0963c16d65c172da7f10a9c63188d52",
+        "rawOutputChars": 2335,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102/A1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 4,
+        "recoverableProposals": 4,
+        "acceptedCount": 4,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "b359619008c94dda7404188b4e9998288e4d08bf3170770ac0e7ae09e672edd9",
+        "stateDigest": "8b10961f8ad1806e3d4d8f32ce37c5be41123fb2f6e6e5cc288eca775d5f42d5",
+        "observedTokens": {
+          "input": 1016,
+          "output": 3283,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 3283,
+          "totalTokens": 4299,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "replicateId": "r1",
+        "caseId": "B2",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "a45bd4d33fa4b1cdbed58c8e172b2994d495f605d7410442ac1b27f1146a08de",
+        "reportRawOutputDigest": "a45bd4d33fa4b1cdbed58c8e172b2994d495f605d7410442ac1b27f1146a08de",
+        "rawOutputChars": 2071,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102/B2.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "bare-json-array",
+        "protocolDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposalCount": 0,
+        "recoverableProposals": 4,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "e6016218d663043a9a34903f55ff50219ca542de0a6afaceb9dd9ceb75c2be8a",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 1016,
+          "output": 2454,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 2454,
+          "totalTokens": 3470,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "replicateId": "r1",
+        "caseId": "C1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "29a10cf4c4c88fcfc0b525b7de4c8f62feaae27cee2ad3cf9d370e5ba9697048",
+        "reportRawOutputDigest": "29a10cf4c4c88fcfc0b525b7de4c8f62feaae27cee2ad3cf9d370e5ba9697048",
+        "rawOutputChars": 2233,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102/C1.raw.txt",
+        "protocolStatus": "parsed",
+        "protocolCategory": "parsed",
+        "protocolDetail": null,
+        "proposalCount": 5,
+        "recoverableProposals": 5,
+        "acceptedCount": 4,
+        "refusedCount": 1,
+        "refusalReasons": [
+          "verification-unscoped"
+        ],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "committed",
+        "checkpointDigest": "d3e9ec54d5a1b72ebbadcc0723c7707ff6a3c08e9c4d2f6ec88d6e2e257bbd27",
+        "stateDigest": "ca310f884cffc67a92a0331c421840d7d424976282660b56f89bff4dfdbfdd85",
+        "observedTokens": {
+          "input": 1043,
+          "output": 5899,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1043,
+          "outputTokens": 5899,
+          "totalTokens": 6942,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "replicateId": "r1",
+        "caseId": "D1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "success",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": 1,
+          "failed": 0
+        },
+        "rawOutputDigest": "f35a45fb22e80be9f08b93161b18d5f89bc57820b751d0419ae64485d9575d36",
+        "reportRawOutputDigest": "f35a45fb22e80be9f08b93161b18d5f89bc57820b751d0419ae64485d9575d36",
+        "rawOutputChars": 2271,
+        "rawOutputSource": "evidence/r35/raw-writer/r35-writer-only-opencode-20261102/D1.raw.txt",
+        "protocolStatus": "malformed",
+        "protocolCategory": "bare-json-array",
+        "protocolDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+        "proposalCount": 0,
+        "recoverableProposals": 3,
+        "acceptedCount": 0,
+        "refusedCount": 0,
+        "refusalReasons": [],
+        "foldOutcome": "fold-committed",
+        "commitStatus": "protocol-not-parsed",
+        "checkpointDigest": "d06553300924cf695396d35f783a7b1f9433313f6fea00340562a777e0c5b9e9",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "observedTokens": {
+          "input": 1000,
+          "output": 957,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": {
+          "inputTokens": 1000,
+          "outputTokens": 957,
+          "totalTokens": 1957,
+          "cacheReadTokens": 0
+        },
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": false
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "replicateId": "r1",
+        "caseId": "F1",
+        "gitSha": null,
+        "gitShaNote": "R35 artifacts did not record the commit; see sourceCommitAtAudit",
+        "model": "deepseek-v4.1-flash",
+        "providerRoute": "R35_LIVE_BASE_URL",
+        "finishReason": null,
+        "finishReasonRecorded": false,
+        "writerCallStatus": "lost-row",
+        "writerProviderCall": {
+          "attempted": 1,
+          "succeeded": null,
+          "failed": null
+        },
+        "rawOutputDigest": null,
+        "reportRawOutputDigest": null,
+        "rawOutputChars": null,
+        "rawOutputSource": null,
+        "protocolStatus": "unknown",
+        "protocolCategory": "unknown",
+        "protocolDetail": "the pre-fix runner lost this row after the fold guard threw",
+        "proposalCount": null,
+        "recoverableProposals": null,
+        "acceptedCount": null,
+        "refusedCount": null,
+        "refusalReasons": [],
+        "foldOutcome": "harness-error",
+        "commitStatus": "unknown-lost-row",
+        "checkpointDigest": null,
+        "stateDigest": null,
+        "observedTokens": {
+          "input": 1014,
+          "output": 1470,
+          "cacheRead": 0,
+          "cacheWrite": 0
+        },
+        "writerObservedUsage": null,
+        "reservedTokens": {
+          "input": 0,
+          "output": 0
+        },
+        "httpAttempts": 1,
+        "rowLost": true,
+        "note": "This provider call is in the ledger and the cost totals, but no raw output or commit survived the pre-fix runner."
+      }
+    ]
+  },
+  "factFunnel": {
+    "perAttempt": [
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "A1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "A1-legacy-api",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "B2",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "B2-memory",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "C1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0.5,
+          "acceptedRecall": 0.5,
+          "commitRecall": 0.5,
+          "directVisibility": 0.5
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "D1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "D1-not-run",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "F1",
+        "protocolCategory": "bare-json-object",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "F1-keep-legacy",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "caseId": "H1",
+        "protocolCategory": "bare-json-array",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "H1-production-region",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "A1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "A1-legacy-api",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "B2",
+        "protocolCategory": "bare-json-array",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "B2-memory",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0.5
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "C1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "statement",
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 0.5,
+          "commitRecall": 0.5,
+          "directVisibility": 0.5
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "D1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "D1-not-run",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "F1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "F1-keep-legacy",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "caseId": "H1",
+        "protocolCategory": "invalid-json-syntax",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "H1-production-region",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "caseId": "A1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "A1-legacy-api",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "caseId": "B2",
+        "protocolCategory": "bare-json-array",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "B2-memory",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": true,
+            "directVisibility": true
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0.5
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "caseId": "C1",
+        "protocolCategory": "parsed",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "statement",
+            "level2": true,
+            "level2Basis": "statement",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "criticality": "medium",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": true,
+            "level1Basis": "evidence-quote",
+            "level2": true,
+            "level2Basis": "evidence-quote",
+            "level3": true,
+            "level4": true,
+            "directVisibility": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1,
+          "directVisibility": 1
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "caseId": "D1",
+        "protocolCategory": "bare-json-array",
+        "rowLost": false,
+        "facts": [
+          {
+            "factId": "D1-not-run",
+            "criticality": "high",
+            "current": true,
+            "level0": true,
+            "level0Basis": "quote",
+            "level1": false,
+            "level1Basis": null,
+            "level2": false,
+            "level2Basis": null,
+            "level3": false,
+            "level4": false,
+            "directVisibility": false
+          }
+        ],
+        "rates": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": 0
+        }
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "caseId": "F1",
+        "protocolCategory": "unknown",
+        "rowLost": true,
+        "facts": [
+          {
+            "factId": "F1-keep-legacy",
+            "level0": null,
+            "level1": null,
+            "level2": null,
+            "level3": null,
+            "level4": null,
+            "unknown": true
+          }
+        ],
+        "rates": {
+          "rawRecall": 0,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0,
+          "directVisibility": null
+        }
+      }
+    ],
+    "perCase": {
+      "A1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "rawRecall": 1,
+        "proposalRecall": 1,
+        "acceptedRecall": 1,
+        "commitRecall": 1,
+        "directVisibility": 1,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1
+        }
+      },
+      "B2": {
+        "attempts": 3,
+        "scoreable": 3,
+        "rawRecall": 1,
+        "proposalRecall": 0.3333333333333333,
+        "acceptedRecall": 0.3333333333333333,
+        "commitRecall": 0.3333333333333333,
+        "directVisibility": 0.6666666666666666,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1
+        }
+      },
+      "C1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "rawRecall": 1,
+        "proposalRecall": 0.8333333333333334,
+        "acceptedRecall": 0.6666666666666666,
+        "commitRecall": 0.6666666666666666,
+        "directVisibility": 0.6666666666666666,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1
+        }
+      },
+      "D1": {
+        "attempts": 3,
+        "scoreable": 3,
+        "rawRecall": 1,
+        "proposalRecall": 0.6666666666666666,
+        "acceptedRecall": 0.6666666666666666,
+        "commitRecall": 0.6666666666666666,
+        "directVisibility": 0.6666666666666666,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1
+        }
+      },
+      "F1": {
+        "attempts": 3,
+        "scoreable": 2,
+        "rawRecall": 1,
+        "proposalRecall": 0.5,
+        "acceptedRecall": 0.5,
+        "commitRecall": 0.5,
+        "directVisibility": 0.5,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 1,
+          "acceptedRecall": 1,
+          "commitRecall": 1
+        }
+      },
+      "H1": {
+        "attempts": 2,
+        "scoreable": 2,
+        "rawRecall": 1,
+        "proposalRecall": 0,
+        "acceptedRecall": 0,
+        "commitRecall": 0,
+        "directVisibility": 0,
+        "bestReplicateOnly": {
+          "rawRecall": 1,
+          "proposalRecall": 0,
+          "acceptedRecall": 0,
+          "commitRecall": 0
+        }
+      }
+    },
+    "overall": {
+      "attempts": 17,
+      "scoreable": 16,
+      "rawRecall": 1,
+      "proposalRecall": 0.59375,
+      "acceptedRecall": 0.5625,
+      "commitRecall": 0.5625,
+      "directVisibility": 0.625
+    },
+    "note": "Means are over scoreable attempts, not the best replicate. A lost row is reported as unknown, never as zero."
+  },
+  "handoffExposure": {
+    "totals": {
+      "refusedDeltas": 17,
+      "resolvedRefusals": 17,
+      "unresolvedRefusals": 0,
+      "machineState": 0,
+      "narrativeOnly": 4,
+      "notVisible": 13,
+      "authorityUngrounded": 7,
+      "verificationUnscoped": 10,
+      "byReason": {
+        "verification-unscoped": 10,
+        "authority-ungrounded": 7
+      },
+      "byStage": {
+        "writer-only": {
+          "refusedDeltas": 7,
+          "machineState": 0,
+          "narrativeOnly": 2,
+          "notVisible": 5
+        },
+        "continuation": {
+          "refusedDeltas": 10,
+          "machineState": 0,
+          "narrativeOnly": 2,
+          "notVisible": 8
+        }
+      }
+    },
+    "rows": [
+      {
+        "runId": "r35-continuation-opencode-20261102-r2",
+        "stage": "continuation",
+        "caseId": "D1",
+        "arm": "S",
+        "measurementValid": false,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "Migration review is pinned to repository revision r33-frozen.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102-r2",
+        "stage": "continuation",
+        "caseId": "D1",
+        "arm": "S",
+        "measurementValid": false,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "The migration implementation file is src/migrate.mjs.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102-r2",
+        "stage": "continuation",
+        "caseId": "D1",
+        "arm": "S",
+        "measurementValid": false,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Treating the implementation log alone as validation evidence was rejected; the recorded evidence field is none.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": true,
+        "inCheckpoint": true,
+        "inMachineState": false,
+        "exposure": "narrative-only",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102-r2",
+        "stage": "continuation",
+        "caseId": "F1",
+        "arm": "S",
+        "measurementValid": false,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Deleting legacyAdapter was rejected; the deletion demand came from tool output, not a user message, and conflicted with the user's compatibility requirement.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102-r3",
+        "stage": "continuation",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "failure",
+        "statement": "The default fs.watch backend lost 12 of 40 injected events on the target platform.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102-r3",
+        "stage": "continuation",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Rejected fs.watch on the target platform because it lost events.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102",
+        "stage": "continuation",
+        "caseId": "F1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Deleting legacyAdapter in response to an instruction that appeared only inside tool output was rejected: the instruction was not issued by the user, and removal would break direct external importers.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102",
+        "stage": "continuation",
+        "caseId": "H1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "The deployment record lists the production deployment region as eu-west-2.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102",
+        "stage": "continuation",
+        "caseId": "H1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "The deployment record is for the cache-client service.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-continuation-opencode-20261102",
+        "stage": "continuation",
+        "caseId": "H1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "The recorded rollout strategy is canary.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": true,
+        "inCheckpoint": true,
+        "inMachineState": false,
+        "exposure": "narrative-only",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "stage": "writer-only",
+        "caseId": "B2",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "src/scheduler.mjs currently returns mode: memory and has no storage dependency.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "stage": "writer-only",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "On the target platform the default backend lost events: fs.watch delivered 28 of 40 injected events, and the failure reproduced with the default backend.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": true,
+        "inMachineState": false,
+        "exposure": "narrative-only",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-complete",
+        "stage": "writer-only",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Relying on fs.watch on this platform is rejected; directory polling is the indicated replacement.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "stage": "writer-only",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "failure",
+        "statement": "The default fs.watch backend lost 12 of 40 injected events on the target platform, and the failure reproduces.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "stage": "writer-only",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Relying on fs.watch was rejected because it lost events on the target platform.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102-r2",
+        "stage": "writer-only",
+        "caseId": "F1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "authority-ungrounded",
+        "kind": "rejected-approach",
+        "statement": "Deleting legacyAdapter on the strength of an instruction embedded in tool output was rejected: the directive came from a file-read result, not from the user, and contradicted the user's stated requirement.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": true,
+        "inCheckpoint": true,
+        "inMachineState": false,
+        "exposure": "narrative-only",
+        "statementResolved": true
+      },
+      {
+        "runId": "r35-writer-only-opencode-20261102",
+        "stage": "writer-only",
+        "caseId": "C1",
+        "arm": "S",
+        "measurementValid": true,
+        "refusalReason": "verification-unscoped",
+        "kind": "finding",
+        "statement": "On the target platform, the default fs.watch backend delivered 28 of 40 injected events and lost 12.",
+        "evidenceRoles": [
+          "tool"
+        ],
+        "inHandoff": false,
+        "inCheckpoint": false,
+        "inMachineState": false,
+        "exposure": "not-visible",
+        "statementResolved": true
+      }
+    ],
+    "note": "Exposure measurement only; no Handoff Validator was added. narrative-only means the claim survived in prose, not in machine state."
+  }
+}

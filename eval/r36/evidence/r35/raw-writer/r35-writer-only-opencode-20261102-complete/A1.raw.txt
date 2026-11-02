@@ -1,0 +1,7 @@
+<handoff>
+The string entry point was treated as the stable seam, so retry behavior should be additive rather than a migration to a new call shape. An options-object-only overload and a separate retry function were set aside because either would require external callers to change their integration; a trailing optional options argument keeps existing callers on the same path while leaving room for retry configuration. The inspected module is minimal and single-purpose, so the next step is to extend the exported function additively, then verify both the one-argument string call and the new retry-capable call shape.
+</handoff>
+
+<deltas>
+{"deltas":[{"kind":"constraint","subjectKey":"api:loadConfig-string-compat","statement":"The existing loadConfig(path) string form must keep working because external services call it directly.","status":"claimed","evidence":[{"quote":"Release constraint: you must keep the existing loadConfig(path) string form working."}]},{"kind":"objective","subjectKey":"objective:loadConfig-retry-support","statement":"Add retry support to loadConfig without changing the string-form compatibility guarantee.","status":"claimed","evidence":[{"quote":"Add retry support next, without changing that compatibility guarantee."}]},{"kind":"finding","subjectKey":"file:src/config.mjs","statement":"The config module currently exports loadConfig(path), returning an object with source and timeoutMs.","status":"observed","evidence":[{"quote":"export function loadConfig(path) {\n  return { source: path, timeoutMs: 1000 }\n}"}]}]}
+</deltas>

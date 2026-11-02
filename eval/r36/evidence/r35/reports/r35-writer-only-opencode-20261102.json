@@ -1,0 +1,2585 @@
+{
+  "schemaVersion": 3,
+  "status": "executed-partial",
+  "stage": "writer-only",
+  "executionKind": "live writer-only: real EF fold, writer, validator, journal, working set, and checkpoint; no follow-up agent",
+  "generatedAt": "2026-11-02T10:21:54.995Z",
+  "runId": "r35-writer-only-opencode-20261102",
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+    "cases": 17,
+    "scorerVersion": 2
+  },
+  "model": "deepseek-v4.1-flash",
+  "modelParameters": {
+    "temperature": null,
+    "maxOutputTokens": 32768,
+    "followUpMaxTokens": 1024,
+    "followUpSteps": 8,
+    "contextWindow": 1048576,
+    "reasoningSettings": null
+  },
+  "route": {
+    "baseUrlEnv": "R35_LIVE_BASE_URL",
+    "apiKeyEnv": "R35_LIVE_API_KEY",
+    "headerNames": [
+      "x-opencode-session"
+    ],
+    "contextWindow": 1048576,
+    "maxOutputTokens": null
+  },
+  "limits": {
+    "requests": 60,
+    "inputTokens": 32000000,
+    "outputTokens": 1000000,
+    "wallClockMs": 1800000
+  },
+  "maxOutputTokens": 32768,
+  "arms": [
+    "S",
+    "O1"
+  ],
+  "isolation": {
+    "environment": "allowlist",
+    "filesystem": "path-checked-workspace",
+    "checker": "trusted-bootstrap-result-file",
+    "osSandbox": "none",
+    "note": "Same-user code can still access other local files and attack the checker process. Not an adversarial sandbox."
+  },
+  "quality": {
+    "measurementValid": true,
+    "validCases": 8,
+    "invalidCases": 1,
+    "taskSuccesses": 0,
+    "taskSuccessRate": null,
+    "contractSuccesses": 0,
+    "contractSuccessRate": null,
+    "functionalFailures": 0,
+    "processViolations": 0,
+    "falseVerificationClaims": 0,
+    "writerMeasurements": {
+      "realWriterRows": 4,
+      "callSucceeded": 4,
+      "callFailed": 0,
+      "callNotAttempted": 0,
+      "protocolParsed": 2,
+      "protocolMalformed": 2,
+      "accepted": 8,
+      "refused": 1,
+      "oracleControls": 4,
+      "oracleControlsCommitted": 4
+    }
+  },
+  "outcomes": {
+    "writer-only-measured": 8,
+    "harness-error": 1
+  },
+  "ledger": {
+    "schemaVersion": 2,
+    "limits": {
+      "requests": 60,
+      "inputTokens": 32000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 1800000
+    },
+    "used": {
+      "requests": 5,
+      "attempts": 5,
+      "inputTokens": 5089,
+      "outputTokens": 14063,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "unknownUsageRequests": 0,
+      "partialUsageRequests": 0,
+      "retries": 0
+    },
+    "observed": {
+      "inputTokens": 5089,
+      "outputTokens": 14063,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    "reserved": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0
+    },
+    "charged": {
+      "inputTokens": 5089,
+      "outputTokens": 14063
+    },
+    "remaining": {
+      "requests": 55,
+      "inputTokens": 31994911,
+      "outputTokens": 985937,
+      "wallClockMs": 1605197
+    },
+    "unresolvedAttempts": 0,
+    "unknownUsageRequests": 0,
+    "partialUsageRequests": 0,
+    "refusals": 0,
+    "elapsedMs": 194803
+  },
+  "runElapsedMs": 194796,
+  "retryAccounting": {
+    "authority": "ledger",
+    "adapter": {
+      "retries": 0,
+      "exhausted": 0,
+      "expectedLedgerRetries": 0
+    },
+    "ledgerRetries": 0,
+    "consistent": true,
+    "note": "The ledger counts each throttled HTTP attempt once. The adapter counter is a cross-check only; it is never added to the ledger."
+  },
+  "provider": {
+    "adapter": "openai-compatible",
+    "rateLimitRetries": 0,
+    "rateLimitExhausted": 0,
+    "toolShapeRepairs": 0,
+    "toolResultsSynthesised": 0,
+    "toolResultsDropped": 0
+  },
+  "rows": [
+    {
+      "schemaVersion": 3,
+      "caseId": "A1",
+      "riskClass": "persistent-constraint",
+      "family": "A",
+      "arm": "S",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 1,
+        "succeeded": 1,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "foldElapsedMs": 101047,
+      "checkpoint": {
+        "digest": "b359619008c94dda7404188b4e9998288e4d08bf3170770ac0e7ae09e672edd9",
+        "chars": 2151,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:37a2cc4d-1224-4650-95fc-52809cbc1522]\n\nChanged in this fold\n- [objective semantic-8f220be142bf409720aed0e0393e039c semantic/objective#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34/objective:retry-support] Add retry support next while preserving the compatibility guarantee for the string form. (normative)\n- [constraint semantic-e920cf8ebdc3134c6fdca7ee53120cbd semantic/constraint#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34/constraint:loadconfig-string-form] The existing loadConfig(path) string form must keep working because external services call it directly. (normative)\n- [evidence semantic-0ed5ceaaf04b4d71efbbeee3ca933a6c semantic/finding#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34/file:src/config.mjs] The current loadConfig implementation takes a path string and returns source plus timeoutMs. (empirical)\n- [decision semantic-22b7085735f6e5440636df39a220cf00 semantic/decision#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34/decision:retry-additive] Retry support should be added additively so the string call remains valid. (decision)\n\nRationale\n- The compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 4,
+        "proposedDeltas": [
+          {
+            "kind": "constraint",
+            "subjectKey": "constraint:loadconfig-string-form",
+            "statement": "The existing loadConfig(path) string form must keep working because external services call it directly.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "Release constraint: you must keep the existing loadConfig(path) string form working. External services call it directly."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": [
+              "Breaking or removing the string call form"
+            ],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "kind": "objective",
+            "subjectKey": "objective:retry-support",
+            "statement": "Add retry support next while preserving the compatibility guarantee for the string form.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "Add retry support next, without changing that compatibility guarantee."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [
+              "constraint:loadconfig-string-form"
+            ],
+            "rulesOut": [],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "kind": "finding",
+            "subjectKey": "file:src/config.mjs",
+            "statement": "The current loadConfig implementation takes a path string and returns source plus timeoutMs.",
+            "status": "observed",
+            "evidence": [
+              {
+                "quote": "export function loadConfig(path) {\n  return { source: path, timeoutMs: 1000 }\n}"
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": [],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "kind": "decision",
+            "subjectKey": "decision:retry-additive",
+            "statement": "Retry support should be added additively so the string call remains valid.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "I will add retries while preserving the string call."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [
+              "objective:retry-support"
+            ],
+            "rulesOut": [
+              "Changing dispatch so existing string callers must migrate"
+            ],
+            "scope": {
+              "branch": "current"
+            }
+          }
+        ],
+        "accepted": 4,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "e920cf8ebdc3134c6fdca7ee53120cbd062d62f34723ce6ac95031b7d11149e9",
+            "kind": "constraint",
+            "subjectKey": "constraint:loadconfig-string-form",
+            "statement": "The existing loadConfig(path) string form must keep working because external services call it directly.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "5083b98da439cd465178c7160b2ad222a0a426ebc3fcd9079b660158697a88c1",
+                "quote": "Release constraint: you must keep the existing loadConfig(path) string form working. External services call it directly."
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "constraint",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "constraint#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34",
+              "property": "constraint:loadconfig-string-form"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": [
+              "Breaking or removing the string call form"
+            ],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "index": 1,
+            "deltaId": "8f220be142bf409720aed0e0393e039c2f12c5436e27ac91fed24d0eb22ae561",
+            "kind": "objective",
+            "subjectKey": "objective:retry-support",
+            "statement": "Add retry support next while preserving the compatibility guarantee for the string form.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 7,
+                "messageDigest": "7f4346c402bfc5a82fff605ca6da559355ea77343ca14dde42176a8caaab098f",
+                "quote": "Add retry support next, without changing that compatibility guarantee."
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "objective",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "objective#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34",
+              "property": "objective:retry-support"
+            },
+            "supersedes": [],
+            "dependsOn": [
+              "constraint:loadconfig-string-form"
+            ],
+            "rulesOut": [],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "index": 2,
+            "deltaId": "0ed5ceaaf04b4d71efbbeee3ca933a6cc70af44e0138846396bd4b76a8fbef47",
+            "kind": "finding",
+            "subjectKey": "file:src/config.mjs",
+            "statement": "The current loadConfig implementation takes a path string and returns source plus timeoutMs.",
+            "status": "observed",
+            "grantedStatus": "observed",
+            "evidence": [
+              {
+                "seq": 14,
+                "messageDigest": "91af50ae8ba7e9e29df468d4610bdc905c810c5b16dd30c7ce5b04a46772140f",
+                "quote": "export function loadConfig(path) {\n  return { source: path, timeoutMs: 1000 }\n}"
+              }
+            ],
+            "authority": "empirical",
+            "anchorKind": "evidence",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "finding#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34",
+              "property": "file:src/config.mjs"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": [],
+            "scope": {
+              "branch": "current"
+            }
+          },
+          {
+            "index": 3,
+            "deltaId": "22b7085735f6e5440636df39a220cf0024f9d1e7078230954ad6d91fd1defb50",
+            "kind": "decision",
+            "subjectKey": "decision:retry-additive",
+            "statement": "Retry support should be added additively so the string call remains valid.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 9,
+                "messageDigest": "e88ba59dd52ec48a8301c15a76552f0acd9782a655cd048d123137b2b9706b12",
+                "quote": "I will add retries while preserving the string call."
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "decision#104b454e58f2459c799c2f866f6023247181ac1d7d46ab337e640f633890bd34",
+              "property": "decision:retry-additive"
+            },
+            "supersedes": [],
+            "dependsOn": [
+              "objective:retry-support"
+            ],
+            "rulesOut": [
+              "Changing dispatch so existing string callers must migrate"
+            ],
+            "scope": {
+              "branch": "current"
+            }
+          }
+        ],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": null,
+        "handoff": "The compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.",
+        "handoffChars": 658,
+        "rawOutput": "<handoff>\nThe compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.\n</handoff>\n\n<deltas>\n{\"deltas\":[{\"kind\":\"constraint\",\"subjectKey\":\"constraint:loadconfig-string-form\",\"statement\":\"The existing loadConfig(path) string form must keep working because external services call it directly.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"Release constraint: you must keep the existing loadConfig(path) string form working. External services call it directly.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[\"Breaking or removing the string call form\"],\"scope\":{\"branch\":\"current\"}},{\"kind\":\"objective\",\"subjectKey\":\"objective:retry-support\",\"statement\":\"Add retry support next while preserving the compatibility guarantee for the string form.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"Add retry support next, without changing that compatibility guarantee.\"}],\"supersedes\":[],\"dependsOn\":[\"constraint:loadconfig-string-form\"],\"rulesOut\":[],\"scope\":{\"branch\":\"current\"}},{\"kind\":\"finding\",\"subjectKey\":\"file:src/config.mjs\",\"statement\":\"The current loadConfig implementation takes a path string and returns source plus timeoutMs.\",\"status\":\"observed\",\"evidence\":[{\"quote\":\"export function loadConfig(path) {\\n  return { source: path, timeoutMs: 1000 }\\n}\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"current\"}},{\"kind\":\"decision\",\"subjectKey\":\"decision:retry-additive\",\"statement\":\"Retry support should be added additively so the string call remains valid.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"I will add retries while preserving the string call.\"}],\"supersedes\":[],\"dependsOn\":[\"objective:retry-support\"],\"rulesOut\":[\"Changing dispatch so existing string callers must migrate\"],\"scope\":{\"branch\":\"current\"}}]}\n</deltas>",
+        "rawOutputChars": 2335,
+        "rawOutputDigest": "d18d4a7aebe58fad0142777336fb048dd0963c16d65c172da7f10a9c63188d52",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 3283,
+          "totalTokens": 4299,
+          "cacheReadTokens": 0
+        },
+        "durationMs": 100953,
+        "maxTokens": 16384,
+        "oracle": false,
+        "oracleBasis": null,
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "b359619008c94dda7404188b4e9998288e4d08bf3170770ac0e7ae09e672edd9",
+        "stateDigest": "8b10961f8ad1806e3d4d8f32ce37c5be41123fb2f6e6e5cc288eca775d5f42d5",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 280,
+          "carriedTokens": 0,
+          "rationaleTokens": 176,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 460,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "3e2ebaa31b60f14ebf5e551b9cd13fbc783d99573afe5336ee90a5abcf8ab548",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "8b10961f8ad1806e3d4d8f32ce37c5be41123fb2f6e6e5cc288eca775d5f42d5",
+        "anchors": [
+          "Add retry support next while preserving the compatibility guarantee for the string form.",
+          "The existing loadConfig(path) string form must keep working because external services call it directly.",
+          "The existing loadConfig(path) string form must keep working because external services call it directly.",
+          "Add retry support next while preserving the compatibility guarantee for the string form.",
+          "The current loadConfig implementation takes a path string and returns source plus timeoutMs.",
+          "Retry support should be added additively so the string call remains valid.",
+          "Retry support should be added additively so the string call remains valid.",
+          "The current loadConfig implementation takes a path string and returns source plus timeoutMs."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "A1-legacy-api",
+          "quote": "keep the existing loadConfig(path) string form working",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 1,
+        "httpAttempts": 1,
+        "httpRetries": 0,
+        "inputTokens": 1016,
+        "outputTokens": 3283,
+        "observedInputTokens": 1016,
+        "observedOutputTokens": 3283,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 1016,
+        "chargedOutputTokens": 3283,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 101065,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 101270,
+        "runElapsedMs": 101279,
+        "modelRequests": 1
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/A1/S/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "A1",
+      "riskClass": "persistent-constraint",
+      "family": "A",
+      "arm": "O1",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 0,
+        "succeeded": 0,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "foldElapsedMs": 36,
+      "checkpoint": {
+        "digest": "47fefe24e00b511ce26d4543ecfea3c33e8610c48dfecaaa01c02f70e38f3068",
+        "chars": 1257,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:f32133a7-0079-41b8-840e-4330d547a00f]\n\nChanged in this fold\n- [constraint semantic-b77de4bf506381e85da1bcf267adc36d semantic/constraint/api-compatibility] The loadConfig(path) string form must remain backward compatible. (normative)\n\nRationale\n- The compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 1,
+        "proposedDeltas": [
+          {
+            "kind": "constraint",
+            "subjectKey": "api-compatibility",
+            "statement": "The loadConfig(path) string form must remain backward compatible.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "keep the existing loadConfig(path) string form working"
+              }
+            ]
+          }
+        ],
+        "accepted": 1,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "b77de4bf506381e85da1bcf267adc36df77798c5210451c5dc30422191bcbea4",
+            "kind": "constraint",
+            "subjectKey": "api-compatibility",
+            "statement": "The loadConfig(path) string form must remain backward compatible.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "a0c01d08253ed80f7e87a9399e9324e069bbe1ded3db0cb7e1010d3d3bc56cdd",
+                "quote": "keep the existing loadConfig(path) string form working"
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "constraint",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "constraint",
+              "property": "api-compatibility"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": null,
+        "handoff": "The compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.",
+        "handoffChars": 658,
+        "rawOutput": "<handoff>\nThe compatibility boundary was treated as a public-interface concern rather than an internal detail, since direct external callers are the audience. An object-only signature or an overload that changed dispatch was rejected because either would impose caller migration and turn retry support into a breaking change. The additive route was preferred: introduce retry configuration without altering how existing calls are dispatched. Next, implement that additive surface and add coverage for both direct calls and retry-enabled calls. The prior inspection located the current function, which is sufficient to place the change without touching unrelated files.\n</handoff>\n<deltas>\n{\"deltas\":[{\"kind\":\"constraint\",\"subjectKey\":\"api-compatibility\",\"statement\":\"The loadConfig(path) string form must remain backward compatible.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"keep the existing loadConfig(path) string form working\"}]}]}\n</deltas>",
+        "rawOutputChars": 945,
+        "rawOutputDigest": "33e146e03aaea8341bc219f8ea26620799702b29429f38ff17c124674183f9e8",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": null,
+        "durationMs": 0,
+        "maxTokens": 16384,
+        "oracle": true,
+        "oracleBasis": "s-conditional",
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "47fefe24e00b511ce26d4543ecfea3c33e8610c48dfecaaa01c02f70e38f3068",
+        "stateDigest": "4c5ea81af3a6c2b066c1ac454de1a49ad0becd4004612c3d565b2631d3773788",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 57,
+          "carriedTokens": 0,
+          "rationaleTokens": 176,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 237,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "effbbb1efde9d7fdd3319b8595a5e51e4f67e01b983d9e0cc04813edae24cb8c",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "4c5ea81af3a6c2b066c1ac454de1a49ad0becd4004612c3d565b2631d3773788",
+        "anchors": [
+          "The loadConfig(path) string form must remain backward compatible.",
+          "The loadConfig(path) string form must remain backward compatible."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "A1-legacy-api",
+          "quote": "keep the existing loadConfig(path) string form working",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 0,
+        "httpAttempts": 0,
+        "httpRetries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "observedInputTokens": 0,
+        "observedOutputTokens": 0,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 0,
+        "chargedOutputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 43,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 66,
+        "runElapsedMs": 101348,
+        "modelRequests": 1
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/A1/O1/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "B2",
+      "riskClass": "decision-override",
+      "family": "B",
+      "arm": "S",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 1,
+        "succeeded": 1,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "foldElapsedMs": 20398,
+      "checkpoint": {
+        "digest": "e6016218d663043a9a34903f55ff50219ca542de0a6afaceb9dd9ceb75c2be8a",
+        "chars": 900,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:830cd403-66a3-44d7-9812-ec0764af1218]\n\nRationale\n- The scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "malformed",
+        "protocolStatus": "malformed",
+        "integrity": "partial",
+        "coverage": "not-assessed",
+        "proposed": 0,
+        "proposedDeltas": [],
+        "accepted": 0,
+        "acceptedDeltas": [],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": "deltas block has no \"deltas\" array",
+        "handoff": "The scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.",
+        "handoffChars": 496,
+        "rawOutput": "<handoff>\nThe scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.\n</handoff>\n\n<deltas>\n[{\"kind\":\"decision\",\"subjectKey\":\"scheduler:queue\",\"statement\":\"Use an in-memory queue for the scheduler because it is simpler and the process is short-lived.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"use an in-memory queue for the scheduler. It is simpler and the process is short-lived.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"scheduler\"}},{\"kind\":\"constraint\",\"subjectKey\":\"deployment:storage-dependency\",\"statement\":\"The storage dependency required by a durable outbox is unavailable in this deployment.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"the storage dependency is unavailable in this deployment.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"scheduler\"}},{\"kind\":\"rejected-approach\",\"subjectKey\":\"scheduler:durable-outbox\",\"statement\":\"A durable outbox was rejected because the deployment's storage dependency is unavailable; the in-memory queue is retained.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"A durable outbox was proposed, but we are rejecting it: the storage dependency is unavailable in this deployment. Keep the in-memory queue.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"scheduler\"}},{\"kind\":\"finding\",\"subjectKey\":\"file:src/scheduler.mjs\",\"statement\":\"src/scheduler.mjs currently returns mode: memory and has no storage dependency.\",\"status\":\"observed\",\"evidence\":[{\"quote\":\"src/scheduler.mjs currently returns mode: memory and has no storage dependency.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"scheduler\"}}]\n</deltas>",
+        "rawOutputChars": 2071,
+        "rawOutputDigest": "a45bd4d33fa4b1cdbed58c8e172b2994d495f605d7410442ac1b27f1146a08de",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": {
+          "inputTokens": 1016,
+          "outputTokens": 2454,
+          "totalTokens": 3470,
+          "cacheReadTokens": 0
+        },
+        "durationMs": 20365,
+        "maxTokens": 16384,
+        "oracle": false,
+        "oracleBasis": null,
+        "providerFailure": null,
+        "commitStatus": "protocol-not-parsed",
+        "renderedCheckpointDigest": "e6016218d663043a9a34903f55ff50219ca542de0a6afaceb9dd9ceb75c2be8a",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 0,
+          "carriedTokens": 0,
+          "rationaleTokens": 135,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 148,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "d178340d321e3582633acd5a514e8a3d7a5c640192fe40692a2fb63c31c69a89",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "anchors": []
+      },
+      "sourceBindings": [
+        {
+          "factId": "B2-memory",
+          "quote": "use an in-memory queue for the scheduler",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        },
+        {
+          "factId": "B2-outbox-rejected",
+          "quote": "we are rejecting it",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 7,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 1,
+        "httpAttempts": 1,
+        "httpRetries": 0,
+        "inputTokens": 1016,
+        "outputTokens": 2454,
+        "observedInputTokens": 1016,
+        "observedOutputTokens": 2454,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 1016,
+        "chargedOutputTokens": 2454,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 20404,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 20424,
+        "runElapsedMs": 121774,
+        "modelRequests": 2
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/B2/S/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "B2",
+      "riskClass": "decision-override",
+      "family": "B",
+      "arm": "O1",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 0,
+        "succeeded": 0,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 21,
+        "summarySeq": 22,
+        "replacementSeq": 23,
+        "endSeq": 24
+      },
+      "foldElapsedMs": 38,
+      "checkpoint": {
+        "digest": "53b9d52242695ad51f25430b5a4ee6dde1127d8534c73c5a0830d139882c9ee8",
+        "chars": 1270,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:a3448fdc-a830-40cb-a312-bf42768b67cb]\n\nChanged in this fold\n- [decision semantic-cc47f4a09923348cc014d367775b428a semantic/rejected-approach/scheduler-outbox] rejected: A durable outbox is rejected: the storage dependency is unavailable in this deployment. (decision)\n- [decision semantic-8513d436c841628fbe2d13e4c842a26d semantic/decision/scheduler-queue] The scheduler keeps an in-memory queue. (decision)\n\nRationale\n- The scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 2,
+        "proposedDeltas": [
+          {
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler keeps an in-memory queue.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "use an in-memory queue for the scheduler"
+              }
+            ]
+          },
+          {
+            "kind": "rejected-approach",
+            "subjectKey": "scheduler-outbox",
+            "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "we are rejecting it"
+              }
+            ]
+          }
+        ],
+        "accepted": 2,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "8513d436c841628fbe2d13e4c842a26d9e94a8be68c56ca4dd1fd74bedfdab07",
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler keeps an in-memory queue.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "0954019c8b4c85c024cceb32f2ddb56f33249c0d81864b13701df382c3581572",
+                "quote": "use an in-memory queue for the scheduler"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "decision",
+              "property": "scheduler-queue"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 1,
+            "deltaId": "cc47f4a09923348cc014d367775b428ab02eba3b1a38ca52eaf205af70be1cb5",
+            "kind": "rejected-approach",
+            "subjectKey": "scheduler-outbox",
+            "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 7,
+                "messageDigest": "2ac2a9357dd96a90ee0edc30b18f0f6279a590ba5b1841163c93210b4672775b",
+                "quote": "we are rejecting it"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "rejected-approach",
+              "property": "scheduler-outbox"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": null,
+        "handoff": "The scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.",
+        "handoffChars": 496,
+        "rawOutput": "<handoff>\nThe scheduler design favored operational simplicity over durability: an in-memory queue avoids adding infrastructure for a short-lived process. A durable outbox was considered but ruled out on deployment-dependency grounds, so retaining the in-memory approach follows from what this environment can support rather than from a preference for losing queued work. The next step is to confirm the scheduler stays dependency-free and that any persistence assumptions are removed or explicitly guarded.\n</handoff>\n<deltas>\n{\"deltas\":[{\"kind\":\"decision\",\"subjectKey\":\"scheduler-queue\",\"statement\":\"The scheduler keeps an in-memory queue.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"use an in-memory queue for the scheduler\"}]},{\"kind\":\"rejected-approach\",\"subjectKey\":\"scheduler-outbox\",\"statement\":\"A durable outbox is rejected: the storage dependency is unavailable in this deployment.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"we are rejecting it\"}]}]}\n</deltas>",
+        "rawOutputChars": 966,
+        "rawOutputDigest": "ed74aa7b990faf339b10921cc82a8322a4b3ac05c26b68963e435a7738ffadfa",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": null,
+        "durationMs": 0,
+        "maxTokens": 16384,
+        "oracle": true,
+        "oracleBasis": "s-conditional",
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "53b9d52242695ad51f25430b5a4ee6dde1127d8534c73c5a0830d139882c9ee8",
+        "stateDigest": "f35f4bc4cccf5390aa545840b5acd6d36e31d9b89b7f845cf08e18b023357d6d",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 100,
+          "carriedTokens": 0,
+          "rationaleTokens": 135,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 240,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "5f7eca64dfb1151cc67060a37ad2c02ebf8966b545babd25bbc2f0fa216ed415",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "f35f4bc4cccf5390aa545840b5acd6d36e31d9b89b7f845cf08e18b023357d6d",
+        "anchors": [
+          "The scheduler keeps an in-memory queue.",
+          "rejected: A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+          "The scheduler keeps an in-memory queue.",
+          "rejected: A durable outbox is rejected: the storage dependency is unavailable in this deployment."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "B2-memory",
+          "quote": "use an in-memory queue for the scheduler",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        },
+        {
+          "factId": "B2-outbox-rejected",
+          "quote": "we are rejecting it",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 7,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 0,
+        "httpAttempts": 0,
+        "httpRetries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "observedInputTokens": 0,
+        "observedOutputTokens": 0,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 0,
+        "chargedOutputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 44,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 65,
+        "runElapsedMs": 121841,
+        "modelRequests": 2
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/B2/O1/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "C1",
+      "riskClass": "negative-knowledge",
+      "family": "C",
+      "arm": "S",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 1,
+        "succeeded": 1,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "foldElapsedMs": 49776,
+      "checkpoint": {
+        "digest": "d3e9ec54d5a1b72ebbadcc0723c7707ff6a3c08e9c4d2f6ec88d6e2e257bbd27",
+        "chars": 1821,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:5a19fe94-c599-4dea-a77a-8afbd17c93d3]\n\nChanged in this fold\n- [constraint semantic-07c8e8093d6790fe70cdf74c478c4d9f semantic/constraint/platform:cache-client-canary] The cache client is shipping on the same platform as the canary. (normative)\n- [constraint semantic-34fb09056fee6a5697e4e7fb5b365e14 semantic/constraint/constraint:file-watcher-no-missed-changes] The file watcher must not miss changes. (normative)\n- [decision semantic-56d9e499fcf2254b7200df83f9b97b9e semantic/decision/decision:watcher-backend] Switch the watcher backend to polling on this platform. (decision)\n- [decision semantic-f6473f312421382709f9323e629fd25e semantic/rejected-approach/rejected:fs-watch-only] rejected: Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform. (decision)\n\nRationale\n- The key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 5,
+        "proposedDeltas": [
+          {
+            "kind": "constraint",
+            "subjectKey": "constraint:file-watcher-no-missed-changes",
+            "statement": "The file watcher must not miss changes.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "The file watcher must not miss changes."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "kind": "constraint",
+            "subjectKey": "platform:cache-client-canary",
+            "statement": "The cache client is shipping on the same platform as the canary.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "We are shipping the cache client on the same platform as the canary."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "kind": "finding",
+            "subjectKey": "finding:fs-watch-event-loss",
+            "statement": "On the target platform, the default fs.watch backend delivered 28 of 40 injected events and lost 12.",
+            "status": "verified",
+            "evidence": [
+              {
+                "quote": "fs.watch delivered 28 of 40; 12 events were lost."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "kind": "decision",
+            "subjectKey": "decision:watcher-backend",
+            "statement": "Switch the watcher backend to polling on this platform.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "The fs.watch backend lost events on the target platform; switching to polling."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "kind": "rejected-approach",
+            "subjectKey": "rejected:fs-watch-only",
+            "statement": "Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "The fs.watch backend lost events on the target platform; switching to polling."
+              }
+            ],
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "accepted": 4,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "34fb09056fee6a5697e4e7fb5b365e144041de112c0eebfbf3496e8c6ad13cdf",
+            "kind": "constraint",
+            "subjectKey": "constraint:file-watcher-no-missed-changes",
+            "statement": "The file watcher must not miss changes.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "ffc069d017a9b9eb777f80dce5395c7cd5e11784e8b3c06592440a6f7bf804ae",
+                "quote": "The file watcher must not miss changes."
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "constraint",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "constraint",
+              "property": "constraint:file-watcher-no-missed-changes"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 1,
+            "deltaId": "07c8e8093d6790fe70cdf74c478c4d9f63510de5b15beaa86a864246e15c027f",
+            "kind": "constraint",
+            "subjectKey": "platform:cache-client-canary",
+            "statement": "The cache client is shipping on the same platform as the canary.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "ffc069d017a9b9eb777f80dce5395c7cd5e11784e8b3c06592440a6f7bf804ae",
+                "quote": "We are shipping the cache client on the same platform as the canary."
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "constraint",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "constraint",
+              "property": "platform:cache-client-canary"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 3,
+            "deltaId": "56d9e499fcf2254b7200df83f9b97b9e87ff829e14cd60dfb7bba1550b1b3a54",
+            "kind": "decision",
+            "subjectKey": "decision:watcher-backend",
+            "statement": "Switch the watcher backend to polling on this platform.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 3,
+                "messageDigest": "2f5c7d1351e3480c6c4466c7b3ac3586471e66da3bc7d37c8e6ae9e499f2a82b",
+                "quote": "The fs.watch backend lost events on the target platform; switching to polling."
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "decision",
+              "property": "decision:watcher-backend"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 4,
+            "deltaId": "f6473f312421382709f9323e629fd25e3d6b40f86fc4caa9b4184add0c989137",
+            "kind": "rejected-approach",
+            "subjectKey": "rejected:fs-watch-only",
+            "statement": "Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 3,
+                "messageDigest": "2f5c7d1351e3480c6c4466c7b3ac3586471e66da3bc7d37c8e6ae9e499f2a82b",
+                "quote": "The fs.watch backend lost events on the target platform; switching to polling."
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "rejected-approach",
+              "property": "rejected:fs-watch-only"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": 1,
+        "refusedDeltas": [
+          {
+            "index": 2,
+            "reason": "verification-unscoped",
+            "detail": "status \"verified\" requires verificationQuote: 8-240 characters copied exactly from the tool result it rests on"
+          }
+        ],
+        "refusalReasons": [
+          "verification-unscoped"
+        ],
+        "limitExceeded": 0,
+        "refusals": {
+          "verification-unscoped": 1
+        },
+        "detail": null,
+        "handoff": "The key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.",
+        "handoffChars": 645,
+        "rawOutput": "<handoff>\nThe key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.\n</handoff>\n\n<deltas>\n{\"deltas\":[{\"kind\":\"constraint\",\"subjectKey\":\"constraint:file-watcher-no-missed-changes\",\"statement\":\"The file watcher must not miss changes.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"The file watcher must not miss changes.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[]},{\"kind\":\"constraint\",\"subjectKey\":\"platform:cache-client-canary\",\"statement\":\"The cache client is shipping on the same platform as the canary.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"We are shipping the cache client on the same platform as the canary.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[]},{\"kind\":\"finding\",\"subjectKey\":\"finding:fs-watch-event-loss\",\"statement\":\"On the target platform, the default fs.watch backend delivered 28 of 40 injected events and lost 12.\",\"status\":\"verified\",\"evidence\":[{\"quote\":\"fs.watch delivered 28 of 40; 12 events were lost.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[]},{\"kind\":\"decision\",\"subjectKey\":\"decision:watcher-backend\",\"statement\":\"Switch the watcher backend to polling on this platform.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"The fs.watch backend lost events on the target platform; switching to polling.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[]},{\"kind\":\"rejected-approach\",\"subjectKey\":\"rejected:fs-watch-only\",\"statement\":\"Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"The fs.watch backend lost events on the target platform; switching to polling.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[]}]}\n</deltas>",
+        "rawOutputChars": 2233,
+        "rawOutputDigest": "29a10cf4c4c88fcfc0b525b7de4c8f62feaae27cee2ad3cf9d370e5ba9697048",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": {
+          "inputTokens": 1043,
+          "outputTokens": 5899,
+          "totalTokens": 6942,
+          "cacheReadTokens": 0
+        },
+        "durationMs": 49738,
+        "maxTokens": 16384,
+        "oracle": false,
+        "oracleBasis": null,
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "d3e9ec54d5a1b72ebbadcc0723c7707ff6a3c08e9c4d2f6ec88d6e2e257bbd27",
+        "stateDigest": "ca310f884cffc67a92a0331c421840d7d424976282660b56f89bff4dfdbfdd85",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 201,
+          "carriedTokens": 0,
+          "rationaleTokens": 173,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 378,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "7cd198817a3039c30fafc4968c570b7b5a473f80363a21da10e72efe865f4789",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "ca310f884cffc67a92a0331c421840d7d424976282660b56f89bff4dfdbfdd85",
+        "anchors": [
+          "The file watcher must not miss changes.",
+          "The cache client is shipping on the same platform as the canary.",
+          "The file watcher must not miss changes.",
+          "The cache client is shipping on the same platform as the canary.",
+          "Switch the watcher backend to polling on this platform.",
+          "rejected: Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform.",
+          "Switch the watcher backend to polling on this platform.",
+          "rejected: Keeping fs.watch as the sole watcher backend was rejected because it lost events on the target platform."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "C1-fs-watch-rejected",
+          "quote": "fs.watch delivered 28 of 40",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 8,
+              "role": "tool",
+              "name": "run_tests",
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "tool"
+        },
+        {
+          "factId": "C1-no-missed-changes",
+          "quote": "The file watcher must not miss changes.",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 1,
+        "httpAttempts": 1,
+        "httpRetries": 0,
+        "inputTokens": 1043,
+        "outputTokens": 5899,
+        "observedInputTokens": 1043,
+        "observedOutputTokens": 5899,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 1043,
+        "chargedOutputTokens": 5899,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 49782,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 49802,
+        "runElapsedMs": 171645,
+        "modelRequests": 3
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/C1/S/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "C1",
+      "riskClass": "negative-knowledge",
+      "family": "C",
+      "arm": "O1",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 0,
+        "succeeded": 0,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "foldElapsedMs": 36,
+      "checkpoint": {
+        "digest": "8d511f795ebfe5fdfb6defb6818aa90cf7157972c1f5122a57aba2170a4cb11c",
+        "chars": 1413,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:5029c7ca-8d81-47c0-b31a-d6a51c37fcd1]\n\nChanged in this fold\n- [objective semantic-4d815843215663d0f141f97f25a8bc41 semantic/objective/watcher-reliability] The file watcher must not miss changes. (normative)\n- [decision semantic-adcba5f4b9424d64be5517b912aa70e5 semantic/rejected-approach/watcher-backend] rejected: Using fs.watch is rejected: it lost 12 of 40 events on the target platform. (decision)\n\nRationale\n- The key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 2,
+        "proposedDeltas": [
+          {
+            "kind": "rejected-approach",
+            "subjectKey": "watcher-backend",
+            "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+            "status": "observed",
+            "evidence": [
+              {
+                "quote": "lost events on the target platform; switching to polling."
+              },
+              {
+                "quote": "fs.watch delivered 28 of 40"
+              }
+            ]
+          },
+          {
+            "kind": "objective",
+            "subjectKey": "watcher-reliability",
+            "statement": "The file watcher must not miss changes.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "The file watcher must not miss changes."
+              }
+            ]
+          }
+        ],
+        "accepted": 2,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "adcba5f4b9424d64be5517b912aa70e52d30e3c59adb403c4e16188589cb3957",
+            "kind": "rejected-approach",
+            "subjectKey": "watcher-backend",
+            "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+            "status": "observed",
+            "grantedStatus": "observed",
+            "evidence": [
+              {
+                "seq": 3,
+                "messageDigest": "9a4fa78bc1994cf7dddb40b581c5a81f09deef4c8a1636cdef524cb838ab3182",
+                "quote": "lost events on the target platform; switching to polling."
+              },
+              {
+                "seq": 8,
+                "messageDigest": "3392ebff98ddc932ed029c99e2e7dd182a206b75c8be92d0a5564c13fe1c6d54",
+                "quote": "fs.watch delivered 28 of 40"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "rejected-approach",
+              "property": "watcher-backend"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 1,
+            "deltaId": "4d815843215663d0f141f97f25a8bc410a248f178aec8565e01a5e381c694dbc",
+            "kind": "objective",
+            "subjectKey": "watcher-reliability",
+            "statement": "The file watcher must not miss changes.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "15ab723667993d43c7091135862755ceb7ff53b1d7e803aa243f7f6331fa7613",
+                "quote": "The file watcher must not miss changes."
+              }
+            ],
+            "authority": "normative",
+            "anchorKind": "objective",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "objective",
+              "property": "watcher-reliability"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": null,
+        "handoff": "The key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.",
+        "handoffChars": 645,
+        "rawOutput": "<handoff>\nThe key risk was relying on an event source that cannot guarantee delivery; retry/debounce around it would not help because missing notifications are unrecoverable. That ruled out keeping the native path as the primary mechanism. Polling trades latency and I/O for determinism, so the next step is to validate interval behavior and scan scope under realistic churn, including rapid create/delete/rename sequences, before integration with the cache client. The open engineering question is whether the polling interval is tight enough for the cache's freshness needs without excessive filesystem load; that should be measured rather than guessed.\n</handoff>\n<deltas>\n{\"deltas\":[{\"kind\":\"rejected-approach\",\"subjectKey\":\"watcher-backend\",\"statement\":\"Using fs.watch is rejected: it lost 12 of 40 events on the target platform.\",\"status\":\"observed\",\"evidence\":[{\"quote\":\"lost events on the target platform; switching to polling.\"},{\"quote\":\"fs.watch delivered 28 of 40\"}]},{\"kind\":\"objective\",\"subjectKey\":\"watcher-reliability\",\"statement\":\"The file watcher must not miss changes.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"The file watcher must not miss changes.\"}]}]}\n</deltas>",
+        "rawOutputChars": 1185,
+        "rawOutputDigest": "5071b387ebb9e2497cc6a504f619bf20c48defb767f515947b237d9e32cc5aca",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": null,
+        "durationMs": 0,
+        "maxTokens": 16384,
+        "oracle": true,
+        "oracleBasis": "s-conditional",
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "8d511f795ebfe5fdfb6defb6818aa90cf7157972c1f5122a57aba2170a4cb11c",
+        "stateDigest": "0f51ef03b82c2634ace79c3c28776d26a7065386aa7a1414cd8c3748a78a5f80",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 99,
+          "carriedTokens": 0,
+          "rationaleTokens": 173,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 276,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "6ddb3026204ffb8e6b3b985c8a7661d9328211f323ca348ff8bcf482dc576f2b",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "0f51ef03b82c2634ace79c3c28776d26a7065386aa7a1414cd8c3748a78a5f80",
+        "anchors": [
+          "The file watcher must not miss changes.",
+          "rejected: Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+          "The file watcher must not miss changes.",
+          "rejected: Using fs.watch is rejected: it lost 12 of 40 events on the target platform."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "C1-fs-watch-rejected",
+          "quote": "fs.watch delivered 28 of 40",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 8,
+              "role": "tool",
+              "name": "run_tests",
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "tool"
+        },
+        {
+          "factId": "C1-no-missed-changes",
+          "quote": "The file watcher must not miss changes.",
+          "refs": [
+            {
+              "transcriptIndex": 0,
+              "eventSeq": 1,
+              "role": "user",
+              "name": null,
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "user"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 2,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 0,
+        "httpAttempts": 0,
+        "httpRetries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "observedInputTokens": 0,
+        "observedOutputTokens": 0,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 0,
+        "chargedOutputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 42,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 60,
+        "runElapsedMs": 171707,
+        "modelRequests": 3
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/C1/O1/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "D1",
+      "riskClass": "validation-boundary",
+      "family": "D1",
+      "arm": "S",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 1,
+        "succeeded": 1,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "foldElapsedMs": 10070,
+      "checkpoint": {
+        "digest": "d06553300924cf695396d35f783a7b1f9433313f6fea00340562a777e0c5b9e9",
+        "chars": 1437,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:a10b5ddd-7366-497c-8218-b0f1d58848bf]\n\nRationale\n- The request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "malformed",
+        "protocolStatus": "malformed",
+        "integrity": "partial",
+        "coverage": "not-assessed",
+        "proposed": 0,
+        "proposedDeltas": [],
+        "accepted": 0,
+        "acceptedDeltas": [],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": "deltas block has no \"deltas\" array",
+        "handoff": "The request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.",
+        "handoffChars": 1033,
+        "rawOutput": "<handoff>\nThe request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.\n</handoff>\n\n<deltas>\n[{\"kind\":\"objective\",\"subjectKey\":\"release:migration-validation\",\"statement\":\"An accurate validation status for the migration is required before release.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"We need an accurate validation status for the migration before release.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"r33-frozen\"}},\n{\"kind\":\"finding\",\"subjectKey\":\"migration:validation-status\",\"statement\":\"Recorded validation for the migration is code written, tests not run, and no evidence collected.\",\"status\":\"observed\",\"evidence\":[{\"quote\":\"Validation status: code=written, tests=not-run, evidence=none.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"r33-frozen\"}},\n{\"kind\":\"rejected-approach\",\"subjectKey\":\"migration:inspection-as-validation\",\"statement\":\"Reviewing the implementation file against the frozen fixture was considered and rejected as a substitute for executing the tests, because inspection yields no execution evidence.\",\"status\":\"claimed\",\"evidence\":[{\"quote\":\"the relevant files were reviewed against the frozen fixture and no unrelated change was made.\"}],\"supersedes\":[],\"dependsOn\":[],\"rulesOut\":[],\"scope\":{\"branch\":\"r33-frozen\"}}]\n</deltas>",
+        "rawOutputChars": 2271,
+        "rawOutputDigest": "f35a45fb22e80be9f08b93161b18d5f89bc57820b751d0419ae64485d9575d36",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": {
+          "inputTokens": 1000,
+          "outputTokens": 957,
+          "totalTokens": 1957,
+          "cacheReadTokens": 0
+        },
+        "durationMs": 10035,
+        "maxTokens": 16384,
+        "oracle": false,
+        "oracleBasis": null,
+        "providerFailure": null,
+        "commitStatus": "protocol-not-parsed",
+        "renderedCheckpointDigest": "d06553300924cf695396d35f783a7b1f9433313f6fea00340562a777e0c5b9e9",
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 0,
+          "carriedTokens": 0,
+          "rationaleTokens": 270,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 282,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "2bb34f7ec4eab155c3bd1845ca7db4dec3eb08589729454d552127bd53ccd72c",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+        "anchors": []
+      },
+      "sourceBindings": [
+        {
+          "factId": "D1-not-run",
+          "quote": "tests=not-run",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 8,
+              "role": "tool",
+              "name": "check_state",
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "tool"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 1,
+        "httpAttempts": 1,
+        "httpRetries": 0,
+        "inputTokens": 1000,
+        "outputTokens": 957,
+        "observedInputTokens": 1000,
+        "observedOutputTokens": 957,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 1000,
+        "chargedOutputTokens": 957,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 10077,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 10095,
+        "runElapsedMs": 181805,
+        "modelRequests": 4
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/D1/S/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "D1",
+      "riskClass": "validation-boundary",
+      "family": "D1",
+      "arm": "O1",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": true,
+      "measurementValid": true,
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "writer-only-measured"
+      },
+      "providerCalls": {
+        "attempted": 0,
+        "succeeded": 0,
+        "failed": 0
+      },
+      "fold": {
+        "valid": true,
+        "startSeq": 18,
+        "summarySeq": 19,
+        "replacementSeq": 20,
+        "endSeq": 21
+      },
+      "foldElapsedMs": 32,
+      "checkpoint": {
+        "digest": "8ab674442ca10e3173cfe004af62397dd6fe9e49d4a88d55003d00d30826cec6",
+        "chars": 1624,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n[EF1 L cp:9e00e71d-48a7-4198-8915-50bcb934f54d]\n\nChanged in this fold\n- [evidence semantic-60d73a34da8b2e1a6962e7aa69a5e0eb semantic/finding/validation-state] The migration code is written, but its tests have not been run. (empirical)\n\nRationale\n- The request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.\n</compacted-summary>",
+        "truncated": false
+      },
+      "writer": {
+        "applicable": true,
+        "call": "success",
+        "callStatus": "success",
+        "protocol": "parsed",
+        "protocolStatus": "parsed",
+        "integrity": "ready",
+        "coverage": "not-assessed",
+        "proposed": 1,
+        "proposedDeltas": [
+          {
+            "kind": "finding",
+            "subjectKey": "validation-state",
+            "statement": "The migration code is written, but its tests have not been run.",
+            "status": "observed",
+            "evidence": [
+              {
+                "quote": "tests=not-run"
+              }
+            ]
+          }
+        ],
+        "accepted": 1,
+        "acceptedDeltas": [
+          {
+            "index": 0,
+            "deltaId": "60d73a34da8b2e1a6962e7aa69a5e0eb137de1e339eff56a35b78ef43899b984",
+            "kind": "finding",
+            "subjectKey": "validation-state",
+            "statement": "The migration code is written, but its tests have not been run.",
+            "status": "observed",
+            "grantedStatus": "observed",
+            "evidence": [
+              {
+                "seq": 8,
+                "messageDigest": "fc0e05e47b6fa776502e8ec6b172755fe3d263993c61c1a923043faabe413bb3",
+                "quote": "tests=not-run"
+              }
+            ],
+            "authority": "empirical",
+            "anchorKind": "evidence",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "finding",
+              "property": "validation-state"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": 0,
+        "refusedDeltas": [],
+        "refusalReasons": [],
+        "limitExceeded": 0,
+        "refusals": {},
+        "detail": null,
+        "handoff": "The request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.",
+        "handoffChars": 1033,
+        "rawOutput": "<handoff>\nThe request was for a trustworthy release gate, so the response was anchored to the recorded review state rather than to the fact that the implementation file reads as finished. Inspection alone was treated as insufficient evidence: reading src/migrate.mjs against the frozen fixture revision was considered and rejected as a substitute for execution, because a passing read-through cannot distinguish a correct migration from one that merely looks correct, and it produces nothing that a release decision can point at. A further alternative — asserting the status from the surrounding narrative — was rejected for the same reason, since narrative is not evidence and would have manufactured confidence the record does not support. The implementation log entries carry no factual content and were ignored. The next step is to run the migration suite against the pinned fixture revision, capture the actual output as evidence, and only then restate the validation coordinate so the release decision has something executable behind it.\n</handoff>\n<deltas>\n{\"deltas\":[{\"kind\":\"finding\",\"subjectKey\":\"validation-state\",\"statement\":\"The migration code is written, but its tests have not been run.\",\"status\":\"observed\",\"evidence\":[{\"quote\":\"tests=not-run\"}]}]}\n</deltas>",
+        "rawOutputChars": 1274,
+        "rawOutputDigest": "7f40a4cd5fa67550d0ac8906779190dc3365558ab1901ac79a5fd115c03f2dd9",
+        "rawOutputTruncatedInReport": false,
+        "rawOutputStoredInTrace": true,
+        "actualProviderUsage": null,
+        "durationMs": 0,
+        "maxTokens": 16384,
+        "oracle": true,
+        "oracleBasis": "s-conditional",
+        "providerFailure": null,
+        "commitStatus": "committed",
+        "renderedCheckpointDigest": "8ab674442ca10e3173cfe004af62397dd6fe9e49d4a88d55003d00d30826cec6",
+        "stateDigest": "514666d39ea02f89f6e7a4073b86958f1ac9b3f130ceb433bb0888a6a517eb47",
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 55,
+          "carriedTokens": 0,
+          "rationaleTokens": 270,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 329,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "providerFailures": []
+      },
+      "state": {
+        "packets": 1,
+        "receipts": 1,
+        "commits": 1,
+        "validationStatuses": [
+          {
+            "packetId": "1b4dc95ea0b2c515c7bd9e7b53b93797fe88f1958598b3276b28d98af50df23c",
+            "status": "valid"
+          }
+        ],
+        "unplaced": 0,
+        "stateDigest": "514666d39ea02f89f6e7a4073b86958f1ac9b3f130ceb433bb0888a6a517eb47",
+        "anchors": [
+          "The migration code is written, but its tests have not been run.",
+          "The migration code is written, but its tests have not been run."
+        ]
+      },
+      "sourceBindings": [
+        {
+          "factId": "D1-not-run",
+          "quote": "tests=not-run",
+          "refs": [
+            {
+              "transcriptIndex": 2,
+              "eventSeq": 8,
+              "role": "tool",
+              "name": "check_state",
+              "containsQuote": true
+            }
+          ],
+          "quoteBoundToEveryRef": true,
+          "authority": "tool"
+        }
+      ],
+      "extraction": {
+        "scorerVersion": 2,
+        "applicable": false,
+        "reason": "this arm commits no semantic deltas",
+        "writer": null,
+        "criticalRecall": null,
+        "coordinateRecall": null,
+        "claimCorrectness": null,
+        "sourceSupport": null,
+        "groundedPrecision": null,
+        "falseNormativeRate": null,
+        "currentStateAccuracy": null,
+        "directVisibility": null,
+        "requiresReview": null,
+        "counts": {
+          "gold": 1,
+          "matched": 0,
+          "accepted": 0,
+          "refused": 0
+        }
+      },
+      "behaviour": {
+        "applicable": false,
+        "reason": "writer-only stage: no follow-up agent ran, so no task outcome exists",
+        "checkerStatus": "not-run",
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "historicalConstraintCompliance": null,
+        "processCompliance": null,
+        "contractSuccess": null,
+        "failedChecks": [],
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "behaviourDetail": null,
+      "checker": {
+        "status": "not-run",
+        "exitCode": null,
+        "timedOut": false,
+        "checks": [],
+        "claims": {},
+        "spoofMarkers": 0
+      },
+      "cost": {
+        "attempts": 0,
+        "httpAttempts": 0,
+        "httpRetries": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "observedInputTokens": 0,
+        "observedOutputTokens": 0,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 0,
+        "chargedOutputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 37,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 58,
+        "runElapsedMs": 181865,
+        "modelRequests": 4
+      },
+      "tracePath": "runs/r35-writer-only-opencode-20261102/D1/O1/r1/trace/record.json"
+    },
+    {
+      "schemaVersion": 3,
+      "caseId": "F1",
+      "arm": "S",
+      "stage": "writer-only",
+      "mode": "live",
+      "runId": "r35-writer-only-opencode-20261102",
+      "replicateId": "r1",
+      "valid": false,
+      "measurementValid": false,
+      "reason": "harness-error",
+      "failures": {
+        "provider": [],
+        "budget": [],
+        "fold": [],
+        "checker": [],
+        "harness": [
+          {
+            "kind": "harness-error",
+            "message": "Error: summary is not smaller than the shadowed content (653 estimated framed tokens >= 598)\n    at summarizeCompaction (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:288:15)\n    at async compactSurfaceRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:138:28)\n    at async EpistemicFoldEngine.compactRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/fold/engine.js:800:28)\n    at async foldCase (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:598:3)\n    at async runOne (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1009:18)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1951:23)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:2118:1"
+          }
+        ],
+        "task": {
+          "assessed": false,
+          "functionalFailure": null,
+          "historicalConstraintViolation": false,
+          "processViolation": false,
+          "falseVerificationClaim": false
+        },
+        "outcome": "harness-error"
+      },
+      "providerCalls": {
+        "attempted": 1,
+        "succeeded": null,
+        "failed": null
+      },
+      "behaviour": {
+        "applicable": false,
+        "taskSuccess": null,
+        "functionalSuccess": null,
+        "contractSuccess": null,
+        "processViolation": false,
+        "falseVerificationClaim": false
+      },
+      "cost": {
+        "attempts": 1,
+        "httpAttempts": 1,
+        "httpRetries": 0,
+        "inputTokens": 1014,
+        "outputTokens": 1470,
+        "observedInputTokens": 1014,
+        "observedOutputTokens": 1470,
+        "reservedInputTokens": 0,
+        "reservedOutputTokens": 0,
+        "chargedInputTokens": 1014,
+        "chargedOutputTokens": 1470,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "budgetRefusals": 0,
+        "unresolvedAttempts": 0,
+        "elapsedMs": 12934,
+        "chargedIncludesUnknown": false,
+        "caseDurationMs": 12934,
+        "runElapsedMs": 194801,
+        "modelRequests": 5
+      }
+    }
+  ],
+  "notes": [
+    "stage: writer-only",
+    "provider calls: 4/5 succeeded over 5 provider row(s)",
+    "provider failures observed: 0",
+    "stop reason: Error: summary is not smaller than the shadowed content (653 estimated framed tokens >= 598)\n    at summarizeCompaction (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:288:15)\n    at async compactSurfaceRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:138:28)\n    at async EpistemicFoldEngine.compactRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/fold/engine.js:800:28)\n    at async foldCase (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:598:3)\n    at async runOne (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1009:18)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1951:23)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:2118:1",
+    "harness error: Error: summary is not smaller than the shadowed content (653 estimated framed tokens >= 598)\n    at summarizeCompaction (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:288:15)\n    at async compactSurfaceRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:138:28)\n    at async EpistemicFoldEngine.compactRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/fold/engine.js:800:28)\n    at async foldCase (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:598:3)\n    at async runOne (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1009:18)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1951:23)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:2118:1",
+    "Custom tool loop: tool results are user text; recall searches the frozen transcript, not production context_search.",
+    "The hidden checker runs outside the agent workspace; the environment is allowlisted.",
+    "Same-user code is not sandboxed by the OS; see isolation.osSandbox.",
+    "No currency is reported: no trusted price profile was supplied."
+  ],
+  "stopReason": "Error: summary is not smaller than the shadowed content (653 estimated framed tokens >= 598)\n    at summarizeCompaction (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:288:15)\n    at async compactSurfaceRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:138:28)\n    at async EpistemicFoldEngine.compactRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/fold/engine.js:800:28)\n    at async foldCase (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:598:3)\n    at async runOne (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1009:18)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1951:23)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:2118:1",
+  "harnessError": "Error: summary is not smaller than the shadowed content (653 estimated framed tokens >= 598)\n    at summarizeCompaction (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:288:15)\n    at async compactSurfaceRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/basic/region.js:138:28)\n    at async EpistemicFoldEngine.compactRegion (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/lib/fold/engine.js:800:28)\n    at async foldCase (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:598:3)\n    at async runOne (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1009:18)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:1951:23)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-r35-live/eval/r33/live.mjs:2118:1",
+  "providerAvailability": {
+    "providerRows": 5,
+    "attemptedRows": 5,
+    "attempts": 5,
+    "successes": 4,
+    "providerFailures": 0,
+    "unavailable": false
+  }
+}

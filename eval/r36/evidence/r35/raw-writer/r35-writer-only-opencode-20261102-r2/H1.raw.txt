@@ -1,0 +1,11 @@
+<handoff>
+The only authoritative artifact available was the deployment record, so it was opened and read rather than inferring region or rollout mode from filenames or environment variables. No source edits were made, and none should be attributed to this span: the implementation-log output consisted of the same boilerplate sentence repeated verbatim many times, with no per-file detail, so it cannot stand in for evidence that the deployment client was inspected. The alternative — treating that repeated log line as confirmation of a completed review — was rejected as unsound, since repetition carries no information about which files were touched or what changed.
+
+Next step is to open the deployment client source directly, trace how the production region is resolved at runtime (record field versus hardcoded default), and confirm the canary rollout path handles region selection the same way. Once the resolution logic is read and the region source is confirmed against the record, the client is ready for handoff. Until then, treat the region value as observed-but-unset-in-code rather than wired through.
+</handoff>
+
+<deltas>
+[{"kind":"objective","subjectKey":"objective:deployment-client","statement":"Finish the deployment client and verify the production region before shipping.","status":"claimed","evidence":[{"quote":"Finish the deployment client and verify the production region before shipping."}],"supersedes":[],"dependsOn":[],"rulesOut":[],"scope":{"branch":"main"}},
+{"kind":"finding","subjectKey":"deployment-record:cache-client","statement":"The deployment record for service cache-client states production region eu-west-2 and a canary rollout.","status":"observed","evidence":[{"quote":"Service: cache-client.",""},{"quote":"Production deployment region: eu-west-2. Rollout: canary."}],"supersedes":[],"dependsOn":[],"rulesOut":[],"scope":{"branch":"main"}},
+{"kind":"experience-candidate","subjectKey":"noise:implementation-log","statement":"The implementation-log output was one boilerplate sentence repeated verbatim with no per-file content, so it does not evidence that any file was reviewed or changed.","status":"observed","evidence":[{"quote":"the relevant files were reviewed against the frozen fixture and no unrelated change was made."}],"supersedes":[],"dependsOn":[],"rulesOut":[],"scope":{"branch":"main"}}]
+</deltas>

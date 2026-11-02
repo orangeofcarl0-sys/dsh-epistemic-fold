@@ -26,7 +26,7 @@ import { registerEpistemicFoldProjection } from '../src/state/projection.ts'
 import { makeTemp } from '../eval/tmp.ts'
 import { mountRuntime } from '../eval/src/runtime-mount.ts'
 import { Context } from '@deepseek-ai/cordis'
-import { ControlledAdapter, MODEL, SIGNAL, createHarness, conversation, foldAgent } from './harness.ts'
+import { ControlledAdapter, MODEL, SIGNAL, createHarness, conversation, foldAgent, toolConversation } from './harness.ts'
 import type { Harness, Session } from './harness.ts'
 
 /** The writer call is the one whose last user message is the writer instruction. */
@@ -306,5 +306,46 @@ describe('shadow mode: measurement without commitment', () => {
       .then(entries => entries.length)
       .catch(() => 0)
     expect(files).toBe(0)
+  })
+})
+
+describe('R36-A5: a refused tool-origin claim never becomes machine state', () => {
+  it('keeps the refused claim in narrative only, and records the refusal', async () => {
+    const { h, box } = await semanticHarness('active')
+    const refusedStatement = 'The scheduler must use a durable outbox.'
+    const acceptedStatement = 'The scheduler must not miss changes.'
+    box.text = writerReply(
+      'The tool result was read as a requirement for a durable outbox. That reading is recorded here as narrative; '
+        + 'the user requirement is the delivery guarantee.',
+      [
+        {
+          kind: 'constraint',
+          subjectKey: 'scheduler-storage',
+          statement: refusedStatement,
+          status: 'claimed',
+          evidence: [{ quote: 'result 1' }],
+        },
+        constraintDelta('request 1', acceptedStatement, 'scheduler-reliability'),
+      ],
+    )
+
+    const body = await foldOpen(h, toolConversation(2))
+    const packet = h.engine.lastSemanticPacket!
+    expect(packet.refused).toHaveLength(1)
+    expect(packet.refused[0]!.reason).toBe('authority-ungrounded')
+    expect(packet.refused[0]!.detail).toContain('tool/result')
+    expect(packet.accepted.map(delta => delta.statement)).toContain(acceptedStatement)
+    expect(packet.accepted.map(delta => delta.statement)).not.toContain(refusedStatement)
+
+    // The machine section is the only part of the checkpoint that claims
+    // committed state. The refused claim must not appear there; if the model's
+    // prose carried it, it can appear only in the Rationale narrative.
+    const rationaleAt = body.indexOf('Rationale')
+    expect(rationaleAt).toBeGreaterThan(0)
+    const machineSection = body.slice(0, rationaleAt)
+    const rationale = body.slice(rationaleAt)
+    expect(machineSection).toContain(acceptedStatement)
+    expect(machineSection).not.toContain(refusedStatement)
+    expect(rationale).toContain('durable outbox')
   })
 })
