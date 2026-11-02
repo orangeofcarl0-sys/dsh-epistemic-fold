@@ -2,9 +2,54 @@
 
 ## Status
 
-No real-model failure can be attributed yet: there are 0 provider requests and 0
-real writer outputs. This document records the failure mechanisms the instrument
-now distinguishes, and the local counterexamples that prove each distinction.
+The first authorized live attempt failed before any semantic behavior could be
+observed: 6 real writer calls, 6 HTTP 401 `api_key_expired`, 0 writer outputs,
+0 tokens. The earliest confirmable failure is **provider authentication** — not
+the writer prompt, the validator, the journal, or the agent. No real-model
+semantic failure can be attributed yet.
+
+This document records that first real failure, the instrument defect it exposed,
+and the local counterexamples that prove each distinction.
+
+## 0. The first real failure: authentication, not semantics
+
+```text
+historical fact
+  -> real EF fold                     executed
+  -> semantic writer request          6 attempted
+  -> provider authentication          FAILED: HTTP 401 api_key_expired
+  -> writer output                    none
+  -> deltas / validator / journal     never reached
+```
+
+The six cases (A1, B2, C1, D1, F1, H1) all stopped at the same point. The fold
+still produced a deterministic checkpoint, so the rows are valid measurements of
+the fold path, but they are not writer measurements: `writer.call = failed`,
+`writer.protocol = not-called`, `writer.rawOutput = null`, and
+`failures.task.assessed = false`.
+
+Attribution rule applied: do not advance a later stage’s explanation when an
+earlier stage failed. The writer did not “omit” anything; it was never heard
+from.
+
+### The instrument defect this exposed
+
+The first run of the pilot reported `executed-success` and “12/12 writer
+measurements valid”. Six of those rows were O1 oracle controls that never touch
+the network; they masked the fact that all six real writer calls had failed. The
+run-level test required every row to carry a provider failure, which oracle rows
+do not.
+
+Fixed by separating provider rows from controls:
+
+```text
+rowExpectsProviderCall(stage, arm)   writer-only: S only
+providerAvailability(rows)           successes over rows that must call
+writerMeasurements(rows)             real calls vs oracle controls
+```
+
+The corrected run is `provider-unavailable` with 0/6 real writer calls
+completed. The superseded report remains in the run archive as evidence.
 
 ## 1. A retry counted twice
 
@@ -42,7 +87,10 @@ Verified cases:
 - **Follow-up HTTP 500 after a successful writer.** The row is invalid,
   `failures.outcome = provider-http-error`, `stage = follow-up`, and
   `failures.task.assessed = false`. The writer's observed input/output tokens and
-  the follow-up's 131,072 / 1,024 charged reserve remain in `cost`.
+  the follow-up's 131,072 / 1,024 charged reserve remain in `cost`. Because the
+  writer call succeeded, the route is not reported as unavailable; the run is
+  `executed-failed` with `measurementValid = false`, which says the measurement
+  is incomplete rather than blaming the provider for the whole run.
 - **Every task fails the hidden checker, provider healthy.** The row is valid,
   `failures.outcome = valid-task-failure`, `failures.provider` is empty,
   `failures.task.assessed = true`, and the run is `executed-failed` with
@@ -76,6 +124,7 @@ actual attempt count and charged reserve.
 ## 6. What is still unattributed
 
 ```text
+whether a real writer follows the protocol at all
 writer omission on a real model
 real protocol malformation
 real unsupported normative claims
@@ -84,5 +133,6 @@ real retrieval failure
 real cost per successful task
 ```
 
-These require the authorized live run. No prompt, gold, or writer change was
-made in anticipation of what that run might show.
+These require a working provider route. The authorized attempt died at
+authentication, before any of them could be observed. No prompt, gold, or writer
+change was made in anticipation of what that run might show.

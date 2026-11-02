@@ -6,8 +6,9 @@ well-formed.
 
 **Current status:** R34.1 closed the live-accounting, failure-classification,
 preflight, writer-only, contract, and report-persistence blockers. The R35 live
-model run is **not executed** (no explicit budget permission, route, or
-authorization). Zero provider requests were made. The scripted results are a
+writer pilot was authorized and attempted, but the route returned HTTP 401
+`api_key_expired` on all six real writer calls; the run is recorded as
+`provider-unavailable` with 0 completed writer calls. The scripted results are a
 pipeline measurement, **not a model result**.
 
 ## Quick start
@@ -15,7 +16,7 @@ pipeline measurement, **not a model result**.
 ```bash
 npm run eval:r33-verify       # manifest matches every case
 node eval/r33/freeze.mjs --holdout --verify
-npm run eval:r33              # R33 + R34.1 + R35 targeted tests (85 tests)
+npm run eval:r33              # R33 + R34.1 + R35 targeted tests (91 tests)
 npm run eval:r33-live-check   # interface only; no credentials
 node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json
 npm run eval:r33-self-test    # four arms, real fold/tool-loop, scripted adapter

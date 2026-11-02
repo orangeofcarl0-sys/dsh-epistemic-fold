@@ -7,12 +7,18 @@ real B1 / S pairs:        0
 real O1 / O2 pairs:       0
 real agent tool loops:    0
 real hidden checker runs: 0
-provider requests:        0
+provider requests:        6 attempted, 0 succeeded
 verdict:                  blocked / not executed
 ```
 
-No real-model behavioural comparison exists. The sections below state what the
-instrument will measure and why no number is reported.
+No real-model behavioural comparison exists. The authorized writer-only pilot
+was attempted, but all six real writer calls returned HTTP 401
+`api_key_expired`, and no O1 oracle row is a substitute for an S row. Running
+B1/S continuations on a dead route would only have spent more attempts to
+produce the same non-result, so the continuation stage was not started.
+
+The sections below state what the instrument will measure and why no number is
+reported.
 
 ## What would be measured
 

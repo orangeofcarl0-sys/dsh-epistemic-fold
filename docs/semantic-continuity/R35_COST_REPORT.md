@@ -3,19 +3,52 @@
 ## Status
 
 ```text
-provider requests:        0
-observed input tokens:    0
-observed output tokens:   0
-reserved tokens:          0
-charged tokens:           0
-retries:                  0
-wall clock (provider):    0 ms
-currency:                 not reported (no trusted price profile)
+provider requests attempted:  6
+provider requests succeeded:  0
+observed input tokens:        0
+observed output tokens:       0
+reserved input tokens:        6,291,456
+reserved output tokens:       98,304
+charged input tokens:         6,291,456
+charged output tokens:        98,304
+unknown-usage attempts:       6
+retries:                      0
+run wall clock:               3,257 ms
+currency:                     not reported (no trusted price profile)
 ```
 
-No real-model cost exists in this round. The numbers below are from the local
-mock-provider tests that verify the accounting instrument. They are **not**
-provider cost and must not be presented as such.
+Six real writer attempts were made and all were refused at authentication with
+HTTP 401. Because the provider reported no usage, the whole per-request reserve
+remains charged and every attempt is counted as unknown rather than free. A 401
+consumed no billed tokens that this harness can observe, but that is a property
+of the refusal, not a measured model cost.
+
+The numbers in the mock-provider sections below verify the accounting
+instrument. They are **not** provider cost and must not be presented as such.
+
+## The authorized attempt
+
+```text
+run id:                  r35-writer-only-provider-auth-20261102
+HTTP attempts:           6
+HTTP retries:            0
+observed tokens:         0
+unknown-usage attempts:  6
+reserved input:          6 x 131,072 = 6,291,456
+reserved output:         6 x 16,384  =    98,304
+charged input/output:    6,291,456 / 98,304
+caseDurationMs:          present per row
+runElapsedMs:            3,257
+currency:                not reported
+```
+
+The adapter's retry telemetry and the ledger agree at zero retries
+(`retryAccounting.consistent = true`). The 401 is a terminal response, not a
+rate-limit condition, so no retry was attempted.
+
+The charge above is an admission reserve, not a bill. A server that rejects the
+key before inference may bill nothing; this harness cannot verify that from the
+response, so it does not settle the reserve to zero.
 
 ## What the instrument now separates
 

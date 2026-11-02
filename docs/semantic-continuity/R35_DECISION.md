@@ -4,16 +4,18 @@
 
 ```text
 R34.1 evaluation integrity closure:   complete
-R35 real writer evidence:             blocked / not executed
+R35 real writer evidence:             provider-unavailable (6 attempts, 0 completed)
 R35 behavioural evidence:             blocked / not executed
 R35 causal (O1/O2/ablation) evidence:  not executed
-provider requests:                    0
+provider requests:                    6 attempted, 0 successful
 real-model behavioural benefit:       insufficient evidence
-product recommendation:               do not expand EF before the pilot
+product recommendation:               do not expand EF before a working pilot
 ```
 
-The instrument is now ready for a live writer-only pilot. The pilot has not run
-because no explicit spend authorization, resolved route, or budget was supplied.
+The instrument is ready and was exercised on the authorized route. The route
+rejected every call with `HTTP 401 api_key_expired`, so the model experiment
+still has not produced a usable observation. The failed attempt is recorded as
+a provider-availability result, not as a writer or task result.
 
 ## Gate status
 
@@ -37,8 +39,17 @@ makes no request. `R33_LIVE` still refuses a live run.
 
 ### G2 — Writer evidence
 
-**Blocked.** Zero real writer outputs. The writer-only stage and its evidence
-fields are implemented and tested locally, but no provider was called.
+**Blocked by credentials, not by the instrument.** Six real writer calls were
+attempted on the authorized route; all six returned `HTTP 401 api_key_expired`.
+Zero writer outputs, zero observed tokens. The writer-only stage and its evidence
+fields are implemented and tested locally, and the attempt exercised the real
+route and the real fold. It did not produce a model observation.
+
+The first run of this attempt was misreported as `executed-success` because the
+O1 oracle controls — which make no provider call — satisfied the old
+every-row-has-a-provider-failure condition. That defect is fixed, regression
+tested, and the corrected report is `provider-unavailable` with 0/6 real writer
+calls completed.
 
 ### G3 — Behavioural evidence
 
@@ -71,15 +82,16 @@ and fold policy are unchanged.
 **Does EF Active beat ordinary history compression on key-knowledge retention,
 subsequent task correctness, and total cost?**
 
-**Insufficient evidence.** The real-model experiment was not authorized. The
-offline instrument can show that the pipeline delivers a fact and that a hidden
-checker can measure a task, but it cannot show what a real writer extracts or how
-a real agent behaves.
+**Insufficient evidence.** The experiment was authorized and attempted, but the
+provider refused every real call at authentication. The offline instrument can
+show that the pipeline delivers a fact and that a hidden checker can measure a
+task, but it cannot show what a real writer extracts or how a real agent behaves.
 
 ## What would change this decision
 
-1. A live writer-only pilot on 4–6 cases with real usage would convert
-   `insufficient evidence` into positive or negative writer evidence.
+1. A refreshed route with a non-expired key, followed by a live writer-only pilot
+   on 4–6 cases with real usage, would convert `insufficient evidence` into
+   positive or negative writer evidence.
 2. A live B1/S continuation on the same frozen inputs, with at least 12 valid
    pairs, would support or refute a behavioural claim.
 3. A reproduced writer omission would make the writer the first R35 target.
@@ -98,12 +110,12 @@ tests as real-model results.
 ## Verification
 
 ```text
-targeted R33/R34.1/R35 suites:   85 passed (14 files)
-full suite:                      1445 passed, 3 failed, 66 skipped
+targeted R33/R34.1/R35 suites:   91 passed (14 files)
+full suite:                      1451 passed, 3 failed, 66 skipped
 full-suite failures:             3 known installed-vs-vendored DSH drift
 typecheck:                       source, client, eval all pass
 four-arm scripted self-test:     68/68 functional, 68/68 contract
 writer-only scripted self-test:  2/2 valid (A1, S/O1)
 preflight example manifest:      12/12 feasible, 0 provider requests
-real provider requests:          0
+authorized live attempt:         6 real writer attempts, 6 x HTTP 401, 0 writer outputs
 ```

@@ -502,12 +502,16 @@ writer/validator/journal/working-set/checkpoint chain without a follow-up agent,
 and `--stage continuation` measures functional success, historical constraint
 compliance, process compliance, contract success, and verification freshness.
 
-The R35 real-model writer and behavioural pilots are **blocked / not executed**:
-0 provider requests, 0 tokens. A local mock-provider end-to-end test verifies
-`429, 429, 200` as 3 attempts and 2 retries in the final report; a writer HTTP
-failure is classified as a provider failure while the fold safely degrades; a
-follow-up failure preserves the earlier cost; and a run whose tasks all fail the
-hidden checker is a valid negative result, not a harness failure. See
+The R35 real-model writer pilot was authorized and attempted on
+`opencode` / `deepseek-v4.1-flash`, but the route returned HTTP 401
+`api_key_expired` on all six real writer calls. The run is recorded as
+**provider-unavailable**: 6 attempts, 0 completions, 0 observed tokens, and six
+local O1 oracle controls. No real-model writer or behavioural result exists. A
+local mock-provider end-to-end test verifies `429, 429, 200` as 3 attempts and 2
+retries in the final report; a writer HTTP failure is classified as a provider
+failure while the fold safely degrades; a follow-up failure preserves the
+earlier cost; and a run whose tasks all fail the hidden checker is a valid
+negative result, not a harness failure. See
 `docs/semantic-continuity/R35_LIVE_PREFLIGHT.md`, `R35_DECISION.md`, and
 `R35_HANDOFF.md`. The scripted pipeline numbers remain offline controls only.
 

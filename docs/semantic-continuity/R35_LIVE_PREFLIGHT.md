@@ -4,14 +4,19 @@
 
 ```text
 R34.1 evaluation integrity closure:  complete
-R35 live writer-only pilot:           blocked / not executed
-R35 behavioural comparison:           blocked / not executed
-provider requests in this round:      0
+explicit spend authorization:        received (opencode / deepseek-v4.1-flash)
+route resolution:                    resolved from the ZCode config
+R35 live writer-only pilot:          attempted; provider-unavailable
+R35 behavioural comparison:          blocked / not executed
+provider requests in this round:     6 attempts, 0 successes
+provider tokens observed:            0
 ```
 
-The instrument is ready to run. The model experiment has not run, because the
-round received no explicit authorization, resolved route, or spend budget. This
-document records what was verified locally and what only a provider can verify.
+The instrument is ready to run, and an authorized pilot was attempted on
+2026-11-01/02. The route answered every real writer call with
+`HTTP 401 api_key_expired`, so no writer output was measured. This document
+records the preflight, the authorization, the probe evidence, and the exact
+point at which the attempt stopped.
 
 ## What R34.1 fixes
 
@@ -54,9 +59,18 @@ task       assessed, functionalFailure, historicalConstraintViolation,
 A non-fatal writer failure — the fold still commits a deterministic checkpoint —
 does not erase a valid task outcome. A fatal follow-up failure makes the row
 invalid and is classified as `provider-*`; the checker result is retained as
-diagnostic evidence but `failures.task.assessed` is `false`. A run in which every
-row has a provider failure and no provider call succeeded is reported as
-`provider-unavailable`, even if a safely degraded fold was valid.
+diagnostic evidence but `failures.task.assessed` is `false`.
+
+The run-level `provider-unavailable` test was initially wrong. It required EVERY
+row to carry a provider failure, so the six O1 oracle controls — which answer from
+the frozen dataset without a network call — hid the fact that all six real writer
+calls had failed. The authorized pilot was first reported as `executed-success`
+with “12/12 writer measurements valid”. `providerAvailability()` now counts only
+rows that the arm/stage design says must reach the provider (writer-only `S`;
+every arm in a continuation), and `runQuality().writerMeasurements` separates
+real writer calls from oracle controls. The corrected run is
+`provider-unavailable` with `0/6` real writer calls completed. A regression test
+covers the exact mix of failed real calls plus successful oracle controls.
 
 ### Cost survives an exception
 
@@ -134,6 +148,95 @@ planned: 6 fold calls (O1 writers are local oracle responses)
 If `route.maxOutputTokens` is omitted, the per-case verdict is
 `unknown-model-capability` even when every local budget check passes. That is
 not a pass: only the provider can confirm the ceiling.
+
+## The authorized attempt (2026-11-01/02)
+
+The user explicitly authorized spend on the `opencode` route with
+`deepseek-v4.1-flash`, pointed at the key material in the ZCode configuration,
+and placed no hard currency cap on the pilot. Because “no limit” is not an
+auditable manifest value, the runner still applied finite audit limits:
+
+```text
+requests:       60        input tokens:  32,000,000
+output tokens:  1,000,000 wall clock:    1,800,000 ms
+maxOutputTokens: 32,768   contextWindow: 1,048,576
+cases:          A1, B2, C1, D1, F1, H1
+arms:           S, O1      stage: writer-only
+```
+
+The key was read from the ZCode config at `$HOME/.zcode/v2/config.json` (or the
+path named by `ZCODE_PERSONAL_PROVIDER_CONFIG_FILE`) and placed only in the child
+process environment as `R35_LIVE_API_KEY`. It was not printed, serialized into a
+report, or written to the repository.
+
+### Route probes
+
+A one-request capability probe was sent before the pilot. No token was consumed.
+The three OpenCode providers in the config all use the same gateway:
+
+| Provider | Base URL | Result |
+| --- | --- | --- |
+| `5c7f8d75-e85e-4de5-9b27-e2b59eab1c7a` | `https://opencode.ai/zen/go/v1` | HTTP 401 `authentication_error` / `api_key_expired` |
+| `ac2dbaa8-7050-48e2-9d72-b21663fe3cff` | `https://opencode.ai/zen/go/v1` | HTTP 401 `authentication_error` / `api_key_expired` |
+| `b88043d7-f229-452c-b634-4152ca14aae8` | `https://opencode.ai/zen/go/v1` | HTTP 401 `authentication_error` / `api_key_expired` |
+| `c15ab109-97b8-4de1-a647-9857a635be38` | `http://127.0.0.1:7866/v1` | transport failure `ECONNREFUSED` |
+
+The provider's own message is explicit: “This API key has expired. Create a new
+API key in OpenCode Console and replace it in your client or secret store.
+Signing in again will not renew this key.” No alternate credential
+(`OPENCODE_GO_API_KEY`, `OPENCODE_API_KEY`, `OPENAI_API_KEY`, `EF_LIVE_API_KEY`,
+`R35_LIVE_API_KEY`, `DEEPSEEK_API_KEY`) was present in the environment, and the
+runner does not search for one.
+
+### Preflight result
+
+```text
+status:                  preflight-ok
+feasible:                0
+infeasible:              0
+unknown-model-capability: 12   (6 cases x 2 arms)
+blocking:                0
+planned fold calls:       6
+worst-case attempts:     24
+worst-case input:        6,291,456
+worst-case output:       98,304
+provider requests:        0
+credentials read:         0 (value never read by the preflight)
+```
+
+`unknown-model-capability` is honest: the ZCode provider rules declare a
+1,048,576-token context window but no output ceiling for this model. The
+manifest's 32,768 bound covers the measured 16,384 writer floor, so the
+preflight had no blocking objection. Only the provider could confirm the
+capability, and the 401 answered before that question was reached.
+
+### Run result
+
+```text
+run id:                  r35-writer-only-provider-auth-20261102
+status:                  provider-unavailable (exit 5)
+real writer calls:       6 attempted, 0 completed
+provider responses:      6 x HTTP 401 api_key_expired
+oracle controls:         6 completed, 6 committed
+fold measurements:       12 / 12 valid
+observed tokens:         0
+unknown-usage attempts:  6
+charged input/output:    6,291,456 / 98,304
+run wall clock:          3,257 ms
+```
+
+An earlier run (`r35-writer-only-provider-auth-20261101`) was executed before
+the status fix and reported `executed-success`. It is retained in the run
+archive as evidence of the defect, but it is **superseded** and must not be
+cited as a result. The corrected report is:
+
+```text
+eval/r35/runs/r35-writer-only-provider-auth-20261102/report.json
+```
+
+No writer raw output, protocol, delta, refusal, or checkpoint semantics were
+observed. The six “fold measurements” are the deterministic EF fold path around
+a failed writer; they are not model behavior.
 
 ## What the preflight does not prove
 

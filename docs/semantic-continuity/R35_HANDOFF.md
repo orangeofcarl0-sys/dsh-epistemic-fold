@@ -12,7 +12,7 @@ Dataset digest    407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c8
 Holdout           r33-semantic-continuity-holdout-v1
 Holdout digest    af22eb7a91155507998750f0428be8bb7c6285696179128a75e83f3eeaada663
 Scorer            v2
-Live status       blocked / not-executed (0 provider requests, 0 tokens)
+Live status       provider-unavailable (6 attempts, 0 successful, 0 tokens)
 ```
 
 The primary worktree and the R30–R34 worktrees are untouched. R34's commits and
@@ -44,14 +44,20 @@ or resetting the R34 one.
 - The authoritative report is `<runRoot>/<runId>/report.json`; the convenience
   copy is best-effort.
 - The example manifest is compatible with the real 16,384-token writer floor.
+- Run-level provider availability now counts only rows that must reach the
+  provider. Oracle controls can no longer mask a dead route; `runQuality` reports
+  real writer calls separately from oracle controls.
+- `eval/r35/run-authorized.mjs` resolves the route from the ZCode config, keeps
+  the key in the child environment only, runs preflight then the pilot, and
+  writes per-run artifacts.
 
 ## Commands
 
 ```bash
 npm run build                    # rebuild lib/ (gitignored)
 npm run eval:build               # rebuild eval/live/dist for live.mjs
-npm run eval:r33                 # R33 + R34.1 + R35 targeted suites (85 tests)
-npm run eval:r35                 # only the new R35 tests (23 tests)
+npm run eval:r33                 # R33 + R34.1 + R35 targeted suites (91 tests)
+npm run eval:r35                 # only the new R35 tests (29 tests)
 npm run eval:r33-verify          # dataset digest
 node eval/r33/freeze.mjs --holdout --verify
 
@@ -70,8 +76,8 @@ environment-variable names the manifest declares.
 
 ### Evaluation-integrity closure
 
-- Targeted R33/R34.1/R35 suites: 14 files, 85 tests passed.
-- Full suite: 1445 passed, 3 failed, 66 skipped. All three failures are the
+- Targeted R33/R34.1/R35 suites: 14 files, 91 tests passed.
+- Full suite: 1451 passed, 3 failed, 66 skipped. All three failures are the
   known installed-vs-vendored DSH drift assertions (`bridge-loads`,
   `rc3-plugin-packaging`, `rc7-inplace-drift`); no R33/R34.1/R35 test fails.
 - Typecheck: source, client, and eval all pass.
@@ -97,17 +103,39 @@ environment-variable names the manifest declares.
 
 ### Live model experiment
 
+The user authorized spend on `opencode` / `deepseek-v4.1-flash` with the key in
+the ZCode configuration. The authorized runner resolved:
+
 ```text
-real writer outputs:       0
-real B1/S pairs:           0
-real tool loops:           0
-real checker outcomes:     0
-observed/charged tokens:   0
+provider:      5c7f8d75-e85e-4de5-9b27-e2b59eab1c7a
+base URL:      https://opencode.ai/zen/go/v1
+model:         deepseek-v4.1-flash
+contextWindow: 1,048,576
+writer bound:  32,768 requested (16,384 actual floor)
 ```
 
-There is no real-model result. The gate is blocked on explicit authorization,
-a resolved provider/model route, and a positive budget including a per-request
-output bound.
+Route probes and the pilot both failed at authentication:
+
+```text
+real writer attempts:      6
+real writer completions:   0
+provider responses:        6 x HTTP 401 api_key_expired
+observed tokens:           0
+unknown-usage attempts:    6
+charged reserve:           6,291,456 input / 98,304 output
+oracle controls:           6 completed, 6 committed
+fold measurements:         12 / 12 valid
+run status:                provider-unavailable (exit 5)
+```
+
+The three OpenCode config entries all returned `api_key_expired`; the local proxy
+returned `ECONNREFUSED`; no alternate key was present in the environment. No key
+value was logged or persisted. The first run of the pilot
+(`r35-writer-only-provider-auth-20261101`) was misreported as `executed-success`
+because oracle controls suppressed the provider-unavailable check. The corrected
+run (`...-20261102`) is the authoritative record.
+
+There is still no real-model writer or behavioural result.
 
 ## Known limits
 
@@ -124,16 +152,19 @@ output bound.
 
 ## Next step (requires the user)
 
-Run the writer-only pilot first:
+The spend authorization is in hand; the blocking input is now a working
+credential or route:
 
-1. Supply explicit permission to spend, a resolved route, a model id, a
-   positive request/input/output/wall-clock budget, and a per-request output
-   bound of at least 16,384.
-2. Run `--preflight`; resolve every `infeasible` or `unknown-model-capability`.
-3. Run `--stage writer-only` on 4–6 discriminating cases.
-4. Save raw output, protocol, proposals, refusals, commit state, source support,
+1. Replace the expired OpenCode key with a non-expired one, or start the local
+   proxy at `http://127.0.0.1:7866/v1`.
+2. Re-run `R35_PROBE=1 node eval/r35/run-authorized.mjs` to confirm a minimal
+   request succeeds before the pilot.
+3. Run `--preflight`; resolve every `infeasible` or `unknown-model-capability`
+   that the provider can answer.
+4. Run `--stage writer-only` on the six cases.
+5. Save raw output, protocol, proposals, refusals, commit state, source support,
    and usage before changing any writer prompt.
-5. Only then run `--stage continuation` for B1/S/O1/O2.
+6. Only then run `--stage continuation` for B1/S/O1/O2.
 
 Do not start R35 product changes before that evidence exists. No MemoryOS,
 vector database, Experience Bank, knowledge graph, second compaction engine, or
