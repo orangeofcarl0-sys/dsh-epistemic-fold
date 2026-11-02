@@ -3,16 +3,17 @@
 ## Status
 
 ```text
-real Semantic Writer calls:  6 attempted, 0 completed
+real Semantic Writer calls:  12 attempted over two runs, 0 completed
 real writer output bytes:    0
-real writer tokens:          0 (6 unknown-usage attempts)
+real writer tokens:          0 (12 unknown-usage attempts)
 verdict:                     provider-unavailable (HTTP 401 api_key_expired)
 ```
 
 An authorized pilot was attempted against `opencode` / `deepseek-v4.1-flash` on
-2026-11-01/02. Every real writer call was refused at authentication, so there is
-still **no real-model writer result**. The six O1 oracle controls completed
-locally; they are controls, not model evidence.
+2026-11-01/02. Every real writer call in both runs was refused at
+authentication, so there is still **no real-model writer result**. The six O1
+oracle controls per run completed locally; they are controls, not model
+evidence.
 
 ## The authorized live attempt
 
@@ -62,8 +63,10 @@ superseded by the corrected report.
 Route probes to all three OpenCode config entries returned HTTP 401
 `authentication_error` with code `api_key_expired`. The local proxy provider
 (`http://127.0.0.1:7866/v1`) refused the connection. No alternate key existed in
-the environment. The runner therefore made the six planned real writer attempts,
-recorded all six failures, and stopped without inventing a writer result.
+the environment. The runner therefore made six planned real writer attempts in
+each of two runs, recorded all twelve failures, and stopped without inventing a
+writer result. The second run exists only to obtain a report from the corrected
+status logic; it did not add a new kind of evidence.
 
 ## What was executed locally
 

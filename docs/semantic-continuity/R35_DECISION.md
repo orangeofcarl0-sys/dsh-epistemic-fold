@@ -4,10 +4,10 @@
 
 ```text
 R34.1 evaluation integrity closure:   complete
-R35 real writer evidence:             provider-unavailable (6 attempts, 0 completed)
+R35 real writer evidence:             provider-unavailable (12 attempts, 0 completed)
 R35 behavioural evidence:             blocked / not executed
 R35 causal (O1/O2/ablation) evidence:  not executed
-provider requests:                    6 attempted, 0 successful
+provider requests:                    16 attempted (12 writer + 4 probes), 0 successful
 real-model behavioural benefit:       insufficient evidence
 product recommendation:               do not expand EF before a working pilot
 ```
@@ -39,11 +39,12 @@ makes no request. `R33_LIVE` still refuses a live run.
 
 ### G2 — Writer evidence
 
-**Blocked by credentials, not by the instrument.** Six real writer calls were
-attempted on the authorized route; all six returned `HTTP 401 api_key_expired`.
-Zero writer outputs, zero observed tokens. The writer-only stage and its evidence
-fields are implemented and tested locally, and the attempt exercised the real
-route and the real fold. It did not produce a model observation.
+**Blocked by credentials, not by the instrument.** Twelve real writer calls were
+attempted across two runs; all twelve returned `HTTP 401 api_key_expired`. Four
+capability probes failed the same way. Zero writer outputs, zero observed
+tokens. The writer-only stage and its evidence fields are implemented and tested
+locally, and the attempt exercised the real route and the real fold. It did not
+produce a model observation.
 
 The first run of this attempt was misreported as `executed-success` because the
 O1 oracle controls — which make no provider call — satisfied the old
@@ -117,5 +118,5 @@ typecheck:                       source, client, eval all pass
 four-arm scripted self-test:     68/68 functional, 68/68 contract
 writer-only scripted self-test:  2/2 valid (A1, S/O1)
 preflight example manifest:      12/12 feasible, 0 provider requests
-authorized live attempt:         6 real writer attempts, 6 x HTTP 401, 0 writer outputs
+authorized live attempt:         16 requests (12 writer + 4 probes), 0 successes
 ```

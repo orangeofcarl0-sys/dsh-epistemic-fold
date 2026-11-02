@@ -12,7 +12,7 @@ verdict:                  blocked / not executed
 ```
 
 No real-model behavioural comparison exists. The authorized writer-only pilot
-was attempted, but all six real writer calls returned HTTP 401
+was attempted, but every real writer call in both runs returned HTTP 401
 `api_key_expired`, and no O1 oracle row is a substitute for an S row. Running
 B1/S continuations on a dead route would only have spent more attempts to
 produce the same non-result, so the continuation stage was not started.

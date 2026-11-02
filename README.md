@@ -504,9 +504,10 @@ compliance, process compliance, contract success, and verification freshness.
 
 The R35 real-model writer pilot was authorized and attempted on
 `opencode` / `deepseek-v4.1-flash`, but the route returned HTTP 401
-`api_key_expired` on all six real writer calls. The run is recorded as
-**provider-unavailable**: 6 attempts, 0 completions, 0 observed tokens, and six
-local O1 oracle controls. No real-model writer or behavioural result exists. A
+`api_key_expired` on every real writer call in both pilot runs. The corrected
+run is recorded as **provider-unavailable**: 12 writer attempts plus 4 probes
+over the round, 0 completions, 0 observed tokens, and six local O1 oracle
+controls per run. No real-model writer or behavioural result exists. A
 local mock-provider end-to-end test verifies `429, 429, 200` as 3 attempts and 2
 retries in the final report; a writer HTTP failure is classified as a provider
 failure while the fold safely degrades; a follow-up failure preserves the

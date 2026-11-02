@@ -7,9 +7,9 @@ well-formed.
 **Current status:** R34.1 closed the live-accounting, failure-classification,
 preflight, writer-only, contract, and report-persistence blockers. The R35 live
 writer pilot was authorized and attempted, but the route returned HTTP 401
-`api_key_expired` on all six real writer calls; the run is recorded as
-`provider-unavailable` with 0 completed writer calls. The scripted results are a
-pipeline measurement, **not a model result**.
+`api_key_expired` on every real writer call in both pilot runs; the run is
+recorded as `provider-unavailable` with 0 completed writer calls. The scripted
+results are a pipeline measurement, **not a model result**.
 
 ## Quick start
 

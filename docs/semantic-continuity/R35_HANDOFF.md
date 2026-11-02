@@ -12,7 +12,7 @@ Dataset digest    407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c8
 Holdout           r33-semantic-continuity-holdout-v1
 Holdout digest    af22eb7a91155507998750f0428be8bb7c6285696179128a75e83f3eeaada663
 Scorer            v2
-Live status       provider-unavailable (6 attempts, 0 successful, 0 tokens)
+Live status       provider-unavailable (16 requests: 12 writer + 4 probes; 0 successful)
 ```
 
 The primary worktree and the R30–R34 worktrees are untouched. R34's commits and
@@ -117,15 +117,15 @@ writer bound:  32,768 requested (16,384 actual floor)
 Route probes and the pilot both failed at authentication:
 
 ```text
-real writer attempts:      6
+real writer attempts:      12 over two runs (6 per run)
 real writer completions:   0
-provider responses:        6 x HTTP 401 api_key_expired
+provider responses:        12 x HTTP 401 api_key_expired + 4 failed probes
 observed tokens:           0
-unknown-usage attempts:    6
-charged reserve:           6,291,456 input / 98,304 output
-oracle controls:           6 completed, 6 committed
-fold measurements:         12 / 12 valid
-run status:                provider-unavailable (exit 5)
+unknown-usage attempts:    12
+charged reserve:           12,582,912 input / 196,608 output (two runs)
+oracle controls:           6 per run, all committed
+fold measurements:         12 / 12 valid per run
+authoritative run status:  provider-unavailable (exit 5)
 ```
 
 The three OpenCode config entries all returned `api_key_expired`; the local proxy

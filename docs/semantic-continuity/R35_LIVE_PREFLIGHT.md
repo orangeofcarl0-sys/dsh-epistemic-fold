@@ -8,7 +8,7 @@ explicit spend authorization:        received (opencode / deepseek-v4.1-flash)
 route resolution:                    resolved from the ZCode config
 R35 live writer-only pilot:          attempted; provider-unavailable
 R35 behavioural comparison:          blocked / not executed
-provider requests in this round:     6 attempts, 0 successes
+provider requests in this round:     16 (12 writer + 4 probes), 0 successes
 provider tokens observed:            0
 ```
 
@@ -228,7 +228,9 @@ run wall clock:          3,257 ms
 An earlier run (`r35-writer-only-provider-auth-20261101`) was executed before
 the status fix and reported `executed-success`. It is retained in the run
 archive as evidence of the defect, but it is **superseded** and must not be
-cited as a result. The corrected report is:
+cited as a result. Across the round, 12 real writer attempts and 4 route probes
+were sent; all 16 requests failed at authentication or transport, and 0 provider
+tokens were observed. The corrected report is:
 
 ```text
 eval/r35/runs/r35-writer-only-provider-auth-20261102/report.json

@@ -3,10 +3,11 @@
 ## Status
 
 The first authorized live attempt failed before any semantic behavior could be
-observed: 6 real writer calls, 6 HTTP 401 `api_key_expired`, 0 writer outputs,
-0 tokens. The earliest confirmable failure is **provider authentication** — not
-the writer prompt, the validator, the journal, or the agent. No real-model
-semantic failure can be attributed yet.
+observed: 12 real writer calls over two runs, 12 HTTP 401 `api_key_expired`,
+0 writer outputs, 0 tokens. Four route probes failed the same way. The earliest
+confirmable failure is **provider authentication** — not the writer prompt, the
+validator, the journal, or the agent. No real-model semantic failure can be
+attributed yet.
 
 This document records that first real failure, the instrument defect it exposed,
 and the local counterexamples that prove each distinction.
@@ -16,17 +17,17 @@ and the local counterexamples that prove each distinction.
 ```text
 historical fact
   -> real EF fold                     executed
-  -> semantic writer request          6 attempted
+  -> semantic writer request          6 attempted per run (12 total)
   -> provider authentication          FAILED: HTTP 401 api_key_expired
   -> writer output                    none
   -> deltas / validator / journal     never reached
 ```
 
-The six cases (A1, B2, C1, D1, F1, H1) all stopped at the same point. The fold
-still produced a deterministic checkpoint, so the rows are valid measurements of
-the fold path, but they are not writer measurements: `writer.call = failed`,
-`writer.protocol = not-called`, `writer.rawOutput = null`, and
-`failures.task.assessed = false`.
+The six cases (A1, B2, C1, D1, F1, H1) stopped at the same point in both runs.
+The fold still produced a deterministic checkpoint, so the rows are valid
+measurements of the fold path, but they are not writer measurements:
+`writer.call = failed`, `writer.protocol = not-called`, `writer.rawOutput = null`,
+and `failures.task.assessed = false`.
 
 Attribution rule applied: do not advance a later stage’s explanation when an
 earlier stage failed. The writer did not “omit” anything; it was never heard

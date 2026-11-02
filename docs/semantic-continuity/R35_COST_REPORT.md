@@ -3,25 +3,23 @@
 ## Status
 
 ```text
-provider requests attempted:  6
+provider requests attempted:  16  (12 real writer calls over two runs + 4 route probes)
 provider requests succeeded:  0
 observed input tokens:        0
 observed output tokens:       0
-reserved input tokens:        6,291,456
-reserved output tokens:       98,304
-charged input tokens:         6,291,456
-charged output tokens:        98,304
-unknown-usage attempts:       6
+reserved input tokens:        12,582,912 (two runs, 6 x 131,072 each)
+reserved output tokens:       196,608    (two runs, 6 x 16,384 each)
+unknown-usage attempts:       12
 retries:                      0
-run wall clock:               3,257 ms
+run wall clock:               6,929 ms (two runs)
 currency:                     not reported (no trusted price profile)
 ```
 
-Six real writer attempts were made and all were refused at authentication with
-HTTP 401. Because the provider reported no usage, the whole per-request reserve
-remains charged and every attempt is counted as unknown rather than free. A 401
-consumed no billed tokens that this harness can observe, but that is a property
-of the refusal, not a measured model cost.
+All twelve real writer attempts and all four probes were refused at
+authentication or transport. Because the provider reported no usage, the whole
+per-request reserve remains charged and every writer attempt is counted as
+unknown rather than free. A 401 consumed no billed tokens that this harness can
+observe, but that is a property of the refusal, not a measured model cost.
 
 The numbers in the mock-provider sections below verify the accounting
 instrument. They are **not** provider cost and must not be presented as such.
@@ -29,20 +27,25 @@ instrument. They are **not** provider cost and must not be presented as such.
 ## The authorized attempt
 
 ```text
-run id:                  r35-writer-only-provider-auth-20261102
-HTTP attempts:           6
-HTTP retries:            0
-observed tokens:         0
-unknown-usage attempts:  6
-reserved input:          6 x 131,072 = 6,291,456
-reserved output:         6 x 16,384  =    98,304
-charged input/output:    6,291,456 / 98,304
-caseDurationMs:          present per row
-runElapsedMs:            3,257
-currency:                not reported
+authoritative run:       r35-writer-only-provider-auth-20261102
+  HTTP attempts:         6
+  HTTP retries:          0
+  observed tokens:       0
+  unknown-usage attempts: 6
+  reserved input:        6 x 131,072 = 6,291,456
+  reserved output:       6 x 16,384  =    98,304
+  charged input/output:  6,291,456 / 98,304
+  runElapsedMs:          3,257
+
+superseded run:          r35-writer-only-provider-auth-20261101
+  same 6 attempts, same charge; status misreported as executed-success
+  runElapsedMs:          3,672
+
+route probes:            4 attempts (3 OpenCode, 1 local proxy)
+  observed tokens:       0
 ```
 
-The adapter's retry telemetry and the ledger agree at zero retries
+The adapter's retry telemetry and the ledger agree at zero retries in both runs
 (`retryAccounting.consistent = true`). The 401 is a terminal response, not a
 rate-limit condition, so no retry was attempted.
 
