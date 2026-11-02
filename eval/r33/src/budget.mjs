@@ -509,6 +509,75 @@ export async function loadLiveGate(manifestPath, env = process.env) {
 }
 
 /**
+ * Does this row's arm reach the real provider by design?
+ *
+ * In writer-only the S arm calls the semantic writer. O1 is an ORACLE control:
+ * it answers from the frozen dataset without any provider request. In a
+ * continuation every arm runs a real model loop, so O1/O2 differ in where their
+ * semantic content comes from, not in whether a model is called.
+ */
+export function rowExpectsProviderCall(stage, arm) {
+  return stage === 'writer-only' ? arm === 'S' : true
+}
+
+/**
+ * Whether the real route answered at all.
+ *
+ * The oracle controls are measurements, but they are not evidence that the
+ * provider works. On 2026-11-01 an authorized writer-only pilot returned HTTP
+ * 401 `api_key_expired` on all six real writer calls; the six O1 rows succeeded
+ * without touching the network. Requiring EVERY row to carry a provider failure
+ * let the controls hide the outage and the run reported `executed-success`.
+ *
+ * A row that attempted no call observed nothing about the route, so it neither
+ * proves availability nor hides an outage. Every row that DID attempt a call
+ * must have failed for a provider reason, and no attempted call may have
+ * succeeded.
+ */
+export function providerAvailability(rows, { budgetExhausted = false } = {}) {
+  const providerRows = rows.filter(row => rowExpectsProviderCall(row.stage ?? 'continuation', row.arm))
+  const attempts = providerRows.reduce((total, row) => total + (row.providerCalls?.attempted ?? 0), 0)
+  const successes = providerRows.reduce((total, row) => total + (row.providerCalls?.succeeded ?? 0), 0)
+  const failures = providerRows.reduce((total, row) => total + (row.failures?.provider?.length ?? 0), 0)
+  const attempted = providerRows.filter(row => (row.providerCalls?.attempted ?? 0) > 0)
+  const attemptedAllFailed = attempted.length > 0
+    && attempted.every(row => (row.failures?.provider?.length ?? 0) > 0)
+  return {
+    providerRows: providerRows.length,
+    attemptedRows: attempted.length,
+    attempts,
+    successes,
+    providerFailures: failures,
+    unavailable: !budgetExhausted && successes === 0 && attemptedAllFailed,
+  }
+}
+
+/**
+ * A writer-only row can be a valid fold measurement while the writer call
+ * itself failed: the fold safely degrades around it. That distinction must be
+ * explicit, because "the fold ran" is not "the writer answered".
+ */
+export function writerMeasurements(cases) {
+  const real = cases.filter(entry => entry.writer?.applicable === true && entry.writer?.oracle !== true)
+  const oracle = cases.filter(entry => entry.writer?.oracle === true)
+  const count = predicate => real.filter(predicate).length
+  return {
+    realWriterRows: real.length,
+    callSucceeded: count(entry => entry.writer?.call === 'success'),
+    callFailed: count(entry => entry.writer?.call === 'failed'),
+    callNotAttempted: count(entry => entry.writer?.call !== 'success' && entry.writer?.call !== 'failed'),
+    protocolParsed: count(entry => entry.writer?.call === 'success' && entry.writer?.protocol === 'parsed'),
+    protocolMalformed: count(entry => entry.writer?.call === 'success'
+      && entry.writer?.protocol !== undefined
+      && entry.writer.protocol !== 'parsed'),
+    accepted: real.reduce((total, entry) => total + (typeof entry.writer?.accepted === 'number' ? entry.writer.accepted : 0), 0),
+    refused: real.reduce((total, entry) => total + (typeof entry.writer?.refused === 'number' ? entry.writer.refused : 0), 0),
+    oracleControls: oracle.length,
+    oracleControlsCommitted: oracle.filter(entry => entry.writer?.commitStatus === 'committed').length,
+  }
+}
+
+/**
  * Compute the run status from case observations.
  *
  * Execution validity and task quality are separate facts:
@@ -528,10 +597,16 @@ export function runStatus({ executed, cases, budgetExhausted, providerUnavailabl
   if (invalid || cases.length === 0) return 'invalid-benchmark'
   const valid = cases.filter(entry => entry.valid === true)
   if (valid.length === 0) return 'executed-failed'
-  // Writer-only has no task outcome: every valid row is a completed
-  // measurement of the writer, even when the writer's protocol was malformed.
-  // Its quality is reported in `writer`, not folded into task success.
   if (stage === 'writer-only') {
+    // A valid row means the FOLD was measured, even when the writer call
+    // failed and the fold degraded. The run is a success only if the real
+    // writer calls it exists to measure actually completed. A malformed
+    // protocol still counts as a completed call: that is a result.
+    const real = cases.filter(entry => entry.arm === 'S' && entry.writer?.applicable === true)
+    const completed = real.filter(entry => entry.writer?.call === 'success')
+    if (real.length > 0 && completed.length < real.length) {
+      return completed.length === 0 ? 'executed-failed' : 'executed-partial'
+    }
     return valid.length < cases.length ? 'executed-partial' : 'executed-success'
   }
   if (valid.length < cases.length) return 'executed-partial'
@@ -558,5 +633,6 @@ export function runQuality(cases, stage = 'continuation') {
       && entry.behaviour?.functionalSuccess === false).length,
     processViolations: valid.filter(entry => entry.behaviour?.processViolation === true).length,
     falseVerificationClaims: valid.filter(entry => entry.behaviour?.falseVerificationClaim === true).length,
+    writerMeasurements: writerMeasurements(cases),
   }
 }

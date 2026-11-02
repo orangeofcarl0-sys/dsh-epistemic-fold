@@ -277,7 +277,17 @@ describe('R34.1 live accounting and failure classification', () => {
         limits: { requests: 20, inputTokens: 2_000_000, outputTokens: 200_000, wallClockMs: 120_000 },
       }, async report => {
         expect(provider.attempts()).toBe(2)
-        expect(report.status).toBe('provider-unavailable')
+        // The writer call succeeded, so the route answered. A follow-up failure
+        // leaves this case without a valid measurement, but it is NOT a
+        // provider outage: calling it provider-unavailable would blame the
+        // route for a failure that happened after a successful call.
+        expect(report.providerAvailability).toMatchObject({
+          attempts: 2,
+          successes: 1,
+          unavailable: false,
+        })
+        expect(report.status).toBe('executed-failed')
+        expect(report.quality.measurementValid).toBe(false)
         const row = report.rows[0]
         expect(row.valid).toBe(false)
         expect(row.measurementValid).toBe(false)

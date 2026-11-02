@@ -14,7 +14,16 @@ import { describe, expect, it } from 'vitest'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { BudgetLedger, runQuality, snapshotDelta, validateManifest } from '../eval/r33/src/budget.mjs'
+import {
+  BudgetLedger,
+  providerAvailability,
+  rowExpectsProviderCall,
+  runQuality,
+  runStatus,
+  snapshotDelta,
+  validateManifest,
+  writerMeasurements,
+} from '../eval/r33/src/budget.mjs'
 import { behaviourMetrics } from '../eval/r33/src/grade.mjs'
 import { classifyOutcome } from '../eval/r33/src/failures.mjs'
 import { runVisibleTests, workspaceDigest } from '../eval/r33/src/workspace.mjs'
@@ -241,5 +250,118 @@ describe('R34.1 contract success and verification freshness', () => {
     const invalid = validateManifest({ ...base, stage: 'sneaky-stage' })
     expect(invalid.ok).toBe(false)
     if (!invalid.ok) expect(invalid.reason).toContain('manifest.stage')
+  })
+})
+
+describe('R35 run-level provider availability', () => {
+  const providerFailure = [{ kind: 'provider-http-error', code: 'LIVE_HTTP', stage: 'fold-writer', writer: true, message: '401 api_key_expired' }]
+
+  function row(arm: string, options: {
+    writerCall?: string
+    oracle?: boolean
+    providerFailures?: number
+    attempts?: number
+    succeeded?: number
+    valid?: boolean
+  } = {}) {
+    const {
+      writerCall = 'success',
+      oracle = arm === 'O1',
+      providerFailures = 0,
+      attempts = 0,
+      succeeded = 0,
+      valid = true,
+    } = options
+    return {
+      caseId: 'X1',
+      arm,
+      stage: 'writer-only',
+      valid,
+      writer: {
+        applicable: true,
+        oracle,
+        call: writerCall,
+        protocol: writerCall === 'success' ? 'parsed' : 'not-called',
+        accepted: writerCall === 'success' ? 1 : null,
+        refused: writerCall === 'success' ? 0 : null,
+        commitStatus: writerCall === 'success' ? 'committed' : 'no-packet',
+      },
+      providerCalls: { attempted: attempts, succeeded, failed: attempts - succeeded },
+      failures: { provider: Array.from({ length: providerFailures }, () => providerFailure[0]) },
+      behaviour: { taskSuccess: null, contractSuccess: null },
+    }
+  }
+
+  it('knows which writer-only arms reach the provider', () => {
+    expect(rowExpectsProviderCall('writer-only', 'S')).toBe(true)
+    expect(rowExpectsProviderCall('writer-only', 'O1')).toBe(false)
+    expect(rowExpectsProviderCall('continuation', 'O1')).toBe(true)
+  })
+
+  it('calls a run provider-unavailable when every real call failed, even if oracle controls succeeded', () => {
+    const rows = [
+      row('S', { writerCall: 'failed', providerFailures: 1, attempts: 1, succeeded: 0 }),
+      row('S', { writerCall: 'failed', providerFailures: 1, attempts: 1, succeeded: 0 }),
+      row('O1', { writerCall: 'success', oracle: true, attempts: 0, succeeded: 0 }),
+      row('O1', { writerCall: 'success', oracle: true, attempts: 0, succeeded: 0 }),
+    ]
+    const availability = providerAvailability(rows)
+    expect(availability.providerRows).toBe(2)
+    expect(availability.attempts).toBe(2)
+    expect(availability.successes).toBe(0)
+    expect(availability.unavailable).toBe(true)
+    expect(runStatus({
+      executed: true,
+      cases: rows,
+      providerUnavailable: availability.unavailable,
+      stage: 'writer-only',
+    })).toBe('provider-unavailable')
+  })
+
+  it('does not call an oracle-only control run provider-unavailable', () => {
+    const rows = [row('O1', { oracle: true }), row('O1', { oracle: true })]
+    const availability = providerAvailability(rows)
+    expect(availability.providerRows).toBe(0)
+    expect(availability.unavailable).toBe(false)
+    expect(runStatus({ executed: true, cases: rows, stage: 'writer-only' })).toBe('executed-success')
+  })
+
+  it('treats a partial real-writer outage as executed-partial, never success', () => {
+    const rows = [
+      row('S', { attempts: 1, succeeded: 1 }),
+      row('S', { writerCall: 'failed', providerFailures: 1, attempts: 1, succeeded: 0 }),
+      row('O1', { oracle: true }),
+    ]
+    const availability = providerAvailability(rows)
+    expect(availability.successes).toBe(1)
+    expect(availability.unavailable).toBe(false)
+    expect(runStatus({ executed: true, cases: rows, stage: 'writer-only' })).toBe('executed-partial')
+  })
+
+  it('does not let a safely degraded fold masquerade as a writer measurement', () => {
+    const rows = [row('S', { writerCall: 'failed', providerFailures: 1, attempts: 1 })]
+    // The fold row is valid: it measured a fold that degraded. It is not a
+    // writer measurement, and a run with no completed writer call is not a
+    // success.
+    expect(runStatus({ executed: true, cases: rows, stage: 'writer-only' })).toBe('executed-failed')
+    const writer = writerMeasurements(rows)
+    expect(writer.realWriterRows).toBe(1)
+    expect(writer.callFailed).toBe(1)
+    expect(writer.callSucceeded).toBe(0)
+    expect(writer.oracleControls).toBe(0)
+  })
+
+  it('separates oracle controls from real writer rows in the quality block', () => {
+    const rows = [
+      row('S', { attempts: 1, succeeded: 1 }),
+      row('S', { attempts: 1, succeeded: 1 }),
+      row('O1', { oracle: true }),
+    ]
+    const quality = runQuality(rows, 'writer-only')
+    expect(quality.writerMeasurements.realWriterRows).toBe(2)
+    expect(quality.writerMeasurements.callSucceeded).toBe(2)
+    expect(quality.writerMeasurements.oracleControls).toBe(1)
+    expect(quality.validCases).toBe(3)
+    expect(quality.taskSuccessRate).toBeNull()
   })
 })

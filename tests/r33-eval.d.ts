@@ -156,6 +156,19 @@ declare module '*/r33/src/budget.mjs' {
   export function validateManifest(manifest: unknown): { ok: true; manifest: any } | { ok: false; reason: string }
   export function runStatus(input: any): string
   export function runQuality(cases: readonly any[], stage?: string): any
+  export function rowExpectsProviderCall(stage: string, arm: string | undefined): boolean
+  export function providerAvailability(
+    rows: readonly any[],
+    options?: { budgetExhausted?: boolean },
+  ): {
+    providerRows: number
+    attemptedRows: number
+    attempts: number
+    successes: number
+    providerFailures: number
+    unavailable: boolean
+  }
+  export function writerMeasurements(cases: readonly any[]): any
 }
 
 declare module '*/r33/src/failures.mjs' {

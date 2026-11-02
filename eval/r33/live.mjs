@@ -62,6 +62,7 @@ import {
   BudgetLedger,
   STATUS_EXIT_CODE,
   loadLiveGate,
+  providerAvailability,
   runQuality,
   runStatus,
   snapshotDelta,
@@ -2057,22 +2058,15 @@ async function main() {
     stopReason = harnessError
   }
   const validRows = rows.filter(row => row.valid === true)
-  const totalProviderSuccesses = rows.reduce((total, row) => total + (row.providerCalls?.succeeded ?? 0), 0)
-  const allRowsHaveProviderFailure = rows.length > 0
-    && rows.every(row => (row.failures?.provider?.length ?? 0) > 0)
-  // A route is unavailable when every observed row has a provider failure and
-  // NO provider call succeeded. A writer failure that the fold safely degraded
-  // around still means the route did not answer; the fold's validity does not
-  // turn an outage into a working treatment. Conversely, one successful call
-  // means the route worked and a later failure is a partial result.
-  const providerUnavailable = !budgetExhausted
-    && allRowsHaveProviderFailure
-    && (validRows.length === 0 || totalProviderSuccesses === 0)
+  // Oracle controls answer from the frozen dataset without a provider call.
+  // They are measurements, but counting them as route health is exactly how a
+  // run whose every real writer call returned 401 was reported as a success.
+  const availability = providerAvailability(rows, { budgetExhausted })
   const status = runStatus({
     executed: true,
     cases: rows,
     budgetExhausted,
-    providerUnavailable,
+    providerUnavailable: availability.unavailable,
     invalid: false,
     stage,
   })
@@ -2091,6 +2085,10 @@ async function main() {
     dataset,
     notes: [
       `stage: ${stage}`,
+      `provider calls: ${availability.successes}/${availability.attempts} succeeded over ${availability.attemptedRows} provider row(s)`,
+      ...(availability.unavailable
+        ? [`provider-unavailable: all ${availability.attempts} attempted call(s) failed at the provider; oracle controls are not route evidence`]
+        : []),
       `provider failures observed: ${rows.filter(row => row.failures?.provider?.length > 0).length}`,
       ...(stopReason === null ? [] : [`stop reason: ${stopReason}`]),
       ...(harnessError === null ? [] : [`harness error: ${harnessError}`]),
@@ -2103,9 +2101,13 @@ async function main() {
   report.runElapsedMs = Date.now() - runStarted
   report.stopReason = stopReason
   report.harnessError = harnessError
+  report.providerAvailability = availability
   const paths = await writeRunReport({ runRoot, runId, report, latestName: 'live-report.json' })
+  const writer = report.quality.writerMeasurements
   const summary = stage === 'writer-only'
-    ? `${validRows.length}/${rows.length} writer measurements valid`
+    ? `${availability.successes}/${availability.attempts} real provider call(s) succeeded; `
+      + `${writer.callSucceeded}/${writer.realWriterRows} real writer call(s) completed; `
+      + `${writer.oracleControls} oracle control(s); ${validRows.length}/${rows.length} fold measurement(s) valid`
     : `${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed`
   process.stdout.write(`${status}: ${summary}\n${paths.reportPath}\n`)
   process.exit(STATUS_EXIT_CODE[status] ?? 7)
