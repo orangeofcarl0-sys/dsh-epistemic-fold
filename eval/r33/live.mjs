@@ -1885,8 +1885,10 @@ async function main() {
     const arms = selectArms(argValue('--arms'), stage)
     const report = await runScriptedSelfTest(selected, arms, stage)
     const path = await writeReport('self-test-report.json', report)
+    const writer = report.quality.writerMeasurements
     const summary = stage === 'writer-only'
-      ? `${report.quality.validCases}/${report.rows.length} writer measurements valid`
+      ? `${writer.callSucceeded}/${writer.realWriterRows} scripted writer call(s) completed; `
+        + `${writer.oracleControls} oracle control(s); ${report.quality.validCases}/${report.rows.length} fold measurement(s) valid`
       : `${report.quality.taskSuccesses}/${report.quality.validCases} valid cases passed`
     process.stdout.write(`${report.status}: ${summary}\n${path}\n`)
     process.exit(STATUS_EXIT_CODE[report.status] ?? 7)
