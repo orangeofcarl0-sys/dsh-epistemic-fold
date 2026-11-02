@@ -41,6 +41,7 @@ const PROVIDER_ID = process.env.R35_PROVIDER_ID ?? '5c7f8d75-e85e-4de5-9b27-e2b5
 const STAGE = process.env.R35_STAGE ?? 'writer-only'
 const CASES = process.env.R35_CASES ?? 'A1,B2,C1,D1,F1,H1'
 const ARMS = process.env.R35_ARMS ?? (STAGE === 'writer-only' ? 'S,O1' : 'B1,S,O1,O2')
+const REPLICATE_ID = process.env.R35_REPLICATE_ID ?? 'r1'
 const RUN_ID = process.env.R35_RUN_ID
   ?? `r35-${STAGE}-${new Date().toISOString().replace(/[-:.TZ]/gu, '').slice(0, 14)}`
 
@@ -116,7 +117,7 @@ async function main() {
     arms: ARMS,
     followUpSteps: 8,
     followUpMaxTokens: 1_024,
-    replicateId: 'r1',
+    replicateId: REPLICATE_ID,
     runId: RUN_ID,
     note: 'Authorized R35 pilot. The key is passed only in the child environment and is never written here.',
   }

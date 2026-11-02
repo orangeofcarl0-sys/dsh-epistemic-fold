@@ -595,12 +595,23 @@ async function foldCase(caseData, layout, host, model) {
   const frontier = host.locateFoldFrontier(session)
   const nodes = [...session.surface.nodes]
   const started = Date.now()
-  await host.plugin.engine.compactRegion(
-    nodes[frontier.firstOpenPosition],
-    nodes[nodes.length - 1],
-    agent,
-    SIGNAL,
-  )
+  let foldRefused
+  try {
+    await host.plugin.engine.compactRegion(
+      nodes[frontier.firstOpenPosition],
+      nodes[nodes.length - 1],
+      agent,
+      SIGNAL,
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    // A summary that is not smaller than the span is a real fold verdict, not
+    // a broken harness: the writer answered, but its handoff cannot pay for
+    // the span it replaces. Record it and keep the case measurable instead of
+    // aborting every remaining case. The raw writer output is still in `log`.
+    if (!message.includes('summary is not smaller than the shadowed content')) throw error
+    foldRefused = { kind: 'summary-not-smaller', detail: message }
+  }
   await host.plugin.engine.reconcileSemantics(session)
   session.append('user/message', createUserMessage({
     content: [{ type: 'text', text: caseData.task }],
@@ -618,6 +629,7 @@ async function foldCase(caseData, layout, host, model) {
     packet,
     writerObservation: host.plugin.engine.semanticWriterObservation,
     state: await committedState(layout.journal, session),
+    ...(foldRefused === undefined ? {} : { foldRefused }),
   }
 }
 
@@ -1008,6 +1020,7 @@ async function runOne({
   const before = ledger.snapshot()
   const folded = await foldCase(caseData, layout, host, manifest.model)
   const writer = writerSummary(log, folded.packet, folded.writerObservation, arm, folded.state)
+  if (folded.foldRefused !== undefined) writer.commitStatus = 'fold-refused'
   writer.renderedCheckpointDigest = digestText(folded.checkpoint)
   let follow
   let checker = {
@@ -1033,14 +1046,41 @@ async function runOne({
       falseVerificationClaim: false,
     }
     : undefined
-  let extraction = extractionMetrics(caseData, {
-    accepted: undefined,
-    refused: undefined,
-    writer: undefined,
-    checkpoint: folded.checkpoint,
-    anchorValues: [],
-    transcript: caseData.transcript,
-  })
+  const activeArm = arm === 'S' || arm === 'O1'
+  let extraction
+  if (activeArm) {
+    // Writer-only has a real extraction to score. R34.1 computed this only
+    // inside the continuation branch, so every writer-only row reported
+    // "this arm commits no semantic deltas" even when it had committed four.
+    const protocol = folded.packet?.deltaParse ?? folded.writerObservation?.protocol ?? 'not-called'
+    const parsed = protocol === 'parsed'
+    extraction = extractionMetrics(caseData, {
+      accepted: parsed ? (folded.packet?.accepted ?? []) : undefined,
+      refused: parsed ? (folded.packet?.refused ?? []) : undefined,
+      writer: folded.writerObservation ?? writer,
+      checkpoint: folded.checkpoint,
+      anchorValues: folded.state.anchors,
+      transcript: caseData.transcript,
+    })
+    if (!parsed || folded.foldRefused !== undefined) {
+      extraction = {
+        ...extraction,
+        applicable: false,
+        reason: folded.foldRefused !== undefined
+          ? `fold refused the checkpoint (${folded.foldRefused.kind}); no deltas were committed`
+          : `writer protocol ${protocol}; no deltas were accepted`,
+      }
+    }
+  } else {
+    extraction = extractionMetrics(caseData, {
+      accepted: undefined,
+      refused: undefined,
+      writer: undefined,
+      checkpoint: folded.checkpoint,
+      anchorValues: [],
+      transcript: caseData.transcript,
+    })
+  }
   if (folded.fold.valid && stage === 'continuation') {
     follow = await followUp({
       adapter,
@@ -1060,15 +1100,6 @@ async function runOne({
       verification,
       testsExecuted: follow.testsExecuted,
       verificationFreshness: follow.verificationFreshness,
-    })
-    const active = arm === 'S' || arm === 'O1'
-    extraction = extractionMetrics(caseData, {
-      accepted: active ? (folded.packet?.accepted ?? []) : undefined,
-      refused: active ? (folded.packet?.refused ?? []) : undefined,
-      writer: active ? (folded.writerObservation ?? writer) : undefined,
-      checkpoint: folded.checkpoint,
-      anchorValues: active ? folded.state.anchors : [],
-      transcript: caseData.transcript,
     })
   }
   const after = ledger.snapshot()
@@ -1119,7 +1150,9 @@ async function runOne({
     }
   }
   if (!folded.fold.valid) {
-    failures.fold.push({ kind: 'fold-invalid', detail: 'no complete compaction transaction was observed' })
+    failures.fold.push(folded.foldRefused === undefined
+      ? { kind: 'fold-invalid', detail: 'no complete compaction transaction was observed' }
+      : { kind: 'fold-refused', reason: folded.foldRefused.kind, detail: folded.foldRefused.detail })
   }
   if (checker.status !== 'executed' && checker.status !== 'not-run') {
     failures.checker.push({

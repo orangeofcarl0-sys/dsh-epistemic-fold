@@ -577,6 +577,40 @@ export function writerMeasurements(cases) {
   }
 }
 
+function meanOf(values) {
+  const present = values.filter(value => typeof value === 'number' && Number.isFinite(value))
+  if (present.length === 0) return null
+  return present.reduce((total, value) => total + value, 0) / present.length
+}
+
+/**
+ * Aggregate the per-case extraction scores over REAL writer rows.
+ *
+ * Oracle controls are excluded: their deltas are the frozen gold, so including
+ * them would answer "how well does the dataset match itself". Rows with no
+ * parsed/committed packet are counted in `realWriterRows` but not in the mean,
+ * because a protocol failure has no accepted deltas to score.
+ */
+export function writerExtraction(cases) {
+  const real = cases.filter(entry => entry.writer?.applicable === true && entry.writer?.oracle !== true)
+  const scored = real.filter(entry => entry.extraction?.applicable === true)
+  return {
+    realWriterRows: real.length,
+    scoredRows: scored.length,
+    criticalRecall: meanOf(scored.map(entry => entry.extraction.criticalRecall)),
+    coordinateRecall: meanOf(scored.map(entry => entry.extraction.coordinateRecall)),
+    claimCorrectness: meanOf(scored.map(entry => entry.extraction.claimCorrectness)),
+    sourceSupport: meanOf(scored.map(entry => entry.extraction.sourceSupport)),
+    groundedPrecision: meanOf(scored.map(entry => entry.extraction.groundedPrecision)),
+    falseNormativeRate: meanOf(scored.map(entry => entry.extraction.falseNormativeRate)),
+    currentStateAccuracy: meanOf(scored.map(entry => entry.extraction.currentStateAccuracy)),
+    requiresReview: real.reduce((total, entry) => total + (entry.extraction?.requiresReview ?? 0), 0),
+    accepted: real.reduce((total, entry) => total + (entry.extraction?.counts?.accepted ?? 0), 0),
+    refused: real.reduce((total, entry) => total + (entry.extraction?.counts?.refused ?? 0), 0),
+    scoredCaseIds: scored.map(entry => entry.caseId),
+  }
+}
+
 /**
  * Compute the run status from case observations.
  *
@@ -634,5 +668,6 @@ export function runQuality(cases, stage = 'continuation') {
     processViolations: valid.filter(entry => entry.behaviour?.processViolation === true).length,
     falseVerificationClaims: valid.filter(entry => entry.behaviour?.falseVerificationClaim === true).length,
     writerMeasurements: writerMeasurements(cases),
+    writerExtraction: writerExtraction(cases),
   }
 }

@@ -169,6 +169,7 @@ declare module '*/r33/src/budget.mjs' {
     unavailable: boolean
   }
   export function writerMeasurements(cases: readonly any[]): any
+  export function writerExtraction(cases: readonly any[]): any
 }
 
 declare module '*/r33/src/failures.mjs' {

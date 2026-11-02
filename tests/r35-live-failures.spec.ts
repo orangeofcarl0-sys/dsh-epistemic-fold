@@ -31,6 +31,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+import { loadDataset } from '../eval/r33/src/dataset.mjs'
 
 const run = promisify(execFile)
 const ROOT = process.cwd()
@@ -97,6 +98,19 @@ function completion(content: string, usage = { prompt_tokens: 100, completion_to
 
 function writerCompletion(): Reply {
   return completion('<handoff>mock handoff</handoff>\n<deltas>{"deltas":[]}</deltas>')
+}
+
+/**
+ * A protocol-valid writer answer whose handoff cannot pay for a small fold.
+ *
+ * The guard compares the framed checkpoint against the shadowed span's route
+ * price. On F1 that span is 598 tokens, so a multi-thousand-character handoff
+ * is correctly refused. The refusal is a writer/fold result, not a harness
+ * crash, and the remaining cases must still run.
+ */
+function verboseWriterCompletion(): Reply {
+  const prose = 'The recorded decision was reviewed against the frozen transcript and the surrounding context was restated at unnecessary length. '.repeat(45)
+  return completion(`<handoff>${prose}</handoff>\n<deltas>{"deltas":[]}</deltas>`)
 }
 
 function finishAction(): Reply {
@@ -392,6 +406,125 @@ describe('R34.1 live accounting and failure classification', () => {
       expect(report.results[0].reasons.some((entry: any) => entry.axis === 'per-request-output')).toBe(true)
     } finally {
       await rm(directory, { recursive: true, force: true })
+    }
+  }, 180_000)
+
+  it('scores a real writer-only proposal against the frozen gold fact', async () => {
+    const { cases } = await loadDataset()
+    const caseData = cases.find((entry: any) => entry.id === 'A1')
+    const fact = caseData.gold[0]
+    const delta = {
+      kind: fact.kind,
+      subjectKey: fact.subjectKey,
+      statement: fact.statement,
+      status: fact.kind === 'finding' ? 'observed' : 'claimed',
+      evidence: [{ quote: fact.quote }],
+      ...(fact.scope === undefined ? {} : { scope: fact.scope }),
+    }
+    const provider = await mockProvider(() => completion(
+      `<handoff>the constraint is preserved</handoff>\n<deltas>${JSON.stringify({ deltas: [delta] })}</deltas>`,
+    ))
+    try {
+      await withRun(provider, {
+        runId: 'writer-extraction',
+        stage: 'writer-only',
+        cases: 'A1',
+        arms: 'S',
+      }, async report => {
+        expect(report.status).toBe('executed-success')
+        const row = report.rows[0]
+        expect(row.writer.call).toBe('success')
+        expect(row.writer.protocol).toBe('parsed')
+        expect(row.writer.accepted).toBe(1)
+        expect(row.writer.commitStatus).toBe('committed')
+
+        // R34.1 left writer-only extraction at "this arm commits no semantic
+        // deltas"; a parsed and committed proposal must be scored.
+        expect(row.extraction.applicable).toBe(true)
+        expect(row.extraction.criticalRecall).toBe(1)
+        expect(row.extraction.claimCorrectness).toBe(1)
+        expect(row.extraction.coordinateRecall).toBe(1)
+        expect(row.extraction.sourceSupport).toBe(1)
+        expect(row.extraction.falseNormativeRate).toBe(0)
+        expect(row.extraction.requiresReview).toBe(0)
+        expect(row.extraction.currentStateAccuracy).toBe(1)
+        expect(row.extraction.counts).toMatchObject({ gold: 1, matched: 1, accepted: 1, refused: 0 })
+        expect(report.quality.writerExtraction).toMatchObject({
+          realWriterRows: 1,
+          scoredRows: 1,
+          criticalRecall: 1,
+          claimCorrectness: 1,
+          sourceSupport: 1,
+          falseNormativeRate: 0,
+          requiresReview: 0,
+          accepted: 1,
+          refused: 0,
+          scoredCaseIds: ['A1'],
+        })
+      })
+    } finally {
+      await provider.close()
+    }
+  }, 180_000)
+
+  it('records a non-compressing writer summary as a fold refusal and continues', async () => {
+    // F1's first real answer is too long for its small span; A1's is normal.
+    // The run must record F1's refusal and still measure A1.
+    const provider = await mockProvider((_body, index) => index === 0
+      ? verboseWriterCompletion()
+      : writerCompletion())
+    try {
+      await withRun(provider, {
+        runId: 'fold-refused',
+        stage: 'writer-only',
+        cases: 'F1,A1',
+        arms: 'S,O1',
+      }, async report => {
+        expect(provider.attempts()).toBe(2)
+        // F1's S and O1 rows are refused; A1's S and O1 rows commit. That is a
+        // partial run, not a harness crash and not a provider outage.
+        expect(report.status).toBe('executed-partial')
+        expect(report.harnessError).toBeNull()
+        expect(report.stopReason).toBeNull()
+        expect(report.providerAvailability).toMatchObject({ attempts: 2, successes: 2, unavailable: false })
+
+        const row = (arm: string, caseId: string) =>
+          report.rows.find((entry: any) => entry.arm === arm && entry.caseId === caseId)
+
+        const refused = row('S', 'A1')
+        expect(refused.valid).toBe(false)
+        expect(refused.fold.valid).toBe(false)
+        expect(refused.failures.fold).toHaveLength(1)
+        expect(refused.failures.fold[0].kind).toBe('fold-refused')
+        expect(refused.failures.fold[0].reason).toBe('summary-not-smaller')
+        expect(refused.writer.call).toBe('success')
+        expect(refused.writer.protocol).toBe('parsed')
+        expect(refused.writer.commitStatus).toBe('fold-refused')
+        expect(refused.writer.rawOutputChars).toBeGreaterThan(1_000)
+        expect(refused.writer.rawOutputDigest).toMatch(/^[0-9a-f]{16}/u)
+        expect(refused.cost.httpAttempts).toBe(1)
+        expect(refused.cost.observedOutputTokens).toBeGreaterThan(0)
+
+        // The refusal did not stop the run: the next case was measured. Its
+        // writer proposed an empty delta list, so the fold commits a
+        // deterministic checkpoint with nothing accepted — a protocol-valid
+        // answer, not a semantic success.
+        const measured = row('S', 'F1')
+        expect(measured.valid).toBe(true)
+        expect(measured.fold.valid).toBe(true)
+        expect(measured.writer.call).toBe('success')
+        expect(measured.writer.commitStatus).toBe('nothing-accepted')
+        expect(measured.writer.accepted).toBe(0)
+        expect(row('O1', 'F1').valid).toBe(true)
+
+        const writer = report.quality.writerMeasurements
+        expect(writer.realWriterRows).toBe(2)
+        expect(writer.callSucceeded).toBe(2)
+        expect(writer.callFailed).toBe(0)
+        expect(writer.oracleControls).toBe(2)
+      })
+    } finally {
+      await provider.close()
     }
   }, 180_000)
 })
