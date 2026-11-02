@@ -96,17 +96,16 @@ async function main() {
   const manifestPath = join(directory, 'manifest.json')
   // Finite limits, chosen against the preflight plan. The user authorized the
   // spend; this cap is the audit boundary, not a claim that the provider will
-  // consume it.
+  // consume it. A continuation runs four arms over six cases with up to eight
+  // follow-up steps each, so its request ceiling is larger than writer-only's.
+  const limits = STAGE === 'continuation'
+    ? { requests: 400, inputTokens: 200_000_000, outputTokens: 5_000_000, wallClockMs: 3_600_000 }
+    : { requests: 60, inputTokens: 32_000_000, outputTokens: 1_000_000, wallClockMs: 1_800_000 }
   const manifest = {
     model: MODEL,
     stage: STAGE,
     maxOutputTokens: 32_768,
-    limits: {
-      requests: 60,
-      inputTokens: 32_000_000,
-      outputTokens: 1_000_000,
-      wallClockMs: 1_800_000,
-    },
+    limits,
     route: {
       baseUrlEnv: 'R35_LIVE_BASE_URL',
       apiKeyEnv: 'R35_LIVE_API_KEY',
