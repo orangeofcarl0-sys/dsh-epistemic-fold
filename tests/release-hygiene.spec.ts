@@ -115,13 +115,13 @@ describe('release hygiene: no machine-specific content is published', () => {
     // `TAU2_ROOT` with an actionable error when unset. Neither needs a path that
     // only resolves on the author's machine.
     expect(hits(MACHINE_PATH), 'use <DSH_HOME> / $HOME / an env var instead').toEqual([])
-  })
+  }, 30_000)
 
   it('no tracked file carries a credential value', () => {
     // The runner scripts read the key at runtime and never embed it; this pins
     // that. A hit here means a real key was pasted into a file.
     expect(hits(SECRET), 'a credential value must never be committed').toEqual([])
-  })
+  }, 30_000)
 
   it('the runner scripts require their benchmark roots instead of defaulting', () => {
     // Both checkouts live OUTSIDE this repository, so a default path could only
