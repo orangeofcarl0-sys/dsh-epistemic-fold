@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02T17:00:08.225Z",
+  "conditions": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-11-02T17:00:04.786Z",
+    "dataset": {
+      "id": "r33-semantic-continuity-v2",
+      "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
+    },
+    "scorer": {
+      "version": 3,
+      "sourceDigest": "b7e9652b47a677f9f7870c5f52f62a8f7e468ed9329085402c4025f6f72f8201",
+      "note": "v3 derives the final verification state from trusted tool runs; expectedClaim is historical t0 only."
+    },
+    "writer": {
+      "productionVersion": "W1",
+      "prompts": {
+        "W0": {
+          "chars": 2432,
+          "digest": "1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc"
+        },
+        "W1": {
+          "chars": 5431,
+          "digest": "61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3"
+        }
+      },
+      "sourceDigest": "4139c5a8c7682cee43ab867c14868686dff748eb851e1795a4bb51faad5d5002",
+      "parser": {
+        "P0": {
+          "sourceDigest": "6bb975b084a011e308f081fff50f8c6f9ea5c9ab72ee97f7c5fcd0f15b5ce1b6",
+          "policy": "strict production parseWriterOutput"
+        },
+        "P1": {
+          "sourceDigest": "6bb975b084a011e308f081fff50f8c6f9ea5c9ab72ee97f7c5fcd0f15b5ce1b6",
+          "policy": "bounded envelope recovery; eval ablation only; no fact/kind/status/evidence rewriting"
+        }
+      }
+    },
+    "validator": {
+      "sourceDigest": "fc10197cef3fca3867ef1a1485a42bf5ae149cc3ec16df7977c15e9273fda2f4",
+      "authoritySourceDigest": "e710c4bbae0d98dbe48bd28e3b3d230343a499a6a996fc14ce745308aaf9df25",
+      "note": "W1-P0 uses this validator unchanged; P1 proposals are revalidated by it."
+    },
+    "harness": {
+      "H0": {
+        "version": "H0-custom-json-loop",
+        "steps": 8,
+        "maxTokensPerTurn": 1024,
+        "tools": [
+          "read_file",
+          "write_file",
+          "list_dir",
+          "run_tests",
+          "recall",
+          "finish"
+        ],
+        "finishGuard": false,
+        "sourceDigest": "cebd3b927b522154e1d887c9d7b565af72812db5d15b183e1f7735cf19e2da8b"
+      },
+      "variants": {
+        "H-step": {
+          "steps": 16,
+          "maxTokensPerTurn": 1024,
+          "finishGuard": false
+        },
+        "H-output": {
+          "steps": 8,
+          "maxTokensPerTurn": 4096,
+          "finishGuard": false
+        },
+        "H-finish": {
+          "steps": 8,
+          "maxTokensPerTurn": 1024,
+          "finishGuard": true
+        },
+        "H-native": {
+          "runtime": "dsh-agent",
+          "status": "not-implemented"
+        }
+      }
+    },
+    "model": {
+      "id": "deepseek-v4.1-flash",
+      "provider": "opencode",
+      "route": "https://opencode.ai/zen/go/v1",
+      "note": "The model and route are frozen for the planned experiment; no R36 request was made."
+    },
+    "live": {
+      "authorization": "not-granted-in-this-session",
+      "gate": "R33_LIVE=1, resolved route, positive limits, and an explicit manifest are still required."
+    }
+  },
+  "dataset": {
+    "ok": true,
+    "reason": null
+  },
+  "manifests": [
+    {
+      "file": "b1-s-o1-o2-frozen.json",
+      "id": "b1-s-o1-o2-frozen",
+      "phase": "D",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "B1,S,O1,O2",
+      "stage": "continuation",
+      "runtime": "custom-json-loop"
+    },
+    {
+      "file": "h-finish-o2.json",
+      "id": "h-finish-o2",
+      "phase": "C",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "O2",
+      "stage": "continuation",
+      "runtime": "custom-json-loop"
+    },
+    {
+      "file": "h-native-o2.json",
+      "id": "h-native-o2",
+      "phase": "C",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "O2",
+      "stage": "continuation",
+      "runtime": "dsh-agent"
+    },
+    {
+      "file": "h-output-o2.json",
+      "id": "h-output-o2",
+      "phase": "C",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "O2",
+      "stage": "continuation",
+      "runtime": "custom-json-loop"
+    },
+    {
+      "file": "h-step-o2.json",
+      "id": "h-step-o2",
+      "phase": "C",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "O2",
+      "stage": "continuation",
+      "runtime": "custom-json-loop"
+    },
+    {
+      "file": "h0-o2.json",
+      "id": "h0-o2",
+      "phase": "C",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": null,
+      "parser": null,
+      "arms": "O2",
+      "stage": "continuation",
+      "runtime": "custom-json-loop"
+    },
+    {
+      "file": "w0-p0-live-control.json",
+      "id": "w0-p0-live-control",
+      "phase": "B",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": "W0",
+      "parser": "P0",
+      "arms": "S",
+      "stage": "writer-only",
+      "runtime": null
+    },
+    {
+      "file": "w0-p0-replay.json",
+      "id": "w0-p0-replay",
+      "phase": "A",
+      "execution": "offline-replay",
+      "status": "ready",
+      "requiresAuthorization": false,
+      "valid": true,
+      "reason": null,
+      "promptVersion": "W0",
+      "parser": "P0",
+      "arms": null,
+      "stage": null,
+      "runtime": null
+    },
+    {
+      "file": "w0-p1-replay.json",
+      "id": "w0-p1-replay",
+      "phase": "A",
+      "execution": "offline-replay",
+      "status": "ready",
+      "requiresAuthorization": false,
+      "valid": true,
+      "reason": null,
+      "promptVersion": "W0",
+      "parser": "P1",
+      "arms": null,
+      "stage": null,
+      "runtime": null
+    },
+    {
+      "file": "w1-p0-live.json",
+      "id": "w1-p0-live",
+      "phase": "B",
+      "execution": "live",
+      "status": "blocked",
+      "requiresAuthorization": true,
+      "valid": true,
+      "reason": null,
+      "promptVersion": "W1",
+      "parser": "P0",
+      "arms": "S",
+      "stage": "writer-only",
+      "runtime": null
+    }
+  ],
+  "manifestsValid": true,
+  "authorization": "not-granted-in-this-session",
+  "gates": [
+    {
+      "id": "G0",
+      "name": "R35 Evidence Closed",
+      "status": "passed",
+      "evidence": "eval/r36/evidence/r35/writer-audit.json",
+      "detail": "17 attempts, 16 scoreable, 1 lost; categories {\"parsed\":10,\"bare-json-object\":1,\"bare-json-array\":4,\"invalid-json-syntax\":1,\"unknown\":1}"
+    },
+    {
+      "id": "G1",
+      "name": "Benchmark Valid",
+      "status": "passed",
+      "evidence": "eval/r36/out/case-certification.json, tests/r36-benchmark-validity.spec.ts",
+      "detail": "7/7 cases certified; dataset verified; scorer v3"
+    },
+    {
+      "id": "G2",
+      "name": "Writer Experiment",
+      "status": "blocked",
+      "evidence": "eval/r36/out/parser-ablation.json, eval/r36/evidence/r35/writer-audit.json",
+      "detail": "offline W0-P0/P1 complete; W1-P0 live is blocked (no R36 authorization)"
+    },
+    {
+      "id": "G3",
+      "name": "Agent Identifiability",
+      "status": "blocked",
+      "evidence": "tests/r36-agent-calibration.spec.ts, eval/r36/manifests/h-*.json",
+      "detail": "offline H0/H-step/H-output/H-finish diagnostics implemented and tested; H-native implemented=false; live calibration blocked"
+    },
+    {
+      "id": "G4",
+      "name": "Real Causal Comparison",
+      "status": "blocked",
+      "evidence": "eval/r36/manifests/b1-s-o1-o2-frozen.json",
+      "detail": "No R36 authorization; writer and harness interventions are not independently measured yet. No B1/S result is claimed."
+    },
+    {
+      "id": "G5",
+      "name": "Product Decision",
+      "status": "insufficient-evidence",
+      "evidence": "docs/semantic-continuity/R36_DECISION.md",
+      "detail": "The decision is limited to the offline evidence; it does not claim Active > Off."
+    }
+  ],
+  "note": "No provider request was made. A blocked gate is not a failed experiment; it is an experiment that was not run."
+}

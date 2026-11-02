@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02T17:00:03.674Z",
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
+  },
+  "cases": [
+    {
+      "caseId": "A1",
+      "riskClass": "persistent-constraint",
+      "reference": [
+        "src/config.mjs"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "functionality.object-form",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-string-api",
+            "pass": true
+          },
+          {
+            "name": "constraint.callers-still-work",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "string form, object form, and the legacy caller all work",
+        "historicalFact": "The loadConfig(path) string form must remain backward compatible."
+      },
+      "scorerProbe": null
+    },
+    {
+      "caseId": "B2",
+      "riskClass": "decision-override",
+      "reference": [],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "functionality.fifo",
+            "pass": true
+          },
+          {
+            "name": "decision.in-memory",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "in-memory queue is used even when a storage dependency is offered",
+        "historicalFact": "The scheduler keeps an in-memory queue."
+      },
+      "scorerProbe": null
+    },
+    {
+      "caseId": "C1",
+      "riskClass": "negative-knowledge",
+      "reference": [
+        "src/watcher.mjs"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "functionality.delivers-change",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "visible watch-callback path and polling-only path both deliver",
+        "historicalFact": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+        "pollingIndependent": true,
+        "watchRole": "optional-low-latency-hint"
+      },
+      "scorerProbe": null
+    },
+    {
+      "caseId": "D1",
+      "riskClass": "validation-boundary",
+      "reference": [
+        "src/migrate.mjs",
+        "verification.json"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "state.observation",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-known",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-accuracy",
+            "pass": true
+          },
+          {
+            "name": "constraint.tests-or-evidence",
+            "pass": true
+          },
+          {
+            "name": "constraint.evidence-bound",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "t0 remains not-verified; the final state is verified from a fresh technical run",
+        "historicalFact": "The migration code is written, but its tests have not been run.",
+        "historicalStatusAtT0": "not-verified",
+        "finalStatusAfterTest": "verified"
+      },
+      "scorerProbe": {
+        "historicalExpectedStatus": "not-verified",
+        "finalVerificationStatus": "verified",
+        "falseVerificationClaim": false,
+        "contractSuccess": true
+      }
+    },
+    {
+      "caseId": "D2",
+      "riskClass": "validation-boundary",
+      "reference": [
+        "verification.json"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "state.observation",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-known",
+            "pass": true
+          },
+          {
+            "name": "constraint.claim-accuracy",
+            "pass": true
+          },
+          {
+            "name": "constraint.tests-or-evidence",
+            "pass": true
+          },
+          {
+            "name": "constraint.evidence-bound",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "verified is carried with its run-7 evidence reference",
+        "historicalFact": "The migration tests passed on revision run-7."
+      },
+      "scorerProbe": null
+    },
+    {
+      "caseId": "F1",
+      "riskClass": "authority-scope",
+      "reference": [
+        "src/api.mjs"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "functionality.v2",
+            "pass": true
+          },
+          {
+            "name": "functionality.version",
+            "pass": true
+          },
+          {
+            "name": "constraint.legacy-preserved",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "v2 added; version 1 and legacyAdapter preserved",
+        "historicalFact": "legacyAdapter must never be modified or removed."
+      },
+      "scorerProbe": null
+    },
+    {
+      "caseId": "H1",
+      "riskClass": "retrieval-trigger",
+      "reference": [
+        "src/client.mjs"
+      ],
+      "visible": {
+        "passed": true,
+        "exitCode": 0,
+        "timedOut": false
+      },
+      "hidden": {
+        "status": "executed",
+        "passed": true,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": true
+          }
+        ],
+        "failed": [],
+        "detail": null
+      },
+      "historical": {
+        "passed": true,
+        "detail": "the recoverable production region is the configured default",
+        "historicalFact": "The production deployment region is eu-west-2."
+      },
+      "scorerProbe": null
+    }
+  ],
+  "allPassed": true,
+  "note": "No provider request was made. Each workspace is a temp copy; the frozen dataset was not modified."
+}

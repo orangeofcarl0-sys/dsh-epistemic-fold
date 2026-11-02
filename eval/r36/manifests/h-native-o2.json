@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "h-native-o2",
+  "conditionsRef": "eval/r36/out/conditions.json",
+  "model": "deepseek-v4.1-flash",
+  "provider": "opencode",
+  "route": {
+    "baseUrlEnv": "OPENCODE_BASE_URL",
+    "apiKeyEnv": "OPENCODE_API_KEY",
+    "contextWindow": 131072,
+    "maxOutputTokens": 32768
+  },
+  "maxOutputTokens": 16384,
+  "phase": "C",
+  "execution": "live",
+  "status": "blocked",
+  "blockedReason": "The real DSH Agent/Tool Runtime is not implemented in this harness; the live runner refuses it without a request.",
+  "requiresAuthorization": true,
+  "stage": "continuation",
+  "arms": "O2",
+  "cases": "A1,B2",
+  "followUpSteps": 8,
+  "followUpMaxTokens": 1024,
+  "finishGuard": true,
+  "harnessVersion": "H-native",
+  "runtime": "dsh-agent",
+  "limits": {
+    "requests": 400,
+    "inputTokens": 200000000,
+    "outputTokens": 5000000,
+    "wallClockMs": 3600000
+  },
+  "note": "Declared condition. Not executed; no result is claimed."
+}

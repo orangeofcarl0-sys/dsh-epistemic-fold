@@ -86,7 +86,15 @@
     "eval:r35": "vitest run tests/r35-contract.spec.ts tests/r35-preflight.spec.ts tests/r35-live-failures.spec.ts",
     "eval:r35-preflight": "node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json",
     "eval:r35-writer-only": "node scripts/build-eval.mjs && node eval/r33/live.mjs --run --stage writer-only",
-    "eval:r35-continuation": "node scripts/build-eval.mjs && node eval/r33/live.mjs --run --stage continuation"
+    "eval:r35-continuation": "node scripts/build-eval.mjs && node eval/r33/live.mjs --run --stage continuation",
+    "eval:r36-audit": "node eval/r36/audit-r35.mjs",
+    "eval:r36-parser": "node eval/r36/parser-ablation.mjs",
+    "eval:r36-certify": "node eval/r36/certify-cases.mjs",
+    "eval:r36-conditions": "node eval/r36/conditions.mjs",
+    "eval:r36-manifests": "node eval/r36/write-manifests.mjs",
+    "eval:r36-gates": "node eval/r36/gates.mjs",
+    "eval:r36-tests": "vitest run tests/r36-eval-api.spec.ts tests/r36-benchmark-validity.spec.ts tests/r36-writer-contract.spec.ts tests/r36-agent-calibration.spec.ts tests/r36-conditions.spec.ts",
+    "eval:r36": "npm run eval:r36-audit && npm run eval:r36-parser && npm run eval:r36-certify && npm run eval:r36-conditions && npm run eval:r36-manifests && npm run eval:r36-gates"
   },
   "repository": {
     "type": "git",

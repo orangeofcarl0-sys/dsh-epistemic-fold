@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "w0-p0-replay",
+  "conditionsRef": "eval/r36/out/conditions.json",
+  "model": "deepseek-v4.1-flash",
+  "provider": "opencode",
+  "route": {
+    "baseUrlEnv": "OPENCODE_BASE_URL",
+    "apiKeyEnv": "OPENCODE_API_KEY",
+    "contextWindow": 131072,
+    "maxOutputTokens": 32768
+  },
+  "maxOutputTokens": 1,
+  "phase": "A",
+  "execution": "offline-replay",
+  "status": "ready",
+  "requiresAuthorization": false,
+  "promptVersion": "W0",
+  "parser": "P0",
+  "validator": "unchanged",
+  "input": "frozen R35 writer-only raw outputs",
+  "script": "eval/r36/parser-ablation.mjs",
+  "limits": {
+    "requests": 1,
+    "inputTokens": 1,
+    "outputTokens": 1,
+    "wallClockMs": 1
+  },
+  "providerRequests": 0,
+  "note": "No model call. P0 is the production strict parser. The positive limits satisfy the manifest schema and are never used."
+}

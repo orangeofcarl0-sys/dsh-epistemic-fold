@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-02T17:00:04.786Z",
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
+  },
+  "scorer": {
+    "version": 3,
+    "sourceDigest": "b7e9652b47a677f9f7870c5f52f62a8f7e468ed9329085402c4025f6f72f8201",
+    "note": "v3 derives the final verification state from trusted tool runs; expectedClaim is historical t0 only."
+  },
+  "writer": {
+    "productionVersion": "W1",
+    "prompts": {
+      "W0": {
+        "chars": 2432,
+        "digest": "1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc"
+      },
+      "W1": {
+        "chars": 5431,
+        "digest": "61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3"
+      }
+    },
+    "sourceDigest": "4139c5a8c7682cee43ab867c14868686dff748eb851e1795a4bb51faad5d5002",
+    "parser": {
+      "P0": {
+        "sourceDigest": "6bb975b084a011e308f081fff50f8c6f9ea5c9ab72ee97f7c5fcd0f15b5ce1b6",
+        "policy": "strict production parseWriterOutput"
+      },
+      "P1": {
+        "sourceDigest": "6bb975b084a011e308f081fff50f8c6f9ea5c9ab72ee97f7c5fcd0f15b5ce1b6",
+        "policy": "bounded envelope recovery; eval ablation only; no fact/kind/status/evidence rewriting"
+      }
+    }
+  },
+  "validator": {
+    "sourceDigest": "fc10197cef3fca3867ef1a1485a42bf5ae149cc3ec16df7977c15e9273fda2f4",
+    "authoritySourceDigest": "e710c4bbae0d98dbe48bd28e3b3d230343a499a6a996fc14ce745308aaf9df25",
+    "note": "W1-P0 uses this validator unchanged; P1 proposals are revalidated by it."
+  },
+  "harness": {
+    "H0": {
+      "version": "H0-custom-json-loop",
+      "steps": 8,
+      "maxTokensPerTurn": 1024,
+      "tools": [
+        "read_file",
+        "write_file",
+        "list_dir",
+        "run_tests",
+        "recall",
+        "finish"
+      ],
+      "finishGuard": false,
+      "sourceDigest": "cebd3b927b522154e1d887c9d7b565af72812db5d15b183e1f7735cf19e2da8b"
+    },
+    "variants": {
+      "H-step": {
+        "steps": 16,
+        "maxTokensPerTurn": 1024,
+        "finishGuard": false
+      },
+      "H-output": {
+        "steps": 8,
+        "maxTokensPerTurn": 4096,
+        "finishGuard": false
+      },
+      "H-finish": {
+        "steps": 8,
+        "maxTokensPerTurn": 1024,
+        "finishGuard": true
+      },
+      "H-native": {
+        "runtime": "dsh-agent",
+        "status": "not-implemented"
+      }
+    }
+  },
+  "model": {
+    "id": "deepseek-v4.1-flash",
+    "provider": "opencode",
+    "route": "https://opencode.ai/zen/go/v1",
+    "note": "The model and route are frozen for the planned experiment; no R36 request was made."
+  },
+  "live": {
+    "authorization": "not-granted-in-this-session",
+    "gate": "R33_LIVE=1, resolved route, positive limits, and an explicit manifest are still required."
+  }
+}
