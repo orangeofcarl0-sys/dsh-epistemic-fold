@@ -38,3 +38,6 @@ eval/r33/out/self-test-runs/
 # Preflight is a local capability check, not a run record; it records the
 # machine's build paths. The review package carries the copy from this round.
 eval/r33/out/preflight-report.json
+# Authorized live run artifacts stay local; the review package carries the
+# reports and traces that are meant to be shared.
+eval/r35/runs/
