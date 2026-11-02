@@ -618,7 +618,13 @@ async function foldCase(caseData, layout, host, model) {
     source: { kind: 'user' },
   }), { surfaceOp: 'append' })
   const foldElapsedMs = Date.now() - started
-  const checkpoint = visibleCheckpoint(session)
+  // A refused fold leaves no compact checkpoint. Production continues with the
+  // uncompressed history, so the follow-up must receive the transcript rather
+  // than an empty string; the empty checkpoint would silently remove every
+  // historical fact the task depends on.
+  const checkpoint = foldRefused === undefined
+    ? visibleCheckpoint(session)
+    : fullHistory(caseData.transcript)
   const packet = host.plugin.engine.lastSemanticPacket
   return {
     session,
@@ -1081,7 +1087,12 @@ async function runOne({
       transcript: caseData.transcript,
     })
   }
-  if (folded.fold.valid && stage === 'continuation') {
+  // A refused fold is a compression outcome, not a reason to cancel the task.
+  // Production keeps the full history when compaction declines; the follow-up
+  // must run in that condition or the B1/O2 baseline silently disappears on
+  // small transcripts. The row records the refusal and the fallback.
+  const foldFallback = stage === 'continuation' && folded.foldRefused !== undefined
+  if ((folded.fold.valid || foldFallback) && stage === 'continuation') {
     follow = await followUp({
       adapter,
       model: manifest.model,
@@ -1152,7 +1163,12 @@ async function runOne({
   if (!folded.fold.valid) {
     failures.fold.push(folded.foldRefused === undefined
       ? { kind: 'fold-invalid', detail: 'no complete compaction transaction was observed' }
-      : { kind: 'fold-refused', reason: folded.foldRefused.kind, detail: folded.foldRefused.detail })
+      : {
+        kind: 'fold-refused',
+        reason: folded.foldRefused.kind,
+        detail: folded.foldRefused.detail,
+        ...(foldFallback ? { fallback: 'full-history' } : {}),
+      })
   }
   if (checker.status !== 'executed' && checker.status !== 'not-run') {
     failures.checker.push({
@@ -1175,17 +1191,17 @@ async function runOne({
   }
   const valid = stage === 'writer-only'
     ? folded.fold.valid && failures.budget.length === 0
-    : folded.fold.valid
+    : (folded.fold.valid || foldFallback)
       && failures.budget.length === 0
       && follow !== undefined
       && follow.providerFailure === undefined
       && checker.status === 'executed'
   const fatalProviderFailure = (stage === 'continuation' && follow?.providerFailure !== undefined)
-    || (!folded.fold.valid && failures.provider.length > 0)
+    || (!folded.fold.valid && !foldFallback && failures.provider.length > 0)
   const outcome = classifyOutcome({
     stage,
     valid,
-    foldValid: folded.fold.valid,
+    foldValid: folded.fold.valid || foldFallback,
     providerFailures: failures.provider,
     fatalProviderFailure,
     budgetExhausted: failures.budget.length > 0,
@@ -1214,6 +1230,7 @@ async function runOne({
     failures,
     providerCalls,
     fold: folded.fold,
+    ...(foldFallback ? { foldFallback: 'full-history' } : {}),
     foldElapsedMs: folded.foldElapsedMs,
     checkpoint: {
       digest: digestText(folded.checkpoint),

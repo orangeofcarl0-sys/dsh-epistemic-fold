@@ -467,6 +467,47 @@ describe('R34.1 live accounting and failure classification', () => {
     }
   }, 180_000)
 
+  it('continues on full history when a continuation fold is refused', async () => {
+    // The first response is the writer's overlong handoff; later responses are
+    // the follow-up agent's finish action. The fold cannot shrink the span, so
+    // the task must run against the uncompressed history, not be skipped.
+    const provider = await mockProvider((_body, index) => index === 0
+      ? verboseWriterCompletion()
+      : finishAction())
+    try {
+      await withRun(provider, {
+        runId: 'continuation-fold-fallback',
+        stage: 'continuation',
+        cases: 'A1',
+        arms: 'S',
+      }, async report => {
+        expect(provider.attempts()).toBeGreaterThanOrEqual(2)
+        expect(report.status).toBe('executed-failed')
+        expect(report.harnessError).toBeNull()
+        const row = report.rows[0]
+        expect(row.valid).toBe(true)
+        expect(row.fold.valid).toBe(false)
+        expect(row.foldFallback).toBe('full-history')
+        expect(row.failures.fold[0]).toMatchObject({
+          kind: 'fold-refused',
+          reason: 'summary-not-smaller',
+          fallback: 'full-history',
+        })
+        expect(row.checker.status).toBe('executed')
+        expect(row.behaviour.taskSuccess).toBe(false)
+        expect(row.behaviourDetail).not.toBeNull()
+        expect(row.failures.task.assessed).toBe(true)
+        // The fallback must hand the follow-up the uncompressed history, not an
+        // empty checkpoint. A1's first user message is the compatibility
+        // constraint, and it must be in the context the agent received.
+        expect(row.checkpoint.text).toContain('loadConfig(path) string form')
+        expect(row.checkpoint.chars).toBeGreaterThan(0)
+      })
+    } finally {
+      await provider.close()
+    }
+  }, 180_000)
+
   it('records a non-compressing writer summary as a fold refusal and continues', async () => {
     // F1's first real answer is too long for its small span; A1's is normal.
     // The run must record F1's refusal and still measure A1.
