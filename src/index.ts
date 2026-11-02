@@ -205,8 +205,17 @@ export type {
   SemanticResidency,
   SemanticWorkingSetReport,
 } from './semantic/types.ts'
-export { parseWriterOutput, SEMANTIC_MAX_TOKENS, SEMANTIC_WRITER_INSTRUCTION } from './semantic/writer.ts'
-export type { WriterOutput } from './semantic/writer.ts'
+export {
+  parseWriterOutput,
+  SEMANTIC_MAX_TOKENS,
+  SEMANTIC_WRITER_INSTRUCTION,
+  SEMANTIC_WRITER_INSTRUCTION_W0,
+  SEMANTIC_WRITER_INSTRUCTION_W1,
+  SEMANTIC_WRITER_PROMPT_VERSION,
+  SEMANTIC_WRITER_PROMPT_VERSIONS,
+  writerInstruction,
+} from './semantic/writer.ts'
+export type { SemanticWriterPromptVersion, WriterOutput } from './semantic/writer.ts'
 export { describeWriterObservation, observeWriter } from './semantic/observation.ts'
 export type {
   ObserveWriterInput,
