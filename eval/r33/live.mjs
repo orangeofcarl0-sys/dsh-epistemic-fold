@@ -57,6 +57,7 @@ import {
   verifyFrozen,
   verifyHoldout,
 } from './src/dataset.mjs'
+import { selectCases } from './src/selection.mjs'
 import {
   BudgetExhausted,
   BudgetLedger,
@@ -695,15 +696,27 @@ function parseAction(text) {
   return undefined
 }
 
-async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRoot, maxSteps, maxTokens = FOLLOW_UP_MAX_TOKENS }) {
+async function followUp({
+  adapter,
+  model,
+  caseData,
+  arm,
+  checkpoint,
+  workspaceRoot,
+  maxSteps,
+  maxTokens = FOLLOW_UP_MAX_TOKENS,
+  finishGuard = false,
+  runtime = 'custom-json-loop',
+}) {
   const messages = [{
     role: 'user',
     content: [{ type: 'text', text: `${armContext(arm, caseData, checkpoint)}\n\nBEGIN THE TASK.` }],
   }]
   const system = systemPrompt()
+  const guardEnabled = finishGuard === true || finishGuard === 'tests-required'
   let toolCalls = 0
   let testsExecuted = 0
-  let testRuns = []
+  const testRuns = []
   let recallAttempts = 0
   let recallSuccess = 0
   let recallGrounded = 0
@@ -713,10 +726,23 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
   let summary = ''
   let lastModification = null
   let lastPassingTest = null
+  let validActions = 0
+  let invalidActions = 0
+  let unknownTools = 0
+  let truncatedTurns = 0
+  let finishRequests = 0
+  let prematureFinishRequests = 0
+  let finishRejections = 0
+  let guardAssistedFinish = false
+  let lastFinishCheck = null
+  const finishChecks = []
+  const toolCounts = Object.fromEntries(FOLLOW_UP_TOOLS.map(tool => [tool, 0]))
+  const finishReasonCounts = {}
   const trace = []
   const finalize = async (extra = {}) => {
     const final = await workspaceDigest(workspaceRoot)
     const verifiedCurrentCode = lastPassingTest !== null && lastPassingTest.digest === final.digest
+    const providerFailed = extra.providerFailure !== undefined
     return {
       steps,
       modelCalls,
@@ -730,12 +756,45 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       summary,
       trace,
       requestedMaxTokens: maxTokens,
+      harness: {
+        version: 'H0-custom-json-loop',
+        runtime,
+        tools: [...FOLLOW_UP_TOOLS],
+        maxSteps,
+        maxTokens,
+        validActions,
+        invalidActions,
+        unknownTools,
+        toolCounts: { ...toolCounts },
+        finishReasonCounts: { ...finishReasonCounts },
+        truncatedTurns,
+        stepLimitTermination: !finished && !providerFailed && steps >= maxSteps,
+        providerFailure: extra.providerFailure ?? null,
+        note: 'Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime.',
+      },
+      finishGuard: {
+        enabled: guardEnabled,
+        policy: guardEnabled ? 'reject-finish-without-fresh-passing-test' : 'none',
+        requiredTests: caseData.requiresTests === true,
+        finishRequests,
+        prematureFinishRequests,
+        rejections: finishRejections,
+        assistedCompletion: guardAssistedFinish,
+        lastCheck: lastFinishCheck,
+        checks: finishChecks.map(check => ({ ...check })),
+        note: guardEnabled
+          ? 'The guard rejects a finish request; it never runs a test, edits code, or writes verification.'
+          : 'No finish guard was configured.',
+      },
       verificationFreshness: {
         currentDigest: final.digest,
         files: final.files,
         lastModification,
         lastPassingTest,
         verifiedCurrentCode,
+        sourceDigestAtLastTest: lastPassingTest?.digest ?? null,
+        sourceDigestAtFinish: final.digest,
+        testRuns: testRuns.map(run => ({ ...run })),
         note: verifiedCurrentCode
           ? 'the last passing visible test ran on the current source digest'
           : lastPassingTest === null
@@ -771,6 +830,9 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
           : { code: 'unknown', message: error instanceof Error ? error.message : String(error) },
       })
     }
+    const finishKind = finishReason?.kind ?? 'none'
+    finishReasonCounts[finishKind] = (finishReasonCounts[finishKind] ?? 0) + 1
+    if (finishKind === 'max-tokens' || finishKind === 'length') truncatedTurns += 1
     if (finishReason?.kind === 'error') {
       if (finishReason.failure?.code === 'BUDGET_EXHAUSTED') {
         throw new BudgetExhausted(finishReason.failure?.message ?? 'provider refused by the ledger')
@@ -785,18 +847,56 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
     trace.push({ step: steps, text: text.slice(0, 1000), usage, finishReason })
     const action = parseAction(text)
     if (action === undefined || typeof action.tool !== 'string') {
+      invalidActions += 1
       messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
       messages.push({ role: 'user', content: [{ type: 'text', text: 'Reply with exactly one JSON tool object.' }] })
       continue
     }
+    validActions += 1
     messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
     if (action.tool === 'finish') {
+      finishRequests += 1
+      toolCounts.finish += 1
+      const current = await workspaceDigest(workspaceRoot)
+      const fresh = lastPassingTest !== null && lastPassingTest.digest === current.digest
+      lastFinishCheck = {
+        step: steps,
+        requiresTests: caseData.requiresTests === true,
+        testsExecuted,
+        lastPassingTest,
+        currentDigest: current.digest,
+        fresh,
+      }
+      finishChecks.push(lastFinishCheck)
+      // The guard only applies when the task REQUIRES tests and it is enabled.
+      // It rejects the request and returns control to the model; it does not
+      // run the tests or repair the workspace.
+      if (guardEnabled && caseData.requiresTests === true && !fresh) {
+        finishRejections += 1
+        prematureFinishRequests += 1
+        const why = testsExecuted === 0
+          ? 'No test run has been recorded.'
+          : lastPassingTest === null
+            ? 'No test run has passed.'
+            : 'The source changed after the last passing test.'
+        messages.push({
+          role: 'user',
+          content: [{
+            type: 'text',
+            text: `FINISH REJECTED: this task requires a fresh passing test run on the current source. ${why} `
+              + 'Run the tests and finish only after they pass on the final code.',
+          }],
+        })
+        continue
+      }
       finished = true
       summary = String(action.summary ?? '')
+      if (finishRejections > 0) guardAssistedFinish = true
       break
     }
     toolCalls += 1
     if (action.tool === 'read_file') {
+      toolCounts.read_file += 1
       const result = await readWorkspaceFile(workspaceRoot, action.path)
       messages.push({
         role: 'user',
@@ -810,6 +910,7 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       continue
     }
     if (action.tool === 'write_file') {
+      toolCounts.write_file += 1
       const result = await writeWorkspaceFile(workspaceRoot, action.path, action.content)
       if (result.ok) {
         const digest = await workspaceDigest(workspaceRoot)
@@ -832,6 +933,7 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       continue
     }
     if (action.tool === 'list_dir') {
+      toolCounts.list_dir += 1
       const listing = await listWorkspace(workspaceRoot)
       messages.push({
         role: 'user',
@@ -840,6 +942,7 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       continue
     }
     if (action.tool === 'run_tests') {
+      toolCounts.run_tests += 1
       testsExecuted += 1
       const result = await runVisibleTests(workspaceRoot)
       const digest = await workspaceDigest(workspaceRoot)
@@ -868,6 +971,7 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       continue
     }
     if (action.tool === 'recall') {
+      toolCounts.recall += 1
       recallAttempts += 1
       const result = recall(caseData, action.query)
       if (result.matches > 0) recallSuccess += 1
@@ -875,6 +979,7 @@ async function followUp({ adapter, model, caseData, arm, checkpoint, workspaceRo
       messages.push({ role: 'user', content: [{ type: 'text', text: `TOOL RESULT recall:\n${result.text}` }] })
       continue
     }
+    unknownTools += 1
     messages.push({ role: 'user', content: [{ type: 'text', text: `TOOL RESULT: unknown tool ${action.tool}` }] })
   }
   return finalize()
@@ -1102,6 +1207,8 @@ async function runOne({
       workspaceRoot: layout.workspace,
       maxSteps: manifest.followUpSteps ?? 8,
       maxTokens: manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS,
+      finishGuard: manifest.finishGuard ?? false,
+      runtime: manifest.runtime ?? 'custom-json-loop',
     })
     checker = await runChecker(caseData, layout.workspace)
     const verification = await readVerification(layout.workspace)
@@ -1111,13 +1218,18 @@ async function runOne({
       verification,
       testsExecuted: follow.testsExecuted,
       verificationFreshness: follow.verificationFreshness,
+      finishGuard: follow.finishGuard,
+      harness: follow.harness,
     })
   }
   const after = ledger.snapshot()
   const cost = snapshotDelta(before, after)
   cost.caseDurationMs = Date.now() - caseStarted
   cost.runElapsedMs = after.elapsedMs
-  cost.modelRequests = after.used.attempts
+  // Per-CASE request cost, not the run's cumulative attempt count. R35 wrote
+  // `after.used.attempts` here, so one row could report httpAttempts 8 and
+  // modelRequests 58 and both were presented as this case's request cost.
+  cost.modelRequests = cost.attempts
 
   // ONE failure record, built from the actual call log and the actual checker
   // state. `valid` is measurement validity, never the task outcome.
@@ -1595,12 +1707,6 @@ async function runPreflight({ manifest, manifestPath, cases, arms, stage, runRoo
   }
 }
 
-function selectCases(cases, requested) {
-  if (requested === undefined || requested.length === 0) return cases
-  const ids = String(requested).split(',').map(id => id.trim()).filter(Boolean)
-  return cases.filter(entry => ids.includes(entry.id))
-}
-
 function selectArms(requested, stage = 'continuation') {
   if (requested === undefined || requested.length === 0) {
     return stage === 'writer-only' ? ['S', 'O1'] : [...ARMS]
@@ -1741,6 +1847,9 @@ function reportEnvelope({ status, executionKind, stage, manifest, arms, runId, r
       maxOutputTokens: manifest.maxOutputTokens,
       followUpMaxTokens: manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS,
       followUpSteps: manifest.followUpSteps ?? 8,
+      finishGuard: manifest.finishGuard ?? false,
+      runtime: manifest.runtime ?? 'custom-json-loop',
+      harnessVersion: manifest.harnessVersion ?? 'H0-custom-json-loop',
       contextWindow: manifest.route?.contextWindow ?? 131_072,
       reasoningSettings: manifest.reasoning ?? null,
     },
@@ -1966,6 +2075,29 @@ async function main() {
   const selected = selectCases(cases, argValue('--cases') ?? manifest.cases)
   const arms = selectArms(argValue('--arms') ?? manifest.arms, stage)
   const runId = manifest.runId ?? newRunId('live')
+  if (manifest.runtime === 'dsh-agent') {
+    const report = {
+      schemaVersion: 3,
+      status: 'not-executed',
+      reason: 'H-native requested the real DSH Agent/Tool Runtime, which this custom evaluation harness '
+        + 'does not implement. No provider request was attempted and no result is claimed.',
+      dataset,
+      stage,
+      runId,
+      generatedAt: new Date().toISOString(),
+      providerRequests: 0,
+      harness: {
+        requestedRuntime: 'dsh-agent',
+        implementedRuntime: 'custom-json-loop',
+        condition: 'H-native',
+        status: 'blocked',
+      },
+      note: 'H-native is a declared calibration condition, not an executed measurement.',
+    }
+    const paths = await writeRunReport({ runRoot, runId, report, latestName: 'live-report.json' })
+    process.stdout.write(`${report.status}: ${report.reason}\n${paths.reportPath}\n`)
+    process.exit(STATUS_EXIT_CODE['not-executed'])
+  }
   const ledger = new BudgetLedger(manifest.limits, { maxRequestOutputTokens: manifest.maxOutputTokens })
   const runtime = await runtimeFromManifest(manifest, ledger)
   if (runtime.unavailable !== undefined) {
@@ -2028,7 +2160,7 @@ async function main() {
           const cost = snapshotDelta(beforeCase, afterCase)
           cost.caseDurationMs = Date.now() - caseStarted
           cost.runElapsedMs = afterCase.elapsedMs
-          cost.modelRequests = afterCase.used.attempts
+          cost.modelRequests = cost.attempts
           const failures = emptyFailures()
           let outcome
           if (error instanceof BudgetExhausted) {

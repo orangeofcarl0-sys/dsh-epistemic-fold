@@ -33,8 +33,34 @@ declare module '*/r33/src/dataset.mjs' {
   export function verifyHoldout(manifestPath?: string): Promise<any>
 }
 
-declare module '*/r33/src/context.mjs' {
-  export function literalSummary(transcript: readonly any[]): string
+declare module '*/r36/writer-protocol.mjs' {
+  export function parseWriterOutput(text: string): any
+  export function classifyWriterFailure(text: string | null, parse?: any): {
+    category: string
+    recoverableProposals: number | null
+    detail: string | null
+  }
+  export function recoverWriterOutput(text: string | null): {
+    status: 'parsed-p0' | 'recovered' | 'unrecovered'
+    category: string
+    recovery?: string
+    detail?: string
+    deltas: any[]
+    handoff?: string
+    contentPreserved?: boolean
+  }
+  export function deltaMatchesFact(delta: any, fact: any): string | undefined
+  export function normalize(text: unknown): string
+  export function tokens(text: unknown): Set<string>
+  export function containment(left: unknown, right: unknown): number
+  export function parseJsonValues(text: string): unknown[] | undefined
+}
+
+declare module '*/r33/src/selection.mjs' {
+  export function selectCases(cases: readonly any[], requested?: string): any[]
+}
+
+declare module '*/r33/src/context.mjs' {  export function literalSummary(transcript: readonly any[]): string
   export function fullHistory(transcript: readonly any[]): string
   export function goldFactsBlock(gold: readonly any[], options?: { includeSuperseded?: boolean }): string
   export function goldEvidenceBlock(
@@ -106,9 +132,16 @@ declare module '*/r33/src/workspace.mjs' {
 declare module '*/r33/src/grade.mjs' {
   export const SCORER_VERSION: number
   export const SCORER_V1_NOTE: string
+  export const SCORER_V2_NOTE: string
   export function sourceBindings(caseData: any, eventSeqs?: readonly number[]): any[]
   export function extractionMetrics(caseData: any, input: any): any
   export function behaviourMetrics(caseData: any, input: any): any
+  export function assessVerification(input: {
+    claim?: string
+    testsExecuted?: number
+    verificationFreshness?: any
+    testRuns?: readonly any[]
+  }): any
   export function aggregateArm(arm: string, rows: readonly any[]): any
   export function compareTreatment(input: {
     rows: readonly any[]

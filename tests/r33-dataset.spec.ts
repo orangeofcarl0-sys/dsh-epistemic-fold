@@ -17,6 +17,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { loadDataset, verifyFrozen } from '../eval/r33/src/dataset.mjs'
+import { SCORER_VERSION } from '../eval/r33/src/grade.mjs'
 
 const PAIRS = [['A1', 'A2'], ['B1', 'B2'], ['C1', 'C2'], ['E1', 'E2'], ['F1', 'F2']] as const
 
@@ -25,7 +26,7 @@ describe('R33 frozen dataset', () => {
     const frozen = await verifyFrozen()
     expect(frozen.ok, frozen.reason).toBe(true)
     expect(frozen.manifest.datasetId).toBe('r33-semantic-continuity-v2')
-    expect(frozen.manifest.scorerVersion).toBe(2)
+    expect(frozen.manifest.scorerVersion).toBe(SCORER_VERSION)
     expect(frozen.manifest.supersedes.datasetId).toBe('r33-semantic-continuity-v1')
     const { cases, errors, datasetDigest } = await loadDataset()
     expect(errors).toEqual([])

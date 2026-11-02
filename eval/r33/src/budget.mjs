@@ -464,6 +464,18 @@ export function validateManifest(manifest) {
   if (manifest.followUpMaxTokens !== undefined && !positiveInteger(manifest.followUpMaxTokens)) {
     return { ok: false, reason: 'manifest.followUpMaxTokens must be a positive integer when present' }
   }
+  if (manifest.finishGuard !== undefined
+    && typeof manifest.finishGuard !== 'boolean'
+    && manifest.finishGuard !== 'tests-required') {
+    return { ok: false, reason: 'manifest.finishGuard must be a boolean or "tests-required" when present' }
+  }
+  if (manifest.runtime !== undefined && manifest.runtime !== 'custom-json-loop' && manifest.runtime !== 'dsh-agent') {
+    return { ok: false, reason: 'manifest.runtime must be "custom-json-loop" or "dsh-agent" when present' }
+  }
+  if (manifest.harnessVersion !== undefined
+    && (typeof manifest.harnessVersion !== 'string' || manifest.harnessVersion.length === 0)) {
+    return { ok: false, reason: 'manifest.harnessVersion must be a non-empty string when present' }
+  }
   if (manifest.runId !== undefined && (typeof manifest.runId !== 'string' || manifest.runId.length === 0)) {
     return { ok: false, reason: 'manifest.runId must be a non-empty string when present' }
   }
@@ -654,6 +666,9 @@ export function runQuality(cases, stage = 'continuation') {
   const valid = cases.filter(entry => entry.valid === true)
   const success = valid.filter(entry => entry.behaviour?.taskSuccess === true)
   const contract = valid.filter(entry => entry.behaviour?.contractSuccess === true)
+  const guarded = valid.filter(entry => entry.behaviour?.finishGuard?.enabled === true)
+  const unguided = valid.filter(entry => entry.behaviour?.finishGuard?.enabled !== true)
+  const sum = selector => valid.reduce((total, entry) => total + (selector(entry) ?? 0), 0)
   const hasTaskOutcome = stage !== 'writer-only'
   return {
     measurementValid: valid.length > 0,
@@ -669,5 +684,22 @@ export function runQuality(cases, stage = 'continuation') {
     falseVerificationClaims: valid.filter(entry => entry.behaviour?.falseVerificationClaim === true).length,
     writerMeasurements: writerMeasurements(cases),
     writerExtraction: writerExtraction(cases),
+    harnessCalibration: {
+      harnessVersions: [...new Set(valid.map(entry => entry.behaviour?.harness?.version).filter(Boolean))],
+      guardedRows: hasTaskOutcome ? guarded.length : 0,
+      unguidedRows: hasTaskOutcome ? unguided.length : 0,
+      finishGuardRejections: hasTaskOutcome ? sum(entry => entry.behaviour?.finishGuard?.rejections) : 0,
+      guardAssistedCompletions: hasTaskOutcome
+        ? guarded.filter(entry => entry.behaviour?.finishGuard?.assistedCompletion === true).length
+        : 0,
+      unguidedContractSuccesses: hasTaskOutcome
+        ? unguided.filter(entry => entry.behaviour?.contractSuccess === true).length
+        : 0,
+      stepLimitTerminations: sum(entry => entry.behaviour?.harness?.stepLimitTermination === true ? 1 : 0),
+      truncatedTurns: sum(entry => entry.behaviour?.harness?.truncatedTurns),
+      invalidActions: sum(entry => entry.behaviour?.harness?.invalidActions),
+      unknownTools: sum(entry => entry.behaviour?.harness?.unknownTools),
+      note: 'Guarded rows are not evidence of unguided process compliance; report them separately.',
+    },
   }
 }

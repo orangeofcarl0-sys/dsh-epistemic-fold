@@ -522,8 +522,10 @@ describe('R34.1 live accounting and failure classification', () => {
         arms: 'S,O1',
       }, async report => {
         expect(provider.attempts()).toBe(2)
-        // F1's S and O1 rows are refused; A1's S and O1 rows commit. That is a
-        // partial run, not a harness crash and not a provider outage.
+        // The requested order is F1 then A1. F1's first real answer is too long
+        // for its small span, so its S and O1 rows are refused; A1's writer
+        // answers normally and commits. That is a partial run, not a harness
+        // crash and not a provider outage.
         expect(report.status).toBe('executed-partial')
         expect(report.harnessError).toBeNull()
         expect(report.stopReason).toBeNull()
@@ -532,7 +534,8 @@ describe('R34.1 live accounting and failure classification', () => {
         const row = (arm: string, caseId: string) =>
           report.rows.find((entry: any) => entry.arm === arm && entry.caseId === caseId)
 
-        const refused = row('S', 'A1')
+        expect(report.rows.map((entry: any) => entry.caseId)).toEqual(['F1', 'F1', 'A1', 'A1'])
+        const refused = row('S', 'F1')
         expect(refused.valid).toBe(false)
         expect(refused.fold.valid).toBe(false)
         expect(refused.failures.fold).toHaveLength(1)
@@ -544,19 +547,34 @@ describe('R34.1 live accounting and failure classification', () => {
         expect(refused.writer.rawOutputChars).toBeGreaterThan(1_000)
         expect(refused.writer.rawOutputDigest).toMatch(/^[0-9a-f]{16}/u)
         expect(refused.cost.httpAttempts).toBe(1)
+        expect(refused.cost.modelRequests).toBe(1)
         expect(refused.cost.observedOutputTokens).toBeGreaterThan(0)
 
         // The refusal did not stop the run: the next case was measured. Its
         // writer proposed an empty delta list, so the fold commits a
         // deterministic checkpoint with nothing accepted — a protocol-valid
         // answer, not a semantic success.
-        const measured = row('S', 'F1')
+        const measured = row('S', 'A1')
         expect(measured.valid).toBe(true)
         expect(measured.fold.valid).toBe(true)
         expect(measured.writer.call).toBe('success')
         expect(measured.writer.commitStatus).toBe('nothing-accepted')
         expect(measured.writer.accepted).toBe(0)
-        expect(row('O1', 'F1').valid).toBe(true)
+        expect(measured.cost.modelRequests).toBe(1)
+        expect(row('O1', 'A1').valid).toBe(true)
+        expect(row('O1', 'F1').valid).toBe(false)
+
+        // Per-case deltas must reconcile with the run total. R35 wrote the
+        // run's cumulative attempt count into every structural row, so the
+        // per-case numbers could not be added up.
+        const perCaseRequests = report.rows.reduce(
+          (total: number, entry: any) => total + entry.cost.modelRequests,
+          0,
+        )
+        expect(perCaseRequests).toBe(report.ledger.used.attempts)
+        for (const entry of report.rows) {
+          expect(entry.cost.modelRequests).toBe(entry.cost.httpAttempts)
+        }
 
         const writer = report.quality.writerMeasurements
         expect(writer.realWriterRows).toBe(2)
