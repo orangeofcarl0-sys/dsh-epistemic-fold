@@ -41,3 +41,6 @@ eval/r33/out/preflight-report.json
 # Authorized live run artifacts stay local; the review package carries the
 # reports and traces that are meant to be shared.
 eval/r35/runs/
+
+# R36 live run archive (local evidence; reports are summarized under eval/r36/out)
+eval/r36/runs/

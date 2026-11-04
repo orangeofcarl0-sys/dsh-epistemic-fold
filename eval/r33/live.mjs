@@ -103,6 +103,15 @@ import {
   sourceBindings,
 } from './src/grade.mjs'
 
+const { SEMANTIC_WRITER_INSTRUCTION_W0, SEMANTIC_WRITER_INSTRUCTION_W1 } =
+  await import('../../lib/semantic/writer.js')
+
+const WRITER_PROMPT_INSTRUCTIONS = {
+  W0: SEMANTIC_WRITER_INSTRUCTION_W0,
+  W1: SEMANTIC_WRITER_INSTRUCTION_W1,
+}
+const WRITER_PROMPT_VERSIONS = ['W0', 'W1']
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = join(HERE, 'out')
 const SIGNAL = new AbortController().signal
@@ -242,6 +251,61 @@ class RecordingAdapter extends LlmAdapter {
         })
       }
     }
+  }
+}
+
+/**
+ * Select the frozen writer prompt for a controlled W0/W1 comparison.
+ *
+ * The production engine always appends the current instruction. This wrapper
+ * replaces only that instruction block, and only for the writer call; the
+ * conversation, model, route, limits, parser, and validator are untouched. W1
+ * is a no-op wrapper, so the production path is byte-identical.
+ */
+class PromptVariantAdapter extends LlmAdapter {
+  constructor(inner, version) {
+    super()
+    this.inner = inner
+    this.version = version
+    this.instruction = WRITER_PROMPT_INSTRUCTIONS[version]
+  }
+
+  resolveModel(provider, model) {
+    return this.inner.resolveModel(provider, model)
+  }
+
+  get rateLimitTelemetry() {
+    return this.inner.rateLimitTelemetry
+  }
+
+  get toolShapeRepairs() {
+    return this.inner.toolShapeRepairs
+  }
+
+  get toolResultsSynthesised() {
+    return this.inner.toolResultsSynthesised
+  }
+
+  get toolResultsDropped() {
+    return this.inner.toolResultsDropped
+  }
+
+  async *stream(options) {
+    if (this.version === 'W1') {
+      yield* this.inner.stream(options)
+      return
+    }
+    let replaced = false
+    const messages = options.messages.map(message => {
+      const content = message.content.map(block => {
+        if (block.type !== 'text' || typeof block.text !== 'string') return block
+        if (!block.text.startsWith('You are the SEMANTIC WRITER')) return block
+        replaced = true
+        return { ...block, text: this.instruction }
+      })
+      return replaced ? { ...message, content } : message
+    })
+    yield* this.inner.stream(replaced ? { ...options, messages } : options)
   }
 }
 
@@ -1817,7 +1881,7 @@ async function runtimeFromManifest(manifest, ledger) {
     }
   }
   const { OpenAiCompatibleAdapter } = await import('../live/dist/openai-adapter.js')
-  const inner = new OpenAiCompatibleAdapter({
+  const base = new OpenAiCompatibleAdapter({
     baseUrl,
     apiKey,
     model: manifest.model,
@@ -1827,6 +1891,8 @@ async function runtimeFromManifest(manifest, ledger) {
     // before every HTTP attempt, including a 429 resend.
     budget: ledger,
   })
+  const promptVersion = manifest.writerPromptVersion ?? 'W1'
+  const inner = promptVersion === 'W1' ? base : new PromptVariantAdapter(base, promptVersion)
   return { inner }
 }
 
@@ -1850,6 +1916,10 @@ function reportEnvelope({ status, executionKind, stage, manifest, arms, runId, r
       finishGuard: manifest.finishGuard ?? false,
       runtime: manifest.runtime ?? 'custom-json-loop',
       harnessVersion: manifest.harnessVersion ?? 'H0-custom-json-loop',
+      writerPromptVersion: manifest.writerPromptVersion ?? 'W1',
+      writerPromptDigest: digestText(
+        WRITER_PROMPT_INSTRUCTIONS[manifest.writerPromptVersion ?? 'W1'] ?? SEMANTIC_WRITER_INSTRUCTION_W1,
+      ),
       contextWindow: manifest.route?.contextWindow ?? 131_072,
       reasoningSettings: manifest.reasoning ?? null,
     },

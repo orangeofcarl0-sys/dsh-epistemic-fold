@@ -476,6 +476,11 @@ export function validateManifest(manifest) {
     && (typeof manifest.harnessVersion !== 'string' || manifest.harnessVersion.length === 0)) {
     return { ok: false, reason: 'manifest.harnessVersion must be a non-empty string when present' }
   }
+  if (manifest.writerPromptVersion !== undefined
+    && manifest.writerPromptVersion !== 'W0'
+    && manifest.writerPromptVersion !== 'W1') {
+    return { ok: false, reason: 'manifest.writerPromptVersion must be "W0" or "W1" when present' }
+  }
   if (manifest.runId !== undefined && (typeof manifest.runId !== 'string' || manifest.runId.length === 0)) {
     return { ok: false, reason: 'manifest.runId must be a non-empty string when present' }
   }
