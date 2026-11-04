@@ -14,7 +14,7 @@
   "phase": "D",
   "execution": "live",
   "status": "blocked",
-  "blockedReason": "Writer, harness, scorer, and dataset conditions are not all frozen/passed yet; G3 is blocked.",
+  "blockedReason": "Authorized, but not run: the O2 calibration floor is not stable (best 3/6 contract success). A B1/S comparison would be dominated by A1/C1 code failures and B2 test omission.",
   "requiresAuthorization": true,
   "stage": "continuation",
   "arms": "B1,S,O1,O2",

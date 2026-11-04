@@ -13,8 +13,7 @@
   "maxOutputTokens": 16384,
   "phase": "C",
   "execution": "live",
-  "status": "blocked",
-  "blockedReason": "No explicit R36 model-spend authorization in this session.",
+  "status": "executed",
   "requiresAuthorization": true,
   "stage": "continuation",
   "arms": "O2",
@@ -30,5 +29,18 @@
     "outputTokens": 5000000,
     "wallClockMs": 3600000
   },
-  "note": "Single-factor step-budget change against H0."
+  "note": "Single-factor step-budget change against H0.",
+  "runIds": [
+    "r36-h-step-o2-r1",
+    "r36-h-step-o2-A1",
+    "r36-h-step-o2-B2",
+    "r36-h-step-o2-C1",
+    "r36-h-step-o2-C1b",
+    "r36-h-step-o2-D1",
+    "r36-h-step-o2-D1b",
+    "r36-h-step-o2-F1",
+    "r36-h-step-o2-H1"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "Split per case after transport resets; C1b/D1b are the valid reruns."
 }

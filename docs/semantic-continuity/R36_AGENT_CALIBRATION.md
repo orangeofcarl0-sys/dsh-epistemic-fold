@@ -4,16 +4,61 @@
 
 ```text
 H0 (custom text-JSON loop)       implemented; offline tests pass
-H-step / H-output                manifest conditions; offline plumbing tested
-H-finish                         implemented; offline tests pass
+H-step / H-output                executed as single-factor O2 conditions
+H-finish                         implemented and executed
 H-native                         declared; NOT implemented; blocked
-Live O2 calibration              blocked: no R36 authorization
-New provider requests            0
+Live O2 calibration              executed: 6 cases per condition
+New provider requests            419 total for the round (12 writer + 407 O2)
 ```
 
-These results are plumbing and guard behaviour, not a model measurement. The
-live manifests in `eval/r36/manifests/` are marked `blocked`; the gate report
-does not present them as executed.
+The live results below are model measurements. The offline guard tests remain
+the deterministic proof that the guard rejects a premature finish without
+running tests or editing code.
+
+## 0. Live O2 calibration
+
+One replicate per condition, six certified cases, `deepseek-v4.1-flash` through
+the local ZCode proxy. Every row is O2 (correct facts directly visible), so the
+only intended differences are the step budget, output budget, and finish guard.
+
+| condition | valid | task success | contract success | tests run | step-limit stops | invalid actions | guard rejections |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| H0 (8 / 1024 / no guard) | 6 | 2 | 1 | 2 | 4 | 28 | 0 |
+| H-step (16 / 1024 / no guard) | 6 | 3 | 2 | 6 | 4 | 47 | 0 |
+| H-output (8 / 4096 / no guard) | 6 | 2 | 1 | 2 | 4 | 23 | 0 |
+| H-finish (8 / 1024 / guard) | 6 | 2 | 1 | 3 | 4 | 16 | 1 |
+| H-combined (16 / 1024 / guard) | 6 | 4 | 3 | 7 | 3 | 32 | 0 |
+
+Per case (`task/contract`):
+
+| case | H0 | H-step | H-output | H-finish | H-combined | earliest observed problem |
+|---|---|---|---|---|---|---|
+| A1 | fail/fail | **pass/pass** | fail/fail | fail/fail | fail/fail | code failure; one success shows variance |
+| B2 | pass/fail | pass/fail | pass/fail | pass/fail | pass/fail | never requests/runs the required test |
+| C1 | fail/fail | fail/fail | fail/fail | fail/fail | fail/fail | code failure (`functionality.delivers-change`) |
+| D1 | fail/fail | fail/fail | fail/fail | fail/fail | **pass/pass** | code/verification; guard fired once |
+| F1 | **pass/pass** | fail/fail | **pass/pass** | **pass/pass** | **pass/pass** | stochastic; code succeeds in most runs |
+| H1 | fail/fail | **pass/pass** | fail/fail | fail/fail | **pass/pass** | code/steps; succeeds when it reaches the edit |
+
+The best condition reaches **3/6 contract success**. The failures are
+separable:
+
+- **A1 / C1:** the agent has the correct facts and still does not produce a
+  working implementation. That is a code/strategy failure, not a memory
+  failure.
+- **B2:** the task is functionally correct, but the agent never runs the
+  required test and never requests finish. The finish guard cannot reject a
+  finish that is never requested.
+- **D1:** the guard fired once, but the agent did not reach a fresh passing
+  test before the step limit.
+- **A1 vs H-combined:** A1 passed under H-step and failed under the combined
+  condition. One replicate per cell is not enough to treat this as a stable
+  harness effect.
+
+Consequence: O2 is **not a stable upper bound**. A B1/S comparison now would
+be dominated by A1/C1 code failures and B2 test omission, so the brief's stop
+condition applies: G4 remains blocked, not because of authorization, but
+because the execution floor makes the comparison uninformative.
 
 ## 1. H0: the fixed baseline
 
@@ -162,17 +207,23 @@ providerRequests: 0
 The refusal is tested. This is a gap, not a negative result about the model or
 the memory policy.
 
-## 7. What the next calibration needs
+## 7. What the next round needs
 
-Before any B1/S comparison, run O2 only on the certified cases and answer:
+The O2 question is answered: the agent can complete some certified tasks when
+the correct facts are visible, but not enough of them for a clean causal
+comparison. The next work is not another B1/S run. It is:
 
-```text
-Can the agent complete a task when the correct facts are directly visible?
-If not: task infeasible, visible/hidden conflict, tool protocol, step budget,
-        output budget, or coding failure?
-If yes: with which of H0 / H-step / H-output / H-finish?
-```
+1. **A1 / C1 code calibration.** Diagnose why the agent fails the implementation
+   even with the right facts. This is the dominant remaining floor.
+2. **B2 test-process calibration.** The agent never requests tests or finish;
+   the guard cannot help. Inspect its trace and the task instruction, or add a
+   different finish condition, before treating it as a memory case.
+3. **Replicates.** A1 passed under H-step and failed under H-combined. One run
+   per cell is too noisy to choose a harness.
+4. **H-native.** Implement the actual DSH Agent/Tool Runtime for a small
+   representative subset, or keep it explicitly blocked.
 
-Do not expand B1/S to accumulate more double-failure results. The guard's
-success is not evidence that unguided agents comply; it is evidence that the
-execution environment can reach contract success when the process is enforced.
+Only after those changes should the B1/S/O1/O2 comparison be reconsidered. The
+guard's success is not evidence that unguided agents comply; it is evidence that
+the execution environment can reach contract success when the process is
+enforced.

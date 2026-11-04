@@ -1,0 +1,1017 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-04T17:26:05.471Z",
+  "note": "Semantic analysis layer, not the benchmark exact scorer. No new provider call.",
+  "runs": [
+    {
+      "runId": "r36-writer-w0-r1",
+      "promptVersion": "W0",
+      "promptDigest": "1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc",
+      "status": "executed-partial",
+      "model": "deepseek-v4.1-flash",
+      "generatedAt": "2026-11-04T17:24:04.477Z",
+      "ledger": {
+        "schemaVersion": 2,
+        "limits": {
+          "requests": 60,
+          "inputTokens": 32000000,
+          "outputTokens": 1000000,
+          "wallClockMs": 1800000
+        },
+        "used": {
+          "requests": 6,
+          "attempts": 6,
+          "inputTokens": 5977,
+          "outputTokens": 2658,
+          "cacheReadTokens": 2304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0,
+          "unknownUsageRequests": 0,
+          "partialUsageRequests": 0,
+          "retries": 0
+        },
+        "observed": {
+          "inputTokens": 5977,
+          "outputTokens": 2658,
+          "cacheReadTokens": 2304,
+          "cacheWriteTokens": 0
+        },
+        "reserved": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0
+        },
+        "charged": {
+          "inputTokens": 5977,
+          "outputTokens": 2658
+        },
+        "remaining": {
+          "requests": 54,
+          "inputTokens": 31994023,
+          "outputTokens": 997342,
+          "wallClockMs": 1777418
+        },
+        "unresolvedAttempts": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "refusals": 0,
+        "elapsedMs": 22582
+      },
+      "rows": [
+        {
+          "caseId": "A1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "protocol-not-parsed",
+          "call": "success",
+          "protocol": "malformed",
+          "category": "bare-json-array",
+          "categoryDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+          "proposed": 0,
+          "accepted": 0,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2283,
+          "rawDigest": "f90f666601552ff0ac153842796a4fc9638eb4f36903c2336f5e1124581fa5d2",
+          "exactScorer": {
+            "criticalRecall": null,
+            "coordinateRecall": null,
+            "claimCorrectness": null,
+            "currentStateAccuracy": null
+          },
+          "facts": [
+            {
+              "factId": "A1-legacy-api",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": false
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 0,
+            "acceptedRecall": 0,
+            "commitRecall": 0,
+            "directVisibility": 0
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1000,
+            "outputTokens": 527,
+            "observedInputTokens": 1000,
+            "observedOutputTokens": 527,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1000,
+            "chargedOutputTokens": 527,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 4440,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 4634,
+            "runElapsedMs": 4644,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "B2",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "protocol-not-parsed",
+          "call": "success",
+          "protocol": "malformed",
+          "category": "bare-json-array",
+          "categoryDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+          "proposed": 0,
+          "accepted": 0,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 1824,
+          "rawDigest": "c18e8a0aed96f9d5905eb55027c4fe970e3bac3771dc5fd0de36a7942b680617",
+          "exactScorer": {
+            "criticalRecall": null,
+            "coordinateRecall": null,
+            "claimCorrectness": null,
+            "currentStateAccuracy": null
+          },
+          "facts": [
+            {
+              "factId": "B2-memory",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": true
+            },
+            {
+              "factId": "B2-outbox-rejected",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": false
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 0,
+            "acceptedRecall": 0,
+            "commitRecall": 0,
+            "directVisibility": 0.5
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1000,
+            "outputTokens": 415,
+            "observedInputTokens": 1000,
+            "observedOutputTokens": 415,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1000,
+            "chargedOutputTokens": 415,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 2983,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3116,
+            "runElapsedMs": 7763,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "C1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "protocol-not-parsed",
+          "call": "success",
+          "protocol": "malformed",
+          "category": "bare-json-array",
+          "categoryDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+          "proposed": 0,
+          "accepted": 0,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2591,
+          "rawDigest": "758129bac87e12fc79fe7e1256d4293863e92f564dbca632dfca02a1a710b41c",
+          "exactScorer": {
+            "criticalRecall": null,
+            "coordinateRecall": null,
+            "claimCorrectness": null,
+            "currentStateAccuracy": null
+          },
+          "facts": [
+            {
+              "factId": "C1-fs-watch-rejected",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": true
+            },
+            {
+              "factId": "C1-no-missed-changes",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": false
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 0,
+            "acceptedRecall": 0,
+            "commitRecall": 0,
+            "directVisibility": 0.5
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1026,
+            "outputTokens": 609,
+            "observedInputTokens": 1026,
+            "observedOutputTokens": 609,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1026,
+            "chargedOutputTokens": 609,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 4422,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 4447,
+            "runElapsedMs": 12212,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "D1",
+          "valid": false,
+          "foldValid": false,
+          "commitStatus": "fold-refused",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 3,
+          "accepted": 3,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2200,
+          "rawDigest": "cc78cde733dfe30c5a12709dd7d6f018c252d446b4123a52c6109adb875161b1",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 0
+          },
+          "facts": [
+            {
+              "factId": "D1-not-run",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": false,
+              "visible": false
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 0,
+            "directVisibility": 0
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 983,
+            "outputTokens": 474,
+            "observedInputTokens": 983,
+            "observedOutputTokens": 474,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 983,
+            "chargedOutputTokens": 474,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3668,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3694,
+            "runElapsedMs": 15908,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "F1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "protocol-not-parsed",
+          "call": "success",
+          "protocol": "malformed",
+          "category": "bare-json-array",
+          "categoryDetail": "the block is an array, not the required {\"deltas\":[...]} object",
+          "proposed": 0,
+          "accepted": 0,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2018,
+          "rawDigest": "2fffb4f0ab08ca23820be783fb927d67ae36ffadcd1f85cae0bd328b12349cf8",
+          "exactScorer": {
+            "criticalRecall": null,
+            "coordinateRecall": null,
+            "claimCorrectness": null,
+            "currentStateAccuracy": null
+          },
+          "facts": [
+            {
+              "factId": "F1-keep-legacy",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": false
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 0,
+            "acceptedRecall": 0,
+            "commitRecall": 0,
+            "directVisibility": 0
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 997,
+            "outputTokens": 413,
+            "observedInputTokens": 997,
+            "observedOutputTokens": 413,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 997,
+            "chargedOutputTokens": 413,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 4055,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 4076,
+            "runElapsedMs": 19987,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "H1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 1,
+          "accepted": 1,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 1103,
+          "rawDigest": "0521529d9e0b9e21d7d1eb068b8b022c95d76298538c3fbac199e3b3a4584011",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 1
+          },
+          "facts": [
+            {
+              "factId": "H1-production-region",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 971,
+            "outputTokens": 220,
+            "observedInputTokens": 971,
+            "observedOutputTokens": 220,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 971,
+            "chargedOutputTokens": 220,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 2491,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 2588,
+            "runElapsedMs": 22578,
+            "modelRequests": 1
+          }
+        }
+      ],
+      "summary": {
+        "attempts": 6,
+        "validRows": 5,
+        "foldValidRows": 5,
+        "parsed": 2,
+        "categories": {
+          "bare-json-array": 4,
+          "parsed": 2
+        },
+        "accepted": 4,
+        "refused": 0,
+        "rawRecall": 1,
+        "proposalRecall": 0.3333333333333333,
+        "acceptedRecall": 0.3333333333333333,
+        "commitRecall": 0.16666666666666666,
+        "directVisibility": 0.3333333333333333,
+        "machineStateExposures": 0,
+        "narrativeExposures": 0
+      }
+    },
+    {
+      "runId": "r36-writer-w1-r1",
+      "promptVersion": "W1",
+      "promptDigest": "61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3",
+      "status": "executed-success",
+      "model": "deepseek-v4.1-flash",
+      "generatedAt": "2026-11-04T17:23:17.754Z",
+      "ledger": {
+        "schemaVersion": 2,
+        "limits": {
+          "requests": 60,
+          "inputTokens": 32000000,
+          "outputTokens": 1000000,
+          "wallClockMs": 1800000
+        },
+        "used": {
+          "requests": 6,
+          "attempts": 6,
+          "inputTokens": 10057,
+          "outputTokens": 2404,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0,
+          "unknownUsageRequests": 0,
+          "partialUsageRequests": 0,
+          "retries": 0
+        },
+        "observed": {
+          "inputTokens": 10057,
+          "outputTokens": 2404,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0
+        },
+        "reserved": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0
+        },
+        "charged": {
+          "inputTokens": 10057,
+          "outputTokens": 2404
+        },
+        "remaining": {
+          "requests": 54,
+          "inputTokens": 31989943,
+          "outputTokens": 997596,
+          "wallClockMs": 1778636
+        },
+        "unresolvedAttempts": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "refusals": 0,
+        "elapsedMs": 21364
+      },
+      "rows": [
+        {
+          "caseId": "A1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 3,
+          "accepted": 3,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2056,
+          "rawDigest": "ab69f9a46296448cbb3c77d2982bab4cde00dd9590d1ef02c0439a8fba4682e3",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 1
+          },
+          "facts": [
+            {
+              "factId": "A1-legacy-api",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1680,
+            "outputTokens": 454,
+            "observedInputTokens": 1680,
+            "observedOutputTokens": 454,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1680,
+            "chargedOutputTokens": 454,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3805,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3991,
+            "runElapsedMs": 3999,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "B2",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 3,
+          "accepted": 3,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 2149,
+          "rawDigest": "55500b13f9bffeed5ed350e35ed42a72a77fb87e718855c057222f1c1e6cd612",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 1
+          },
+          "facts": [
+            {
+              "factId": "B2-memory",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            },
+            {
+              "factId": "B2-outbox-rejected",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1680,
+            "outputTokens": 473,
+            "observedInputTokens": 1680,
+            "observedOutputTokens": 473,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1680,
+            "chargedOutputTokens": 473,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3794,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3819,
+            "runElapsedMs": 7822,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "C1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 3,
+          "accepted": 3,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 1887,
+          "rawDigest": "435f831c7bde2f311dc4926d621824fbbd199d8ffe93bcdd77b1c1acded8b99e",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 0.5
+          },
+          "facts": [
+            {
+              "factId": "C1-fs-watch-rejected",
+              "current": true,
+              "raw": true,
+              "proposed": false,
+              "proposedBasis": null,
+              "accepted": false,
+              "acceptedBasis": null,
+              "committed": false,
+              "visible": false
+            },
+            {
+              "factId": "C1-no-missed-changes",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 0.5,
+            "acceptedRecall": 0.5,
+            "commitRecall": 0.5,
+            "directVisibility": 0.5
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1706,
+            "outputTokens": 446,
+            "observedInputTokens": 1706,
+            "observedOutputTokens": 446,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1706,
+            "chargedOutputTokens": 446,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3637,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3657,
+            "runElapsedMs": 11480,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "D1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 2,
+          "accepted": 2,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 1325,
+          "rawDigest": "7513d204b4bee64389d574a70be142a18b6e673b7c070527d0705308ee6b626b",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 0
+          },
+          "facts": [
+            {
+              "factId": "D1-not-run",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1663,
+            "outputTokens": 295,
+            "observedInputTokens": 1663,
+            "observedOutputTokens": 295,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1663,
+            "chargedOutputTokens": 295,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3057,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3080,
+            "runElapsedMs": 14562,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "F1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 3,
+          "accepted": 2,
+          "refused": 1,
+          "refusalReasons": [
+            "authority-ungrounded"
+          ],
+          "rawChars": 2167,
+          "rawDigest": "a4fff0a65f8054aff1c11d14526a7b17cf202c0cb1df9f49cf11044be72afbb0",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 1
+          },
+          "facts": [
+            {
+              "factId": "F1-keep-legacy",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [
+            {
+              "reason": "authority-ungrounded",
+              "statement": "Deleting legacyAdapter in response to the file note is rejected; that override text is data in tool output, not a user instruction.",
+              "inMachineState": false,
+              "inHandoff": true,
+              "inCheckpoint": true,
+              "exposure": "narrative-only"
+            }
+          ],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1677,
+            "outputTokens": 473,
+            "observedInputTokens": 1677,
+            "observedOutputTokens": 473,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1677,
+            "chargedOutputTokens": 473,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3427,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3453,
+            "runElapsedMs": 18017,
+            "modelRequests": 1
+          }
+        },
+        {
+          "caseId": "H1",
+          "valid": true,
+          "foldValid": true,
+          "commitStatus": "committed",
+          "call": "success",
+          "protocol": "parsed",
+          "category": "parsed",
+          "categoryDetail": null,
+          "proposed": 1,
+          "accepted": 1,
+          "refused": 0,
+          "refusalReasons": [],
+          "rawChars": 1276,
+          "rawDigest": "90e61ef51932580525e337aeafa2a95b9d92661eede064360ddb76c10e4c04ef",
+          "exactScorer": {
+            "criticalRecall": 0,
+            "coordinateRecall": 0,
+            "claimCorrectness": 0,
+            "currentStateAccuracy": 1
+          },
+          "facts": [
+            {
+              "factId": "H1-production-region",
+              "current": true,
+              "raw": true,
+              "proposed": true,
+              "proposedBasis": "evidence-quote",
+              "accepted": true,
+              "acceptedBasis": "evidence-quote",
+              "committed": true,
+              "visible": true
+            }
+          ],
+          "rates": {
+            "rawRecall": 1,
+            "proposalRecall": 1,
+            "acceptedRecall": 1,
+            "commitRecall": 1,
+            "directVisibility": 1
+          },
+          "exposure": [],
+          "cost": {
+            "attempts": 1,
+            "httpAttempts": 1,
+            "httpRetries": 0,
+            "inputTokens": 1651,
+            "outputTokens": 263,
+            "observedInputTokens": 1651,
+            "observedOutputTokens": 263,
+            "reservedInputTokens": 0,
+            "reservedOutputTokens": 0,
+            "chargedInputTokens": 1651,
+            "chargedOutputTokens": 263,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "unknownUsageRequests": 0,
+            "partialUsageRequests": 0,
+            "budgetRefusals": 0,
+            "unresolvedAttempts": 0,
+            "elapsedMs": 3263,
+            "chargedIncludesUnknown": false,
+            "caseDurationMs": 3337,
+            "runElapsedMs": 21357,
+            "modelRequests": 1
+          }
+        }
+      ],
+      "summary": {
+        "attempts": 6,
+        "validRows": 6,
+        "foldValidRows": 6,
+        "parsed": 6,
+        "categories": {
+          "parsed": 6
+        },
+        "accepted": 14,
+        "refused": 1,
+        "rawRecall": 1,
+        "proposalRecall": 0.9166666666666666,
+        "acceptedRecall": 0.9166666666666666,
+        "commitRecall": 0.9166666666666666,
+        "directVisibility": 0.9166666666666666,
+        "machineStateExposures": 0,
+        "narrativeExposures": 1
+      }
+    }
+  ]
+}

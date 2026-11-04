@@ -13,13 +13,19 @@ Scorer                v3
 W0 prompt digest      1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc
 W1 prompt digest      61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3
 R35 worktree          untouched; run archive read-only
-R36 provider requests 0
-R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0
+R36 provider requests 419 (12 writer + 407 O2 calibration)
+R36 live route        local ZCode proxy 127.0.0.1:7866 (provider c15ab109…); direct keys expired
+R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0, c6bf179
 Push                  not authorized, not performed
 ```
 
 The primary worktree and the R30–R35 worktrees were not reset, cleaned, or
 overwritten. The new worktree was created from the verified R35 HEAD.
+
+The user granted R36 spend on 2026-11-05. The three direct `/zen/go/v1` keys
+answered HTTP 401 `api_key_expired`; the authorized runs used the local ZCode
+proxy, which passed the production 16,384-token probe. The key was read at
+runtime and never written to a report.
 
 Commit map:
 
@@ -53,8 +59,12 @@ d3fc6e0  feat(eval): certify benchmark feasibility and freeze R36 conditions
   reported separately from unguided compliance.
 - H-native is declared and refused before any provider request; it is not
   implemented.
-- Conditions and 10 manifests are frozen. Every live manifest is marked
-  `blocked`; no R36 spend was authorized.
+- Conditions and 11 manifests are frozen. Phase B/C manifests are `executed`
+  with run IDs; H-native and the B1/S draft remain `blocked`.
+- The live W0/W1 pair and the O2 calibration were run on 2026-11-05. The
+  same-time writer pair is 2/6 vs 6/6 parsed and 0.167 vs 0.917 commit recall.
+  The best O2 condition reaches 3/6 contract success; B1/S was intentionally
+  not run because that floor would dominate the comparison.
 
 ## Results
 
@@ -72,12 +82,19 @@ Narrative-only exposures        4
 P0 → P1 accepted fact recall    0.5625 → 0.875
 P1 recovered                    5/6; content preserved
 Cases certified                 7/7
-R36 live runs                   0
+
+W0 live control                 2/6 parsed, 4 accepted, 0 refused, commit 0.167
+W1 live                         6/6 parsed, 14 accepted, 1 refused, commit 0.917
+O2 best (H-combined)            4/6 task, 3/6 contract success
+B1/S rows                       0 (intentionally not run: O2 floor)
+R36 HTTP attempts               419 (403 success, 16 transport failures)
+R36 observed tokens             328,150 input / 46,333 output / 233,466 cache
 ```
 
 The key attribution: the writer's understanding was not the bottleneck; the
-envelope and authority/status contract were. H1 is the clearest case: the
-production region is in the raw text and never reaches a proposal.
+envelope and authority/status contract were. W1 removes the envelope failure
+mode in the live pair. The remaining limiter is agent execution: A1/C1 code
+failures and B2's failure to run tests keep O2 at 3/6 contract success.
 
 ## Gates
 
@@ -85,10 +102,10 @@ production region is in the raw text and never reaches a proposal.
 |---|---|
 | G0 R35 Evidence Closed | passed |
 | G1 Benchmark Valid | passed |
-| G2 Writer Experiment | blocked (W1-P0 live not authorized) |
-| G3 Agent Identifiability | blocked (H-native absent; live O2 not authorized) |
-| G4 Real Causal Comparison | blocked |
-| G5 Product Decision | insufficient evidence |
+| G2 Writer Experiment | passed (live pilot, 1 replicate) |
+| G3 Agent Identifiability | partial (O2 best 3/6 contract; H-native absent) |
+| G4 Real Causal Comparison | blocked (O2 execution floor; B1/S not run) |
+| G5 Product Decision | insufficient evidence (Active vs Off) |
 
 `eval/r36/out/gate-status.json` is authoritative.
 
@@ -109,6 +126,15 @@ npm run eval:r36-gates       # gate status; exits non-zero only on a failed gate
 npm run eval:r36-tests       # 25 R36 tests
 npm run eval:r33             # 94 targeted R33/R34.1/R35 tests
 npm run typecheck
+
+# authorized live staging (only with explicit spend authorization)
+R36_PROMPT=W1 R36_STAGE=writer-only node eval/r36/run-authorized.mjs
+R36_STAGE=continuation R36_ARMS=O2 R36_FINISH_GUARD=1 node eval/r36/run-authorized.mjs
+
+# result analysis, no provider call
+node eval/r36/analyze-live.mjs r36-writer-w0-r1 r36-writer-w1-r1
+node eval/r36/analyze-harness.mjs
+node eval/r36/record-live.mjs
 ```
 
 Note: `npm run eval:r33` needs `npm run eval:build` first in a fresh worktree;
@@ -151,26 +177,32 @@ eval/r36/out/
   parser-ablation.json
   case-certification.json
   conditions.json
+  live-writer-analysis.json
+  harness-calibration.json
+  live-results.json
   gate-status.json
 
-eval/r36/manifests/              10 condition manifests, 8 live-blocked
+eval/r36/manifests/              11 condition manifests; B/C executed, H-native/B1S blocked
 eval/r36/reference/              A1/C1/D1/F1/H1 reference fixtures
+eval/r36/runs/                   local run archive (gitignored)
 docs/semantic-continuity/R36_*   this round's documents
 ```
 
 ## Next step
 
-Do not run the live manifests without an explicit R36 authorization naming the
-model, route, request limit, input/output budgets, wall clock, per-request
-output bound, and approved scope.
+R36 authorization was granted and used. The next step is not B1/S yet:
 
-When authorized:
+1. Replicate the W0/W1 pair at least three times; 0.917 is a pilot, not a
+   stable rate.
+2. Calibrate A1/C1 code execution and B2's test process. These are the cases
+   that keep O2 at 3/6 contract success.
+3. Replicate the harness conditions; A1 already moved between H-step and
+   H-combined, so one run per cell is too noisy.
+4. Implement H-native or keep it explicitly blocked.
+5. Only then freeze a B1/S harness and run B1/S/O1/O2.
 
-1. Paired W0-P0 / W1-P0 writer pilot.
-2. O2 harness calibration: H0, H-step, H-output, H-finish.
-3. Freeze final conditions and run B1/S/O1/O2.
-4. Report rescue/damage/both/neither and provider/budget/invalid/incomplete
-   pairs; do not pool with R35 r1/r2/r3.
+Do not pool R35 r1/r2/r3 with the R36 runs. Report rescue/damage/both/neither
+and provider/budget/invalid/incomplete pairs when B1/S is eventually run.
 
 ## Caveats
 
@@ -181,4 +213,11 @@ When authorized:
 - The 0/0 R35 pair result is not equivalence.
 - Guard-assisted success is not unguided compliance.
 - H-native is not implemented; no native-runtime result exists.
+- The direct `/zen/go/v1` keys were expired; the R36 live runs used the local
+  ZCode proxy. The route is recorded, the key is not.
+- The O2 calibration includes 16 transport-failed attempts and 9 unknown-usage
+  attempts; those are counted in cost, and the affected rows are invalid, not
+  task failures.
+- A1 passed under H-step and failed under H-combined; one replicate per cell is
+  not a stable harness estimate.
 - No currency is reported.

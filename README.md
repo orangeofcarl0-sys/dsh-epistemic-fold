@@ -552,9 +552,15 @@ evaluation ablation, not a production parser.
 
 The continuation harness records tool-protocol diagnostics and adds an optional
 finish guard that rejects a finish without a fresh passing test, without running
-the test itself. H-native is declared but not implemented. The 10 R36 manifests
-are frozen and all live phases are marked **Blocked**: R36 made zero provider
-requests because no new spend authorization was given. See
+the test itself. The authorized live stage ran on 2026-11-05 through the local
+ZCode proxy: W0-P0 vs W1-P0 on six certified cases moved from 2/6 to 6/6
+protocol parsed and from 0.167 to 0.917 commit recall, with one authority
+refusal remaining (F1's tool-origin constraint). The O2 calibration then showed
+the execution floor: H0 2/6 task, H-step 3/6, H-output 2/6, H-finish 2/6, and
+the exploratory 16-step+guard 4/6 task / 3/6 contract. A1/C1 fail on code and
+B2 never runs the required test, so B1/S was intentionally not run. R36 used
+419 HTTP attempts and reports no currency. H-native remains unimplemented; G4
+is blocked by the O2 floor, not by authorization. See
 `docs/semantic-continuity/R36_R35_EVIDENCE_AUDIT.md`,
 `R36_BENCHMARK_VALIDITY.md`, `R36_WRITER_CONTRACT.md`,
 `R36_WRITER_ABLATION.md`, `R36_AGENT_CALIBRATION.md`,

@@ -3,8 +3,8 @@
 ## Status
 
 ```text
-G4 real B1/S/O1/O2 comparison     BLOCKED
-R36 provider requests             0
+G4 real B1/S/O1/O2 comparison     BLOCKED (O2 execution floor)
+R36 provider requests             419 (12 writer + 407 O2 calibration)
 R36 B1/S rows                     0
 R36 causal claims                 none
 ```
@@ -32,27 +32,33 @@ H-output                4096 tokens/turn
 H-finish                guard enabled
 H-native                not implemented
 model                   deepseek-v4.1-flash
-provider                opencode
+provider                zcode local proxy (provider c15ab109…)
+route                   http://127.0.0.1:7866/v1
 ```
 
-The live manifests are in `eval/r36/manifests/`. Every live manifest is marked
-`blocked` and carries a reason. They validate against the manifest schema but
-have not run.
+The direct `/zen/go/v1` keys answered HTTP 401 `api_key_expired`; the authorized
+runs used the local ZCode proxy, which passed the production 16,384-token bound.
+The live manifests are in `eval/r36/manifests/`. The Phase B/C manifests are
+marked `executed` with their run IDs; `h-native-o2` and the B1/S draft remain
+`blocked`.
 
 ## 2. Why G4 is blocked
 
-Two independent prerequisites are missing:
+Authorization is no longer the missing condition. The execution floor is:
 
-1. **No R36 spend authorization.** The R35 authorization does not automatically
-   extend to a new round. `R36_LIVE_AUTHORIZED` is not set, and the live
-   manifests are blocked.
-2. **The interventions are not independently measured.** W1-P0 has no live
-   result, and the harness has only offline guard/diagnostic evidence. Running
-   B1/S now would repeat R35's behavioral floor without knowing whether the
-   writer or the harness changed it.
+1. **The writer intervention is measured.** W0-P0 vs W1-P0 on six cases:
+   2/6 → 6/6 parsed, commit recall 0.167 → 0.917. That is a strong pilot, not a
+   causal memory result.
+2. **O2 does not form a stable upper bound.** The best condition (exploratory
+   16 steps + finish guard) reaches 3/6 contract success. A1 and C1 fail on code;
+   B2 never runs the required test and never requests finish. A1 passes under
+   H-step and fails under the combined condition, so one replicate per cell is
+   also visibly noisy.
 
-The correct status is `Blocked`, not `Insufficient Evidence` pretending a run
-occurred.
+A B1/S comparison now would be dominated by those execution failures. The brief
+says not to expand B1/S to accumulate more double-failure results, so the B1/S
+rows remain zero. The correct status is `Blocked` by the calibration floor, not
+by lack of authorization.
 
 ## 3. Matched comparison design (for the later run)
 
@@ -129,14 +135,15 @@ harness and a different writer contract.
 
 ## 6. What would unblock G4
 
-1. An explicit R36 model-spend authorization with model, route, request limit,
-   input/output budgets, wall clock, per-request output bound, and approved
-   scope.
-2. A completed W1-P0 writer pilot with a same-time W0-P0 control.
-3. An O2 harness calibration that shows at least some certified cases can reach
-   contract success, with the remaining failures attributed to code, protocol,
-   budget, or task feasibility.
-4. A final conditions freeze after 2 and 3, and a new manifest that is no longer
-   marked `blocked`.
+1. ~~Explicit R36 authorization and a resolved route.~~ Done: the user granted
+   spend on 2026-11-05; the local proxy passed the 16,384-token probe.
+2. ~~A W1-P0 writer pilot with a same-time W0-P0 control.~~ Done: 6/6 vs 2/6
+   parsed; commit recall 0.917 vs 0.167.
+3. **Raise the O2 floor.** The best condition reaches 3/6 contract success.
+   A1/C1 need code calibration, B2 needs test-process calibration, and the
+   harness needs replicates before it can be treated as stable.
+4. **Then freeze a B1/S harness and run it.** The B1/S manifest must not be
+   marked `blocked`, and the analysis must report rescue/damage/both/neither
+   plus invalid/incomplete pairs.
 
 Until then, `eval/r36/out/gate-status.json` remains the authoritative status.

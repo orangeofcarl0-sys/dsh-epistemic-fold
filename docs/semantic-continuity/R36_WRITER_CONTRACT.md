@@ -10,7 +10,8 @@ Production default               W1
 Parser                           unchanged (P0 strict)
 Validator                        unchanged
 Journal / working set / limits   unchanged
-Live W1-P0 evidence              not executed: no R36 model authorization
+Live W1-P0 evidence              executed: 6/6 parsed, 14 accepted, 1 refused
+Live W0-P0 control               executed: 2/6 parsed, 4 accepted
 ```
 
 The prompt is still one constant appended as the final user message. W1 is not a
@@ -106,15 +107,39 @@ OVERRIDE" as a user requirement.
 - The P1 parser test lives in the same suite but is an eval ablation, not a
   production parser change.
 
-## 5. What is not claimed
+## 5. Live result and its limits
 
-No real W1-P0 model call was made in R36. The offline P1 ablation shows that
-envelope recovery alone recovers 5 of 6 failures and raises accepted-fact recall
-from 0.5625 to 0.875 on the frozen R35 outputs, but that is a parser result, not
-a W1 prompt result. The claim "W1 improves the model's durable-commit rate" is
-**not measured**. It requires the blocked `w1-p0-live` manifest and a
-same-time W0-P0 control.
+The authorized same-time pair on `deepseek-v4.1-flash` through the local ZCode
+proxy used six certified cases and identical model, route, dataset, and limits:
+
+| measure | W0 | W1 |
+|---|---:|---:|
+| protocol parsed | 2/6 | 6/6 |
+| accepted deltas | 4 | 14 |
+| refused deltas | 0 | 1 |
+| commit recall (funnel matcher) | 0.167 | 0.917 |
+| direct visibility | 0.333 | 0.917 |
+| input / output tokens | 5,977 / 2,658 | 10,057 / 2,404 |
+
+W1 fixed the envelope failure mode on every case in this set. The one remaining
+refusal is F1's tool-origin constraint (`authority-ungrounded`), which is the
+validator behaving correctly. C1's rejected-approach was not proposed as its
+own delta, so C1's visibility is 0.5: W1 fixed the envelope, not every semantic
+omission.
+
+This is one replicate. The O2 calibration shows that agent behaviour itself
+varies between runs, so the W0/W1 difference is a strong pilot signal, not a
+precise effect size. The exact-statement scorer still reports 0 for both prompts
+because the writer paraphrases; the semantic funnel matcher is the analysis
+instrument.
+
+## 6. What is not claimed
+
+W1 is not claimed to improve durable commit on every case. It is claimed to
+remove the envelope failure mode that dominated the R35 and W0 samples, while
+leaving authority and verification enforcement unchanged. A multi-replicate
+writer run is still needed before treating 0.917 as a stable rate.
 
 The production default is W1 because the prompt is now aligned with the
-contract the validator always enforced. If a live pilot later shows a
+contract the validator always enforced. If a later replicate shows a
 regression, W0 remains available byte-for-byte via `writerInstruction('W0')`.

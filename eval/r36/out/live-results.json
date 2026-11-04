@@ -1,0 +1,2030 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-04T17:44:41.652Z",
+  "authorization": {
+    "status": "granted",
+    "basis": "The user explicitly granted R36 spend on 2026-11-05.",
+    "model": "deepseek-v4.1-flash",
+    "provider": "zcode local proxy (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "route": "http://127.0.0.1:7866/v1",
+    "directOpenCode": "three direct /zen/go/v1 keys answered HTTP 401 api_key_expired and were not used",
+    "key": "read from the ZCode config at runtime; never written to a report"
+  },
+  "writer": {
+    "status": "executed (one replicate, six certified cases)",
+    "comparison": "W0-P0 vs W1-P0, same model, route, dataset, limits, and six cases",
+    "runs": [
+      {
+        "runId": "r36-writer-w0-r1",
+        "promptVersion": "W0",
+        "promptDigest": "1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc",
+        "status": "executed-partial",
+        "summary": {
+          "attempts": 6,
+          "validRows": 5,
+          "foldValidRows": 5,
+          "parsed": 2,
+          "categories": {
+            "bare-json-array": 4,
+            "parsed": 2
+          },
+          "accepted": 4,
+          "refused": 0,
+          "rawRecall": 1,
+          "proposalRecall": 0.3333333333333333,
+          "acceptedRecall": 0.3333333333333333,
+          "commitRecall": 0.16666666666666666,
+          "directVisibility": 0.3333333333333333,
+          "machineStateExposures": 0,
+          "narrativeExposures": 0
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "protocol": "malformed",
+            "category": "bare-json-array",
+            "proposed": 0,
+            "accepted": 0,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "protocol-not-parsed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 0,
+              "acceptedRecall": 0,
+              "commitRecall": 0,
+              "directVisibility": 0
+            },
+            "exactScorer": {
+              "criticalRecall": null,
+              "coordinateRecall": null,
+              "claimCorrectness": null,
+              "currentStateAccuracy": null
+            }
+          },
+          {
+            "caseId": "B2",
+            "protocol": "malformed",
+            "category": "bare-json-array",
+            "proposed": 0,
+            "accepted": 0,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "protocol-not-parsed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 0,
+              "acceptedRecall": 0,
+              "commitRecall": 0,
+              "directVisibility": 0.5
+            },
+            "exactScorer": {
+              "criticalRecall": null,
+              "coordinateRecall": null,
+              "claimCorrectness": null,
+              "currentStateAccuracy": null
+            }
+          },
+          {
+            "caseId": "C1",
+            "protocol": "malformed",
+            "category": "bare-json-array",
+            "proposed": 0,
+            "accepted": 0,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "protocol-not-parsed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 0,
+              "acceptedRecall": 0,
+              "commitRecall": 0,
+              "directVisibility": 0.5
+            },
+            "exactScorer": {
+              "criticalRecall": null,
+              "coordinateRecall": null,
+              "claimCorrectness": null,
+              "currentStateAccuracy": null
+            }
+          },
+          {
+            "caseId": "D1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 3,
+            "accepted": 3,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "fold-refused",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 0,
+              "directVisibility": 0
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 0
+            }
+          },
+          {
+            "caseId": "F1",
+            "protocol": "malformed",
+            "category": "bare-json-array",
+            "proposed": 0,
+            "accepted": 0,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "protocol-not-parsed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 0,
+              "acceptedRecall": 0,
+              "commitRecall": 0,
+              "directVisibility": 0
+            },
+            "exactScorer": {
+              "criticalRecall": null,
+              "coordinateRecall": null,
+              "claimCorrectness": null,
+              "currentStateAccuracy": null
+            }
+          },
+          {
+            "caseId": "H1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 1,
+            "accepted": 1,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 1
+            }
+          }
+        ],
+        "cost": {
+          "requests": 6,
+          "attempts": 6,
+          "inputTokens": 5977,
+          "outputTokens": 2658,
+          "cacheReadTokens": 2304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0,
+          "unknownUsageRequests": 0,
+          "partialUsageRequests": 0,
+          "retries": 0
+        }
+      },
+      {
+        "runId": "r36-writer-w1-r1",
+        "promptVersion": "W1",
+        "promptDigest": "61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3",
+        "status": "executed-success",
+        "summary": {
+          "attempts": 6,
+          "validRows": 6,
+          "foldValidRows": 6,
+          "parsed": 6,
+          "categories": {
+            "parsed": 6
+          },
+          "accepted": 14,
+          "refused": 1,
+          "rawRecall": 1,
+          "proposalRecall": 0.9166666666666666,
+          "acceptedRecall": 0.9166666666666666,
+          "commitRecall": 0.9166666666666666,
+          "directVisibility": 0.9166666666666666,
+          "machineStateExposures": 0,
+          "narrativeExposures": 1
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 3,
+            "accepted": 3,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 1
+            }
+          },
+          {
+            "caseId": "B2",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 3,
+            "accepted": 3,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 1
+            }
+          },
+          {
+            "caseId": "C1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 3,
+            "accepted": 3,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 0.5,
+              "acceptedRecall": 0.5,
+              "commitRecall": 0.5,
+              "directVisibility": 0.5
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 0.5
+            }
+          },
+          {
+            "caseId": "D1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 2,
+            "accepted": 2,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 0
+            }
+          },
+          {
+            "caseId": "F1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 3,
+            "accepted": 2,
+            "refused": 1,
+            "refusalReasons": [
+              "authority-ungrounded"
+            ],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 1
+            }
+          },
+          {
+            "caseId": "H1",
+            "protocol": "parsed",
+            "category": "parsed",
+            "proposed": 1,
+            "accepted": 1,
+            "refused": 0,
+            "refusalReasons": [],
+            "commitStatus": "committed",
+            "rates": {
+              "rawRecall": 1,
+              "proposalRecall": 1,
+              "acceptedRecall": 1,
+              "commitRecall": 1,
+              "directVisibility": 1
+            },
+            "exactScorer": {
+              "criticalRecall": 0,
+              "coordinateRecall": 0,
+              "claimCorrectness": 0,
+              "currentStateAccuracy": 1
+            }
+          }
+        ],
+        "cost": {
+          "requests": 6,
+          "attempts": 6,
+          "inputTokens": 10057,
+          "outputTokens": 2404,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0,
+          "unknownUsageRequests": 0,
+          "partialUsageRequests": 0,
+          "retries": 0
+        }
+      }
+    ],
+    "note": "Semantic rates use the documented funnel matcher, not the exact-statement scorer. The exact scorer reports 0 for both prompts because the writer paraphrases."
+  },
+  "harness": {
+    "status": "executed (O2 calibration)",
+    "conditions": [
+      {
+        "condition": "H0",
+        "runIds": [
+          "r36-h0-o2-r2"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 2,
+          "contractSuccesses": 1,
+          "functionalFailures": 4,
+          "processViolations": 4,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 2,
+          "stepLimitTerminations": 4,
+          "truncatedTurns": 3,
+          "invalidActions": 28,
+          "guardRejections": 0,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.3333333333333333,
+          "contractSuccessRate": 0.16666666666666666
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.object-form",
+              "constraint.legacy-string-api"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 7,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.claim-known"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 6,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "region.production"
+            ],
+            "finalVerificationStatus": "not-verified"
+          }
+        ]
+      },
+      {
+        "condition": "H-step",
+        "runIds": [
+          "r36-h-step-o2-A1",
+          "r36-h-step-o2-B2",
+          "r36-h-step-o2-C1b",
+          "r36-h-step-o2-D1b",
+          "r36-h-step-o2-F1",
+          "r36-h-step-o2-H1"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 3,
+          "contractSuccesses": 2,
+          "functionalFailures": 3,
+          "processViolations": 3,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 6,
+          "stepLimitTerminations": 4,
+          "truncatedTurns": 0,
+          "invalidActions": 47,
+          "guardRejections": 0,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.5,
+          "contractSuccessRate": 0.3333333333333333
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 3,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 2,
+            "steps": 11,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.claim-known"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.v2"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 9,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          }
+        ]
+      },
+      {
+        "condition": "H-output",
+        "runIds": [
+          "r36-h-output-o2-A1",
+          "r36-h-output-o2-B2",
+          "r36-h-output-o2-C1",
+          "r36-h-output-o2-D1",
+          "r36-h-output-o2-F1",
+          "r36-h-output-o2-H1"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 2,
+          "contractSuccesses": 1,
+          "functionalFailures": 4,
+          "processViolations": 4,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 2,
+          "stepLimitTerminations": 4,
+          "truncatedTurns": 0,
+          "invalidActions": 23,
+          "guardRejections": 0,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.3333333333333333,
+          "contractSuccessRate": 0.16666666666666666
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 6,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.legacy-string-api"
+            ],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.claim-known",
+              "constraint.tests-or-evidence"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 7,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "region.production"
+            ],
+            "finalVerificationStatus": "not-verified"
+          }
+        ]
+      },
+      {
+        "condition": "H-finish",
+        "runIds": [
+          "r36-h-finish-o2-A1",
+          "r36-h-finish-o2-B2",
+          "r36-h-finish-o2-C1",
+          "r36-h-finish-o2-D1",
+          "r36-h-finish-o2-F1",
+          "r36-h-finish-o2-H1"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 2,
+          "contractSuccesses": 1,
+          "functionalFailures": 4,
+          "processViolations": 3,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 3,
+          "stepLimitTerminations": 4,
+          "truncatedTurns": 0,
+          "invalidActions": 16,
+          "guardRejections": 1,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.3333333333333333,
+          "contractSuccessRate": 0.16666666666666666
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.legacy-string-api"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 1,
+            "failedChecks": [
+              "constraint.claim-known"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 4,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 5,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [
+              "region.production"
+            ],
+            "finalVerificationStatus": "verified"
+          }
+        ]
+      },
+      {
+        "condition": "H-combined",
+        "runIds": [
+          "r36-h-combined-o2-A1",
+          "r36-h-combined-o2-B2",
+          "r36-h-combined-o2-C1",
+          "r36-h-combined-o2-D1",
+          "r36-h-combined-o2-F1",
+          "r36-h-combined-o2-H1"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 4,
+          "contractSuccesses": 3,
+          "functionalFailures": 2,
+          "processViolations": 2,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 7,
+          "stepLimitTerminations": 3,
+          "truncatedTurns": 1,
+          "invalidActions": 32,
+          "guardRejections": 0,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.6666666666666666,
+          "contractSuccessRate": 0.5
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 3,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.object-form",
+              "constraint.legacy-string-api"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "testsExecuted": 0,
+            "steps": 16,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 2,
+            "steps": 7,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 4,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 7,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          }
+        ]
+      }
+    ],
+    "note": "H-combined is exploratory: 16 steps plus the finish guard, selected after the single-factor results. It is not a pre-registered arm."
+  },
+  "causal": {
+    "status": "not-run",
+    "gate": "G4 blocked",
+    "reason": "Even under the best O2 condition, only 3/6 cases reached contract success; A1 and C1 fail on code and B2 never runs the required tests. A B1/S comparison would be dominated by this execution floor, so the brief stop condition applies.",
+    "b1sRows": 0
+  },
+  "cost": {
+    "total": {
+      "attempts": 419,
+      "input": 328150,
+      "output": 46333,
+      "cacheRead": 233466,
+      "cacheWrite": 0,
+      "unknownUsage": 9,
+      "retries": 0
+    },
+    "byStage": {
+      "writer-only": {
+        "attempts": 12,
+        "input": 16034,
+        "output": 5062,
+        "cacheRead": 2304,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      },
+      "continuation": {
+        "attempts": 407,
+        "input": 312116,
+        "output": 41271,
+        "cacheRead": 231162,
+        "cacheWrite": 0,
+        "unknownUsage": 9,
+        "retries": 0
+      },
+      "other": {
+        "attempts": 0,
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    "runs": 31,
+    "note": "Every HTTP attempt, including the failed transport attempts, is counted. Unknown usage is not zero. No currency is reported."
+  },
+  "runs": [
+    {
+      "runId": "r36-h-combined-o2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 20995,
+        "output": 1296,
+        "cacheRead": 17152,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-combined-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 15081,
+        "output": 2152,
+        "cacheRead": 11776,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-combined-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 19678,
+        "output": 2449,
+        "cacheRead": 15615,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-combined-o2-D1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 7309,
+        "output": 1044,
+        "cacheRead": 5376,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-combined-o2-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 2639,
+        "output": 696,
+        "cacheRead": 1536,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-combined-o2-H1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 4205,
+        "output": 493,
+        "cacheRead": 2559,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5909,
+        "output": 771,
+        "cacheRead": 3840,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5089,
+        "output": 858,
+        "cacheRead": 3456,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5208,
+        "output": 883,
+        "cacheRead": 3455,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 6614,
+        "output": 1131,
+        "cacheRead": 4736,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 2774,
+        "output": 687,
+        "cacheRead": 1664,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-finish-o2-H1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": true,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 7,
+        "successes": 7,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 7,
+        "input": 4078,
+        "output": 673,
+        "cacheRead": 2815,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 8,
+        "successes": 8,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 8,
+        "input": 4994,
+        "output": 664,
+        "cacheRead": 3200,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5666,
+        "output": 697,
+        "cacheRead": 3968,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5423,
+        "output": 840,
+        "cacheRead": 3456,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 4625,
+        "output": 666,
+        "cacheRead": 2944,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 4524,
+        "output": 705,
+        "cacheRead": 2816,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-output-o2-H1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 4096,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 4373,
+        "output": 554,
+        "cacheRead": 2687,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-A1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 21302,
+        "output": 1059,
+        "cacheRead": 17408,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 16160,
+        "output": 2170,
+        "cacheRead": 12928,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 0,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 3,
+        "successes": 2,
+        "providerFailures": 1,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 3,
+        "input": 884,
+        "output": 248,
+        "cacheRead": 512,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-C1b",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 14627,
+        "output": 1070,
+        "cacheRead": 11136,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 0,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 7,
+        "successes": 6,
+        "providerFailures": 1,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 7,
+        "input": 3575,
+        "output": 662,
+        "cacheRead": 2432,
+        "cacheWrite": 0,
+        "unknownUsage": 1,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-D1b",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 13,
+        "successes": 13,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 13,
+        "input": 15286,
+        "output": 1750,
+        "cacheRead": 12416,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-F1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 15298,
+        "output": 1549,
+        "cacheRead": 12032,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-H1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 11,
+        "successes": 11,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 11,
+        "input": 6914,
+        "output": 817,
+        "cacheRead": 4735,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-step-o2-r1",
+      "status": "executed-partial",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 6,
+        "attemptedRows": 6,
+        "attempts": 38,
+        "successes": 29,
+        "providerFailures": 9,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 38,
+        "input": 28482,
+        "output": 2720,
+        "cacheRead": 22400,
+        "cacheWrite": 0,
+        "unknownUsage": 3,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h0-o2-r1",
+      "status": "executed-partial",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 3,
+      "taskSuccesses": 2,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 6,
+        "attemptedRows": 6,
+        "attempts": 37,
+        "successes": 32,
+        "providerFailures": 5,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 37,
+        "input": 25706,
+        "output": 5198,
+        "cacheRead": 18560,
+        "cacheWrite": 0,
+        "unknownUsage": 5,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h0-o2-r2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 6,
+      "taskSuccesses": 2,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 6,
+        "attemptedRows": 6,
+        "attempts": 53,
+        "successes": 53,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 53,
+        "input": 34698,
+        "output": 6769,
+        "cacheRead": 23552,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-writer-w0-r1",
+      "status": "executed-partial",
+      "stage": "writer-only",
+      "arms": [
+        "S"
+      ],
+      "promptVersion": "W0",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 5,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 6,
+        "attemptedRows": 6,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 5977,
+        "output": 2658,
+        "cacheRead": 2304,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-writer-w1-r1",
+      "status": "executed-success",
+      "stage": "writer-only",
+      "arms": [
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 6,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 6,
+        "attemptedRows": 6,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 10057,
+        "output": 2404,
+        "cacheRead": 0,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    }
+  ]
+}

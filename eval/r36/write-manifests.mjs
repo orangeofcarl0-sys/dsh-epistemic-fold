@@ -182,6 +182,23 @@ const manifests = {
     limits: LARGE_LIMITS,
     note: 'Finish guard only. Guard-assisted success must be reported separately from unguided compliance.',
   }),
+  'h-combined-o2.json': base('h-combined-o2', {
+    phase: 'C',
+    execution: 'live',
+    status: 'blocked',
+    blockedReason: 'Exploratory condition selected after the single-factor results.',
+    requiresAuthorization: true,
+    stage: 'continuation',
+    arms: 'O2',
+    cases: 'A1,B2,C1,D1,F1,H1',
+    followUpSteps: 16,
+    followUpMaxTokens: 1024,
+    finishGuard: true,
+    harnessVersion: 'H0-custom-json-loop',
+    runtime: 'custom-json-loop',
+    limits: LARGE_LIMITS,
+    note: 'Exploratory combination of H-step and H-finish. Not a pre-registered single-factor arm.',
+  }),
   'h-native-o2.json': base('h-native-o2', {
     phase: 'C',
     execution: 'live',
@@ -219,6 +236,67 @@ const manifests = {
 }
 
 await mkdir(DIR, { recursive: true })
+const EXECUTED = {
+  'w0-p0-live-control.json': {
+    runIds: ['r36-writer-w0-r1'],
+    note: 'Executed on 2026-11-05: 2/6 protocol parsed, commit recall 0.167.',
+  },
+  'w1-p0-live.json': {
+    runIds: ['r36-writer-w1-r1'],
+    note: 'Executed on 2026-11-05: 6/6 protocol parsed, commit recall 0.917.',
+  },
+  'h0-o2.json': {
+    runIds: ['r36-h0-o2-r1', 'r36-h0-o2-r2'],
+    note: 'r1 had transport-invalid rows; r2 is the complete 6-case calibration.',
+  },
+  'h-step-o2.json': {
+    runIds: [
+      'r36-h-step-o2-r1',
+      'r36-h-step-o2-A1',
+      'r36-h-step-o2-B2',
+      'r36-h-step-o2-C1',
+      'r36-h-step-o2-C1b',
+      'r36-h-step-o2-D1',
+      'r36-h-step-o2-D1b',
+      'r36-h-step-o2-F1',
+      'r36-h-step-o2-H1',
+    ],
+    note: 'Split per case after transport resets; C1b/D1b are the valid reruns.',
+  },
+  'h-output-o2.json': {
+    runIds: [
+      'r36-h-output-o2-A1', 'r36-h-output-o2-B2', 'r36-h-output-o2-C1',
+      'r36-h-output-o2-D1', 'r36-h-output-o2-F1', 'r36-h-output-o2-H1',
+    ],
+    note: 'Executed per case on 2026-11-05.',
+  },
+  'h-finish-o2.json': {
+    runIds: [
+      'r36-h-finish-o2-A1', 'r36-h-finish-o2-B2', 'r36-h-finish-o2-C1',
+      'r36-h-finish-o2-D1', 'r36-h-finish-o2-F1', 'r36-h-finish-o2-H1',
+    ],
+    note: 'Executed per case; the guard fired once (D1) and did not by itself produce a contract success.',
+  },
+  'h-combined-o2.json': {
+    runIds: [
+      'r36-h-combined-o2-A1', 'r36-h-combined-o2-B2', 'r36-h-combined-o2-C1',
+      'r36-h-combined-o2-D1', 'r36-h-combined-o2-F1', 'r36-h-combined-o2-H1',
+    ],
+    note: 'Exploratory 16-step + guard condition: 4/6 task, 3/6 contract success.',
+  },
+}
+for (const [name, record] of Object.entries(EXECUTED)) {
+  const manifest = manifests[name]
+  manifest.status = 'executed'
+  manifest.runIds = record.runIds
+  manifest.executedAt = '2026-11-05'
+  manifest.executionNote = record.note
+  delete manifest.blockedReason
+}
+manifests['b1-s-o1-o2-frozen.json'].blockedReason =
+  'Authorized, but not run: the O2 calibration floor is not stable (best 3/6 contract success). '
+  + 'A B1/S comparison would be dominated by A1/C1 code failures and B2 test omission.'
+
 for (const [name, manifest] of Object.entries(manifests)) {
   await writeFile(join(DIR, name), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
 }

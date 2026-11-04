@@ -13,8 +13,7 @@
   "maxOutputTokens": 16384,
   "phase": "C",
   "execution": "live",
-  "status": "blocked",
-  "blockedReason": "No explicit R36 model-spend authorization in this session.",
+  "status": "executed",
   "requiresAuthorization": true,
   "stage": "continuation",
   "arms": "O2",
@@ -30,5 +29,15 @@
     "outputTokens": 5000000,
     "wallClockMs": 3600000
   },
-  "note": "Finish guard only. Guard-assisted success must be reported separately from unguided compliance."
+  "note": "Finish guard only. Guard-assisted success must be reported separately from unguided compliance.",
+  "runIds": [
+    "r36-h-finish-o2-A1",
+    "r36-h-finish-o2-B2",
+    "r36-h-finish-o2-C1",
+    "r36-h-finish-o2-D1",
+    "r36-h-finish-o2-F1",
+    "r36-h-finish-o2-H1"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "Executed per case; the guard fired once (D1) and did not by itself produce a contract success."
 }

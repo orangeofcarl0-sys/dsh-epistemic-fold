@@ -164,6 +164,40 @@ floor effect. R36 does not add a new B1/S comparison, so it does not resolve it.
 | fold guard aborted the run (R35) | F1 row lost | recorded as `fold-refused` and continued |
 | empty-checkpoint fallback (R35 r2) | invalid full-history baseline | full transcript passed; r2 remains invalid |
 
+## Live R36 attribution
+
+### W0 vs W1 (writer-only)
+
+W0's earliest loss is the envelope: 4/6 responses were bare arrays, so the
+validator never saw them. W1 removes that loss (6/6 parsed) but two residuals
+remain:
+
+- **F1:** the writer still turned a tool-origin rejection into a
+  `rejected-approach`/constraint cited only to the tool result. The validator
+  refused it as `authority-ungrounded`. Earliest confirmed stage: authority
+  validation, not parsing.
+- **C1:** the writer accepted the decision and the reliability constraint but
+  did not propose the rejected `fs.watch` approach at all. There is no refusal;
+  the negative fact is simply absent. Earliest confirmed stage: proposal
+  coverage, not parsing or authority.
+
+### O2 execution floor
+
+The O2 calibration separates execution failures from memory delivery:
+
+| case | earliest confirmed failure | evidence |
+|---|---|---|
+| A1 | code/strategy | hidden `functionality.object-form` / `constraint.legacy-string-api` fail despite correct facts; one H-step run succeeds, so it is not deterministic |
+| B2 | process / test omission | functional checks pass, but `testsExecuted=0`, no finish request, 16-step limit; the guard has nothing to reject |
+| C1 | code/strategy | hidden `functionality.delivers-change` fails; no tests run |
+| D1 | code/verification | reaches tests in some runs; the guard rejected one finish; no fresh pass before the step limit |
+| F1 | no failure in most conditions | contract success under H0/H-output/H-finish/H-combined |
+| H1 | code/steps | succeeds when it reaches the edit under H-step/H-combined; fails at 8 steps |
+
+This is why G4 is blocked: the earliest failure in A1/B2/C1 is before any
+memory-policy comparison can be attributed. The writer interface is not the
+bottleneck in those O2 rows; the agent's code and process are.
+
 ## What is not attributable
 
 - **Model capability:** raw recall is 1.000. The model found the facts. The

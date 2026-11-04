@@ -13,8 +13,7 @@
   "maxOutputTokens": 16384,
   "phase": "C",
   "execution": "live",
-  "status": "blocked",
-  "blockedReason": "No explicit R36 model-spend authorization in this session.",
+  "status": "executed",
   "requiresAuthorization": true,
   "stage": "continuation",
   "arms": "O2",
@@ -30,5 +29,11 @@
     "outputTokens": 5000000,
     "wallClockMs": 3600000
   },
-  "note": "Oracle-visible facts. The question is whether the agent can complete a certified task at all."
+  "note": "Oracle-visible facts. The question is whether the agent can complete a certified task at all.",
+  "runIds": [
+    "r36-h0-o2-r1",
+    "r36-h0-o2-r2"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "r1 had transport-invalid rows; r2 is the complete 6-case calibration."
 }

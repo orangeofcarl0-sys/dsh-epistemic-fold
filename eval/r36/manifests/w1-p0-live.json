@@ -13,8 +13,7 @@
   "maxOutputTokens": 16384,
   "phase": "B",
   "execution": "live",
-  "status": "blocked",
-  "blockedReason": "No explicit R36 model-spend authorization in this session.",
+  "status": "executed",
   "requiresAuthorization": true,
   "stage": "writer-only",
   "arms": "S",
@@ -28,5 +27,10 @@
     "outputTokens": 1000000,
     "wallClockMs": 1800000
   },
-  "note": "Real model calls. Compares against the same-time W0-P0 control, not only against R35."
+  "note": "Real model calls. Compares against the same-time W0-P0 control, not only against R35.",
+  "runIds": [
+    "r36-writer-w1-r1"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "Executed on 2026-11-05: 6/6 protocol parsed, commit recall 0.917."
 }

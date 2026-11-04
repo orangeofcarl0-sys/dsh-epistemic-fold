@@ -174,3 +174,23 @@ false verification claim                              overclaim, not a checker e
 A D1 final-state change from `not-verified` to `verified` is no longer an eval
 error. A stale or self-asserted verification is a process failure. The two are
 recorded independently.
+
+## 6. Live O2 check
+
+The O2 calibration exercised the certified cases with correct facts directly
+visible:
+
+- **D1** reached task and contract success under the combined condition, with a
+  fresh passing test and a `verified` final status. The temporal scorer did not
+  misclassify it.
+- **C1** failed `functionality.delivers-change` in every O2 condition even
+  though the hybrid reference passes the same visible and hidden checks. This is
+  an agent implementation failure, not a benchmark conflict.
+- **A1** failed the object-form/legacy checks in most conditions; one H-step run
+  succeeded. The reference passes, so the case remains solvable, but the agent's
+  code is not stable.
+- **B2** passed the functional checks but never ran the required test. That is a
+  process failure, not a checker failure.
+
+The certification therefore did not hide a benchmark defect. It exposed the
+agent execution floor that the R36 decision reports.

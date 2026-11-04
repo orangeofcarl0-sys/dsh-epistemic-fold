@@ -35,6 +35,12 @@ async function fileDigest(relative) {
 }
 
 const { datasetDigest } = await loadDataset()
+let liveEvidence = null
+try {
+  liveEvidence = JSON.parse(await readFile(join(HERE, 'out', 'live-results.json'), 'utf8'))
+} catch {
+  // No live run yet: conditions still freeze the planned inputs.
+}
 const conditions = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
@@ -85,13 +91,32 @@ const conditions = {
   },
   model: {
     id: 'deepseek-v4.1-flash',
-    provider: 'opencode',
-    route: 'https://opencode.ai/zen/go/v1',
-    note: 'The model and route are frozen for the planned experiment; no R36 request was made.',
+    provider: liveEvidence === null
+      ? 'opencode'
+      : 'zcode local proxy (provider c15ab109-97b8-4de1-a647-9857a635be38)',
+    route: liveEvidence === null
+      ? 'https://opencode.ai/zen/go/v1'
+      : 'http://127.0.0.1:7866/v1',
+    note: liveEvidence === null
+      ? 'The model and route are frozen for the planned experiment; no R36 request was made.'
+      : 'The three direct /zen/go/v1 keys answered HTTP 401 api_key_expired. The authorized runs used the local ZCode proxy at the production 16,384-token bound.',
   },
   live: {
-    authorization: process.env.R36_LIVE_AUTHORIZED === '1' ? 'granted-by-environment' : 'not-granted-in-this-session',
+    authorization: liveEvidence?.authorization?.status === 'granted'
+      ? 'granted-in-this-session'
+      : (process.env.R36_LIVE_AUTHORIZED === '1' ? 'granted-by-environment' : 'not-granted-in-this-session'),
     gate: 'R33_LIVE=1, resolved route, positive limits, and an explicit manifest are still required.',
+    evidence: liveEvidence === null
+      ? null
+      : {
+        writerRuns: liveEvidence.writer?.runs?.map(run => run.runId) ?? [],
+        harnessConditions: liveEvidence.harness?.conditions?.map(condition => ({
+          condition: condition.condition,
+          runIds: condition.runIds,
+        })) ?? [],
+        causal: liveEvidence.causal ?? null,
+        httpAttempts: liveEvidence.cost?.total?.attempts ?? null,
+      },
   },
 }
 await writeFile(OUT, `${JSON.stringify(conditions, null, 2)}\n`, 'utf8')

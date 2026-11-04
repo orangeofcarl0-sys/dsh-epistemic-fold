@@ -152,7 +152,22 @@ The replayed P0 parser reproduces the R35 validator outcome exactly: 30 accepted
 and 7 refused over the same 16 proposals. That exact match is the evidence that
 the audit's synthetic transcript binding did not change the validator result.
 
-## 6. Limitations
+## 6. Live confirmation
+
+The same-time W0/W1 writer pair confirms the audit's main diagnosis:
+
+- W0 reproduced the R35 envelope pattern: four bare arrays, 2/6 parsed.
+- W1 removed it completely: 6/6 parsed, 14 accepted, one authority-ungrounded
+  refusal (F1's tool-origin constraint).
+- C1 still lacks its rejected-approach as its own coordinate, so the audit's
+  "authority/coverage, not perception" distinction survives the prompt fix.
+- H1's fact, which the R35 audit found absent from every proposal, is now a
+  parsed and committed delta.
+
+The live pair does not change the R35 evidence; it shows that the diagnosed
+envelope bottleneck was actionable.
+
+## 7. Limitations
 
 - No per-run git SHA or writer finish reason was recorded by R35.
 - F1's lost raw output cannot be recovered. It is counted as an attempt and as

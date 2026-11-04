@@ -3,19 +3,50 @@
 ## R36 spend
 
 ```text
-New HTTP attempts                 0
-New provider requests             0
-New input tokens                  0
-New output tokens                 0
-New cache tokens                  0
-Live runs                         0
-Replay / offline runs             all R36 analysis
-Currency                          not reported (no trusted price profile)
+HTTP attempts                 419
+successful responses          403
+failed HTTP attempts           16  (local-proxy transport resets; no model result)
+observed input tokens         328,150
+observed output tokens         46,333
+cache read tokens             233,466
+cache write tokens                  0
+unknown-usage attempts              9
+retries                             0
+run reports                        31  (including invalid rows and retries)
+currency                          not reported (no trusted price profile)
 ```
 
-No R36 manifest was executed. The W1-P0 and harness manifests are `blocked`;
-`eval/r36/gates.mjs` records that state. The audit, parser ablation,
-certification, conditions, and gate scripts read local artifacts only.
+Split by stage:
+
+| stage | attempts | input | output | cache read | unknown |
+|---|---:|---:|---:|---:|---:|
+| writer-only (W0 + W1) | 12 | 16,034 | 5,062 | 2,304 | 0 |
+| O2 calibration | 407 | 312,116 | 41,271 | 231,162 | 9 |
+| **total** | **419** | **328,150** | **46,333** | **233,466** | **9** |
+
+The writer-only split is 6 W0 calls and 6 W1 calls. The O2 total includes the
+invalid transport rows and the per-case reruns; those attempts happened and are
+counted, but the invalid rows are not used as task measurements.
+
+The route was the local ZCode proxy `http://127.0.0.1:7866/v1` (provider
+`c15ab109…`). The three direct `/zen/go/v1` keys answered HTTP 401
+`api_key_expired` and were not used. The proxy passed a 16,384-token probe.
+
+## What was executed
+
+The authorized R36 run executed:
+
+- W0-P0 and W1-P0 writer-only on six certified cases (one replicate each);
+- O2 calibration on six cases for H0, H-step, H-output, H-finish, and the
+  exploratory H-step+H-finish condition.
+
+It did **not** execute B1/S/O1/O2. The best O2 condition reached 3/6 contract
+success; A1/C1 fail on code and B2 never runs the required test, so the
+comparison would be dominated by the execution floor. The B1/S rows are zero by
+design, not by provider failure.
+
+`eval/r36/out/live-results.json` is the authoritative machine-readable record;
+`eval/r36/out/gate-status.json` is the authoritative gate status.
 
 ## R35 historical spend (context, not R36 spend)
 
@@ -76,6 +107,8 @@ The manifests carry explicit positive limits; these are caps, not estimates:
 | h0-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
 | h-step-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
 | h-output-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
+| h-finish-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
+| h-combined-o2 (exploratory) | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
 | h-finish-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
 | b1-s-o1-o2 | continuation | 400 | 200,000,000 | 5,000,000 | 3,600,000 ms |
 
