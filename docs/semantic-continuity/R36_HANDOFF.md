@@ -15,7 +15,7 @@ W1 prompt digest      61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeada
 R35 worktree          untouched; run archive read-only
 R36 provider requests 419 (12 writer + 407 O2 calibration)
 R36 live route        local ZCode proxy 127.0.0.1:7866 (provider c15ab109…); direct keys expired
-R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0, c6bf179
+R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0, c6bf179, 8a7aef4, 5273faa
 Push                  not authorized, not performed
 ```
 
@@ -35,6 +35,9 @@ af6e533  fix(eval): score verification at the final state and calibrate the loop
 0b354b1  feat(eval): audit R35 evidence and add the P1 parser ablation
 d3fc6e0  feat(eval): certify benchmark feasibility and freeze R36 conditions
 7b25ea0  docs(eval): publish R36 evidence, decision, and handoff
+c6bf179  docs(eval): record R36 verification counts and commit map
+8a7aef4  feat(eval): add W0/W1 selection and the authorized live runner
+5273faa  docs(eval): record the authorized R36 live results and harness floor
 ```
 
 ## What changed
