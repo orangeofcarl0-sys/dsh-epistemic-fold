@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "B2-F-N",
+  "caseId": "B2",
+  "variant": "F-N",
+  "representationLabel": "critical fact withheld",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "B2-memory",
+      "needle": "in-memory queue",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "authority": "user",
+      "sourceRefs": [
+        0,
+        2
+      ],
+      "scope": {
+        "branch": "scheduler"
+      },
+      "status": "claimed"
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "needle": "durable outbox",
+      "kind": "rejected-approach",
+      "subjectKey": "scheduler-outbox",
+      "statement": "A durable outbox is rejected because the storage dependency is unavailable in this deployment.",
+      "authority": "user",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "branch": "scheduler",
+        "deployment": "current"
+      },
+      "status": "claimed",
+      "rulesOut": [
+        "durable-outbox"
+      ]
+    }
+  ],
+  "contextText": "No historical decision is provided for this run.",
+  "tokenEstimate": 12,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "7e169eae9849176e7ff61b84b5436e87fdbd49c6efe2adba431925f04068a197",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user"
+    ],
+    "scope": [
+      "scheduler"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": []
+  },
+  "withheldFactIds": [
+    "B2-memory",
+    "B2-outbox-rejected"
+  ],
+  "semanticEquivalence": {
+    "factIds": [
+      "B2-memory",
+      "B2-outbox-rejected"
+    ],
+    "covered": [
+      {
+        "factId": "B2-memory",
+        "inLeft": false,
+        "inRight": false
+      },
+      {
+        "factId": "B2-outbox-rejected",
+        "inLeft": false,
+        "inRight": false
+      }
+    ],
+    "equivalent": false,
+    "note": "F-N intentionally withholds every critical fact; it is the negative control."
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "C1-F-P",
+  "caseId": "C1",
+  "variant": "F-P",
+  "representationLabel": "plain-language fact representation",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "C1-fs-watch-rejected",
+      "needle": "fs.watch",
+      "kind": "rejected-approach",
+      "subjectKey": "watcher-backend",
+      "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+      "authority": "tool",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "platform": "target",
+        "backend": "fs.watch"
+      },
+      "status": "observed",
+      "rulesOut": [
+        "fs.watch"
+      ]
+    },
+    {
+      "factId": "C1-no-missed-changes",
+      "needle": "must not miss changes",
+      "kind": "objective",
+      "subjectKey": "watcher-reliability",
+      "statement": "The file watcher must not miss changes.",
+      "authority": "user",
+      "sourceRefs": [
+        0
+      ],
+      "scope": {
+        "platform": "target"
+      },
+      "status": "claimed"
+    }
+  ],
+  "contextText": "The file watcher must not miss changes.\nThe canary injected 40 events on the target platform; fs.watch delivered 28 and lost 12.\nUse directory polling. Do not rely on fs.watch on this platform without new evidence.",
+  "tokenEstimate": 54,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "d9d3e2ba2c8885120533ffc605385ea9c264be79801ac7563af70e40f4e0903d",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user",
+      "tool"
+    ],
+    "scope": [
+      "target platform"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": [
+      "fs.watch rejected after 12/40 lost events"
+    ]
+  },
+  "semanticEquivalence": {
+    "factIds": [
+      "C1-fs-watch-rejected",
+      "C1-no-missed-changes"
+    ],
+    "covered": [
+      {
+        "factId": "C1-fs-watch-rejected",
+        "inLeft": true,
+        "inRight": true
+      },
+      {
+        "factId": "C1-no-missed-changes",
+        "inLeft": true,
+        "inRight": true
+      }
+    ],
+    "equivalent": true,
+    "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+  }
+}

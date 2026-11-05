@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T12:33:35.171Z",
+  "status": "ready",
+  "label": "controlled/oracle-facts intervention",
+  "note": "These contexts are evaluation fixtures. They are not EF writer outputs and are not live model evidence.",
+  "fixtures": [
+    {
+      "fixtureId": "B2-F-P",
+      "caseId": "B2",
+      "variant": "F-P",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 218,
+      "tokenEstimate": 55,
+      "contextDigest": "ca6e7bd9f5ad0c67d7511cadc262e04d618ef6795a85f6ed1d0fba5c869da7a9",
+      "semanticEquivalence": {
+        "factIds": [
+          "B2-memory",
+          "B2-outbox-rejected"
+        ],
+        "covered": [
+          {
+            "factId": "B2-memory",
+            "inLeft": true,
+            "inRight": true
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "inLeft": true,
+            "inRight": true
+          }
+        ],
+        "equivalent": true,
+        "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+      }
+    },
+    {
+      "fixtureId": "B2-F-S",
+      "caseId": "B2",
+      "variant": "F-S",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 829,
+      "tokenEstimate": 208,
+      "contextDigest": "80826d687a503ad63d0ba572907a0d2c511d9e0255b69334de4b70914dbab789",
+      "semanticEquivalence": {
+        "factIds": [
+          "B2-memory",
+          "B2-outbox-rejected"
+        ],
+        "covered": [
+          {
+            "factId": "B2-memory",
+            "inLeft": true,
+            "inRight": true
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "inLeft": true,
+            "inRight": true
+          }
+        ],
+        "equivalent": true,
+        "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+      }
+    },
+    {
+      "fixtureId": "B2-F-N",
+      "caseId": "B2",
+      "variant": "F-N",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 48,
+      "tokenEstimate": 12,
+      "contextDigest": "7e169eae9849176e7ff61b84b5436e87fdbd49c6efe2adba431925f04068a197",
+      "semanticEquivalence": {
+        "factIds": [
+          "B2-memory",
+          "B2-outbox-rejected"
+        ],
+        "covered": [
+          {
+            "factId": "B2-memory",
+            "inLeft": false,
+            "inRight": false
+          },
+          {
+            "factId": "B2-outbox-rejected",
+            "inLeft": false,
+            "inRight": false
+          }
+        ],
+        "equivalent": false,
+        "note": "F-N intentionally withholds every critical fact; it is the negative control."
+      }
+    },
+    {
+      "fixtureId": "C1-F-H",
+      "caseId": "C1",
+      "variant": "F-H",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 2275,
+      "tokenEstimate": 569,
+      "contextDigest": "01e87af789a6c90c939804645318e74a9b57fd07f5641a11ae0c4eeeb2ad489e",
+      "semanticEquivalence": {
+        "factIds": [
+          "C1-fs-watch-rejected",
+          "C1-no-missed-changes"
+        ],
+        "covered": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "inLeft": true,
+            "inRight": true
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "inLeft": true,
+            "inRight": true
+          }
+        ],
+        "equivalent": true,
+        "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+      }
+    },
+    {
+      "fixtureId": "C1-F-P",
+      "caseId": "C1",
+      "variant": "F-P",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 214,
+      "tokenEstimate": 54,
+      "contextDigest": "d9d3e2ba2c8885120533ffc605385ea9c264be79801ac7563af70e40f4e0903d",
+      "semanticEquivalence": {
+        "factIds": [
+          "C1-fs-watch-rejected",
+          "C1-no-missed-changes"
+        ],
+        "covered": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "inLeft": true,
+            "inRight": true
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "inLeft": true,
+            "inRight": true
+          }
+        ],
+        "equivalent": true,
+        "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+      }
+    },
+    {
+      "fixtureId": "C1-F-S",
+      "caseId": "C1",
+      "variant": "F-S",
+      "label": "controlled/oracle-facts intervention",
+      "contextChars": 807,
+      "tokenEstimate": 202,
+      "contextDigest": "34118fffcf57964777646b83d2860dca31aa0bbbbf1a26841472dbd0a0ad6e68",
+      "semanticEquivalence": {
+        "factIds": [
+          "C1-fs-watch-rejected",
+          "C1-no-missed-changes"
+        ],
+        "covered": [
+          {
+            "factId": "C1-fs-watch-rejected",
+            "inLeft": true,
+            "inRight": true
+          },
+          {
+            "factId": "C1-no-missed-changes",
+            "inLeft": true,
+            "inRight": true
+          }
+        ],
+        "equivalent": true,
+        "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+      }
+    }
+  ]
+}

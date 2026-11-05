@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "C1-F-S",
+  "caseId": "C1",
+  "variant": "F-S",
+  "representationLabel": "structured semantic representation",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "C1-fs-watch-rejected",
+      "needle": "fs.watch",
+      "kind": "rejected-approach",
+      "subjectKey": "watcher-backend",
+      "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+      "authority": "tool",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "platform": "target",
+        "backend": "fs.watch"
+      },
+      "status": "observed",
+      "rulesOut": [
+        "fs.watch"
+      ]
+    },
+    {
+      "factId": "C1-no-missed-changes",
+      "needle": "must not miss changes",
+      "kind": "objective",
+      "subjectKey": "watcher-reliability",
+      "statement": "The file watcher must not miss changes.",
+      "authority": "user",
+      "sourceRefs": [
+        0
+      ],
+      "scope": {
+        "platform": "target"
+      },
+      "status": "claimed"
+    }
+  ],
+  "contextText": "{\n  \"facts\": [\n    {\n      \"factId\": \"C1-fs-watch-rejected\",\n      \"kind\": \"rejected-approach\",\n      \"subjectKey\": \"watcher-backend\",\n      \"statement\": \"Using fs.watch is rejected: it lost 12 of 40 events on the target platform.\",\n      \"status\": \"observed\",\n      \"authority\": \"tool\",\n      \"sourceRefs\": [\n        2\n      ],\n      \"scope\": {\n        \"platform\": \"target\",\n        \"backend\": \"fs.watch\"\n      },\n      \"rulesOut\": [\n        \"fs.watch\"\n      ]\n    },\n    {\n      \"factId\": \"C1-no-missed-changes\",\n      \"kind\": \"objective\",\n      \"subjectKey\": \"watcher-reliability\",\n      \"statement\": \"The file watcher must not miss changes.\",\n      \"status\": \"claimed\",\n      \"authority\": \"user\",\n      \"sourceRefs\": [\n        0\n      ],\n      \"scope\": {\n        \"platform\": \"target\"\n      }\n    }\n  ]\n}",
+  "tokenEstimate": 202,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "34118fffcf57964777646b83d2860dca31aa0bbbbf1a26841472dbd0a0ad6e68",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user",
+      "tool"
+    ],
+    "scope": [
+      "target platform"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": [
+      "fs.watch rejected after 12/40 lost events"
+    ]
+  },
+  "semanticEquivalence": {
+    "factIds": [
+      "C1-fs-watch-rejected",
+      "C1-no-missed-changes"
+    ],
+    "covered": [
+      {
+        "factId": "C1-fs-watch-rejected",
+        "inLeft": true,
+        "inRight": true
+      },
+      {
+        "factId": "C1-no-missed-changes",
+        "inLeft": true,
+        "inRight": true
+      }
+    ],
+    "equivalent": true,
+    "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+  }
+}

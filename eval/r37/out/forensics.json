@@ -1,0 +1,1740 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T12:33:35.174Z",
+  "source": {
+    "reconstruction": "eval/r37/out/r36-evidence-reconstruction.json",
+    "reconstructionSha256": "ad7abb125b69b1f2a2e74c40b621c73f953cb323e8e8c6acd111b58d827cad52",
+    "r36Worktree": "../ef-r36-interface"
+  },
+  "cases": {
+    "B2": {
+      "transcriptFacts": [
+        {
+          "factId": "B2-memory",
+          "kind": "decision",
+          "subjectKey": "scheduler-queue",
+          "sourceRefs": [
+            0
+          ],
+          "quote": "use an in-memory queue for the scheduler",
+          "statement": "The scheduler keeps an in-memory queue.",
+          "criticality": "high",
+          "current": true,
+          "visibleNeedle": "in-memory queue",
+          "expectedBehavior": "Keep the in-memory queue and do not add a storage dependency.",
+          "corroboratingRefs": [
+            2
+          ]
+        },
+        {
+          "factId": "B2-outbox-rejected",
+          "kind": "rejected-approach",
+          "subjectKey": "scheduler-outbox",
+          "sourceRefs": [
+            2
+          ],
+          "quote": "we are rejecting it",
+          "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+          "criticality": "medium",
+          "current": true,
+          "visibleNeedle": "rejected",
+          "expectedBehavior": "Do not retry the rejected outbox without new evidence."
+        }
+      ],
+      "runs": [
+        {
+          "runId": "r36-causal-B2",
+          "replicateId": "r1",
+          "arm": "S",
+          "assignedArm": "S",
+          "actualDelivery": "semantic-committed",
+          "fold": {
+            "valid": true,
+            "startSeq": 21,
+            "summarySeq": 22,
+            "replacementSeq": 23,
+            "endSeq": 24
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "success",
+            "protocol": "parsed",
+            "commitStatus": "committed",
+            "accepted": 2,
+            "refused": 0,
+            "rawDigest": "0e881ff93d75e940038590c8d3285b2ca6a9566ce2adf525315723a2e4ce3218",
+            "rawChars": 1713,
+            "rawTruncated": false,
+            "acceptedDeltaIds": [
+              "a2ad85f1b00a7d01c9f1cb3dc943bf170bd9e3a75fd7ca9b531025feafc76543",
+              "03d6dc0905ec0ff6e967a7e3a1e5e9884ef487581545045d7942d6b774fe90c5"
+            ]
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "B2-memory",
+                "kind": "decision",
+                "statement": "The scheduler keeps an in-memory queue.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "kind": "rejected-approach",
+                "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "B2-memory",
+                "rendered": true,
+                "committed": true
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "rendered": true,
+                "committed": true
+              }
+            ],
+            "checkpointChars": 1890,
+            "checkpointDigest": "d03939f3e73441ce7bf044ddae19f834bf2842a86cb82ace57b26276c1a82c20"
+          },
+          "instructions": {
+            "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 7,
+              "invalidActions": 1,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 4,
+                "write_file": 1,
+                "list_dir": 1,
+                "run_tests": 1,
+                "recall": 0,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/scheduler.mjs",
+            "tests/scheduler.test.mjs",
+            "package.json",
+            "src/scheduler.mjs"
+          ],
+          "filesModified": [
+            {
+              "path": "src/scheduler.mjs",
+              "sha256": "dbaa81c1d7ce7de2c2f0ebbcc142f14c2c853ea620fdf233ce1b58a82c48b4eb"
+            }
+          ],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": true,
+          "codeProduced": [
+            {
+              "path": "src/scheduler.mjs",
+              "sha256": "dbaa81c1d7ce7de2c2f0ebbcc142f14c2c853ea620fdf233ce1b58a82c48b4eb",
+              "chars": 1019,
+              "text": "export function createScheduler(options = {}) {\n  const { maxSize = Infinity } = options\n\n  if (maxSize !== Infinity && (typeof maxSize !== 'number' || !Number.isInteger(maxSize) || maxSize < 1)) {\n    throw new RangeError('maxSize must be a positive integer or Infinity')\n  }\n\n  // In-memory FIFO queue. This deployment cannot supply the storage dependency\n  // a durable outbox would need, so persistence stays out of scope.\n  const tasks = []\n\n  return {\n    mode: 'memory',\n\n    get size() {\n      return tasks.length\n    },\n\n    async enqueue(task) {\n      if (task === null || typeof task !== 'object') {\n        throw new TypeError('task must be an object')\n      }\n      if (tasks.length >= maxSize) {\n        throw new Error(\\`queue is full (maxSize \\${maxSize})\\`)\n      }\n      tasks.push(task)\n      return { queued: true, size: tasks.length }\n    },\n\n    async drain() {\n      return tasks.splice(0, tasks.length)\n    },\n\n    async peek() {\n      return tasks.length > 0 ? tasks[0] : undefined\n    },\n  }\n}",
+              "truncated": false
+            }
+          ],
+          "testsRequested": [
+            4
+          ],
+          "testsObserved": {
+            "testsExecuted": 1,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 4,
+              "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": false
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": {
+            "step": 9997,
+            "kind": "tool-parameter-corruption",
+            "detail": "final workspace file src/scheduler.mjs retains literal DSML attribute escapes (\\` or \\${)",
+            "confidence": "observed-in-final-workspace"
+          },
+          "sufficientCause": {
+            "step": 9997,
+            "kind": "tool-parameter-corruption",
+            "detail": "final workspace file src/scheduler.mjs retains literal DSML attribute escapes (\\` or \\${)",
+            "confidence": "observed-in-final-workspace"
+          },
+          "unresolvedHypotheses": [
+            {
+              "kind": "trace-truncated",
+              "steps": [
+                5,
+                7
+              ],
+              "detail": "the R36 trace stores at most 1000 characters per turn; the rest of the model output is not available for offline replay"
+            },
+            {
+              "kind": "unclosed-invoke-prefix",
+              "steps": [
+                5,
+                7
+              ],
+              "detail": "the saved prefix has no closing invoke tag; this may be model truncation or the trace cap, so it is not classified as a parse failure"
+            },
+            {
+              "kind": "write-prefix-without-content",
+              "steps": [
+                5
+              ],
+              "detail": "the saved prefix shows a write invoke without a content parameter, but the closing tag is beyond the cap"
+            }
+          ],
+          "outcome": {
+            "taskSuccess": false,
+            "functionalSuccess": false,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": false,
+            "failedChecks": [
+              "module-load:src/scheduler.mjs",
+              "functionality.fifo",
+              "decision.in-memory"
+            ],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "implementation-invalid",
+            "actionConsistency": "implementation-invalid"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 5, 7",
+            "unclosed invoke prefix on steps 5, 7; not classified as a parse failure"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-B2/report.json",
+            "trace": "eval/r36/runs/r36-causal-B2/B2/S/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-B2/B2/S/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-B2/B2/S/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-B2/B2/S/r1/bundles",
+            "case": "eval/r33/cases/B2"
+          },
+          "decisionConsistency": "action-consistent",
+          "classification": "harness-protocol"
+        },
+        {
+          "runId": "r36-causal-r2-B2",
+          "replicateId": "r2",
+          "arm": "S",
+          "assignedArm": "S",
+          "actualDelivery": "semantic-committed",
+          "fold": {
+            "valid": true,
+            "startSeq": 21,
+            "summarySeq": 22,
+            "replacementSeq": 23,
+            "endSeq": 24
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "success",
+            "protocol": "parsed",
+            "commitStatus": "committed",
+            "accepted": 2,
+            "refused": 0,
+            "rawDigest": "bd4b3022341718428d0a8f6fe878cffc74c65c7f4640a089a3aaec1d6b539f48",
+            "rawChars": 1717,
+            "rawTruncated": false,
+            "acceptedDeltaIds": [
+              "e9b21f7081f5dad0a3224044534a44bee32d95079e102da26d1872c8d39c333f",
+              "46c89b8e758044b37285c0ca36a8f1ad969e81e74552a1993c60f207e645c656"
+            ]
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "B2-memory",
+                "kind": "decision",
+                "statement": "The scheduler keeps an in-memory queue.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "kind": "rejected-approach",
+                "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "B2-memory",
+                "rendered": true,
+                "committed": true
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "rendered": true,
+                "committed": true
+              }
+            ],
+            "checkpointChars": 1894,
+            "checkpointDigest": "b0c6391970f6ae04191191825ab3929b25d8f0f1ef616527bbf2bc7ccabb99e6"
+          },
+          "instructions": {
+            "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 8,
+              "invalidActions": 0,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 7,
+                "write_file": 0,
+                "list_dir": 1,
+                "run_tests": 0,
+                "recall": 0,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/scheduler.mjs",
+            "tests/scheduler.test.mjs"
+          ],
+          "filesModified": [],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": false,
+          "codeProduced": [],
+          "testsRequested": [],
+          "testsObserved": {
+            "testsExecuted": 0,
+            "testRuns": [],
+            "lastPassingTest": null,
+            "verifiedCurrentCode": false
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "sufficientCause": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "unresolvedHypotheses": [],
+          "outcome": {
+            "taskSuccess": true,
+            "functionalSuccess": true,
+            "historicalConstraintCompliance": true,
+            "processCompliance": false,
+            "contractSuccess": false,
+            "failedChecks": [],
+            "processViolation": true,
+            "falseVerificationClaim": false,
+            "classification": "process-violation",
+            "actionConsistency": "unattributed"
+          },
+          "traceNotes": [],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-r2-B2/report.json",
+            "trace": "eval/r36/runs/r36-causal-r2-B2/B2/S/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-r2-B2/B2/S/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-r2-B2/B2/S/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-r2-B2/B2/S/r1/bundles",
+            "case": "eval/r33/cases/B2"
+          },
+          "decisionConsistency": "no-observed-action",
+          "classification": "implementation-correctness"
+        }
+      ],
+      "baselineContrast": [
+        {
+          "runId": "r36-causal-B2",
+          "replicateId": "r1",
+          "arm": "B1",
+          "assignedArm": "B1",
+          "actualDelivery": "ef-off-basic-context",
+          "fold": {
+            "valid": true,
+            "startSeq": 21,
+            "summarySeq": 22,
+            "replacementSeq": 23,
+            "endSeq": 24
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "not-attempted",
+            "protocol": "not-called",
+            "commitStatus": "not-applicable",
+            "accepted": 0,
+            "refused": 0,
+            "rawDigest": null,
+            "rawChars": 0,
+            "rawTruncated": false,
+            "acceptedDeltaIds": []
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "B2-memory",
+                "kind": "decision",
+                "statement": "The scheduler keeps an in-memory queue.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "kind": "rejected-approach",
+                "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "B2-memory",
+                "rendered": true,
+                "committed": null
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "rendered": true,
+                "committed": null
+              }
+            ],
+            "checkpointChars": 1237,
+            "checkpointDigest": "f792e123bfeb291e4e85618bba2306513f148d9d6b1fe335cd81ea543be02e10"
+          },
+          "instructions": {
+            "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 9,
+              "invalidActions": 0,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 5,
+                "write_file": 1,
+                "list_dir": 1,
+                "run_tests": 2,
+                "recall": 0,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/scheduler.mjs",
+            "tests/scheduler.test.mjs",
+            "package.json"
+          ],
+          "filesModified": [
+            {
+              "path": "src/scheduler.mjs",
+              "sha256": "5e2438ef4d9c6d2896e935b197d55d348705718697769f4ded9729f29b35b23c"
+            }
+          ],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": true,
+          "codeProduced": [
+            {
+              "path": "src/scheduler.mjs",
+              "sha256": "5e2438ef4d9c6d2896e935b197d55d348705718697769f4ded9729f29b35b23c",
+              "chars": 784,
+              "text": "export function createScheduler(options = {}) {\n  const { maxQueueSize = Infinity } = options\n  if (typeof maxQueueSize !== 'number' || Number.isNaN(maxQueueSize) || maxQueueSize <= 0) {\n    throw new TypeError('maxQueueSize must be a positive number')\n  }\n\n  let tasks = []\n\n  return {\n    mode: 'memory',\n\n    get size() {\n      return tasks.length\n    },\n\n    async enqueue(task) {\n      if (task === undefined) {\n        throw new TypeError('task must not be undefined')\n      }\n      if (tasks.length >= maxQueueSize) {\n        throw new Error(`queue is full (maxQueueSize=${maxQueueSize})`)\n      }\n      tasks.push(task)\n      return { queued: true, size: tasks.length }\n    },\n\n    async drain() {\n      const drained = tasks\n      tasks = []\n      return drained\n    },\n  }\n}",
+              "truncated": false
+            }
+          ],
+          "testsRequested": [
+            5,
+            7
+          ],
+          "testsObserved": {
+            "testsExecuted": 2,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+              },
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "0c99249936ca0913c279f883f0303d172820d8a7e4196735f05f426956be24dc"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 7,
+              "digest": "0c99249936ca0913c279f883f0303d172820d8a7e4196735f05f426956be24dc",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": true
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": null,
+          "sufficientCause": null,
+          "unresolvedHypotheses": [],
+          "outcome": {
+            "taskSuccess": true,
+            "functionalSuccess": true,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": true,
+            "failedChecks": [],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "contract-success",
+            "actionConsistency": "action-consistent"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 6",
+            "unclosed invoke prefix on steps 6; not classified as a parse failure"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-B2/report.json",
+            "trace": "eval/r36/runs/r36-causal-B2/B2/B1/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-B2/B2/B1/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-B2/B2/B1/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-B2/B2/B1/r1/bundles",
+            "case": "eval/r33/cases/B2"
+          }
+        },
+        {
+          "runId": "r36-causal-r2-B2",
+          "replicateId": "r2",
+          "arm": "B1",
+          "assignedArm": "B1",
+          "actualDelivery": "ef-off-basic-context",
+          "fold": {
+            "valid": true,
+            "startSeq": 21,
+            "summarySeq": 22,
+            "replacementSeq": 23,
+            "endSeq": 24
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "not-attempted",
+            "protocol": "not-called",
+            "commitStatus": "not-applicable",
+            "accepted": 0,
+            "refused": 0,
+            "rawDigest": null,
+            "rawChars": 0,
+            "rawTruncated": false,
+            "acceptedDeltaIds": []
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "B2-memory",
+                "kind": "decision",
+                "statement": "The scheduler keeps an in-memory queue.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "kind": "rejected-approach",
+                "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "B2-memory",
+                "rendered": true,
+                "committed": null
+              },
+              {
+                "factId": "B2-outbox-rejected",
+                "rendered": true,
+                "committed": null
+              }
+            ],
+            "checkpointChars": 1260,
+            "checkpointDigest": "f8d4bb2e0a6b58bdfb89ab50dad6cce94973f4d85200df406b383f986d651159"
+          },
+          "instructions": {
+            "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 7,
+              "invalidActions": 1,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 3,
+                "write_file": 0,
+                "list_dir": 1,
+                "run_tests": 2,
+                "recall": 0,
+                "finish": 1
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": false,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 1,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": {
+                "step": 7,
+                "requiresTests": true,
+                "testsExecuted": 2,
+                "lastPassingTest": {
+                  "step": 6,
+                  "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+                  "exitCode": 0
+                },
+                "currentDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+                "fresh": true
+              },
+              "checks": [
+                {
+                  "step": 7,
+                  "requiresTests": true,
+                  "testsExecuted": 2,
+                  "lastPassingTest": {
+                    "step": 6,
+                    "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+                    "exitCode": 0
+                  },
+                  "currentDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+                  "fresh": true
+                }
+              ],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/scheduler.mjs",
+            "tests/scheduler.test.mjs",
+            "package.json"
+          ],
+          "filesModified": [],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": false,
+          "codeProduced": [],
+          "testsRequested": [
+            4,
+            6
+          ],
+          "testsObserved": {
+            "testsExecuted": 2,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+              },
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 6,
+              "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": true
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": null,
+          "sufficientCause": null,
+          "unresolvedHypotheses": [],
+          "outcome": {
+            "taskSuccess": true,
+            "functionalSuccess": true,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": true,
+            "failedChecks": [],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "contract-success",
+            "actionConsistency": "action-consistent"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 5",
+            "unclosed invoke prefix on steps 5; not classified as a parse failure"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-r2-B2/report.json",
+            "trace": "eval/r36/runs/r36-causal-r2-B2/B2/B1/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-r2-B2/B2/B1/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-r2-B2/B2/B1/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-r2-B2/B2/B1/r1/bundles",
+            "case": "eval/r33/cases/B2"
+          }
+        }
+      ],
+      "conclusion": [
+        "r1 S: the checkpoint contained the in-memory decision; the model wrote code that kept it; the stored file failed only because DSML attribute escapes were not decoded. Unescaping the saved file makes the hidden checker pass. This is a harness-protocol failure, not a decision-consistency failure.",
+        "r2 S: the checkpoint contained the decision, but the agent read files for eight steps and never wrote or tested. The workspace is byte-identical to the initial workspace. This is an implementation/process failure, not a memory failure."
+      ]
+    },
+    "C1": {
+      "transcriptFacts": [
+        {
+          "factId": "C1-fs-watch-rejected",
+          "kind": "rejected-approach",
+          "subjectKey": "watcher-backend",
+          "sourceRefs": [
+            2
+          ],
+          "quote": "fs.watch delivered 28 of 40",
+          "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+          "criticality": "high",
+          "current": true,
+          "visibleNeedle": "lost 12 of 40",
+          "oracleEvidence": [
+            "lost events on the target platform; switching to polling.",
+            "fs.watch delivered 28 of 40"
+          ],
+          "expectedBehavior": "Use polling; do not retry fs.watch without new evidence.",
+          "corroboratingRefs": [
+            1
+          ]
+        },
+        {
+          "factId": "C1-no-missed-changes",
+          "kind": "objective",
+          "subjectKey": "watcher-reliability",
+          "sourceRefs": [
+            0
+          ],
+          "quote": "The file watcher must not miss changes.",
+          "statement": "The file watcher must not miss changes.",
+          "criticality": "medium",
+          "current": true,
+          "visibleNeedle": "must not miss changes",
+          "expectedBehavior": "Deliver every change."
+        }
+      ],
+      "runs": [
+        {
+          "runId": "r36-causal-C1",
+          "replicateId": "r1",
+          "arm": "S",
+          "assignedArm": "S",
+          "actualDelivery": "full-history-fallback",
+          "fold": {
+            "valid": false,
+            "startSeq": 18,
+            "endSeq": 19
+          },
+          "foldFallback": "full-history",
+          "writer": {
+            "call": "success",
+            "protocol": "parsed",
+            "commitStatus": "fold-refused",
+            "accepted": 6,
+            "refused": 0,
+            "rawDigest": "c177ba37ec39587a11d9f69c5e76f5f643e32215851ef31ccedea9b7e1fc3ef2",
+            "rawChars": 3086,
+            "rawTruncated": false,
+            "acceptedDeltaIds": [
+              "15b244fdc1a4ad6e36f9a6797c0787f5b15f4a76e3802b5146acd1e39b86ddc7",
+              "95c45413f223ed9cae818df3a89a42698d0b2f9e37ad6ad275013495167c6d9a",
+              "6c25250f1c57b62a05e7f689ac662a704250ffb04db7193e05826e8af4c89216",
+              "04f25deff86250fd22db1361612acec8a6257812d3a6503541acaa9d6376a3ac",
+              "7f2ba76a04a8d68c848e073786f59311b7fc8dfcbeed3419acbc039376dfed9a",
+              "de7b5f78fbb4ee92e9620b7a500fcfd011c3845ee8c231a6efc57df35cd652c9"
+            ]
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "kind": "rejected-approach",
+                "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+                "authority": [
+                  "tool"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "kind": "objective",
+                "statement": "The file watcher must not miss changes.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "rendered": true,
+                "committed": false
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "rendered": true,
+                "committed": false
+              }
+            ],
+            "checkpointChars": 2275,
+            "checkpointDigest": "01e87af789a6c90c939804645318e74a9b57fd07f5641a11ae0c4eeeb2ad489e"
+          },
+          "instructions": {
+            "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 11,
+              "invalidActions": 1,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 5,
+                "write_file": 0,
+                "list_dir": 2,
+                "run_tests": 3,
+                "recall": 1,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 7,
+                "max-tokens": 1
+              },
+              "truncatedTurns": 1,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/watcher.mjs",
+            "tests/watcher.test.mjs",
+            "package.json",
+            "tests/watcher.test.mjs",
+            "tests/watcher.test.mjs"
+          ],
+          "filesModified": [],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": false,
+          "codeProduced": [],
+          "testsRequested": [
+            0
+          ],
+          "testsObserved": {
+            "testsExecuted": 3,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              },
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              },
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 6,
+              "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": true
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": {
+            "step": -1,
+            "kind": "validation-refusal",
+            "detail": "fold refused; full-history fallback delivered"
+          },
+          "sufficientCause": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "unresolvedHypotheses": [
+            {
+              "kind": "trace-truncated",
+              "steps": [
+                2,
+                5,
+                6
+              ],
+              "detail": "the R36 trace stores at most 1000 characters per turn; the rest of the model output is not available for offline replay"
+            }
+          ],
+          "outcome": {
+            "taskSuccess": false,
+            "functionalSuccess": false,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": false,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "implementation-invalid",
+            "actionConsistency": "implementation-invalid"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 2, 5, 6"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-C1/report.json",
+            "trace": "eval/r36/runs/r36-causal-C1/C1/S/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-C1/C1/S/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-C1/C1/S/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-C1/C1/S/r1/bundles",
+            "case": "eval/r33/cases/C1"
+          },
+          "decisionConsistency": "no-observed-action",
+          "classification": "fold-refusal-then-implementation"
+        },
+        {
+          "runId": "r36-causal-r2-C1",
+          "replicateId": "r2",
+          "arm": "S",
+          "assignedArm": "S",
+          "actualDelivery": "semantic-committed",
+          "fold": {
+            "valid": true,
+            "startSeq": 18,
+            "summarySeq": 19,
+            "replacementSeq": 20,
+            "endSeq": 21
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "success",
+            "protocol": "parsed",
+            "commitStatus": "committed",
+            "accepted": 4,
+            "refused": 0,
+            "rawDigest": "e6224d411923d756506008a0e68c4849b6c8005b8c3a1bb18395c4855fe82c8b",
+            "rawChars": 2447,
+            "rawTruncated": false,
+            "acceptedDeltaIds": [
+              "8fecb3d4af75e47b4882e1d93c131da3d0dad9af90c691dfe042fcecc79b8e95",
+              "8844fd3ec2602ef6b27c6a0b20b0983194ee2b4bc473c2e37e89e3a5c8627c8c",
+              "53d877e3f18eec05b410afbeb24f929c2b93040d166f7f8f284e901966b1863d",
+              "ac644bdf32c5a18f036b8e8c26371e6377b9ce107dcecccaebb1537054d6302c"
+            ]
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "kind": "rejected-approach",
+                "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+                "authority": [
+                  "tool"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "kind": "objective",
+                "statement": "The file watcher must not miss changes.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "rendered": true,
+                "committed": true
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "rendered": true,
+                "committed": true
+              }
+            ],
+            "checkpointChars": 2391,
+            "checkpointDigest": "533356a089f238db3d17250c44941b5c79c6706bcc67dec1301418e1ffff95e5"
+          },
+          "instructions": {
+            "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 8,
+              "invalidActions": 0,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 3,
+                "write_file": 2,
+                "list_dir": 1,
+                "run_tests": 2,
+                "recall": 0,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "src/watcher.mjs",
+            "tests/watcher.test.mjs",
+            "src/watcher.mjs"
+          ],
+          "filesModified": [
+            {
+              "path": "src/watcher.mjs",
+              "sha256": "974235f82d5e1f04e739667f017a2c52b7cd0629e1ada76597ca3e0ec6773154"
+            }
+          ],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": true,
+          "codeProduced": [
+            {
+              "path": "src/watcher.mjs",
+              "sha256": "974235f82d5e1f04e739667f017a2c52b7cd0629e1ada76597ca3e0ec6773154",
+              "chars": 1043,
+              "text": "export function watchChanges({ fs, dir, onEvent, intervalMs = 100 }) {\n  let known = null\n  let closed = false\n  let timer = null\n\n  const snapshot = () => {\n    let entries\n    try {\n      entries = fs.readdir(dir, { withFileTypes: true })\n    } catch {\n      return []\n    }\n    return Array.from(entries ?? []).map(entry =>\n      typeof entry === 'string' ? entry : entry.name,\n    )\n  }\n\n  const poll = () => {\n    if (closed) return\n    const current = snapshot()\n    if (known !== null) {\n      for (const name of current) {\n        if (!known.includes(name)) onEvent(name)\n      }\n      for (const name of known) {\n        if (!current.includes(name)) onEvent(name)\n      }\n    }\n    known = current\n    timer = setTimeout(poll, intervalMs)\n    timer?.unref?.()\n  }\n\n  // Seed the baseline synchronously so the first poll compares against it.\n  known = snapshot()\n  timer = setTimeout(poll, intervalMs)\n  timer?.unref?.()\n\n  return {\n    close() {\n      closed = true\n      if (timer) clearTimeout(timer)\n      timer = null\n    },\n  }\n}",
+              "truncated": false
+            }
+          ],
+          "testsRequested": [
+            4,
+            7
+          ],
+          "testsObserved": {
+            "testsExecuted": 2,
+            "testRuns": [
+              {
+                "exitCode": 1,
+                "passed": false,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "aa55bdc48222843bd4608d174000838a6ebb97bca4b421ca4970e87e5e7b42d8"
+              },
+              {
+                "exitCode": 1,
+                "passed": false,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "3981ebf0b05614241d00ac6590fd158f303a99ab90e9ed80698ccf44f9cc039c"
+              }
+            ],
+            "lastPassingTest": null,
+            "verifiedCurrentCode": false
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": null,
+          "sufficientCause": null,
+          "unresolvedHypotheses": [],
+          "outcome": {
+            "taskSuccess": true,
+            "functionalSuccess": true,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": true,
+            "failedChecks": [],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "contract-success",
+            "actionConsistency": "action-consistent"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 3, 6",
+            "unclosed invoke prefix on steps 3, 6; not classified as a parse failure"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-r2-C1/report.json",
+            "trace": "eval/r36/runs/r36-causal-r2-C1/C1/S/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-r2-C1/C1/S/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-r2-C1/C1/S/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-r2-C1/C1/S/r1/bundles",
+            "case": "eval/r33/cases/C1"
+          },
+          "decisionConsistency": "action-consistent",
+          "classification": "contract-success"
+        }
+      ],
+      "baselineContrast": [
+        {
+          "runId": "r36-causal-C1",
+          "replicateId": "r1",
+          "arm": "B1",
+          "assignedArm": "B1",
+          "actualDelivery": "ef-off-basic-context",
+          "fold": {
+            "valid": true,
+            "startSeq": 18,
+            "summarySeq": 19,
+            "replacementSeq": 20,
+            "endSeq": 21
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "not-attempted",
+            "protocol": "not-called",
+            "commitStatus": "not-applicable",
+            "accepted": 0,
+            "refused": 0,
+            "rawDigest": null,
+            "rawChars": 0,
+            "rawTruncated": false,
+            "acceptedDeltaIds": []
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "kind": "rejected-approach",
+                "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+                "authority": [
+                  "tool"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "kind": "objective",
+                "statement": "The file watcher must not miss changes.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "rendered": true,
+                "committed": null
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "rendered": true,
+                "committed": null
+              }
+            ],
+            "checkpointChars": 2093,
+            "checkpointDigest": "d9f1660df2670aa7bedd16126310f48eaa22db77c2d516132050cdd0f584cac1"
+          },
+          "instructions": {
+            "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 7,
+              "invalidActions": 1,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 5,
+                "write_file": 0,
+                "list_dir": 1,
+                "run_tests": 1,
+                "recall": 0,
+                "finish": 0
+              },
+              "finishReasonCounts": {
+                "stop": 8
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": true,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 0,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": null,
+              "checks": [],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [],
+          "filesModified": [],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": false,
+          "codeProduced": [],
+          "testsRequested": [
+            6
+          ],
+          "testsObserved": {
+            "testsExecuted": 1,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 6,
+              "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": true
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "sufficientCause": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "unresolvedHypotheses": [
+            {
+              "kind": "unclosed-invoke-prefix",
+              "steps": [
+                1
+              ],
+              "detail": "the saved prefix has no closing invoke tag; this may be model truncation or the trace cap, so it is not classified as a parse failure"
+            }
+          ],
+          "outcome": {
+            "taskSuccess": false,
+            "functionalSuccess": false,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": false,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "implementation-invalid",
+            "actionConsistency": "implementation-invalid"
+          },
+          "traceNotes": [
+            "unclosed invoke prefix on steps 1; not classified as a parse failure"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-C1/report.json",
+            "trace": "eval/r36/runs/r36-causal-C1/C1/B1/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-C1/C1/B1/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-C1/C1/B1/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-C1/C1/B1/r1/bundles",
+            "case": "eval/r33/cases/C1"
+          }
+        },
+        {
+          "runId": "r36-causal-r2-C1",
+          "replicateId": "r2",
+          "arm": "B1",
+          "assignedArm": "B1",
+          "actualDelivery": "ef-off-basic-context",
+          "fold": {
+            "valid": true,
+            "startSeq": 18,
+            "summarySeq": 19,
+            "replacementSeq": 20,
+            "endSeq": 21
+          },
+          "foldFallback": null,
+          "writer": {
+            "call": "not-attempted",
+            "protocol": "not-called",
+            "commitStatus": "not-applicable",
+            "accepted": 0,
+            "refused": 0,
+            "rawDigest": null,
+            "rawChars": 0,
+            "rawTruncated": false,
+            "acceptedDeltaIds": []
+          },
+          "factsAvailable": {
+            "sourceFacts": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "kind": "rejected-approach",
+                "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+                "authority": [
+                  "tool"
+                ],
+                "sourceRefs": [
+                  2
+                ]
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "kind": "objective",
+                "statement": "The file watcher must not miss changes.",
+                "authority": [
+                  "user"
+                ],
+                "sourceRefs": [
+                  0
+                ]
+              }
+            ],
+            "rendered": [
+              {
+                "factId": "C1-fs-watch-rejected",
+                "rendered": true,
+                "committed": null
+              },
+              {
+                "factId": "C1-no-missed-changes",
+                "rendered": true,
+                "committed": null
+              }
+            ],
+            "checkpointChars": 1346,
+            "checkpointDigest": "c56c8d8cc5f5c0cd34500416d7e257c85c4dbf641341b644c08360732a05d1dd"
+          },
+          "instructions": {
+            "task": "Make the file watcher reliable on the target platform. Run the visible tests before you finish.",
+            "requiresTests": true,
+            "harness": {
+              "version": "H0-custom-json-loop",
+              "runtime": "custom-json-loop",
+              "tools": [
+                "read_file",
+                "write_file",
+                "list_dir",
+                "run_tests",
+                "recall",
+                "finish"
+              ],
+              "maxSteps": 8,
+              "maxTokens": 1024,
+              "validActions": 13,
+              "invalidActions": 0,
+              "unknownTools": 0,
+              "toolCounts": {
+                "read_file": 3,
+                "write_file": 0,
+                "list_dir": 4,
+                "run_tests": 2,
+                "recall": 3,
+                "finish": 1
+              },
+              "finishReasonCounts": {
+                "stop": 5
+              },
+              "truncatedTurns": 0,
+              "stepLimitTermination": false,
+              "providerFailure": null,
+              "note": "Custom text-JSON tool loop, not the production DSH Agent/Tool Runtime."
+            },
+            "finishGuard": {
+              "enabled": false,
+              "policy": "none",
+              "requiredTests": true,
+              "finishRequests": 1,
+              "prematureFinishRequests": 0,
+              "rejections": 0,
+              "assistedCompletion": false,
+              "lastCheck": {
+                "step": 4,
+                "requiresTests": true,
+                "testsExecuted": 2,
+                "lastPassingTest": {
+                  "step": 3,
+                  "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+                  "exitCode": 0
+                },
+                "currentDigest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+                "fresh": true
+              },
+              "checks": [
+                {
+                  "step": 4,
+                  "requiresTests": true,
+                  "testsExecuted": 2,
+                  "lastPassingTest": {
+                    "step": 3,
+                    "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+                    "exitCode": 0
+                  },
+                  "currentDigest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+                  "fresh": true
+                }
+              ],
+              "note": "No finish guard was configured."
+            }
+          },
+          "filesRead": [
+            "package.json",
+            "src/watcher.mjs",
+            "tests/watcher.test.mjs"
+          ],
+          "filesModified": [],
+          "filesAdded": [],
+          "filesRemoved": [],
+          "workspaceChanged": false,
+          "codeProduced": [],
+          "testsRequested": [
+            2
+          ],
+          "testsObserved": {
+            "testsExecuted": 2,
+            "testRuns": [
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              },
+              {
+                "exitCode": 0,
+                "passed": true,
+                "timedOut": false,
+                "truncated": false,
+                "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847"
+              }
+            ],
+            "lastPassingTest": {
+              "step": 3,
+              "digest": "a2fdef2a9eeacacbbd831324a16e6ed5548a82f58fb58def1c0009d1525ef847",
+              "exitCode": 0
+            },
+            "verifiedCurrentCode": true
+          },
+          "verificationArtifact": null,
+          "earliestObservableDivergence": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "sufficientCause": {
+            "step": 9998,
+            "kind": "implementation-failure",
+            "detail": "the workspace was never modified"
+          },
+          "unresolvedHypotheses": [
+            {
+              "kind": "trace-truncated",
+              "steps": [
+                3,
+                4
+              ],
+              "detail": "the R36 trace stores at most 1000 characters per turn; the rest of the model output is not available for offline replay"
+            }
+          ],
+          "outcome": {
+            "taskSuccess": false,
+            "functionalSuccess": false,
+            "historicalConstraintCompliance": true,
+            "processCompliance": true,
+            "contractSuccess": false,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ],
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "classification": "implementation-invalid",
+            "actionConsistency": "implementation-invalid"
+          },
+          "traceNotes": [
+            "trace text is capped at 1000 chars on steps 3, 4"
+          ],
+          "evidenceRefs": {
+            "report": "eval/r36/runs/r36-causal-r2-C1/report.json",
+            "trace": "eval/r36/runs/r36-causal-r2-C1/C1/B1/r1/trace/record.json",
+            "workspace": "eval/r36/runs/r36-causal-r2-C1/C1/B1/r1/workspace",
+            "journal": "eval/r36/runs/r36-causal-r2-C1/C1/B1/r1/journal",
+            "bundles": "eval/r36/runs/r36-causal-r2-C1/C1/B1/r1/bundles",
+            "case": "eval/r33/cases/C1"
+          }
+        }
+      ],
+      "conclusion": [
+        "r1 S: the fold was refused (packet status aborted) and the agent continued on the full transcript. The fact was present in the fallback context. The agent never wrote code and failed the visible behavior. This is a fallback-plus-implementation failure, not a semantic-checkpoint delivery failure.",
+        "r2 S: the fold committed with the rejected-approach anchor and the agent wrote a polling watcher that passed. B1 failed without a write. This is the only candidate memory signal in the two cases, and n=1."
+      ]
+    }
+  },
+  "fixtures": {
+    "indexPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\eval\\r37\\out\\representation-fixtures.json",
+    "cases": {
+      "B2": [
+        "B2-F-P",
+        "B2-F-S",
+        "B2-F-N"
+      ],
+      "C1": [
+        "C1-F-H",
+        "C1-F-P",
+        "C1-F-S"
+      ]
+    },
+    "note": "F-P/F-S are intended to be semantically equivalent; F-N withholds the critical facts; F-H is the full transcript."
+  },
+  "warnings": [
+    "No claim that the model understood or forgot a fact is made from visibility alone.",
+    "B2 r1 and r2 both had the fact in the checkpoint; the observed failures differ, so the representation is not a sufficient explanation.",
+    "C1 r1 is a fallback run and must not be pooled with semantic-checkpoint delivery."
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "B2-F-S",
+  "caseId": "B2",
+  "variant": "F-S",
+  "representationLabel": "structured semantic facts",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "B2-memory",
+      "needle": "in-memory queue",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "authority": "user",
+      "sourceRefs": [
+        0,
+        2
+      ],
+      "scope": {
+        "branch": "scheduler"
+      },
+      "status": "claimed"
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "needle": "durable outbox",
+      "kind": "rejected-approach",
+      "subjectKey": "scheduler-outbox",
+      "statement": "A durable outbox is rejected because the storage dependency is unavailable in this deployment.",
+      "authority": "user",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "branch": "scheduler",
+        "deployment": "current"
+      },
+      "status": "claimed",
+      "rulesOut": [
+        "durable-outbox"
+      ]
+    }
+  ],
+  "contextText": "{\n  \"facts\": [\n    {\n      \"factId\": \"B2-memory\",\n      \"kind\": \"decision\",\n      \"subjectKey\": \"scheduler-queue\",\n      \"statement\": \"The scheduler keeps an in-memory queue.\",\n      \"status\": \"claimed\",\n      \"authority\": \"user\",\n      \"sourceRefs\": [\n        0,\n        2\n      ],\n      \"scope\": {\n        \"branch\": \"scheduler\"\n      }\n    },\n    {\n      \"factId\": \"B2-outbox-rejected\",\n      \"kind\": \"rejected-approach\",\n      \"subjectKey\": \"scheduler-outbox\",\n      \"statement\": \"A durable outbox is rejected because the storage dependency is unavailable in this deployment.\",\n      \"status\": \"claimed\",\n      \"authority\": \"user\",\n      \"sourceRefs\": [\n        2\n      ],\n      \"scope\": {\n        \"branch\": \"scheduler\",\n        \"deployment\": \"current\"\n      },\n      \"rulesOut\": [\n        \"durable-outbox\"\n      ]\n    }\n  ]\n}",
+  "tokenEstimate": 208,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "80826d687a503ad63d0ba572907a0d2c511d9e0255b69334de4b70914dbab789",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user"
+    ],
+    "scope": [
+      "scheduler"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": [
+      "durable outbox rejected: storage dependency unavailable"
+    ]
+  },
+  "semanticEquivalence": {
+    "factIds": [
+      "B2-memory",
+      "B2-outbox-rejected"
+    ],
+    "covered": [
+      {
+        "factId": "B2-memory",
+        "inLeft": true,
+        "inRight": true
+      },
+      {
+        "factId": "B2-outbox-rejected",
+        "inLeft": true,
+        "inRight": true
+      }
+    ],
+    "equivalent": true,
+    "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+  }
+}

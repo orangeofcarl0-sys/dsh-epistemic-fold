@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "B2-F-P",
+  "caseId": "B2",
+  "variant": "F-P",
+  "representationLabel": "plain-language facts",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "B2-memory",
+      "needle": "in-memory queue",
+      "kind": "decision",
+      "subjectKey": "scheduler-queue",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "authority": "user",
+      "sourceRefs": [
+        0,
+        2
+      ],
+      "scope": {
+        "branch": "scheduler"
+      },
+      "status": "claimed"
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "needle": "durable outbox",
+      "kind": "rejected-approach",
+      "subjectKey": "scheduler-outbox",
+      "statement": "A durable outbox is rejected because the storage dependency is unavailable in this deployment.",
+      "authority": "user",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "branch": "scheduler",
+        "deployment": "current"
+      },
+      "status": "claimed",
+      "rulesOut": [
+        "durable-outbox"
+      ]
+    }
+  ],
+  "contextText": "The scheduler keeps an in-memory queue.\nA durable outbox was rejected because the storage dependency is unavailable in this deployment.\nDo not add a storage dependency or retry the rejected outbox without new evidence.",
+  "tokenEstimate": 55,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "ca6e7bd9f5ad0c67d7511cadc262e04d618ef6795a85f6ed1d0fba5c869da7a9",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user"
+    ],
+    "scope": [
+      "scheduler"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": [
+      "durable outbox rejected: storage dependency unavailable"
+    ]
+  },
+  "semanticEquivalence": {
+    "factIds": [
+      "B2-memory",
+      "B2-outbox-rejected"
+    ],
+    "covered": [
+      {
+        "factId": "B2-memory",
+        "inLeft": true,
+        "inRight": true
+      },
+      {
+        "factId": "B2-outbox-rejected",
+        "inLeft": true,
+        "inRight": true
+      }
+    ],
+    "equivalent": true,
+    "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+  }
+}

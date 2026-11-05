@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "C1-F-H",
+  "caseId": "C1",
+  "variant": "F-H",
+  "representationLabel": "full historical context",
+  "label": "controlled/oracle-facts intervention",
+  "note": "This text is constructed by the evaluation from the frozen transcript. It is not an EF writer output and must not be reported as one.",
+  "criticalFacts": [
+    {
+      "factId": "C1-fs-watch-rejected",
+      "needle": "fs.watch",
+      "kind": "rejected-approach",
+      "subjectKey": "watcher-backend",
+      "statement": "Using fs.watch is rejected: it lost 12 of 40 events on the target platform.",
+      "authority": "tool",
+      "sourceRefs": [
+        2
+      ],
+      "scope": {
+        "platform": "target",
+        "backend": "fs.watch"
+      },
+      "status": "observed",
+      "rulesOut": [
+        "fs.watch"
+      ]
+    },
+    {
+      "factId": "C1-no-missed-changes",
+      "needle": "must not miss changes",
+      "kind": "objective",
+      "subjectKey": "watcher-reliability",
+      "statement": "The file watcher must not miss changes.",
+      "authority": "user",
+      "sourceRefs": [
+        0
+      ],
+      "scope": {
+        "platform": "target"
+      },
+      "status": "claimed"
+    }
+  ],
+  "contextText": "user: The file watcher must not miss changes. We are shipping the cache client on the same platform as the canary.\n\nassistant: The fs.watch backend lost events on the target platform; switching to polling.\n\ntool:run_tests: canary run started: injecting 40 events on the target platform. The default backend was exercised. fs.watch delivered 28 of 40; 12 events were lost. The failure reproduces with the default backend. Do not rely on fs.watch on this platform; poll the directory instead.\n\nassistant: Polling is the safer backend for this platform.\n\nassistant: Implementation log: the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. the relevant files were reviewed against the frozen fixture and no unrelated change was made. ",
+  "tokenEstimate": 569,
+  "tokenEstimateMethod": "ceil(chars/4); deterministic estimate, not a provider token count",
+  "contextDigest": "01e87af789a6c90c939804645318e74a9b57fd07f5641a11ae0c4eeeb2ad489e",
+  "provenance": {
+    "sourceRefs": [
+      0,
+      2
+    ],
+    "authority": [
+      "user",
+      "tool"
+    ],
+    "scope": [
+      "target platform"
+    ],
+    "supersededDecisions": [],
+    "negativeKnowledge": [
+      "fs.watch rejected after 12/40 lost events"
+    ]
+  },
+  "semanticEquivalence": {
+    "factIds": [
+      "C1-fs-watch-rejected",
+      "C1-no-missed-changes"
+    ],
+    "covered": [
+      {
+        "factId": "C1-fs-watch-rejected",
+        "inLeft": true,
+        "inRight": true
+      },
+      {
+        "factId": "C1-no-missed-changes",
+        "inLeft": true,
+        "inRight": true
+      }
+    ],
+    "equivalent": true,
+    "note": "Presence of the same critical fact ids, not proof that a model interprets them identically."
+  }
+}
