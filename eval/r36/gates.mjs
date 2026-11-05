@@ -94,7 +94,7 @@ const g2Live = w0?.summary?.attempts === 6
 const g3Offline = await exists(join(ROOT, 'tests', 'r36-agent-calibration.spec.ts'))
   && await exists(join(ROOT, 'tests', 'r36-benchmark-validity.spec.ts'))
 const harnessConditions = live?.harness?.conditions ?? []
-const harnessValid = harnessConditions.length === 5
+const harnessValid = harnessConditions.length >= 5
   && harnessConditions.every(condition => condition.summary.valid === 6)
 const bestHarness = harnessConditions
   .slice()
@@ -141,8 +141,8 @@ const gates = [
     evidence: 'eval/r36/out/harness-calibration.json, tests/r36-agent-calibration.spec.ts',
     detail: harnessValid
       ? `O2 conditions valid 6/6; best ${bestHarness.condition} ${bestHarness.summary.contractSuccesses}/6 contract, `
-        + `${bestHarness.summary.taskSuccesses}/6 task. Failures separate code (A1/C1), process/test omission (B2), `
-        + `and step/guard limits. H-native is not implemented.`
+        + `${bestHarness.summary.taskSuccesses}/6 task. The H0/H-step failures were the unparsed DSML protocol; `
+        + `the remaining D1 failure is the missing verification.json. H-native is not implemented.`
       : 'O2 calibration is incomplete; H-native is not implemented.',
   },
   {
@@ -151,7 +151,9 @@ const gates = [
     status: g4 ? 'partial' : 'blocked',
     evidence: 'eval/r36/out/live-results.json, eval/r36/manifests/b1-s-o1-o2-frozen.json',
     detail: g4
-      ? 'A B1/S run exists; see live-results.json.'
+      ? `${live.causal.b1sRows} exploratory pairs: ${live.causal.contract.rescue} rescue, `
+        + `${live.causal.contract.damage} damage, ${live.causal.contract.both} both, `
+        + `${live.causal.contract.neither} neither. Damage is confounded by the A1 task/gold ambiguity and B2 code/process.`
       : (live?.causal?.reason
         ?? 'No B1/S run. O2 does not form a stable upper bound, so a causal comparison would be dominated by the execution floor.'),
   },

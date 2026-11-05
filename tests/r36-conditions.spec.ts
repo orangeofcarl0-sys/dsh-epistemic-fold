@@ -42,6 +42,7 @@ describe('R36-F: conditions and gates', () => {
       'h-step-o2.json',
       'h-output-o2.json',
       'h-finish-o2.json',
+      'h-protocol-o2.json',
       'h-combined-o2.json',
       'h-native-o2.json',
       'b1-s-o1-o2-frozen.json',
@@ -52,7 +53,7 @@ describe('R36-F: conditions and gates', () => {
       expect(verdict.ok, verdict.ok ? file : `${file}: ${verdict.reason}`).toBe(true)
       if (manifest.execution === 'live') {
         expect(manifest.requiresAuthorization, file).toBe(true)
-        if (file === 'h-native-o2.json' || file === 'b1-s-o1-o2-frozen.json') {
+        if (file === 'h-native-o2.json') {
           expect(manifest.status, file).toBe('blocked')
         } else {
           expect(manifest.status, file).toBe('executed')
@@ -74,7 +75,7 @@ describe('R36-F: conditions and gates', () => {
     expect(byId.get('G1').status).toBe('passed')
     expect(byId.get('G2').status).toBe('passed')
     expect(byId.get('G3').status).toBe('partial')
-    expect(byId.get('G4').status).toBe('blocked')
+    expect(byId.get('G4').status).toBe('partial')
     expect(byId.get('G5').status).toBe('insufficient-evidence')
     expect(status.manifestsValid).toBe(true)
     expect(status.authorization).toBe('granted-in-this-session')

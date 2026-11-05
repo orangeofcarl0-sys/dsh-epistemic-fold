@@ -50,6 +50,14 @@ const CONDITIONS = {
     'r36-h-finish-o2-F1',
     'r36-h-finish-o2-H1',
   ],
+  'H-protocol': [
+    'r36-h-protocol-o2-A1b',
+    'r36-h-protocol-o2-B2',
+    'r36-h-protocol-o2-C1b',
+    'r36-h-protocol-o2-D1c',
+    'r36-h-protocol-o2-F1',
+    'r36-h-protocol-o2-H1b',
+  ],
   'H-combined': [
     'r36-h-combined-o2-A1',
     'r36-h-combined-o2-B2',

@@ -94,8 +94,8 @@
     "eval:r36-manifests": "node eval/r36/write-manifests.mjs",
     "eval:r36-gates": "node eval/r36/gates.mjs",
     "eval:r36-live": "node eval/r36/run-authorized.mjs",
-    "eval:r36-analyze": "node eval/r36/analyze-live.mjs r36-writer-w0-r1 r36-writer-w1-r1 && node eval/r36/analyze-harness.mjs && node eval/r36/record-live.mjs",
-    "eval:r36-tests": "vitest run tests/r36-eval-api.spec.ts tests/r36-benchmark-validity.spec.ts tests/r36-writer-contract.spec.ts tests/r36-agent-calibration.spec.ts tests/r36-conditions.spec.ts",
+    "eval:r36-analyze": "node eval/r36/analyze-live.mjs r36-writer-w0-r1 r36-writer-w1-r1 && node eval/r36/analyze-harness.mjs && node eval/r36/analyze-causal.mjs && node eval/r36/record-live.mjs",
+    "eval:r36-tests": "vitest run tests/r36-eval-api.spec.ts tests/r36-benchmark-validity.spec.ts tests/r36-writer-contract.spec.ts tests/r36-agent-calibration.spec.ts tests/r36-conditions.spec.ts tests/r36-tool-protocol.spec.ts",
     "eval:r36": "npm run eval:r36-audit && npm run eval:r36-parser && npm run eval:r36-certify && npm run eval:r36-conditions && npm run eval:r36-manifests && npm run eval:r36-gates"
   },
   "repository": {

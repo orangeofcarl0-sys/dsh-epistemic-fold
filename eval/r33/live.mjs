@@ -58,6 +58,7 @@ import {
   verifyHoldout,
 } from './src/dataset.mjs'
 import { selectCases } from './src/selection.mjs'
+import { parseActions } from './src/tool-protocol.mjs'
 import {
   BudgetExhausted,
   BudgetLedger,
@@ -746,20 +747,6 @@ function systemPrompt() {
   ].join('\n')
 }
 
-function parseAction(text) {
-  const start = text.indexOf('{')
-  if (start === -1) return undefined
-  for (let end = text.length; end > start; end -= 1) {
-    if (text[end - 1] !== '}') continue
-    try {
-      return JSON.parse(text.slice(start, end))
-    } catch {
-      // keep shrinking
-    }
-  }
-  return undefined
-}
-
 async function followUp({
   adapter,
   model,
@@ -868,6 +855,69 @@ async function followUp({
       ...extra,
     }
   }
+  const executeAction = async action => {
+    toolCalls += 1
+    if (action.tool === 'read_file') {
+      toolCounts.read_file += 1
+      const result = await readWorkspaceFile(workspaceRoot, action.path)
+      return result.ok
+        ? `TOOL RESULT read_file:\n${result.content ?? ''}`
+        : `TOOL RESULT read_file: ${result.reason ?? 'failed'}`
+    }
+    if (action.tool === 'write_file') {
+      toolCounts.write_file += 1
+      const result = await writeWorkspaceFile(workspaceRoot, action.path, action.content)
+      if (result.ok) {
+        const digest = await workspaceDigest(workspaceRoot)
+        lastModification = {
+          step: steps,
+          tool: 'write_file',
+          path: String(action.path),
+          digest: digest.digest,
+        }
+      }
+      return result.ok
+        ? `TOOL RESULT write_file: wrote ${action.path}`
+        : `TOOL RESULT write_file: failed: ${result.reason ?? 'unknown error'}`
+    }
+    if (action.tool === 'list_dir') {
+      toolCounts.list_dir += 1
+      const listing = await listWorkspace(workspaceRoot)
+      return `TOOL RESULT list_dir:\n${listing.text}`
+    }
+    if (action.tool === 'run_tests') {
+      toolCounts.run_tests += 1
+      testsExecuted += 1
+      const result = await runVisibleTests(workspaceRoot)
+      const digest = await workspaceDigest(workspaceRoot)
+      if (result.passed) {
+        lastPassingTest = {
+          step: steps,
+          digest: digest.digest,
+          exitCode: result.exitCode,
+        }
+      }
+      testRuns.push({
+        exitCode: result.exitCode,
+        passed: result.passed,
+        timedOut: result.timedOut,
+        truncated: result.outputTruncated,
+        digest: digest.digest,
+      })
+      return `TOOL RESULT run_tests (exit ${result.exitCode}${result.timedOut ? ', timed out' : ''}):\n`
+        + `${result.stdout.slice(-8_000)}\n${result.stderr.slice(-2_000)}`
+    }
+    if (action.tool === 'recall') {
+      toolCounts.recall += 1
+      recallAttempts += 1
+      const result = recall(caseData, action.query)
+      if (result.matches > 0) recallSuccess += 1
+      if (result.grounded) recallGrounded += 1
+      return `TOOL RESULT recall:\n${result.text}`
+    }
+    unknownTools += 1
+    return `TOOL RESULT: unknown tool ${action.tool}`
+  }
   for (; steps < maxSteps; steps += 1) {
     let text = ''
     let usage
@@ -909,16 +959,28 @@ async function followUp({
       })
     }
     trace.push({ step: steps, text: text.slice(0, 1000), usage, finishReason })
-    const action = parseAction(text)
-    if (action === undefined || typeof action.tool !== 'string') {
+    const actions = parseActions(text)
+    if (actions.length === 0) {
       invalidActions += 1
       messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
-      messages.push({ role: 'user', content: [{ type: 'text', text: 'Reply with exactly one JSON tool object.' }] })
+      messages.push({
+        role: 'user',
+        content: [{
+          type: 'text',
+          text: 'Reply with one JSON tool object or one DSML invoke block. Use one protocol per turn.',
+        }],
+      })
       continue
     }
-    validActions += 1
+    validActions += actions.length
     messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
-    if (action.tool === 'finish') {
+    const finishAction = actions.find(action => action.tool === 'finish')
+    for (const action of actions) {
+      if (action.tool === 'finish') continue
+      const result = await executeAction(action)
+      messages.push({ role: 'user', content: [{ type: 'text', text: result }] })
+    }
+    if (finishAction !== undefined) {
       finishRequests += 1
       toolCounts.finish += 1
       const current = await workspaceDigest(workspaceRoot)
@@ -954,97 +1016,10 @@ async function followUp({
         continue
       }
       finished = true
-      summary = String(action.summary ?? '')
+      summary = String(finishAction.summary ?? '')
       if (finishRejections > 0) guardAssistedFinish = true
       break
     }
-    toolCalls += 1
-    if (action.tool === 'read_file') {
-      toolCounts.read_file += 1
-      const result = await readWorkspaceFile(workspaceRoot, action.path)
-      messages.push({
-        role: 'user',
-        content: [{
-          type: 'text',
-          text: result.ok
-            ? `TOOL RESULT read_file:\n${result.content ?? ''}`
-            : `TOOL RESULT read_file: ${result.reason ?? 'failed'}`,
-        }],
-      })
-      continue
-    }
-    if (action.tool === 'write_file') {
-      toolCounts.write_file += 1
-      const result = await writeWorkspaceFile(workspaceRoot, action.path, action.content)
-      if (result.ok) {
-        const digest = await workspaceDigest(workspaceRoot)
-        lastModification = {
-          step: steps,
-          tool: 'write_file',
-          path: String(action.path),
-          digest: digest.digest,
-        }
-      }
-      messages.push({
-        role: 'user',
-        content: [{
-          type: 'text',
-          text: result.ok
-            ? `TOOL RESULT write_file: wrote ${action.path}`
-            : `TOOL RESULT write_file: failed: ${result.reason ?? 'unknown error'}`,
-        }],
-      })
-      continue
-    }
-    if (action.tool === 'list_dir') {
-      toolCounts.list_dir += 1
-      const listing = await listWorkspace(workspaceRoot)
-      messages.push({
-        role: 'user',
-        content: [{ type: 'text', text: `TOOL RESULT list_dir:\n${listing.text}` }],
-      })
-      continue
-    }
-    if (action.tool === 'run_tests') {
-      toolCounts.run_tests += 1
-      testsExecuted += 1
-      const result = await runVisibleTests(workspaceRoot)
-      const digest = await workspaceDigest(workspaceRoot)
-      if (result.passed) {
-        lastPassingTest = {
-          step: steps,
-          digest: digest.digest,
-          exitCode: result.exitCode,
-        }
-      }
-      testRuns.push({
-        exitCode: result.exitCode,
-        passed: result.passed,
-        timedOut: result.timedOut,
-        truncated: result.outputTruncated,
-        digest: digest.digest,
-      })
-      messages.push({
-        role: 'user',
-        content: [{
-          type: 'text',
-          text: `TOOL RESULT run_tests (exit ${result.exitCode}${result.timedOut ? ', timed out' : ''}):\n`
-            + `${result.stdout.slice(-8_000)}\n${result.stderr.slice(-2_000)}`,
-        }],
-      })
-      continue
-    }
-    if (action.tool === 'recall') {
-      toolCounts.recall += 1
-      recallAttempts += 1
-      const result = recall(caseData, action.query)
-      if (result.matches > 0) recallSuccess += 1
-      if (result.grounded) recallGrounded += 1
-      messages.push({ role: 'user', content: [{ type: 'text', text: `TOOL RESULT recall:\n${result.text}` }] })
-      continue
-    }
-    unknownTools += 1
-    messages.push({ role: 'user', content: [{ type: 'text', text: `TOOL RESULT: unknown tool ${action.tool}` }] })
   }
   return finalize()
 }

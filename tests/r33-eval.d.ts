@@ -33,6 +33,13 @@ declare module '*/r33/src/dataset.mjs' {
   export function verifyHoldout(manifestPath?: string): Promise<any>
 }
 
+declare module '*/r33/src/tool-protocol.mjs' {
+  export const MAX_ACTIONS_PER_TURN: number
+  export function parseDsmlActions(text: string): any[]
+  export function parseJsonActions(text: string): any[]
+  export function parseActions(text: string): any[]
+}
+
 declare module '*/r36/writer-protocol.mjs' {
   export function parseWriterOutput(text: string): any
   export function classifyWriterFailure(text: string | null, parse?: any): {

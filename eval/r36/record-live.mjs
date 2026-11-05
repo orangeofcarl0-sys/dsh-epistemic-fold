@@ -19,6 +19,12 @@ const OUT = join(HERE, 'out', 'live-results.json')
 
 const writer = JSON.parse(await readFile(join(HERE, 'out', 'live-writer-analysis.json'), 'utf8'))
 const harness = JSON.parse(await readFile(join(HERE, 'out', 'harness-calibration.json'), 'utf8'))
+let causal = null
+try {
+  causal = JSON.parse(await readFile(join(HERE, 'out', 'causal-comparison.json'), 'utf8'))
+} catch {
+  // No B1/S run yet.
+}
 
 const runIds = (await readdir(RUNS)).sort()
 const runs = []
@@ -125,12 +131,30 @@ const result = {
     })),
     note: 'H-combined is exploratory: 16 steps plus the finish guard, selected after the single-factor results. It is not a pre-registered arm.',
   },
-  causal: {
-    status: 'not-run',
-    gate: 'G4 blocked',
-    reason: 'Even under the best O2 condition, only 3/6 cases reached contract success; A1 and C1 fail on code and B2 never runs the required tests. A B1/S comparison would be dominated by this execution floor, so the brief stop condition applies.',
-    b1sRows: 0,
-  },
+  causal: causal === null
+    ? {
+      status: 'not-run',
+      gate: 'G4 blocked',
+      reason: 'No B1/S run.',
+      b1sRows: 0,
+    }
+    : {
+      status: 'executed',
+      gate: 'G4 partial (exploratory)',
+      harness: causal.harness,
+      replicates: causal.replicates,
+      cases: causal.cases,
+      contract: causal.contract,
+      task: causal.task,
+      byReplicate: causal.byReplicate,
+      byCase: causal.byCase,
+      oracle: causal.oracle,
+      b1sRows: causal.contract.pairs,
+      reason: 'Exploratory mixed result: 1 rescue, 3 damage, 4 both, 4 neither over 12 valid pairs. '
+        + 'The damage is not a clean memory-loss signal: A1\'s S checkpoint contains the compatibility constraint but the agent kept the old string shape, '
+        + 'B2\'s S checkpoint contains the in-memory decision but the agent wrote a broken module or skipped tests, and C1\'s rescue appears only when the fold commits. '
+        + 'Small n and one model/route: not an equivalence or superiority claim.',
+    },
   cost: {
     total,
     byStage,

@@ -182,6 +182,23 @@ const manifests = {
     limits: LARGE_LIMITS,
     note: 'Finish guard only. Guard-assisted success must be reported separately from unguided compliance.',
   }),
+  'h-protocol-o2.json': base('h-protocol-o2', {
+    phase: 'C',
+    execution: 'live',
+    status: 'blocked',
+    blockedReason: 'Tool-protocol condition selected after the H0 traces exposed DSML invocations.',
+    requiresAuthorization: true,
+    stage: 'continuation',
+    arms: 'O2',
+    cases: 'A1,B2,C1,D1,F1,H1',
+    followUpSteps: 8,
+    followUpMaxTokens: 1024,
+    finishGuard: false,
+    harnessVersion: 'H0-custom-json-loop',
+    runtime: 'custom-json-loop',
+    limits: LARGE_LIMITS,
+    note: 'H0 step/output/guard settings plus JSON+DSML tool parsing. This is the usable O2 floor.',
+  }),
   'h-combined-o2.json': base('h-combined-o2', {
     phase: 'C',
     execution: 'live',
@@ -283,6 +300,23 @@ const EXECUTED = {
       'r36-h-combined-o2-D1', 'r36-h-combined-o2-F1', 'r36-h-combined-o2-H1',
     ],
     note: 'Exploratory 16-step + guard condition: 4/6 task, 3/6 contract success.',
+  },
+  'h-protocol-o2.json': {
+    runIds: [
+      'r36-h-protocol-o2-A1b', 'r36-h-protocol-o2-B2', 'r36-h-protocol-o2-C1b',
+      'r36-h-protocol-o2-D1c', 'r36-h-protocol-o2-F1', 'r36-h-protocol-o2-H1b',
+    ],
+    note: 'Executed per case: 5/6 task, 5/6 contract success; D1 misses verification.json.',
+  },
+  'b1-s-o1-o2-frozen.json': {
+    runIds: [
+      'r36-causal-A1', 'r36-causal-B2', 'r36-causal-C1',
+      'r36-causal-D1', 'r36-causal-F1', 'r36-causal-H1',
+      'r36-causal-r2-A1', 'r36-causal-r2-B2', 'r36-causal-r2-C1',
+      'r36-causal-r2-D1', 'r36-causal-r2-F1', 'r36-causal-r2-H1',
+    ],
+    note: 'Executed under H-protocol, 2 replicates: 1 rescue, 3 damage, 4 both, 4 neither. '
+      + 'Exploratory; A1 task/gold ambiguity and B2 code/process variance remain.',
   },
 }
 for (const [name, record] of Object.entries(EXECUTED)) {
