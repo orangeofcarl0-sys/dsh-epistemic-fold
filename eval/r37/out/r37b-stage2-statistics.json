@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T19:40:03.075Z",
+  "stage": 2,
+  "source": "eval/r37/out/r37b-stage2-results.json",
+  "pairs": 36,
+  "contract": {
+    "sRate": 0.5,
+    "b1Rate": 0.7222222222222222,
+    "difference": -0.2222222222222222,
+    "wins": 1,
+    "losses": 9,
+    "n": 10,
+    "p": 0.021484375,
+    "method": "two-sided exact binomial on discordant pairs",
+    "bootstrap": {
+      "iterations": 10000,
+      "cases": 6,
+      "observedTreatment": 0.5,
+      "observedBaseline": 0.7222222222222222,
+      "difference": -0.2222222222222222,
+      "ci95": [
+        -0.3055555555555556,
+        -0.1111111111111111
+      ],
+      "note": "Case-clustered bootstrap of the S-minus-B1 rate difference; six cases make it descriptive, not a population estimate."
+    }
+  },
+  "task": {
+    "sRate": 0.6111111111111112,
+    "b1Rate": 0.75,
+    "difference": -0.13888888888888884,
+    "wins": 2,
+    "losses": 7,
+    "n": 9,
+    "p": 0.1796875,
+    "method": "two-sided exact binomial on discordant pairs",
+    "bootstrap": {
+      "iterations": 10000,
+      "cases": 6,
+      "observedTreatment": 0.6111111111111112,
+      "observedBaseline": 0.75,
+      "difference": -0.13888888888888884,
+      "ci95": [
+        -0.25,
+        -0.02777777777777779
+      ],
+      "note": "Case-clustered bootstrap of the S-minus-B1 rate difference; six cases make it descriptive, not a population estimate."
+    }
+  },
+  "representation": [
+    {
+      "caseId": "B2",
+      "treatment": "FS",
+      "baseline": "FP",
+      "wins": 2,
+      "losses": 0,
+      "ties": 4,
+      "n": 2,
+      "p": 0.5,
+      "method": "two-sided exact binomial on discordant pairs"
+    },
+    {
+      "caseId": "B2",
+      "treatment": "FN",
+      "baseline": "FP",
+      "wins": 1,
+      "losses": 2,
+      "ties": 3,
+      "n": 3,
+      "p": 1,
+      "method": "two-sided exact binomial on discordant pairs"
+    },
+    {
+      "caseId": "C1",
+      "treatment": "FS",
+      "baseline": "FP",
+      "wins": 1,
+      "losses": 0,
+      "ties": 5,
+      "n": 1,
+      "p": 1,
+      "method": "two-sided exact binomial on discordant pairs"
+    },
+    {
+      "caseId": "C1",
+      "treatment": "FH",
+      "baseline": "FP",
+      "wins": 1,
+      "losses": 0,
+      "ties": 5,
+      "n": 1,
+      "p": 1,
+      "method": "two-sided exact binomial on discordant pairs"
+    }
+  ],
+  "warnings": [
+    "Stage 2 has six cases; the cluster bootstrap is descriptive, not a population interval.",
+    "A difference here is an assigned-arm effect under one model, one route, and one harness.",
+    "Eight of the nine contract damages are implementation/process; H1 is the only fact-visible action-inconsistent case."
+  ]
+}

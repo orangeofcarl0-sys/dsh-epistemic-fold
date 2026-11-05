@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T19:41:09.668Z",
+  "round": "R37-B",
+  "stage": 2,
+  "status": "stage-2-complete",
+  "stage2": "confirmatory-batch-complete",
+  "productDecision": "active-not-supported-harm-signal",
+  "exploratory": false,
+  "gates": [
+    {
+      "id": "R37B-W",
+      "name": "Writer Pilot",
+      "status": "passed",
+      "detail": "W0 22/36 parsed, recall 0.5; W1 32/36 parsed, recall 0.7222222222222222; 72 accepted / 8 refused",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#writer"
+    },
+    {
+      "id": "R37B-O2",
+      "name": "O2 Floor Under P3e",
+      "status": "passed",
+      "detail": "valid 36/36; contract 24/36 (66.7%); task 26/36",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#o2"
+    },
+    {
+      "id": "R37B-P",
+      "name": "P3e Protocol",
+      "status": "passed",
+      "detail": "1148 valid actions, 121 rejected, invalid-action rate 0.09535066981875492; unparsed-turn rate 0.045177045177045176; reasons {\"missing-parameter\":121}; diagnostics {\"multiple-actions\":228,\"truncated-invoke\":37,\"duplicate-action\":71}",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#protocol"
+    },
+    {
+      "id": "R37B-R",
+      "name": "Controlled Representation",
+      "status": "passed",
+      "detail": "36/36 expected cells valid; rows 36; B2 FP 4/6, FS 6/6, FN 3/6; C1 FP 0/6, FS 1/6, FH 1/6",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#representation"
+    },
+    {
+      "id": "R37B-E2E",
+      "name": "Assigned-Arm B1/S Pairs",
+      "status": "passed",
+      "detail": "36/36 pairs; contract {\"rescue\":1,\"damage\":9,\"both\":17,\"neither\":9,\"invalid\":0}; task {\"rescue\":2,\"damage\":7,\"both\":20,\"neither\":7}",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#e2e"
+    },
+    {
+      "id": "R37B-D",
+      "name": "Delivery Determination",
+      "status": "passed",
+      "detail": "35/36 S rows with determined delivery (97.2%)",
+      "evidence": "eval/r37/out/r37b-stage2-results.json#e2e.pairsDetail"
+    }
+  ],
+  "cost": {
+    "reports": 218,
+    "rows": 218,
+    "uniqueRows": 216,
+    "attempts": 1088,
+    "inputTokens": 1250840,
+    "outputTokens": 235317,
+    "cacheReadTokens": 999626,
+    "unknownUsageRequests": 1,
+    "retries": 0,
+    "invalidMeasurements": 11,
+    "note": "Invalid transport attempts are counted in cost and excluded from the deduplicated outcome rows."
+  },
+  "notes": [
+    "Stage 2 is the confirmatory batch under R37_B_PREREGISTRATION_AMENDMENT A1; Stage 1 is not pooled.",
+    "A partial or provider-invalid gate is not a task failure and is not a pass.",
+    "The product decision is a harm signal under this model/route/harness, not a population estimate."
+  ]
+}

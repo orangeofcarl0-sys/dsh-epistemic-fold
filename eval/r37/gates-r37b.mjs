@@ -19,9 +19,13 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = process.env.R37B_GATES_OUT === undefined
   ? join(HERE, 'out', 'gate-status-r37b.json')
   : process.env.R37B_GATES_OUT
-const results = await readJson(process.env.R37B_RESULTS === undefined
+const resultsPath = process.env.R37B_RESULTS === undefined
   ? join(HERE, 'out', 'r37b-results.json')
-  : process.env.R37B_RESULTS)
+  : process.env.R37B_RESULTS
+const results = await readJson(resultsPath)
+const evidencePath = process.env.R37B_RESULTS === undefined
+  ? 'eval/r37/out/r37b-results.json'
+  : process.env.R37B_RESULTS
 const PAIR_EXPECTED = Number(process.env.R37B_PAIR_EXPECTED ?? 24)
 const REP_EXPECTED = Number(process.env.R37B_REP_EXPECTED ?? 24)
 const O2_MIN_VALID = Number(process.env.R37B_O2_MIN_VALID ?? 20)
@@ -86,7 +90,7 @@ const gates = [
     detail: `W0 ${writer.W0?.parsed}/${writer.W0?.attempts} parsed, recall ${writer.W0?.commitRecall}; `
       + `W1 ${writer.W1?.parsed}/${writer.W1?.attempts} parsed, recall ${writer.W1?.commitRecall}; `
       + `${writer.W1?.accepted ?? 0} accepted / ${writer.W1?.refused ?? 0} refused`,
-    evidence: 'eval/r37/out/r37b-results.json#writer',
+    evidence: `${evidencePath}#writer`,
   },
   {
     id: 'R37B-O2',
@@ -94,7 +98,7 @@ const gates = [
     status: o2Status,
     detail: `valid ${o2.valid}/${o2.rows}; contract ${o2.contractSuccesses}/${o2.valid} `
       + `(${(o2Rate * 100).toFixed(1)}%); task ${o2.taskSuccesses}/${o2.valid}`,
-    evidence: 'eval/r37/out/r37b-results.json#o2',
+    evidence: `${evidencePath}#o2`,
   },
   {
     id: 'R37B-P',
@@ -103,7 +107,7 @@ const gates = [
     detail: `${protocol.validActions ?? 0} valid actions, ${protocol.rejectedActions ?? 0} rejected, `
       + `invalid-action rate ${protocol.rejectionRate}; unparsed-turn rate ${protocol.unparsedTurnRate}; `
       + `reasons ${JSON.stringify(protocol.rejectedReasons ?? {})}; diagnostics ${JSON.stringify(protocol.diagnostics ?? {})}`,
-    evidence: 'eval/r37/out/r37b-results.json#protocol',
+    evidence: `${evidencePath}#protocol`,
   },
   {
     id: 'R37B-R',
@@ -112,7 +116,7 @@ const gates = [
     detail: `${repValid}/${repExpected} expected cells valid; rows ${repRows}; `
       + `B2 ${['FP', 'FS', 'FN'].map(arm => `${arm} ${representation.byCase?.B2?.byArm?.[arm]?.contract ?? 0}/${representation.byCase?.B2?.byArm?.[arm]?.rows ?? 0}`).join(', ')}; `
       + `C1 ${['FP', 'FS', 'FH'].map(arm => `${arm} ${representation.byCase?.C1?.byArm?.[arm]?.contract ?? 0}/${representation.byCase?.C1?.byArm?.[arm]?.rows ?? 0}`).join(', ')}`,
-    evidence: 'eval/r37/out/r37b-results.json#representation',
+    evidence: `${evidencePath}#representation`,
   },
   {
     id: 'R37B-E2E',
@@ -120,7 +124,7 @@ const gates = [
     status: e2eStatus,
     detail: `${pairCount}/${pairExpected} pairs; contract ${JSON.stringify(e2e.contract)}; `
       + `task ${JSON.stringify(e2e.task)}`,
-    evidence: 'eval/r37/out/r37b-results.json#e2e',
+    evidence: `${evidencePath}#e2e`,
   },
   {
     id: 'R37B-D',
@@ -128,7 +132,7 @@ const gates = [
     status: deliveryStatus,
     detail: `${determined}/${treatmentDeliveries.length} S rows with determined delivery `
       + `(${deliveryRate === null ? 'n/a' : `${(deliveryRate * 100).toFixed(1)}%`})`,
-    evidence: 'eval/r37/out/r37b-results.json#e2e.pairsDetail',
+    evidence: `${evidencePath}#e2e.pairsDetail`,
   },
 ]
 
@@ -140,16 +144,20 @@ const report = {
   status: stage1Complete ? (STAGE === 2 ? 'stage-2-complete' : 'stage-1-complete') : (STAGE === 2 ? 'stage-2-incomplete' : 'stage-1-incomplete'),
   stage2: STAGE === 2 ? (stage1Complete ? 'confirmatory-batch-complete' : 'confirmatory-batch-incomplete') : (stage1Complete ? 'ready-for-stage-2' : 'blocked-on-stage-1'),
   productDecision: PRODUCT_DECISION,
-  exploratory: true,
+  exploratory: STAGE !== 2,
   gates,
   cost: {
     ...cost,
     note: 'Invalid transport attempts are counted in cost and excluded from the deduplicated outcome rows.',
   },
   notes: [
-    'Stage 1 is exploratory under R37_B_PREREGISTRATION_AMENDMENT A1.',
+    STAGE === 2
+      ? 'Stage 2 is the confirmatory batch under R37_B_PREREGISTRATION_AMENDMENT A1; Stage 1 is not pooled.'
+      : 'Stage 1 is exploratory under R37_B_PREREGISTRATION_AMENDMENT A1.',
     'A partial or provider-invalid gate is not a task failure and is not a pass.',
-    'Stage 2 remains unstarted; no confirmatory claim is made.',
+    STAGE === 2
+      ? 'The product decision is a harm signal under this model/route/harness, not a population estimate.'
+      : 'Stage 2 remains unstarted; no confirmatory claim is made.',
   ],
 }
 await writeJson(OUT, report)
