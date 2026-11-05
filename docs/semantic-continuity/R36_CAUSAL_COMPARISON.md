@@ -30,6 +30,7 @@ H0                      custom loop, 8 steps, 1024 tokens/turn, no guard
 H-step                  16 steps
 H-output                4096 tokens/turn
 H-finish                guard enabled
+H-protocol              JSON + both DSML forms; 8 steps / 1024 / no guard
 H-native                not implemented
 model                   deepseek-v4.1-flash
 provider                zcode local proxy (provider c15ab109…)
