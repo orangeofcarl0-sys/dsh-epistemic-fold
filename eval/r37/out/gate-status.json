@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T12:33:35.374Z",
+  "round": "R37-A",
+  "authorization": {
+    "r37aProviderRequests": 0,
+    "r37b": "not-granted",
+    "note": "R37-A is offline. R37-B requires a new explicit authorization."
+  },
+  "gates": [
+    {
+      "id": "G0",
+      "name": "Baseline Integrity",
+      "status": "passed",
+      "evidence": "eval/r37/out/baseline-manifest.json",
+      "detail": "base b8274bb; dataset 407148f0c328…; 32/32 R36 files; 12/12 causal runs; full suite 1476 passed / 12 failed / 70 skipped"
+    },
+    {
+      "id": "G1",
+      "name": "Evidence Reconstruction",
+      "status": "passed",
+      "evidence": "eval/r37/out/r36-evidence-reconstruction.json, eval/r37/out/r36-evidence-discrepancies.json",
+      "detail": "12 pairs: 1 rescue, 3 damage, 4 both, 4 neither; 36/36 rows consistent; discrepancies 0"
+    },
+    {
+      "id": "G2",
+      "name": "Protocol Attribution",
+      "status": "passed",
+      "evidence": "eval/r37/out/protocol-ablation.json",
+      "detail": "732 turns; valid actions P0 302 → P1 472 → P2 555 → P3 852; B2 deterministic P3 syntax/checker false/false, P3e true/true"
+    },
+    {
+      "id": "G3",
+      "name": "Benchmark Validity",
+      "status": "passed",
+      "evidence": "eval/r37/out/benchmark-validity.json, eval/r37/cases/A1-v2, eval/r37/cases/D1-v2",
+      "detail": "A1-v2/D1-v2 2/2 certified; old cases unchanged true"
+    },
+    {
+      "id": "G4",
+      "name": "Behavioral Identifiability",
+      "status": "passed",
+      "evidence": "eval/r37/out/forensics.json, eval/r37/out/representation-fixtures.json",
+      "detail": "B2 r1 tool-parameter-corruption; B2 r2 no-observed-action; C1 r1 full-history-fallback; C1 r2 contract-success; 6 controlled fixtures"
+    },
+    {
+      "id": "G5",
+      "name": "Live Experiment Readiness",
+      "status": "ready-not-authorized",
+      "evidence": "docs/semantic-continuity/R37_B_PREREGISTRATION.md",
+      "detail": "Preregistration frozen and offline prerequisites pass. No R37-B provider request was made; explicit spend authorization is required. H-native remains blocked."
+    },
+    {
+      "id": "G6",
+      "name": "Product Decision",
+      "status": "insufficient-evidence",
+      "evidence": "docs/semantic-continuity/R37_DECISION.md",
+      "detail": "Active vs Off remains insufficient evidence; R37-A identifies harness and benchmark confounds, not a product effect."
+    }
+  ],
+  "liveExecution": {
+    "executed": false,
+    "status": "not-executed",
+    "reason": "R37-A prohibits provider calls; G5 is readiness, not a live result.",
+    "hNative": "blocked"
+  },
+  "artifacts": {
+    "baseline": "eval/r37/out/baseline-manifest.json",
+    "reconstruction": "eval/r37/out/r36-evidence-reconstruction.json",
+    "discrepancies": "eval/r37/out/r36-evidence-discrepancies.json",
+    "protocol": "eval/r37/out/protocol-ablation.json",
+    "benchmarkValidity": "eval/r37/out/benchmark-validity.json",
+    "forensics": "eval/r37/out/forensics.json",
+    "fixtures": "eval/r37/out/representation-fixtures.json",
+    "preregistration": "docs/semantic-continuity/R37_B_PREREGISTRATION.md",
+    "decision": "docs/semantic-continuity/R37_DECISION.md"
+  },
+  "note": "A gate is computed from the artifacts above. A blocked or not-executed live phase is not a pass."
+}
