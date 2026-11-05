@@ -51,7 +51,7 @@ describe('R37-A1: R36 reconstruction', () => {
     expect(actualDelivery({
       arm: 'S',
       fold: { valid: true },
-      state: { commits: 1 },
+      state: { commits: 1, anchors: ['a fact'] },
       writer: { commitStatus: 'committed' },
     })).toBe('semantic-committed')
     expect(actualDelivery({
