@@ -1,0 +1,1935 @@
+{
+  "schemaVersion": 1,
+  "round": "R37-A",
+  "generatedAt": "2026-11-05T11:56:41.326Z",
+  "purpose": "Identity and environment record for the R36-to-R37 evidence audit. No provider request is made by this script.",
+  "repository": {
+    "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action",
+    "worktree": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action",
+    "branch": "rc37-semantic-action",
+    "head": "b8274bba8b2a974e9c75af283e415e61a650295e",
+    "baseCommit": "b8274bba8b2a974e9c75af283e415e61a650295e",
+    "remote": [
+      "origin\thttps://github.com/orangeofcarl0-sys/dsh-epistemic-fold.git (fetch)",
+      "origin\thttps://github.com/orangeofcarl0-sys/dsh-epistemic-fold.git (push)"
+    ],
+    "statusAtStart": [
+      "?? docs/semantic-continuity/R37_BASELINE.md",
+      "?? eval/r37/"
+    ],
+    "statusAfterTests": [
+      " M docs/12_R1_EVALUATION_REPORT.md",
+      " M docs/MANIFEST.json",
+      " M eval/r33/out/live-check.json",
+      " M eval/r33/out/live-report.json",
+      " M eval/r33/out/offline-report.json",
+      " M eval/r33/out/offline-report.md",
+      " M eval/r33/out/self-test-report.json",
+      "?? docs/semantic-continuity/R37_BASELINE.md",
+      "?? ef-phase7-logs/watchdog.heartbeat",
+      "?? eval/r37/"
+    ],
+    "testGeneratedChanges": [
+      " M docs/12_R1_EVALUATION_REPORT.md",
+      " M docs/MANIFEST.json",
+      " M eval/r33/out/live-check.json",
+      " M eval/r33/out/live-report.json",
+      " M eval/r33/out/offline-report.json",
+      " M eval/r33/out/offline-report.md",
+      " M eval/r33/out/self-test-report.json",
+      "?? ef-phase7-logs/watchdog.heartbeat"
+    ],
+    "log": [
+      "b8274bb docs(eval): name H-protocol in the frozen causal conditions",
+      "fe6f304 fix(eval): remove the stale blocked reason from the executed B1/S manifest",
+      "07224eb docs(eval): record the H-protocol and causal commit range",
+      "7ed1329 docs(eval): record the H-protocol floor and the exploratory causal result",
+      "e785080 fix(eval): parse both DSML tool forms and complete the B1/S comparison",
+      "eafdc37 docs(eval): record the live commit range in the R36 handoff",
+      "5273faa docs(eval): record the authorized R36 live results and harness floor",
+      "8a7aef4 feat(eval): add W0/W1 selection and the authorized live runner",
+      "c6bf179 docs(eval): record R36 verification counts and commit map",
+      "7b25ea0 docs(eval): publish R36 evidence, decision, and handoff",
+      "d3fc6e0 feat(eval): certify benchmark feasibility and freeze R36 conditions",
+      "0b354b1 feat(eval): audit R35 evidence and add the P1 parser ablation",
+      "1e36ca8 feat(semantic): version the writer contract and align W1 with the validator",
+      "af6e533 fix(eval): score verification at the final state and calibrate the loop",
+      "914ed31 test: give the repository-wide hygiene scan a realistic timeout"
+    ],
+    "r36Worktree": {
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface",
+      "branch": "rc36-semantic-interface",
+      "head": "b8274bba8b2a974e9c75af283e415e61a650295e",
+      "status": []
+    },
+    "primaryWorktree": {
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\dsh-epistemic-fold",
+      "status": []
+    }
+  },
+  "environment": {
+    "node": "v24.14.1",
+    "npm": null,
+    "platform": "win32",
+    "arch": "x64",
+    "packageLockSha256": "e62fdfcc1ebd261e4ac166f2a682b27cb1ec901007e01cb9af08c42e18c25447",
+    "nodeModules": true,
+    "libBuilt": true,
+    "evalDistBuilt": true,
+    "vendorDeepseekHarness": false
+  },
+  "dataset": {
+    "id": "r33-semantic-continuity-v2",
+    "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+    "frozenDigest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
+    "matches": true,
+    "reason": null,
+    "manifestPath": "eval/r33/manifest.json",
+    "manifestSha256": "dc68b96eed4cf2d65b744f633fb1349c54d461b6e8bb29b69dd77ccb2c7c5ab8",
+    "scorerVersion": 3,
+    "caseCount": 17,
+    "cases": [
+      {
+        "id": "A1",
+        "digest": "642bd3c1f93e550c7a1553b425eef0548991269cffd12bfbd182dadc1dd03c3b",
+        "caseJsonSha256": "4dbac14a85032dc0a1ea9e829499caa05eaeff68dd5406020128b3392a9d52d0",
+        "checkSha256": "363f89d919c5e618dfa50d8e4e3e766dbe055b999f66c48d227a7bd8d746f741",
+        "workspace": {
+          "digest": "4706be3b3320c7a75dc5e88aae7fd9453f1e8d810ccd4b43c146a966ffb6031d",
+          "fileCount": 4
+        }
+      },
+      {
+        "id": "B2",
+        "digest": "4a7c173eac9cd8a23a448ddf07053c9170e1d41a4816a317bdf4318f81939284",
+        "caseJsonSha256": "7bb8659d6bf0904a55d0cbd3471190340efab8859c888103e03aaa1d670d5d71",
+        "checkSha256": "8a5906a771944eaf52affc24abbbe139de986f855baa997b8f283fc142c48527",
+        "workspace": {
+          "digest": "b60de59a1f0576f27e9a9f7c81c080028d9af0a2fa9464b1b96de644e5869a74",
+          "fileCount": 3
+        }
+      },
+      {
+        "id": "C1",
+        "digest": "c62af2d52cf8cae23885793433fec4b6d0ee395e219852209860de8fec83f171",
+        "caseJsonSha256": "fdc225e14c17a3394c32725b29b85e82c9e2c545d2b9b0614241746311428057",
+        "checkSha256": "ce48e5c239c558e9cc0c623a30ab0f3bce6242a19cd28aa2e1822ac5112ce5a6",
+        "workspace": {
+          "digest": "17a949cc455a44595ac30e6458445eb71a168263bee16a432895f68a7da1b946",
+          "fileCount": 3
+        }
+      },
+      {
+        "id": "D1",
+        "digest": "1422d9207af5c9a575987e6ddaf2373defce012aa0ce0c50d152315aaf017210",
+        "caseJsonSha256": "d740e4c2f8507d38edfd9e1ca6a0103a1c8e8791d73343ce7756bbbb243092a1",
+        "checkSha256": "06a853bda76b10e6e4a1ebc3355f1052899a73aff9f10516e020f307b517367b",
+        "workspace": {
+          "digest": "782d7c678ca8bc963fbe29fe61bcc2df68a1382a63956eef43d7a7e3a119b11d",
+          "fileCount": 3
+        }
+      },
+      {
+        "id": "F1",
+        "digest": "f9e09e24c0cb9171f7eece477ae309a6b1eb16982cca79a4012d6158ef552490",
+        "caseJsonSha256": "0d8c18898ff510639fe28418bab3e2093c2b7284d0659069776ab7462b034260",
+        "checkSha256": "eb8bebbb9fed6510b50c58005c010f500c2abcfff58a271cd329d62a86f7319a",
+        "workspace": {
+          "digest": "9761cc6292ad2662528d004579f03b9c1b8dfed5c24251a22c1ab060759c15ed",
+          "fileCount": 3
+        }
+      },
+      {
+        "id": "H1",
+        "digest": "f80d08ac6010d6a9acf7b6aa5af2d1229fcb12b7331cb3f47cba03e3c0103f11",
+        "caseJsonSha256": "db8ce7fed182993a7fcb2e47f75227521f07eadb6ce9ddaf40c300b6471341f7",
+        "checkSha256": "648a4929fa464ce0081ada70c9046c192a004c09c72b3fa2493227f0d86f20e7",
+        "workspace": {
+          "digest": "cdc768fa5df78ba7067a9be69d1eb947400c716980575218152f6b5b5adcb9ed",
+          "fileCount": 3
+        }
+      }
+    ]
+  },
+  "historicalEvidence": {
+    "r36Worktree": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface",
+    "files": {
+      "eval/r36/out/gate-status.json": {
+        "present": true,
+        "sha256": "981b5d882e99a385e115dd2c288999e8b88c21e49d5d9bccef07124165cf105f",
+        "bytes": 16162
+      },
+      "eval/r36/out/causal-comparison.json": {
+        "present": true,
+        "sha256": "62588877e01e906fa1cd45466a2a1dce602f51baff45a9cf3c78d1585d4852e7",
+        "bytes": 34006
+      },
+      "eval/r36/out/live-results.json": {
+        "present": true,
+        "sha256": "79e0d5f4087c66ef8f19aeb9ab6ff93a914b368843ab2b5485025243d0eb22d0",
+        "bytes": 83344
+      },
+      "eval/r36/out/conditions.json": {
+        "present": true,
+        "sha256": "1b71429cb3824055b986427c18cba863002dea74796242ba1265b8dc7c14bc13",
+        "bytes": 8796
+      },
+      "eval/r36/out/harness-calibration.json": {
+        "present": true,
+        "sha256": "efe2dd3f895ee39bd3b46f8fa38bd695ea53ea97cfac9033ee36e0531b3c5e48",
+        "bytes": 29869
+      },
+      "eval/r36/out/live-writer-analysis.json": {
+        "present": true,
+        "sha256": "5cca9a57b7bd0b0638376b4026c0121980c1ccec7304ceeda659453ed4c833b4",
+        "bytes": 31653
+      },
+      "eval/r36/out/parser-ablation.json": {
+        "present": true,
+        "sha256": "5fde25f248d202bfb39aa9e4e3eb05aa623cf9e3646e5ad327e94b1c2f6820e9",
+        "bytes": 28805
+      },
+      "eval/r36/out/case-certification.json": {
+        "present": true,
+        "sha256": "4c3064e4425d8e28081b240669b07d7c9c4342fb341ac1d1921848aa38370408",
+        "bytes": 7098
+      },
+      "eval/r36/evidence/r35/writer-audit.json": {
+        "present": true,
+        "sha256": "a00ea291bf4f7ebf2c41a6bfb62ba85a27f6c56bf72fb4d97113579c72546f4c",
+        "bytes": 66496
+      },
+      "eval/r36/evidence/r35/continuation-writers.json": {
+        "present": true,
+        "sha256": "6c4ea9f2f86ffa5ea52c338f242f9be057b80a1668790f91f4d13b504f797728",
+        "bytes": 154547
+      },
+      "eval/r36/manifests/b1-s-o1-o2-frozen.json": {
+        "present": true,
+        "sha256": "696c81082ad4559dbaaebd8626d7365104b533036e4ede59c7623a1cf765fa18",
+        "bytes": 1400
+      },
+      "eval/r36/manifests/h-combined-o2.json": {
+        "present": true,
+        "sha256": "5e0061931599799807dd1902cc7987e82b73b4b64af291dee44588f536783fe1",
+        "bytes": 1199
+      },
+      "eval/r36/manifests/h-finish-o2.json": {
+        "present": true,
+        "sha256": "22b1e6098cf67458edfdc7ff440e2b0823adaa6ed12cb38704a7c7c9ed270e20",
+        "bytes": 1216
+      },
+      "eval/r36/manifests/h-native-o2.json": {
+        "present": true,
+        "sha256": "98d7171cc332fa0b5123c33270c61086303068f89f69a3b2f28a39beaf0dc3b8",
+        "bytes": 960
+      },
+      "eval/r36/manifests/h-output-o2.json": {
+        "present": true,
+        "sha256": "b95c4828b9ae5144a08527e977eb071df1da5f8e58187c604f69085cd6e71347",
+        "bytes": 1106
+      },
+      "eval/r36/manifests/h-protocol-o2.json": {
+        "present": true,
+        "sha256": "7304f38ddf50feb430f49e35914071fe4f9e3d26b4170de28f803a49456c7cae",
+        "bytes": 1212
+      },
+      "eval/r36/manifests/h-step-o2.json": {
+        "present": true,
+        "sha256": "420434803653ca862dcfa08a79d8a77a938e3cf2117e9cf40305ad6846cfb7ff",
+        "bytes": 1201
+      },
+      "eval/r36/manifests/h0-o2.json": {
+        "present": true,
+        "sha256": "e0927d3edb3a1a0da86c185d3850fcd146fd09488571e42f73c37c178613a3fa",
+        "bytes": 1068
+      },
+      "eval/r36/manifests/w0-p0-live-control.json": {
+        "present": true,
+        "sha256": "84af2e19a3fdb817a20ad35ae7df9b642cc07f6c91485487fe5997b3e0f77d4d",
+        "bytes": 970
+      },
+      "eval/r36/manifests/w0-p0-replay.json": {
+        "present": true,
+        "sha256": "2954695554f34de1a96993be30ef10eed7c1eaf96f93e462cc3d366d1c7c9450",
+        "bytes": 865
+      },
+      "eval/r36/manifests/w0-p1-replay.json": {
+        "present": true,
+        "sha256": "2cd707c506d487fbda26b72e55ef3c3eed8ef883856998db2ba762fcf1b456c9",
+        "bytes": 873
+      },
+      "eval/r36/manifests/w1-p0-live.json": {
+        "present": true,
+        "sha256": "5b15c5ee89e53e4b1b1b58291c257796ca5053180cbcb3e95d107e1b243e18b5",
+        "bytes": 961
+      },
+      "docs/semantic-continuity/R36_AGENT_CALIBRATION.md": {
+        "present": true,
+        "sha256": "6a9f5f1c8712ddf3a9ae8fc8458756b23532e2b8fbe4096ee399981f63e1e30e",
+        "bytes": 9098
+      },
+      "docs/semantic-continuity/R36_BENCHMARK_VALIDITY.md": {
+        "present": true,
+        "sha256": "c5eea059cb25ed69224c3c302485a4c6201f22343daf701b0445dff6923645c5",
+        "bytes": 8872
+      },
+      "docs/semantic-continuity/R36_CAUSAL_COMPARISON.md": {
+        "present": true,
+        "sha256": "5d81f4ba3c748ff80632e6af9481ab1e15aa135480912cab1ea16d17eaf83351",
+        "bytes": 7369
+      },
+      "docs/semantic-continuity/R36_COST_REPORT.md": {
+        "present": true,
+        "sha256": "f33042d30318ae09a69f2d6db16f8ff99192014b6e3bd06f96dbe0e637120df0",
+        "bytes": 5190
+      },
+      "docs/semantic-continuity/R36_DECISION.md": {
+        "present": true,
+        "sha256": "6687f4a015e09aafa80d6a8c626e71c669919ffe8ca7e4f0523826dfb392695b",
+        "bytes": 8304
+      },
+      "docs/semantic-continuity/R36_FAILURE_ATTRIBUTION.md": {
+        "present": true,
+        "sha256": "97ffa4495db10cc2c586e0cdc9aaafbba2d275bb33d1ec70126ac5093ae266fa",
+        "bytes": 10833
+      },
+      "docs/semantic-continuity/R36_HANDOFF.md": {
+        "present": true,
+        "sha256": "edc4d90d7c6874bbc41a85333a31a6dae2bec556a96c2a68344946600b3f1b19",
+        "bytes": 10626
+      },
+      "docs/semantic-continuity/R36_R35_EVIDENCE_AUDIT.md": {
+        "present": true,
+        "sha256": "1ef82fc0778f3e7286091bc6a967e1d20005791c5f2a3235c3c2361c0a106504",
+        "bytes": 9815
+      },
+      "docs/semantic-continuity/R36_WRITER_ABLATION.md": {
+        "present": true,
+        "sha256": "5ccec69128c5ff057c3735062466f040736e697e509ac972514687af1fd423a1",
+        "bytes": 6790
+      },
+      "docs/semantic-continuity/R36_WRITER_CONTRACT.md": {
+        "present": true,
+        "sha256": "3ec83b4f25e98cd2fd0093e60eab4c185e995dbb3d08b18b3a496749b97bed6c",
+        "bytes": 6251
+      }
+    },
+    "sourceFiles": {
+      "eval/r33/src/tool-protocol.mjs": {
+        "present": true,
+        "sha256": "f08a872922bfee0ce1694c849444fb864561f1c78a78a80f7d5e33ead13d9e65",
+        "bytes": 4716
+      },
+      "eval/r33/live.mjs": {
+        "present": true,
+        "sha256": "8e1722e73b53d660ef035da44616a84658c679e9286a1437ddce52b8afc80afb",
+        "bytes": 87873
+      },
+      "eval/r33/src/grade.mjs": {
+        "present": true,
+        "sha256": "b7e9652b47a677f9f7870c5f52f62a8f7e468ed9329085402c4025f6f72f8201",
+        "bytes": 28628
+      },
+      "eval/r33/src/dataset.mjs": {
+        "present": true,
+        "sha256": "6a0b6557301a8036335ddc20e559fdb84614102197fc1731da0ef9653a2fbcf2",
+        "bytes": 8245
+      },
+      "eval/r36/writer-protocol.mjs": {
+        "present": true,
+        "sha256": "6bb975b084a011e308f081fff50f8c6f9ea5c9ab72ee97f7c5fcd0f15b5ce1b6",
+        "bytes": 12967
+      },
+      "eval/r36/conditions.mjs": {
+        "present": true,
+        "sha256": "9bd0a1673bea7bdab9f3275aaafede0bf505607c5561b23766d46adbcf56aafb",
+        "bytes": 5123
+      },
+      "eval/r36/write-manifests.mjs": {
+        "present": true,
+        "sha256": "7f3353ba132f2d36de1db660ecd3f059dc7dd97968da4b8b15eb8922732c964d",
+        "bytes": 11235
+      },
+      "src/semantic/writer.ts": {
+        "present": true,
+        "sha256": "4139c5a8c7682cee43ab867c14868686dff748eb851e1795a4bb51faad5d5002",
+        "bytes": 15609
+      }
+    },
+    "runArchive": {
+      "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs",
+      "counts": {
+        "reports": 60,
+        "traces": 109,
+        "verificationJson": 12,
+        "workspaceFiles": 118
+      },
+      "runs": [
+        {
+          "runId": "r36-causal-A1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\report.json",
+            "sha256": "9a51d988b8b8ed481081b012082ac68eaa4da3260e9e1894ec230875fbeb1143",
+            "bytes": 100245
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\B1\\r1\\trace\\record.json",
+                "sha256": "e243219f138239282ae71de3eac66ffefc5bf8dea98ede0853a3dd39a90f324e",
+                "bytes": 13285
+              },
+              "workspace": {
+                "digest": "f5bab1e35530fb71464e2f35b96701f2984530d17dce71b0d10dfd5f05c020e9",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "6091217a000ee20ffd16dfd13f02bae8af8160ed3fb2780a92180a31773c44e3",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-dc63ec6c-cf20-437a-86a6-8fbe5f5e89ea/bundle-381eec36-ba20-4737-9ea9-475757edab94.json": "610f20f1162dab8e3b94a6a356a49c776ce5e6b244197fd8085a2e17f9681245",
+                  "r34-live-A1-dc63ec6c-cf20-437a-86a6-8fbe5f5e89ea/commit-381eec36-ba20-4737-9ea9-475757edab94.json": "b1c2ae2b49a313fcdeb589b7ad6adc118171c6e41ba0444b067fd507cfab7513"
+                },
+                "fileCount": 2,
+                "digest": "5d4628222333f6cae28934dec010594f146825d9c675096af039086ae2d317fd"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\S\\r1\\trace\\record.json",
+                "sha256": "743983cf5b282364424cea4345c98ccaaf38525ee3516f02dff91bd3faae3225",
+                "bytes": 21002
+              },
+              "workspace": {
+                "digest": "e904ad4a141c2ce434b41867830f88c926dc6fb334d8e8f36c4c8d1b13bcc31c",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "857c39c769cce57d39a2711d6c4434d5203ee9f3e08087f0bf1549cac3ef3632",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-426b6439-c479-4db4-b7a2-dac8d0003e10/bundle-308307e2-e4b6-4e29-ac12-a66dd4956f74.json": "0f66c56c2825138630cc0c19bbfc8ccb58bb51204af7257cb44c72f87a65fbb8",
+                  "r34-live-A1-426b6439-c479-4db4-b7a2-dac8d0003e10/commit-308307e2-e4b6-4e29-ac12-a66dd4956f74.json": "eb4e1c941da750f2262cfaa48211ade2c86452fb7a3c9775da1f0c88c251a4c4"
+                },
+                "fileCount": 2,
+                "digest": "af63b49f9493ae0ba7b135b3610a470ff1b5bf91050e24e0d6568c873878057b"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-A1-426b6439-c479-4db4-b7a2-dac8d0003e10/2f1f3bba4ac6c23c889d3e69d6d9711b2304aafdd6c3f6a7e81ad0c0df54dc0e.json": "282f6330106a781fa48f244dd9dff131e43ac3b07a95c08d800549c659ae9022",
+                  "r34-live-A1-426b6439-c479-4db4-b7a2-dac8d0003e10/2f1f3bba4ac6c23c889d3e69d6d9711b2304aafdd6c3f6a7e81ad0c0df54dc0e.receipt.json": "455fe55205d772ddb06ba45cf746d234da0ea274e641c100aac9a1e033bac505"
+                },
+                "fileCount": 2,
+                "digest": "f07006f703058becb7e4dba8c786796551ed2678c74cc142fd3ce7fc281f94f3"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O1\\r1\\trace\\record.json",
+                "sha256": "a4e62c6c2105532b3442f4673f38b44e5d48819950f3f9761d6ba75d42017845",
+                "bytes": 15955
+              },
+              "workspace": {
+                "digest": "9ca5b9e17e0f2acb857fd92d213698a5fd592301da889d7dd2cc0fefd0c62315",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "896ab39fade4a6aeef3d7420262f6b0eb58b1656e6221f327bc66a64913c144b",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-f57f1930-32a6-4802-bdcc-a461f0f85879/bundle-01a070f5-b84e-49c8-9168-50d5e354c4ff.json": "0b6392c9d6550fa20b15e3c7538beefde94a9b6bb6d91720f17487a4cbf862fe",
+                  "r34-live-A1-f57f1930-32a6-4802-bdcc-a461f0f85879/commit-01a070f5-b84e-49c8-9168-50d5e354c4ff.json": "f4548c9d37b9d056dee46c153ea4f129f9c6ba24734745d033ebbaa726acf342"
+                },
+                "fileCount": 2,
+                "digest": "445b619e650fb7b4157a7f4b173205e354abbcfcc6b694ebec262c1eec71d027"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-A1-f57f1930-32a6-4802-bdcc-a461f0f85879/125ba964d1602a550fef8c8e6b64088352cb91d1db7afecc419ffe482fa9a041.json": "c265b07d5c3297d34ad2a7d19143553db4de158eb0c546e51d9ab31434016a66",
+                  "r34-live-A1-f57f1930-32a6-4802-bdcc-a461f0f85879/125ba964d1602a550fef8c8e6b64088352cb91d1db7afecc419ffe482fa9a041.receipt.json": "82865c0241f3244bac943a6ba56f58ef6d4fa9f9343e9881a323e55dc6f11f11"
+                },
+                "fileCount": 2,
+                "digest": "74b65acb7898136595249a13f1b6c62c24700b3ba71ab4787e568ce17436a189"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O2\\r1\\trace\\record.json",
+                "sha256": "90bb721bef7d43fea369b5eb51e38455abf306c964b751013b67b310dea85220",
+                "bytes": 12594
+              },
+              "workspace": {
+                "digest": "00b3b4cf1fe37f3aedb7222e0d93ead79028a534a8f510a05532ae467a7fe8c8",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "85b4883ddcdf65a60328113d706718bb195c76968380e854494dd3a49e6cfdcb",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-6692a675-065d-4272-a7cb-05d78d5d342b/bundle-efed2f0b-99fd-478b-b84e-d10151dfc1e2.json": "b0c83236483c5ef60b64925ab25107f1074e30e295e2ec5950183de4f4312fa9"
+                },
+                "fileCount": 1,
+                "digest": "c11c29332e211b1b6478482c2511a2a42c656147d5ce7762cdae1e57b539cd57"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-A1\\A1\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-B2",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\report.json",
+            "sha256": "c51795598d25390b6d3eb1ffc97b39bf82a48bde969ff71bc00338944f84d80a",
+            "bytes": 101199
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\B1\\r1\\trace\\record.json",
+                "sha256": "8cc814d0ae35d82368e6234200d0ff85510fc3fc435b6957c7512c988b752a19",
+                "bytes": 12935
+              },
+              "workspace": {
+                "digest": "7c5cccf31514e91e1d4dfd87b1a1b57c6380ea13ae7344881d1c642ba603e043",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "5e2438ef4d9c6d2896e935b197d55d348705718697769f4ded9729f29b35b23c",
+                  "tests/scheduler.test.mjs": "598699cc9d1811388d45f1de0c256c1b8b9e2b30d19af15cecb1d9cb498d6503"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-c3065641-7dd4-4533-b3d3-1b065a6e3a1b/bundle-1bca06e2-5f79-4307-9548-e34e3e56bcee.json": "e6ad6c4e42e7671f747ebc0aec336673e1f48fb3cb1e05fa0dcdc4f70281e06c",
+                  "r34-live-B2-c3065641-7dd4-4533-b3d3-1b065a6e3a1b/commit-1bca06e2-5f79-4307-9548-e34e3e56bcee.json": "8a42b15d973b1e4b76f80d673f60b5244e68782f309743507fb2429c01206381"
+                },
+                "fileCount": 2,
+                "digest": "5f74ae6cd10fadab48efc4dabd235f4cb298243bc218c2bfec7221229f77101f"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\S\\r1\\trace\\record.json",
+                "sha256": "7591e9291c8fa4a2b950be9fe3e2b3950a576ee5271cfa1e1b3eec2a9fcb84ba",
+                "bytes": 20664
+              },
+              "workspace": {
+                "digest": "7aaa4debc9bd500c5296782e582d02f57ad41f1cc06862815b4e9e6a64746b25",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "dbaa81c1d7ce7de2c2f0ebbcc142f14c2c853ea620fdf233ce1b58a82c48b4eb",
+                  "tests/scheduler.test.mjs": "598699cc9d1811388d45f1de0c256c1b8b9e2b30d19af15cecb1d9cb498d6503"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-bbcfd621-b58e-4bdb-8c6b-f7a20347901a/bundle-c004fad8-4fa0-4a7f-a6ab-fa94e99b475e.json": "ce8d41b60d35702695192bb8968e58f531baf9ecca7f48bce29a1a4964db78c4",
+                  "r34-live-B2-bbcfd621-b58e-4bdb-8c6b-f7a20347901a/commit-c004fad8-4fa0-4a7f-a6ab-fa94e99b475e.json": "3079fb7c26eb78a3c9876daa779c13565c5b087d893623a83d26edd240060ebc"
+                },
+                "fileCount": 2,
+                "digest": "3ce6a913a6dd75ea1e1120bb4423c951bbf3d2e148844d7096c78bf76d445335"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\S\\r1\\journal",
+                "files": {
+                  "r34-live-B2-bbcfd621-b58e-4bdb-8c6b-f7a20347901a/10556e5086a9df20c84afd4ab9c4bce4e5eed29051b24cc43303a39f882f742a.json": "aacf3b3da4716e19f93aee2354af25b2538035aac1a2c0b2a6c78baaf4e997ea",
+                  "r34-live-B2-bbcfd621-b58e-4bdb-8c6b-f7a20347901a/10556e5086a9df20c84afd4ab9c4bce4e5eed29051b24cc43303a39f882f742a.receipt.json": "b91b47b9a24549011c05c35a2fbbc4993e72017c292df65b25905dc456967f57"
+                },
+                "fileCount": 2,
+                "digest": "175adf3327e512456de8e3f209af0481a52b207be054e49875596071e8daf350"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O1\\r1\\trace\\record.json",
+                "sha256": "b9eaa3d2485ed0871f26358fe78c7963624e7a11cb04d081b4e82a84a1cce381",
+                "bytes": 19551
+              },
+              "workspace": {
+                "digest": "ee9906526b6620242881c5a68386d317c52799ea22d40f31a507c4aaaab7bfff",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "5de5f17eebfe93777717e75ae21ba7727365d8f148416022e39a3098f78bf88a",
+                  "tests/scheduler.test.mjs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-67a423bf-317f-42c0-bd94-51c09595b84c/bundle-e662e171-2956-4e89-b046-c2cb7ec3f02e.json": "f77348b40a2067fbb477c323d7dc320bdceb36626a015224cd1cffbfd2375ab6",
+                  "r34-live-B2-67a423bf-317f-42c0-bd94-51c09595b84c/commit-e662e171-2956-4e89-b046-c2cb7ec3f02e.json": "82507e0128d8aa27f397fe48601181638eb2a5af77840ea5dab9add6f44d0958"
+                },
+                "fileCount": 2,
+                "digest": "3b8b63d062683cda21131e098cc79f36d44fa81514a8ddcfb13f2b1393e4a514"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-B2-67a423bf-317f-42c0-bd94-51c09595b84c/7fe1eeb36e08b438165fd2cee9b25dd3adf5385810e6d8bca61f92b106cb324b.json": "38fd9ec96f0a0f1310a5a20b1f8d68caf600dbeaf4a9a0f1b9e60da85e5e3a42",
+                  "r34-live-B2-67a423bf-317f-42c0-bd94-51c09595b84c/7fe1eeb36e08b438165fd2cee9b25dd3adf5385810e6d8bca61f92b106cb324b.receipt.json": "54d2c0d0d3585bf0a29aa2d02aa7d13c3fb5b504fd1e9b1fabf0f7560eb21d1e"
+                },
+                "fileCount": 2,
+                "digest": "c6e32c98ca3a26d1f9a5d6b12e7f82e4c0e2306f8305966346ab3c4d478ad423"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O2\\r1\\trace\\record.json",
+                "sha256": "3f0afdee2adf3a3eb30db1444354679dc4f21f0e7ea6cb5375d5ef5b5b250ac4",
+                "bytes": 13689
+              },
+              "workspace": {
+                "digest": "76529724fa773133c2a9b45b1819df3b887c4161f6b35881cf58a8cb96daeee9",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "tests/scheduler.test.mjs": "598699cc9d1811388d45f1de0c256c1b8b9e2b30d19af15cecb1d9cb498d6503"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-ba8b51cc-d48d-4db5-8c89-7f697314758d/bundle-cc44637c-3ae6-48ac-ba6e-47ab9a36753c.json": "975c2c16371c97b435ad8bb73e426912c8043b1af881e1cd8e3e39b4941eec4e"
+                },
+                "fileCount": 1,
+                "digest": "e498457a6bba7cdc84a980d9fe30672163b966199c2c3b160e0378a426795203"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-B2\\B2\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-C1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\report.json",
+            "sha256": "bad1ad7109d72929046a3534bb79e531c625f4043732ccde856383f8ecf08640",
+            "bytes": 119029
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\B1\\r1\\trace\\record.json",
+                "sha256": "2b09fd5ddbb9152087874ce7e1438a4a985c1db8d8732334d25ff71e1b3103de",
+                "bytes": 12128
+              },
+              "workspace": {
+                "digest": "17a949cc455a44595ac30e6458445eb71a168263bee16a432895f68a7da1b946",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "9b71950d4b77a82fa0fca32b8f73e0c8f67ef95a54bfe7777ca2829740ef826d",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-b1a42920-791d-4f76-912a-d3a070db23dd/bundle-9765c77c-f23d-4370-82c1-71955c4ac151.json": "c505f7337cc91a04a67fb8aefe0e2ba8293ff1d05526f442c2272cc47d4c97aa",
+                  "r34-live-C1-b1a42920-791d-4f76-912a-d3a070db23dd/commit-9765c77c-f23d-4370-82c1-71955c4ac151.json": "f00d7b25879c9655dbaa447fa0246b3fd1472c71501dd834d08690d2af49d9c8"
+                },
+                "fileCount": 2,
+                "digest": "3158332872414b4b951e2fbf0690af3b35458b8c4f0b74fd0a25b7bcec71a460"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\S\\r1\\trace\\record.json",
+                "sha256": "99d663bde436ac89f613dafc72a7222536cf33fd4e0805314eb9e5882f9491a3",
+                "bytes": 27882
+              },
+              "workspace": {
+                "digest": "17a949cc455a44595ac30e6458445eb71a168263bee16a432895f68a7da1b946",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "9b71950d4b77a82fa0fca32b8f73e0c8f67ef95a54bfe7777ca2829740ef826d",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-5355f3fc-804e-4862-8198-484c5c46af75/bundle-a03ed3e3-506f-42ea-824b-9b681c3faed5.json": "0f2b48e61e3950ae86fdcf1b58b1d80d84d8e714bbd22b32bd18c9173d5ff701"
+                },
+                "fileCount": 1,
+                "digest": "106335f045679ea24cd3fbf7bfa8485b5cefd054385f1ba68b474cea952b0f4e"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-C1-5355f3fc-804e-4862-8198-484c5c46af75/54ff40597530fc7b3544725319cfec6ff224ae244fa6e0a0e9040a07c8ef260d.json": "ad1c12e3d33a546edbf13838d469b8351badbc4a2f9127c94ecab10414334506",
+                  "r34-live-C1-5355f3fc-804e-4862-8198-484c5c46af75/54ff40597530fc7b3544725319cfec6ff224ae244fa6e0a0e9040a07c8ef260d.receipt.json": "169bb18fd78c0e3a3cb5ad2b5750dd6289e0697b10485dee25d8090d641b4923"
+                },
+                "fileCount": 2,
+                "digest": "21d46f44a4e5bbd9a434426509ce5d06620db84291a3a06a78951b66efcba57e"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O1\\r1\\trace\\record.json",
+                "sha256": "0f6798e105d47691c3d74d5458d2b3fb3170a1acb2cc7873e6b9bee0140931e8",
+                "bytes": 25784
+              },
+              "workspace": {
+                "digest": "4d59ed0425c74713a92e0a2402e438c81517ce74b5f5aa7e87da6d9826e183e3",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "469db9d4dbab0fb8c8813182d9aef3fd2d36db4017e48be2de2e1bd750a29daa",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-50445bba-1711-48ca-b7fc-005beab9ff99/bundle-b9885add-0ed7-4b6c-9024-0d05f718332c.json": "027eb611e4a8ef3e4ef3939a55b1574ed1c729ed92c759ba33082fd4705e2255",
+                  "r34-live-C1-50445bba-1711-48ca-b7fc-005beab9ff99/commit-b9885add-0ed7-4b6c-9024-0d05f718332c.json": "90824f8675cffb283894333a57cfc3d33abe2c1b3781fe9ed734732d4700d3b4"
+                },
+                "fileCount": 2,
+                "digest": "a082051accc11ed80d545b03513c7f28a36f900917d9839c30d09bc6eddcc1f8"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-C1-50445bba-1711-48ca-b7fc-005beab9ff99/b236c6aea20820e4384059d6b64b9501e3785a3a7d7e6a39579554d6feda1964.json": "1b1e35f2138edcf909835e33276e62bc64cab5d40b9c8c15df2a88eeaafbe08a",
+                  "r34-live-C1-50445bba-1711-48ca-b7fc-005beab9ff99/b236c6aea20820e4384059d6b64b9501e3785a3a7d7e6a39579554d6feda1964.receipt.json": "20832b1b7ded58c89cfa3a21c3907b3795bbc28c349a515d666b3835f7ef6cb1"
+                },
+                "fileCount": 2,
+                "digest": "49563d91495d882439a524ecb590fe2a758b954a616b3298ed47dd3ae1e98253"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O2\\r1\\trace\\record.json",
+                "sha256": "4e723fd57df50c342f3b9b84fb4b1ff43fc90c33da189cce64464341e944a6af",
+                "bytes": 14715
+              },
+              "workspace": {
+                "digest": "17a949cc455a44595ac30e6458445eb71a168263bee16a432895f68a7da1b946",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "9b71950d4b77a82fa0fca32b8f73e0c8f67ef95a54bfe7777ca2829740ef826d",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-757b4295-6614-44c3-b1f1-f9fd51a64576/bundle-3e82aed0-f9c8-444d-945b-81b2991bbade.json": "641aac860988e39029139ae3611aedf27c9d65311a1ce520f9416215894499d7",
+                  "r34-live-C1-757b4295-6614-44c3-b1f1-f9fd51a64576/commit-3e82aed0-f9c8-444d-945b-81b2991bbade.json": "8461e7be011a31c77ac733b50a6854b099f38cb23c3b993051531bc3f2ff2352"
+                },
+                "fileCount": 2,
+                "digest": "2a8faa464bcd866737cc758fa1990b0d37796a2136ba6971633cff7b47883ca2"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-C1\\C1\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-D1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\report.json",
+            "sha256": "1d35e6933935d77fd05a0f3a23df2405e5f9fd15d53b78ab31488df18894b738",
+            "bytes": 91388
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\B1\\r1\\trace\\record.json",
+                "sha256": "3d5729d9473b6e347ad7bb6f0a4a9221be63ea2db0fe96fac3bd06093168450e",
+                "bytes": 12576
+              },
+              "workspace": {
+                "digest": "4646bc8e2cc82b0a82a5c84968299290c7786301e0144bf1f84aaf0d169aa17f",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "865ff6cf8859435b02965c305622de011aac6f66e0a244513e3accefe61f3b49",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e",
+                  "verification.json": "5aa28ca0e112030628f5317a4c08d60a2835b8f4167d0529bd2e47a8d6f9329d"
+                },
+                "verificationJson": "5aa28ca0e112030628f5317a4c08d60a2835b8f4167d0529bd2e47a8d6f9329d"
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-03b740b9-3be2-4d29-ae65-bbf43714dc62/bundle-9979fb6e-8c11-4ce4-a1f3-16f8a3b0f636.json": "74b62140584169ea3ea390c6fea9a784a3a587cb8c837828d70d1c4369d58829"
+                },
+                "fileCount": 1,
+                "digest": "a91c72b71de43728133115165dee20bfe5ffbebe92026da7813e369f8a72a9ce"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\S\\r1\\trace\\record.json",
+                "sha256": "ecfefa1900d846b2635aa31950ec45c05f9e7aff0999e50115ae9862c18b29da",
+                "bytes": 16415
+              },
+              "workspace": {
+                "digest": "9942df2e2c9664e16427b42b81e50b0a2e1e54383ef14584ebcfc1db7a121182",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "865ff6cf8859435b02965c305622de011aac6f66e0a244513e3accefe61f3b49",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e",
+                  "verification.json": "cb93c30ad02042e526df939658eff53fccd63adfe7ccfaeb8cd75caa75ee99e9"
+                },
+                "verificationJson": "cb93c30ad02042e526df939658eff53fccd63adfe7ccfaeb8cd75caa75ee99e9"
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-06e1da04-7d95-4292-969c-6ad0ee996a3c/bundle-a797c360-0011-486d-b2f4-73b3875516cd.json": "a12ced5659b56343efef42b61dbc47af4a4161fc566c48c27dd22a476ae563f0",
+                  "r34-live-D1-06e1da04-7d95-4292-969c-6ad0ee996a3c/commit-a797c360-0011-486d-b2f4-73b3875516cd.json": "fd4aaf8d957878bd8272d759b0565043003e3d60d60d902f1c0f60b3197f66d7"
+                },
+                "fileCount": 2,
+                "digest": "f140f7120ea87ae9c44c59eab6906efeaf03844c61f6447a1ad9f24d007a5001"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-D1-06e1da04-7d95-4292-969c-6ad0ee996a3c/9f7a0164b5d602f4b4f1bc7ef2521b005047ab5d13f6d34eba17e036397e24d3.json": "d93faab52cfd5e3a6f44fa57eb78e99440f76f29368440ecd98313f43398dcba",
+                  "r34-live-D1-06e1da04-7d95-4292-969c-6ad0ee996a3c/9f7a0164b5d602f4b4f1bc7ef2521b005047ab5d13f6d34eba17e036397e24d3.receipt.json": "5595747439518d0573266148155cf0b92e5c17106c8eecca70a2b5839831ffb1"
+                },
+                "fileCount": 2,
+                "digest": "4a03cdb51d32c2aa6557a5e69524b7980af87da100f06243d17ecfa67da9d9fd"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O1\\r1\\trace\\record.json",
+                "sha256": "e615f9693563aef9c484e9c3fd3ed40f467a32f1469bba91e6a469ded024e74d",
+                "bytes": 15136
+              },
+              "workspace": {
+                "digest": "9cd85f00f7d478eb9907e53d1019165abd70fdaf2cd68a848cb6a2071882c047",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "aa14a36f834b3bd2c0e4adeea8108242f414d5c556256e8d1f89de1624d6b535",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e",
+                  "verification.json": "be2079ea23bdeb47adb0d16b54b1848167d2d4706d93d6bc9259d61b9054a90b"
+                },
+                "verificationJson": "be2079ea23bdeb47adb0d16b54b1848167d2d4706d93d6bc9259d61b9054a90b"
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-3815c0df-d77f-493d-b341-b404237549a8/bundle-f45ec418-f5ec-47fa-a6a0-6b06422df0c5.json": "d7c64db828a7c90d32af815563d32339d53ca30a1192f1a2fb89ae7725e28d3c",
+                  "r34-live-D1-3815c0df-d77f-493d-b341-b404237549a8/commit-f45ec418-f5ec-47fa-a6a0-6b06422df0c5.json": "f1fac0987b178e622ff76153542eae0a00fb8b8c2d38e612172ce22fe15503bc"
+                },
+                "fileCount": 2,
+                "digest": "992b89210669be29db1b46d44843c6fadde2f05694455bb62800d908a32cd0f4"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-D1-3815c0df-d77f-493d-b341-b404237549a8/846f3ff929f79358f80edefa2b5177feb8b13e91ba0cc009adda71b0c7981455.json": "2df3847617a40685304b0135b1778caf33272bd6da5313c9c8517c5d548afc53",
+                  "r34-live-D1-3815c0df-d77f-493d-b341-b404237549a8/846f3ff929f79358f80edefa2b5177feb8b13e91ba0cc009adda71b0c7981455.receipt.json": "424ab182f904d6a3cfa07b1cebe34dbc4ea8838df678eb0c5a78cfe3f70713ae"
+                },
+                "fileCount": 2,
+                "digest": "dfb351ba7ba0a0239e9931c3f3b124371beb31795b67a73d11a212f6f7b58dcd"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O2\\r1\\trace\\record.json",
+                "sha256": "6a927b5a45faab5f84867766d859f0204b1adae7255533f67dba2a3409d07ec2",
+                "bytes": 12560
+              },
+              "workspace": {
+                "digest": "782d7c678ca8bc963fbe29fe61bcc2df68a1382a63956eef43d7a7e3a119b11d",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "865ff6cf8859435b02965c305622de011aac6f66e0a244513e3accefe61f3b49",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-40fa2134-4423-45db-b49f-1702d78e6e0a/bundle-e2e2c4b1-0348-46c8-9438-e28493905aad.json": "486e37bb7e698c60c598a8d22ae2e44ce0405b7195198e48d64355aff888e75a",
+                  "r34-live-D1-40fa2134-4423-45db-b49f-1702d78e6e0a/commit-e2e2c4b1-0348-46c8-9438-e28493905aad.json": "4f19e401ba670d4a3b027bf06aef2f7c6e2ee7d16e12f0e7b4f554cfd82ba4ef"
+                },
+                "fileCount": 2,
+                "digest": "755ce6a3de72bda312db4f59d1a99cec10c85094d544a6fc1b4d367f6062bc2f"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-D1\\D1\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-F1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\report.json",
+            "sha256": "a59fb03dd77fe3593d80fe9de366546aa736b1c215e4031fdfd1a1e6180692ba",
+            "bytes": 95568
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\B1\\r1\\trace\\record.json",
+                "sha256": "b1ee120e2bad9946bf4e2d02736f9e4eb59f31ba43cf1a7f0c57f8611156107b",
+                "bytes": 12722
+              },
+              "workspace": {
+                "digest": "90670dd191e30bb42ba3fb67031517ce31e90ed309a33f35363eb6e63babd82e",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "3d3589f9974c498838f933ad9af1717177a9470ca164a428edf66cda70b1c8d8",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-d7a57912-5f4c-4f99-a16a-864b76b63e97/bundle-9b7c8d3f-e270-4453-81b8-976427e27643.json": "4e90fceab0dc3fe237c49b9d076ff90f6b50492924b413feae0b00f0a1c6089d"
+                },
+                "fileCount": 1,
+                "digest": "0a03cc902638fc5b38597304d06fdec47970d9337d68eed5b0c05f4c532c635a"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\S\\r1\\trace\\record.json",
+                "sha256": "90e6ae2df003fee7e52d20ee89d57682f57790e7a3b7de9beb7012b94e2ff613",
+                "bytes": 19628
+              },
+              "workspace": {
+                "digest": "d692fc44dc134b17854ff02de586781799721c09a7f96e9954198a8ca1d219cb",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "65dd35f77e6ad8a58eb166ddd98676d3ca49222176ddead8e87dd1dae0a074c4",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-9a2d6170-b147-4f83-961a-a86036ce9ab1/bundle-c931ecf2-ebfc-49c1-8d97-1b20fd69214c.json": "b3b4b70c5f4d8b31cadaff9f4418091543d0f839018eb19b660d236e89cde3ff",
+                  "r34-live-F1-9a2d6170-b147-4f83-961a-a86036ce9ab1/commit-c931ecf2-ebfc-49c1-8d97-1b20fd69214c.json": "b40ef2bdc6ac783a0dd4780721a3a0e5a77276ee194c26c224d67d6f7d66a484"
+                },
+                "fileCount": 2,
+                "digest": "82bce1815944ca0b3e0076a5f737ec488787b543940b1dab957b2c8631a6d79e"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-F1-9a2d6170-b147-4f83-961a-a86036ce9ab1/c71a18f8a79e1501fec2226a301281e5673a2be13d11f19d3f95fe5887374aed.json": "2f9c85f5f8cd243e8831f459091d2f48627980d688bd8341f6307b72a324ca08",
+                  "r34-live-F1-9a2d6170-b147-4f83-961a-a86036ce9ab1/c71a18f8a79e1501fec2226a301281e5673a2be13d11f19d3f95fe5887374aed.receipt.json": "7a89918c7a78fa06e45181a9ceb0ea9f6e4480d1ae0fd7e712d6062bdf64d588"
+                },
+                "fileCount": 2,
+                "digest": "c18f4c0d78fa64f3c9f075697569327f87a807b233e75a0b5bcfb692aab321ae"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O1\\r1\\trace\\record.json",
+                "sha256": "92d04e82312d3d31e4885587e98b58d22686abfa44d6b275cbd08942341a9078",
+                "bytes": 15479
+              },
+              "workspace": {
+                "digest": "9761cc6292ad2662528d004579f03b9c1b8dfed5c24251a22c1ab060759c15ed",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "64cd2999387c70bf85f6fbfc3c230f055eced803fc088cc5b1f4d6b1fc7abd33",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-1f9b5558-8c35-433b-ada0-751687dd9500/bundle-ea4ca9ba-62ef-4650-a891-8342be1a569c.json": "149a3b6f831cbd497f4f97c4ae7e8c9e2d316114e7ed953aaee1583d4b2b5704",
+                  "r34-live-F1-1f9b5558-8c35-433b-ada0-751687dd9500/commit-ea4ca9ba-62ef-4650-a891-8342be1a569c.json": "9c4cfb461ec1b03b48b85b523e2f74b42a8b0f9e0f7ccc20725615874badadcf"
+                },
+                "fileCount": 2,
+                "digest": "6c290cab564424501904df8dc0bfb7d8cc863240d61fa1c5183a60b4b5244b9c"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-F1-1f9b5558-8c35-433b-ada0-751687dd9500/fa0161216dfc975ae4c230673e66acc902672c3121b6ae2ba1de7b5f109dd927.json": "e545e9dde0e76aa41bbb4c76bdac471df1562905fafa94c9646f93308fe7c990",
+                  "r34-live-F1-1f9b5558-8c35-433b-ada0-751687dd9500/fa0161216dfc975ae4c230673e66acc902672c3121b6ae2ba1de7b5f109dd927.receipt.json": "4d0b986105a67ad92d698ab0f5a952bff68ae24adbb0ab2b886374730d90f09d"
+                },
+                "fileCount": 2,
+                "digest": "752e484944db47822b8bbd6cebb60e1939a55d2bbd4e60411319607f0439c751"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O2\\r1\\trace\\record.json",
+                "sha256": "b205453791753b1e93c4323c0c4f3599477e41fa1d947f5e04c364c01a564ca9",
+                "bytes": 12298
+              },
+              "workspace": {
+                "digest": "90670dd191e30bb42ba3fb67031517ce31e90ed309a33f35363eb6e63babd82e",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "3d3589f9974c498838f933ad9af1717177a9470ca164a428edf66cda70b1c8d8",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-a4a8e0cf-7455-4a90-a8d1-ad4a49784ebe/bundle-702c6db1-6227-44d3-a389-a22c2a0f3d0b.json": "ec5a930bf57a2be41c7d61736536bf6121951062ddba0f576c6c032704f066f2"
+                },
+                "fileCount": 1,
+                "digest": "3f571851ebe431f44884f6129488c734e1989605b6bfaa0f72057d352ecf6f97"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-F1\\F1\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-H1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\report.json",
+            "sha256": "998fe6457184dc26dd89c34e94bad2bdfcd68b780150de6fbf55363a4d43b4a2",
+            "bytes": 92536
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\B1\\r1\\trace\\record.json",
+                "sha256": "edcf7addc4429f1af18e59a67436c6f5231d40cc334ee2076cc5a6c5bfcac5e0",
+                "bytes": 11355
+              },
+              "workspace": {
+                "digest": "9c8bd1dd18e23abf73249184eccf5e5922093c9b84cc7d9747a113d4d1bc280c",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "785f8ee8cfb57342e5dfb313344e0a09dfd6a939465f3360526cf362dd9c4361",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-f9bea6e4-95d1-4eea-a86a-f07483d2a39b/bundle-ca902f55-0d22-4261-bb4c-894802887dad.json": "0040ba4fd1f3c61dd04b890ba1726eb08eb0f315a7dc0cf3c08e34d2bb0a54b4",
+                  "r34-live-H1-f9bea6e4-95d1-4eea-a86a-f07483d2a39b/commit-ca902f55-0d22-4261-bb4c-894802887dad.json": "1972b5031b1af2bb1bdb53e9f0f54fee80a382ebe4cd2c9b86f738e437174c37"
+                },
+                "fileCount": 2,
+                "digest": "1ff0cf4bbdd8b7586c0ee46abcc142cb38d1dd177ed3e5d780bfe9791f5e05ae"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\S\\r1\\trace\\record.json",
+                "sha256": "1ed57727a86d653d2a4f2be793f00fcba884f37d930d2943107bea808c7dfdf9",
+                "bytes": 19425
+              },
+              "workspace": {
+                "digest": "baef776301052b963d938a864538376fab819f5eb235133999c3c3a76450441b",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "38b91c315a7a0302dead7585b9a4de2428c370e04924c54e2e2ef5ae21b32cc9",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-4df6f3b8-ee92-45bb-a338-0ae2533ed2e1/bundle-b8598991-73b6-4517-903a-30d0e8df3a71.json": "5166bf865114a7707d199ba38eb36abb9f67b0719debf938439abf87747f6301",
+                  "r34-live-H1-4df6f3b8-ee92-45bb-a338-0ae2533ed2e1/commit-b8598991-73b6-4517-903a-30d0e8df3a71.json": "492716800b2dd82ea744db7ba337bcdf6a6fe1c693a5265d82c4a547e80ce618"
+                },
+                "fileCount": 2,
+                "digest": "dcf0603a599c3972db5222ce7945fc936bd26ebf7a59316f19119fbb6696bd9a"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-H1-4df6f3b8-ee92-45bb-a338-0ae2533ed2e1/7fda21de4c90f5ab05de2238ebaf7573a41d87a602b80e97d63d3068e7c2f432.json": "86162948bad7012bb80d233305e118aaf9e8a717425b10ade9df5dd2045e250d",
+                  "r34-live-H1-4df6f3b8-ee92-45bb-a338-0ae2533ed2e1/7fda21de4c90f5ab05de2238ebaf7573a41d87a602b80e97d63d3068e7c2f432.receipt.json": "4aa744b41190f5bd84a1b66b2c42b7112de696b8cea186e45b651811f94ca3a1"
+                },
+                "fileCount": 2,
+                "digest": "1f68ac0b70ea69d3e365c229b1067c680ef98e0ce275f95bba220b0ed7ef85e4"
+              }
+            },
+            "O1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O1\\r1\\trace\\record.json",
+                "sha256": "c1bb0864043247ad84d04abb7d907ee215cd8abe8f67026f4a0aa60694cdcbbb",
+                "bytes": 15713
+              },
+              "workspace": {
+                "digest": "baef776301052b963d938a864538376fab819f5eb235133999c3c3a76450441b",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "38b91c315a7a0302dead7585b9a4de2428c370e04924c54e2e2ef5ae21b32cc9",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O1\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-ec415733-7eaf-43de-bfe4-1f92038c0200/bundle-e200f0e7-57ce-4f16-b5c2-9f58430f9842.json": "b2d0b404c6e38f4b3d24e3360a93ef1e3e43efdcee56556a0f1404e74466cf9c",
+                  "r34-live-H1-ec415733-7eaf-43de-bfe4-1f92038c0200/commit-e200f0e7-57ce-4f16-b5c2-9f58430f9842.json": "2b967dad313c3a45bde45c570f8d04b92c65b341b7ffeafb2b364d0eef690490"
+                },
+                "fileCount": 2,
+                "digest": "8e9b0c1dcffb4385cce696dee901691a948e8542b6e925553db4cc95c7a20286"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O1\\r1\\journal",
+                "files": {
+                  "r34-live-H1-ec415733-7eaf-43de-bfe4-1f92038c0200/0d2ed45b460101aa300f53c940d43998d80d6846bbd2cd04ac703938e88633a9.json": "3ab3c5a9f90234148b7fbd1d25f8a83ad52b02d5c3847238269048a69a8308f6",
+                  "r34-live-H1-ec415733-7eaf-43de-bfe4-1f92038c0200/0d2ed45b460101aa300f53c940d43998d80d6846bbd2cd04ac703938e88633a9.receipt.json": "a63c0f839c9d98d744702f82f67d2e2c87bdbcb3e7fd2dd3f05f52c7ec56cb3d"
+                },
+                "fileCount": 2,
+                "digest": "07dc2bf87ea62e98e813f7533bfe541f37e2ab8d13714a304c3bcb6b7359a350"
+              }
+            },
+            "O2": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O2\\r1\\trace\\record.json",
+                "sha256": "f6a451c338295c4c36179f340caa41b6f01ae791455a563d2d1b50174bbb743c",
+                "bytes": 11053
+              },
+              "workspace": {
+                "digest": "cdc768fa5df78ba7067a9be69d1eb947400c716980575218152f6b5b5adcb9ed",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "c83ce693768002e104c73249812f943f208a7a0fefc219901a37ee352988223d",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O2\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-db613b84-a436-434d-ba51-6aadad0a74ef/bundle-401ef27f-7a25-41f0-8ae0-dcb85399f7a0.json": "72571094b297fa63090160f3a70fead6b2846613e00a719c416aee82a696575e",
+                  "r34-live-H1-db613b84-a436-434d-ba51-6aadad0a74ef/commit-401ef27f-7a25-41f0-8ae0-dcb85399f7a0.json": "2e008cd78b8066df0bcbae7d1af344378d1e889db66e522047ec8c21a148e4e9"
+                },
+                "fileCount": 2,
+                "digest": "e23c72749de90c72910636d58780bc89e06a36875c9683ca40702a252e2c4e70"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-H1\\H1\\O2\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-A1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\report.json",
+            "sha256": "4df9e8875de7d123b12297e5de376b48ddc3d75a6416fd4a1ad3c6e20f7e12aa",
+            "bytes": 50770
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\B1\\r1\\trace\\record.json",
+                "sha256": "dab6e3caa51fb70d78fab4e8ac733ff1e8a7bf922bcad24742314b1058a99e01",
+                "bytes": 12253
+              },
+              "workspace": {
+                "digest": "4706be3b3320c7a75dc5e88aae7fd9453f1e8d810ccd4b43c146a966ffb6031d",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "7144f93cad5fdd8bace12f2886d3d3f2257dd0031e32d215a0c9066ada22e7a1",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-3f0196f2-4241-4ddc-8668-6d03cb15d0df/bundle-4a2c8b01-4475-422e-bb59-c96cd0b009f2.json": "cb476acdd1aecd2302a181f1d3ee7db28134479ee8a0ab5704a0a4b52d9546bb",
+                  "r34-live-A1-3f0196f2-4241-4ddc-8668-6d03cb15d0df/commit-4a2c8b01-4475-422e-bb59-c96cd0b009f2.json": "db6cb32c20e4710892bbade25522bb5f8888f5de8580eaff89d4c192b60c6e41"
+                },
+                "fileCount": 2,
+                "digest": "44a65cfd34e74d5969404d2c5f2b75a68c0d3a5822547c45a7997dec86cd97b6"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\S\\r1\\trace\\record.json",
+                "sha256": "fea61e8be954e81b66b5405babe64df86e753b68f7b6a0447f3b7d89b7f5ba40",
+                "bytes": 19892
+              },
+              "workspace": {
+                "digest": "eb16ccab6ba5e6a64ea1ee37ee88160767e6db30a3e204ca0505dbd87c173244",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "c2a928ff517d897255b54a7a1985f4d2ec1341ec7aa7eef4611cce122e3158ce",
+                  "src/callers.mjs": "50a56695a8527841a2587c762b1578c7df9e9dfcbdbb328987d1b56ac499fba6",
+                  "src/config.mjs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "tests/config.test.mjs": "d554ee5be093e537fed43d68bef531f901f489c5b47cdd7ac5ce5ee496b9c2d0"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-A1-7aaf9081-3e0f-4a75-b779-d7df1efc2d24/bundle-2df4cf3e-8a1f-4575-bc26-ae36a7b0212a.json": "9004164366093a0793db3d735a8d644c68081eca3491b4976ca94871d6648720",
+                  "r34-live-A1-7aaf9081-3e0f-4a75-b779-d7df1efc2d24/commit-2df4cf3e-8a1f-4575-bc26-ae36a7b0212a.json": "7f0cd79952c9e9f20600d4c58cdcfabba3468a854e9e5002f79444f52fc8ee61"
+                },
+                "fileCount": 2,
+                "digest": "8f2bd14796795555481929191542c12c8184ab0b35858a3c53466164dd8dfe80"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-A1\\A1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-A1-7aaf9081-3e0f-4a75-b779-d7df1efc2d24/62b6d5086be289627d5cf8e09d559adbbed3daf1d054fff0d96e2ce46a62d8d7.json": "bd291c560d901421d2af5fe713bf4757a0426807a8926a027360107c601e373b",
+                  "r34-live-A1-7aaf9081-3e0f-4a75-b779-d7df1efc2d24/62b6d5086be289627d5cf8e09d559adbbed3daf1d054fff0d96e2ce46a62d8d7.receipt.json": "261f3cd0372fca60c56bcf918c81725cd5a5a786d120ebbba5c10ca42dc82acd"
+                },
+                "fileCount": 2,
+                "digest": "abba33289c59d63b4746acd7def620d15cf1035c594d04ae8cf064fd40e04bfb"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-B2",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\report.json",
+            "sha256": "4d45546d443898db9569b3d1cdfc94d678b442e62d251843b69442b41c22f521",
+            "bytes": 51975
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\B1\\r1\\trace\\record.json",
+                "sha256": "040fe0e86137fb1bc8ca732c70bbf700dbfb4c228111af5495e8f6a420b98c58",
+                "bytes": 13832
+              },
+              "workspace": {
+                "digest": "b60de59a1f0576f27e9a9f7c81c080028d9af0a2fa9464b1b96de644e5869a74",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "5de5f17eebfe93777717e75ae21ba7727365d8f148416022e39a3098f78bf88a",
+                  "tests/scheduler.test.mjs": "598699cc9d1811388d45f1de0c256c1b8b9e2b30d19af15cecb1d9cb498d6503"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-bebf4269-dd1f-40fb-becd-d84188ad5353/bundle-e4a24219-695b-47d2-932e-80f09a9fb7d8.json": "f32c34b86e0109c5dfb85e3b9d1c4c5b47c4acbf9c2e2771e1e7f87b9c70e309",
+                  "r34-live-B2-bebf4269-dd1f-40fb-becd-d84188ad5353/commit-e4a24219-695b-47d2-932e-80f09a9fb7d8.json": "c11676db8d0d3a2808c421b1a18d126579b78d27aff4317f9453eca86493f274"
+                },
+                "fileCount": 2,
+                "digest": "678c19f5971e05bbe116d54886cad89fd8dfaf0779b60dcc833e689a9c938389"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\S\\r1\\trace\\record.json",
+                "sha256": "10e3a3b10da13cd595290c08b0cf998f2c54a001c6025a85d869a9d98a9c44e2",
+                "bytes": 17340
+              },
+              "workspace": {
+                "digest": "b60de59a1f0576f27e9a9f7c81c080028d9af0a2fa9464b1b96de644e5869a74",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "f926041f010ae9ed2640d0ccc58643b7c82b471e215548aa33d2a438ac090498",
+                  "src/scheduler.mjs": "5de5f17eebfe93777717e75ae21ba7727365d8f148416022e39a3098f78bf88a",
+                  "tests/scheduler.test.mjs": "598699cc9d1811388d45f1de0c256c1b8b9e2b30d19af15cecb1d9cb498d6503"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-B2-9ff33026-66e4-489e-9ab5-12c24f92eab7/bundle-719a8666-406f-4708-afa2-7e4bff8e5e12.json": "92598e2b9936bbbc936b4357530a4c3174e251e38d12a5e063c88d5b81d16ec4",
+                  "r34-live-B2-9ff33026-66e4-489e-9ab5-12c24f92eab7/commit-719a8666-406f-4708-afa2-7e4bff8e5e12.json": "34ba0ac162a09912b863b4aa83f53d8aaea3e5c65aa47a3d44c79a832468890b"
+                },
+                "fileCount": 2,
+                "digest": "2055ff1b5fdf08b6c5a3abd0f5969eb89a4706a24940b259c22ed009afc04140"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-B2\\B2\\S\\r1\\journal",
+                "files": {
+                  "r34-live-B2-9ff33026-66e4-489e-9ab5-12c24f92eab7/67252fc0dd6b5124c02919fab182cf9cce73f6f773ef79ac104ae6edb1c0dbe5.json": "3a4eb40048fb267f10af67b6fc80e7be24495c5afed2fe81ace7e65842aee1d3",
+                  "r34-live-B2-9ff33026-66e4-489e-9ab5-12c24f92eab7/67252fc0dd6b5124c02919fab182cf9cce73f6f773ef79ac104ae6edb1c0dbe5.receipt.json": "654489fb582df451f6ca709872ca1048c1b2f740c605d85c584394594c6d4bf3"
+                },
+                "fileCount": 2,
+                "digest": "4c4be0d575be95e571f7c78bd9ab2c9f95928e0f4fbd1be58d9540af9532e243"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-C1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\report.json",
+            "sha256": "f91af0b2303e1e0a7c68d969854feffa98826c2194980744ab8b37bf54825e35",
+            "bytes": 59986
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\B1\\r1\\trace\\record.json",
+                "sha256": "65e81f18259b229feeb768ea2eb72d55cd3666b3dfe32cd4d8da4b8e04dc8e97",
+                "bytes": 13151
+              },
+              "workspace": {
+                "digest": "17a949cc455a44595ac30e6458445eb71a168263bee16a432895f68a7da1b946",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "9b71950d4b77a82fa0fca32b8f73e0c8f67ef95a54bfe7777ca2829740ef826d",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-216be94d-84a8-45be-9b9a-f3e48984ed11/bundle-322c11b9-0231-4da6-8840-a58cb84fc465.json": "9dbbc474fe0a8120f1dda1fdf3c866a36d5a375d69a13ed511def6a0c1bbb157",
+                  "r34-live-C1-216be94d-84a8-45be-9b9a-f3e48984ed11/commit-322c11b9-0231-4da6-8840-a58cb84fc465.json": "96c5e74cb883ce8c9ea5af688364ba7b96e954caeff62257ba24550ef6b0ff29"
+                },
+                "fileCount": 2,
+                "digest": "454c0fec76f3eb4507287577f66a19dd83f194fc3ab652a9e218438533d5305a"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\S\\r1\\trace\\record.json",
+                "sha256": "988b2d1f7d5f89ea737d14726e41cf2632c7feaee922667729f555dbe15798bb",
+                "bytes": 23605
+              },
+              "workspace": {
+                "digest": "bc6dfc1c2663722cfb8359d188919a8aa01177f10e0a5f47b609e65dad8108e0",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "c41642f8126910cd5d4972ab4f7fc868a7f868ae37fddcdeac2abdf89fb2da7d",
+                  "src/watcher.mjs": "974235f82d5e1f04e739667f017a2c52b7cd0629e1ada76597ca3e0ec6773154",
+                  "tests/watcher.test.mjs": "f40f2971222baec5e875c87b7f1a876f31f34112530319d0262a71ad23be250d"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-C1-ee3e7f13-8f1f-4bcc-bf76-6c328687788e/bundle-992df57d-fa92-444d-b20d-af220c347a8f.json": "02bd2e13f1fd1619a75db9083357ae77086035a05c901c130817515cbfc5b376",
+                  "r34-live-C1-ee3e7f13-8f1f-4bcc-bf76-6c328687788e/commit-992df57d-fa92-444d-b20d-af220c347a8f.json": "4c86dd365710fe3ae11ac96c74e775419bd00aa76ef616f5015a1ec5e18eaef9"
+                },
+                "fileCount": 2,
+                "digest": "2aecde1f51dc3ac55861c776ba4b6a9ac0b74da11fc72503c6f0574f977478ad"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-C1\\C1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-C1-ee3e7f13-8f1f-4bcc-bf76-6c328687788e/642ec3de0f6ae309d7be9ac56bb54c0be1c063ae14a14ffe4c957bdbb7bc78b5.json": "7caeb14c8f31a61c797b6c0c87e325f7d1dbfa21bda726ee79433763a077d88f",
+                  "r34-live-C1-ee3e7f13-8f1f-4bcc-bf76-6c328687788e/642ec3de0f6ae309d7be9ac56bb54c0be1c063ae14a14ffe4c957bdbb7bc78b5.receipt.json": "89bc398543298b3a3c6747f51748b3cf8b4804951efba27778a09e937ac2d4b6"
+                },
+                "fileCount": 2,
+                "digest": "ae7e523b75b8cff0b56a6095dd7eb3437c1b33b2cc0c080c38b4bc72335b4765"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-D1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\report.json",
+            "sha256": "2ff339c274f6f28ce1b18e60b1c5355ab38a831ae20c0430e4d28d2647dd1f20",
+            "bytes": 49364
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\B1\\r1\\trace\\record.json",
+                "sha256": "f8ed39a61a4de71bb7c15587f7eeb7e7550c80d4f2b1a4feed19eba2d67f4262",
+                "bytes": 11146
+              },
+              "workspace": {
+                "digest": "782d7c678ca8bc963fbe29fe61bcc2df68a1382a63956eef43d7a7e3a119b11d",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "865ff6cf8859435b02965c305622de011aac6f66e0a244513e3accefe61f3b49",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-93731477-b18c-4349-adf2-4617533b2d7a/bundle-5ff01ffd-5e7c-4871-ac14-c550413cfde6.json": "93c25388b158b8553f49f53e180c9ab6bce0542fa38e25c98bbb0f9842df2e44",
+                  "r34-live-D1-93731477-b18c-4349-adf2-4617533b2d7a/commit-5ff01ffd-5e7c-4871-ac14-c550413cfde6.json": "89b3688b678f95d06f62c5d8aaca0917543f73dab68d379102da101185d65b66"
+                },
+                "fileCount": 2,
+                "digest": "f486c7f289e12e386420840a2f7b421d516e63f41a9b32eecf0882da5ab0390d"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\S\\r1\\trace\\record.json",
+                "sha256": "05ac06539d42c8d046a0ed4b8212c3729e8af8b6a1acdba47321900820898d26",
+                "bytes": 18965
+              },
+              "workspace": {
+                "digest": "1e62a47762277cbe8d8904ffd6ce8a256dfd3f6dd6bf92c37a36dd7a3ce195f8",
+                "fileCount": 4,
+                "files": {
+                  "package.json": "1267e5082f58d92ae5533e216710fdcd8b1a9cbeeb30194f4f9e19a9bdc46001",
+                  "src/migrate.mjs": "865ff6cf8859435b02965c305622de011aac6f66e0a244513e3accefe61f3b49",
+                  "tests/migrate.test.mjs": "454c59c127798de5ea4fcdb9214bd659ace25a2b433ebeeb6a240ad8b405374e",
+                  "verification.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "verificationJson": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-D1-7238ab52-5f55-478c-9668-950153a4be3b/bundle-4d77e22a-2697-40d3-98e5-aee14a566d45.json": "e227608beebc041c258b31532eadca474aa54c2b55c8362e01ce17e72cd4f8f8",
+                  "r34-live-D1-7238ab52-5f55-478c-9668-950153a4be3b/commit-4d77e22a-2697-40d3-98e5-aee14a566d45.json": "600fd2798d1587c15a754036f8da6b8a328f00b616557816fcbd4be9b2c81d90"
+                },
+                "fileCount": 2,
+                "digest": "acc002a8fdc420596bf1ab689343687f665730f721257633eac96487eabc5b08"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-D1\\D1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-D1-7238ab52-5f55-478c-9668-950153a4be3b/e79c6829aa3edc57f9ac7c2315a72b67d43c5742b078fe7b64d7ca4b523994bf.json": "62a259e334271bba1cfcff5e364623abdafc4f5bf4e8b28d6fcb39c9f0902fb6",
+                  "r34-live-D1-7238ab52-5f55-478c-9668-950153a4be3b/e79c6829aa3edc57f9ac7c2315a72b67d43c5742b078fe7b64d7ca4b523994bf.receipt.json": "e1cd417f322fd1e87c7fe363ec661fd2112be029c530c31fa6a6a9a4139c65d5"
+                },
+                "fileCount": 2,
+                "digest": "182737ecfc9ef58d47bad83b723ca214a3335c3797892fec41e4a8dfef42d286"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-F1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\report.json",
+            "sha256": "9739a1393d7e79cf5daeb56e9d2998f2177fb318da4a35140cf5298951f257a3",
+            "bytes": 50111
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\B1\\r1\\trace\\record.json",
+                "sha256": "18849653df6eb6ad54b630694451be26a6e70c820db95c1d86d3690bb105acd0",
+                "bytes": 11672
+              },
+              "workspace": {
+                "digest": "d692fc44dc134b17854ff02de586781799721c09a7f96e9954198a8ca1d219cb",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "65dd35f77e6ad8a58eb166ddd98676d3ca49222176ddead8e87dd1dae0a074c4",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-23cf0119-bd21-483c-8daa-e806c4e2e8ba/bundle-1e4af654-24d0-4ce9-8f34-5bbf9ae6ab2b.json": "7deaa9011bac0ee05b467b4ef3d13e5162f8e479898ea19a97c42b6646956955"
+                },
+                "fileCount": 1,
+                "digest": "62d62f5c212060c1fcfa5835bb4184d35d64bb01888d4c39d1070ba7ae669f0b"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\S\\r1\\trace\\record.json",
+                "sha256": "8d64b54ada708da32fcfcf0332ea46d44e36451b9b636b42ce8563c3f0ee8da2",
+                "bytes": 17355
+              },
+              "workspace": {
+                "digest": "d692fc44dc134b17854ff02de586781799721c09a7f96e9954198a8ca1d219cb",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "1b5c52c577e1f40455b1363c3290a48b6abeb7084230979bdfdafa5bbd377222",
+                  "src/api.mjs": "65dd35f77e6ad8a58eb166ddd98676d3ca49222176ddead8e87dd1dae0a074c4",
+                  "tests/api.test.mjs": "e132035e3b63d55e4957bde6d7b45b6c35a47b1c28b3e49b069e82a8ad3e68ed"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-F1-a83a91bf-fedb-4889-abfe-ea5203c6faa2/bundle-642ee36b-8d27-4e20-abf2-0929257940da.json": "f2100e2eeb78a81695bb1982c057bd9fab836aff30bd162d7091ca2fb7d2aa7a",
+                  "r34-live-F1-a83a91bf-fedb-4889-abfe-ea5203c6faa2/commit-642ee36b-8d27-4e20-abf2-0929257940da.json": "bde320c5e6ab469d4d6b26dbb418a4891e1576be3d955221a60b093250456e55"
+                },
+                "fileCount": 2,
+                "digest": "7bd037ec3cee184f94f561564b5098a17e34fffd305a2f7b260dbcfe9eefd65f"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-F1\\F1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-F1-a83a91bf-fedb-4889-abfe-ea5203c6faa2/702b235f373c50ff6c8964d23253c7d311f16c49bb5122678db40065aead0322.json": "13c6fc0fcf0088a2415e86a6c875396fea465e949205e17b3e06ac47fc174255",
+                  "r34-live-F1-a83a91bf-fedb-4889-abfe-ea5203c6faa2/702b235f373c50ff6c8964d23253c7d311f16c49bb5122678db40065aead0322.receipt.json": "5b4316c73b2a39eba31a441e5db313ebef36c0fc466e4d7017b2a7271fecc51a"
+                },
+                "fileCount": 2,
+                "digest": "b37418339bfc8cc7a27a8626dc514e5ad11adc21249010400ed63376098f264e"
+              }
+            }
+          }
+        },
+        {
+          "runId": "r36-causal-r2-H1",
+          "present": true,
+          "report": {
+            "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\report.json",
+            "sha256": "9371dc94d6b3aecdf8b8a9cf402b90e65139bce5c360e7e8da9898539f41252d",
+            "bytes": 46496
+          },
+          "arms": {
+            "B1": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\B1\\r1\\trace\\record.json",
+                "sha256": "959a9d546691b87cbbf2392ca46c452f165f50ab24c8b3ea63d32b54ee9ee05d",
+                "bytes": 11543
+              },
+              "workspace": {
+                "digest": "9c8bd1dd18e23abf73249184eccf5e5922093c9b84cc7d9747a113d4d1bc280c",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "785f8ee8cfb57342e5dfb313344e0a09dfd6a939465f3360526cf362dd9c4361",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\B1\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-1aee1ba8-f0a2-4d67-bc3d-62301315cd34/bundle-3c5d9bf0-56e4-47dd-97f4-fce95a2522b2.json": "88db18444f3c72e75949d73679cdc55d10fba675827f4e5f0191192d1b08e8ef"
+                },
+                "fileCount": 1,
+                "digest": "8411a11dc07ae3e9bf5a870f8cd4333cce290de156cf6486b89676f11424b551"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\B1\\r1\\journal",
+                "files": {},
+                "fileCount": 0,
+                "digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+              }
+            },
+            "S": {
+              "replicateId": "r1",
+              "trace": {
+                "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\S\\r1\\trace\\record.json",
+                "sha256": "255bd6f0224d1a17558462b9ec2a144ca3de7e3315e405e311c1f29f62e44e75",
+                "bytes": 14434
+              },
+              "workspace": {
+                "digest": "9c8bd1dd18e23abf73249184eccf5e5922093c9b84cc7d9747a113d4d1bc280c",
+                "fileCount": 3,
+                "files": {
+                  "package.json": "5f5029286be65662ce19828a8d5907b9ab6ac502930d34ae326b31191fef9a03",
+                  "src/client.mjs": "785f8ee8cfb57342e5dfb313344e0a09dfd6a939465f3360526cf362dd9c4361",
+                  "tests/client.test.mjs": "d7d8a5c285a986960e68970529123c8bb1a4202ec32a25ea2bd7b10f7005b562"
+                },
+                "verificationJson": null
+              },
+              "bundles": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\S\\r1\\bundles",
+                "files": {
+                  "r34-live-H1-3256dcd0-3629-4f06-aead-11d742d055d1/bundle-7fdcfd3c-d3b8-4af7-89c6-7769643ede65.json": "790f64a55f826cfe436ae2c6acbe9aacf3f0ca46d3dbd9123d89b0533d9880ed",
+                  "r34-live-H1-3256dcd0-3629-4f06-aead-11d742d055d1/commit-7fdcfd3c-d3b8-4af7-89c6-7769643ede65.json": "c898531ab55425330ced7e20edd78594c3af84bfff1c6f702ca1349c14a9121a"
+                },
+                "fileCount": 2,
+                "digest": "f4f260ff8226a8d22ed57f941ffc4d8bf8fda4639988330e4e32125ddeeaab24"
+              },
+              "journal": {
+                "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\runs\\r36-causal-r2-H1\\H1\\S\\r1\\journal",
+                "files": {
+                  "r34-live-H1-3256dcd0-3629-4f06-aead-11d742d055d1/766cb0488157a5c001ef7bac98d5d3819c8197d698a77223a7e55493dd3b3dbd.json": "ee407947f1ed6ac3851f2e444c159e5db8503c940a400895309ffc1c626ba044",
+                  "r34-live-H1-3256dcd0-3629-4f06-aead-11d742d055d1/766cb0488157a5c001ef7bac98d5d3819c8197d698a77223a7e55493dd3b3dbd.receipt.json": "4408c825f41ba1336e542713b88d93204333c1162eb9877a7f8ed38d2007923d"
+                },
+                "fileCount": 2,
+                "digest": "8be5fcf2e2ef52b2f9c75f0c589dbbd582b17ce6c265e0bb8aaf00dba9483792"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "tests": {
+    "requested": true,
+    "status": "executed",
+    "commands": [
+      {
+        "command": "npm run typecheck",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 22695,
+        "vitest": {
+          "summary": null,
+          "testFiles": null,
+          "passed": null,
+          "failed": null,
+          "skipped": null,
+          "todo": null
+        },
+        "tail": [
+          "> dsh-epistemic-fold@0.1.0 typecheck",
+          "> npm run typecheck:src && npm run typecheck:client && npm run typecheck:eval",
+          "> dsh-epistemic-fold@0.1.0 typecheck:src",
+          "> tsc --noEmit -p tsconfig.json",
+          "> dsh-epistemic-fold@0.1.0 typecheck:client",
+          "> tsc -p tsconfig.client.json",
+          "> dsh-epistemic-fold@0.1.0 typecheck:eval",
+          "> tsc --noEmit -p tsconfig.eval.json"
+        ]
+      },
+      {
+        "command": "npm run eval:r33",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 39184,
+        "vitest": {
+          "summary": "Tests  94 passed (94)",
+          "testFiles": "Test Files  14 passed (14)",
+          "passed": 94,
+          "failed": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "tail": [
+          "     ✓ records a non-compressing writer summary as a fold refusal and continues 1230ms",
+          " ✓ tests/r35-contract.spec.ts (18 tests) 322ms",
+          " ✓ tests/r331-scoring.spec.ts (11 tests) 115ms",
+          " ✓ tests/r331-isolation.spec.ts (11 tests) 2138ms",
+          "   ✓ R33.1 hidden-checker authority (4)",
+          "     ✓ rejects a missing declared check, a duplicate, and an unknown name 364ms",
+          "     ✓ reports a hang as checker-timeout, not as a task result 1040ms",
+          " ✓ tests/r33-writer-observation.spec.ts (11 tests) 255ms",
+          " ✓ tests/r33-receipt-window.spec.ts (4 tests) 272ms",
+          " ✓ tests/r33-live-entry.spec.ts (8 tests) 1672ms",
+          "   ✓ R33 live gate and budget (8)",
+          "     ✓ validates the interface without resolving credentials 885ms",
+          "     ✓ refuses a live run and records not-executed when R33_LIVE is not 1 768ms",
+          " ✓ tests/r35-preflight.spec.ts (5 tests) 7134ms",
+          "   ✓ R34.1 zero-request preflight (5)",
+          "     ✓ reports the real writer floor and marks model capability unverified when undeclared 1308ms",
+          "     ✓ refuses an input budget below one conservative request reserve 1234ms",
+          "     ✓ refuses a plan whose total requests exceed the manifest limit 1358ms",
+          "     ✓ refuses a run directory that already exists 1350ms",
+          "     ✓ validates the committed example manifest and never logs a credential value 1878ms",
+          " ✓ tests/r331-budget-http.spec.ts (4 tests) 124ms",
+          " ✓ tests/r33-coverage.spec.ts (1 test) 117ms",
+          " ✓ tests/r33-arms.spec.ts (1 test) 28961ms",
+          "   ✓ R33 frozen semantic-continuity arms (1)",
+          "     ✓ runs every case through every applicable arm and writes a reproducible report 28643ms",
+          " ✓ tests/r33-dataset.spec.ts (6 tests) 1402ms",
+          "   ✓ R33 frozen dataset (6)",
+          "     ✓ verifies against the committed v2 manifest 446ms",
+          " ✓ tests/r33-holdout.spec.ts (3 tests) 1355ms",
+          "   ✓ R34 frozen holdout (3)",
+          "     ✓ is frozen under its own id and does not disturb the v2 digest 557ms",
+          "     ✓ passes the correct action and fails the wrong one 759ms",
+          " ✓ tests/r331-live-writer.spec.ts (2 tests) 7673ms",
+          "   ✓ R33.1/R34 four-arm self-test (2)",
+          "     ✓ runs B1/S/O1/O2 through the real host and captures writer diagnostics 6731ms",
+          "     ✓ refuses a valid manifest when the route environment is absent 937ms",
+          " Test Files  14 passed (14)",
+          "      Tests  94 passed (94)",
+          "   Start at  19:57:07",
+          "   Duration  37.13s (tests 94%, import 4%, transform 2%)"
+        ]
+      },
+      {
+        "command": "npm run eval:r36-tests",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 9422,
+        "vitest": {
+          "summary": "Tests  34 passed (34)",
+          "testFiles": "Test Files  6 passed (6)",
+          "passed": 34,
+          "failed": 0,
+          "skipped": 0,
+          "todo": 0
+        },
+        "tail": [
+          "> dsh-epistemic-fold@0.1.0 eval:r36-tests",
+          "> vitest run tests/r36-eval-api.spec.ts tests/r36-benchmark-validity.spec.ts tests/r36-writer-contract.spec.ts tests/r36-agent-calibration.spec.ts tests/r36-conditions.spec.ts tests/r36-tool-protocol.spec.ts",
+          " RUN  v5.0.5 F:/Codex_Work_Space/DSH plugin/ef-r37-action",
+          " ✓ tests/r36-benchmark-validity.spec.ts (7 tests) 17ms",
+          " ✓ tests/r36-writer-contract.spec.ts (7 tests) 47ms",
+          " ✓ tests/r36-tool-protocol.spec.ts (9 tests) 16ms",
+          " ✓ tests/r36-conditions.spec.ts (3 tests) 39ms",
+          " ✓ tests/r36-eval-api.spec.ts (4 tests) 15ms",
+          " ✓ tests/r36-agent-calibration.spec.ts (4 tests) 6386ms",
+          "   ✓ R36-D: finish guard and harness diagnostics (4)",
+          "     ✓ H0: an unguarded finish is recorded as a process violation, not as compliance 1813ms",
+          "     ✓ H-finish: rejects the premature finish, then allows it after a fresh passing test 1961ms",
+          "     ✓ H-step/H-output are explicit manifest conditions, recorded in the report 1578ms",
+          "     ✓ H-native is declared but blocked, with no provider request 1027ms",
+          " Test Files  6 passed (6)",
+          "      Tests  34 passed (34)",
+          "   Start at  19:57:46",
+          "   Duration  6.93s (tests 89%, transform 6%, setup 2%, import 2%, worker 1%)",
+          "    Isolate  6 workers spawned · ~301ms startup each (spawn + environment, per file)",
+          "             at least ~602ms faster with isolate: false — reuses workers across files instead of one per file"
+        ]
+      },
+      {
+        "command": "npm run test",
+        "exitCode": 1,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 209642,
+        "vitest": {
+          "summary": "Tests  12 failed | 1476 passed | 70 skipped (1558)",
+          "testFiles": "Test Files  9 failed | 146 passed | 24 skipped (179)",
+          "passed": 1476,
+          "failed": 12,
+          "skipped": 70,
+          "todo": 0
+        },
+        "tail": [
+          "     23| }",
+          "     24|",
+          " ❯ tests/rc3-plugin-packaging.spec.ts:426:22",
+          "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯",
+          " FAIL  tests/rc7-inplace-drift.spec.ts > RC7-T2: the in-place preset block matches the installed DSH > each preset differs from the reference ONLY inside the compaction group",
+          "AssertionError: standard: row count must match the reference: expected 19 to be 22 // Object.is equality",
+          "- Expected",
+          "+ Received",
+          "- 22",
+          "+ 19",
+          " ❯ tests/rc7-inplace-drift.spec.ts:141:79",
+          "    139|       const reference = shippedPlugins(dir!, name, yaml)",
+          "    140|       const generated = row.config?.plugins ?? []",
+          "    141|       expect(generated.length, `${name}: row count must match the refe…",
+          "       |                                                                               ^",
+          "    142|",
+          "    143|       for (const [index, refRow] of reference.entries()) {",
+          "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯",
+          " FAIL  tests/rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy > every module is a byte-identical copy of the reference",
+          "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\vendor\\deepseek-harness\\packages\\compaction\\compaction-basic\\src\\config.ts'",
+          " ❯ readRef tests/rc7-vendored-basic.spec.ts:74:3",
+          "     72|  */",
+          "     73| const readRef = (m: string) => applySeam(stripRefDoc(",
+          "     74|   readFileSync(join(REF_DIR, `${m}.ts`), 'utf8'),",
+          "       |   ^",
+          "     75| ), m)",
+          "     76|",
+          " ❯ tests/rc7-vendored-basic.spec.ts:143:31",
+          "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯",
+          " FAIL  tests/rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy > the span-selection algorithm matches the reference exactly",
+          "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\vendor\\deepseek-harness\\packages\\compaction\\compaction-basic\\src\\region.ts'",
+          " ❯ readRef tests/rc7-vendored-basic.spec.ts:74:3",
+          "     72|  */",
+          "     73| const readRef = (m: string) => applySeam(stripRefDoc(",
+          "     74|   readFileSync(join(REF_DIR, `${m}.ts`), 'utf8'),",
+          "       |   ^",
+          "     75| ), m)",
+          "     76|",
+          " ❯ tests/rc7-vendored-basic.spec.ts:166:54",
+          "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯"
+        ]
+      }
+    ]
+  },
+  "notes": [
+    "R36 is read-only. The archive is referenced by digest, not copied.",
+    "A test-generated change is recorded, not hidden. The tracked install output (cordis.patch.yml) was restored before this manifest was written.",
+    "Historical R36 reports keep their original bytes; R37 writes only under eval/r37 and its own documents."
+  ]
+}
