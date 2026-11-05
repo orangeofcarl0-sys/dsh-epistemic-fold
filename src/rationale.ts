@@ -69,6 +69,13 @@ function finishError(finish: FinishReason): Error | undefined {
  * Run the rationale-only auxiliary call over the same replayed conversation
  * prefix Basic uses (so the provider's warm prefix cache still applies), with
  * the EF rationale instruction as the final user message.
+ *
+ * `instruction` lets a caller ask the SAME call for more than the rationale —
+ * the Semantic Writer requests a handoff plus structured deltas in one response
+ * rather than paying for a second round trip (Semantic Continuity §5.1). It is
+ * one call either way: provider, model, token budget, abort signal and failure
+ * classification are shared, so the two producers cannot drift apart.
+ *
  * @returns rationale text plus the REAL call envelope for durable audit.
  */
 export async function rationaleOnly(options: {
@@ -78,6 +85,8 @@ export async function rationaleOnly(options: {
   input: { readonly tools?: readonly unknown[]; readonly messages: readonly Message[] }
   agent: Agent
   signal?: AbortSignal | undefined
+  /** Overrides the default rationale instruction; used by the semantic writer. */
+  instruction?: string
 }): Promise<RationaleCallResult> {
   const { ctx, agent } = options
   const assembler = new BlockAssembler()
@@ -85,7 +94,7 @@ export async function rationaleOnly(options: {
     ...options.input.messages,
     deepFreeze({
       role: 'user',
-      content: [{ type: 'text', text: RATIONALE_INSTRUCTION }],
+      content: [{ type: 'text', text: options.instruction ?? RATIONALE_INSTRUCTION }],
     }),
   ]
   const generateOptions: GenerateOptions = {

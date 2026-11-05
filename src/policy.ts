@@ -10,6 +10,7 @@
 import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
+import { dirname, join } from 'node:path'
 // RC7: the config vocabulary comes from EF's own vendored copy of Basic, so the
 // package no longer depends on the host shipping `@deepseek-ai/dsh-compaction-basic`.
 import type { BasicCompactionConfig } from './basic/types.ts'
@@ -18,6 +19,8 @@ import type { ContextEconomicsProfile } from './economics-profile.ts'
 import type { FramingMode } from './framing.ts'
 import { FOLD_MODE_NAMES, isFoldModeName, resolvePreset } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
+import { DEFAULT_WORKING_SET_TOKENS } from './semantic/working-set-compiler.ts'
+import type { SemanticMode } from './semantic/types.ts'
 
 /** Resolve the exact provider/model durably routed for the latest request. */
 export function routedTarget(session: Session): Pick<LlmCallConfig, 'provider' | 'model'> | undefined {
@@ -138,6 +141,28 @@ export interface ResolvedEpistemicFoldConfig {
    * `src/working-set-observer.ts`, which is the only consumer of this flag.
    */
   readonly workingSet: WorkingSetMode
+  /**
+   * Semantic Continuity (the semantic writer, state reconciliation and the
+   * working-set compiler).
+   *
+   * `off` (default) — the pre-existing behavior, byte for byte: one rationale
+   * call, a full-state checkpoint, no journal, no new directories.
+   * `shadow` — the writer runs, proposals are validated and journaled, and the
+   * model-visible checkpoint is UNCHANGED. The measurements exist; the behavior
+   * does not move.
+   * `active` — validated proposals become anchors, and the checkpoint is
+   * rendered as a temporal body plus a bounded working set.
+   *
+   * Requires `semanticMode: 'rationale'`. A zero-LLM deployment cannot run a
+   * model-backed writer, and silently adding a call to a configuration that
+   * asked for none would be the worst kind of surprise — so the conflict is
+   * refused at resolution time rather than downgraded.
+   */
+  readonly semanticContinuity: SemanticMode
+  /** Token budget for the carried-state section of an active checkpoint. */
+  readonly semanticWorkingSetTokens: number
+  /** Durable journal directory; defaults to a sibling of `bundleRoot`. */
+  readonly semanticRoot: string
 }
 
 /** Leaf admission policy mode (R2-B). */
@@ -274,6 +299,18 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * `WorkingSetMode`.
    */
   workingSet?: WorkingSetMode
+  /**
+   * Semantic Continuity. Default `off`; see `ResolvedEpistemicFoldConfig`.
+   *
+   * `shadow` and `active` require `semanticMode: 'rationale'`, because the
+   * semantic writer IS the rationale call with a richer instruction. A
+   * deployment that set `semanticMode: 'none'` cannot have both.
+   */
+  semanticContinuity?: SemanticMode
+  /** Token budget for an active checkpoint's carried state; default 1024. */
+  semanticWorkingSetTokens?: number
+  /** Journal directory; default `<dirname(bundleRoot)>/semantic`. */
+  semanticRoot?: string
 }
 
 /**
@@ -367,6 +404,31 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (workingSet !== 'off' && workingSet !== 'observe') {
     throw new Error('epistemic-fold: workingSet must be "off" or "observe"')
   }
+  const semanticContinuity = expanded.semanticContinuity ?? 'off'
+  if (semanticContinuity !== 'off' && semanticContinuity !== 'shadow' && semanticContinuity !== 'active') {
+    throw new Error('epistemic-fold: semanticContinuity must be "off", "shadow" or "active"')
+  }
+  // The conflict is refused, never resolved silently. `semanticMode: 'none'` is
+  // a promise that no auxiliary model call happens; the semantic writer cannot
+  // run without one. Picking a winner here would either break the promise or
+  // silently disable the feature the deployment asked for.
+  if (semanticContinuity !== 'off' && semanticMode !== 'rationale') {
+    throw new Error(
+      `epistemic-fold: semanticContinuity "${semanticContinuity}" requires semanticMode "rationale" — `
+      + `the semantic writer is the rationale auxiliary call with a richer instruction, and `
+      + `semanticMode "${semanticMode}" promises no such call. Set semanticMode: "rationale", or `
+      + 'leave semanticContinuity off.',
+    )
+  }
+  const semanticWorkingSetTokens = expanded.semanticWorkingSetTokens ?? DEFAULT_WORKING_SET_TOKENS
+  if (!Number.isInteger(semanticWorkingSetTokens) || semanticWorkingSetTokens < 128
+    || semanticWorkingSetTokens > 8192) {
+    throw new Error('epistemic-fold: semanticWorkingSetTokens must be an integer in [128, 8192]')
+  }
+  const semanticRoot = expanded.semanticRoot ?? join(dirname(bundleRoot), 'semantic')
+  if (semanticRoot.trim().length === 0) {
+    throw new Error('epistemic-fold: semanticRoot must be a non-empty path')
+  }
   return {
     thresholdRatio,
     headroomTokens,
@@ -383,6 +445,9 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     referentialArchive,
     allowCrossSessionRecall,
     workingSet,
+    semanticContinuity,
+    semanticWorkingSetTokens,
+    semanticRoot,
     rootPolicy: {
       mode: rootPolicy,
       profiles: expanded.economicsProfiles ?? BUILTIN_ECONOMICS_PROFILES,
@@ -498,6 +563,9 @@ const EF_OWNED_CONFIG_KEYS = [
   'referentialArchive',
   'allowCrossSessionRecall',
   'workingSet',
+  'semanticContinuity',
+  'semanticWorkingSetTokens',
+  'semanticRoot',
 ] as const
 
 /** Drop the EF-owned config keys so Basic's strict key validation passes. */

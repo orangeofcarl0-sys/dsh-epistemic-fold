@@ -66,16 +66,19 @@ export const epistemicFoldProjection: ProjectionDefinition<'epistemicFold.curren
   key: EF_CURRENT_STATE_KEY,
   stateSchema: currentStateSchema as unknown as ZodType<FoldCurrentState>,
   /**
-   * BUMPED 1 -> 2 when `superseded` was added.
+   * BUMPED 1 -> 2 when `superseded` was added; 2 -> 3 when the reducer began
+   * advancing `stateHeads` on a failure transition.
    *
    * The projection contract is explicit: raise this whenever the serialized
    * state fields or the fold semantics change, so a persisted row from an older
    * unit is DISCARDED and re-folded rather than forward-applied. A version-1
    * row has no `superseded` map, and reusing it would leave the chain silently
    * empty — a state that looks valid and has quietly lost the thing this field
-   * was added to carry.
+   * was added to carry. A version-2 row carries a failure head frozen at
+   * `open` while its face advanced, so reusing it would preserve exactly the
+   * divergence version 3 removes.
    */
-  stateVersion: 2,
+  stateVersion: 3,
   init: () => emptyCurrentState(),
   apply: (state, event: SessionEvent) => reduceEvent(state, event),
 }

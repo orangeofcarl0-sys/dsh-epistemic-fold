@@ -29,7 +29,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import type { CommandDefinition } from '@deepseek-ai/dsh-commands'
 import type { TokenUsageProjection } from '@deepseek-ai/dsh-token-meter/client'
 import { buildContextStatus, contextStatusToLine, contextStatusToText } from './status.ts'
-import type { ContextStatus } from './status.ts'
+import type { ContextStatus, SemanticStatusFigure } from './status.ts'
 import { resolveEfCompactSpec, resolveEfConfig, routedTarget } from './policy.ts'
 import { BUILTIN_ECONOMICS_PROFILES, selectProfile } from './economics-profile.ts'
 import { TIERS, TIER_MODE_NAMES, isTierModeName, tierLadderToText } from './preset.ts'
@@ -127,6 +127,15 @@ export interface ContextCommandDeps {
    * — `/context mode` then reports that rather than pretending to succeed.
    */
   readonly setMode?: (mode: FoldModeName) => FoldModeName
+  /**
+   * The semantic layer's diagnostic state, when one is mounted.
+   *
+   * A callback, for the same reason as `setMode`: the command must not reach
+   * into engine internals, and a test can drive the report without an engine.
+   * Absent means "no semantic layer", which renders as no section at all rather
+   * than as `ready`.
+   */
+  readonly semantic?: () => SemanticStatusFigure
 }
 
 /** Parse the command's own grammar; the handler owns it, the registry does not. */
@@ -224,6 +233,7 @@ export async function gatherStatus(
   const usage = readTokenUsage(ctx, session)
 
   return buildContextStatus({
+    ...(deps.semantic === undefined ? {} : { semantic: deps.semantic }),
     mode,
     session,
     ...(measurement === undefined ? {} : { measurement }),

@@ -186,7 +186,15 @@ function removeFace(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
 /** How the reducer files one anchor into the bounded state faces. */
 function indexAnchor(state: FoldCurrentState, anchor: Anchor): FoldCurrentState {
   if (anchor.kind === 'objective') {
-    return { ...state, objective: anchor }
+    // An objective also occupies its STATE COORDINATE when it has one, even
+    // though the singleton slot below is what renderers read. Without the head,
+    // a second objective never displaced the first: `applyAnchorOp` found no
+    // previous anchor at the coordinate, so no `superseded` entry and no
+    // revision became traceable. The slot and the head stay the same object.
+    const next = anchor.stateKey === undefined
+      ? state
+      : { ...state, stateHeads: { ...state.stateHeads, [stateKeyText(anchor.stateKey)]: anchor } }
+    return { ...next, objective: anchor }
   }
   let next = state
   if (anchor.stateKey !== undefined) {
@@ -290,7 +298,23 @@ function transitionFailure(
     return { ...removeFace(state, head), retiredCount: state.retiredCount + 1 }
   }
   const advanced: Anchor = { ...head, failureState }
-  return { ...state, openFailures: { ...state.openFailures, [anchorId]: advanced } }
+  let next: FoldCurrentState = {
+    ...state,
+    openFailures: { ...state.openFailures, [anchorId]: advanced },
+  }
+  // The SAME anchor is also indexed in `stateHeads` under its state key (see
+  // `applyToolResult`). Advancing only the face left the head saying `open`
+  // forever, so two faces of one anchor disagreed about its lifecycle and a
+  // consumer that read the head reported resolved work as outstanding. The
+  // head is the coordinate's current value and must advance with the face —
+  // the face is an index, not a second source of truth.
+  if (head.stateKey !== undefined) {
+    const key = stateKeyText(head.stateKey)
+    if (next.stateHeads[key]?.id === anchorId) {
+      next = { ...next, stateHeads: { ...next.stateHeads, [key]: advanced } }
+    }
+  }
+  return next
 }
 
 /** Retire one anchor by id (verified failures, revoked constraints). */

@@ -177,7 +177,74 @@ export {
   hasCheckpointMarker,
 } from './checkpoint-marker.ts'
 export type { EfCheckpointMarker } from './checkpoint-marker.ts'
-export { renderStructuredCheckpoint } from './renderer.ts'
+export {
+  renderAnchorLine,
+  renderFailureLine,
+  renderStructuredCheckpoint,
+  renderTemporalCheckpoint,
+} from './renderer.ts'
+export type { CheckpointPresentation, SemanticCheckpointInput } from './renderer.ts'
+export {
+  FileSemanticJournal,
+  NullSemanticJournal,
+  committedDeltaIds,
+  packetIdOf,
+} from './semantic/journal.ts'
+export type { SemanticCommit, SemanticCommitRecord, SemanticJournal } from './semantic/journal.ts'
+export { anchorIdsInLog, changedAnchors, planCommits } from './semantic/reconcile.ts'
+export type { CommitPlan, PlanCommitsOptions } from './semantic/reconcile.ts'
+export {
+  DEFAULT_MAX_DELTAS,
+  MAX_STATEMENT_CHARS,
+  MAX_SUBJECT_CHARS,
+  SEMANTIC_NAMESPACE,
+  anchorIdOf,
+  semanticStateKey,
+  validateDeltas,
+} from './semantic/validate.ts'
+export type { ValidateDeltasOptions, ValidationResult } from './semantic/validate.ts'
+export { citableMessages, messageText, resolveEvidence, resolveQuote } from './semantic/evidence.ts'
+export type { CitableMessage, QuoteResolution } from './semantic/evidence.ts'
+export {
+  SEMANTIC_MAX_TOKENS,
+  SEMANTIC_WRITER_INSTRUCTION,
+  parseWriterOutput,
+} from './semantic/writer.ts'
+export type { WriterOutput } from './semantic/writer.ts'
+export {
+  DEFAULT_WORKING_SET_TOKENS,
+  compileWorkingSet,
+  describeWorkingSetCompilation,
+} from './semantic/working-set-compiler.ts'
+export type {
+  CompileWorkingSetOptions,
+  CompiledWorkingSet,
+  WorkingSetEstimateBasis,
+} from './semantic/working-set-compiler.ts'
+export {
+  EPISTEMIC_STATUSES,
+  SEMANTIC_KINDS,
+  SEMANTIC_SCHEMA_VERSION,
+} from './semantic/types.ts'
+export type {
+  AcceptedDelta,
+  EpistemicStatus,
+  EvidenceRef,
+  JournalRecord,
+  ProposedDelta,
+  ProposedEvidence,
+  ReconciliationReport,
+  SemanticDiagnostics,
+  SemanticHealth,
+  SemanticKind,
+  SemanticLifecycle,
+  SemanticMode,
+  SemanticPacket,
+  SemanticRefusal,
+  SemanticRefusalReason,
+  SemanticResidency,
+  SemanticScope,
+} from './semantic/types.ts'
 export type {
   BundleDescriptor,
   BundleVerification,

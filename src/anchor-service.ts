@@ -13,15 +13,9 @@ import { randomUUID } from 'node:crypto'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { Session as SessionType } from '@deepseek-ai/dsh-session'
 import { canVerify, isAuthorityGrounded } from './authority.ts'
+import { authoritativeKindOf, provenanceOf } from './authority.ts'
 import type { AuthoritativeEventKind } from './authority.ts'
 import type { Anchor, EventRef, FailureState } from './state.ts'
-
-const AUTHORITATIVE_KINDS: ReadonlySet<string> = new Set([
-  'user/message',
-  'system/message',
-  'tool/result',
-  'assistant/message',
-])
 
 /**
  * Whether this host admits a plugin-owned session event durably.
@@ -97,16 +91,41 @@ export interface AnchorService {
   retire(session: SessionType, anchorId: string): void
 }
 
-/** Resolve the raw event kinds behind one anchor's source refs. */
-function citedKinds(session: SessionType, refs: readonly EventRef[]): AuthoritativeEventKind[] {
+/**
+ * Resolve the raw event kinds behind one anchor's source refs.
+ *
+ * A ref is citable only when its event's ROLE and its derived message's
+ * PRODUCER agree (see `authoritativeKindOf`). Two refusals matter and were
+ * both previously accepted:
+ *
+ *  - a `user/message` whose `source.kind` is not `user` is host- or
+ *    plugin-injected context, not the human, so it grounds nothing;
+ *  - a compaction checkpoint is a `compaction/summary` event and so was never
+ *    citable at all — but an EF checkpoint RE-appended as a user message would
+ *    still have been trusted by role alone. Now its producer kind decides.
+ */
+function citedKinds(
+  session: SessionType,
+  refs: readonly EventRef[],
+): { readonly kinds: AuthoritativeEventKind[]; readonly refused: string[] } {
   const kinds: AuthoritativeEventKind[] = []
+  const refused: string[] = []
   for (const ref of refs) {
-    const kind = session.eventAt(ref.seq)?.type
-    if (kind !== undefined && AUTHORITATIVE_KINDS.has(kind)) {
-      kinds.push(kind as AuthoritativeEventKind)
+    const event = session.eventAt(ref.seq)
+    if (event === undefined) {
+      refused.push(`${String(ref.seq)}:absent`)
+      continue
     }
+    const message = session.deriveEventMessage(event)
+    const sourceKind = message === null ? undefined : message.source.kind
+    const kind = authoritativeKindOf(event.type, sourceKind)
+    if (kind === undefined) {
+      refused.push(`${String(ref.seq)}:${provenanceOf(event.type, sourceKind)}`)
+      continue
+    }
+    kinds.push(kind)
   }
-  return kinds
+  return { kinds, refused }
 }
 
 /** Create the anchor service; one instance may serve many sessions. */
@@ -128,12 +147,35 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
     )
   }
 
+  /**
+   * Append one `ef/anchor` WITH the `ignorable` marker.
+   *
+   * The capability probe asks "does this host preserve the marker WHEN ONE IS
+   * SUPPLIED". A write that did not supply it could pass the probe on a host
+   * that honors the option and still append an unmarked event — the exact log
+   * the persistence read path refuses to reopen. Probe and writes now exercise
+   * the same call shape.
+   *
+   * The typed `append` overload does not accept options for a non-surface event
+   * type, so the receiver is widened as it is in the probe. On a host that
+   * ignores the bag the append behaves exactly as before.
+   */
+  function appendAnchor(session: SessionType, data: unknown): void {
+    const untyped = session as unknown as {
+      append(type: string, payload: unknown, opts: unknown): unknown
+    }
+    untyped.append('ef/anchor', data, { ignorable: true })
+  }
+
   function declare(session: SessionType, draft: AnchorDraft): Anchor {
     assertDurableWriteAllowed()
-    const kinds = citedKinds(session, draft.sourceRefs)
+    const { kinds, refused } = citedKinds(session, draft.sourceRefs)
     if (kinds.length === 0) {
       throw new Error(
-        `epistemic-fold: ungrounded anchor — cite at least one raw authoritative event (kind=${draft.kind})`,
+        `epistemic-fold: ungrounded anchor — cite at least one raw authoritative event `
+        + `(kind=${draft.kind}); refused source(s): ${refused.join(', ') || 'none cited'}. `
+        + 'A user-role message produced by a plugin, a workspace context injection, or a checkpoint '
+        + 'is not the human user and cannot ground an anchor.',
       )
     }
     if (!isAuthorityGrounded(draft.authority, kinds)) {
@@ -147,7 +189,7 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
       id: draft.id ?? `anchor-${randomUUID()}`,
       lifecycle: 'active',
     }
-    session.append('ef/anchor', { op: 'declare', anchor })
+    appendAnchor(session, { op: 'declare', anchor })
     return anchor
   }
 
@@ -156,14 +198,15 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
     if (evidenceRefs.length === 0) {
       throw new Error('epistemic-fold: VERIFIED requires at least one evidence ref')
     }
-    const kinds = citedKinds(session, evidenceRefs)
+    const { kinds, refused } = citedKinds(session, evidenceRefs)
     if (!canVerify(kinds)) {
       throw new Error(
         `epistemic-fold: VERIFIED refused — evidence kinds [${kinds.join(', ') || 'none'}] `
-        + 'are not all empirical/procedural (Evidence Overrides Narrative)',
+        + `are not all empirical/procedural (Evidence Overrides Narrative)`
+        + (refused.length === 0 ? '' : `; refused source(s): ${refused.join(', ')}`),
       )
     }
-    session.append('ef/anchor', {
+    appendAnchor(session, {
       op: 'transition',
       anchorId: failureAnchorId,
       failureState: 'verified',
@@ -173,7 +216,7 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
 
   function transitionFailure(session: SessionType, failureAnchorId: string, failureState: Exclude<FailureState, 'verified'>): void {
     assertDurableWriteAllowed()
-    session.append('ef/anchor', {
+    appendAnchor(session, {
       op: 'transition',
       anchorId: failureAnchorId,
       failureState,
@@ -182,7 +225,7 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
 
   function retire(session: SessionType, anchorId: string): void {
     assertDurableWriteAllowed()
-    session.append('ef/anchor', { op: 'retire', anchorId })
+    appendAnchor(session, { op: 'retire', anchorId })
   }
 
   return { declare, verifyFailure, transitionFailure, retire }

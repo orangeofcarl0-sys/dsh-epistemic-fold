@@ -92,6 +92,11 @@ export class EpistemicFoldPlugin {
     // RC29: the working-set observer. Declared here or the loader's schema
     // validation would reject a deployment that set it.
     workingSet: z.union(['off', 'observe'] as const),
+    // Semantic Continuity. Declared here for the same reason: the loader's
+    // schema is strict, so an undeclared key rejects the whole profile.
+    semanticContinuity: z.union(['off', 'shadow', 'active'] as const),
+    semanticWorkingSetTokens: z.number(),
+    semanticRoot: z.string(),
   })
 
   /** The engine instance this plugin mounts (owns `ctx.compaction`). */
@@ -115,10 +120,26 @@ export class EpistemicFoldPlugin {
     for (const line of effectiveConfigToText(this.effectiveConfig).split(String.fromCharCode(10))) {
       ctx.logger.info(`[epistemic-fold] ${line}`)
     }
+    // The anchor service exists BEFORE the engine, because the semantic layer
+    // commits through it and the engine must not be the one deciding which
+    // producer writes `ef/anchor`. `mode: basic` constructs it but never
+    // provides it: providing a service is a surface, and basic mounts none.
+    //
+    // The capability probe is wired here rather than defaulted in the service:
+    // `ef/anchor` is outside DSH's known event vocabulary, and a host whose
+    // `append` drops the `ignorable` marker would persist a log it then refuses
+    // to reopen. Refusing the write is the only safe answer, and only the
+    // mounted plugin knows which host it is on. The answer cannot change within
+    // a process, so it is probed once rather than on every write.
+    let admitsPluginEvents: boolean | undefined
+    const anchors = createAnchorService({
+      durableWritesAllowed: () => (admitsPluginEvents ??= hostAdmitsPluginEvents()),
+    })
+
     // The engine owns ctx.compaction (one compaction backend per context).
     // Constructing it here places it on the plugin's own fiber, so unloading
     // the plugin disposes the engine with it.
-    this.engine = new EpistemicFoldEngine(ctx, config)
+    this.engine = new EpistemicFoldEngine(ctx, config, { anchors })
 
     // `mode: basic` mounts NO EF surface at all (RC7, the C2 requirement).
     //
@@ -141,18 +162,9 @@ export class EpistemicFoldPlugin {
     }
 
     // Anchor service: the sanctioned `ef/anchor` producer, provided for the
-    // plugin's fiber lifetime (cordis requires provide, not assignment).
-    //
-    // The capability probe is wired here rather than defaulted in the service:
-    // `ef/anchor` is outside DSH's known event vocabulary, and a host whose
-    // `append` drops the `ignorable` marker would persist a log it then refuses
-    // to reopen. Refusing the write is the only safe answer, and only the
-    // mounted plugin knows which host it is on. The answer cannot change within
-    // a process, so it is probed once rather than on every write.
-    let admitsPluginEvents: boolean | undefined
-    this.anchors = createAnchorService({
-      durableWritesAllowed: () => (admitsPluginEvents ??= hostAdmitsPluginEvents()),
-    })
+    // plugin's fiber lifetime (cordis requires provide, not assignment). It was
+    // constructed above so the engine could receive the same instance.
+    this.anchors = anchors
     ctx.provide('epistemicFold', this.anchors)
 
     // Deterministic state projection + recall tools: registered for the
@@ -231,6 +243,22 @@ export class EpistemicFoldPlugin {
         // first switch.
         config: () => ({ mode: this.engine.currentMode, raw: config as Record<string, unknown> }),
         setMode: mode => this.engine.setMode(mode, config),
+        // Semantic health rides the same control-plane surface as the fold
+        // counts: an operator asking "is my context trustworthy right now"
+        // must not have to read a log to find out.
+        semantic: () => {
+          const diagnostics = this.engine.semanticDiagnostics
+          return {
+            health: diagnostics.health,
+            mode: diagnostics.mode,
+            accepted: diagnostics.accepted,
+            refused: diagnostics.refused,
+            committed: diagnostics.committed,
+            reconciled: diagnostics.reconciled,
+            workingSetTokens: diagnostics.workingSetTokens,
+            ...(diagnostics.detail === undefined ? {} : { detail: diagnostics.detail }),
+          }
+        },
       })
       return () => dispose?.()
     })

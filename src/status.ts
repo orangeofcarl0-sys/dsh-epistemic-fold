@@ -119,6 +119,8 @@ export interface FoldLifetimeCounts {
 export interface ContextStatus {
   /** The configured mode name, tier or not. */
   readonly mode: FoldModeName
+  /** Semantic Continuity's diagnostic state, when a layer is configured. */
+  readonly semantic?: SemanticStatusFigure
   /** The tier this mode names, when it names one. */
   readonly tier?: TierModeName
   /** The tier's one-line claim, when there is one. */
@@ -198,9 +200,29 @@ export interface ContextStatus {
 }
 
 /** The inputs the status model needs; all optional so it degrades honestly. */
+/**
+ * The semantic layer's diagnostic state, as the command surface reports it.
+ *
+ * Every count is a number the layer itself produced (see
+ * `SemanticDiagnostics`); the health is a VALUE, not an opinion, so a report
+ * that says `ready` cannot be reached by a fold whose writer never ran.
+ */
+export interface SemanticStatusFigure {
+  readonly health: string
+  readonly mode: string
+  readonly accepted: number
+  readonly refused: number
+  readonly committed: number
+  readonly reconciled: number
+  readonly workingSetTokens: number
+  readonly detail?: string
+}
+
 export interface ContextStatusInput {
   readonly mode: FoldModeName
   readonly session: Session
+  /** Optional: absent means the deployment did not mount a semantic layer. */
+  readonly semantic?: () => SemanticStatusFigure
   /** The token meter's reading of the live surface. */
   readonly measurement?: TokenMeasurement
   /** The routed model's window, when known. */
@@ -433,6 +455,7 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
   const calls = countRecallCalls(session)
   const frontier = locateFoldFrontier(session)
   const archive = archiveFigures(input.bundles)
+  const semantic = input.semantic === undefined ? undefined : input.semantic()
   const folds: FoldLifetimeCounts = input.foldCounts !== undefined
     ? {
       leaves: {
@@ -528,6 +551,7 @@ export function buildContextStatus(input: ContextStatusInput): ContextStatus {
       ? {}
       : { costProfileId: input.profile.id }),
     ...(input.usage === undefined ? {} : { usage: input.usage }),
+    ...(semantic === undefined ? {} : { semantic }),
   }
 }
 
@@ -579,6 +603,27 @@ export function contextStatusToText(status: ContextStatus): string {
   lines.push(`  archived msgs   ${figure(status.archivedMessages)}`)
   // Named for what it is: the CURRENT surface, not a lifetime total.
   lines.push(`  checkpoints now ${figure(status.checkpoints.value)}`)
+
+  if (status.semantic !== undefined) {
+    lines.push('')
+    // The health is the first thing on the line because it is the only value
+    // that says whether the counts below describe a complete state. `off` reads
+    // `archive-only`, never `ready`: absence of a semantic layer is not evidence
+    // that the current state is complete.
+    lines.push('semantic continuity:')
+    lines.push(`  health          ${status.semantic.health} (${status.semantic.mode})`)
+    lines.push(`  deltas          ${status.semantic.accepted} accepted, `
+      + `${status.semantic.refused} refused, ${status.semantic.committed} committed`)
+    if (status.semantic.reconciled > 0) {
+      lines.push(`  reconciled      ${status.semantic.reconciled} re-committed after a restart gap`)
+    }
+    if (status.semantic.workingSetTokens > 0) {
+      lines.push(`  working set     ${status.semantic.workingSetTokens} tokens`)
+    }
+    if (status.semantic.detail !== undefined) {
+      lines.push(`  NOTE            ${status.semantic.detail}`)
+    }
+  }
 
   lines.push('')
   lines.push('retrieval:')
@@ -654,6 +699,7 @@ export function contextStatusToLine(status: ContextStatus): string {
     `recalls=${status.recalls.value}`,
     `folds=${status.folds.leaves.value}`,
     `roots=${status.folds.roots.value}`,
+    status.semantic === undefined ? undefined : `semantic=${status.semantic.health}`,
     status.cost === undefined ? 'cost=unknown' : `cost~${status.cost.value.toFixed(4)}`,
   ].filter((part): part is string => part !== undefined)
   return parts.join(' ')

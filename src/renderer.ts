@@ -12,6 +12,7 @@ import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
 import { stateKeyText } from './state.ts'
 import type { Anchor, FoldCurrentState } from './state.ts'
+import type { FoldMode } from './types.ts'
 
 /**
  * One state line: `- [<kind> <id> <stateKey>] <value> (<authority>)`.
@@ -29,11 +30,19 @@ import type { Anchor, FoldCurrentState } from './state.ts'
  * `splitLeafCheckpointText` splits on SECTION headers (`\nCurrent\n`), never on
  * bracket content, so this format is not a parsing contract — which is what
  * lets the id be added without a reader change.
+ *
+ * Exported because the semantic working-set compiler renders the same lines:
+ * two renderers for one anchor would drift, and the checkpoint would then show
+ * two formats for the same kind of fact.
  */
-function anchorLine(anchor: Anchor): string {
+export function renderAnchorLine(anchor: Anchor): string {
   const key = anchor.stateKey === undefined ? '' : ` ${stateKeyText(anchor.stateKey)}`
   const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
-  return `- [${anchor.kind} ${anchor.id}${key}] ${value} (${anchor.authority})`
+  // ONE line, always. The validator already collapses whitespace in semantic
+  // statements, but this renderer also serves anchors declared by other callers
+  // — and a value containing a newline would otherwise emit a line shaped like
+  // a runtime anchor, including the trailing authority marker.
+  return `- [${anchor.kind} ${anchor.id}${key}] ${oneLine(value)} (${anchor.authority})`
 }
 
 /**
@@ -43,12 +52,17 @@ function anchorLine(anchor: Anchor): string {
  * was observed to produce a wrong answer on the live behavioral subset. The
  * id stays (recall and oracles key on it) alongside the value.
  */
-function failureLine(anchor: Anchor): string {
+export function renderFailureLine(anchor: Anchor): string {
   const value = typeof anchor.value === 'string' ? anchor.value : JSON.stringify(anchor.value)
   const state = anchor.failureState ?? 'open'
   return value === undefined || value === '{}'
     ? `- [failure] ${anchor.id} (${state})`
-    : `- [failure] ${anchor.id} (${state}): ${value}`
+    : `- [failure] ${anchor.id} (${state}): ${oneLine(value)}`
+}
+
+/** Collapse a rendered value to a single line. */
+function oneLine(value: string): string {
+  return value.replace(/\s+/gu, ' ').trim()
 }
 
 /**
@@ -144,14 +158,22 @@ export function projectForCheckpoint(state: FoldCurrentState): CheckpointPresent
  * @param state - the deterministic current state at fold time.
  * @returns the digest and the visible anchor count.
  */
-export function describeRenderedState(state: FoldCurrentState): {
+export function describeRenderedState(
+  state: FoldCurrentState,
+  presentedAnchors?: number,
+): {
   readonly digest: string
   readonly anchors: number
 } {
   const presentation = projectForCheckpoint(state)
   return {
     digest: canonicalHash(state),
-    anchors: presentation.current.length + presentation.evidence.length + presentation.open.length,
+    // A temporal body renders a CAPPED, BUDGETED subset, so the count must be
+    // what the body shows rather than what the state holds — otherwise the
+    // documented "equal content, equal count" comparison is wrong for exactly
+    // the folds that dropped something on purpose.
+    anchors: presentedAnchors
+      ?? presentation.current.length + presentation.evidence.length + presentation.open.length,
   }
 }
 
@@ -159,24 +181,25 @@ export function renderStructuredCheckpoint(
   state: FoldCurrentState,
   checkpointId: string,
   rationale?: string,
+  mode: FoldMode = 'leaf',
 ): string {
   const presentation = projectForCheckpoint(state)
-  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode: 'leaf' })]
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
 
   if (presentation.current.length > 0) {
     lines.push('', 'Current')
-    for (const anchor of presentation.current) lines.push(anchorLine(anchor))
+    for (const anchor of presentation.current) lines.push(renderAnchorLine(anchor))
   }
 
   if (presentation.evidence.length > 0) {
     lines.push('', 'Evidence')
-    for (const anchor of presentation.evidence) lines.push(anchorLine(anchor))
+    for (const anchor of presentation.evidence) lines.push(renderAnchorLine(anchor))
   }
 
   if (presentation.open.length > 0) {
     lines.push('', 'Open')
     for (const anchor of presentation.open) {
-      lines.push(anchor.kind === 'failure' ? failureLine(anchor) : anchorLine(anchor))
+      lines.push(anchor.kind === 'failure' ? renderFailureLine(anchor) : renderAnchorLine(anchor))
     }
   }
 
@@ -187,6 +210,80 @@ export function renderStructuredCheckpoint(
   if (rationaleText.length > 0) {
     lines.push('', 'Rationale')
     for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * What one semantic checkpoint body is rendered from.
+ *
+ * The three inputs are deliberately separate: `changed` is provenance-scoped to
+ * the fold, `workingSet` is the budgeted carried state, and `rationale` is the
+ * only narrative. Collapsing them (for example, passing the whole state as
+ * `changed`) would recreate the every-fold-repeats-everything defect this shape
+ * exists to remove.
+ */
+export interface SemanticCheckpointInput {
+  readonly checkpointId: string
+  /** Which fold produced this body; the marker's mode code comes from it. */
+  readonly mode: FoldMode
+  /** Anchors whose source events lie inside THIS fold's span. */
+  readonly changed: readonly Anchor[]
+  /** The compiled, bounded carried state; empty when nothing is carried. */
+  readonly workingSetText: string
+  readonly rationale?: string
+}
+
+/**
+ * Render a checkpoint whose state sections are TEMPORAL.
+ *
+ * ## The defect this shape fixes
+ *
+ * The original structured body had a `Current` section that rendered the whole
+ * state at fold time. Frozen checkpoints are never rewritten, so after several
+ * folds the surface held several sections titled `Current` — each asserting a
+ * different value, with nothing saying which one won. Measured: after two folds
+ * the older checkpoint still said "never commit to main" while the newer said
+ * "work on the semantic-continuity branch", both under `Current`.
+ *
+ * ## The shape here
+ *
+ *   Changed in this fold                      provenance-scoped, unique per fold
+ *   State from earlier folds (superseded…)    effective, budgeted, explicitly dated
+ *   Rationale                                 advisory prose
+ *
+ * `Changed in this fold` makes a claim about the SPAN, not about today: it says
+ * "this is what that fold established", which stays true forever. The carried
+ * section states its own temporality in its heading, so an older checkpoint
+ * cannot be misread as current even though it is never rewritten. A later
+ * checkpoint's `Changed` section is the authority for a coordinate it touches.
+ *
+ * @param input - the fold's changes, the carried state, and the handoff.
+ * @returns the checkpoint body, unframed.
+ */
+export function renderTemporalCheckpoint(input: SemanticCheckpointInput): string {
+  const lines: string[] = [encodeCheckpointMarker({ checkpointId: input.checkpointId, mode: input.mode })]
+
+  if (input.changed.length > 0) {
+    lines.push('', 'Changed in this fold')
+    for (const anchor of input.changed) {
+      lines.push(anchor.kind === 'failure' ? renderFailureLine(anchor) : renderAnchorLine(anchor))
+    }
+  }
+
+  const carried = input.workingSetText.trim()
+  if (carried.length > 0) {
+    // The heading is the temporal contract. It rides on every checkpoint, so it
+    // survives the `legacy` framing mode where no system section exists to say
+    // it once.
+    lines.push('', 'State from earlier folds (later checkpoints supersede it)', carried)
+  }
+
+  const rationale = input.rationale?.trim() ?? ''
+  if (rationale.length > 0) {
+    lines.push('', 'Rationale')
+    for (const line of rationale.split('\n')) lines.push(`- ${line}`)
   }
 
   return lines.join('\n')

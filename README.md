@@ -262,6 +262,46 @@ Then verify from a session:
 /context status
 ```
 
+### Semantic Continuity (opt-in)
+
+EF can extract semantic state from ordinary conversation — constraints, decisions,
+rejected approaches, failures, obligations — and carry it across folds. It is
+**off by default**, and turns on in two steps so the measurement exists before the
+behavior moves:
+
+```yaml
+- name: dsh-epistemic-fold
+  config:
+    bundleRoot: <profile persistence root>/epistemic-fold
+    mode: economy
+    semanticMode: rationale          # required: the writer IS the rationale call
+    semanticContinuity: shadow       # off | shadow | active
+    semanticWorkingSetTokens: 1024   # bounded carried-state budget (128-8192)
+    semanticRoot: <persistence root>/epistemic-fold/semantic   # optional; default
+                                      # is <dirname(bundleRoot)>/semantic
+```
+
+- `off` (default) — the previous behavior exactly: one rationale call, the
+  full-state checkpoint, no journal directory.
+- `shadow` — the writer runs, proposals are validated and journaled, and the
+  model-visible checkpoint does **not** change. Use this to measure extraction
+  quality and cost on your own traffic before trusting it.
+- `active` — validated proposals become durable anchors, and checkpoints render
+  as `Changed in this fold` plus a bounded `State from earlier folds`.
+
+`semanticMode: none` (the zero-LLM profile) and `semanticContinuity: shadow` or
+`active` are **refused together at resolution time** rather than silently
+downgraded: the writer is a model call, and a configuration that promised none
+must not acquire one.
+
+`/context status` reports the layer's health (`ready`, `partial`, `unavailable`,
+`stale`, `archive-only`), its accepted/refused/committed counts and the size of
+the last working set. See
+[docs/semantic-continuity/SPEC.md](docs/semantic-continuity/SPEC.md) for what the
+states mean and
+[docs/semantic-continuity/EVALUATION.md](docs/semantic-continuity/EVALUATION.md)
+for what is and is not proven.
+
 For install channels, pnpm `allowBuilds`, preset verification, browser checks and
 upgrade behavior, see the [User guide](docs/USER_GUIDE.md) and the detailed
 [deployment chain](docs/42_DEPLOYMENT_CHAIN.md).

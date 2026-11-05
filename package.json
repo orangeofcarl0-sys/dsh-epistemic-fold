@@ -51,6 +51,7 @@
     "typecheck:all": "npm run typecheck && npm run typecheck:client && npm run typecheck:eval",
     "generate-maps": "node scripts/generate-maps.cjs",
     "eval:keyless": "vitest run tests/eval-core.spec.ts tests/eval-corpus.spec.ts tests/eval-longhorizon.spec.ts",
+    "eval:semantic": "vitest run tests/semantic-core.spec.ts tests/semantic-continuity.spec.ts tests/p0-regressions.spec.ts tests/eval-semantic.spec.ts",
     "eval:longhorizon": "vitest run tests/eval-longhorizon.spec.ts",
     "eval:r1": "vitest run tests/r1a-economics.spec.ts tests/r1b-roi.spec.ts tests/r1d-policy.spec.ts tests/r1e-pareto.spec.ts",
     "eval:r1-report": "vitest run tests/r1-report.spec.ts",

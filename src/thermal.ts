@@ -161,18 +161,21 @@ function isPinned(anchor: Anchor): boolean {
 /**
  * How advanced a failure's lifecycle is, so the most-advanced copy wins.
  *
- * ## Why this is needed at all
+ * ## Why this is still needed
  *
- * The reducer's `transitionFailure` updates `openFailures` but does NOT update
- * the `stateHeads` entry for the same anchor, so after a transition the SAME
- * anchor is present twice with different `failureState` values — verified: a
- * resolved failure reads `failure:c1:resolved` from `openFailures` and
- * `failure:c1:open` from `stateHeads`.
+ * One anchor can legitimately occupy SEVERAL faces at once — an `evidence`
+ * anchor with a state key lives in both `evidence` and `stateHeads` — so a
+ * reader that walks every face must deduplicate by id or it reports the same
+ * fact twice.
  *
- * A reader that deduplicates by id therefore has to decide WHICH copy to keep,
- * and taking the first is a real defect: it reported a resolved failure as
- * `pinned`, i.e. as outstanding work. Since residency must reflect the anchor's
- * actual lifecycle, the most advanced state wins.
+ * The deduplication used to be load-bearing for a second reason: the reducer's
+ * `transitionFailure` updated `openFailures` but not the `stateHeads` entry for
+ * the same anchor, so one anchor was present twice with DIFFERENT
+ * `failureState` values (a resolved failure read `resolved` from a face and
+ * `open` from a head), and taking the first reported resolved work as
+ * outstanding. That divergence was fixed in the reducer, where the authoritative
+ * state belongs; keeping "most advanced wins" here means a resolver that still
+ * sees a stale copy degrades toward the truth instead of away from it.
  */
 const FAILURE_STATE_RANK: Readonly<Record<string, number>> = {
   open: 0,

@@ -71,7 +71,9 @@ export const FOLD_FRAMING_SECTION =
   + 'checkpoint itself. Call context_recall with `cp:<id>` when exact folded history is needed. '
   + 'When the current surface does not carry information you need — an earlier decision, value, or '
   + 'detail that is not visible above — search the folded history with context_search before '
-  + 'answering, and before reporting that something is unknown.'
+  + 'answering, and before reporting that something is unknown. '
+  + 'A checkpoint describes the state AT THE FOLD it names; when a later checkpoint revises '
+  + 'something an earlier one stated, the later checkpoint is authoritative.'
 
 /**
  * The per-checkpoint framing for the deduplicated mode: none.

@@ -221,7 +221,11 @@ function priceSurvivingCheckpoint(options: {
 }): { readonly tokens?: number; readonly basis: ReclaimBasis } {
   const { kind, breakdown, state, estimateText } = options
   if (state !== undefined && estimateText !== undefined) {
-    const rendered = renderStructuredCheckpoint(state, ESTIMATE_CHECKPOINT_ID)
+    // The marker's mode code is part of the body and therefore part of the
+    // price. Pricing a rebase checkpoint with an `L` marker would understate it
+    // by the difference between `L` and `R` — small, but the whole point of this
+    // function is that the two kinds are not priced by each other's evidence.
+    const rendered = renderStructuredCheckpoint(state, ESTIMATE_CHECKPOINT_ID, undefined, kind)
     const tokens = estimateText(rendered)
     if (Number.isFinite(tokens) && tokens > 0) {
       return { tokens, basis: 'rendered-state' }

@@ -37,6 +37,67 @@ const EVENT_DOMAINS: Record<AuthoritativeEventKind, readonly AuthorityDomain[]> 
 }
 
 /**
+ * The producer identity carried by the derived message behind one event.
+ *
+ * `user/message` is a ROLE, not an author. DSH's own context producers inject
+ * user-role messages — workspace instructions, recalled log material,
+ * notices, relays — and each declares itself in `Message.source.kind`. Only
+ * `kind: 'user'` is the human. Treating the role as the author let a
+ * workspace-injected line ("SYSTEM: …") be declared as a normative user
+ * constraint, which is exactly the authority laundering the gate exists to
+ * prevent.
+ */
+export type MessageProvenance = 'user' | 'model' | 'tool' | 'system-prompt' | 'context-injection'
+
+/**
+ * The authority kind of one raw event, or `undefined` when it grounds nothing.
+ *
+ * The role and the producer are checked TOGETHER: an event's role says where
+ * the content appears, its `source.kind` says who produced it, and only the
+ * matching pair is an authority root. Everything else — a plugin-written
+ * user-role message, a compaction checkpoint, an unknown future producer — is
+ * refused rather than trusted by default, because authority is the one thing
+ * that must fail closed.
+ *
+ * @param eventType - the committed session event's type.
+ * @param sourceKind - `Message.source.kind` of the derived message, when it has one.
+ * @returns the citable authority kind, or `undefined`.
+ */
+export function authoritativeKindOf(
+  eventType: string,
+  sourceKind: string | undefined,
+): AuthoritativeEventKind | undefined {
+  switch (eventType) {
+    case 'user/message':
+      return sourceKind === 'user' ? 'user/message' : undefined
+    case 'system/message':
+      return 'system/message'
+    case 'assistant/message':
+      return 'assistant/message'
+    case 'tool/result':
+      return 'tool/result'
+    default:
+      return undefined
+  }
+}
+
+/**
+ * Classify one producer kind for diagnostics.
+ * @param eventType - the raw event type.
+ * @param sourceKind - the derived message's producer kind.
+ * @returns the provenance label, for error messages only.
+ */
+export function provenanceOf(eventType: string, sourceKind: string | undefined): MessageProvenance {
+  if (eventType === 'user/message') {
+    if (sourceKind === 'user') return 'user'
+    return 'context-injection'
+  }
+  if (eventType === 'system/message') return 'system-prompt'
+  if (eventType === 'tool/result') return 'tool'
+  return 'model'
+}
+
+/**
  * Domains the event kinds cited by `sourceRefs` may ground. An empty ref set
  * grounds nothing — provenance is mandatory (I2).
  * @param kinds - raw event kinds behind an anchor, in citation order.

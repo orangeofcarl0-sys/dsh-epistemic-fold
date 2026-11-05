@@ -26,7 +26,7 @@
 import BasicCompactionEngine from './basic/index.ts'
 import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import type { ContentBlock, Message } from '@deepseek-ai/dsh-llm'
 import { createUserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import type { Session } from '@deepseek-ai/dsh-session'
@@ -66,8 +66,31 @@ import type { CapacityRegime, PressureRegime } from './pressure.ts'
 import { evaluateRootRebase } from './root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from './projection.ts'
 import { observeWorkingSet } from './working-set-observer.ts'
-import { describeRenderedState, renderStructuredCheckpoint } from './renderer.ts'
+import { describeRenderedState, renderStructuredCheckpoint, renderTemporalCheckpoint } from './renderer.ts'
 import { rationaleOnly } from './rationale.ts'
+import type { RationaleCallResult } from './rationale.ts'
+import { canonicalHash } from './hash.ts'
+import { createAnchorService } from './anchor-service.ts'
+import type { AnchorService } from './anchor-service.ts'
+import { FileSemanticJournal, NullSemanticJournal, committedDeltaIds, packetIdOf } from './semantic/journal.ts'
+import type { SemanticJournal } from './semantic/journal.ts'
+import { anchorIdsInLog, changedAnchors, commitRefusal, planCommits } from './semantic/reconcile.ts'
+import { messageAt, messageDigestOf } from './semantic/evidence.ts'
+import { validateDeltas } from './semantic/validate.ts'
+import { SEMANTIC_MAX_TOKENS, parseWriterOutput, SEMANTIC_WRITER_INSTRUCTION } from './semantic/writer.ts'
+import {
+  compileWorkingSet,
+  describeWorkingSetCompilation,
+} from './semantic/working-set-compiler.ts'
+import type { CompiledWorkingSet } from './semantic/working-set-compiler.ts'
+import { SEMANTIC_SCHEMA_VERSION } from './semantic/types.ts'
+import type {
+  AcceptedDelta,
+  SemanticDiagnostics,
+  SemanticHealth,
+  SemanticPacket,
+  SemanticRefusal,
+} from './semantic/types.ts'
 import {
   conversationTarget,
   resolveEfConfig,
@@ -81,11 +104,13 @@ import {
 } from './policy.ts'
 import { isBasicMode } from './preset.ts'
 import type { FoldModeName } from './preset.ts'
-import type { FoldCurrentState } from './state.ts'
+import type { Anchor, FoldCurrentState } from './state.ts'
 import type {
   CheckpointBundleV1,
   FoldBundleStore,
+  FoldCandidate,
   FoldCommitRecordV1,
+  FoldMode,
   SummarizationInput,
   SummaryResult,
 } from './types.ts'
@@ -93,9 +118,35 @@ import type {
 /** Cap for the rationale-only auxiliary call (R0-A: ~100-400 tokens). */
 const RATIONALE_MAX_TOKENS = 400
 
+/**
+ * Most anchors the fold's own "Changed in this fold" section may render.
+ *
+ * A LEAF fold touches a bounded span, so this cap is rarely reached. A ROOT
+ * fold's span covers the whole prefix, which makes "changed in this fold" the
+ * entire state — the unbounded re-rendering this round exists to remove, at the
+ * one fold that happens to be large. The remainder is not dropped: it flows into
+ * the budgeted carried section, so it is still either shown or counted in the
+ * `Not shown` pointer.
+ *
+ * Ordered so the cap keeps the most consequential lines: contracts and
+ * outstanding work first, then the most recent.
+ */
+const MAX_CHANGED_ANCHORS = 24
+
 export interface EpistemicFoldOptions {
   /** Durable bundle destination; defaults to `.epistemic-fold/bundles`. */
   readonly bundleStore?: FoldBundleStore
+  /**
+   * The sanctioned `ef/anchor` producer semantic commits must go through.
+   *
+   * Supplied by the plugin so the host capability probe and the durable write
+   * guard are the same ones every other anchor write uses. A programmatic caller
+   * that omits it gets a default service — correct for the in-memory/test face,
+   * and never used to write state unless `semanticContinuity` is `active`.
+   */
+  readonly anchors?: AnchorService
+  /** Journal destination; defaults to `<dirname(bundleRoot)>/semantic`. */
+  readonly semanticJournal?: SemanticJournal
 }
 
 /**
@@ -162,6 +213,35 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
 
   private readonly candidates = new FoldCandidateRegistry()
   private readonly bundles: FoldBundleStore
+  /**
+   * The anchor producer semantic commits use. The ONE sanctioned writer of
+   * durable state; the engine never appends `ef/anchor` itself.
+   */
+  private readonly anchors: AnchorService
+  /**
+   * The semantic journal. A `NullSemanticJournal` under `semanticContinuity:
+   * off`, so the feature cannot create a directory or read one when disabled.
+   */
+  private readonly semanticJournal: SemanticJournal
+  /** The most recent packet, for inspection, status and tests. */
+  private lastSemanticPacketValue: SemanticPacket | undefined
+  /**
+   * Semantic health after the most recent fold.
+   *
+   * Initialized to `partial` rather than `archive-only`: `archive-only` means
+   * "no semantic layer is mounted", and a `shadow`/`active` deployment that has
+   * not folded yet is not that. `partial` with an explicit detail says exactly
+   * what is true — the layer is configured and has established nothing.
+   */
+  private semanticHealthValue: SemanticHealth = 'partial'
+  /** Why the health is not `ready`. */
+  private semanticDetailValue: string | undefined
+  /** Lifetime counters, reported by `semanticDiagnostics`. */
+  private semanticCounters = { packets: 0, accepted: 0, refused: 0, committed: 0, reconciled: 0 }
+  /** Token size of the most recent compiled working set. */
+  private lastWorkingSetTokensValue = 0
+  /** The most recent compiled working set, for tests and diagnostics. */
+  private lastWorkingSetValue: CompiledWorkingSet | undefined
   /**
    * Outstanding rebase requests, keyed per agent (R3-0b). R2-C only
    * RECOMMENDED a rebase; this is the state the production consumer reads at
@@ -274,6 +354,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // from `bundleRoot` in the config face, honoring the DSH persistence
     // lifecycle (R0-B). Programmatic callers may inject a store directly.
     this.bundles = options.bundleStore ?? new FileBundleStore(this.efConfig.bundleRoot)
+    this.anchors = options.anchors ?? createAnchorService()
+    // `off` gets a journal that keeps nothing. The feature must not create a
+    // directory it is not going to use, and a null object keeps every call site
+    // uniform instead of scattering `if (enabled)` through the engine.
+    this.semanticJournal = this.efConfig.semanticContinuity === 'off'
+      ? new NullSemanticJournal()
+      : options.semanticJournal ?? new FileSemanticJournal(this.efConfig.semanticRoot)
   }
 
   /**
@@ -323,6 +410,18 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       )
     }
     const next = resolveEfConfig({ ...explicit, mode })
+    // The journal is constructed once, from the startup config. Switching the
+    // semantic mode at runtime would either keep a Null journal while committing
+    // (no intent record, no idempotency, no reconciliation) or stop writing to a
+    // real one. Refuse rather than half-apply.
+    if (next.semanticContinuity !== this.resolvedConfig.semanticContinuity) {
+      throw new Error(
+        `epistemic-fold: cannot switch semanticContinuity at runtime `
+        + `(${this.resolvedConfig.semanticContinuity} -> ${next.semanticContinuity}) — the journal is `
+        + 'constructed once at startup, so a runtime change would commit without an intent record. '
+        + 'Restart with the mode in config instead.',
+      )
+    }
     if (next.framingMode !== this.resolvedConfig.framingMode) {
       throw new Error(
         `epistemic-fold: cannot switch to mode ${JSON.stringify(mode)} at runtime — it changes `
@@ -398,6 +497,142 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Bundles this engine has successfully written (monotonic, never decreases). */
   get bundleWriteCount(): number {
     return this.bundleWriteCountValue
+  }
+
+  /**
+   * The most recent semantic packet, or `undefined` when the layer is off or no
+   * fold has run. Exposed so a test can assert on the ACCEPTED deltas rather
+   * than re-parsing a log line.
+   */
+  get lastSemanticPacket(): SemanticPacket | undefined {
+    return this.lastSemanticPacketValue
+  }
+
+  /** The most recent compiled working set (`active` mode only). */
+  get lastWorkingSet(): CompiledWorkingSet | undefined {
+    return this.lastWorkingSetValue
+  }
+
+  /**
+   * The semantic layer's current diagnostic state.
+   *
+   * `archive-only` under `off`: history is archived and recallable, and the
+   * layer makes no claim about semantic completeness. That is the honest answer
+   * for a deployment with no semantic writer, and it is deliberately distinct
+   * from `unavailable`, which means a writer was configured and failed.
+   */
+  get semanticDiagnostics(): SemanticDiagnostics {
+    const idle = this.semanticCounters.packets === 0
+    const detail = this.semanticDetailValue
+      ?? (this.efConfig.semanticContinuity !== 'off' && idle
+        ? 'no semantic fold has run yet'
+        : undefined)
+    return {
+      health: this.efConfig.semanticContinuity === 'off' ? 'archive-only' : this.semanticHealthValue,
+      ...(detail === undefined ? {} : { detail }),
+      mode: this.efConfig.semanticContinuity,
+      packets: this.semanticCounters.packets,
+      accepted: this.semanticCounters.accepted,
+      refused: this.semanticCounters.refused,
+      committed: this.semanticCounters.committed,
+      reconciled: this.semanticCounters.reconciled,
+      workingSetTokens: this.lastWorkingSetTokensValue,
+      ...(this.lastSemanticPacketValue === undefined ? {} : { lastPacket: this.lastSemanticPacketValue }),
+    }
+  }
+
+  /**
+   * Reconcile the journal against this session's log and REPAIR the gap.
+   *
+   * A crash between "packet accepted and journaled" and "anchor appended"
+   * leaves semantic state that the journal believes was committed and the log
+   * has never seen. The anchor id is derived from the delta identity, so the
+   * log alone answers whether that happened; this method re-commits the missing
+   * ones and reports how many.
+   *
+   * Idempotent and safe to call at the start of every fold.
+   *
+   * @param session - the session to reconcile.
+   * @returns how many deltas were missing and re-committed.
+   */
+  async reconcileSemantics(session: Session): Promise<{
+    readonly missing: number
+    readonly recommitted: number
+    readonly unrepairable: number
+  }> {
+    if (this.efConfig.semanticContinuity === 'off') return { missing: 0, recommitted: 0, unrepairable: 0 }
+    // The LOG is the oracle. The bounded state keeps at most two ids per
+    // coordinate, so using it here reported every twice-displaced anchor as
+    // missing and re-declared it — which made the current value cycle through
+    // old revisions on every fold.
+    const logIds = anchorIdsInLog(session)
+    const report = await this.semanticJournal.reconcile(session.id, logIds)
+    if (report.missing.length === 0) return { missing: 0, recommitted: 0, unrepairable: 0 }
+
+    // Group by packet so a delta that supersedes a sibling in the same packet
+    // still resolves its target. Repairing one delta at a time dropped every
+    // cross-coordinate retirement and produced a state the live path would
+    // never have written.
+    const byPacket = new Map<string, AcceptedDelta[]>()
+    for (const entry of report.missing) {
+      const list = byPacket.get(entry.packetId)
+      if (list === undefined) byPacket.set(entry.packetId, [entry.delta])
+      else list.push(entry.delta)
+    }
+
+    let recommitted = 0
+    let unrepairable = 0
+    for (const deltas of byPacket.values()) {
+      // Re-check the evidence against the CURRENT log before reparir. A digest
+      // mismatch means the source event no longer says what the delta cited
+      // (a replaced message, a migrated log), and re-committing it would assert
+      // provenance the log no longer supports.
+      const verified = deltas.filter(delta => delta.evidence.every(
+        (ref: { readonly seq: number; readonly messageDigest: string }) => {
+          const message = messageAt(session, ref.seq)
+          return message !== undefined && messageDigestOf(message) === ref.messageDigest
+        },
+      ))
+      unrepairable += deltas.length - verified.length
+      if (verified.length === 0) continue
+      const plans = planCommits({
+        deltas: verified,
+        state: currentFoldState(this.ctx, session),
+        knownAnchorIds: logIds,
+      })
+      // Two phases: every declare first, then every retirement. A retirement
+      // executed immediately after its own declare is a no-op when its target
+      // is declared later in the same packet — the replacement would then stay
+      // active alongside the decision it was supposed to replace.
+      const declared: typeof plans[number][] = []
+      for (const plan of plans) {
+        if (plan.skipped !== undefined || plan.draft === undefined) continue
+        try {
+          this.anchors.declare(session, plan.draft)
+          declared.push(plan)
+          recommitted += 1
+        } catch {
+          // Fail closed on this delta, not on the fold: an ungrounded recompute
+          // means the log no longer supports the claim, so it stays missing and
+          // the health stays `stale` rather than being reported as repaired.
+          unrepairable += 1
+        }
+      }
+      for (const plan of declared) {
+        for (const target of plan.retire) {
+          try {
+            this.anchors.retire(session, target)
+          } catch {
+            // Reported by the next reconciliation; never fatal here.
+          }
+        }
+      }
+    }
+    this.semanticCounters.reconciled += recommitted
+    if (unrepairable > 0) {
+      this.semanticDetailValue = `${unrepairable} accepted delta(s) could not be recomputed`
+    }
+    return { missing: report.missing.length, recommitted, unrepairable }
   }
 
   /** Outstanding pending-rebase intents across all sessions (telemetry). */
@@ -1415,6 +1650,21 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     // One registry probe per fold: the structured rendering path and the
     // semantic-mode choice read the same mounted state.
     const mountedState = this.mountedState(session)
+    const semanticContinuity = this.efConfig.semanticContinuity
+    /**
+     * The state the body projects, and the body itself when a mode renders its
+     * own.
+     *
+     * `off` and `shadow` render from the PRE-fold state through the existing
+     * renderer, so their model-visible surface keeps the pre-existing shape.
+     * `active` renders from the POST-commit state: the anchors this fold
+     * accepted are part of what the model must see next, and rendering from the
+     * pre-fold snapshot would hide exactly the new semantic state.
+     */
+    let stateForRender = mountedState
+    let preRenderedBody: string | undefined
+    /** Anchors a pre-rendered body actually shows, for the bundle's state record. */
+    let preRenderedAnchors: number | undefined
 
     const publish = async (
       semanticText: string | undefined,
@@ -1422,8 +1672,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     ): Promise<SummaryResult> => {
       // M3a: when the deterministic projection is mounted, the checkpoint is
       // a structured handoff — machine state first, narrative in Rationale.
-      const stateText = this.structuredStateText(mountedState, candidate.checkpointId, semanticText)
-      const renderedText = stateText ?? (semanticText === undefined
+      const stateText = this.structuredStateText(
+        stateForRender,
+        candidate.checkpointId,
+        semanticText,
+        candidate.mode,
+      )
+      const renderedText = preRenderedBody ?? stateText ?? (semanticText === undefined
         ? fallbackText
         : renderSemanticCheckpoint(candidate, semanticText))
       const bundle = buildBundle({
@@ -1438,9 +1693,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         ...(this.efConfig.referentialArchive ? { referentialArchive: true } : {}),
         // Bind the body to the state it projected. Only when a projection was
         // mounted, because only then is state in the body at all.
-        ...(mountedState === undefined
+        ...(stateForRender === undefined
           ? {}
-          : { renderedState: describeRenderedState(mountedState) }),
+          : { renderedState: describeRenderedState(stateForRender, preRenderedAnchors) }),
       })
       await this.bundles.write(bundle)
       this.bundleWriteCountValue += 1
@@ -1467,7 +1722,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     let semanticMeta: SummaryResult | undefined
 
     if (mountedState !== undefined) {
-      if (this.efConfig.semanticMode === 'rationale') {
+      if (this.efConfig.semanticMode === 'rationale' && semanticContinuity === 'off') {
         try {
           const rationale = await rationaleOnly({
             ctx: this.ctx,
@@ -1490,6 +1745,28 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         } catch (error: unknown) {
           if (signal?.aborted === true) throw error
           semanticText = undefined
+        }
+      } else if (this.efConfig.semanticMode === 'rationale') {
+        // `shadow` / `active`: ONE combined call produces both the handoff and
+        // the structured deltas. Only an abort propagates — a model that
+        // returns malformed output degrades the semantic layer and leaves the
+        // fold's archive and checkpoint untouched.
+        const face = await this.runSemanticFace({
+          agent,
+          input,
+          ...(signal === undefined ? {} : { signal }),
+          session,
+          candidate,
+          shadowedMessages,
+          orderedSurfaceSeqs,
+          mountedState,
+        })
+        semanticText = face.handoff.length > 0 ? face.handoff : undefined
+        semanticMeta = face.meta
+        if (semanticContinuity === 'active' && face.state !== undefined) {
+          stateForRender = face.state
+          preRenderedBody = face.body
+          preRenderedAnchors = face.renderedAnchors
         }
       }
       // semanticMode 'none': no LLM call at all — zero-LLM profile.
@@ -1535,9 +1812,377 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     state: FoldCurrentState | undefined,
     checkpointId: string,
     semanticText: string | undefined,
+    mode: FoldMode,
   ): string | undefined {
     if (state === undefined) return undefined
-    return renderStructuredCheckpoint(state, checkpointId, semanticText)
+    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode)
+  }
+
+  /**
+   * Price one checkpoint body with the token meter, exactly as Basic prices its
+   * own summary. Used for the working-set budget, so the compiler's decision
+   * and the engine's cost accounting are in the same units.
+   */
+  private estimateText(text: string): number {
+    return this.ctx.tokenMeter.estimateMessage(createUserMessage({
+      content: [{ type: 'text', text }],
+      source: { kind: 'user' },
+    }))
+  }
+
+  /**
+   * Acquire the semantic face for one fold: one writer call, validation, the
+   * journal record, and — in `active` mode only — the anchor commits and the
+   * temporal checkpoint body.
+   *
+   * ## Ordering, and why it is this order
+   *
+   *   1. the writer call (no durable effect)
+   *   2. validation (no durable effect)
+   *   3. journal packet            the INTENT is durable first
+   *   4. anchor commits            `ef/anchor` appends, one per accepted delta
+   *   5. journal commit sidecar    audit of what landed
+   *   6. re-read state, compile, render
+   *
+   * The bundle is written by the caller AFTER this returns. That means a fold
+   * refused by Basic's shrink check, or a bundle write that fails, can leave
+   * anchors behind (steps 4-5) for content that is still on the surface. That
+   * asymmetry is the safe direction — additive state derived from visible
+   * history, nothing lost — and it is why reconciliation compares against the
+   * LOG rather than assuming the fold completed.
+   *
+   * @returns the handoff, the call envelope, and (active only) the post-commit
+   *   state and rendered body. Never throws for model output or a failed
+   *   semantic write; only an abort propagates.
+   */
+  private async runSemanticFace(options: {
+    readonly agent: Agent
+    readonly input: SummarizationInput
+    readonly signal?: AbortSignal
+    readonly session: Session
+    readonly candidate: FoldCandidate
+    readonly shadowedMessages: readonly Message[]
+    readonly orderedSurfaceSeqs: readonly SessionSeq[]
+    readonly mountedState: FoldCurrentState
+  }): Promise<{
+    readonly handoff: string
+    readonly meta?: SummaryResult
+    readonly packet?: SemanticPacket
+    readonly state?: FoldCurrentState
+    readonly body?: string
+    /** How many anchor lines the body actually shows. */
+    readonly renderedAnchors?: number
+  }> {
+    const { session, candidate, shadowedMessages, orderedSurfaceSeqs } = options
+    const mode = this.efConfig.semanticContinuity
+
+    // Reconcile BEFORE writing anything new: a crash between "packet accepted"
+    // and "anchor appended" leaves state the journal believes was committed and
+    // the log has never seen. Repairing it first means the writer's own
+    // idempotency check below sees the repaired state, so a delta lost in a
+    // crash cannot also be re-proposed as a duplicate and silently dropped.
+    // Appending `ef/anchor` is log-only, so this does not perturb the surface
+    // the fold is about to replace.
+    // Never fatal: a journal that cannot be read or a repair that cannot be
+    // written is a diagnostic problem, and the archive this fold is about to
+    // publish is sound either way. "A corrupt journal must never block a fold."
+    const reconciliation = await this.reconcileSemantics(session).catch(() => ({
+      missing: 0,
+      recommitted: 0,
+      unrepairable: 1,
+    }))
+
+    // A surface node that derives no message must not shift the pairing between
+    // `orderedSurfaceSeqs` and `shadowedMessages`: a quote attributed to the
+    // wrong seq is a provenance claim the text does not support.
+    const messageSeqs: number[] = []
+    for (const seq of orderedSurfaceSeqs) {
+      const event = session.eventAt(seq)
+      if (event !== undefined && session.deriveEventMessage(event) !== null) {
+        messageSeqs.push(seq as unknown as number)
+      }
+    }
+
+    // A writer failure produces no packet, so it would leave no durable trace of
+    // the health transition. The health file is keyed by the packet id the span
+    // WOULD have had, so it lines up with the packet once the writer recovers.
+    const packetId = packetIdOf(session.id, messageSeqs)
+
+    let writer: RationaleCallResult
+    try {
+      writer = await rationaleOnly({
+        ctx: this.ctx,
+        target: conversationTarget(options.agent) ?? { provider: 'unrouted', model: 'unrouted' },
+        maxTokens: SEMANTIC_MAX_TOKENS,
+        input: options.input,
+        agent: options.agent,
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+        instruction: SEMANTIC_WRITER_INSTRUCTION,
+      })
+    } catch (error: unknown) {
+      if (options.signal?.aborted === true) throw error
+      // A persistent reconciliation gap is more severe than this call failing:
+      // `unavailable` says the writer did not run, `stale` says the state may be
+      // WRONG. Report the worse one, with both facts in the detail.
+      this.semanticHealthValue = reconciliation.unrepairable > 0 ? 'stale' : 'unavailable'
+      this.semanticDetailValue = reconciliation.unrepairable > 0
+        ? `${reconciliation.unrepairable} accepted delta(s) could not be recomputed; `
+          + `semantic writer call failed: ${errorText(error)}`
+        : `semantic writer call failed: ${errorText(error)}`
+      await this.recordHealthSafe(session, packetId, this.semanticHealthValue, this.semanticDetailValue)
+      this.ctx.logger.warn(`[epistemic-fold] semantic (${mode}): unavailable — ${this.semanticDetailValue}`)
+      if (mode !== 'active') return { handoff: '' }
+      // ACTIVE must keep its body SHAPE even with no writer output. Falling back
+      // to the legacy renderer would emit an unlabeled `Current` snapshot — the
+      // exact artifact this mode exists to remove — and would freeze it forever
+      // in the log. Render the temporal body from the post-reconcile state with
+      // no rationale instead.
+      const state = currentFoldState(this.ctx, session)
+      const changed = capChanged(changedAnchors(state, new Set(messageSeqs)))
+      const workingSet = compileWorkingSet({
+        state,
+        exclude: new Set(changed.map(anchor => anchor.id)),
+        budgetTokens: this.efConfig.semanticWorkingSetTokens,
+        estimate: text => this.estimateText(text),
+      })
+      this.lastWorkingSetValue = workingSet
+      this.lastWorkingSetTokensValue = workingSet.tokens
+      return {
+        handoff: '',
+        state,
+        body: renderTemporalCheckpoint({
+          checkpointId: candidate.checkpointId,
+          mode: candidate.mode,
+          changed,
+          workingSetText: workingSet.text,
+        }),
+        renderedAnchors: changed.length + workingSet.pinned.length + workingSet.working.length,
+      }
+    }
+
+    const meta: SummaryResult = {
+      summary: [{ type: 'text', text: writer.text }],
+      provider: writer.provider,
+      model: writer.model,
+      maxTokens: writer.maxTokens,
+      ...(writer.usage === undefined ? {} : { usage: writer.usage }),
+      rawOutput: writer.rawOutput,
+      llmStreamCall: true,
+    }
+    const parsed = parseWriterOutput(writer.text)
+
+    const previous = await this.semanticJournal.readAll(session.id)
+    // "Committed" means an anchor is IN THE LOG, not "the delta was accepted".
+    // A shadow packet or a declare that threw must not make a genuine
+    // re-proposal look like a duplicate.
+    const logIds = anchorIdsInLog(session)
+    const known = committedDeltaIds(previous, logIds)
+    const validation = validateDeltas({
+      foldedSeqs: messageSeqs,
+      messages: shadowedMessages,
+      proposed: parsed.proposed,
+      knownDeltaIds: known,
+    })
+
+    const packet: SemanticPacket = {
+      schemaVersion: SEMANTIC_SCHEMA_VERSION,
+      packetId,
+      sessionId: session.id,
+      checkpointId: candidate.checkpointId,
+      mode,
+      spanDigest: canonicalHash(messageSeqs),
+      foldedSeqs: messageSeqs,
+      createdAt: Date.now(),
+      handoff: parsed.handoff,
+      deltaParse: parsed.deltaParse,
+      proposed: parsed.proposed as SemanticPacket['proposed'],
+      accepted: validation.accepted,
+      refused: validation.refused,
+      writer: {
+        provider: writer.provider,
+        model: writer.model,
+        maxTokens: writer.maxTokens,
+        ...(writer.usage === undefined ? {} : { usage: writer.usage }),
+      },
+    }
+    this.lastSemanticPacketValue = packet
+    this.semanticCounters.packets += 1
+    this.semanticCounters.accepted += validation.accepted.length
+    this.semanticCounters.refused += validation.refused.length
+
+    let journalDetail: string | undefined
+    try {
+      await this.semanticJournal.write(packet)
+    } catch (error: unknown) {
+      // A journal that cannot be written costs audit and idempotency, not
+      // correctness: the anchors still carry the state, and the next fold
+      // simply cannot see that this packet ran. Reported, never fatal.
+      journalDetail = `journal write failed: ${errorText(error)}`
+    }
+
+    if (mode === 'shadow') {
+      const base: SemanticHealth = parsed.deltaParse === 'parsed' && validation.refused.length === 0
+        ? 'ready'
+        : 'partial'
+      // A persistent reconciliation gap outranks this fold's own verdict: the
+      // `stale` alert an operator watches for must not be overwritten by a
+      // later clean fold that happened to repair nothing.
+      const health: SemanticHealth = reconciliation.unrepairable > 0 ? 'stale' : base
+      this.semanticHealthValue = health
+      this.semanticDetailValue = health === 'stale'
+        ? this.semanticDetailValue
+        : journalDetail
+          ?? (health === 'ready' ? undefined : describeRefusals(parsed.deltaParse, validation.refused))
+      await this.recordHealthSafe(session, packetId, health, this.semanticDetailValue)
+      this.logSemantic('shadow', packet)
+      return { handoff: parsed.handoff, meta, packet }
+    }
+
+    // --- active: commit through the one sanctioned anchor producer.
+    const plans = planCommits({
+      deltas: validation.accepted,
+      state: currentFoldState(this.ctx, session),
+      knownDeltaIds: known,
+      knownAnchorIds: logIds,
+    })
+    const refusals: SemanticRefusal[] = [...validation.refused]
+    const commits: { deltaId: string; anchorId: string }[] = []
+    const declared: typeof plans[number][] = []
+    for (const plan of plans) {
+      if (plan.skipped !== undefined || plan.draft === undefined) continue
+      try {
+        // Declare first: at the same coordinate the reducer replaces the head
+        // in place, so a failure here leaves the old value intact. Retiring
+        // first would delete the old value before proving the new one is
+        // writable.
+        this.anchors.declare(session, plan.draft)
+        declared.push(plan)
+        commits.push({ deltaId: plan.delta.deltaId, anchorId: plan.anchorId })
+      } catch (error: unknown) {
+        refusals.push(commitRefusal(plan.delta, error))
+      }
+    }
+    // Retirements AFTER every declare. A retirement executed inside the declare
+    // loop is a no-op when its target is declared later in the same packet, so
+    // the replaced decision stayed active next to its replacement.
+    for (const plan of declared) {
+      for (const target of plan.retire) {
+        try {
+          this.anchors.retire(session, target)
+        } catch {
+          // A cross-coordinate retirement that fails leaves one stale anchor;
+          // the next fold's reconciliation reports it rather than corrupting
+          // the write that succeeded.
+        }
+      }
+    }
+    this.semanticCounters.committed += commits.length
+
+    let commitDetail: string | undefined
+    if (commits.length > 0) {
+      try {
+        await this.semanticJournal.recordCommit(session.id, packet.packetId, commits)
+      } catch (error: unknown) {
+        commitDetail = `commit sidecar write failed: ${errorText(error)}`
+      }
+    }
+
+    const state = currentFoldState(this.ctx, session)
+    const changedAll = changedAnchors(state, new Set(messageSeqs))
+    const changed = capChanged(changedAll)
+    const workingSet = compileWorkingSet({
+      state,
+      exclude: new Set(changed.map(anchor => anchor.id)),
+      budgetTokens: this.efConfig.semanticWorkingSetTokens,
+      estimate: text => this.estimateText(text),
+    })
+    this.lastWorkingSetValue = workingSet
+    this.lastWorkingSetTokensValue = workingSet.tokens
+    const body = renderTemporalCheckpoint({
+      checkpointId: candidate.checkpointId,
+      mode: candidate.mode,
+      changed,
+      workingSetText: workingSet.text,
+      ...(parsed.handoff.length === 0 ? {} : { rationale: parsed.handoff }),
+    })
+
+    const base: SemanticHealth = refusals.length === 0
+      && parsed.deltaParse === 'parsed'
+      && journalDetail === undefined
+      && commitDetail === undefined
+      ? 'ready'
+      : 'partial'
+    // A reconciliation gap that could not be repaired outranks this fold's own
+    // verdict. Without this, a clean fold overwrote `stale` on every run and the
+    // alert an operator watches for could never fire.
+    const health: SemanticHealth = reconciliation.unrepairable > 0 ? 'stale' : base
+    this.semanticHealthValue = health
+    const commitFailure = refusals.find(refusal => refusal.reason === 'commit-failed')
+    const details = [journalDetail, commitDetail, commitFailure?.detail]
+      .filter((entry): entry is string => entry !== undefined)
+    this.semanticDetailValue = health === 'stale'
+      ? (this.semanticDetailValue ?? 'reconciliation could not repair every accepted delta')
+      : details.length > 0
+        ? details.join('; ')
+        : (health === 'ready' ? undefined : describeRefusals(parsed.deltaParse, refusals))
+    await this.recordHealthSafe(session, packetId, health, this.semanticDetailValue)
+    this.logSemantic('active', packet)
+    this.ctx.logger.info(
+      `[epistemic-fold] semantic working set: ${describeWorkingSetCompilation(workingSet)}`,
+    )
+    return {
+      handoff: parsed.handoff,
+      meta,
+      packet,
+      state,
+      body,
+      renderedAnchors: changed.length + workingSet.pinned.length + workingSet.working.length,
+    }
+  }
+
+  /**
+   * Persist one health transition, best effort.
+   *
+   * Health is DIAGNOSTIC: a journal that cannot record it must not fail a fold
+   * whose archive is already sound. The detail string is the same content-free
+   * text the log line carries — reason counts and error messages, never a
+   * statement or a quote.
+   */
+  private async recordHealthSafe(
+    session: Session,
+    packetId: string,
+    health: SemanticHealth,
+    detail: string | undefined,
+  ): Promise<void> {
+    try {
+      await this.semanticJournal.recordHealth(
+        session.id,
+        packetId,
+        health,
+        ...(detail === undefined ? [] : [detail] as const),
+      )
+    } catch {
+      // Deliberately silent: the health is already in memory and in the log,
+      // and a fold must not fail because a diagnostic could not be written.
+    }
+  }
+
+  /**
+   * One log line per fold: counts and verdicts only.
+   *
+   * No statement, no quote, no message text — the same rule the working-set
+   * observer follows, for the same reason: a log line must not be able to leak
+   * a user's constraint. A reader who needs the content reads the journal or
+   * the checkpoint.
+   */
+  private logSemantic(mode: string, packet: SemanticPacket): void {
+    this.ctx.logger.info(
+      `[epistemic-fold] semantic (${mode}): health=${this.semanticHealthValue} `
+      + `proposed=${packet.proposed.length} accepted=${packet.accepted.length} `
+      + `refused=${packet.refused.length} committed=${this.semanticCounters.committed} `
+      + `parse=${packet.deltaParse}`
+      + (this.semanticDetailValue === undefined ? '' : ` — ${this.semanticDetailValue}`),
+    )
   }
 
   /**
@@ -1620,6 +2265,72 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     }
     return span
   }
+}
+
+
+/**
+ * Bound the fold's own delta section, keeping what matters most.
+ *
+ * @param anchors - every anchor whose provenance lies in the folded span.
+ * @returns at most {@link MAX_CHANGED_ANCHORS}, contracts first and then newest.
+ */
+function capChanged(anchors: readonly Anchor[]): readonly Anchor[] {
+  if (anchors.length <= MAX_CHANGED_ANCHORS) return anchors
+  const priority: Readonly<Record<string, number>> = {
+    objective: 0,
+    constraint: 1,
+    obligation: 2,
+    failure: 3,
+  }
+  const recency = (anchor: Anchor): number => {
+    let latest = -1
+    for (const ref of anchor.sourceRefs) {
+      const seq = ref.seq as unknown as number
+      if (seq > latest) latest = seq
+    }
+    return latest
+  }
+  return [...anchors]
+    .sort((left, right) =>
+      (priority[left.kind] ?? 9) - (priority[right.kind] ?? 9)
+      || recency(right) - recency(left)
+      || left.id.localeCompare(right.id))
+    .slice(0, MAX_CHANGED_ANCHORS)
+}
+
+/**
+ * A one-line error description for a log or a diagnostic.
+ *
+ * Deliberately not a stack trace and not the error object: both can carry
+ * request payloads on some transports, and these strings reach logs.
+ *
+ * @param error - the thrown value.
+ * @returns a short, content-free description.
+ */
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
+/**
+ * Describe why a packet is `partial`, without repeating any content.
+ *
+ * @param parse - the writer's parse verdict.
+ * @param refusals - the refusals recorded for this packet.
+ * @returns a machine-oriented summary.
+ */
+function describeRefusals(
+  parse: SemanticPacket['deltaParse'],
+  refusals: readonly SemanticRefusal[],
+): string {
+  if (parse !== 'parsed') {
+    return parse === 'absent'
+      ? 'the writer produced no <deltas> block, so no semantic state was proposed'
+      : 'the writer\'s <deltas> block was not valid JSON, so no semantic state was proposed'
+  }
+  if (refusals.length === 0) return 'semantic layer ran cleanly'
+  const counts = new Map<string, number>()
+  for (const refusal of refusals) counts.set(refusal.reason, (counts.get(refusal.reason) ?? 0) + 1)
+  return [...counts.entries()].map(([reason, count]) => `${reason}x${count}`).join(', ')
 }
 
 export default EpistemicFoldEngine
