@@ -1,0 +1,2737 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T19:26:47.295Z",
+  "status": "exploratory-stage-1",
+  "stage": "stage1",
+  "replicates": 4,
+  "source": {
+    "runRoot": "eval/r37/runs-b",
+    "reports": 158
+  },
+  "writer": {
+    "byPrompt": {
+      "W0": {
+        "attempts": 24,
+        "parsed": 10,
+        "malformed": 14,
+        "accepted": 25,
+        "refused": 3,
+        "commitRecall": 0.3958333333333333,
+        "strictCriticalRecall": 0,
+        "directVisibility": 0.25,
+        "rows": [
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "not-called",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "no-packet",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r2",
+            "valid": false,
+            "protocol": "parsed",
+            "accepted": 6,
+            "refused": 0,
+            "commitStatus": "fold-refused",
+            "matchedFactRecall": 0.5,
+            "criticalRecall": 0,
+            "directVisibility": 0.5
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r3",
+            "valid": false,
+            "protocol": "parsed",
+            "accepted": 5,
+            "refused": 0,
+            "commitStatus": "fold-refused",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0.5
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 1,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 2,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "malformed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "protocol-not-parsed",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          }
+        ]
+      },
+      "W1": {
+        "attempts": 24,
+        "parsed": 23,
+        "malformed": 1,
+        "accepted": 51,
+        "refused": 8,
+        "commitRecall": 0.8125,
+        "strictCriticalRecall": 0,
+        "directVisibility": 0.7291666666666666,
+        "rows": [
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "not-called",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "no-packet",
+            "matchedFactRecall": 0,
+            "criticalRecall": null,
+            "directVisibility": null
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r3",
+            "valid": false,
+            "protocol": "parsed",
+            "accepted": 4,
+            "refused": 0,
+            "commitStatus": "fold-refused",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "A1-v2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "B2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 1,
+            "commitStatus": "committed",
+            "matchedFactRecall": 0.5,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 4,
+            "refused": 2,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r2",
+            "valid": false,
+            "protocol": "parsed",
+            "accepted": 4,
+            "refused": 0,
+            "commitStatus": "fold-refused",
+            "matchedFactRecall": 0.5,
+            "criticalRecall": 0,
+            "directVisibility": 0.5
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 0,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "C1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 0.5,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 0,
+            "refused": 0,
+            "commitStatus": "nothing-accepted",
+            "matchedFactRecall": 0,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "D1-v2",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 0
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 3,
+            "refused": 1,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 2,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 1,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "F1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 1,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r1",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r2",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r3",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 1,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          },
+          {
+            "caseId": "H1",
+            "replicateId": "r4",
+            "valid": true,
+            "protocol": "parsed",
+            "accepted": 2,
+            "refused": 0,
+            "commitStatus": "committed",
+            "matchedFactRecall": 1,
+            "criticalRecall": 0,
+            "directVisibility": 1
+          }
+        ]
+      }
+    }
+  },
+  "o2": {
+    "rows": 24,
+    "valid": 23,
+    "contractSuccesses": 17,
+    "taskSuccesses": 17,
+    "byCase": [
+      {
+        "caseId": "A1-v2",
+        "rows": 4,
+        "valid": 4,
+        "contract": 3,
+        "task": 3
+      },
+      {
+        "caseId": "D1-v2",
+        "rows": 4,
+        "valid": 4,
+        "contract": 3,
+        "task": 3
+      },
+      {
+        "caseId": "B2",
+        "rows": 4,
+        "valid": 4,
+        "contract": 4,
+        "task": 4
+      },
+      {
+        "caseId": "C1",
+        "rows": 4,
+        "valid": 3,
+        "contract": 0,
+        "task": 0
+      },
+      {
+        "caseId": "F1",
+        "rows": 4,
+        "valid": 4,
+        "contract": 3,
+        "task": 3
+      },
+      {
+        "caseId": "H1",
+        "rows": 4,
+        "valid": 4,
+        "contract": 4,
+        "task": 4
+      }
+    ],
+    "rowsDetail": [
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r2",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "functionality.object-form",
+          "constraint.legacy-string-api"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r2",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r2",
+        "valid": false,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "module-load:src/watcher.mjs",
+          "functionality.delivers-change"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r2",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "functionality.v2"
+        ],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r2",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r1",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r2",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r3",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r4",
+        "valid": true,
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "delivery": "oracle-gold-facts"
+      }
+    ]
+  },
+  "e2e": {
+    "pairs": 24,
+    "contract": {
+      "rescue": 3,
+      "damage": 8,
+      "both": 10,
+      "neither": 3,
+      "invalid": 0
+    },
+    "task": {
+      "rescue": 3,
+      "damage": 6,
+      "both": 12,
+      "neither": 3
+    },
+    "byCase": [
+      {
+        "caseId": "A1-v2",
+        "pairs": 4,
+        "rescue": 1,
+        "damage": 1,
+        "both": 2,
+        "neither": 0,
+        "confounds": [
+          "empty-semantic-commit",
+          "ceiling"
+        ]
+      },
+      {
+        "caseId": "D1-v2",
+        "pairs": 4,
+        "rescue": 0,
+        "damage": 0,
+        "both": 4,
+        "neither": 0,
+        "confounds": [
+          "empty-semantic-commit",
+          "ceiling",
+          "fallback-delivery"
+        ]
+      },
+      {
+        "caseId": "B2",
+        "pairs": 4,
+        "rescue": 0,
+        "damage": 2,
+        "both": 2,
+        "neither": 0,
+        "confounds": [
+          "ceiling"
+        ]
+      },
+      {
+        "caseId": "C1",
+        "pairs": 4,
+        "rescue": 1,
+        "damage": 1,
+        "both": 0,
+        "neither": 2,
+        "confounds": [
+          "fallback-delivery"
+        ]
+      },
+      {
+        "caseId": "F1",
+        "pairs": 4,
+        "rescue": 1,
+        "damage": 1,
+        "both": 2,
+        "neither": 0,
+        "confounds": [
+          "fallback-delivery",
+          "ceiling"
+        ]
+      },
+      {
+        "caseId": "H1",
+        "pairs": 4,
+        "rescue": 0,
+        "damage": 3,
+        "both": 0,
+        "neither": 1,
+        "confounds": [
+          "empty-semantic-commit"
+        ]
+      }
+    ],
+    "pairsDetail": [
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed-empty",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "empty-semantic-commit"
+          },
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "functionality.object-form",
+            "constraint.legacy-string-api"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 3
+        },
+        "contractOutcome": "rescue",
+        "taskOutcome": "rescue",
+        "confounds": [],
+        "memoryAttribution": "candidate"
+      },
+      {
+        "caseId": "A1-v2",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "functionality.object-form",
+            "constraint.legacy-string-api"
+          ],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed-empty",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "empty-semantic-commit"
+          },
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed-empty",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "empty-semantic-commit"
+          },
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "D1-v2",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "full-history-fallback",
+          "failedChecks": [],
+          "foldValid": false,
+          "testsExecuted": 1,
+          "steps": 3
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "fallback-delivery"
+          },
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 8
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "both",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "both",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "B2",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 2,
+          "steps": 8
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 8
+        },
+        "contractOutcome": "neither",
+        "taskOutcome": "neither",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "full-history-fallback",
+          "failedChecks": [],
+          "foldValid": false,
+          "testsExecuted": 3,
+          "steps": 6
+        },
+        "contractOutcome": "rescue",
+        "taskOutcome": "rescue",
+        "confounds": [
+          {
+            "kind": "fallback-delivery"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "C1",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "functionality.delivers-change"
+          ],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "neither",
+        "taskOutcome": "neither",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "full-history-fallback",
+          "failedChecks": [],
+          "foldValid": false,
+          "testsExecuted": 1,
+          "steps": 3
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "fallback-delivery"
+          },
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "functionality.v2"
+          ],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "functionality.v2"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 4
+        },
+        "contractOutcome": "rescue",
+        "taskOutcome": "rescue",
+        "confounds": [],
+        "memoryAttribution": "candidate"
+      },
+      {
+        "caseId": "F1",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "semantic-committed",
+          "failedChecks": [],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 4
+        },
+        "contractOutcome": "both",
+        "taskOutcome": "both",
+        "confounds": [
+          {
+            "kind": "ceiling"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r1",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": [
+            "region.production"
+          ]
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed-empty",
+          "failedChecks": [
+            "region.production"
+          ],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 8
+        },
+        "contractOutcome": "neither",
+        "taskOutcome": "neither",
+        "confounds": [
+          {
+            "kind": "empty-semantic-commit"
+          }
+        ],
+        "memoryAttribution": "none"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r2",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "region.production"
+          ],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 7
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r3",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "region.production"
+          ],
+          "foldValid": true,
+          "testsExecuted": 0,
+          "steps": 8
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      },
+      {
+        "caseId": "H1",
+        "replicateId": "r4",
+        "valid": true,
+        "baseline": {
+          "valid": true,
+          "contract": true,
+          "task": true,
+          "delivery": "ef-off-basic-context",
+          "failedChecks": []
+        },
+        "treatment": {
+          "valid": true,
+          "contract": false,
+          "task": false,
+          "delivery": "semantic-committed",
+          "failedChecks": [
+            "region.production"
+          ],
+          "foldValid": true,
+          "testsExecuted": 1,
+          "steps": 4
+        },
+        "contractOutcome": "damage",
+        "taskOutcome": "damage",
+        "confounds": [],
+        "memoryAttribution": "unresolved"
+      }
+    ]
+  },
+  "representation": {
+    "rows": 24,
+    "byCase": {
+      "B2": {
+        "rows": 12,
+        "valid": 12,
+        "byArm": {
+          "FP": {
+            "arm": "FP",
+            "fixture": {
+              "variant": "F-P",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "ca6e7bd9f5ad0c67d7511cadc262e04d618ef6795a85f6ed1d0fba5c869da7a9",
+              "chars": 218,
+              "path": "eval/r37/fixtures/B2-F-P/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 3,
+            "task": 4,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 3,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 4,
+                "steps": 5,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": false,
+                "task": true,
+                "testsExecuted": 0,
+                "steps": 8,
+                "failedChecks": []
+              }
+            ]
+          },
+          "FS": {
+            "arm": "FS",
+            "fixture": {
+              "variant": "F-S",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "80826d687a503ad63d0ba572907a0d2c511d9e0255b69334de4b70914dbab789",
+              "chars": 829,
+              "path": "eval/r37/fixtures/B2-F-S/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 4,
+            "task": 4,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 3,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 2,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 4,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 3,
+                "steps": 8,
+                "failedChecks": []
+              }
+            ]
+          },
+          "FN": {
+            "arm": "FN",
+            "fixture": {
+              "variant": "F-N",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "7e169eae9849176e7ff61b84b5436e87fdbd49c6efe2adba431925f04068a197",
+              "chars": 48,
+              "path": "eval/r37/fixtures/B2-F-N/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 2,
+            "task": 4,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": false,
+                "task": true,
+                "testsExecuted": 0,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": []
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": false,
+                "task": true,
+                "testsExecuted": 0,
+                "steps": 8,
+                "failedChecks": []
+              }
+            ]
+          },
+          "FH": {
+            "arm": "FH",
+            "fixture": null,
+            "rows": 0,
+            "valid": 0,
+            "contract": 0,
+            "task": 0,
+            "delivery": [],
+            "failedChecks": [],
+            "rowsDetail": []
+          }
+        }
+      },
+      "C1": {
+        "rows": 12,
+        "valid": 12,
+        "byArm": {
+          "FP": {
+            "arm": "FP",
+            "fixture": {
+              "variant": "F-P",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "d9d3e2ba2c8885120533ffc605385ea9c264be79801ac7563af70e40f4e0903d",
+              "chars": 214,
+              "path": "eval/r37/fixtures/C1-F-P/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 1,
+            "task": 1,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [
+              "functionality.delivers-change",
+              "functionality.delivers-change",
+              "functionality.delivers-change"
+            ],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 0,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 0,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": true,
+                "task": true,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": []
+              }
+            ]
+          },
+          "FS": {
+            "arm": "FS",
+            "fixture": {
+              "variant": "F-S",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "34118fffcf57964777646b83d2860dca31aa0bbbbf1a26841472dbd0a0ad6e68",
+              "chars": 807,
+              "path": "eval/r37/fixtures/C1-F-S/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 0,
+            "task": 0,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [
+              "functionality.delivers-change",
+              "functionality.delivers-change",
+              "functionality.delivers-change",
+              "functionality.delivers-change"
+            ],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 2,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 1,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 4,
+                "steps": 6,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 3,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              }
+            ]
+          },
+          "FN": {
+            "arm": "FN",
+            "fixture": null,
+            "rows": 0,
+            "valid": 0,
+            "contract": 0,
+            "task": 0,
+            "delivery": [],
+            "failedChecks": [],
+            "rowsDetail": []
+          },
+          "FH": {
+            "arm": "FH",
+            "fixture": {
+              "variant": "F-H",
+              "label": "controlled/oracle-facts intervention",
+              "digest": "01e87af789a6c90c939804645318e74a9b57fd07f5641a11ae0c4eeeb2ad489e",
+              "chars": 2275,
+              "path": "eval/r37/fixtures/C1-F-H/fixture.json"
+            },
+            "rows": 4,
+            "valid": 4,
+            "contract": 0,
+            "task": 0,
+            "delivery": [
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts",
+              "controlled-oracle-facts"
+            ],
+            "failedChecks": [
+              "functionality.delivers-change",
+              "functionality.delivers-change",
+              "functionality.delivers-change",
+              "functionality.delivers-change"
+            ],
+            "rowsDetail": [
+              {
+                "replicateId": "r1",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 1,
+                "steps": 0,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r2",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 1,
+                "steps": 3,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r3",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 2,
+                "steps": 5,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              },
+              {
+                "replicateId": "r4",
+                "valid": true,
+                "contract": false,
+                "task": false,
+                "testsExecuted": 3,
+                "steps": 8,
+                "failedChecks": [
+                  "functionality.delivers-change"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "cells": {
+      "B2-FP": {
+        "arm": "FP",
+        "fixture": {
+          "variant": "F-P",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "ca6e7bd9f5ad0c67d7511cadc262e04d618ef6795a85f6ed1d0fba5c869da7a9",
+          "chars": 218,
+          "path": "eval/r37/fixtures/B2-F-P/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 3,
+        "task": 4,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 3,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 4,
+            "steps": 5,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": false,
+            "task": true,
+            "testsExecuted": 0,
+            "steps": 8,
+            "failedChecks": []
+          }
+        ]
+      },
+      "B2-FS": {
+        "arm": "FS",
+        "fixture": {
+          "variant": "F-S",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "80826d687a503ad63d0ba572907a0d2c511d9e0255b69334de4b70914dbab789",
+          "chars": 829,
+          "path": "eval/r37/fixtures/B2-F-S/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 4,
+        "task": 4,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 3,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 2,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 4,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 3,
+            "steps": 8,
+            "failedChecks": []
+          }
+        ]
+      },
+      "B2-FN": {
+        "arm": "FN",
+        "fixture": {
+          "variant": "F-N",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "7e169eae9849176e7ff61b84b5436e87fdbd49c6efe2adba431925f04068a197",
+          "chars": 48,
+          "path": "eval/r37/fixtures/B2-F-N/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 2,
+        "task": 4,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": false,
+            "task": true,
+            "testsExecuted": 0,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": []
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": false,
+            "task": true,
+            "testsExecuted": 0,
+            "steps": 8,
+            "failedChecks": []
+          }
+        ]
+      },
+      "B2-FH": {
+        "arm": "FH",
+        "fixture": null,
+        "rows": 0,
+        "valid": 0,
+        "contract": 0,
+        "task": 0,
+        "delivery": [],
+        "failedChecks": [],
+        "rowsDetail": []
+      },
+      "C1-FP": {
+        "arm": "FP",
+        "fixture": {
+          "variant": "F-P",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "d9d3e2ba2c8885120533ffc605385ea9c264be79801ac7563af70e40f4e0903d",
+          "chars": 214,
+          "path": "eval/r37/fixtures/C1-F-P/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 1,
+        "task": 1,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [
+          "functionality.delivers-change",
+          "functionality.delivers-change",
+          "functionality.delivers-change"
+        ],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 0,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": true,
+            "task": true,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": []
+          }
+        ]
+      },
+      "C1-FS": {
+        "arm": "FS",
+        "fixture": {
+          "variant": "F-S",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "34118fffcf57964777646b83d2860dca31aa0bbbbf1a26841472dbd0a0ad6e68",
+          "chars": 807,
+          "path": "eval/r37/fixtures/C1-F-S/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 0,
+        "task": 0,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [
+          "functionality.delivers-change",
+          "functionality.delivers-change",
+          "functionality.delivers-change",
+          "functionality.delivers-change"
+        ],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 2,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 1,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 4,
+            "steps": 6,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 3,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          }
+        ]
+      },
+      "C1-FN": {
+        "arm": "FN",
+        "fixture": null,
+        "rows": 0,
+        "valid": 0,
+        "contract": 0,
+        "task": 0,
+        "delivery": [],
+        "failedChecks": [],
+        "rowsDetail": []
+      },
+      "C1-FH": {
+        "arm": "FH",
+        "fixture": {
+          "variant": "F-H",
+          "label": "controlled/oracle-facts intervention",
+          "digest": "01e87af789a6c90c939804645318e74a9b57fd07f5641a11ae0c4eeeb2ad489e",
+          "chars": 2275,
+          "path": "eval/r37/fixtures/C1-F-H/fixture.json"
+        },
+        "rows": 4,
+        "valid": 4,
+        "contract": 0,
+        "task": 0,
+        "delivery": [
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts",
+          "controlled-oracle-facts"
+        ],
+        "failedChecks": [
+          "functionality.delivers-change",
+          "functionality.delivers-change",
+          "functionality.delivers-change",
+          "functionality.delivers-change"
+        ],
+        "rowsDetail": [
+          {
+            "replicateId": "r1",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 1,
+            "steps": 0,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r2",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 1,
+            "steps": 3,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r3",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 2,
+            "steps": 5,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          },
+          {
+            "replicateId": "r4",
+            "valid": true,
+            "contract": false,
+            "task": false,
+            "testsExecuted": 3,
+            "steps": 8,
+            "failedChecks": [
+              "functionality.delivers-change"
+            ]
+          }
+        ]
+      }
+    },
+    "paired": [
+      {
+        "caseId": "B2",
+        "treatment": "FS",
+        "baseline": "FP",
+        "pairs": 4,
+        "wins": 1,
+        "losses": 0,
+        "ties": 3,
+        "outcomes": [
+          {
+            "replicateId": "r1",
+            "treatmentContract": true,
+            "baselineContract": true,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r2",
+            "treatmentContract": true,
+            "baselineContract": true,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r3",
+            "treatmentContract": true,
+            "baselineContract": true,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r4",
+            "treatmentContract": true,
+            "baselineContract": false,
+            "outcome": "win"
+          }
+        ]
+      },
+      {
+        "caseId": "B2",
+        "treatment": "FN",
+        "baseline": "FP",
+        "pairs": 4,
+        "wins": 0,
+        "losses": 1,
+        "ties": 3,
+        "outcomes": [
+          {
+            "replicateId": "r1",
+            "treatmentContract": true,
+            "baselineContract": true,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r2",
+            "treatmentContract": false,
+            "baselineContract": true,
+            "outcome": "loss"
+          },
+          {
+            "replicateId": "r3",
+            "treatmentContract": true,
+            "baselineContract": true,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r4",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          }
+        ]
+      },
+      {
+        "caseId": "C1",
+        "treatment": "FS",
+        "baseline": "FP",
+        "pairs": 4,
+        "wins": 0,
+        "losses": 1,
+        "ties": 3,
+        "outcomes": [
+          {
+            "replicateId": "r1",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r2",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r3",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r4",
+            "treatmentContract": false,
+            "baselineContract": true,
+            "outcome": "loss"
+          }
+        ]
+      },
+      {
+        "caseId": "C1",
+        "treatment": "FH",
+        "baseline": "FP",
+        "pairs": 4,
+        "wins": 0,
+        "losses": 1,
+        "ties": 3,
+        "outcomes": [
+          {
+            "replicateId": "r1",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r2",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r3",
+            "treatmentContract": false,
+            "baselineContract": false,
+            "outcome": "tie"
+          },
+          {
+            "replicateId": "r4",
+            "treatmentContract": false,
+            "baselineContract": true,
+            "outcome": "loss"
+          }
+        ]
+      }
+    ]
+  },
+  "protocol": {
+    "rows": 144,
+    "toolProtocols": [
+      "P3e"
+    ],
+    "modelTurns": 569,
+    "validActions": 792,
+    "rejectedActions": 93,
+    "invalidActionTurns": 157,
+    "rowsWithRejections": 24,
+    "rejectionRate": 0.10508474576271186,
+    "noValidActionTurnRate": 0.2759226713532513,
+    "rejectedReasons": {
+      "missing-parameter": 90,
+      "unknown-tool": 4,
+      "path-escape": 1
+    },
+    "diagnostics": {
+      "multiple-actions": 138,
+      "duplicate-action": 81,
+      "truncated-invoke": 29
+    },
+    "unparsedTurns": 29,
+    "unparsedTurnRate": 0.050966608084358524
+  },
+  "cost": {
+    "reports": 158,
+    "rows": 158,
+    "uniqueRows": 144,
+    "attempts": 777,
+    "inputTokens": 884561,
+    "outputTokens": 167871,
+    "cacheReadTokens": 703461,
+    "unknownUsageRequests": 6,
+    "retries": 0,
+    "invalidMeasurements": 19
+  },
+  "notes": [
+    "Stage 1 is exploratory under R37_B_PREREGISTRATION_AMENDMENT A1; it is not a confirmatory product result.",
+    "The B1/S pairs are assigned-arm pairs; S fallback rows remain in the denominator.",
+    "Representation rows are controlled oracle-facts interventions, not EF writer output.",
+    "A1-v2/D1-v2 are versioned cases; old A1/D1 are not pooled."
+  ]
+}

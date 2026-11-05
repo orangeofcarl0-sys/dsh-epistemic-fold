@@ -34,18 +34,24 @@ import { exists, readJson, writeJson } from './src/io.mjs'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..')
 const LIVE = join(ROOT, 'eval', 'r33', 'live.mjs')
-const RUN_ROOT = join(HERE, 'runs-b')
-const MANIFEST_ROOT = join(HERE, 'manifests-b')
-const PROGRESS = join(HERE, 'out', 'r37b-progress.json')
+const RUN_ROOT = process.env.R37B_RUN_ROOT === undefined ? join(HERE, 'runs-b') : resolve(process.env.R37B_RUN_ROOT)
+const MANIFEST_ROOT = process.env.R37B_MANIFEST_ROOT === undefined ? join(HERE, 'manifests-b') : resolve(process.env.R37B_MANIFEST_ROOT)
+const PROGRESS = process.env.R37B_PROGRESS === undefined ? join(HERE, 'out', 'r37b-progress.json') : resolve(process.env.R37B_PROGRESS)
 const MODEL = process.env.R37B_MODEL ?? 'deepseek-v4.1-flash'
 const PROVIDER_ID = process.env.R37B_PROVIDER_ID ?? 'c15ab109-97b8-4de1-a647-9857a635be38'
 const PHASE = process.env.R37B_PHASE ?? 'all'
 const REPLICATES = Number(process.env.R37B_REPLICATES ?? 4)
+const REPLICATE_LIST = process.env.R37B_REPLICATE_LIST === undefined
+  ? Array.from({ length: Number.isInteger(REPLICATES) && REPLICATES > 0 ? REPLICATES : 0 }, (_, index) => index + 1)
+  : process.env.R37B_REPLICATE_LIST.split(',').map(value => Number(value.trim())).filter(value => Number.isInteger(value) && value > 0)
 const SEED = Number(process.env.R37B_SEED ?? 37)
 const SUFFIX = process.env.R37B_SUFFIX ?? ''
 const TIMEOUT_MS = Number(process.env.R37B_TIMEOUT_MS ?? 1_800_000)
 const ONLY_CASES = process.env.R37B_CASES === undefined ? null : new Set(process.env.R37B_CASES.split(',').map(value => value.trim()))
 const ONLY_ARMS = process.env.R37B_ARMS === undefined ? null : new Set(process.env.R37B_ARMS.split(',').map(value => value.trim()))
+const ONLY_CELLS = process.env.R37B_CELLS === undefined
+  ? null
+  : new Set(process.env.R37B_CELLS.split(',').map(value => value.trim()))
 
 const CASES = ['A1-v2', 'D1-v2', 'B2', 'C1', 'F1', 'H1']
 const STANDARD_CASES = ['B2', 'C1', 'F1', 'H1']
@@ -216,7 +222,7 @@ async function runBlock({ phase, caseId, arm, replicateId, runId, stage, limits,
 function phaseBlocks(phase) {
   const blocks = []
   if (phase === 'writer' || phase === 'all') {
-    for (let replicate = 1; replicate <= REPLICATES; replicate += 1) {
+    for (const replicate of REPLICATE_LIST) {
       for (const caseId of CASES) {
         for (const prompt of ['W0', 'W1']) {
           blocks.push({
@@ -234,7 +240,7 @@ function phaseBlocks(phase) {
     }
   }
   if (phase === 'o2' || phase === 'all') {
-    for (let replicate = 1; replicate <= REPLICATES; replicate += 1) {
+    for (const replicate of REPLICATE_LIST) {
       for (const caseId of CASES) {
         blocks.push({
           phase: 'o2',
@@ -249,7 +255,7 @@ function phaseBlocks(phase) {
     }
   }
   if (phase === 'representation' || phase === 'all') {
-    for (let replicate = 1; replicate <= REPLICATES; replicate += 1) {
+    for (const replicate of REPLICATE_LIST) {
       for (const [caseId, arms] of [['B2', ['FP', 'FS', 'FN']], ['C1', ['FH', 'FP', 'FS']]]) {
         for (const arm of arms) {
           blocks.push({
@@ -267,7 +273,7 @@ function phaseBlocks(phase) {
     }
   }
   if (phase === 'end-to-end' || phase === 'all') {
-    for (let replicate = 1; replicate <= REPLICATES; replicate += 1) {
+    for (const replicate of REPLICATE_LIST) {
       for (const caseId of CASES) {
         for (const arm of ['B1', 'S']) {
           blocks.push({
@@ -311,6 +317,9 @@ async function main() {
   let blocks = phaseBlocks(PHASE)
   if (ONLY_CASES !== null) blocks = blocks.filter(block => ONLY_CASES.has(block.caseId))
   if (ONLY_ARMS !== null) blocks = blocks.filter(block => ONLY_ARMS.has(block.arm))
+  if (ONLY_CELLS !== null) {
+    blocks = blocks.filter(block => ONLY_CELLS.has(`${block.caseId}:${block.arm}:${block.replicateId}`))
+  }
   // Randomise within each phase/replicate, not across the whole batch, so a
   // pair remains in the same replicate.
   const grouped = new Map()

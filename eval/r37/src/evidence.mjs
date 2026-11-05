@@ -74,6 +74,8 @@ export function actualDelivery(row) {
     if (row.foldFallback === 'full-history') return 'full-history-fallback'
     if (row.fold?.valid !== true) return 'unknown'
     if (row.state?.commits === 0) return 'commit-missing'
+    const anchors = Array.isArray(row.state?.anchors) ? row.state.anchors.length : 0
+    if (anchors === 0) return 'semantic-committed-empty'
     if (row.writer?.commitStatus === 'committed') return 'semantic-committed'
     return 'unknown'
   }

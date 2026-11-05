@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T19:26:47.532Z",
+  "round": "R37-B",
+  "stage": 1,
+  "status": "stage-1-complete",
+  "stage2": "ready-for-stage-2",
+  "productDecision": "insufficient-evidence",
+  "exploratory": true,
+  "gates": [
+    {
+      "id": "R37B-W",
+      "name": "Writer Pilot",
+      "status": "passed",
+      "detail": "W0 10/24 parsed, recall 0.3958333333333333; W1 23/24 parsed, recall 0.8125; 51 accepted / 8 refused",
+      "evidence": "eval/r37/out/r37b-results.json#writer"
+    },
+    {
+      "id": "R37B-O2",
+      "name": "O2 Floor Under P3e",
+      "status": "passed",
+      "detail": "valid 23/24; contract 17/23 (73.9%); task 17/23",
+      "evidence": "eval/r37/out/r37b-results.json#o2"
+    },
+    {
+      "id": "R37B-P",
+      "name": "P3e Protocol",
+      "status": "passed",
+      "detail": "792 valid actions, 93 rejected, invalid-action rate 0.10508474576271186; unparsed-turn rate 0.050966608084358524; reasons {\"missing-parameter\":90,\"unknown-tool\":4,\"path-escape\":1}; diagnostics {\"multiple-actions\":138,\"duplicate-action\":81,\"truncated-invoke\":29}",
+      "evidence": "eval/r37/out/r37b-results.json#protocol"
+    },
+    {
+      "id": "R37B-R",
+      "name": "Controlled Representation",
+      "status": "passed",
+      "detail": "24/24 expected cells valid; rows 24; B2 FP 3/4, FS 4/4, FN 2/4; C1 FP 1/4, FS 0/4, FH 0/4",
+      "evidence": "eval/r37/out/r37b-results.json#representation"
+    },
+    {
+      "id": "R37B-E2E",
+      "name": "Assigned-Arm B1/S Pairs",
+      "status": "passed",
+      "detail": "24/24 pairs; contract {\"rescue\":3,\"damage\":8,\"both\":10,\"neither\":3,\"invalid\":0}; task {\"rescue\":3,\"damage\":6,\"both\":12,\"neither\":3}",
+      "evidence": "eval/r37/out/r37b-results.json#e2e"
+    },
+    {
+      "id": "R37B-D",
+      "name": "Delivery Determination",
+      "status": "passed",
+      "detail": "20/24 S rows with determined delivery (83.3%)",
+      "evidence": "eval/r37/out/r37b-results.json#e2e.pairsDetail"
+    }
+  ],
+  "cost": {
+    "reports": 158,
+    "rows": 158,
+    "uniqueRows": 144,
+    "attempts": 777,
+    "inputTokens": 884561,
+    "outputTokens": 167871,
+    "cacheReadTokens": 703461,
+    "unknownUsageRequests": 6,
+    "retries": 0,
+    "invalidMeasurements": 19,
+    "note": "Invalid transport attempts are counted in cost and excluded from the deduplicated outcome rows."
+  },
+  "notes": [
+    "Stage 1 is exploratory under R37_B_PREREGISTRATION_AMENDMENT A1.",
+    "A partial or provider-invalid gate is not a task failure and is not a pass.",
+    "Stage 2 remains unstarted; no confirmatory claim is made."
+  ]
+}

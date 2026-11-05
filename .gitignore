@@ -49,3 +49,6 @@ eval/r36/runs/
 # aggregate result is written to eval/r37/out/r37b-results.json)
 eval/r37/runs-b/
 eval/r37/manifests-b/
+eval/r37/runs-b2/
+eval/r37/manifests-b2/
+eval/r37/out/r37b-*progress*.json

@@ -10,7 +10,7 @@
  */
 
 import { readdir } from 'node:fs/promises'
-import { dirname, join, resolve } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadCase } from '../r33/src/dataset.mjs'
 import { deltaMatchesFact } from '../r36/writer-protocol.mjs'
@@ -18,8 +18,10 @@ import { actualDelivery, pairOutcome } from './src/evidence.mjs'
 import { exists, readJson, writeJson } from './src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const RUNS = join(HERE, 'runs-b')
-const OUT = join(HERE, 'out', 'r37b-results.json')
+const ROOT = resolve(HERE, '..', '..')
+const RUNS = process.env.R37B_RUNS === undefined ? join(HERE, 'runs-b') : resolve(process.env.R37B_RUNS)
+const OUT = process.env.R37B_OUT === undefined ? join(HERE, 'out', 'r37b-results.json') : resolve(process.env.R37B_OUT)
+const relRoot = path => relative(ROOT, path).split(sep).join('/')
 const CASES = ['A1-v2', 'D1-v2', 'B2', 'C1', 'F1', 'H1']
 const cases = {}
 for (const caseId of CASES) {
@@ -37,25 +39,30 @@ function rate(part, total) {
 }
 
 function pairAnalysis(baseline, treatment) {
-  const contractOutcome = pairOutcome(baseline, treatment, row => row.behaviour?.contractSuccess)
-  const taskOutcome = pairOutcome(baseline, treatment, row => row.behaviour?.taskSuccess)
+  const contractOutcome = pairOutcome(baseline, treatment, row => row.contractSuccess)
+  const taskOutcome = pairOutcome(baseline, treatment, row => row.taskSuccess)
   const confounds = []
   if (baseline.delivery === 'full-history-fallback' || treatment.delivery === 'full-history-fallback') {
     confounds.push({ kind: 'fallback-delivery' })
+  }
+  if (baseline.delivery === 'semantic-committed-empty'
+    || treatment.delivery === 'semantic-committed-empty') {
+    confounds.push({ kind: 'empty-semantic-commit' })
   }
   if (baseline.delivery === 'unknown' || treatment.delivery === 'unknown'
     || baseline.delivery === 'commit-missing' || treatment.delivery === 'commit-missing') {
     confounds.push({ kind: 'unknown-delivery' })
   }
-  if (baseline.behaviour?.contractSuccess === true && treatment.behaviour?.contractSuccess === true) {
+  if (baseline.contractSuccess === true && treatment.contractSuccess === true) {
     confounds.push({ kind: 'ceiling' })
   }
-  if (baseline.fixture !== undefined || treatment.fixture !== undefined) {
+  if ((baseline.fixture !== undefined && baseline.fixture !== null)
+    || (treatment.fixture !== undefined && treatment.fixture !== null)) {
     confounds.push({ kind: 'controlled-representation' })
   }
   let memoryAttribution = 'none'
   if (confounds.length === 0 && treatment.delivery === 'semantic-committed'
-    && baseline.behaviour?.contractSuccess !== true && treatment.behaviour?.contractSuccess === true) {
+    && baseline.contractSuccess !== true && treatment.contractSuccess === true) {
     memoryAttribution = 'candidate'
   } else if (confounds.length === 0) {
     memoryAttribution = 'unresolved'
@@ -77,12 +84,12 @@ for (const runId of runDirs) {
   reports.push({ runId, report })
 }
 
-const rows = []
+const rowsAll = []
 for (const { runId, report } of reports) {
   for (const row of report.rows ?? []) {
-    rows.push({
+    rowsAll.push({
       runId,
-      reportPath: join(RUNS, runId, 'report.json'),
+      reportPath: relRoot(join(RUNS, runId, 'report.json')),
       phase: report.modelParameters?.toolProtocol === 'P3e' ? 'P3e' : 'P3',
       promptVersion: report.modelParameters?.writerPromptVersion ?? null,
       stage: row.stage,
@@ -95,7 +102,7 @@ for (const { runId, report } of reports) {
       processViolation: row.behaviour?.processViolation === true,
       finalVerification: row.behaviour?.finalVerificationStatus ?? null,
       failedChecks: row.behaviour?.failedChecks ?? [],
-      delivery: actualDelivery(row),
+      delivery: actualDelivery(row.row ?? row),
       foldValid: row.fold?.valid === true,
       foldSynthetic: row.fold?.synthetic === true,
       foldFallback: row.foldFallback ?? null,
@@ -109,14 +116,34 @@ for (const { runId, report } of reports) {
       testsExecuted: row.behaviourDetail?.testsExecuted ?? 0,
       steps: row.behaviourDetail?.steps ?? null,
       toolProtocol: row.behaviourDetail?.harness?.toolProtocol ?? null,
+      validActions: row.behaviourDetail?.harness?.validActions ?? 0,
       rejectedActions: row.behaviourDetail?.harness?.rejectedActions ?? 0,
       invalidActions: row.behaviourDetail?.harness?.invalidActions ?? 0,
+      invalidActionDetails: row.behaviourDetail?.harness?.invalidActionDetails ?? [],
       protocolDiagnostics: row.behaviourDetail?.harness?.protocolDiagnostics ?? [],
       cost: row.cost ?? null,
       row,
     })
   }
 }
+
+// A transport-invalid attempt is retried under a new run id. Keep both in the
+// raw cost ledger, but use one row per cell for outcome metrics: prefer a valid
+// row, then the most recent run id.
+const deduped = new Map()
+for (const row of rowsAll) {
+  const key = row.stage === 'writer-only'
+    ? `${row.stage}|${row.promptVersion}|${row.caseId}|${row.arm}|${row.replicateId}`
+    : `${row.stage}|${row.caseId}|${row.arm}|${row.replicateId}`
+  const existing = deduped.get(key)
+  if (existing === undefined
+    || (row.valid && !existing.valid)
+    || (row.valid === existing.valid && row.runId > existing.runId)) {
+    deduped.set(key, row)
+  }
+}
+const rows = [...deduped.values()]
+const invalidMeasurements = rowsAll.filter(row => !row.valid)
 
 const writerRows = rows.filter(row => row.stage === 'writer-only' && row.arm === 'S')
 function writerRecall(row) {
@@ -296,34 +323,98 @@ for (const caseId of ['B2', 'C1']) {
   }
 }
 
+const contrasts = [
+  { caseId: 'B2', treatment: 'FS', baseline: 'FP' },
+  { caseId: 'B2', treatment: 'FN', baseline: 'FP' },
+  { caseId: 'C1', treatment: 'FS', baseline: 'FP' },
+  { caseId: 'C1', treatment: 'FH', baseline: 'FP' },
+]
+representation.paired = contrasts.map(contrast => {
+  const rows = representationRows.filter(row => row.caseId === contrast.caseId)
+  const replicates = [...new Set(rows.map(row => row.replicateId))].sort()
+  const outcomes = []
+  for (const replicateId of replicates) {
+    const treatment = rows.find(row => row.replicateId === replicateId && row.arm === contrast.treatment)
+    const baseline = rows.find(row => row.replicateId === replicateId && row.arm === contrast.baseline)
+    if (treatment === undefined || baseline === undefined) continue
+    outcomes.push({
+      replicateId,
+      treatmentContract: treatment.contractSuccess,
+      baselineContract: baseline.contractSuccess,
+      outcome: treatment.contractSuccess === baseline.contractSuccess
+        ? 'tie'
+        : treatment.contractSuccess ? 'win' : 'loss',
+    })
+  }
+  return {
+    caseId: contrast.caseId,
+    treatment: contrast.treatment,
+    baseline: contrast.baseline,
+    pairs: outcomes.length,
+    wins: outcomes.filter(entry => entry.outcome === 'win').length,
+    losses: outcomes.filter(entry => entry.outcome === 'loss').length,
+    ties: outcomes.filter(entry => entry.outcome === 'tie').length,
+    outcomes,
+  }
+})
+
 const cost = {
   reports: reports.length,
-  rows: rows.length,
-  attempts: rows.reduce((total, row) => total + (row.cost?.attempts ?? 0), 0),
-  inputTokens: rows.reduce((total, row) => total + (row.cost?.observedInputTokens ?? 0), 0),
-  outputTokens: rows.reduce((total, row) => total + (row.cost?.observedOutputTokens ?? 0), 0),
-  cacheReadTokens: rows.reduce((total, row) => total + (row.cost?.cacheReadTokens ?? 0), 0),
-  unknownUsageRequests: rows.reduce((total, row) => total + (row.cost?.unknownUsageRequests ?? 0), 0),
-  retries: rows.reduce((total, row) => total + (row.cost?.httpRetries ?? 0), 0),
+  rows: rowsAll.length,
+  uniqueRows: rows.length,
+  attempts: rowsAll.reduce((total, row) => total + (row.cost?.attempts ?? 0), 0),
+  inputTokens: rowsAll.reduce((total, row) => total + (row.cost?.observedInputTokens ?? 0), 0),
+  outputTokens: rowsAll.reduce((total, row) => total + (row.cost?.observedOutputTokens ?? 0), 0),
+  cacheReadTokens: rowsAll.reduce((total, row) => total + (row.cost?.cacheReadTokens ?? 0), 0),
+  unknownUsageRequests: rowsAll.reduce((total, row) => total + (row.cost?.unknownUsageRequests ?? 0), 0),
+  retries: rowsAll.reduce((total, row) => total + (row.cost?.httpRetries ?? 0), 0),
+  invalidMeasurements: invalidMeasurements.length,
 }
 
 const protocol = {
   rows: rows.length,
   toolProtocols: [...new Set(rows.map(row => row.toolProtocol).filter(Boolean))],
+  modelTurns: rows.reduce((total, row) => total + (row.steps ?? 0), 0),
+  validActions: rows.reduce((total, row) => total + row.validActions, 0),
   rejectedActions: rows.reduce((total, row) => total + row.rejectedActions, 0),
   invalidActionTurns: rows.reduce((total, row) => total + row.invalidActions, 0),
   rowsWithRejections: rows.filter(row => row.rejectedActions > 0).length,
+  rejectionRate: (() => {
+    const valid = rows.reduce((total, row) => total + row.validActions, 0)
+    const rejected = rows.reduce((total, row) => total + row.rejectedActions, 0)
+    return valid + rejected === 0 ? null : rejected / (valid + rejected)
+  })(),
+  noValidActionTurnRate: (() => {
+    const turns = rows.reduce((total, row) => total + (row.steps ?? 0), 0)
+    const invalid = rows.reduce((total, row) => total + row.invalidActions, 0)
+    return turns === 0 ? null : invalid / turns
+  })(),
+  rejectedReasons: (() => {
+    const counts = {}
+    for (const row of rows) {
+      for (const detail of row.invalidActionDetails) {
+        for (const reason of detail.reasons ?? []) {
+          counts[reason.reason] = (counts[reason.reason] ?? 0) + 1
+        }
+      }
+    }
+    return counts
+  })(),
   diagnostics: rows.flatMap(row => row.protocolDiagnostics).reduce((counts, diagnostic) => {
     counts[diagnostic.reason] = (counts[diagnostic.reason] ?? 0) + 1
     return counts
   }, {}),
 }
+protocol.unparsedTurns = protocol.diagnostics['truncated-invoke'] ?? 0
+protocol.unparsedTurnRate = protocol.modelTurns === 0 ? null : protocol.unparsedTurns / protocol.modelTurns
 
 const result = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
-  status: 'exploratory-stage-1',
-  source: { runRoot: 'eval/r37/runs-b', reports: reports.length },
+  status: process.env.R37B_STAGE === 'stage2' ? 'confirmatory-stage-2' : 'exploratory-stage-1',
+  stage: process.env.R37B_STAGE ?? 'stage1',
+  replicates: Number(process.env.R37B_STAGE_REPLICATES ?? 4),
+  source: { runRoot: relRoot(RUNS), reports: reports.length },
   writer: { byPrompt: writerByPrompt },
   o2,
   e2e,
