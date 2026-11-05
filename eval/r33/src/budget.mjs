@@ -485,7 +485,7 @@ export function validateManifest(manifest) {
     return { ok: false, reason: 'manifest.runId must be a non-empty string when present' }
   }
   if (manifest.arms !== undefined) {
-    const allowed = new Set(['B1', 'S', 'O1', 'O2', 'F', 'N', 'OR'])
+    const allowed = new Set(['B1', 'S', 'O1', 'O2', 'F', 'N', 'OR', 'FP', 'FS', 'FN', 'FH'])
     const arms = Array.isArray(manifest.arms) ? manifest.arms : String(manifest.arms).split(',')
     for (const arm of arms) {
       if (!allowed.has(String(arm).trim())) {

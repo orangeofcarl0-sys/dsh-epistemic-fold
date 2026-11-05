@@ -63,6 +63,7 @@ export function renderedContext(arm, caseData, checkpoint) {
  * were the same intervention.
  */
 export function actualDelivery(row) {
+  if (row.fixture !== undefined && row.fixture !== null) return 'controlled-oracle-facts'
   if (row.arm === 'B1') return 'ef-off-basic-context'
   if (row.arm === 'O2') return 'oracle-gold-facts'
   if (row.arm === 'O1') {

@@ -138,6 +138,11 @@ export async function loadDataset() {
   return await loadFrom(CASES_ROOT, DATASET_ID)
 }
 
+/** Load a validated case root without changing the frozen v2 manifest. */
+export async function loadDatasetFrom(casesRoot, datasetId) {
+  return await loadFrom(casesRoot, datasetId)
+}
+
 /** Load the separately frozen holdout, never mixed into the v2 digest. */
 export async function loadHoldoutDataset() {
   return await loadFrom(HOLDOUT_ROOT, HOLDOUT_ID)

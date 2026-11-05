@@ -53,12 +53,14 @@ import { isCompactCheckpointSource } from '@deepseek-ai/dsh-compaction'
 import {
   HOLDOUT_ID,
   loadDataset,
+  loadDatasetFrom,
   loadHoldoutDataset,
   verifyFrozen,
   verifyHoldout,
 } from './src/dataset.mjs'
 import { selectCases } from './src/selection.mjs'
 import { parseActions } from './src/tool-protocol.mjs'
+import { analyzeTurn } from '../r37/src/tool-protocol-r37.mjs'
 import {
   BudgetExhausted,
   BudgetLedger,
@@ -117,7 +119,9 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = join(HERE, 'out')
 const SIGNAL = new AbortController().signal
 const ARMS = ['B1', 'S', 'O1', 'O2']
-const ALL_ARMS = [...ARMS, 'F', 'N', 'OR']
+const FIXTURE_ARMS = { FP: 'F-P', FS: 'F-S', FN: 'F-N', FH: 'F-H' }
+const ALL_ARMS = [...ARMS, 'F', 'N', 'OR', ...Object.keys(FIXTURE_ARMS)]
+const TOOL_PROTOCOL = process.env.R37_TOOL_PROTOCOL ?? 'P3'
 const FOLLOW_UP_TOOLS = ['read_file', 'write_file', 'list_dir', 'run_tests', 'recall', 'finish']
 const STAGES = ['writer-only', 'continuation']
 const FOLLOW_UP_MAX_TOKENS = 1024
@@ -724,7 +728,33 @@ function recall(caseData, query) {
   }
 }
 
-function armContext(arm, caseData, checkpoint) {
+async function loadFixtureContext(caseData, arm) {
+  const variant = FIXTURE_ARMS[arm]
+  if (variant === undefined) return undefined
+  const fileName = `${caseData.id}-${variant}`
+  const root = process.env.R37_FIXTURE_ROOT ?? join(HERE, '..', 'r37', 'fixtures')
+  const path = join(root, fileName, 'fixture.json')
+  const parsed = JSON.parse(await readFile(path, 'utf8'))
+  const contextText = String(parsed.contextText ?? '')
+  if (contextText.length === 0) throw new Error(`fixture ${fileName} has an empty contextText`)
+  return {
+    fileName,
+    variant,
+    label: parsed.label ?? null,
+    contextText,
+    chars: contextText.length,
+    digest: digestText(contextText),
+    path: `eval/r37/fixtures/${fileName}/fixture.json`,
+  }
+}
+
+function armContext(arm, caseData, checkpoint, fixtureContext) {
+  if (FIXTURE_ARMS[arm] !== undefined) {
+    if (typeof fixtureContext !== 'string') {
+      throw new Error(`fixture arm ${arm} has no fixture context for ${caseData.id}`)
+    }
+    return withTask(fixtureContext, caseData.task)
+  }
   if (arm === 'O2') return withTask(goldFactsBlock(caseData.gold), caseData.task)
   if (arm === 'F') return withTask(fullHistory(caseData.transcript), caseData.task)
   if (arm === 'OR') return withTask(goldFactsBlock(caseData.gold), caseData.task)
@@ -747,12 +777,26 @@ function systemPrompt() {
   ].join('\n')
 }
 
+function parseLiveActions(text) {
+  if (TOOL_PROTOCOL === 'P3e') {
+    const analysis = analyzeTurn(text, 'P3e', 'model')
+    return {
+      actions: analysis.actions.map(action => ({ ...action.params, tool: action.tool })),
+      invalid: analysis.invalid,
+      diagnostics: analysis.diagnostics,
+      protocol: 'P3e',
+    }
+  }
+  return { actions: parseActions(text), invalid: [], diagnostics: [], protocol: 'P3' }
+}
+
 async function followUp({
   adapter,
   model,
   caseData,
   arm,
   checkpoint,
+  fixtureContext,
   workspaceRoot,
   maxSteps,
   maxTokens = FOLLOW_UP_MAX_TOKENS,
@@ -761,7 +805,7 @@ async function followUp({
 }) {
   const messages = [{
     role: 'user',
-    content: [{ type: 'text', text: `${armContext(arm, caseData, checkpoint)}\n\nBEGIN THE TASK.` }],
+    content: [{ type: 'text', text: `${armContext(arm, caseData, checkpoint, fixtureContext)}\n\nBEGIN THE TASK.` }],
   }]
   const system = systemPrompt()
   const guardEnabled = finishGuard === true || finishGuard === 'tests-required'
@@ -779,8 +823,11 @@ async function followUp({
   let lastPassingTest = null
   let validActions = 0
   let invalidActions = 0
+  let rejectedActions = 0
   let unknownTools = 0
   let truncatedTurns = 0
+  const protocolDiagnostics = []
+  const invalidActionDetails = []
   let finishRequests = 0
   let prematureFinishRequests = 0
   let finishRejections = 0
@@ -808,13 +855,17 @@ async function followUp({
       trace,
       requestedMaxTokens: maxTokens,
       harness: {
-        version: 'H0-custom-json-loop',
+        version: TOOL_PROTOCOL === 'P3e' ? 'H-protocol-e' : 'H0-custom-json-loop',
         runtime,
         tools: [...FOLLOW_UP_TOOLS],
         maxSteps,
         maxTokens,
+        toolProtocol: TOOL_PROTOCOL,
         validActions,
         invalidActions,
+        rejectedActions,
+        protocolDiagnostics: protocolDiagnostics.slice(0, 50),
+        invalidActionDetails: invalidActionDetails.slice(0, 50),
         unknownTools,
         toolCounts: { ...toolCounts },
         finishReasonCounts: { ...finishReasonCounts },
@@ -959,21 +1010,33 @@ async function followUp({
       })
     }
     trace.push({ step: steps, text: text.slice(0, 1000), usage, finishReason })
-    const actions = parseActions(text)
+    const parsedActions = parseLiveActions(text)
+    const actions = parsedActions.actions
+    rejectedActions += parsedActions.invalid.length
+    for (const bad of parsedActions.invalid) {
+      invalidActionDetails.push({
+        tool: bad.tool,
+        reasons: bad.reasons,
+        form: bad.form,
+      })
+    }
+    for (const diagnostic of parsedActions.diagnostics) protocolDiagnostics.push(diagnostic)
+    const rejection = parsedActions.invalid.length > 0
+      ? 'TOOL PROTOCOL REJECTED:\n'
+        + parsedActions.invalid.map(bad => `- ${bad.tool}: ${bad.reasons.map(reason => `${reason.reason}: ${reason.detail}`).join('; ')}`).join('\n')
+        + '\nReply with a valid action; no rejected action was executed.'
+      : 'Reply with one JSON tool object or one DSML invoke block. Use one protocol per turn.'
     if (actions.length === 0) {
       invalidActions += 1
       messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
-      messages.push({
-        role: 'user',
-        content: [{
-          type: 'text',
-          text: 'Reply with one JSON tool object or one DSML invoke block. Use one protocol per turn.',
-        }],
-      })
+      messages.push({ role: 'user', content: [{ type: 'text', text: rejection }] })
       continue
     }
     validActions += actions.length
     messages.push({ role: 'assistant', content: [{ type: 'text', text }] })
+    if (parsedActions.invalid.length > 0) {
+      messages.push({ role: 'user', content: [{ type: 'text', text: rejection }] })
+    }
     const finishAction = actions.find(action => action.tool === 'finish')
     for (const action of actions) {
       if (action.tool === 'finish') continue
@@ -1027,7 +1090,8 @@ async function followUp({
 function writerSummary(log, packet, observation, arm, state) {
   const writerEntries = log.entries.filter(entry => entry.kind === 'writer-call')
   const providerEntries = log.entries.filter(entry => entry.kind === 'provider-failure')
-  if (arm === 'B1' || arm === 'O2' || arm === 'F' || arm === 'N' || arm === 'OR') {
+  if (arm === 'B1' || arm === 'O2' || arm === 'F' || arm === 'N' || arm === 'OR'
+    || FIXTURE_ARMS[arm] !== undefined) {
     return {
       applicable: false,
       reason: 'this arm has no semantic writer',
@@ -1163,12 +1227,36 @@ async function runOne({
   // `createReplicateLayout` already created a NEW directory and failed on a
   // collision; materialize only fills it.
   await materialize(caseData.workspace.files, layout.workspace)
+  const fixture = await loadFixtureContext(caseData, arm)
   const log = new WriterLog()
   const base = baseAdapter({ live, inner, ledger, log, caseData, plan, writerPayload })
   const adapter = adapterForRun({ base, arm, caseData, ledger, log, o1Handoff })
-  const host = await mountHost(adapter, manifest.model, layout, arm === 'S' || arm === 'O1')
+  const host = fixture === undefined
+    ? await mountHost(adapter, manifest.model, layout, arm === 'S' || arm === 'O1')
+    : undefined
   const before = ledger.snapshot()
-  const folded = await foldCase(caseData, layout, host, manifest.model)
+  const folded = fixture === undefined
+    ? await foldCase(caseData, layout, host, manifest.model)
+    : {
+      session: null,
+      sourceEventSeqs: [],
+      checkpoint: fixture.contextText,
+      fold: { valid: true, synthetic: true },
+      foldElapsedMs: 0,
+      packet: undefined,
+      writerObservation: undefined,
+      state: {
+        packets: 0,
+        receipts: 0,
+        commits: 0,
+        validationStatuses: [],
+        unplaced: 0,
+        stateDigest: digestText(''),
+        anchors: [],
+        synthetic: true,
+      },
+      syntheticFixture: true,
+    }
   const writer = writerSummary(log, folded.packet, folded.writerObservation, arm, folded.state)
   if (folded.foldRefused !== undefined) writer.commitStatus = 'fold-refused'
   writer.renderedCheckpointDigest = digestText(folded.checkpoint)
@@ -1231,6 +1319,13 @@ async function runOne({
       transcript: caseData.transcript,
     })
   }
+  if (fixture !== undefined) {
+    extraction = {
+      ...extraction,
+      applicable: false,
+      reason: 'controlled fixture arm: the context is an oracle-facts fixture, not a semantic checkpoint',
+    }
+  }
   // A refused fold is a compression outcome, not a reason to cancel the task.
   // Production keeps the full history when compaction declines; the follow-up
   // must run in that condition or the B1/O2 baseline silently disappears on
@@ -1243,6 +1338,7 @@ async function runOne({
       caseData,
       arm,
       checkpoint: folded.checkpoint,
+      fixtureContext: fixture?.contextText,
       workspaceRoot: layout.workspace,
       maxSteps: manifest.followUpSteps ?? 8,
       maxTokens: manifest.followUpMaxTokens ?? FOLLOW_UP_MAX_TOKENS,
@@ -1389,6 +1485,15 @@ async function runOne({
       text: folded.checkpoint.slice(0, 8_000),
       truncated: folded.checkpoint.length > 8_000,
     },
+    ...(fixture === undefined ? {} : {
+      fixture: {
+        variant: fixture.variant,
+        label: fixture.label,
+        digest: fixture.digest,
+        chars: fixture.chars,
+        path: fixture.path,
+      },
+    }),
     writer,
     state: folded.state,
     sourceBindings: sourceBindings(caseData, folded.sourceEventSeqs),
@@ -1433,6 +1538,15 @@ async function runOne({
       actualProviderUsage: writer.actualProviderUsage,
     },
     checkpoint: folded.checkpoint,
+    ...(fixture === undefined ? {} : {
+      fixture: {
+        variant: fixture.variant,
+        label: fixture.label,
+        digest: fixture.digest,
+        chars: fixture.chars,
+        path: fixture.path,
+      },
+    }),
     followTrace: follow?.trace ?? [],
     verificationFreshness: follow?.verificationFreshness ?? null,
     checker,
@@ -1891,6 +2005,7 @@ function reportEnvelope({ status, executionKind, stage, manifest, arms, runId, r
       finishGuard: manifest.finishGuard ?? false,
       runtime: manifest.runtime ?? 'custom-json-loop',
       harnessVersion: manifest.harnessVersion ?? 'H0-custom-json-loop',
+      toolProtocol: TOOL_PROTOCOL,
       writerPromptVersion: manifest.writerPromptVersion ?? 'W1',
       writerPromptDigest: digestText(
         WRITER_PROMPT_INSTRUCTIONS[manifest.writerPromptVersion ?? 'W1'] ?? SEMANTIC_WRITER_INSTRUCTION_W1,
@@ -1969,12 +2084,24 @@ async function main() {
   const checkOnly = process.argv.includes('--check')
   const selfTest = process.argv.includes('--self-test')
   const preflight = process.argv.includes('--preflight')
-  const frozen = await verifyFrozen()
+  const externalCasesRoot = process.env.R37_CASES_ROOT
+  const frozen = externalCasesRoot === undefined
+    ? await verifyFrozen()
+    : { ok: true, manifest: { datasetId: 'r37-b-cases' } }
   if (!frozen.ok) {
     process.stderr.write(`invalid benchmark: ${frozen.reason}\n`)
     process.exit(STATUS_EXIT_CODE['invalid-benchmark'])
   }
-  const { cases, errors, datasetDigest } = await loadDataset()
+  let loaded
+  try {
+    loaded = externalCasesRoot === undefined
+      ? await loadDataset()
+      : await loadDatasetFrom(externalCasesRoot, 'r37-b-cases')
+  } catch (error) {
+    process.stderr.write(`invalid benchmark: ${error instanceof Error ? error.message : String(error)}\n`)
+    process.exit(STATUS_EXIT_CODE['invalid-benchmark'])
+  }
+  const { cases, errors, datasetDigest } = loaded
   if (errors.length > 0) {
     process.stderr.write(`invalid benchmark: ${json(errors)}\n`)
     process.exit(STATUS_EXIT_CODE['invalid-benchmark'])

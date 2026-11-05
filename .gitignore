@@ -44,3 +44,8 @@ eval/r35/runs/
 
 # R36 live run archive (local evidence; reports are summarized under eval/r36/out)
 eval/r36/runs/
+
+# R37-B live run archive and generated manifests (local evidence; the
+# aggregate result is written to eval/r37/out/r37b-results.json)
+eval/r37/runs-b/
+eval/r37/manifests-b/

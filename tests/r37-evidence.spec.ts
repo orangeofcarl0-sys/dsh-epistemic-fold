@@ -62,6 +62,12 @@ describe('R37-A1: R36 reconstruction', () => {
       writer: { commitStatus: 'fold-refused' },
     })).toBe('full-history-fallback')
     expect(actualDelivery({ arm: 'S', fold: { valid: true }, state: { commits: 0 } })).toBe('commit-missing')
+    expect(actualDelivery({
+      arm: 'FP',
+      fixture: { variant: 'F-P' },
+      fold: { valid: true, synthetic: true },
+      state: { commits: 0 },
+    })).toBe('controlled-oracle-facts')
   })
 
   it('keeps the C1 fallback out of the semantic-checkpoint population', () => {

@@ -104,7 +104,9 @@
     "eval:r37-forensics": "node eval/r37/forensics.mjs",
     "eval:r37-gates": "node eval/r37/gates.mjs",
     "eval:r37-tests": "vitest run tests/r37-baseline.spec.ts tests/r37-evidence.spec.ts tests/r37-protocol.spec.ts tests/r37-benchmark-validity.spec.ts tests/r37-forensics.spec.ts tests/r37-gates.spec.ts",
-    "eval:r37": "npm run eval:r37-reconstruct && npm run eval:r37-protocol && npm run eval:r37-benchmark && npm run eval:r37-forensics && npm run eval:r37-gates"
+    "eval:r37": "npm run eval:r37-reconstruct && npm run eval:r37-protocol && npm run eval:r37-benchmark && npm run eval:r37-forensics && npm run eval:r37-gates",
+    "eval:r37b": "node eval/r37/live-r37b.mjs",
+    "eval:r37b-analyze": "node eval/r37/analyze-r37b.mjs"
   },
   "repository": {
     "type": "git",
