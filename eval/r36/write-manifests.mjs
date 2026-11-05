@@ -327,9 +327,6 @@ for (const [name, record] of Object.entries(EXECUTED)) {
   manifest.executionNote = record.note
   delete manifest.blockedReason
 }
-manifests['b1-s-o1-o2-frozen.json'].blockedReason =
-  'Authorized, but not run: the O2 calibration floor is not stable (best 3/6 contract success). '
-  + 'A B1/S comparison would be dominated by A1/C1 code failures and B2 test omission.'
 
 for (const [name, manifest] of Object.entries(manifests)) {
   await writeFile(join(DIR, name), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8')
