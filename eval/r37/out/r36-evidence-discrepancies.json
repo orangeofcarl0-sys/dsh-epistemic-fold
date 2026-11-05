@@ -1,0 +1,391 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T12:33:33.664Z",
+  "status": "no-discrepancy",
+  "r36Authoritative": {
+    "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r36-interface\\eval\\r36\\out\\causal-comparison.json",
+    "sha256": "62588877e01e906fa1cd45466a2a1dce602f51baff45a9cf3c78d1585d4852e7",
+    "contract": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 3,
+      "both": 4,
+      "neither": 4,
+      "invalid": 0
+    },
+    "task": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 2,
+      "both": 5,
+      "neither": 4
+    },
+    "byReplicate": [
+      {
+        "replicateId": "r1",
+        "pairs": 6,
+        "rescue": 0,
+        "damage": 2,
+        "both": 2,
+        "neither": 2
+      },
+      {
+        "replicateId": "r2",
+        "pairs": 6,
+        "rescue": 1,
+        "damage": 1,
+        "both": 2,
+        "neither": 2
+      }
+    ],
+    "byCase": [
+      {
+        "caseId": "A1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        }
+      },
+      {
+        "caseId": "B2",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 2,
+          "both": 0,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 1,
+          "neither": 0
+        }
+      },
+      {
+        "caseId": "C1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        }
+      },
+      {
+        "caseId": "D1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        }
+      },
+      {
+        "caseId": "F1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        }
+      },
+      {
+        "caseId": "H1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        }
+      }
+    ]
+  },
+  "reconstructed": {
+    "contract": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 3,
+      "both": 4,
+      "neither": 4,
+      "invalid": 0
+    },
+    "task": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 2,
+      "both": 5,
+      "neither": 4
+    },
+    "byReplicate": [
+      {
+        "replicateId": "r1",
+        "pairs": 6,
+        "rescue": 0,
+        "damage": 2,
+        "both": 2,
+        "neither": 2
+      },
+      {
+        "replicateId": "r2",
+        "pairs": 6,
+        "rescue": 1,
+        "damage": 1,
+        "both": 2,
+        "neither": 2
+      }
+    ],
+    "byCase": [
+      {
+        "caseId": "A1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        },
+        "confounds": [
+          "task-gold-ambiguity"
+        ]
+      },
+      {
+        "caseId": "B2",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 2,
+          "both": 0,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 1,
+          "neither": 0
+        },
+        "confounds": [
+          "tool-protocol"
+        ]
+      },
+      {
+        "caseId": "C1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        },
+        "confounds": [
+          "fallback-delivery"
+        ]
+      },
+      {
+        "caseId": "D1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        },
+        "confounds": [
+          "verification-artifact-process"
+        ]
+      },
+      {
+        "caseId": "F1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "confounds": [
+          "ceiling"
+        ]
+      },
+      {
+        "caseId": "H1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "confounds": [
+          "ceiling"
+        ]
+      }
+    ]
+  },
+  "discrepancies": [],
+  "notes": [
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-A1",
+      "caseId": "A1",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-A1",
+      "caseId": "A1",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-B2",
+      "caseId": "B2",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-B2",
+      "caseId": "B2",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-C1",
+      "caseId": "C1",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-C1",
+      "caseId": "C1",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-D1",
+      "caseId": "D1",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-D1",
+      "caseId": "D1",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-F1",
+      "caseId": "F1",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-F1",
+      "caseId": "F1",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-H1",
+      "caseId": "H1",
+      "replicateId": "r2",
+      "arm": "O1",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    },
+    {
+      "kind": "arm-not-run",
+      "runId": "r36-causal-r2-H1",
+      "caseId": "H1",
+      "replicateId": "r2",
+      "arm": "O2",
+      "note": "the r2 causal run selected B1 and S only; O1/O2 were not executed in this replicate"
+    }
+  ],
+  "note": "The R36 pair counts reproduce from the report rows and trace bytes. This is a reproduction, not a new result."
+}
