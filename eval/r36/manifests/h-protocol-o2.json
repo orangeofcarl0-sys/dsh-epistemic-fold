@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "h-protocol-o2",
+  "conditionsRef": "eval/r36/out/conditions.json",
+  "model": "deepseek-v4.1-flash",
+  "provider": "opencode",
+  "route": {
+    "baseUrlEnv": "OPENCODE_BASE_URL",
+    "apiKeyEnv": "OPENCODE_API_KEY",
+    "contextWindow": 131072,
+    "maxOutputTokens": 32768
+  },
+  "maxOutputTokens": 16384,
+  "phase": "C",
+  "execution": "live",
+  "status": "executed",
+  "requiresAuthorization": true,
+  "stage": "continuation",
+  "arms": "O2",
+  "cases": "A1,B2,C1,D1,F1,H1",
+  "followUpSteps": 8,
+  "followUpMaxTokens": 1024,
+  "finishGuard": false,
+  "harnessVersion": "H0-custom-json-loop",
+  "runtime": "custom-json-loop",
+  "limits": {
+    "requests": 400,
+    "inputTokens": 200000000,
+    "outputTokens": 5000000,
+    "wallClockMs": 3600000
+  },
+  "note": "H0 step/output/guard settings plus JSON+DSML tool parsing. This is the usable O2 floor.",
+  "runIds": [
+    "r36-h-protocol-o2-A1b",
+    "r36-h-protocol-o2-B2",
+    "r36-h-protocol-o2-C1b",
+    "r36-h-protocol-o2-D1c",
+    "r36-h-protocol-o2-F1",
+    "r36-h-protocol-o2-H1b"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "Executed per case: 5/6 task, 5/6 contract success; D1 misses verification.json."
+}

@@ -13,8 +13,7 @@
   "maxOutputTokens": 16384,
   "phase": "D",
   "execution": "live",
-  "status": "blocked",
-  "blockedReason": "Authorized, but not run: the O2 calibration floor is not stable (best 3/6 contract success). A B1/S comparison would be dominated by A1/C1 code failures and B2 test omission.",
+  "status": "executed",
   "requiresAuthorization": true,
   "stage": "continuation",
   "arms": "B1,S,O1,O2",
@@ -30,5 +29,22 @@
     "outputTokens": 5000000,
     "wallClockMs": 3600000
   },
-  "note": "Draft only. Do not run until the independent writer and harness interventions have evidence."
+  "note": "Draft only. Do not run until the independent writer and harness interventions have evidence.",
+  "runIds": [
+    "r36-causal-A1",
+    "r36-causal-B2",
+    "r36-causal-C1",
+    "r36-causal-D1",
+    "r36-causal-F1",
+    "r36-causal-H1",
+    "r36-causal-r2-A1",
+    "r36-causal-r2-B2",
+    "r36-causal-r2-C1",
+    "r36-causal-r2-D1",
+    "r36-causal-r2-F1",
+    "r36-causal-r2-H1"
+  ],
+  "executedAt": "2026-11-05",
+  "executionNote": "Executed under H-protocol, 2 replicates: 1 rescue, 3 damage, 4 both, 4 neither. Exploratory; A1 task/gold ambiguity and B2 code/process variance remain.",
+  "blockedReason": "Authorized, but not run: the O2 calibration floor is not stable (best 3/6 contract success). A B1/S comparison would be dominated by A1/C1 code failures and B2 test omission."
 }

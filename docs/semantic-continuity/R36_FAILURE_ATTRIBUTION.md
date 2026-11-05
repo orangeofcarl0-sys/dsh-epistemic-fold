@@ -181,22 +181,38 @@ remain:
   the negative fact is simply absent. Earliest confirmed stage: proposal
   coverage, not parsing or authority.
 
-### O2 execution floor
+### O2 execution floor: the tool protocol
 
-The O2 calibration separates execution failures from memory delivery:
+The first O2 conditions looked like a step/code floor, but the traces showed a
+more basic defect: the model emitted DeepSeek DSML invocations, and H0 parsed
+only JSON. Reads returned no content, actions were counted invalid, and the
+agent's "the tool results are empty" conclusion was correct from its side.
 
-| case | earliest confirmed failure | evidence |
+| condition | task | contract | invalid actions |
+|---|---:|---:|---:|
+| H0 | 2/6 | 1/6 | 28 |
+| H-protocol (JSON + both DSML forms) | 5/6 | 5/6 | 2 |
+
+The remaining D1 failure is a specific process gap: the agent runs tests and
+finishes but never writes `verification.json`, so `constraint.claim-known`
+fails. It is not a memory or protocol failure.
+
+### B1/S pair attribution
+
+Under H-protocol, 12 pairs (6 cases x 2 replicates) give 1 rescue, 3 damage,
+4 both, 4 neither. Earliest confirmed explanations:
+
+| case | result | earliest confirmed explanation |
 |---|---|---|
-| A1 | code/strategy | hidden `functionality.object-form` / `constraint.legacy-string-api` fail despite correct facts; one H-step run succeeds, so it is not deterministic |
-| B2 | process / test omission | functional checks pass, but `testsExecuted=0`, no finish request, 16-step limit; the guard has nothing to reject |
-| C1 | code/strategy | hidden `functionality.delivers-change` fails; no tests run |
-| D1 | code/verification | reaches tests in some runs; the guard rejected one finish; no fresh pass before the step limit |
-| F1 | no failure in most conditions | contract success under H0/H-output/H-finish/H-combined |
-| H1 | code/steps | succeeds when it reaches the edit under H-step/H-combined; fails at 8 steps |
+| A1 | 1 damage, 1 neither | S checkpoint contains the compatibility constraint. The agent kept the old string return shape; the hidden checker requires `retries: 2` on the string form, which the task text does not state. Task/gold ambiguity, not missing memory. |
+| B2 | 2 damage | S checkpoint contains the in-memory decision. r1 wrote a module that failed to load; r2 skipped tests. B1 passed both. Code/process, but the 2/2 consistency is worth a targeted replicate. |
+| C1 | 1 rescue, 1 neither | r1's S fold was refused and the agent ran on full history and failed; r2's S fold committed and the agent reached contract success while B1 failed. The rescue depends on fold quality. |
+| D1 | 2 neither | Both arms fail on the missing `verification.json`; no memory difference. |
+| F1 | 2 both | Ceiling; both arms succeed. |
+| H1 | 2 both | Ceiling; both arms succeed. |
 
-This is why G4 is blocked: the earliest failure in A1/B2/C1 is before any
-memory-policy comparison can be attributed. The writer interface is not the
-bottleneck in those O2 rows; the agent's code and process are.
+This is exploratory. The damage is not a clean memory-delivery signal; the
+rescue is not a stable Active advantage.
 
 ## What is not attributable
 
@@ -206,7 +222,9 @@ bottleneck in those O2 rows; the agent's code and process are.
 - **Memory delivery:** C1's accepted decision still reaches the checkpoint; H1's
   region does not. These are opposite outcomes from the same writer, so a
   blanket "memory does not work" conclusion is unsupported.
-- **Active vs Off:** no R36 causal run. R35's paired result is exploratory and
+- **Active vs Off:** the R36 causal run is exploratory (12 pairs, 2
+  replicates). Its damage is attributable to A1's task/gold ambiguity and B2's
+  code/process, and its rescue depends on C1's fold quality. R35's paired result
   is not pooled into R36.
 - **H-native:** not implemented. Its absence is a harness gap, not a model
   result.

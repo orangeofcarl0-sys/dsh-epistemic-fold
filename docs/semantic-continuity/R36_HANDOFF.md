@@ -13,7 +13,7 @@ Scorer                v3
 W0 prompt digest      1d13166dfaba145986af0d183d1739ed2835aca76668774dada15f0aaf937abc
 W1 prompt digest      61f380abc4fc2e98a02a55891a9a06c8e41040fbaf845f276ca6bbeadab3b5a3
 R35 worktree          untouched; run archive read-only
-R36 provider requests 419 (12 writer + 407 O2 calibration)
+R36 provider requests 845 (12 writer + 833 continuation)
 R36 live route        local ZCode proxy 127.0.0.1:7866 (provider c15ab109…); direct keys expired
 R36 commits           af6e533, 1e36ca8, 0b354b1, d3fc6e0, 7b25ea0, c6bf179, 8a7aef4, 5273faa
 Push                  not authorized, not performed
@@ -62,12 +62,14 @@ c6bf179  docs(eval): record R36 verification counts and commit map
   reported separately from unguided compliance.
 - H-native is declared and refused before any provider request; it is not
   implemented.
-- Conditions and 11 manifests are frozen. Phase B/C manifests are `executed`
-  with run IDs; H-native and the B1/S draft remain `blocked`.
-- The live W0/W1 pair and the O2 calibration were run on 2026-11-05. The
-  same-time writer pair is 2/6 vs 6/6 parsed and 0.167 vs 0.917 commit recall.
-  The best O2 condition reaches 3/6 contract success; B1/S was intentionally
-  not run because that floor would dominate the comparison.
+- Conditions and 11 manifests are frozen. Phase B/C manifests and the B1/S
+  manifest are `executed` with run IDs; only H-native remains `blocked`.
+- The live W0/W1 pair, the O2 calibration, and the B1/S comparison were run on
+  2026-11-05. The same-time writer pair is 2/6 vs 6/6 parsed and 0.167 vs 0.917
+  commit recall. The H-protocol tool-parser fix lifts O2 to 5/6 contract
+  success. The B1/S comparison is 1 rescue / 3 damage / 4 both / 4 neither
+  over 12 pairs; the damage is confounded by A1's task/gold ambiguity and B2's
+  code/process variance.
 
 ## Results
 
@@ -88,16 +90,20 @@ Cases certified                 7/7
 
 W0 live control                 2/6 parsed, 4 accepted, 0 refused, commit 0.167
 W1 live                         6/6 parsed, 14 accepted, 1 refused, commit 0.917
-O2 best (H-combined)            4/6 task, 3/6 contract success
-B1/S rows                       0 (intentionally not run: O2 floor)
-R36 HTTP attempts               419 (403 success, 16 transport failures)
-R36 observed tokens             328,150 input / 46,333 output / 233,466 cache
+O2 H0                           1/6 contract, 2/6 task
+O2 H-protocol                   5/6 contract, 5/6 task
+B1/S pairs                      12: 1 rescue, 3 damage, 4 both, 4 neither
+R36 HTTP attempts               845 (16 transport failures)
+R36 observed tokens             777,005 input / 114,404 output / 581,622 cache
 ```
 
 The key attribution: the writer's understanding was not the bottleneck; the
 envelope and authority/status contract were. W1 removes the envelope failure
-mode in the live pair. The remaining limiter is agent execution: A1/C1 code
-failures and B2's failure to run tests keep O2 at 3/6 contract success.
+mode in the live pair. The bigger execution floor was the **tool protocol**:
+the model emitted DSML invocations that H0 ignored. H-protocol parses JSON and
+both DSML forms, and O2 rises to 5/6 contract success. The remaining D1 failure
+is the missing `verification.json`; B2 damage is a code/process issue, and A1's
+damage is a task/gold ambiguity.
 
 ## Gates
 
@@ -106,8 +112,8 @@ failures and B2's failure to run tests keep O2 at 3/6 contract success.
 | G0 R35 Evidence Closed | passed |
 | G1 Benchmark Valid | passed |
 | G2 Writer Experiment | passed (live pilot, 1 replicate) |
-| G3 Agent Identifiability | partial (O2 best 3/6 contract; H-native absent) |
-| G4 Real Causal Comparison | blocked (O2 execution floor; B1/S not run) |
+| G3 Agent Identifiability | partial (H-protocol 5/6 contract; D1 artifact; H-native absent) |
+| G4 Real Causal Comparison | partial (12 exploratory pairs, mixed/confounded) |
 | G5 Product Decision | insufficient evidence (Active vs Off) |
 
 `eval/r36/out/gate-status.json` is authoritative.
@@ -126,7 +132,7 @@ npm run eval:r36-conditions  # freeze prompt/parser/validator/harness digests
 npm run eval:r36-manifests   # rewrite the 10 condition manifests
 npm run eval:r36-gates       # gate status; exits non-zero only on a failed gate
 
-npm run eval:r36-tests       # 25 R36 tests
+npm run eval:r36-tests       # 34 R36 tests
 npm run eval:r33             # 94 targeted R33/R34.1/R35 tests
 npm run typecheck
 
@@ -148,8 +154,8 @@ without the built adapter, the live-entry tests stop at "adapter not built".
 ```text
 Typecheck                 pass (src, client, eval)
 Targeted R33/R34.1/R35    94/94 pass
-R36 tests                 25/25 pass
-Full suite                1467 passed, 12 failed, 70 skipped
+R36 tests                 34/34 pass
+Full suite                1476 passed, 12 failed, 70 skipped
 ```
 
 The 12 full-suite failures are the pre-existing environment/DSH-drift set, not
@@ -182,10 +188,11 @@ eval/r36/out/
   conditions.json
   live-writer-analysis.json
   harness-calibration.json
+  causal-comparison.json
   live-results.json
   gate-status.json
 
-eval/r36/manifests/              11 condition manifests; B/C executed, H-native/B1S blocked
+eval/r36/manifests/              12 condition manifests; H-native blocked, rest executed
 eval/r36/reference/              A1/C1/D1/F1/H1 reference fixtures
 eval/r36/runs/                   local run archive (gitignored)
 docs/semantic-continuity/R36_*   this round's documents
@@ -193,19 +200,21 @@ docs/semantic-continuity/R36_*   this round's documents
 
 ## Next step
 
-R36 authorization was granted and used. The next step is not B1/S yet:
+R36 authorization was granted and used. The B1/S comparison has run, but it is
+exploratory. The next step is to remove its confounds:
 
-1. Replicate the W0/W1 pair at least three times; 0.917 is a pilot, not a
-   stable rate.
-2. Calibrate A1/C1 code execution and B2's test process. These are the cases
-   that keep O2 at 3/6 contract success.
-3. Replicate the harness conditions; A1 already moved between H-step and
-   H-combined, so one run per cell is too noisy.
-4. Implement H-native or keep it explicitly blocked.
-5. Only then freeze a B1/S harness and run B1/S/O1/O2.
+1. Resolve A1's task/gold ambiguity: the hidden checker requires `retries: 2`
+   on the string form; the task text does not state it. Either clarify the task
+   or relax the checker. Do not count A1 damage as memory.
+2. Fix the D1 verification artifact process: the agent never writes
+   `verification.json`.
+3. Replicate B2 damage and C1 rescue; both are currently n=2.
+4. Replicate W0/W1 and the causal pairs beyond two runs; 0.917 and the
+   1/3/4/4 split are not stable estimates.
+5. Implement H-native or keep it explicitly blocked.
 
 Do not pool R35 r1/r2/r3 with the R36 runs. Report rescue/damage/both/neither
-and provider/budget/invalid/incomplete pairs when B1/S is eventually run.
+and provider/budget/invalid/incomplete pairs if the causal comparison is rerun.
 
 ## Caveats
 

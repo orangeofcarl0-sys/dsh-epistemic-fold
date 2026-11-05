@@ -3,16 +3,16 @@
 ## R36 spend
 
 ```text
-HTTP attempts                 419
-successful responses          403
-failed HTTP attempts           16  (local-proxy transport resets; no model result)
-observed input tokens         328,150
-observed output tokens         46,333
-cache read tokens             233,466
+HTTP attempts                 845
+responses without transport failure 829
+transport failures             16  (local-proxy resets; no model result)
+observed input tokens         777,005
+observed output tokens        114,404
+cache read tokens             581,622
 cache write tokens                  0
 unknown-usage attempts              9
 retries                             0
-run reports                        31  (including invalid rows and retries)
+run reports                        60  (including per-case and retry runs)
 currency                          not reported (no trusted price profile)
 ```
 
@@ -21,12 +21,13 @@ Split by stage:
 | stage | attempts | input | output | cache read | unknown |
 |---|---:|---:|---:|---:|---:|
 | writer-only (W0 + W1) | 12 | 16,034 | 5,062 | 2,304 | 0 |
-| O2 calibration | 407 | 312,116 | 41,271 | 231,162 | 9 |
-| **total** | **419** | **328,150** | **46,333** | **233,466** | **9** |
+| continuation (O2 + B1/S/O1/O2) | 833 | 760,971 | 109,342 | 579,318 | 9 |
+| **total** | **845** | **777,005** | **114,404** | **581,622** | **9** |
 
-The writer-only split is 6 W0 calls and 6 W1 calls. The O2 total includes the
-invalid transport rows and the per-case reruns; those attempts happened and are
-counted, but the invalid rows are not used as task measurements.
+The writer-only split is 6 W0 calls and 6 W1 calls. The continuation total
+includes the O2 calibration, the B1/S/O1/O2 causal runs, the per-case reruns,
+and the invalid transport rows; those attempts happened and are counted, but
+the invalid rows are not used as task measurements.
 
 The route was the local ZCode proxy `http://127.0.0.1:7866/v1` (provider
 `c15ab109…`). The three direct `/zen/go/v1` keys answered HTTP 401

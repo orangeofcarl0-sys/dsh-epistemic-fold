@@ -3,13 +3,13 @@
 ## Status
 
 ```text
-G4 real B1/S/O1/O2 comparison     BLOCKED (O2 execution floor)
-R36 provider requests             419 (12 writer + 407 O2 calibration)
-R36 B1/S rows                     0
-R36 causal claims                 none
+G4 real B1/S/O1/O2 comparison     PARTIAL (exploratory, 2 replicates)
+R36 provider requests             845 (12 writer + 833 continuation)
+R36 B1/S rows                     12 (2 replicates x 6 cases)
+R36 causal claims                 exploratory only
 ```
 
-This document records the frozen design and why no causal result exists. It
+This document records the matched design and the actual exploratory result. It
 does not present R35's continuation rows as R36 evidence.
 
 ## 1. What is frozen
@@ -38,29 +38,75 @@ route                   http://127.0.0.1:7866/v1
 
 The direct `/zen/go/v1` keys answered HTTP 401 `api_key_expired`; the authorized
 runs used the local ZCode proxy, which passed the production 16,384-token bound.
-The live manifests are in `eval/r36/manifests/`. The Phase B/C manifests are
-marked `executed` with their run IDs; `h-native-o2` and the B1/S draft remain
+The live manifests are in `eval/r36/manifests/`. Phase B/C manifests and the
+B1/S manifest are `executed` with their run IDs; only `h-native-o2` remains
 `blocked`.
 
-## 2. Why G4 is blocked
+## 2. What was run, and why G4 is partial
 
-Authorization is no longer the missing condition. The execution floor is:
+Authorization is not the issue. The harness first had to be fixed: the model
+was emitting DSML tool calls that H0 did not parse. After H-protocol (JSON +
+DSML, including the short direct-attribute form), O2 reached **5/6 contract
+success**; only D1 fails because the agent never writes `verification.json`.
 
-1. **The writer intervention is measured.** W0-P0 vs W1-P0 on six cases:
-   2/6 → 6/6 parsed, commit recall 0.167 → 0.917. That is a strong pilot, not a
-   causal memory result.
-2. **O2 does not form a stable upper bound.** The best condition (exploratory
-   16 steps + finish guard) reaches 3/6 contract success. A1 and C1 fail on code;
-   B2 never runs the required test and never requests finish. A1 passes under
-   H-step and fails under the combined condition, so one replicate per cell is
-   also visibly noisy.
+That floor was sufficient to run the planned B1/S comparison: 6 cases, 2
+replicates, H-protocol (8 steps / 1024 / no guard), one model and route. The
+result is mixed, not a stable superiority or equivalence:
 
-A B1/S comparison now would be dominated by those execution failures. The brief
-says not to expand B1/S to accumulate more double-failure results, so the B1/S
-rows remain zero. The correct status is `Blocked` by the calibration floor, not
-by lack of authorization.
+| outcome (contract) | pairs |
+|---|---:|
+| rescue | 1 |
+| damage | 3 |
+| both | 4 |
+| neither | 4 |
+| invalid | 0 |
+| **total** | **12** |
 
-## 3. Matched comparison design (for the later run)
+Task-level: 1 rescue, 2 damage, 5 both, 4 neither.
+
+By replicate:
+
+```text
+r1: 0 rescue, 2 damage, 2 both, 2 neither
+r2: 1 rescue, 1 damage, 2 both, 2 neither
+```
+
+By case (contract):
+
+```text
+A1: 1 damage, 1 neither
+B2: 2 damage
+C1: 1 rescue, 1 neither
+D1: 2 neither
+F1: 2 both
+H1: 2 both
+```
+
+The damage is not a clean memory-loss signal:
+
+- **A1:** the S checkpoint contains the compatibility constraint, but the agent
+  kept the old string return shape while the hidden checker requires
+  `retries: 2` on both forms. The task text does not state that requirement;
+  this is a task/gold ambiguity, not missing memory.
+- **B2:** the S checkpoint contains the in-memory decision, but the S agent
+  wrote a broken module in r1 and skipped tests in r2. B1 passed both times.
+  This is the most interesting damage signal (2/2), but it is code/process, not
+  a missing fact.
+- **C1:** r1's S fold was refused, so the agent ran on full history and failed;
+  r2's S fold committed and the agent reached contract success while B1 failed.
+  The rescue depends on fold quality, not a uniform Active advantage.
+- **D1:** both arms fail on the missing `verification.json`; no memory
+  difference.
+- **F1/H1:** both arms succeed; ceiling, no discrimination.
+
+`eval/r36/out/causal-comparison.json` carries the per-pair rows and failed
+checks. This is exploratory evidence, not a product-level causal claim.
+
+The oracle arms were also not stable in the causal batch: O1 4/6 contract,
+O2 1/6 (despite O2 reaching 5/6 in the isolated H-protocol calibration). That
+order/run variance is another reason not to over-read the pair counts.
+
+## 3. Matched comparison design used
 
 Use all of:
 
@@ -133,17 +179,23 @@ Do not pool R35 r1, r2, r3 with any R36 run. R35 r2 is invalid by construction;
 r1 has 18 valid rows and r3 has 24. They were produced under a different
 harness and a different writer contract.
 
-## 6. What would unblock G4
+## 6. What would upgrade G4 from partial to passed
 
-1. ~~Explicit R36 authorization and a resolved route.~~ Done: the user granted
-   spend on 2026-11-05; the local proxy passed the 16,384-token probe.
+1. ~~Authorization and a resolved route.~~ Done: the user granted spend on
+   2026-11-05; the local proxy passed the 16,384-token probe.
 2. ~~A W1-P0 writer pilot with a same-time W0-P0 control.~~ Done: 6/6 vs 2/6
    parsed; commit recall 0.917 vs 0.167.
-3. **Raise the O2 floor.** The best condition reaches 3/6 contract success.
-   A1/C1 need code calibration, B2 needs test-process calibration, and the
-   harness needs replicates before it can be treated as stable.
-4. **Then freeze a B1/S harness and run it.** The B1/S manifest must not be
-   marked `blocked`, and the analysis must report rescue/damage/both/neither
-   plus invalid/incomplete pairs.
+3. ~~Raise the O2 floor.~~ Done: H-protocol reaches 5/6 contract success.
+4. ~~Run the B1/S comparison.~~ Done: 12 pairs, 2 replicates, 1 rescue / 3
+   damage / 4 both / 4 neither.
+5. **Resolve the A1 task/gold ambiguity.** The hidden checker requires
+   `retries: 2` on the string form; the task text does not state it. Until this
+   is clarified, A1's damage is not a memory result.
+6. **Fix the D1 verification artifact process.** The agent never writes
+   `verification.json`; both arms fail for that reason.
+7. **Replicate B2 and C1.** B2 damage is 2/2; C1 rescue is 1/2. Both need more
+   runs before they are more than anecdotes.
+8. **Implement H-native and increase the replicate count.** The current
+   comparison is one model, one route, two replicates.
 
 Until then, `eval/r36/out/gate-status.json` remains the authoritative status.

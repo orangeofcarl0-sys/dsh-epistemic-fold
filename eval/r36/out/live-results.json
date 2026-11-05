@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-04T17:44:41.652Z",
+  "generatedAt": "2026-11-05T04:30:06.779Z",
   "authorization": {
     "status": "granted",
     "basis": "The user explicitly granted R36 spend on 2026-11-05.",
@@ -863,6 +863,124 @@
         ]
       },
       {
+        "condition": "H-protocol",
+        "runIds": [
+          "r36-h-protocol-o2-A1b",
+          "r36-h-protocol-o2-B2",
+          "r36-h-protocol-o2-C1b",
+          "r36-h-protocol-o2-D1c",
+          "r36-h-protocol-o2-F1",
+          "r36-h-protocol-o2-H1b"
+        ],
+        "summary": {
+          "cases": 6,
+          "valid": 6,
+          "invalid": 0,
+          "taskSuccesses": 5,
+          "contractSuccesses": 5,
+          "functionalFailures": 1,
+          "processViolations": 0,
+          "falseVerificationClaims": 0,
+          "testsExecuted": 10,
+          "stepLimitTerminations": 2,
+          "truncatedTurns": 0,
+          "invalidActions": 2,
+          "guardRejections": 0,
+          "guardAssisted": 0,
+          "taskSuccessRate": 0.8333333333333334,
+          "contractSuccessRate": 0.8333333333333334
+        },
+        "perCase": [
+          {
+            "caseId": "A1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 3,
+            "steps": 7,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "B2",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "C1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 2,
+            "steps": 8,
+            "finished": false,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "D1",
+            "valid": true,
+            "taskSuccess": false,
+            "contractSuccess": false,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 6,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [
+              "constraint.claim-known",
+              "constraint.tests-or-evidence"
+            ],
+            "finalVerificationStatus": "not-verified"
+          },
+          {
+            "caseId": "F1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 1,
+            "steps": 3,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          },
+          {
+            "caseId": "H1",
+            "valid": true,
+            "taskSuccess": true,
+            "contractSuccess": true,
+            "processViolation": false,
+            "falseVerificationClaim": false,
+            "testsExecuted": 2,
+            "steps": 3,
+            "finished": true,
+            "guardRejections": 0,
+            "failedChecks": [],
+            "finalVerificationStatus": "verified"
+          }
+        ]
+      },
+      {
         "condition": "H-combined",
         "runIds": [
           "r36-h-combined-o2-A1",
@@ -986,17 +1104,173 @@
     "note": "H-combined is exploratory: 16 steps plus the finish guard, selected after the single-factor results. It is not a pre-registered arm."
   },
   "causal": {
-    "status": "not-run",
-    "gate": "G4 blocked",
-    "reason": "Even under the best O2 condition, only 3/6 cases reached contract success; A1 and C1 fail on code and B2 never runs the required tests. A B1/S comparison would be dominated by this execution floor, so the brief stop condition applies.",
-    "b1sRows": 0
+    "status": "executed",
+    "gate": "G4 partial (exploratory)",
+    "harness": "H-protocol: 8 steps / 1024 output tokens / no finish guard; DSML and JSON tool parsing",
+    "replicates": [
+      "r1",
+      "r2"
+    ],
+    "cases": [
+      "A1",
+      "B2",
+      "C1",
+      "D1",
+      "F1",
+      "H1"
+    ],
+    "contract": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 3,
+      "both": 4,
+      "neither": 4,
+      "invalid": 0
+    },
+    "task": {
+      "pairs": 12,
+      "rescue": 1,
+      "damage": 2,
+      "both": 5,
+      "neither": 4
+    },
+    "byReplicate": [
+      {
+        "replicateId": "r1",
+        "pairs": 6,
+        "rescue": 0,
+        "damage": 2,
+        "both": 2,
+        "neither": 2
+      },
+      {
+        "replicateId": "r2",
+        "pairs": 6,
+        "rescue": 1,
+        "damage": 1,
+        "both": 2,
+        "neither": 2
+      }
+    ],
+    "byCase": [
+      {
+        "caseId": "A1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 0,
+          "neither": 1
+        }
+      },
+      {
+        "caseId": "B2",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 2,
+          "both": 0,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 1,
+          "both": 1,
+          "neither": 0
+        }
+      },
+      {
+        "caseId": "C1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        },
+        "task": {
+          "rescue": 1,
+          "damage": 0,
+          "both": 0,
+          "neither": 1
+        }
+      },
+      {
+        "caseId": "D1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 0,
+          "neither": 2
+        }
+      },
+      {
+        "caseId": "F1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        }
+      },
+      {
+        "caseId": "H1",
+        "pairs": 2,
+        "contract": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        },
+        "task": {
+          "rescue": 0,
+          "damage": 0,
+          "both": 2,
+          "neither": 0
+        }
+      }
+    ],
+    "oracle": {
+      "O1": {
+        "rows": 6,
+        "valid": 6,
+        "contractSuccesses": 4
+      },
+      "O2": {
+        "rows": 6,
+        "valid": 6,
+        "contractSuccesses": 1
+      }
+    },
+    "b1sRows": 12,
+    "reason": "Exploratory mixed result: 1 rescue, 3 damage, 4 both, 4 neither over 12 valid pairs. The damage is not a clean memory-loss signal: A1's S checkpoint contains the compatibility constraint but the agent kept the old string shape, B2's S checkpoint contains the in-memory decision but the agent wrote a broken module or skipped tests, and C1's rescue appears only when the fold commits. Small n and one model/route: not an equivalence or superiority claim."
   },
   "cost": {
     "total": {
-      "attempts": 419,
-      "input": 328150,
-      "output": 46333,
-      "cacheRead": 233466,
+      "attempts": 845,
+      "input": 777005,
+      "output": 114404,
+      "cacheRead": 581622,
       "cacheWrite": 0,
       "unknownUsage": 9,
       "retries": 0
@@ -1012,10 +1286,10 @@
         "retries": 0
       },
       "continuation": {
-        "attempts": 407,
-        "input": 312116,
-        "output": 41271,
-        "cacheRead": 231162,
+        "attempts": 833,
+        "input": 760971,
+        "output": 109342,
+        "cacheRead": 579318,
         "cacheWrite": 0,
         "unknownUsage": 9,
         "retries": 0
@@ -1030,10 +1304,418 @@
         "retries": 0
       }
     },
-    "runs": 31,
+    "runs": 60,
     "note": "Every HTTP attempt, including the failed transport attempts, is counted. Unknown usage is not zero. No currency is reported."
   },
   "runs": [
+    {
+      "runId": "r36-causal-A1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 2,
+      "contractSuccesses": 2,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 32,
+        "successes": 32,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 27,
+        "input": 26912,
+        "output": 2742,
+        "cacheRead": 19712,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 2,
+      "contractSuccesses": 2,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 43,
+        "successes": 43,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 35,
+        "input": 38295,
+        "output": 5608,
+        "cacheRead": 30208,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-C1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 43,
+        "successes": 43,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 35,
+        "input": 69052,
+        "output": 14007,
+        "cacheRead": 60032,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-D1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 29,
+        "successes": 29,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 25,
+        "input": 21511,
+        "output": 2604,
+        "cacheRead": 14592,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 3,
+      "contractSuccesses": 2,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 36,
+        "successes": 36,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 28,
+        "input": 23256,
+        "output": 2839,
+        "cacheRead": 16384,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-H1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S",
+        "O1",
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 4,
+      "taskSuccesses": 3,
+      "contractSuccesses": 3,
+      "providerAvailability": {
+        "providerRows": 4,
+        "attemptedRows": 4,
+        "attempts": 30,
+        "successes": 30,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 25,
+        "input": 19954,
+        "output": 2463,
+        "cacheRead": 13695,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 18,
+        "successes": 18,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 18,
+        "input": 20043,
+        "output": 2011,
+        "cacheRead": 15360,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 2,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 18,
+        "successes": 18,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 18,
+        "input": 17854,
+        "output": 1833,
+        "cacheRead": 13568,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-C1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 15,
+        "successes": 15,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 15,
+        "input": 20023,
+        "output": 3453,
+        "cacheRead": 15872,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 18,
+        "successes": 18,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 18,
+        "input": 18737,
+        "output": 1768,
+        "cacheRead": 14080,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 2,
+      "contractSuccesses": 2,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 10,
+        "successes": 10,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 10,
+        "input": 9078,
+        "output": 1247,
+        "cacheRead": 6656,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-causal-r2-H1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "B1",
+        "S"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 2,
+      "taskSuccesses": 2,
+      "contractSuccesses": 2,
+      "providerAvailability": {
+        "providerRows": 2,
+        "attemptedRows": 2,
+        "attempts": 10,
+        "successes": 10,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 10,
+        "input": 8242,
+        "output": 1043,
+        "cacheRead": 5632,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
     {
       "runId": "r36-h-combined-o2-A1",
       "status": "executed-failed",
@@ -1605,6 +2287,550 @@
         "input": 4373,
         "output": 554,
         "cacheRead": 2687,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 4588,
+        "output": 694,
+        "cacheRead": 3200,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-A1b",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 10963,
+        "output": 1205,
+        "cacheRead": 8704,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5384,
+        "output": 710,
+        "cacheRead": 3584,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 5209,
+        "output": 692,
+        "cacheRead": 3456,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-C1b",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 16034,
+        "output": 3810,
+        "cacheRead": 14080,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 6,
+        "successes": 6,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 6,
+        "input": 3966,
+        "output": 934,
+        "cacheRead": 2560,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-D1b",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 7,
+        "successes": 7,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 7,
+        "input": 5842,
+        "output": 2013,
+        "cacheRead": 4224,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-D1c",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 8,
+        "successes": 8,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 8,
+        "input": 5371,
+        "output": 897,
+        "cacheRead": 3456,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-F1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 5,
+        "successes": 5,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 5,
+        "input": 2394,
+        "output": 592,
+        "cacheRead": 1408,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-H1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 9,
+        "successes": 9,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 9,
+        "input": 4768,
+        "output": 735,
+        "cacheRead": 3071,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-o2-H1b",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 8,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 5,
+        "successes": 5,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 5,
+        "input": 2896,
+        "output": 578,
+        "cacheRead": 1919,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-A1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 15889,
+        "output": 1325,
+        "cacheRead": 12416,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-B2",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 16569,
+        "output": 2524,
+        "cacheRead": 13184,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-C1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 36400,
+        "output": 7148,
+        "cacheRead": 33152,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-D1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 5,
+        "successes": 5,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 5,
+        "input": 2902,
+        "output": 689,
+        "cacheRead": 1664,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-F1",
+      "status": "executed-failed",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 0,
+      "contractSuccesses": 0,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 17,
+        "successes": 17,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 17,
+        "input": 13706,
+        "output": 1342,
+        "cacheRead": 10368,
+        "cacheWrite": 0,
+        "unknownUsage": 0,
+        "retries": 0
+      }
+    },
+    {
+      "runId": "r36-h-protocol-step-o2-H1",
+      "status": "executed-success",
+      "stage": "continuation",
+      "arms": [
+        "O2"
+      ],
+      "promptVersion": "W1",
+      "followUpSteps": 16,
+      "followUpMaxTokens": 1024,
+      "finishGuard": false,
+      "validRows": 1,
+      "taskSuccesses": 1,
+      "contractSuccesses": 1,
+      "providerAvailability": {
+        "providerRows": 1,
+        "attemptedRows": 1,
+        "attempts": 7,
+        "successes": 7,
+        "providerFailures": 0,
+        "unavailable": false
+      },
+      "cost": {
+        "attempts": 7,
+        "input": 3017,
+        "output": 565,
+        "cacheRead": 1919,
         "cacheWrite": 0,
         "unknownUsage": 0,
         "retries": 0

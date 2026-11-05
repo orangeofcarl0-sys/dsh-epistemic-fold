@@ -3,17 +3,17 @@
 ## Status
 
 ```text
-Active vs Off                     Insufficient Evidence
+Active vs Off                     Insufficient Evidence (exploratory mixed)
 Writer interface diagnosis        Positive Evidence (live pilot)
 Benchmark validity                Positive Evidence (7/7 certified)
 Parser envelope ablation          Positive Evidence (offline)
 Writer prompt W1 effect           Positive pilot (1 replicate, 6 cases)
-Harness execution effect          Partial; no stable upper bound
-Real causal comparison            Blocked by the O2 execution floor
+Harness execution effect          Positive for H-protocol (5/6 contract)
+Real causal comparison            Exploratory: 1 rescue / 3 damage / 4 both / 4 neither
 ```
 
 R36 did not prove that EF Active is better than EF Off, and did not prove that
-it is equivalent. It proved four narrower things:
+it is equivalent. It proved five narrower things:
 
 1. The model's raw semantic understanding was not the bottleneck in R35: every
    gold fact appeared in every scoreable raw response.
@@ -21,10 +21,14 @@ it is equivalent. It proved four narrower things:
    same-time pilot (2/6 → 6/6 parsed; commit recall 0.167 → 0.917).
 3. The benchmark itself had a temporal scoring defect (D1) and an unexplained
    visible/hidden conflict (C1); both are now fixed and certified.
-4. Even with the correct facts directly visible, the custom agent loop reaches
-   only 3/6 contract success at best. A1/C1 fail on code, B2 never runs the
-   required test, and A1 varies between runs. That floor, not the memory
-   mechanism, blocks the causal comparison.
+4. The custom agent loop's real floor was the **tool protocol**, not the step
+   budget: DSML invocations were ignored. H-protocol parses both JSON and DSML
+   and reaches 5/6 contract success with correct facts visible; only D1 misses
+   its `verification.json` artifact.
+5. The exploratory B1/S result is mixed: 1 rescue, 3 damage, 4 both, 4 neither
+   over 12 pairs. The damage is attributable to code/process or an A1
+   task/gold ambiguity, not to missing memory. B2 damage is 2/2; C1 rescue is
+   1/2. This is not an Active>Off claim.
 
 ## Gate status
 
@@ -33,8 +37,8 @@ it is equivalent. It proved four narrower things:
 | G0 R35 evidence closed | passed | 17 attempts, 16 scoreable, 1 lost; six failures classified |
 | G1 benchmark valid | passed | 7/7 cases certified; dataset digest unchanged; scorer v3 |
 | G2 writer experiment | passed | same-time W0-P0/W1-P0: 2/6 vs 6/6 parsed, commit 0.167 vs 0.917; P0/P1 separate |
-| G3 agent identifiability | partial | O2 conditions separate code, process, step, and guard failure; best 3/6 contract success; H-native absent |
-| G4 real causal comparison | blocked | not authorization: O2 does not form a stable upper bound, so B1/S was intentionally not run |
+| G3 agent identifiability | partial | H-protocol 5/6 contract; D1 verification artifact still fails; H-native absent |
+| G4 real causal comparison | partial | 12 exploratory pairs, 2 replicates; mixed and confounded by A1 ambiguity/B2 code |
 | G5 product decision | insufficient evidence | this document; Active vs Off is not claimed |
 
 `eval/r36/out/gate-status.json` is authoritative.
@@ -76,39 +80,45 @@ authority. C1's missing rejected-approach is an omission, not an overclaim.
 
 ### 4. Was the agent execution bottleneck improved?
 
-**Partially, and not enough for a causal run.** The finish guard works as a
-mechanism: it rejects a premature finish and never runs the test itself. In the
-live O2 calibration, however, it fired only once (D1) because the failing agents
-usually never requested finish. The best condition was the exploratory 16-step +
-guard combination: 4/6 task success, 3/6 contract success. A1 and C1 fail on
-code; B2 never runs the required test. A1 passed under H-step and failed under
-the combined condition, so one replicate per cell is visibly noisy.
+**Yes, by fixing the tool protocol.** The model emitted DSML invocations in two
+syntaxes; H0 parsed neither, so read results were empty and 28 actions were
+invalid. H-protocol parses JSON and both DSML forms. The best O2 condition then
+reaches 5/6 task and **5/6 contract success**, with 0 process violations and 2
+invalid actions. The finish guard was not the main lever; it fired only once in
+the earlier conditions. The remaining D1 failure is a specific process gap: the
+agent never writes `verification.json`.
 
 ### 5. Did the oracle condition restore task completion?
 
-**Partially: 3/6 contract success at best.** O2 is not a stable upper bound.
-A1/C1 are code failures, B2 is a process/test-omission failure, D1 needs the
-combined condition, and F1/H1 succeed in most conditions. H-native is still not
-implemented. This is enough to identify failure categories, not enough to
-attribute a B1/S difference to memory delivery.
+**Almost: 5/6 contract success under H-protocol.** Only D1 fails, for the missing
+verification artifact. A1/C1/B2/F1/H1 succeed with correct facts visible. This
+is a usable O2 floor and enough to identify code, protocol, and process failures.
+H-native is still not implemented.
 
 ### 6. Is Active better than Off?
 
-**No valid R36 evidence.** R36 was authorized but deliberately did not run
-B1/S: the best O2 condition reaches only 3/6 contract success, with A1/C1 code
-failures and B2 test omission. A B1/S comparison would be dominated by that
-execution floor, exactly the double-failure accumulation the brief forbids.
-R35's 9 valid r1/r3 pairs remain all `neither` and are not equivalence.
+**No stable evidence; the exploratory result is mixed.** A B1/S comparison was
+run under H-protocol: 12 valid pairs, 2 replicates.
+
+```text
+contract: 1 rescue, 3 damage, 4 both, 4 neither
+task:     1 rescue, 2 damage, 5 both, 4 neither
+```
+
+B2 damage is 2/2, C1 rescue is 1/2, A1 is 1 damage / 1 neither. The A1 damage
+is a task/gold ambiguity (the hidden checker requires `retries: 2` on the string
+form, which the task text does not state); B2's S agent wrote a broken module or
+skipped tests even though its checkpoint contained the decision. This is not a
+clean memory-loss signal, and it is not equivalence. R35's 9 valid r1/r3 pairs
+remain all `neither` and are not pooled.
 
 ### 7. Were the extra tokens, latency, and retrieval worth it?
 
-**The writer pilot was cheap and informative; the O2 calibration was expensive
-and diagnostic.** R36 spent 419 HTTP attempts, 328,150 input / 46,333 output
-tokens, 233,466 cache-read tokens, with 9 unknown-usage attempts and 16
-transport failures. The writer pair used only 12 attempts and produced the
-clearest result of the round. The O2 calibration consumed the rest and showed
-that the agent, not the memory policy, is the current limiter. No currency is
-reported.
+**The writer pair and the protocol fix were the high-value work; the later
+causal batch was expensive and noisy.** R36 spent 845 HTTP attempts, 777,005
+input / 114,404 output tokens, 581,622 cache-read tokens, with 9 unknown-usage
+attempts and 16 transport failures. The writer pair used 12 attempts; the
+continuation calibration and causal runs used 833. No currency is reported.
 
 ### 8. Should the next round change EF product mechanisms?
 
@@ -118,8 +128,9 @@ execution environment:
 ```text
 writer envelope / contract      W1 live pilot positive; replicate before treating 0.917 as stable
 parser tolerance                P1 proven offline; keep as an ablation, not production
-agent code/process              A1/C1 code failures and B2 test omission are now the limiter
-agent harness                   H-combined 3/6 contract; needs replicates and a working H-native
+agent tool protocol             H-protocol fixed; 5/6 O2 contract
+agent code/process              D1 verification artifact; B2 over-edit/test omission
+A1 task/gold                    hidden retries-on-string requirement is not in the task text
 state delivery / recall         no evidence yet that changing it would help
 MemoryOS / vector DB / new
 compaction engine / prefetcher  not justified
@@ -127,24 +138,29 @@ compaction engine / prefetcher  not justified
 
 ## Recommended next step
 
-The authorization was used, and the next step is **not** B1/S yet:
+The authorization was used. The next step is not another memory feature:
 
-1. Replicate W0/W1 at least three times to turn the 0.917 pilot into a stable
-   estimate.
-2. Calibrate A1/C1 code execution and B2 test process. These are the cases that
-   keep O2 below a usable floor.
-3. Replicate the harness conditions; A1 already moved between H-step and
-   H-combined, so single runs are not a basis for a frozen harness.
-4. Implement H-native or keep it explicitly blocked.
-5. Only then freeze a B1/S harness and run the paired comparison.
+1. Resolve A1's task/gold ambiguity: either state the `retries: 2` string-form
+   requirement or relax the hidden checker. Do not count A1 damage as memory.
+2. Fix the D1 verification artifact process.
+3. Replicate the B2 damage and C1 rescue (currently 2/2 and 1/2).
+4. Replicate W0/W1 and the causal pairs beyond two runs; implement H-native or
+   keep it explicitly blocked.
+5. Freeze a final harness and re-run B1/S/O1/O2 only after those confounds are
+   removed.
 
 Do not pool R35 r1/r2/r3 with the R36 runs. Do not treat guard-assisted success
 as autonomous compliance. Do not call the 0/0 R35 pair result equivalence.
+Do not call the exploratory 1/3/4/4 result an Active effect until A1/D1/B2 are
+resolved.
 
 ## Why this is a decision, not a delay
 
 The round closed the evidence that could be closed: the real writer trace is
 reconstructed, the six protocol failures are separated, the D1/C1 benchmark
-defects are fixed, W1 is live-tested against a same-time W0 control, and the O2
-calibration identifies the execution floor. The remaining causal question
-requires a better agent/harness floor, not more B1/S rows on the current one.
+defects are fixed, W1 is live-tested against a same-time W0 control, the tool
+protocol fix lifts O2 to 5/6 contract success, and a two-replicate B1/S
+comparison exists. The remaining causal question is blocked by concrete
+confounds—A1's unstated hidden requirement, D1's missing verification artifact,
+and B2's code/process variance—not by a missing experiment or a missing
+authorization.

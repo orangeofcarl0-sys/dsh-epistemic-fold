@@ -178,19 +178,26 @@ recorded independently.
 ## 6. Live O2 check
 
 The O2 calibration exercised the certified cases with correct facts directly
-visible:
+visible. Under H-protocol (JSON + DSML tool parsing):
 
-- **D1** reached task and contract success under the combined condition, with a
-  fresh passing test and a `verified` final status. The temporal scorer did not
-  misclassify it.
-- **C1** failed `functionality.delivers-change` in every O2 condition even
-  though the hybrid reference passes the same visible and hidden checks. This is
-  an agent implementation failure, not a benchmark conflict.
-- **A1** failed the object-form/legacy checks in most conditions; one H-step run
-  succeeded. The reference passes, so the case remains solvable, but the agent's
-  code is not stable.
-- **B2** passed the functional checks but never ran the required test. That is a
-  process failure, not a checker failure.
+- **A1** passes visible and hidden checks when the agent returns `retries: 2`
+  for both the object and string forms. In some B1/S runs the agent kept the
+  old string shape, which is backward compatible but fails the hidden
+  `constraint.legacy-string-api` check. The task text only requires
+  `loadConfig({ path })` to return `retries: 2`; it does not say the string form
+  must also return it. **This is a task/gold ambiguity.** The reference can
+  satisfy both, so the case is solvable, but the hidden requirement is not
+  stated in the task.
+- **B2** passes task and contract under H-protocol; the earlier failures were
+  the tool-protocol defect, not a checker conflict.
+- **C1** passes task and contract under H-protocol; the hybrid reference and
+  the agent's implementation agree. The earlier failures were the same
+  protocol defect.
+- **D1** still fails because the agent never writes `verification.json`. The
+  checker is correct; this is a process failure, not a benchmark conflict.
+- **F1/H1** pass.
 
-The certification therefore did not hide a benchmark defect. It exposed the
-agent execution floor that the R36 decision reports.
+The certification therefore did not hide an impossible visible/hidden
+conflict, but it did expose one **unstated hidden requirement (A1)**. That
+ambiguity must be resolved before A1 damage can be attributed to memory. The
+D1 failure is a separate verification-artifact process gap.

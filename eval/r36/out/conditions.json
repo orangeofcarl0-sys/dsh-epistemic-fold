@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-04T17:46:56.948Z",
+  "generatedAt": "2026-11-05T04:30:07.350Z",
   "dataset": {
     "id": "r33-semantic-continuity-v2",
     "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f"
@@ -53,7 +53,7 @@
         "finish"
       ],
       "finishGuard": false,
-      "sourceDigest": "4448f5d18cfc1750f2993c0ef2f5af456260f219c7889a9f8cea80fba001ac53"
+      "sourceDigest": "8e1722e73b53d660ef035da44616a84658c679e9286a1437ddce52b8afc80afb"
     },
     "variants": {
       "H-step": {
@@ -132,6 +132,17 @@
           ]
         },
         {
+          "condition": "H-protocol",
+          "runIds": [
+            "r36-h-protocol-o2-A1b",
+            "r36-h-protocol-o2-B2",
+            "r36-h-protocol-o2-C1b",
+            "r36-h-protocol-o2-D1c",
+            "r36-h-protocol-o2-F1",
+            "r36-h-protocol-o2-H1b"
+          ]
+        },
+        {
           "condition": "H-combined",
           "runIds": [
             "r36-h-combined-o2-A1",
@@ -144,12 +155,168 @@
         }
       ],
       "causal": {
-        "status": "not-run",
-        "gate": "G4 blocked",
-        "reason": "Even under the best O2 condition, only 3/6 cases reached contract success; A1 and C1 fail on code and B2 never runs the required tests. A B1/S comparison would be dominated by this execution floor, so the brief stop condition applies.",
-        "b1sRows": 0
+        "status": "executed",
+        "gate": "G4 partial (exploratory)",
+        "harness": "H-protocol: 8 steps / 1024 output tokens / no finish guard; DSML and JSON tool parsing",
+        "replicates": [
+          "r1",
+          "r2"
+        ],
+        "cases": [
+          "A1",
+          "B2",
+          "C1",
+          "D1",
+          "F1",
+          "H1"
+        ],
+        "contract": {
+          "pairs": 12,
+          "rescue": 1,
+          "damage": 3,
+          "both": 4,
+          "neither": 4,
+          "invalid": 0
+        },
+        "task": {
+          "pairs": 12,
+          "rescue": 1,
+          "damage": 2,
+          "both": 5,
+          "neither": 4
+        },
+        "byReplicate": [
+          {
+            "replicateId": "r1",
+            "pairs": 6,
+            "rescue": 0,
+            "damage": 2,
+            "both": 2,
+            "neither": 2
+          },
+          {
+            "replicateId": "r2",
+            "pairs": 6,
+            "rescue": 1,
+            "damage": 1,
+            "both": 2,
+            "neither": 2
+          }
+        ],
+        "byCase": [
+          {
+            "caseId": "A1",
+            "pairs": 2,
+            "contract": {
+              "rescue": 0,
+              "damage": 1,
+              "both": 0,
+              "neither": 1
+            },
+            "task": {
+              "rescue": 0,
+              "damage": 1,
+              "both": 0,
+              "neither": 1
+            }
+          },
+          {
+            "caseId": "B2",
+            "pairs": 2,
+            "contract": {
+              "rescue": 0,
+              "damage": 2,
+              "both": 0,
+              "neither": 0
+            },
+            "task": {
+              "rescue": 0,
+              "damage": 1,
+              "both": 1,
+              "neither": 0
+            }
+          },
+          {
+            "caseId": "C1",
+            "pairs": 2,
+            "contract": {
+              "rescue": 1,
+              "damage": 0,
+              "both": 0,
+              "neither": 1
+            },
+            "task": {
+              "rescue": 1,
+              "damage": 0,
+              "both": 0,
+              "neither": 1
+            }
+          },
+          {
+            "caseId": "D1",
+            "pairs": 2,
+            "contract": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 0,
+              "neither": 2
+            },
+            "task": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 0,
+              "neither": 2
+            }
+          },
+          {
+            "caseId": "F1",
+            "pairs": 2,
+            "contract": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 2,
+              "neither": 0
+            },
+            "task": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 2,
+              "neither": 0
+            }
+          },
+          {
+            "caseId": "H1",
+            "pairs": 2,
+            "contract": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 2,
+              "neither": 0
+            },
+            "task": {
+              "rescue": 0,
+              "damage": 0,
+              "both": 2,
+              "neither": 0
+            }
+          }
+        ],
+        "oracle": {
+          "O1": {
+            "rows": 6,
+            "valid": 6,
+            "contractSuccesses": 4
+          },
+          "O2": {
+            "rows": 6,
+            "valid": 6,
+            "contractSuccesses": 1
+          }
+        },
+        "b1sRows": 12,
+        "reason": "Exploratory mixed result: 1 rescue, 3 damage, 4 both, 4 neither over 12 valid pairs. The damage is not a clean memory-loss signal: A1's S checkpoint contains the compatibility constraint but the agent kept the old string shape, B2's S checkpoint contains the in-memory decision but the agent wrote a broken module or skipped tests, and C1's rescue appears only when the fold commits. Small n and one model/route: not an equivalence or superiority claim."
       },
-      "httpAttempts": 419
+      "httpAttempts": 845
     }
   }
 }

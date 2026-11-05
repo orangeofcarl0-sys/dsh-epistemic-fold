@@ -1,0 +1,1348 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-05T04:23:51.627Z",
+  "harness": "H-protocol: 8 steps / 1024 output tokens / no finish guard; DSML and JSON tool parsing",
+  "replicates": [
+    "r1",
+    "r2"
+  ],
+  "cases": [
+    "A1",
+    "B2",
+    "C1",
+    "D1",
+    "F1",
+    "H1"
+  ],
+  "contract": {
+    "pairs": 12,
+    "rescue": 1,
+    "damage": 3,
+    "both": 4,
+    "neither": 4,
+    "invalid": 0
+  },
+  "task": {
+    "pairs": 12,
+    "rescue": 1,
+    "damage": 2,
+    "both": 5,
+    "neither": 4
+  },
+  "byReplicate": [
+    {
+      "replicateId": "r1",
+      "pairs": 6,
+      "rescue": 0,
+      "damage": 2,
+      "both": 2,
+      "neither": 2
+    },
+    {
+      "replicateId": "r2",
+      "pairs": 6,
+      "rescue": 1,
+      "damage": 1,
+      "both": 2,
+      "neither": 2
+    }
+  ],
+  "byCase": [
+    {
+      "caseId": "A1",
+      "pairs": 2,
+      "contract": {
+        "rescue": 0,
+        "damage": 1,
+        "both": 0,
+        "neither": 1
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 1,
+        "both": 0,
+        "neither": 1
+      }
+    },
+    {
+      "caseId": "B2",
+      "pairs": 2,
+      "contract": {
+        "rescue": 0,
+        "damage": 2,
+        "both": 0,
+        "neither": 0
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 1,
+        "both": 1,
+        "neither": 0
+      }
+    },
+    {
+      "caseId": "C1",
+      "pairs": 2,
+      "contract": {
+        "rescue": 1,
+        "damage": 0,
+        "both": 0,
+        "neither": 1
+      },
+      "task": {
+        "rescue": 1,
+        "damage": 0,
+        "both": 0,
+        "neither": 1
+      }
+    },
+    {
+      "caseId": "D1",
+      "pairs": 2,
+      "contract": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 0,
+        "neither": 2
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 0,
+        "neither": 2
+      }
+    },
+    {
+      "caseId": "F1",
+      "pairs": 2,
+      "contract": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 2,
+        "neither": 0
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 2,
+        "neither": 0
+      }
+    },
+    {
+      "caseId": "H1",
+      "pairs": 2,
+      "contract": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 2,
+        "neither": 0
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 0,
+        "both": 2,
+        "neither": 0
+      }
+    }
+  ],
+  "oracle": {
+    "O1": {
+      "rows": 6,
+      "valid": 6,
+      "contractSuccesses": 4
+    },
+    "O2": {
+      "rows": 6,
+      "valid": 6,
+      "contractSuccesses": 1
+    }
+  },
+  "pairs": [
+    {
+      "caseId": "A1",
+      "replicateId": "r1",
+      "runId": "r36-causal-A1",
+      "valid": true,
+      "contractOutcome": "damage",
+      "taskOutcome": "damage",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": true,
+        "checkpointChars": 2013
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "constraint.legacy-string-api"
+        ],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1869,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "runId": "r36-causal-B2",
+      "valid": true,
+      "contractOutcome": "damage",
+      "taskOutcome": "damage",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 2,
+        "failedChecks": [],
+        "foldValid": true,
+        "checkpointChars": 1237
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "module-load:src/scheduler.mjs",
+          "functionality.fifo",
+          "decision.in-memory"
+        ],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1890,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r1",
+      "runId": "r36-causal-C1",
+      "valid": true,
+      "contractOutcome": "neither",
+      "taskOutcome": "neither",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "foldValid": true,
+        "checkpointChars": 2093
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 3,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "foldValid": false,
+        "foldFallback": "full-history",
+        "checkpointChars": 2275,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "fold-refused"
+      }
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r1",
+      "runId": "r36-causal-D1",
+      "valid": true,
+      "contractOutcome": "neither",
+      "taskOutcome": "neither",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "constraint.claim-known"
+        ],
+        "foldValid": false,
+        "checkpointChars": 2128
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "constraint.claim-known"
+        ],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1661,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r1",
+      "runId": "r36-causal-F1",
+      "valid": true,
+      "contractOutcome": "both",
+      "taskOutcome": "both",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": false,
+        "checkpointChars": 2200
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 2133,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r1",
+      "runId": "r36-causal-H1",
+      "valid": true,
+      "contractOutcome": "both",
+      "taskOutcome": "both",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": true,
+        "checkpointChars": 1641
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 2050,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-A1",
+      "valid": true,
+      "contractOutcome": "neither",
+      "taskOutcome": "neither",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "processViolation": true,
+        "testsExecuted": 0,
+        "failedChecks": [
+          "functionality.object-form",
+          "constraint.legacy-string-api"
+        ],
+        "foldValid": true,
+        "checkpointChars": 2266
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": true,
+        "testsExecuted": 0,
+        "failedChecks": [
+          "module-load:src/callers.mjs",
+          "functionality.object-form",
+          "constraint.legacy-string-api",
+          "constraint.callers-still-work"
+        ],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 2162,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-B2",
+      "valid": true,
+      "contractOutcome": "damage",
+      "taskOutcome": "both",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 2,
+        "failedChecks": [],
+        "foldValid": true,
+        "checkpointChars": 1260
+      },
+      "treatment": {
+        "contract": false,
+        "task": true,
+        "processViolation": true,
+        "testsExecuted": 0,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1894,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-C1",
+      "valid": true,
+      "contractOutcome": "rescue",
+      "taskOutcome": "rescue",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 2,
+        "failedChecks": [
+          "functionality.delivers-change"
+        ],
+        "foldValid": true,
+        "checkpointChars": 1346
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 2,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 2391,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-D1",
+      "valid": true,
+      "contractOutcome": "neither",
+      "taskOutcome": "neither",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "processViolation": true,
+        "testsExecuted": 0,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "foldValid": true,
+        "checkpointChars": 2054
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1745,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-F1",
+      "valid": true,
+      "contractOutcome": "both",
+      "taskOutcome": "both",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": false,
+        "checkpointChars": 2200
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1909,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-H1",
+      "valid": true,
+      "contractOutcome": "both",
+      "taskOutcome": "both",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 1,
+        "failedChecks": [],
+        "foldValid": false,
+        "checkpointChars": 2071
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "processViolation": false,
+        "testsExecuted": 2,
+        "failedChecks": [],
+        "foldValid": true,
+        "foldFallback": null,
+        "checkpointChars": 1091,
+        "writerProtocol": "parsed",
+        "writerCommitStatus": "committed"
+      }
+    }
+  ],
+  "arms": [
+    {
+      "caseId": "A1",
+      "replicateId": "r1",
+      "runId": "r36-causal-A1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 6,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2013,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r1",
+      "runId": "r36-causal-A1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 6,
+      "finished": true,
+      "failedChecks": [
+        "constraint.legacy-string-api"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1869,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r1",
+      "runId": "r36-causal-A1",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 4,
+      "finished": true,
+      "failedChecks": [
+        "constraint.legacy-string-api"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1502,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r1",
+      "runId": "r36-causal-A1",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 4,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2160,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "runId": "r36-causal-B2",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1237,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "runId": "r36-causal-B2",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "module-load:src/scheduler.mjs",
+        "functionality.fifo",
+        "decision.in-memory"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1890,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "runId": "r36-causal-B2",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1653,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "runId": "r36-causal-B2",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.fifo",
+        "decision.in-memory"
+      ],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2150,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r1",
+      "runId": "r36-causal-C1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.delivers-change"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2093,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r1",
+      "runId": "r36-causal-C1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 3,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.delivers-change"
+      ],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2275,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r1",
+      "runId": "r36-causal-C1",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 6,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1897,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r1",
+      "runId": "r36-causal-C1",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.delivers-change"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1026,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r1",
+      "runId": "r36-causal-D1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 6,
+      "finished": true,
+      "failedChecks": [
+        "constraint.claim-known"
+      ],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2128,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r1",
+      "runId": "r36-causal-D1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 2,
+      "finished": true,
+      "failedChecks": [
+        "constraint.claim-known"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1661,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r1",
+      "runId": "r36-causal-D1",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1321,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r1",
+      "runId": "r36-causal-D1",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2125,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r1",
+      "runId": "r36-causal-F1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 5,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2200,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r1",
+      "runId": "r36-causal-F1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2133,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": [
+        "authority-ungrounded",
+        "authority-ungrounded"
+      ]
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r1",
+      "runId": "r36-causal-F1",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.v2"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1815,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r1",
+      "runId": "r36-causal-F1",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 6,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2200,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r1",
+      "runId": "r36-causal-H1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1641,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r1",
+      "runId": "r36-causal-H1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 4,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2050,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r1",
+      "runId": "r36-causal-H1",
+      "arm": "O1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 4,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1437,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r1",
+      "runId": "r36-causal-H1",
+      "arm": "O2",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "region.production"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1840,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-A1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "functionality.object-form",
+        "constraint.legacy-string-api"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2266,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "A1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-A1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "module-load:src/callers.mjs",
+        "functionality.object-form",
+        "constraint.legacy-string-api",
+        "constraint.callers-still-work"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2162,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-B2",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 7,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1260,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-B2",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1894,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-C1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 4,
+      "finished": true,
+      "failedChecks": [
+        "functionality.delivers-change"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1346,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "C1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-C1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2391,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-D1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": true,
+      "falseVerificationClaim": false,
+      "testsExecuted": 0,
+      "steps": 8,
+      "finished": false,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 2054,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "not-applicable",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "D1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-D1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": false,
+      "contractSuccess": false,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 7,
+      "finished": true,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1745,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-F1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2200,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "F1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-F1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1909,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": [
+        "authority-ungrounded"
+      ]
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-H1",
+      "arm": "B1",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 1,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": false,
+      "foldFallback": "full-history",
+      "checkpointChars": 2071,
+      "writerProtocol": "not-called",
+      "writerCommitStatus": "fold-refused",
+      "writerRefusalReasons": []
+    },
+    {
+      "caseId": "H1",
+      "replicateId": "r2",
+      "runId": "r36-causal-r2-H1",
+      "arm": "S",
+      "valid": true,
+      "taskSuccess": true,
+      "contractSuccess": true,
+      "processViolation": false,
+      "falseVerificationClaim": false,
+      "testsExecuted": 2,
+      "steps": 3,
+      "finished": true,
+      "failedChecks": [],
+      "foldValid": true,
+      "foldFallback": null,
+      "checkpointChars": 1091,
+      "writerProtocol": "parsed",
+      "writerCommitStatus": "committed",
+      "writerRefusalReasons": []
+    }
+  ],
+  "note": "Exploratory: six cases, two replicates, one model/route. The contract outcome is the primary pair. Damage is not automatically a memory failure; the per-case failed checks and checkpoint sizes are retained for attribution."
+}

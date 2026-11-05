@@ -16,13 +16,14 @@ writer prompt with the validator; W0 is frozen byte-for-byte. A P1
 envelope-recovery ablation raises accepted-fact recall from 0.5625 to 0.875
 without changing any proposal. The authorized live stage ran on 2026-11-05:
 W0-P0 vs W1-P0 on six cases moved from 2/6 to 6/6 parsed and 0.167 to 0.917
-commit recall, with one authority refusal remaining. The O2 calibration then
-found the execution floor: best condition 3/6 contract success, with A1/C1 code
-failures and B2 test omission. B1/S was intentionally not run; G4 is blocked by
-that floor, not by authorization. R36 used 419 HTTP attempts and reports no
-currency. The R35 B1/S result remains 9 valid pairs, all `neither`, and is not
-an equivalence result. The scripted results are a pipeline measurement, **not a
-model result**.
+commit recall, with one authority refusal remaining. The O2 calibration found
+the real execution defect: DSML tool invocations were ignored. H-protocol
+parses JSON and both DSML forms and reaches 5/6 contract success. The B1/S
+comparison then ran two replicates: 1 rescue, 3 damage, 4 both, 4 neither,
+confounded by A1's task/gold ambiguity and B2's code/process variance. R36 used
+845 HTTP attempts and reports no currency. The R35 B1/S result remains 9 valid
+pairs, all `neither`, and is not an equivalence result. The scripted results
+are a pipeline measurement, **not a model result**.
 
 ## Quick start
 
@@ -30,7 +31,7 @@ model result**.
 npm run eval:r33-verify       # manifest matches every case
 node eval/r33/freeze.mjs --holdout --verify
 npm run eval:r33              # R33 + R34.1 + R35 targeted tests (94 tests)
-npm run eval:r36-tests        # R36 audit/benchmark/writer/harness tests (25 tests)
+npm run eval:r36-tests        # R36 audit/benchmark/writer/harness tests (34 tests)
 npm run eval:r36              # deterministic R36 audit, ablation, certification, gates
 npm run eval:r33-live-check   # interface only; no credentials
 node eval/r33/live.mjs --preflight --manifest eval/r33/live-manifest.example.json
