@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T20:54:54.856Z",
+  "generatedAt": "2026-11-06T21:19:43.993Z",
   "round": "R38-M0",
   "work": "WP4-archive-recovery",
   "status": "passed",
@@ -169,8 +169,7 @@
         "recoveredIsArchive": true,
         "stateDigestUnchanged": true,
         "stateUnchangedFlag": true
-      },
-      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+      }
     },
     {
       "id": "s1-production-timeout",
@@ -225,8 +224,7 @@
         "recoveredIsArchive": true,
         "stateDigestUnchanged": true,
         "stateUnchangedFlag": true
-      },
-      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+      }
     },
     {
       "id": "archive-miss",
@@ -281,8 +279,7 @@
         "recoveredIsArchive": true,
         "stateDigestUnchanged": true,
         "stateUnchangedFlag": true
-      },
-      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+      }
     },
     {
       "id": "descriptor-budget",
@@ -340,8 +337,7 @@
         "recoveredIsArchive": true,
         "stateDigestUnchanged": true,
         "stateUnchangedFlag": true
-      },
-      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+      }
     },
     {
       "id": "scope-mismatch",
@@ -396,8 +392,7 @@
         "recoveredIsArchive": true,
         "stateDigestUnchanged": true,
         "stateUnchangedFlag": true
-      },
-      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+      }
     }
   ]
 }

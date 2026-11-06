@@ -247,7 +247,7 @@ const cases = []
   })
 }
 
-async function runCase(caseData, store, root) {
+async function runCase(caseData, store) {
   for (const bundle of caseData.bundles) await store.write(bundle)
   const state = stateWith(caseData.anchors)
   const stateDigestBefore = canonicalHash(state)
@@ -320,7 +320,6 @@ async function runCase(caseData, store, root) {
       stateDigestUnchanged: stateDigestBefore === stateDigestAfter,
       stateUnchangedFlag: recovery.stateUnchanged === true,
     },
-    root,
   }
 }
 
@@ -329,7 +328,7 @@ export async function runAblation() {
   const store = new FileBundleStore(join(root, 'bundles'))
   const rows = []
   try {
-    for (const caseData of cases) rows.push(await runCase(caseData, store, root))
+    for (const caseData of cases) rows.push(await runCase(caseData, store))
   } finally {
     await rm(root, { recursive: true, force: true }).catch(() => {})
   }

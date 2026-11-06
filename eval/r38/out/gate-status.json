@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T21:17:49.309Z",
+  "generatedAt": "2026-11-06T21:19:48.739Z",
   "round": "R38-M0",
   "status": "complete",
   "eligibility": {
@@ -25,7 +25,7 @@
       "id": "R38-G0",
       "name": "Repository and baseline integrity",
       "status": "passed",
-      "detail": "base 7a2c974 -> head 820abfb; tracked changes 0; archive de6102989457…; tests 1656/1737",
+      "detail": "base 7a2c974 -> head 94ea25e; tracked changes 0; archive de6102989457…; tests 1656/1737",
       "evidence": "eval/r38/out/baseline-manifest.json, eval/r38/out/baseline-tests.json"
     },
     {
