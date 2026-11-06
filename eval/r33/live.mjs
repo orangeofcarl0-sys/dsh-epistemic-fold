@@ -61,6 +61,7 @@ import {
 import { selectCases } from './src/selection.mjs'
 import { parseActions } from './src/tool-protocol.mjs'
 import { analyzeTurn } from '../r37/src/tool-protocol-r37.mjs'
+import { analyzeTurnStrict } from '../r37c/src/dsml-codec.mjs'
 import {
   BudgetExhausted,
   BudgetLedger,
@@ -121,11 +122,24 @@ const SIGNAL = new AbortController().signal
 const ARMS = ['B1', 'S', 'O1', 'O2']
 const FIXTURE_ARMS = { FP: 'F-P', FS: 'F-S', FN: 'F-N', FH: 'F-H' }
 const ALL_ARMS = [...ARMS, 'F', 'N', 'OR', ...Object.keys(FIXTURE_ARMS)]
-const TOOL_PROTOCOL = process.env.R37_TOOL_PROTOCOL ?? 'P3'
+let TOOL_PROTOCOL = process.env.R37_TOOL_PROTOCOL ?? 'P3'
+let TOOL_PROTOCOL_SOURCE = process.env.R37_TOOL_PROTOCOL === undefined ? 'default' : 'environment'
 const FOLLOW_UP_TOOLS = ['read_file', 'write_file', 'list_dir', 'run_tests', 'recall', 'finish']
 const STAGES = ['writer-only', 'continuation']
 const FOLLOW_UP_MAX_TOKENS = 1024
 const MAX_RAW_OUTPUT_CHARS = 512 * 1024
+
+/**
+ * The frozen manifest is the authority for the protocol. The environment may
+ * select a protocol only when the manifest does not declare one; `loadLiveGate`
+ * rejects a conflicting pair before this function is reached.
+ */
+function applyManifestProtocol(manifest) {
+  if (manifest?.toolProtocol !== undefined) {
+    TOOL_PROTOCOL = manifest.toolProtocol
+    TOOL_PROTOCOL_SOURCE = 'manifest'
+  }
+}
 
 function argValue(flag) {
   const index = process.argv.indexOf(flag)
@@ -778,6 +792,15 @@ function systemPrompt() {
 }
 
 function parseLiveActions(text) {
+  if (TOOL_PROTOCOL === 'P3s') {
+    const analysis = analyzeTurnStrict(text, 'model')
+    return {
+      actions: analysis.actions.map(action => ({ ...action.params, tool: action.tool })),
+      invalid: analysis.invalid,
+      diagnostics: analysis.diagnostics,
+      protocol: 'P3s',
+    }
+  }
   if (TOOL_PROTOCOL === 'P3e') {
     const analysis = analyzeTurn(text, 'P3e', 'model')
     return {
@@ -855,7 +878,9 @@ async function followUp({
       trace,
       requestedMaxTokens: maxTokens,
       harness: {
-        version: TOOL_PROTOCOL === 'P3e' ? 'H-protocol-e' : 'H0-custom-json-loop',
+        version: TOOL_PROTOCOL === 'P3s'
+          ? 'H-protocol-s'
+          : TOOL_PROTOCOL === 'P3e' ? 'H-protocol-e' : 'H0-custom-json-loop',
         runtime,
         tools: [...FOLLOW_UP_TOOLS],
         maxSteps,
@@ -2006,6 +2031,7 @@ function reportEnvelope({ status, executionKind, stage, manifest, arms, runId, r
       runtime: manifest.runtime ?? 'custom-json-loop',
       harnessVersion: manifest.harnessVersion ?? 'H0-custom-json-loop',
       toolProtocol: TOOL_PROTOCOL,
+      toolProtocolSource: TOOL_PROTOCOL_SOURCE,
       writerPromptVersion: manifest.writerPromptVersion ?? 'W1',
       writerPromptDigest: digestText(
         WRITER_PROMPT_INSTRUCTIONS[manifest.writerPromptVersion ?? 'W1'] ?? SEMANTIC_WRITER_INSTRUCTION_W1,
@@ -2192,6 +2218,13 @@ async function main() {
     }
     const validated = validateManifest(manifest)
     if (!validated.ok) await invalid(validated.reason)
+    if (manifest.toolProtocol !== undefined
+      && process.env.R37_TOOL_PROTOCOL !== undefined
+      && manifest.toolProtocol !== process.env.R37_TOOL_PROTOCOL) {
+      await invalid(`protocol-manifest-mismatch: manifest declares ${manifest.toolProtocol}, `
+        + `runtime environment requests ${process.env.R37_TOOL_PROTOCOL}`)
+    }
+    applyManifestProtocol(manifest)
     const stage = selectStage(argValue('--stage') ?? manifest.stage)
     const selected = selectCases(cases, argValue('--cases') ?? manifest.cases)
     const arms = selectArms(argValue('--arms') ?? manifest.arms, stage)
@@ -2243,6 +2276,7 @@ async function main() {
     process.exit(STATUS_EXIT_CODE['not-executed'])
   }
   const manifest = gate.manifest
+  applyManifestProtocol(manifest)
   const stage = selectStage(argValue('--stage') ?? manifest.stage)
   const selected = selectCases(cases, argValue('--cases') ?? manifest.cases)
   const arms = selectArms(argValue('--arms') ?? manifest.arms, stage)

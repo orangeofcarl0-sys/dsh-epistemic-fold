@@ -476,6 +476,10 @@ export function validateManifest(manifest) {
     && (typeof manifest.harnessVersion !== 'string' || manifest.harnessVersion.length === 0)) {
     return { ok: false, reason: 'manifest.harnessVersion must be a non-empty string when present' }
   }
+  if (manifest.toolProtocol !== undefined
+    && !['P0', 'P1', 'P2', 'P3', 'P3e', 'P3s', 'P4'].includes(manifest.toolProtocol)) {
+    return { ok: false, reason: 'manifest.toolProtocol must be P0, P1, P2, P3, P3e, P3s, or P4 when present' }
+  }
   if (manifest.writerPromptVersion !== undefined
     && manifest.writerPromptVersion !== 'W0'
     && manifest.writerPromptVersion !== 'W1') {
@@ -522,7 +526,17 @@ export async function loadLiveGate(manifestPath, env = process.env) {
   } catch (error) {
     return { ok: false, reason: `manifest unreadable: ${error instanceof Error ? error.message : String(error)}` }
   }
-  return validateManifest(manifest)
+  const validated = validateManifest(manifest)
+  if (!validated.ok) return validated
+  const declared = manifest.toolProtocol
+  const environment = env.R37_TOOL_PROTOCOL
+  if (declared !== undefined && environment !== undefined && declared !== environment) {
+    return {
+      ok: false,
+      reason: `protocol-manifest-mismatch: manifest declares ${declared}, runtime environment requests ${environment}`,
+    }
+  }
+  return validated
 }
 
 /**
