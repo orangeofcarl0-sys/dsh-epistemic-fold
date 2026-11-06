@@ -22,6 +22,7 @@ export const NON_PASS_STATUSES = new Set([
   'not-executed',
   'blocked',
   'gate-not-verifiable',
+  'ready-for-authorization',
   'incomplete',
   'unknown',
 ])

@@ -120,7 +120,19 @@
     "eval:r37c-c2-analyze": "node eval/r37c/analyze-process-pilot.mjs",
     "eval:r37c-tests": "vitest run tests/r37c-semantic-funnel.spec.ts tests/r37c-measurement.spec.ts tests/r37c-gates.spec.ts tests/r37c-stats.spec.ts tests/r37c-dsml.spec.ts tests/r37c-artifacts.spec.ts",
     "eval:r37c": "npm run eval:r37c-baseline && npm run eval:r37c-funnel && npm run eval:r37c-measurement && npm run eval:r37c-statistics && npm run eval:r37c-protocol && npm run eval:r37c-h1v2 && npm run eval:r37c-native",
-    "eval:r37c-trajectories": "node eval/r37c/analyze-trajectories.mjs"
+    "eval:r37c-trajectories": "node eval/r37c/analyze-trajectories.mjs",
+    "eval:r37d-baseline": "node eval/r37d/audit-r37c.mjs",
+    "eval:r37d-operational": "node eval/r37d/operational-completion.mjs",
+    "eval:r37d-protocol": "node eval/r37d/analyze-protocol.mjs",
+    "eval:r37d-fixtures": "node eval/r37d/freeze-fixtures.mjs",
+    "eval:r37d-native": "node eval/r37d/native-extended.mjs",
+    "eval:r37d-pilot": "node eval/r37d/process-pilot.mjs",
+    "eval:r37d-h1": "node eval/r37d/audit-h1-v2.mjs",
+    "eval:r37d-s1": "node eval/r37d/certify-s1-v1.mjs",
+    "eval:r37d-plan": "node eval/r37d/held-out-plan.mjs",
+    "eval:r37d-tests": "vitest run tests/r37d-operational.spec.ts tests/r37d-protocol.spec.ts tests/r37d-fixtures.spec.ts tests/r37d-native.spec.ts tests/r37d-pilot.spec.ts tests/r37d-benchmark.spec.ts",
+    "eval:r37d-gates": "node eval/r37d/gates.mjs",
+    "eval:r37d": "npm run eval:r37d-baseline && npm run eval:r37d-operational && npm run eval:r37d-protocol && npm run eval:r37d-fixtures && npm run eval:r37d-native && npm run eval:r37d-pilot && npm run eval:r37d-h1 && npm run eval:r37d-s1 && npm run eval:r37d-plan && npm run eval:r37d-tests && npm run eval:r37d-gates"
   },
   "repository": {
     "type": "git",

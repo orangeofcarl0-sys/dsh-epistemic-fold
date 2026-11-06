@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T14:07:55.681Z",
+  "round": "R37-D",
+  "status": "attention",
+  "eligibility": {
+    "evaluated": 8,
+    "passed": 6,
+    "failed": 0,
+    "nonPass": 2,
+    "eligible": false,
+    "failedIds": [],
+    "nonPassIds": [
+      "R37D-D5",
+      "R37D-D6"
+    ]
+  },
+  "historicalEvidenceStatus": {
+    "r37bProductDecision": "active-not-supported-harm-signal",
+    "r37cStage1Admission": "gate-not-verifiable",
+    "note": "Historical status is not repaired by R37-D."
+  },
+  "currentStageReadiness": {
+    "d5": "ready-for-authorization",
+    "d6": "not-executed",
+    "note": "The process batch is ready for authorization, not executed."
+  },
+  "productDecision": "deployment-hold",
+  "machineProductOutcome": "active-harm-signal",
+  "productRationale": "R37-B contract harm remains; the R37-C metric correction found no Active benefit; the C2 guard had no opportunity in any failing cell; the R37-D process batch is not executed.",
+  "tests": {
+    "total": 62,
+    "passed": 62,
+    "failed": 0,
+    "success": true
+  },
+  "benchmark": {
+    "h1v2": "passed",
+    "s1v1": "certified",
+    "heldOutCertified": 2,
+    "heldOutSpecified": 4
+  },
+  "gates": [
+    {
+      "id": "R37D-D0",
+      "name": "Repository and evidence integrity",
+      "status": "passed",
+      "detail": "R37-C rc37c-measurement-closure@045cccf; archive de6102989457…; C2 24 cells; discrepancies 0",
+      "evidence": "eval/r37d/out/baseline.json, eval/r37d/out/r37c-audit.json"
+    },
+    {
+      "id": "R37D-D1",
+      "name": "Operational metric validity",
+      "status": "passed",
+      "detail": "C2 legacy contract 19, operational 16, legacy-pass/operational-fail 3; R37-B continuation 146 rows, legacy 83, operational 74",
+      "evidence": "eval/r37d/out/operational-completion.json"
+    },
+    {
+      "id": "R37D-D2",
+      "name": "Protocol and action attribution",
+      "status": "passed",
+      "detail": "model calls 163, no-valid 46; classes {\"invalid-envelope\":30,\"natural-language-only\":2,\"missing-parameter\":13,\"truncated-output\":6}; D1 phases {\"executed\":10,\"tool-request-rejected\":1,\"budget-exhausted-before-request\":1}",
+      "evidence": "eval/r37d/out/action-accounting.json, eval/r37d/out/protocol-efficiency.json, eval/r37d/out/b2-d1-action-forensics.json"
+    },
+    {
+      "id": "R37D-D3",
+      "name": "Fixed-context certification",
+      "status": "passed",
+      "detail": "fixtures 4, distinct digests 4, G0/r1 true, candidates true, secrets 0",
+      "evidence": "eval/r37d/out/fixed-context-manifest.json"
+    },
+    {
+      "id": "R37D-D4",
+      "name": "Native runtime extension",
+      "status": "passed",
+      "detail": "N3 passed (5 calls); N4 passed (TOOL_NOT_STARTED, TOOL_OUTCOME_UNKNOWN); N5 passed (journal 2 commits, proof true)",
+      "evidence": "eval/r37d/out/native-extended.json"
+    },
+    {
+      "id": "R37D-D5",
+      "name": "Process pilot readiness",
+      "status": "ready-for-authorization",
+      "detail": "24/24 cells; authorization not granted; runner design-only; failed checks 0",
+      "evidence": "eval/r37d/out/process-pilot-manifest.json, eval/r37d/out/process-pilot-preflight.json"
+    },
+    {
+      "id": "R37D-D6",
+      "name": "Process pilot executed",
+      "status": "not-executed",
+      "detail": "no live result artifact; the batch is ready-for-authorization",
+      "evidence": "eval/r37d/out/process-pilot-results.json"
+    },
+    {
+      "id": "R37D-D7",
+      "name": "Product decision",
+      "status": "passed",
+      "detail": "EF Active deployment hold; machine outcome active-harm-signal; R37-B contract 1/9 p=0.021484375",
+      "evidence": "eval/r37c/out/statistics-audit.json"
+    }
+  ],
+  "notes": [
+    "A gate-not-verifiable status is not a pass.",
+    "A ready-for-authorization batch is not an execution.",
+    "The historical R37-B/R37-C conclusions are not rewritten."
+  ]
+}
