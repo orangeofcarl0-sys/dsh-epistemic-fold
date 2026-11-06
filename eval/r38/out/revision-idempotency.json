@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T20:37:22.703Z",
+  "round": "R38-M0",
+  "work": "WP1-revision-idempotency",
+  "status": "passed",
+  "claimIdentity": {
+    "algorithm": "canonicalHash(kind, subjectKey, statement, status, evidenceSeqs, scope)",
+    "relationsIncluded": false,
+    "historicalIdsChanged": false
+  },
+  "revisionIdentity": {
+    "algorithm": "canonicalHash(sorted supersedes, sorted dependsOn, sorted rulesOut)",
+    "purpose": "dedupe an exact repeat without dropping a new operation"
+  },
+  "summary": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "claim-identity-excludes-relations",
+      "expected": "same deltaId for different targets",
+      "actual": {
+        "a": "5f5a14a775bbe465afc4649ef53fa4c21359ed1d1616327e62de20a41afcce9c",
+        "b": "5f5a14a775bbe465afc4649ef53fa4c21359ed1d1616327e62de20a41afcce9c"
+      },
+      "pass": true
+    },
+    {
+      "id": "repeat-with-new-plan-applies-operations",
+      "expected": "one declare, two retires, duplicateClaim on the second",
+      "actual": {
+        "declares": 1,
+        "retires": 2,
+        "duplicateClaim": true,
+        "queuePresent": false,
+        "outboxPresent": false
+      },
+      "pass": true
+    },
+    {
+      "id": "exact-repeat-refused",
+      "expected": "one accepted, one duplicate refusal",
+      "actual": {
+        "accepted": 1,
+        "refused": [
+          "duplicate"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "id": "replay-once-matches-candidate",
+      "expected": "replayed state digest equals the candidate digest",
+      "actual": {
+        "candidate": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7",
+        "replayed": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7",
+        "unplaced": 0
+      },
+      "pass": true
+    },
+    {
+      "id": "second-apply-detected-by-state-digest",
+      "expected": "counter changes, digest gate reports one mismatch",
+      "actual": {
+        "onceRetired": 1,
+        "twiceRetired": 2,
+        "checked": 2,
+        "mismatches": 1
+      },
+      "pass": true
+    },
+    {
+      "id": "replay-at-cut-matches-fork-state",
+      "expected": "cut replay equals the first fold state; whole replay equals the second",
+      "actual": {
+        "cut": "2e806c6b5b90e6c819a609fca486773e3ee90af2f7fb7ae277d4c4b823e52ac5",
+        "first": "2e806c6b5b90e6c819a609fca486773e3ee90af2f7fb7ae277d4c4b823e52ac5",
+        "whole": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7",
+        "second": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7"
+      },
+      "pass": true
+    },
+    {
+      "id": "retry-deterministic",
+      "expected": "same accepted ids, same ops, same state",
+      "actual": {
+        "acceptedIds": [
+          "11cb659aff7aee5714ab22029b032716cb6401e0c198b9e8d5aa5ab1b33acb67",
+          "03cf87a17341ab106e22ab800d245ff5c6a44e40e3b39ba43be5fd79b14ee341"
+        ],
+        "opsDigestA": "5a681d526191bec7a501d541f770aed361773b7f9f42dc8399c49361ef2f5fbe",
+        "opsDigestB": "5a681d526191bec7a501d541f770aed361773b7f9f42dc8399c49361ef2f5fbe",
+        "stateA": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7",
+        "stateB": "66f1d135926208cac91bf662d9a7daf2fa0d08ca43ccaa16e4a1f0f796a2eaf7"
+      },
+      "pass": true
+    }
+  ]
+}

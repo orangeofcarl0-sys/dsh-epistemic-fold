@@ -138,6 +138,7 @@ import type {
   SemanticPacket,
   SemanticReceipt,
   SemanticRefusal,
+  SemanticRetirementAudit,
   SemanticWorkingSetReport,
 } from '../semantic/types.ts'
 import type { Message } from '@deepseek-ai/dsh-llm'
@@ -226,6 +227,7 @@ interface ActiveFoldPlan {
     readonly deltaParse: 'parsed' | 'absent' | 'malformed'
     readonly ops: readonly EfAnchorEventData[]
     readonly handoff: string
+    readonly retirement?: SemanticRetirementAudit
   }
 }
 
@@ -2154,6 +2156,15 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
               deltaParse: parsed.deltaParse,
               ops: plan.ops,
               handoff: parsed.handoff,
+              ...(plan.withheld.length > 0 || plan.refusedRetirements.length > 0 || plan.valueConflicts.length > 0
+                ? {
+                  retirement: {
+                    withheld: plan.withheld,
+                    refused: plan.refusedRetirements,
+                    ...(plan.valueConflicts.length === 0 ? {} : { valueConflicts: plan.valueConflicts }),
+                  },
+                }
+                : {}),
             },
           })
           semanticText = parsed.handoff.trim().length > 0 ? parsed.handoff : undefined
@@ -2437,6 +2448,15 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       proposed: parsed.proposed,
       accepted: validation.accepted,
       refused: validation.refused,
+      ...(plan.withheld.length > 0 || plan.refusedRetirements.length > 0 || plan.valueConflicts.length > 0
+        ? {
+          retirement: {
+            withheld: plan.withheld,
+            refused: plan.refusedRetirements,
+            ...(plan.valueConflicts.length === 0 ? {} : { valueConflicts: plan.valueConflicts }),
+          },
+        }
+        : {}),
       writer: {
         provider: writer.meta.provider,
         model: writer.meta.model,
@@ -2601,6 +2621,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
       proposed: packet.proposed,
       accepted: packet.accepted,
       refused: packet.refused,
+      ...(packet.retirement === undefined ? {} : { retirement: packet.retirement }),
       workingSet: args.active.workingSet,
       ...(args.meta === undefined ? {} : {
         writer: {

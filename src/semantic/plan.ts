@@ -23,6 +23,15 @@
  * later in the same packet, which leaves the replaced value active and visible.
  * Two phases make the outcome independent of proposal order.
  *
+ * ## Claim acceptance is not retirement authorization
+ *
+ * `validate.ts` decides whether a CLAIM may be recorded. This module decides
+ * whether the claim's relation operations may be applied. A target that exists
+ * but outranks the declaring claim keeps its state; the claim is still
+ * declared. A target that cannot be resolved withholds the revision entirely,
+ * because applying it alone would create a second active value while the value
+ * it claimed to replace stayed live.
+ *
  * @module dsh-epistemic-fold/semantic/plan
  */
 
@@ -32,6 +41,8 @@ import { reduceEvent } from '../state/state.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import { anchorIdOf, rejectedApproachValue } from './validate.ts'
+import { mayRetire } from './retirement.ts'
+import type { RetirementRefusalReason } from './retirement.ts'
 import type { AcceptedDelta } from './types.ts'
 
 /** How one target named by `supersedes` was resolved. */
@@ -40,7 +51,9 @@ export interface ResolvedSupersede {
   /** The anchor id to retire, when the target named a known coordinate. */
   readonly anchorId?: string
   /** `same-coordinate` needs no retire op: the declare displaces it in place. */
-  readonly via: 'same-coordinate' | 'other-coordinate' | 'unknown'
+  readonly via: 'same-coordinate' | 'other-coordinate' | 'unknown' | 'already-retired' | 'cross-scope' | 'ambiguous'
+  /** Set when the target resolved but the declaring claim may not retire it. */
+  readonly refusal?: RetirementRefusalReason
 }
 
 /** One accepted delta with its resolved operations. */
@@ -52,6 +65,25 @@ export interface PlannedDelta {
   readonly supersedes: readonly ResolvedSupersede[]
   /** Set when the anchor was already present, so the declare was skipped. */
   readonly duplicate?: boolean
+  /** Set when this proposal repeated an already-planned claim in the same fold. */
+  readonly duplicateClaim?: boolean
+  /** Set when the delta was accepted by validation but NOT applied. */
+  readonly withheld?: WithheldDelta['reason']
+}
+
+/** A delta whose revision could not be resolved, so it was not applied. */
+export interface WithheldDelta {
+  readonly deltaId: string
+  readonly reason: 'unresolved-target' | 'ambiguous-target'
+  readonly targets: readonly string[]
+}
+
+/** A target that resolved, but whose retirement the declaring claim may not perform. */
+export interface RefusedRetirement {
+  readonly deltaId: string
+  readonly target: string
+  readonly anchorId?: string
+  readonly reason: RetirementRefusalReason
 }
 
 /** The complete commit plan for one packet. */
@@ -60,6 +92,12 @@ export interface CommitPlan {
   readonly planned: readonly PlannedDelta[]
   /** Targets no state coordinate matched; recorded, never guessed at. */
   readonly unresolvedTargets: readonly string[]
+  /** Deltas validation accepted but the plan did not apply. */
+  readonly withheld: readonly WithheldDelta[]
+  /** Retirements dropped because the declaring authority lacked standing. */
+  readonly refusedRetirements: readonly RefusedRetirement[]
+  /** Repeated claims whose rendered value differs from the declared anchor's. */
+  readonly valueConflicts: readonly { readonly deltaId: string; readonly anchorId: string }[]
 }
 
 /** Every anchor currently visible in any hot face. */
@@ -75,6 +113,22 @@ export function visibleAnchors(state: FoldCurrentState): readonly Anchor[] {
   ]
 }
 
+/**
+ * Every visible anchor, ONCE.
+ *
+ * `visibleAnchors` concatenates faces and `stateHeads`, and a constraint or
+ * decision is indexed in both. Matching on the raw list made one anchor look
+ * like two candidates and turned a precise target into an "ambiguous" one, so
+ * every resolution path below uses this de-duplicated view.
+ */
+function uniqueAnchors(state: FoldCurrentState): readonly Anchor[] {
+  const byId = new Map<string, Anchor>()
+  for (const anchor of visibleAnchors(state)) {
+    if (!byId.has(anchor.id)) byId.set(anchor.id, anchor)
+  }
+  return [...byId.values()]
+}
+
 /** Whether two claims belong to the same task scope (both absent = yes). */
 export function sameScope(left: AnchorScope | undefined, right: AnchorScope | undefined): boolean {
   if (left === undefined && right === undefined) return true
@@ -82,39 +136,96 @@ export function sameScope(left: AnchorScope | undefined, right: AnchorScope | un
   return canonicalHash(left) === canonicalHash(right)
 }
 
-/**
- * Find the anchor a target names.
- *
- * Three spellings are accepted because all three are natural in a proposal:
- * the anchor id itself, the exact `stateKeyText`, and the bare `subjectKey`
- * (which is the `property` of a semantic coordinate). The bare subject is
- * matched ONLY among semantic coordinates, so a proposal cannot retire an
- * unrelated user anchor by naming its value.
- *
- * A bare subject is additionally matched only within the PROPOSAL'S scope. Two
- * tasks can name the same `timeout`; letting a repo-A proposal resolve the bare
- * word to repo-B's anchor would retire another task's contract by coincidence.
- * An explicit anchor id or exact stateKeyText is still an explicit reference and
- * is honored regardless of scope.
- */
-function findTarget(
-  state: FoldCurrentState,
-  target: string,
-  scope: AnchorScope | undefined,
-): Anchor | undefined {
-  for (const anchor of visibleAnchors(state)) {
-    if (anchor.id === target) return anchor
-    if (anchor.stateKey !== undefined && stateKeyText(anchor.stateKey) === target) return anchor
-    if (anchor.stateKey?.namespace === 'semantic'
-      && anchor.stateKey.property === target
-      && sameScope(anchor.scope, scope)) return anchor
-  }
-  return undefined
-}
-
 /** The anchor that currently occupies one coordinate, if any. */
 function headAt(state: FoldCurrentState, key: StateKey): Anchor | undefined {
   return state.stateHeads[stateKeyText(key)]
+}
+
+/** One target's resolution, before authorization is decided. */
+type TargetResolution =
+  | { readonly kind: 'previous-absent' }
+  | { readonly kind: 'already-retired' }
+  | { readonly kind: 'resolved'; readonly anchor: Anchor; readonly sameCoordinate: boolean }
+  | { readonly kind: 'sibling'; readonly anchorId: string; readonly authority: Anchor['authority'] }
+  | { readonly kind: 'cross-scope'; readonly anchor: Anchor }
+  | { readonly kind: 'ambiguous'; readonly anchorIds: readonly string[] }
+  | { readonly kind: 'unknown' }
+
+/**
+ * Resolve one `supersedes` entry.
+ *
+ * Resolution is deliberately WIDER than matching: it must be able to say why a
+ * target did not resolve. "Nothing matched" (a typo or a lost anchor), "only
+ * another scope matched" (a scope error) and "several same-scope coordinates
+ * matched" (an ambiguous bare subject) are different failures with different
+ * safe responses, and collapsing them into one `undefined` is how an
+ * unauthorized or impossible revision gets applied as if it were complete.
+ */
+function resolveTarget(
+  state: FoldCurrentState,
+  target: string,
+  delta: AcceptedDelta,
+  accepted: readonly AcceptedDelta[],
+): TargetResolution {
+  const stateKey = delta.stateKey!
+  if (target === 'previous') {
+    const head = headAt(state, stateKey)
+    return head === undefined
+      ? { kind: 'previous-absent' }
+      : { kind: 'resolved', anchor: head, sameCoordinate: true }
+  }
+
+  // A sibling proposal in the SAME packet may declare the target coordinate
+  // later. Its anchor does not exist in `state` yet, but its authority does.
+  const sibling = accepted.find(candidate =>
+    candidate.deltaId !== delta.deltaId
+    && candidate.stateKey !== undefined && candidate.subjectKey === target
+    && candidate.stateKey.namespace === stateKey.namespace
+    && sameScope(candidate.scope, delta.scope))
+  if (sibling !== undefined) {
+    return { kind: 'sibling', anchorId: anchorIdOf(sibling.deltaId), authority: sibling.authority }
+  }
+
+  const anchors = uniqueAnchors(state)
+  // Explicit references: the anchor id itself, or the exact state-key text.
+  const exact = anchors.filter(anchor =>
+    anchor.id === target || (anchor.stateKey !== undefined && stateKeyText(anchor.stateKey) === target))
+  if (exact.length > 1) {
+    return { kind: 'ambiguous', anchorIds: exact.map(anchor => anchor.id) }
+  }
+  if (exact.length === 1) {
+    const anchor = exact[0]!
+    const sameCoordinate = anchor.stateKey !== undefined
+      && stateKeyText(anchor.stateKey) === stateKeyText(stateKey)
+    return { kind: 'resolved', anchor, sameCoordinate }
+  }
+
+  // A bare subject is matched only among SEMANTIC coordinates, and only inside
+  // the proposal's scope — the pre-R32 rule that keeps one task's `timeout`
+  // from retiring another task's contract by coincidence.
+  const semantic = anchors.filter(anchor =>
+    anchor.stateKey?.namespace === 'semantic' && anchor.stateKey.property === target)
+  const inScope = semantic.filter(anchor => sameScope(anchor.scope, delta.scope))
+  if (inScope.length > 1) {
+    return { kind: 'ambiguous', anchorIds: inScope.map(anchor => anchor.id) }
+  }
+  if (inScope.length === 1) {
+    const anchor = inScope[0]!
+    const sameCoordinate = anchor.stateKey !== undefined
+      && stateKeyText(anchor.stateKey) === stateKeyText(stateKey)
+    return { kind: 'resolved', anchor, sameCoordinate }
+  }
+  if (semantic.length > 0) {
+    return { kind: 'cross-scope', anchor: semantic[0]! }
+  }
+
+  // A target that names a coordinate already displaced by a newer value is not
+  // a failure: there is nothing left to retire.
+  const superseded = Object.values(state.superseded)
+  if (superseded.some(anchor => anchor.id === target) || state.superseded[target] !== undefined) {
+    return { kind: 'already-retired' }
+  }
+  return { kind: 'unknown' }
 }
 
 /** Options for {@link planCommit}. */
@@ -136,12 +247,16 @@ export function planCommit(
   accepted: readonly AcceptedDelta[],
   options: PlanCommitOptions,
 ): CommitPlan {
-  const known = options.knownAnchorIds ?? new Set(visibleAnchors(options.state).map(anchor => anchor.id))
+  const anchorById = new Map(uniqueAnchors(options.state).map(anchor => [anchor.id, anchor]))
+  const declared = new Set<string>(options.knownAnchorIds ?? anchorById.keys())
   const declares: EfAnchorEventData[] = []
   const transitions: EfAnchorEventData[] = []
   const retires: EfAnchorEventData[] = []
   const planned: PlannedDelta[] = []
   const unresolvedTargets = new Set<string>()
+  const withheld: WithheldDelta[] = []
+  const refusedRetirements: RefusedRetirement[] = []
+  const valueConflicts: { deltaId: string; anchorId: string }[] = []
 
   // Declares and their same-packet supersession targets are resolved in one
   // pass so a forward reference (`this replaces the delta below`) is known.
@@ -160,53 +275,131 @@ export function planCommit(
     const anchorId = anchorIdOf(delta.deltaId)
     const resolved: ResolvedSupersede[] = []
     const supersededHere = new Set<string>()
+    const blocking: string[] = []
+    const ambiguous: string[] = []
 
     for (const target of delta.supersedes) {
-      if (target === 'previous') {
-        const head = headAt(options.state, stateKey)
-        resolved.push({
-          target,
-          ...(head === undefined ? {} : { anchorId: head.id }),
-          via: 'same-coordinate',
-        })
-        continue
-      }
-      const sibling = accepted.find(candidate =>
-        // A bare target may equal the declaring delta's own subject. That is a
-        // reference to the EXISTING value at this coordinate, not a request to
-        // retire the claim being made: including the delta itself made
-        // `supersedes: ['timeout']` retire its own freshly declared anchor.
-        candidate.deltaId !== delta.deltaId
-        && candidate.stateKey !== undefined && candidate.subjectKey === target
-        && candidate.stateKey.namespace === stateKey.namespace
-        && sameScope(candidate.scope, delta.scope))
-      if (sibling !== undefined) {
-        const siblingId = anchorIdOf(sibling.deltaId)
-        resolved.push({ target, anchorId: siblingId, via: 'other-coordinate' })
-        supersededHere.add(siblingId)
-        continue
-      }
-      const found = findTarget(options.state, target, delta.scope)
-      if (found === undefined) {
-        unresolvedTargets.add(target)
-        resolved.push({ target, via: 'unknown' })
-        continue
-      }
-      if (found.stateKey !== undefined && stateKeyText(found.stateKey) === stateKeyText(stateKey)) {
-        resolved.push({ target, anchorId: found.id, via: 'same-coordinate' })
-      } else {
-        resolved.push({ target, anchorId: found.id, via: 'other-coordinate' })
+      const resolution = resolveTarget(options.state, target, delta, accepted)
+      switch (resolution.kind) {
+        case 'previous-absent':
+          resolved.push({ target, via: 'same-coordinate' })
+          continue
+        case 'already-retired':
+          resolved.push({ target, via: 'already-retired' })
+          continue
+        case 'unknown':
+          unresolvedTargets.add(target)
+          blocking.push(target)
+          resolved.push({ target, via: 'unknown' })
+          continue
+        case 'ambiguous':
+          unresolvedTargets.add(target)
+          ambiguous.push(target)
+          resolved.push({ target, via: 'ambiguous' })
+          continue
+        case 'cross-scope':
+          unresolvedTargets.add(target)
+          refusedRetirements.push({
+            deltaId: delta.deltaId,
+            target,
+            anchorId: resolution.anchor.id,
+            reason: 'cross-scope',
+          })
+          resolved.push({ target, via: 'cross-scope', anchorId: resolution.anchor.id, refusal: 'cross-scope' })
+          continue
+        case 'sibling': {
+          const authorization = mayRetire({
+            declaring: delta.authority,
+            target: resolution.authority,
+            sameScope: true,
+          })
+          if (!authorization.allowed) {
+            refusedRetirements.push({
+              deltaId: delta.deltaId,
+              target,
+              anchorId: resolution.anchorId,
+              reason: authorization.reason,
+            })
+            resolved.push({
+              target,
+              anchorId: resolution.anchorId,
+              via: 'other-coordinate',
+              refusal: authorization.reason,
+            })
+            continue
+          }
+          resolved.push({ target, anchorId: resolution.anchorId, via: 'other-coordinate' })
+          supersededHere.add(resolution.anchorId)
+          continue
+        }
+        case 'resolved': {
+          if (resolution.sameCoordinate) {
+            resolved.push({ target, anchorId: resolution.anchor.id, via: 'same-coordinate' })
+            continue
+          }
+          const authorization = mayRetire({
+            declaring: delta.authority,
+            target: resolution.anchor.authority,
+            sameScope: sameScope(resolution.anchor.scope, delta.scope),
+          })
+          if (!authorization.allowed) {
+            refusedRetirements.push({
+              deltaId: delta.deltaId,
+              target,
+              anchorId: resolution.anchor.id,
+              reason: authorization.reason,
+            })
+            resolved.push({
+              target,
+              anchorId: resolution.anchor.id,
+              via: 'other-coordinate',
+              refusal: authorization.reason,
+            })
+            continue
+          }
+          resolved.push({ target, anchorId: resolution.anchor.id, via: 'other-coordinate' })
+          continue
+        }
       }
     }
 
-    if (known.has(anchorId)) {
-      planned.push({ deltaId: delta.deltaId, anchorId, kind: delta.kind, supersedes: resolved, duplicate: true })
+    // A revision whose target cannot be resolved is NOT applied. Declaring it
+    // anyway would leave the value it claimed to replace live next to the new
+    // claim — the N5 stale-anchor failure — while looking like a clean commit.
+    if (blocking.length > 0 || ambiguous.length > 0) {
+      const reason = ambiguous.length > 0 ? 'ambiguous-target' : 'unresolved-target'
+      withheld.push({
+        deltaId: delta.deltaId,
+        reason,
+        targets: [...blocking, ...ambiguous],
+      })
+      planned.push({ deltaId: delta.deltaId, anchorId, kind: delta.kind, supersedes: resolved, withheld: reason })
       continue
     }
 
     const value = delta.kind === 'rejected-approach'
       ? rejectedApproachValue(delta.statement, delta.rulesOut)
       : delta.statement
+
+    if (declared.has(anchorId)) {
+      // The claim is already state (or already planned in this packet). The
+      // DECLARE is skipped; its authorized retirements are still applied below.
+      const existing = anchorById.get(anchorId)
+      if (existing !== undefined && existing.value !== value) {
+        valueConflicts.push({ deltaId: delta.deltaId, anchorId })
+      }
+      planned.push({
+        deltaId: delta.deltaId,
+        anchorId,
+        kind: delta.kind,
+        supersedes: resolved,
+        duplicate: true,
+        ...(delta.duplicateClaim === true ? { duplicateClaim: true } : {}),
+      })
+      continue
+    }
+    declared.add(anchorId)
+
     const anchor: Anchor = {
       id: anchorId,
       kind: delta.anchorKind,
@@ -240,8 +433,10 @@ export function planCommit(
   // supersession link. Retiring it again would double-count `retiredCount` and
   // remove the link from hot state twice.
   for (const entry of planned) {
+    // A withheld delta contributes NO operations, including retirements.
+    if (entry.withheld !== undefined) continue
     for (const target of entry.supersedes) {
-      if (target.via === 'other-coordinate' && target.anchorId !== undefined) {
+      if (target.via === 'other-coordinate' && target.anchorId !== undefined && target.refusal === undefined) {
         retires.push({ op: 'retire', anchorId: target.anchorId })
       }
     }
@@ -251,6 +446,9 @@ export function planCommit(
     ops: [...declares, ...transitions, ...dedupeRetires(retires)],
     planned,
     unresolvedTargets: [...unresolvedTargets],
+    withheld,
+    refusedRetirements,
+    valueConflicts,
   }
 }
 

@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T20:36:48.365Z",
+  "round": "R38-M0",
+  "work": "WP1-relation-authorization",
+  "status": "passed",
+  "retirementPower": {
+    "normative": 5,
+    "decision": 4,
+    "procedural": 3,
+    "empirical": 3,
+    "hypothesis": 1,
+    "narrative": 0
+  },
+  "matrix": {
+    "normativeOverDecision": {
+      "allowed": true
+    },
+    "decisionOverEmpirical": {
+      "allowed": true
+    },
+    "empiricalOverNormative": {
+      "allowed": false,
+      "reason": "insufficient-authority",
+      "detail": "a empirical claim may not retire a normative anchor"
+    },
+    "hypothesisOverNormative": {
+      "allowed": false,
+      "reason": "insufficient-authority",
+      "detail": "a hypothesis claim may not retire a normative anchor"
+    },
+    "normativeCrossScope": {
+      "allowed": false,
+      "reason": "cross-scope",
+      "detail": "a retirement may not cross task scopes; restate the claim in the target scope"
+    }
+  },
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "blockedAt": {
+      "planner": 5,
+      "none": 2,
+      "validator": 1
+    }
+  },
+  "scenarios": [
+    {
+      "id": "tool-finding-vs-user-constraint",
+      "expected": "constraint stays active; finding may still be declared",
+      "actual": {
+        "constraintActive": true,
+        "retireOps": 0,
+        "refused": [
+          {
+            "deltaId": "984a18478d02e26d3439934b01ce4bc9864482cbdfff6b34bcde29c8023dc9cd",
+            "target": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+            "anchorId": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+            "reason": "insufficient-authority"
+          }
+        ],
+        "findingDeclared": true,
+        "retiredCount": 0
+      },
+      "blockedAt": "planner",
+      "pass": true
+    },
+    {
+      "id": "assistant-decision-vs-user-constraint",
+      "expected": "constraint stays active",
+      "actual": {
+        "constraintActive": true,
+        "retireOps": 0,
+        "refused": [
+          {
+            "deltaId": "852f5d59e161301fce08b070b4731f5d4f545c27022b30ff9686d5ee956a5957",
+            "target": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+            "anchorId": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+            "reason": "insufficient-authority"
+          }
+        ]
+      },
+      "blockedAt": "planner",
+      "pass": true
+    },
+    {
+      "id": "user-revision",
+      "expected": "new value active, old value superseded",
+      "actual": {
+        "displacedLifecycle": "superseded",
+        "activeValues": [
+          "Hotfix deploys may skip the signed-release gate."
+        ],
+        "retireOps": 0
+      },
+      "blockedAt": "none",
+      "pass": true
+    },
+    {
+      "id": "same-scope-decision-revision",
+      "expected": "queue retired, outbox active",
+      "actual": {
+        "queuePresent": false,
+        "activeValues": [
+          "Use the durable outbox."
+        ],
+        "retireOps": 1,
+        "refused": []
+      },
+      "blockedAt": "none",
+      "pass": true
+    },
+    {
+      "id": "cross-scope-explicit-anchor-id",
+      "expected": "retirement refused; constraint stays active",
+      "actual": {
+        "constraintActive": true,
+        "refused": [
+          {
+            "deltaId": "2da6bb2f8483c9d24cbc72ca4ada2e020e0efa0cc0129e24c56371078a06e20f",
+            "target": "semantic-1fc055cc8e22e1bc74e1e4a49cfd9831",
+            "anchorId": "semantic-1fc055cc8e22e1bc74e1e4a49cfd9831",
+            "reason": "cross-scope"
+          }
+        ]
+      },
+      "blockedAt": "planner",
+      "pass": true
+    },
+    {
+      "id": "nonexistent-target",
+      "expected": "delta withheld; no declare and no retire",
+      "actual": {
+        "ops": 0,
+        "withheld": [
+          {
+            "deltaId": "240649b132b8659659594b5862b1d11b449a2d35bf6b2a5be0782f7109756c63",
+            "reason": "unresolved-target",
+            "targets": [
+              "semantic-00000000000000000000000000000000"
+            ]
+          }
+        ],
+        "constraintActive": true
+      },
+      "blockedAt": "planner",
+      "pass": true
+    },
+    {
+      "id": "forged-tool-instruction",
+      "expected": "proposal refused; no normative anchor",
+      "actual": {
+        "accepted": 0,
+        "refused": [
+          {
+            "index": 0,
+            "reason": "authority-ungrounded",
+            "detail": "a constraint requires normative authority, but the cited evidence is [tool/result] (sources: tool/tool)"
+          }
+        ]
+      },
+      "blockedAt": "validator",
+      "pass": true
+    },
+    {
+      "id": "ambiguous-bare-subject",
+      "expected": "delta withheld; no arbitrary pick",
+      "actual": {
+        "ops": 0,
+        "withheld": [
+          {
+            "deltaId": "a13649f49803d23f0f21449e28131ae2579642433ebc8a7b6275f4bb68411e52",
+            "reason": "ambiguous-target",
+            "targets": [
+              "shared"
+            ]
+          }
+        ]
+      },
+      "blockedAt": "planner",
+      "pass": true
+    }
+  ]
+}

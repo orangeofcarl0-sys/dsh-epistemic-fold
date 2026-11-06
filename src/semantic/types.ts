@@ -274,6 +274,45 @@ export interface AcceptedDelta {
   readonly scope?: SemanticScope
   /** Set when the runtime downgraded the claimed status. */
   readonly downgradedFrom?: EpistemicStatus
+  /**
+   * Set when this proposal repeats an already-accepted CLAIM in the same fold
+   * but names a different relation plan.
+   *
+   * Claim identity (`deltaId`) is content-based and stays that way. The
+   * relation fields are a separate operation identity: repeating the claim with
+   * a new `supersedes` target must still contribute that retirement, and must
+   * not declare a second anchor. This flag is how the planner knows to do only
+   * the second half.
+   */
+  readonly duplicateClaim?: boolean
+}
+
+/**
+ * What happened to the relation operations of one fold.
+ *
+ * `withheld` deltas were accepted by validation but NOT applied: a revision
+ * whose target cannot be resolved must not silently become a fresh claim
+ * alongside the value it claimed to replace. `refused` retirements kept their
+ * declaring claim but dropped the operation, because the declaring authority
+ * had no standing to retire that target.
+ */
+export interface SemanticRetirementAudit {
+  readonly withheld: readonly {
+    readonly deltaId: string
+    readonly reason: 'unresolved-target' | 'ambiguous-target'
+    readonly targets: readonly string[]
+  }[]
+  readonly refused: readonly {
+    readonly deltaId: string
+    readonly target: string
+    readonly anchorId?: string
+    readonly reason: string
+  }[]
+  /** A repeated claim whose rendered value differs from the declared one. */
+  readonly valueConflicts?: readonly {
+    readonly deltaId: string
+    readonly anchorId: string
+  }[]
 }
 
 /** The writer's complete output for one fold. */
@@ -357,6 +396,14 @@ export interface SemanticPacket {
    * pass whose oracle (the bounded current state) may have moved on.
    */
   readonly ops: readonly EfAnchorEventData[]
+  /**
+   * What happened to relation operations that were NOT applied.
+   *
+   * Absent when every declared relation was authorized and resolved. Present
+   * otherwise, so a reader can tell "this packet had no retirements" from "this
+   * packet's retirements were refused", which the ops array alone cannot say.
+   */
+  readonly retirement?: SemanticRetirementAudit
   /**
    * What WOULD have been committed, when nothing was.
    *

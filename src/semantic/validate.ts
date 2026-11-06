@@ -350,6 +350,35 @@ function deltaIdentity(input: {
   })
 }
 
+/**
+ * Identity of one CLAIM's relation plan.
+ *
+ * `deltaIdentity` deliberately excludes `supersedes`/`dependsOn`/`rulesOut`:
+ * those fields describe an OPERATION, not the claim's content, and changing
+ * them would change historical anchor ids. But two proposals can carry the same
+ * claim and different operations, and refusing the second outright would drop a
+ * retirement the writer explicitly asked for. So the claim identity and the
+ * revision identity are tracked separately: a repeat of the same claim with a
+ * new plan is accepted as `duplicateClaim`, and the planner applies only its
+ * operations.
+ *
+ * The lists are sorted because their order does not change what is retired; it
+ * only changes the rendered text of a `rejected-approach`, which the planner
+ * compares separately.
+ */
+function revisionIdentity(delta: {
+  readonly supersedes: readonly string[]
+  readonly dependsOn: readonly string[]
+  readonly rulesOut: readonly string[]
+}): string {
+  const sorted = (list: readonly string[]): string[] => [...list].sort((left, right) => left.localeCompare(right))
+  return canonicalHash({
+    supersedes: sorted(delta.supersedes),
+    dependsOn: sorted(delta.dependsOn),
+    rulesOut: sorted(delta.rulesOut),
+  })
+}
+
 /** Options for {@link validateDeltas}. */
 export interface ValidateDeltasOptions {
   /** Surface seqs of the folded span. */
@@ -389,7 +418,10 @@ export function validateDeltas(options: ValidateDeltasOptions): ValidationResult
   const limit = options.maxDeltas ?? DEFAULT_MAX_DELTAS
   const accepted: AcceptedDelta[] = []
   const refused: SemanticRefusal[] = []
-  const seen = new Set<string>(known)
+  // Per claim id, the revision plans already seen IN THIS FOLD. A repeat with
+  // the same plan is the idempotent duplicate; a repeat with a new plan is a
+  // duplicate CLAIM carrying new operations.
+  const seenRevisions = new Map<string, Set<string>>()
 
   for (const [index, raw] of options.proposed.entries()) {
     if (accepted.length >= limit) {
@@ -400,17 +432,28 @@ export function validateDeltas(options: ValidateDeltasOptions): ValidationResult
       })
       continue
     }
-    const refusal = validateOne(index, raw, citable)
-    if ('reason' in refusal) {
-      refused.push(refusal)
+    const delta = validateOne(index, raw, citable)
+    if ('reason' in delta) {
+      refused.push(delta)
       continue
     }
-    if (seen.has(refusal.deltaId)) {
-      refused.push({ index, reason: 'duplicate', detail: `delta ${refusal.deltaId.slice(0, 12)} is already committed` })
+    if (known.has(delta.deltaId)) {
+      refused.push({ index, reason: 'duplicate', detail: `delta ${delta.deltaId.slice(0, 12)} is already committed` })
       continue
     }
-    seen.add(refusal.deltaId)
-    accepted.push(refusal)
+    const revision = revisionIdentity(delta)
+    const revisions = seenRevisions.get(delta.deltaId)
+    if (revisions === undefined) {
+      seenRevisions.set(delta.deltaId, new Set([revision]))
+      accepted.push(delta)
+      continue
+    }
+    if (revisions.has(revision)) {
+      refused.push({ index, reason: 'duplicate', detail: `delta ${delta.deltaId.slice(0, 12)} is already proposed` })
+      continue
+    }
+    revisions.add(revision)
+    accepted.push({ ...delta, duplicateClaim: true })
   }
   return { accepted, refused, citable }
 }
