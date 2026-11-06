@@ -1,0 +1,492 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T20:49:07.368Z",
+  "round": "R38-M0",
+  "work": "WP3-task-aware-selection",
+  "status": "passed",
+  "mode": "shadow",
+  "productionDefaultChanged": false,
+  "estimator": "chars-per-4",
+  "summary": {
+    "cases": 4,
+    "checks": 5,
+    "passed": 5,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "greedy-rescues-smaller-candidate",
+      "pass": true,
+      "detail": {
+        "s0": [
+          "semantic-greedy-a"
+        ],
+        "s1": [
+          "semantic-greedy-a",
+          "semantic-greedy-c"
+        ]
+      }
+    },
+    {
+      "id": "sets-are-disjoint-and-complete",
+      "pass": true,
+      "detail": [
+        {
+          "id": "n5-budget-pressure",
+          "disjoint": true,
+          "complete": true,
+          "pinnedAllSelected": true
+        },
+        {
+          "id": "scope-separation",
+          "disjoint": true,
+          "complete": true,
+          "pinnedAllSelected": true
+        },
+        {
+          "id": "greedy-skip",
+          "disjoint": true,
+          "complete": true,
+          "pinnedAllSelected": true
+        },
+        {
+          "id": "pinned-overflow",
+          "disjoint": true,
+          "complete": true,
+          "pinnedAllSelected": true
+        }
+      ]
+    },
+    {
+      "id": "pinned-overflow-is-reported-not-hidden",
+      "pass": true
+    },
+    {
+      "id": "selected-content-fits-budget",
+      "pass": true,
+      "detail": [
+        {
+          "id": "n5-budget-pressure",
+          "content": 99,
+          "budget": 120,
+          "pinnedOverflow": false
+        },
+        {
+          "id": "scope-separation",
+          "content": 76,
+          "budget": 200,
+          "pinnedOverflow": false
+        },
+        {
+          "id": "greedy-skip",
+          "content": 61,
+          "budget": 62,
+          "pinnedOverflow": false
+        },
+        {
+          "id": "pinned-overflow",
+          "content": 71,
+          "budget": 20,
+          "pinnedOverflow": true
+        }
+      ]
+    },
+    {
+      "id": "selection-is-stable",
+      "pass": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "n5-budget-pressure",
+      "description": "an older relevant rejection versus eight newer unrelated findings",
+      "budget": 120,
+      "anchors": 11,
+      "greedy": null,
+      "s0": {
+        "selected": [
+          "semantic-constraint-signed",
+          "semantic-noise-8"
+        ],
+        "selectedCount": 2,
+        "criticalVisible": 0,
+        "criticalTotal": 1,
+        "criticalIds": [],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 1,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 1,
+        "unrelatedTokens": 42,
+        "scopePrecision": 1,
+        "tokens": 115,
+        "bodyOverBudget": false,
+        "pinnedOverflow": false,
+        "omitted": 9,
+        "stable": true
+      },
+      "s1": {
+        "selected": [
+          "semantic-constraint-signed",
+          "semantic-rejected-outbox"
+        ],
+        "selectedCount": 2,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-rejected-outbox"
+        ],
+        "negativeKnowledgeVisible": 1,
+        "negativeKnowledgeTotal": 1,
+        "negativeKnowledgeIds": [
+          "semantic-rejected-outbox"
+        ],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 130,
+        "contentTokens": 99,
+        "bodyOverBudget": true,
+        "pinnedOverflow": false,
+        "omitted": 9,
+        "stable": true,
+        "unresolvedCoverage": [
+          "scope-unknown:semantic-decision-queue",
+          "scope-unknown:semantic-noise-1",
+          "scope-unknown:semantic-noise-2",
+          "scope-unknown:semantic-noise-3",
+          "scope-unknown:semantic-noise-4",
+          "scope-unknown:semantic-noise-5",
+          "scope-unknown:semantic-noise-6",
+          "scope-unknown:semantic-noise-7",
+          "scope-unknown:semantic-noise-8"
+        ],
+        "scores": {
+          "semantic-rejected-outbox": 3.500002,
+          "semantic-decision-queue": 0.6000030000000001,
+          "semantic-noise-1": 0.20001000000000002,
+          "semantic-noise-2": 0.20001100000000002,
+          "semantic-noise-3": 0.20001200000000002,
+          "semantic-noise-4": 0.20001300000000002,
+          "semantic-noise-5": 0.200014,
+          "semantic-noise-6": 0.200015,
+          "semantic-noise-7": 0.200016,
+          "semantic-noise-8": 0.200017
+        },
+        "reasons": {
+          "semantic-rejected-outbox": [
+            "scope-match",
+            "subject-overlap:1",
+            "decision",
+            "negative-knowledge",
+            "rules-out-overlap:durable",
+            "phase-editing"
+          ],
+          "semantic-decision-queue": [
+            "scope-unknown",
+            "decision",
+            "phase-editing"
+          ],
+          "semantic-noise-1": [
+            "scope-unknown"
+          ],
+          "semantic-noise-2": [
+            "scope-unknown"
+          ],
+          "semantic-noise-3": [
+            "scope-unknown"
+          ],
+          "semantic-noise-4": [
+            "scope-unknown"
+          ],
+          "semantic-noise-5": [
+            "scope-unknown"
+          ],
+          "semantic-noise-6": [
+            "scope-unknown"
+          ],
+          "semantic-noise-7": [
+            "scope-unknown"
+          ],
+          "semantic-noise-8": [
+            "scope-unknown"
+          ]
+        },
+        "retrievalCandidates": 9
+      },
+      "invariants": {
+        "disjoint": true,
+        "complete": true,
+        "pinnedAllSelected": true
+      },
+      "delta": {
+        "criticalVisible": 1,
+        "negativeKnowledgeVisible": 1,
+        "unrelatedTokens": -42,
+        "scopePrecision": 0
+      }
+    },
+    {
+      "id": "scope-separation",
+      "description": "only the in-scope decision should be selected; the other scope is explicit",
+      "budget": 200,
+      "anchors": 3,
+      "greedy": null,
+      "s0": {
+        "selected": [
+          "semantic-decision-repo-a",
+          "semantic-decision-repo-b",
+          "semantic-decision-shared"
+        ],
+        "selectedCount": 3,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-decision-repo-a"
+        ],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 1,
+        "unrelatedTokens": 45,
+        "scopePrecision": 0.6666666666666666,
+        "tokens": 122,
+        "bodyOverBudget": false,
+        "pinnedOverflow": false,
+        "omitted": 0,
+        "stable": true
+      },
+      "s1": {
+        "selected": [
+          "semantic-decision-repo-a",
+          "semantic-decision-shared"
+        ],
+        "selectedCount": 2,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-decision-repo-a"
+        ],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 76,
+        "contentTokens": 76,
+        "bodyOverBudget": false,
+        "pinnedOverflow": false,
+        "omitted": 0,
+        "stable": true,
+        "unresolvedCoverage": [
+          "scope-mismatch:semantic-decision-repo-b",
+          "scope-unknown:semantic-decision-shared"
+        ],
+        "scores": {
+          "semantic-decision-repo-a": 1.7000009999999999,
+          "semantic-decision-repo-b": -1,
+          "semantic-decision-shared": 0.9000029999999999
+        },
+        "reasons": {
+          "semantic-decision-repo-a": [
+            "scope-match",
+            "subject-overlap:1",
+            "decision",
+            "phase-editing"
+          ],
+          "semantic-decision-repo-b": [
+            "workspace-mismatch"
+          ],
+          "semantic-decision-shared": [
+            "scope-unknown",
+            "subject-overlap:1",
+            "decision",
+            "phase-editing"
+          ]
+        },
+        "retrievalCandidates": 0
+      },
+      "invariants": {
+        "disjoint": true,
+        "complete": true,
+        "pinnedAllSelected": true
+      },
+      "delta": {
+        "criticalVisible": 0,
+        "negativeKnowledgeVisible": 0,
+        "unrelatedTokens": -45,
+        "scopePrecision": 0.3333
+      }
+    },
+    {
+      "id": "greedy-skip",
+      "description": "the production prefix selector breaks at B; the task-aware selector skips it and keeps C",
+      "budget": 62,
+      "anchors": 3,
+      "greedy": {
+        "aTokens": 32,
+        "abTokens": 84,
+        "acTokens": 61,
+        "pinned": 0
+      },
+      "s0": {
+        "selected": [
+          "semantic-greedy-a"
+        ],
+        "selectedCount": 1,
+        "criticalVisible": 0,
+        "criticalTotal": 1,
+        "criticalIds": [],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 64,
+        "bodyOverBudget": true,
+        "pinnedOverflow": false,
+        "omitted": 2,
+        "stable": true
+      },
+      "s1": {
+        "selected": [
+          "semantic-greedy-a",
+          "semantic-greedy-c"
+        ],
+        "selectedCount": 2,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-greedy-c"
+        ],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 92,
+        "contentTokens": 61,
+        "bodyOverBudget": true,
+        "pinnedOverflow": false,
+        "omitted": 1,
+        "stable": true,
+        "unresolvedCoverage": [],
+        "scores": {
+          "semantic-greedy-a": 1.000003,
+          "semantic-greedy-b": 0.7000019999999999,
+          "semantic-greedy-c": 0.700001
+        },
+        "reasons": {
+          "semantic-greedy-a": [
+            "scope-global",
+            "subject-overlap:2",
+            "decision",
+            "phase-editing"
+          ],
+          "semantic-greedy-b": [
+            "scope-global",
+            "subject-overlap:1",
+            "decision",
+            "phase-editing"
+          ],
+          "semantic-greedy-c": [
+            "scope-global",
+            "subject-overlap:1",
+            "decision",
+            "phase-editing"
+          ]
+        },
+        "retrievalCandidates": 1
+      },
+      "invariants": {
+        "disjoint": true,
+        "complete": true,
+        "pinnedAllSelected": true
+      },
+      "delta": {
+        "criticalVisible": 1,
+        "negativeKnowledgeVisible": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 0
+      }
+    },
+    {
+      "id": "pinned-overflow",
+      "description": "pinned state alone exceeds the budget and is still shown in full",
+      "budget": 20,
+      "anchors": 2,
+      "greedy": null,
+      "s0": {
+        "selected": [
+          "semantic-constraint-long"
+        ],
+        "selectedCount": 1,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-constraint-long"
+        ],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 135,
+        "bodyOverBudget": true,
+        "pinnedOverflow": true,
+        "omitted": 1,
+        "stable": true
+      },
+      "s1": {
+        "selected": [
+          "semantic-constraint-long"
+        ],
+        "selectedCount": 1,
+        "criticalVisible": 1,
+        "criticalTotal": 1,
+        "criticalIds": [
+          "semantic-constraint-long"
+        ],
+        "negativeKnowledgeVisible": 0,
+        "negativeKnowledgeTotal": 0,
+        "negativeKnowledgeIds": [],
+        "unrelatedSelected": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 1,
+        "tokens": 135,
+        "contentTokens": 71,
+        "bodyOverBudget": true,
+        "pinnedOverflow": true,
+        "omitted": 1,
+        "stable": true,
+        "unresolvedCoverage": [],
+        "scores": {
+          "semantic-decision-staging": 0.7000019999999999
+        },
+        "reasons": {
+          "semantic-decision-staging": [
+            "scope-global",
+            "subject-overlap:1",
+            "decision",
+            "phase-editing"
+          ]
+        },
+        "retrievalCandidates": 1
+      },
+      "invariants": {
+        "disjoint": true,
+        "complete": true,
+        "pinnedAllSelected": true
+      },
+      "delta": {
+        "criticalVisible": 0,
+        "negativeKnowledgeVisible": 0,
+        "unrelatedTokens": 0,
+        "scopePrecision": 0
+      }
+    }
+  ]
+}
