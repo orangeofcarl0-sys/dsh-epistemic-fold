@@ -1,0 +1,13 @@
+This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+
+<compacted-summary>
+[EF1 L cp:62f760b5-a923-4e60-bc98-0876f442a84a]
+
+Changed in this fold
+- [objective semantic-0a6a6b0ef0e8099ec428c96043f948ff semantic/objective#bcf9fe4423484a737b8a11b9d2ff30bab4068c499ef1f5e5ec04a2a26a245bab/objective:migration-validation] An accurate validation status for the migration is required before release. (normative)
+- [evidence semantic-12720b0a418aae9d94ad3fd40e7261e0 semantic/finding#bcf9fe4423484a737b8a11b9d2ff30bab4068c499ef1f5e5ec04a2a26a245bab/finding:migration-review-scope] The review is pinned to repository revision r33-frozen with src/migrate.mjs as the implementation file. (empirical)
+- [evidence semantic-d4901b435d68e09efda415f82b89b36a semantic/finding#bcf9fe4423484a737b8a11b9d2ff30bab4068c499ef1f5e5ec04a2a26a245bab/finding:migration-validation-status] The recorded state shows the migration code written, tests not run, and no evidence. (empirical)
+
+Rationale
+- The pending release decision hinges on validation evidence that does not yet exist, so no completion claim can be grounded. The review was scoped to a frozen fixture and a single implementation file, deliberately avoiding unrelated edits so any later test result maps cleanly to one revision. A broader pre-release change set was avoided for the same reason: it would make attribution of any regression ambiguous. Re-running the suite against the frozen fixture was preferred over hand-inspection, since inspection cannot supply the executable evidence a release gate requires. The next step is to execute the migration tests on the frozen revision and record the outcome before any release statement.
+</compacted-summary>

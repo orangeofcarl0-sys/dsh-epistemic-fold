@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "caseId": "B2",
+  "arm": "S",
+  "runId": "r37c-c2-B2-S-G0-r1",
+  "replicateId": "r1",
+  "guard": "G0",
+  "checkpointDigest": "e51244857f1e2f1e7aab56acf4203828997c77b01950fcccebb24974fc3d91e4",
+  "checkpointChars": 2126,
+  "delivery": "committed",
+  "stateDigest": "04c11164572431596d8519798706838ae30448951b6f3632843969dc66880b66",
+  "anchors": [
+    "The scheduler uses an in-memory queue because the process is short-lived and the in-memory queue is simpler.",
+    "rejected: A durable outbox is rejected because the storage dependency is unavailable in this deployment.",
+    "The scheduler module returns mode: memory and has no storage dependency.",
+    "The scheduler uses an in-memory queue because the process is short-lived and the in-memory queue is simpler.",
+    "rejected: A durable outbox is rejected because the storage dependency is unavailable in this deployment.",
+    "The scheduler module returns mode: memory and has no storage dependency."
+  ],
+  "facts": [
+    {
+      "factId": "B2-memory",
+      "criticality": "high",
+      "visibleNeedle": "in-memory queue",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "lexicalInCheckpoint": true,
+      "lexicalInAnchor": true,
+      "tokenCoverage": 0.75,
+      "semanticVisible": true,
+      "factVisible": true
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "criticality": "medium",
+      "visibleNeedle": "rejected",
+      "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+      "lexicalInCheckpoint": true,
+      "lexicalInAnchor": true,
+      "tokenCoverage": 1,
+      "semanticVisible": true,
+      "factVisible": true
+    }
+  ],
+  "sourceReport": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r1\\report.json",
+  "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+  "workspaceDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+  "note": "Frozen R37-D fixed-context fixture. Reuse verbatim; do not regenerate."
+}

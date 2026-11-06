@@ -1,0 +1,16 @@
+This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+
+<compacted-summary>
+[EF1 L cp:f5060e83-3ad5-4791-9120-313752ea3f6b]
+
+Rationale
+- The scheduler will use an in-memory queue. Decision rationale: it is simpler, and the process is short-lived, so durability is not needed to protect in-flight work across restarts.
+- 
+- A durable outbox was proposed as an alternative and was explicitly rejected: the storage dependency it requires is unavailable in this deployment. The in-memory queue decision stands; the rejection is not a temporary deferral to be revisited unless the storage dependency becomes available in the target deployment.
+- 
+- State check performed against `src/scheduler.mjs`: it currently returns `mode: memory`, and it has no storage dependency. So no code change is needed to implement the decision — the file already matches the chosen design. No unrelated edits were made during review.
+- 
+- Errata/corrections: none. The durable-outbox option was superseded before any implementation, so there are no stale figures or identifiers to reconcile.
+- 
+- Open items for a later reader: none outstanding. If the deployment later gains storage availability, the durable outbox would need to be re-proposed from scratch; nothing was built for it. The key invariant to preserve is that `src/scheduler.mjs` must not acquire a storage dependency while the in-memory decision is in force.
+</compacted-summary>

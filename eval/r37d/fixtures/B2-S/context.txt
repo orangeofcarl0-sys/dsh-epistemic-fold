@@ -1,0 +1,13 @@
+This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.
+
+<compacted-summary>
+[EF1 L cp:db6a179c-142a-488a-be61-24c3123b1f31]
+
+Changed in this fold
+- [evidence semantic-3290bc26a3836934238302c17c8be0af semantic/finding#33a389d851393eabbb6c2f26ea8d9453d052dbe244343b8ce5c7068128b6b747/file:src/scheduler.mjs] The scheduler module returns mode: memory and has no storage dependency. (empirical)
+- [decision semantic-46c89b8e758044b37285c0ca36a8f1ad semantic/rejected-approach#33a389d851393eabbb6c2f26ea8d9453d052dbe244343b8ce5c7068128b6b747/approach:durable-outbox] rejected: A durable outbox is rejected because the storage dependency is unavailable in this deployment. (decision)
+- [decision semantic-7f3adceb68cd36897f06f37d0a5a6681 semantic/decision#33a389d851393eabbb6c2f26ea8d9453d052dbe244343b8ce5c7068128b6b747/scheduler:queue-backend] The scheduler uses an in-memory queue because the process is short-lived and the in-memory queue is simpler. (decision)
+
+Rationale
+- The scheduler runs as a short-lived process, so an in-memory queue was chosen for simplicity over persistence machinery it would never exercise. A durable outbox was the natural alternative once crash-safety came up, and it was designed far enough to name a storage dependency; deployment cannot supply that dependency, so the outbox is off the table and the in-memory path stands as the only viable option rather than a preference. Note the consequence for the next step: queue contents are lost on restart by construction, so retry and delivery guarantees should be scoped to the process lifetime, and anything needing cross-restart durability has to be dropped or deferred until storage exists. Next, confirm the scheduler module still carries no storage imports and document the process-lifetime recovery semantics so downstream consumers do not assume more than the queue provides.
+</compacted-summary>

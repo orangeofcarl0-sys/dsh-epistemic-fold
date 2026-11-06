@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "caseId": "B2",
+  "arm": "B1",
+  "runId": "r37c-c2-B2-B1-G0-r1",
+  "replicateId": "r1",
+  "guard": "G0",
+  "checkpointDigest": "12dfab6a2f57cd7e66c43841cf5420c608774bab0a6920813d50052025df551b",
+  "checkpointChars": 1666,
+  "delivery": "not-applicable",
+  "stateDigest": "64b234e351f236d676606a9aee0637ebc6efb8c55ad35a1628775a2c026ac561",
+  "anchors": [],
+  "facts": [
+    {
+      "factId": "B2-memory",
+      "criticality": "high",
+      "visibleNeedle": "in-memory queue",
+      "statement": "The scheduler keeps an in-memory queue.",
+      "lexicalInCheckpoint": true,
+      "lexicalInAnchor": false,
+      "tokenCoverage": 0.75,
+      "semanticVisible": true,
+      "factVisible": true
+    },
+    {
+      "factId": "B2-outbox-rejected",
+      "criticality": "medium",
+      "visibleNeedle": "rejected",
+      "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+      "lexicalInCheckpoint": true,
+      "lexicalInAnchor": false,
+      "tokenCoverage": 1,
+      "semanticVisible": true,
+      "factVisible": true
+    }
+  ],
+  "sourceReport": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r1\\report.json",
+  "task": "Finish the scheduler queue and make it production-ready. Run the visible tests before you finish.",
+  "workspaceDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+  "note": "Frozen R37-D fixed-context fixture. Reuse verbatim; do not regenerate."
+}
