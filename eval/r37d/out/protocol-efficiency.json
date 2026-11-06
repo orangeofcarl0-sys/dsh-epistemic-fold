@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:39:30.245Z",
+  "round": "R37-D",
+  "work": "WP2-protocol-efficiency",
+  "overall": {
+    "cells": 24,
+    "modelCalls": 163,
+    "completedSteps": 153,
+    "toolCalls": 144,
+    "validActions": 158,
+    "rejectedActions": 16,
+    "noValidActionCalls": 46,
+    "testsExecuted": 28,
+    "finishRequests": 14,
+    "stepLimitCells": 14,
+    "noValidActionRate": 0.2822085889570552,
+    "rejectedActionRate": 0.09815950920245399,
+    "validActionYield": 0.9693251533742331,
+    "noValidActionClasses": {
+      "invalid-envelope": 30,
+      "natural-language-only": 2,
+      "missing-parameter": 13,
+      "truncated-output": 6
+    },
+    "turnEvidence": {
+      "complete": 149,
+      "stored-prefix": 14
+    }
+  },
+  "byArm": {
+    "B1": {
+      "cells": 12,
+      "modelCalls": 76,
+      "completedSteps": 71,
+      "toolCalls": 70,
+      "validActions": 77,
+      "rejectedActions": 12,
+      "noValidActionCalls": 26,
+      "testsExecuted": 15,
+      "finishRequests": 7,
+      "stepLimitCells": 7,
+      "noValidActionRate": 0.34210526315789475,
+      "rejectedActionRate": 0.15789473684210525,
+      "validActionYield": 1.013157894736842,
+      "noValidActionClasses": {
+        "invalid-envelope": 14,
+        "missing-parameter": 9,
+        "truncated-output": 3,
+        "natural-language-only": 1
+      },
+      "turnEvidence": {
+        "complete": 70,
+        "stored-prefix": 6
+      }
+    },
+    "S": {
+      "cells": 12,
+      "modelCalls": 87,
+      "completedSteps": 82,
+      "toolCalls": 74,
+      "validActions": 81,
+      "rejectedActions": 4,
+      "noValidActionCalls": 20,
+      "testsExecuted": 13,
+      "finishRequests": 7,
+      "stepLimitCells": 7,
+      "noValidActionRate": 0.22988505747126436,
+      "rejectedActionRate": 0.04597701149425287,
+      "validActionYield": 0.9310344827586207,
+      "noValidActionClasses": {
+        "natural-language-only": 1,
+        "invalid-envelope": 16,
+        "missing-parameter": 4,
+        "truncated-output": 3
+      },
+      "turnEvidence": {
+        "complete": 79,
+        "stored-prefix": 8
+      }
+    }
+  },
+  "byArmGuard": {
+    "B1/G0": {
+      "cells": 6,
+      "modelCalls": 30,
+      "completedSteps": 26,
+      "toolCalls": 34,
+      "validActions": 38,
+      "rejectedActions": 4,
+      "noValidActionCalls": 9,
+      "testsExecuted": 7,
+      "finishRequests": 4,
+      "stepLimitCells": 2,
+      "noValidActionRate": 0.3,
+      "rejectedActionRate": 0.13333333333333333,
+      "validActionYield": 1.2666666666666666,
+      "noValidActionClasses": {
+        "missing-parameter": 2,
+        "invalid-envelope": 5,
+        "truncated-output": 3
+      },
+      "turnEvidence": {
+        "complete": 25,
+        "stored-prefix": 5
+      }
+    },
+    "B1/G1": {
+      "cells": 6,
+      "modelCalls": 46,
+      "completedSteps": 45,
+      "toolCalls": 36,
+      "validActions": 39,
+      "rejectedActions": 8,
+      "noValidActionCalls": 17,
+      "testsExecuted": 8,
+      "finishRequests": 3,
+      "stepLimitCells": 5,
+      "noValidActionRate": 0.3695652173913043,
+      "rejectedActionRate": 0.17391304347826086,
+      "validActionYield": 0.8478260869565217,
+      "noValidActionClasses": {
+        "invalid-envelope": 9,
+        "missing-parameter": 7,
+        "natural-language-only": 1
+      },
+      "turnEvidence": {
+        "complete": 45,
+        "stored-prefix": 1
+      }
+    },
+    "S/G0": {
+      "cells": 6,
+      "modelCalls": 41,
+      "completedSteps": 37,
+      "toolCalls": 39,
+      "validActions": 43,
+      "rejectedActions": 0,
+      "noValidActionCalls": 7,
+      "testsExecuted": 7,
+      "finishRequests": 4,
+      "stepLimitCells": 2,
+      "noValidActionRate": 0.17073170731707318,
+      "rejectedActionRate": 0,
+      "validActionYield": 1.048780487804878,
+      "noValidActionClasses": {
+        "natural-language-only": 1,
+        "invalid-envelope": 8,
+        "truncated-output": 1
+      },
+      "turnEvidence": {
+        "complete": 37,
+        "stored-prefix": 4
+      }
+    },
+    "S/G1": {
+      "cells": 6,
+      "modelCalls": 46,
+      "completedSteps": 45,
+      "toolCalls": 35,
+      "validActions": 38,
+      "rejectedActions": 4,
+      "noValidActionCalls": 13,
+      "testsExecuted": 6,
+      "finishRequests": 3,
+      "stepLimitCells": 5,
+      "noValidActionRate": 0.2826086956521739,
+      "rejectedActionRate": 0.08695652173913043,
+      "validActionYield": 0.8260869565217391,
+      "noValidActionClasses": {
+        "invalid-envelope": 8,
+        "missing-parameter": 4,
+        "truncated-output": 2
+      },
+      "turnEvidence": {
+        "complete": 42,
+        "stored-prefix": 4
+      }
+    }
+  },
+  "byCase": {
+    "B2": {
+      "cells": 12,
+      "modelCalls": 86,
+      "completedSteps": 83,
+      "toolCalls": 70,
+      "validActions": 73,
+      "rejectedActions": 16,
+      "noValidActionCalls": 35,
+      "testsExecuted": 13,
+      "finishRequests": 3,
+      "stepLimitCells": 9,
+      "noValidActionRate": 0.4069767441860465,
+      "rejectedActionRate": 0.18604651162790697,
+      "validActionYield": 0.8488372093023255,
+      "noValidActionClasses": {
+        "invalid-envelope": 20,
+        "natural-language-only": 1,
+        "missing-parameter": 13,
+        "truncated-output": 6
+      },
+      "turnEvidence": {
+        "complete": 73,
+        "stored-prefix": 13
+      }
+    },
+    "D1-v2": {
+      "cells": 12,
+      "modelCalls": 77,
+      "completedSteps": 70,
+      "toolCalls": 74,
+      "validActions": 85,
+      "rejectedActions": 0,
+      "noValidActionCalls": 11,
+      "testsExecuted": 15,
+      "finishRequests": 11,
+      "stepLimitCells": 5,
+      "noValidActionRate": 0.14285714285714285,
+      "rejectedActionRate": 0,
+      "validActionYield": 1.103896103896104,
+      "noValidActionClasses": {
+        "invalid-envelope": 10,
+        "natural-language-only": 1
+      },
+      "turnEvidence": {
+        "complete": 76,
+        "stored-prefix": 1
+      }
+    }
+  },
+  "multiActionSemantics": {
+    "policy": "non-finish actions execute in model order; one finish is evaluated after all non-finish actions",
+    "source": "eval/r33/src/action-order.mjs",
+    "turnsWithMultipleActions": 21,
+    "finishMovedToEnd": 0,
+    "examples": []
+  },
+  "notes": [
+    "A no-valid-action turn is a consumed model call, not necessarily a parser bug.",
+    "truncated-output requires positive provider truncation (finishReason max-tokens/length).",
+    "A stored prefix at the 1,000-character cap is labelled unavailable-evidence when no diagnostic explains it."
+  ]
+}

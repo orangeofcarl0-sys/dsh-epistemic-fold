@@ -1,0 +1,655 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:39:30.245Z",
+  "round": "R37-D",
+  "work": "WP2-b2-d1-action-forensics",
+  "B2": {
+    "summary": {
+      "cells": 12,
+      "cellsWithoutTest": 3,
+      "cellsWithRepeatedReads": 2,
+      "cellsWithLegalCodeNoTest": 0,
+      "cellsWithInvalidEnvelope": 8,
+      "cellsWithTruncatedOutput": 4,
+      "noValidActionClasses": {
+        "invalid-envelope": 20,
+        "natural-language-only": 1,
+        "missing-parameter": 13,
+        "truncated-output": 6
+      },
+      "byArm": {
+        "B1": {
+          "cells": 6,
+          "modelCalls": 44,
+          "completedSteps": 43,
+          "toolCalls": 33,
+          "validActions": 34,
+          "rejectedActions": 12,
+          "noValidActionCalls": 22,
+          "testsExecuted": 7,
+          "finishRequests": 1,
+          "stepLimitCells": 5,
+          "noValidActionRate": 0.5,
+          "rejectedActionRate": 0.2727272727272727,
+          "validActionYield": 0.7727272727272727,
+          "noValidActionClasses": {
+            "invalid-envelope": 11,
+            "missing-parameter": 9,
+            "truncated-output": 3
+          },
+          "turnEvidence": {
+            "complete": 39,
+            "stored-prefix": 5
+          }
+        },
+        "S": {
+          "cells": 6,
+          "modelCalls": 42,
+          "completedSteps": 40,
+          "toolCalls": 37,
+          "validActions": 39,
+          "rejectedActions": 4,
+          "noValidActionCalls": 13,
+          "testsExecuted": 6,
+          "finishRequests": 2,
+          "stepLimitCells": 4,
+          "noValidActionRate": 0.30952380952380953,
+          "rejectedActionRate": 0.09523809523809523,
+          "validActionYield": 0.9285714285714286,
+          "noValidActionClasses": {
+            "natural-language-only": 1,
+            "invalid-envelope": 9,
+            "missing-parameter": 4,
+            "truncated-output": 3
+          },
+          "turnEvidence": {
+            "complete": 34,
+            "stored-prefix": 8
+          }
+        }
+      }
+    },
+    "cells": [
+      {
+        "cellId": "B2-B1-G1-r2",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": 7,
+        "modelCallsBeforeFirstTest": 7,
+        "invalidCallsBeforeFirstTest": 3,
+        "remainingBudgetAtFirstTest": 0,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "invalid-envelope": 3
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-S-G0-r1",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": 6,
+        "modelCallsBeforeFirstTest": 6,
+        "invalidCallsBeforeFirstTest": 2,
+        "remainingBudgetAtFirstTest": 1,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "natural-language-only": 1,
+          "invalid-envelope": 2
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-B1-G1-r3",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 0,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": null,
+        "modelCallsBeforeFirstTest": null,
+        "invalidCallsBeforeFirstTest": null,
+        "remainingBudgetAtFirstTest": null,
+        "readPaths": {},
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "missing-parameter": 7
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-B1-G0-r2",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 0,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": null,
+        "modelCallsBeforeFirstTest": null,
+        "invalidCallsBeforeFirstTest": null,
+        "remainingBudgetAtFirstTest": null,
+        "readPaths": {
+          "src/scheduler.mjs": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "missing-parameter": 1,
+          "invalid-envelope": 4,
+          "truncated-output": 1
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-S-G1-r1",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 0,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": null,
+        "modelCallsBeforeFirstTest": null,
+        "invalidCallsBeforeFirstTest": null,
+        "remainingBudgetAtFirstTest": null,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "missing-parameter": 4
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-B1-G0-r3",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 3,
+        "modelCalls": 4,
+        "completedSteps": 3,
+        "firstWriteStep": null,
+        "firstTestStep": 0,
+        "modelCallsBeforeFirstTest": 0,
+        "invalidCallsBeforeFirstTest": 0,
+        "remainingBudgetAtFirstTest": 7,
+        "readPaths": {
+          "src/scheduler.mjs": 2,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {
+          "src/scheduler.mjs": 2
+        },
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "invalid-envelope": 1
+        },
+        "stepLimitTermination": false
+      },
+      {
+        "cellId": "B2-S-G0-r3",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": 6,
+        "modelCallsBeforeFirstTest": 6,
+        "invalidCallsBeforeFirstTest": 3,
+        "remainingBudgetAtFirstTest": 1,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "invalid-envelope": 3,
+          "truncated-output": 1
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-S-G0-r2",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 2,
+        "modelCalls": 4,
+        "completedSteps": 3,
+        "firstWriteStep": null,
+        "firstTestStep": 1,
+        "modelCallsBeforeFirstTest": 1,
+        "invalidCallsBeforeFirstTest": 0,
+        "remainingBudgetAtFirstTest": 6,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "invalid-envelope": 2
+        },
+        "stepLimitTermination": false
+      },
+      {
+        "cellId": "B2-S-G1-r2",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": 4,
+        "modelCallsBeforeFirstTest": 4,
+        "invalidCallsBeforeFirstTest": 1,
+        "remainingBudgetAtFirstTest": 3,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "truncated-output": 2,
+          "invalid-envelope": 2
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-S-G1-r3",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "modelCalls": 6,
+        "completedSteps": 5,
+        "firstWriteStep": 2,
+        "firstTestStep": 4,
+        "modelCallsBeforeFirstTest": 4,
+        "invalidCallsBeforeFirstTest": 0,
+        "remainingBudgetAtFirstTest": 3,
+        "readPaths": {
+          "src/scheduler.mjs": 2,
+          "tests/scheduler.test.mjs": 1
+        },
+        "repeatedReadPaths": {
+          "src/scheduler.mjs": 2
+        },
+        "listDirTurns": 1,
+        "writePaths": {
+          "src/scheduler.mjs": 2
+        },
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {},
+        "stepLimitTermination": false
+      },
+      {
+        "cellId": "B2-B1-G1-r1",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 2,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": 6,
+        "firstTestStep": 2,
+        "modelCallsBeforeFirstTest": 2,
+        "invalidCallsBeforeFirstTest": 0,
+        "remainingBudgetAtFirstTest": 5,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {
+          "src/scheduler.mjs": 1
+        },
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "invalid-envelope": 3
+        },
+        "stepLimitTermination": true
+      },
+      {
+        "cellId": "B2-B1-G0-r1",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "firstWriteStep": null,
+        "firstTestStep": 3,
+        "modelCallsBeforeFirstTest": 3,
+        "invalidCallsBeforeFirstTest": 1,
+        "remainingBudgetAtFirstTest": 4,
+        "readPaths": {
+          "src/scheduler.mjs": 1,
+          "tests/scheduler.test.mjs": 1,
+          "package.json": 1
+        },
+        "repeatedReadPaths": {},
+        "listDirTurns": 1,
+        "writePaths": {},
+        "legalCodeNoTest": false,
+        "noValidActionClasses": {
+          "missing-parameter": 1,
+          "truncated-output": 2
+        },
+        "stepLimitTermination": true
+      }
+    ]
+  },
+  "D1": {
+    "summary": {
+      "cells": 12,
+      "cellsWithoutTest": 0,
+      "cellsWithArtifact": 10,
+      "cellsWithArtifactMissing": 2,
+      "failurePhase": {
+        "executed": 10,
+        "tool-request-rejected": 1,
+        "budget-exhausted-before-request": 1
+      },
+      "byArm": {
+        "B1": {
+          "cells": 6,
+          "modelCalls": 32,
+          "completedSteps": 28,
+          "toolCalls": 37,
+          "validActions": 43,
+          "rejectedActions": 0,
+          "noValidActionCalls": 4,
+          "testsExecuted": 8,
+          "finishRequests": 6,
+          "stepLimitCells": 2,
+          "noValidActionRate": 0.125,
+          "rejectedActionRate": 0,
+          "validActionYield": 1.34375,
+          "noValidActionClasses": {
+            "invalid-envelope": 3,
+            "natural-language-only": 1
+          },
+          "turnEvidence": {
+            "complete": 31,
+            "stored-prefix": 1
+          }
+        },
+        "S": {
+          "cells": 6,
+          "modelCalls": 45,
+          "completedSteps": 42,
+          "toolCalls": 37,
+          "validActions": 42,
+          "rejectedActions": 0,
+          "noValidActionCalls": 7,
+          "testsExecuted": 7,
+          "finishRequests": 5,
+          "stepLimitCells": 3,
+          "noValidActionRate": 0.15555555555555556,
+          "rejectedActionRate": 0,
+          "validActionYield": 0.9333333333333333,
+          "noValidActionClasses": {
+            "invalid-envelope": 7
+          },
+          "turnEvidence": {
+            "complete": 45
+          }
+        }
+      }
+    },
+    "cells": [
+      {
+        "cellId": "D1-v2-S-G0-r1",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 1,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 5,
+        "completedSteps": 4,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-S-G1-r1",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 3,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": true,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-B1-G1-r3",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 2,
+        "verificationWriteMentions": 3,
+        "verificationWriteValid": 0,
+        "verificationArtifactPresent": false,
+        "verificationFailurePhase": "tool-request-rejected",
+        "stepLimitTermination": true,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "noValidActionClasses": {
+          "invalid-envelope": 3
+        }
+      },
+      {
+        "cellId": "D1-v2-S-G1-r3",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 1,
+        "verificationWriteMentions": 0,
+        "verificationWriteValid": 0,
+        "verificationArtifactPresent": false,
+        "verificationFailurePhase": "budget-exhausted-before-request",
+        "stepLimitTermination": true,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "noValidActionClasses": {
+          "invalid-envelope": 6
+        }
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r3",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 0,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 3,
+        "completedSteps": 2,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r2",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 1,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 4,
+        "completedSteps": 3,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-S-G0-r3",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 4,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 8,
+        "completedSteps": 7,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-B1-G1-r2",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 2,
+        "testResultsReceived": 2,
+        "firstTestStep": 2,
+        "verificationWriteMentions": 2,
+        "verificationWriteValid": 2,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 6,
+        "completedSteps": 5,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-S-G0-r2",
+        "arm": "S",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 3,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 8,
+        "completedSteps": 7,
+        "noValidActionClasses": {
+          "invalid-envelope": 1
+        }
+      },
+      {
+        "cellId": "D1-v2-B1-G1-r1",
+        "arm": "B1",
+        "guard": "G1",
+        "testsExecuted": 2,
+        "testResultsReceived": 2,
+        "firstTestStep": 3,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": true,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "noValidActionClasses": {
+          "natural-language-only": 1
+        }
+      },
+      {
+        "cellId": "D1-v2-S-G1-r2",
+        "arm": "S",
+        "guard": "G1",
+        "testsExecuted": 2,
+        "testResultsReceived": 2,
+        "firstTestStep": 2,
+        "verificationWriteMentions": 2,
+        "verificationWriteValid": 2,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": true,
+        "modelCalls": 8,
+        "completedSteps": 8,
+        "noValidActionClasses": {}
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r1",
+        "arm": "B1",
+        "guard": "G0",
+        "testsExecuted": 1,
+        "testResultsReceived": 1,
+        "firstTestStep": 0,
+        "verificationWriteMentions": 1,
+        "verificationWriteValid": 1,
+        "verificationArtifactPresent": true,
+        "verificationFailurePhase": "executed",
+        "stepLimitTermination": false,
+        "modelCalls": 3,
+        "completedSteps": 2,
+        "noValidActionClasses": {}
+      }
+    ]
+  },
+  "interpretation": {
+    "B2": "the dominant failure is a malformed DSML envelope or a truncated response; the parser rejects it correctly, and the agent spends the remaining steps on reads instead of a test",
+    "D1": "the missing verification artifact has two distinct causes: a rejected write request, or no write request at all before the step limit"
+  }
+}

@@ -59,6 +59,7 @@ import {
   verifyHoldout,
 } from './src/dataset.mjs'
 import { selectCases } from './src/selection.mjs'
+import { splitFinishActions } from './src/action-order.mjs'
 import { parseActions } from './src/tool-protocol.mjs'
 import { analyzeTurn } from '../r37/src/tool-protocol-r37.mjs'
 import { analyzeTurnStrict } from '../r37c/src/dsml-codec.mjs'
@@ -1062,13 +1063,12 @@ async function followUp({
     if (parsedActions.invalid.length > 0) {
       messages.push({ role: 'user', content: [{ type: 'text', text: rejection }] })
     }
-    const finishAction = actions.find(action => action.tool === 'finish')
-    for (const action of actions) {
-      if (action.tool === 'finish') continue
+    const { nonFinish, finish: finishAction } = splitFinishActions(actions)
+    for (const action of nonFinish) {
       const result = await executeAction(action)
       messages.push({ role: 'user', content: [{ type: 'text', text: result }] })
     }
-    if (finishAction !== undefined) {
+    if (finishAction !== null) {
       finishRequests += 1
       toolCounts.finish += 1
       const current = await workspaceDigest(workspaceRoot)

@@ -16,3 +16,36 @@ declare module '*/r37d/src/operational-completion.mjs' {
   }
   export function classifyOperationalCompletion(input: any): any
 }
+
+declare module '*/r37d/src/action-accounting.mjs' {
+  export const NO_VALID_ACTION_CLASSES: readonly string[]
+  export function classifyNoValidAction(input: {
+    text: string
+    finishReason: string
+    actions: any[]
+    invalid: any[]
+    diagnostics: any[]
+    capped: boolean
+  }): string | null
+  export function accountTurn(input: {
+    turn: { step?: number; text?: string; finishReason?: { kind?: string } }
+    maxSteps: number
+    index: number
+  }): any
+  export function summarizeCell(input: {
+    cell: any
+    turns: any[]
+    detail?: any
+    harness?: any
+    verificationArtifact?: boolean | object | null
+    requiresVerificationArtifact?: boolean
+  }): any
+}
+
+declare module '*/r33/src/action-order.mjs' {
+  export function splitFinishActions(actions: readonly any[]): {
+    nonFinish: any[]
+    finish: any | null
+    finishPosition: number
+  }
+}
