@@ -1,0 +1,871 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:56:38.867Z",
+  "round": "R37-D",
+  "work": "WP5-native-extension",
+  "packages": {
+    "agentLoop": "0.2.1-rc.3",
+    "session": "0.2.1-rc.3",
+    "tools": "0.2.1-rc.3",
+    "llm": "0.2.1-rc.3",
+    "persistence": "0.2.1-rc.3"
+  },
+  "n3": {
+    "status": "passed",
+    "adapterCalls": 2,
+    "sessionId": "r37d-n3-387a4cc3-e797-4f6d-b361-41b8a4d3c80e",
+    "counts": {
+      "toolCalls": 5,
+      "toolResults": 5,
+      "errors": 1
+    },
+    "paired": true,
+    "sawWritten": true,
+    "duplicateResults": 2,
+    "failResult": {
+      "callId": "call-fail-1",
+      "code": "tool-threw",
+      "message": "Error: intentional tool failure"
+    },
+    "errorCodes": [
+      "tool-threw"
+    ],
+    "errors": [],
+    "events": [
+      {
+        "seq": 0,
+        "type": "agent/inbox/spliced"
+      },
+      {
+        "seq": 1,
+        "type": "turn/start"
+      },
+      {
+        "seq": 2,
+        "type": "agent/inbox/spliced"
+      },
+      {
+        "seq": 3,
+        "type": "step/start"
+      },
+      {
+        "seq": 4,
+        "type": "system/message"
+      },
+      {
+        "seq": 5,
+        "type": "user/message"
+      },
+      {
+        "seq": 6,
+        "type": "request/header"
+      },
+      {
+        "seq": 7,
+        "type": "request/context"
+      },
+      {
+        "seq": 8,
+        "type": "assistant/message",
+        "toolCalls": [
+          {
+            "id": "call-read-1",
+            "name": "read_file"
+          },
+          {
+            "id": "call-write-1",
+            "name": "write_file"
+          },
+          {
+            "id": "call-test-1",
+            "name": "run_tests"
+          },
+          {
+            "id": "call-fail-1",
+            "name": "fail_once"
+          },
+          {
+            "id": "call-read-2",
+            "name": "read_file"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "type": "tool/call",
+        "name": "read_file",
+        "callId": "call-read-1"
+      },
+      {
+        "seq": 10,
+        "type": "tool/result",
+        "callId": "call-read-1",
+        "error": null,
+        "text": "{\"path\":\"src/queue.mjs\",\"content\":\"export const queue = \\\"old\\\"\\n\"}"
+      },
+      {
+        "seq": 11,
+        "type": "tool/call",
+        "name": "write_file",
+        "callId": "call-write-1"
+      },
+      {
+        "seq": 12,
+        "type": "tool/result",
+        "callId": "call-write-1",
+        "error": null,
+        "text": "{\"path\":\"src/queue.mjs\",\"bytes\":27}"
+      },
+      {
+        "seq": 13,
+        "type": "tool/call",
+        "name": "run_tests",
+        "callId": "call-test-1"
+      },
+      {
+        "seq": 14,
+        "type": "tool/result",
+        "callId": "call-test-1",
+        "error": null,
+        "text": "{\"content\":\"export const queue = \\\"new\\\"\\n\",\"sawWritten\":true}"
+      },
+      {
+        "seq": 15,
+        "type": "tool/call",
+        "name": "fail_once",
+        "callId": "call-fail-1"
+      },
+      {
+        "seq": 16,
+        "type": "tool/result",
+        "callId": "call-fail-1",
+        "error": null,
+        "text": "Error: intentional tool failure"
+      },
+      {
+        "seq": 17,
+        "type": "tool/call",
+        "name": "read_file",
+        "callId": "call-read-2"
+      },
+      {
+        "seq": 18,
+        "type": "tool/result",
+        "callId": "call-read-2",
+        "error": null,
+        "text": "{\"path\":\"src/queue.mjs\",\"content\":\"export const queue = \\\"new\\\"\\n\"}"
+      },
+      {
+        "seq": 19,
+        "type": "step/end"
+      },
+      {
+        "seq": 20,
+        "type": "step/start"
+      },
+      {
+        "seq": 21,
+        "type": "assistant/message",
+        "toolCalls": []
+      },
+      {
+        "seq": 22,
+        "type": "step/end"
+      },
+      {
+        "seq": 23,
+        "type": "turn/end"
+      }
+    ]
+  },
+  "n4": {
+    "status": "passed",
+    "notStarted": {
+      "status": "passed",
+      "kind": "not-started",
+      "expectedCode": "TOOL_NOT_STARTED",
+      "persistedBytes": 0,
+      "persistence": {
+        "files": 1,
+        "bytes": 1060
+      },
+      "recoveryError": null,
+      "syntheticResults": [
+        {
+          "seq": 4,
+          "type": "tool/result",
+          "callId": "call-not-started",
+          "error": "TOOL_NOT_STARTED",
+          "text": "The tool call was interrupted before the Harness recorded it as started. Retry it if it is still needed."
+        }
+      ],
+      "codes": [
+        "TOOL_NOT_STARTED"
+      ],
+      "errors": [],
+      "events": [
+        {
+          "seq": 0,
+          "type": "turn/start"
+        },
+        {
+          "seq": 1,
+          "type": "user/message"
+        },
+        {
+          "seq": 2,
+          "type": "step/start"
+        },
+        {
+          "seq": 3,
+          "type": "assistant/message",
+          "toolCalls": [
+            {
+              "id": "call-not-started",
+              "name": "read_file"
+            }
+          ]
+        },
+        {
+          "seq": 4,
+          "type": "tool/result",
+          "callId": "call-not-started",
+          "error": "TOOL_NOT_STARTED",
+          "text": "The tool call was interrupted before the Harness recorded it as started. Retry it if it is still needed."
+        },
+        {
+          "seq": 5,
+          "type": "step/end"
+        },
+        {
+          "seq": 6,
+          "type": "turn/end"
+        },
+        {
+          "seq": 7,
+          "type": "session/end-seed"
+        }
+      ]
+    },
+    "started": {
+      "status": "passed",
+      "kind": "started",
+      "expectedCode": "TOOL_OUTCOME_UNKNOWN",
+      "persistedBytes": 0,
+      "persistence": {
+        "files": 1,
+        "bytes": 1203
+      },
+      "recoveryError": null,
+      "syntheticResults": [
+        {
+          "seq": 5,
+          "type": "tool/result",
+          "callId": "call-started",
+          "error": "TOOL_OUTCOME_UNKNOWN",
+          "text": "The tool call was interrupted after it was recorded, but no result was durably recorded. Its outcome is unknown. Decide whether to retry from the tool semantics: retry only if the operation is read-only or idempotent; if it may have side effects, first verify external state or ask the user. Do not retry blindly."
+        }
+      ],
+      "codes": [
+        "TOOL_OUTCOME_UNKNOWN"
+      ],
+      "errors": [],
+      "events": [
+        {
+          "seq": 0,
+          "type": "turn/start"
+        },
+        {
+          "seq": 1,
+          "type": "user/message"
+        },
+        {
+          "seq": 2,
+          "type": "step/start"
+        },
+        {
+          "seq": 3,
+          "type": "assistant/message",
+          "toolCalls": [
+            {
+              "id": "call-started",
+              "name": "read_file"
+            }
+          ]
+        },
+        {
+          "seq": 4,
+          "type": "tool/call",
+          "name": "read_file",
+          "callId": "call-started"
+        },
+        {
+          "seq": 5,
+          "type": "tool/result",
+          "callId": "call-started",
+          "error": "TOOL_OUTCOME_UNKNOWN",
+          "text": "The tool call was interrupted after it was recorded, but no result was durably recorded. Its outcome is unknown. Decide whether to retry from the tool semantics: retry only if the operation is read-only or idempotent; if it may have side effects, first verify external state or ask the user. Do not retry blindly."
+        },
+        {
+          "seq": 6,
+          "type": "step/end"
+        },
+        {
+          "seq": 7,
+          "type": "turn/end"
+        },
+        {
+          "seq": 8,
+          "type": "session/end-seed"
+        }
+      ]
+    }
+  },
+  "n5": {
+    "status": "passed",
+    "foldError": null,
+    "nativeError": null,
+    "revisionTurn": 3,
+    "firstCheckpointChars": 870,
+    "finalCheckpointChars": 727,
+    "firstHasOld": true,
+    "finalHasNew": true,
+    "finalHasOld": false,
+    "firstAnchors": [],
+    "finalAnchors": [],
+    "oldActive": false,
+    "newActive": true,
+    "staleRejectionActive": false,
+    "retiredOld": true,
+    "declaredNew": true,
+    "finalOps": [
+      {
+        "op": "declare",
+        "anchor": {
+          "id": "semantic-774ab5992709146cca57b2ec4bb16051",
+          "kind": "decision",
+          "stateKey": {
+            "namespace": "semantic",
+            "entity": "decision",
+            "property": "scheduler-queue"
+          },
+          "value": "The scheduler uses a durable outbox because the storage dependency is now available.",
+          "authority": "decision",
+          "lifecycle": "active",
+          "sourceRefs": [
+            {
+              "seq": 25
+            }
+          ]
+        }
+      },
+      {
+        "op": "retire",
+        "anchorId": "semantic-cc47f4a09923348cc014d367775b428a"
+      }
+    ],
+    "journal": {
+      "journalFound": true,
+      "sessions": [
+        "r37d-native-B2-bc0834ff-d0a6-4dd1-9d75-295e2ac4817c"
+      ],
+      "packets": 2,
+      "receipts": 2,
+      "committedPackets": 2,
+      "proofValid": true,
+      "anchors": [
+        {
+          "id": "semantic-774ab5992709146cca57b2ec4bb16051",
+          "kind": "decision",
+          "stateKey": {
+            "namespace": "semantic",
+            "entity": "decision",
+            "property": "scheduler-queue"
+          },
+          "value": "The scheduler uses a durable outbox because the storage dependency is now available.",
+          "authority": "decision",
+          "lifecycle": "active",
+          "sourceRefs": [
+            {
+              "seq": 25
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "unavailable": null
+    },
+    "firstState": null,
+    "finalState": null,
+    "firstDiagnostics": {
+      "health": "ready",
+      "mode": "active",
+      "packets": 2,
+      "accepted": 2,
+      "refused": 0,
+      "committed": 1,
+      "reconciled": 0,
+      "workingSetTokens": 0,
+      "writer": {
+        "call": "success",
+        "protocol": "parsed",
+        "proposed": 2,
+        "accepted": 2,
+        "refused": 0,
+        "limitExceeded": 0,
+        "refusals": {},
+        "integrity": "ready",
+        "coverage": "not-assessed"
+      },
+      "lastPacket": {
+        "schemaVersion": 4,
+        "packetId": "52add02d633c134921903bee0e22b4bf64e2e856187f87106cc6607ca4ae1ef7",
+        "sessionId": "r37d-native-B2-bc0834ff-d0a6-4dd1-9d75-295e2ac4817c",
+        "checkpointId": "ddb4b211-1831-46f2-b9ee-bbeb98ed0ea0",
+        "mode": "active",
+        "authority": "journal",
+        "status": "staged",
+        "spanDigest": "13f4ae2a893d0be13804a7cca1f1b12a4932c10c60f108969f072e7ec9f8f234",
+        "foldedSeqs": [
+          1,
+          3,
+          7,
+          9,
+          12,
+          14,
+          17
+        ],
+        "createdAt": 1793973398751,
+        "stagedAtSeq": 22,
+        "bodyDigest": "444a6f33a7d80b6b45e0b75e868f399ea619ac37da013e2d7471eecf67565837",
+        "sourceDigest": "1aae2f61edd46aaff217ba3bc6639bfa18a02cf2ed2b6f0d48fff4ab0d12e081",
+        "ops": [
+          {
+            "op": "declare",
+            "anchor": {
+              "id": "semantic-8513d436c841628fbe2d13e4c842a26d",
+              "kind": "decision",
+              "stateKey": {
+                "namespace": "semantic",
+                "entity": "decision",
+                "property": "scheduler-queue"
+              },
+              "value": "The scheduler keeps an in-memory queue.",
+              "authority": "decision",
+              "lifecycle": "active",
+              "sourceRefs": [
+                {
+                  "seq": 1
+                }
+              ]
+            }
+          },
+          {
+            "op": "declare",
+            "anchor": {
+              "id": "semantic-cc47f4a09923348cc014d367775b428a",
+              "kind": "decision",
+              "stateKey": {
+                "namespace": "semantic",
+                "entity": "rejected-approach",
+                "property": "scheduler-outbox"
+              },
+              "value": "rejected: A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+              "authority": "decision",
+              "lifecycle": "active",
+              "sourceRefs": [
+                {
+                  "seq": 7
+                }
+              ]
+            }
+          }
+        ],
+        "handoff": "The in-memory queue remains the effective decision; the outbox was rejected for this deployment.",
+        "deltaParse": "parsed",
+        "proposed": [
+          {
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler keeps an in-memory queue.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "use an in-memory queue for the scheduler"
+              }
+            ]
+          },
+          {
+            "kind": "rejected-approach",
+            "subjectKey": "scheduler-outbox",
+            "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "we are rejecting it"
+              }
+            ]
+          }
+        ],
+        "accepted": [
+          {
+            "index": 0,
+            "deltaId": "8513d436c841628fbe2d13e4c842a26d9e94a8be68c56ca4dd1fd74bedfdab07",
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler keeps an in-memory queue.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 1,
+                "messageDigest": "044d1d095e1084cedb31ce20bf636977ebcbce797ce5c8a146c7c1e40be9e9fd",
+                "quote": "use an in-memory queue for the scheduler"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "decision",
+              "property": "scheduler-queue"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          },
+          {
+            "index": 1,
+            "deltaId": "cc47f4a09923348cc014d367775b428ab02eba3b1a38ca52eaf205af70be1cb5",
+            "kind": "rejected-approach",
+            "subjectKey": "scheduler-outbox",
+            "statement": "A durable outbox is rejected: the storage dependency is unavailable in this deployment.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 7,
+                "messageDigest": "608cefe9f19186763cc828cd4285bc6f7d12bb918a2d92ea771598fe0ba0de93",
+                "quote": "we are rejecting it"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "rejected-approach",
+              "property": "scheduler-outbox"
+            },
+            "supersedes": [],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": [],
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 100,
+          "carriedTokens": 0,
+          "rationaleTokens": 35,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 140,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "writer": {
+          "provider": "r37d-scripted",
+          "model": "r37d-scripted-native",
+          "maxTokens": 16384,
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 10
+          }
+        }
+      }
+    },
+    "finalDiagnostics": {
+      "health": "ready",
+      "mode": "active",
+      "packets": 1,
+      "accepted": 3,
+      "refused": 0,
+      "committed": 2,
+      "reconciled": 0,
+      "workingSetTokens": 0,
+      "writer": {
+        "call": "success",
+        "protocol": "parsed",
+        "proposed": 1,
+        "accepted": 1,
+        "refused": 0,
+        "limitExceeded": 0,
+        "refusals": {},
+        "integrity": "ready",
+        "coverage": "not-assessed"
+      },
+      "lastPacket": {
+        "schemaVersion": 4,
+        "packetId": "eef987ba5182852a2ffb700a3f33f95718551566a3688a2fda3532c87624d2d1",
+        "sessionId": "r37d-native-B2-bc0834ff-d0a6-4dd1-9d75-295e2ac4817c",
+        "checkpointId": "a13a8d53-7c66-48e6-9a7b-ceba730410b8",
+        "mode": "active",
+        "authority": "journal",
+        "status": "staged",
+        "spanDigest": "579334d87fdd486dc8ce9940ed9b187502a35ef69abec6155c025a9b664cabdd",
+        "foldedSeqs": [
+          25,
+          27
+        ],
+        "createdAt": 1793973398813,
+        "stagedAtSeq": 30,
+        "bodyDigest": "93f907708818c877976b55f87d7561e2fac517a10a8e9e2b394895faf5588537",
+        "sourceDigest": "dfe0d851339f00e06ea346474e1d1572ff97ede41c9985cb340dc3d6f9849edc",
+        "ops": [
+          {
+            "op": "declare",
+            "anchor": {
+              "id": "semantic-774ab5992709146cca57b2ec4bb16051",
+              "kind": "decision",
+              "stateKey": {
+                "namespace": "semantic",
+                "entity": "decision",
+                "property": "scheduler-queue"
+              },
+              "value": "The scheduler uses a durable outbox because the storage dependency is now available.",
+              "authority": "decision",
+              "lifecycle": "active",
+              "sourceRefs": [
+                {
+                  "seq": 25
+                }
+              ]
+            }
+          },
+          {
+            "op": "retire",
+            "anchorId": "semantic-cc47f4a09923348cc014d367775b428a"
+          }
+        ],
+        "handoff": "The storage dependency is now available. Use a durable outbox for the scheduler, superseding the in-memory decision.",
+        "deltaParse": "parsed",
+        "proposed": [
+          {
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler uses a durable outbox because the storage dependency is now available.",
+            "status": "claimed",
+            "evidence": [
+              {
+                "quote": "moves to a durable outbox"
+              }
+            ],
+            "supersedes": [
+              "scheduler-queue",
+              "scheduler-outbox"
+            ]
+          }
+        ],
+        "accepted": [
+          {
+            "index": 0,
+            "deltaId": "774ab5992709146cca57b2ec4bb160512e85141974079fca18889c719b137cd3",
+            "kind": "decision",
+            "subjectKey": "scheduler-queue",
+            "statement": "The scheduler uses a durable outbox because the storage dependency is now available.",
+            "status": "claimed",
+            "grantedStatus": "claimed",
+            "evidence": [
+              {
+                "seq": 25,
+                "messageDigest": "6df7824c137ca6b023f9390c36aaf703d5377e881717e5d56f52a12ba289fc5b",
+                "quote": "moves to a durable outbox"
+              }
+            ],
+            "authority": "decision",
+            "anchorKind": "decision",
+            "stateKey": {
+              "namespace": "semantic",
+              "entity": "decision",
+              "property": "scheduler-queue"
+            },
+            "supersedes": [
+              "scheduler-queue",
+              "scheduler-outbox"
+            ],
+            "dependsOn": [],
+            "rulesOut": []
+          }
+        ],
+        "refused": [],
+        "workingSet": {
+          "tokens": 0,
+          "overflow": false,
+          "pinned": 0,
+          "working": 0,
+          "archived": 0,
+          "changedTokens": 60,
+          "carriedTokens": 0,
+          "rationaleTokens": 40,
+          "framingTokens": 20,
+          "noticeTokens": 0,
+          "totalCheckpointTokens": 104,
+          "pinnedTokens": 0,
+          "budgetTokens": 2048,
+          "totalBudgetTokens": 8192,
+          "pinnedOverflow": false,
+          "totalOverflow": false,
+          "estimateBasis": "token-meter"
+        },
+        "writer": {
+          "provider": "r37d-scripted",
+          "model": "r37d-scripted-native",
+          "maxTokens": 16384,
+          "usage": {
+            "inputTokens": 10,
+            "outputTokens": 10
+          }
+        }
+      }
+    },
+    "firstWriterStats": {
+      "calls": 1,
+      "failures": 0
+    },
+    "firstFoldResult": {
+      "compactionId": "3f044bb5-af22-4374-b7f4-fbe1e89a8094",
+      "startSeq": 21,
+      "summarySeq": 22,
+      "summary": [
+        {
+          "type": "text",
+          "text": "[EF1 L cp:ddb4b211-1831-46f2-b9ee-bbeb98ed0ea0]\n\nChanged in this fold\n- [decision semantic-cc47f4a09923348cc014d367775b428a semantic/rejected-approach/scheduler-outbox] rejected: A durable outbox is rejected: the storage dependency is unavailable in this deployment. (decision)\n- [decision semantic-8513d436c841628fbe2d13e4c842a26d semantic/decision/scheduler-queue] The scheduler keeps an in-memory queue. (decision)\n\nRationale\n- The in-memory queue remains the effective decision; the outbox was rejected for this deployment."
+        }
+      ],
+      "shadowedRange": {
+        "start": 1,
+        "end": 17
+      },
+      "shadowedSeqs": [
+        1,
+        3,
+        7,
+        9,
+        12,
+        14,
+        17
+      ],
+      "shadowedTokenCount": 592,
+      "endSeq": 24
+    },
+    "native": {
+      "events": [
+        {
+          "seq": 0,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 1,
+          "type": "turn/start"
+        },
+        {
+          "seq": 2,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 3,
+          "type": "step/start"
+        },
+        {
+          "seq": 4,
+          "type": "system/message"
+        },
+        {
+          "seq": 5,
+          "type": "user/message"
+        },
+        {
+          "seq": 6,
+          "type": "request/header"
+        },
+        {
+          "seq": 7,
+          "type": "request/context"
+        },
+        {
+          "seq": 8,
+          "type": "assistant/message",
+          "toolCalls": [
+            {
+              "id": "call-n5-read",
+              "name": "read_file"
+            }
+          ]
+        },
+        {
+          "seq": 9,
+          "type": "tool/call",
+          "name": "read_file",
+          "callId": "call-n5-read"
+        },
+        {
+          "seq": 10,
+          "type": "tool/result",
+          "callId": "call-n5-read",
+          "error": null,
+          "text": "{\"path\":\"hello.txt\",\"content\":\"native smoke: hello\\n\"}"
+        },
+        {
+          "seq": 11,
+          "type": "step/end"
+        },
+        {
+          "seq": 12,
+          "type": "step/start"
+        },
+        {
+          "seq": 13,
+          "type": "assistant/message",
+          "toolCalls": []
+        },
+        {
+          "seq": 14,
+          "type": "step/end"
+        },
+        {
+          "seq": 15,
+          "type": "turn/end"
+        }
+      ],
+      "counts": {
+        "toolCalls": 1,
+        "toolResults": 1,
+        "errors": 0
+      },
+      "order": [
+        {
+          "kind": "call",
+          "callId": "call-n5-read",
+          "seq": 9
+        },
+        {
+          "kind": "result",
+          "callId": "call-n5-read",
+          "seq": 10
+        }
+      ],
+      "paired": true,
+      "errorCodes": []
+    },
+    "errors": []
+  },
+  "note": "No provider request was made. The adapter is scripted; the tools are deterministic."
+}
