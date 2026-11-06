@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T14:04:07.485Z",
+  "round": "R37-D",
+  "work": "WP6-held-out-plan",
+  "status": "prepared",
+  "noProviderCall": true,
+  "cases": [
+    {
+      "id": "H1-v2",
+      "category": "retrieval-trigger",
+      "status": "certified",
+      "historyIndependent": false,
+      "gold": [
+        {
+          "factId": "H1-production-region",
+          "statement": "The production deployment region is eu-west-2.",
+          "visibleNeedle": "eu-west-2",
+          "quote": "Production deployment region: eu-west-2",
+          "sourceRefs": [
+            2
+          ],
+          "scope": null
+        }
+      ],
+      "referenceAction": "use-eu",
+      "staleAction": "use-us",
+      "digests": {
+        "case": "2bd46f10ada6c00070df3b523d6dadf76907e75473b26bd112c0226e1598f2d0",
+        "workspace": "10b06ac37b6aead7977ee519c63b2af0eaa13e2fba7e5c43af2557ed953a4a3c",
+        "checker": "648a4929fa464ce0081ada70c9046c192a004c09c72b3fa2493227f0d86f20e7",
+        "reference": "d3f7f9fe7449e9a29e78497cff996d5e3350b6998f657d1f4a007a00f5fe3b5e",
+        "stale": "25c405217321170ab9b504a7b6fc2c6434c63ba59c07164cd258a02948ee235a"
+      },
+      "certification": "eval/r37c/out/h1-v2-validity.json",
+      "audit": "eval/r37d/out/h1-v2-audit.json"
+    },
+    {
+      "id": "S1-v1",
+      "category": "authority-scope",
+      "status": "certified",
+      "historyIndependent": false,
+      "gold": [
+        {
+          "factId": "S1-production-timeout",
+          "statement": "The production checkout timeout is 30 seconds.",
+          "visibleNeedle": "30 seconds",
+          "quote": "Production config: checkout timeout 30 seconds",
+          "sourceRefs": [
+            2
+          ],
+          "scope": {
+            "environment": "production"
+          }
+        }
+      ],
+      "referenceAction": "use-production",
+      "staleAction": "use-staging",
+      "digests": {
+        "case": "6eddbe86a497d2eeee8a58c2285491368cae8c0c3674c8a9fb423245269436f4",
+        "workspace": "d3600a1627b796d2324fd68c509d83517105768e063eceaac08e325ed4508fa9",
+        "checker": "2dcd85d6b49b62b9d5000418a26c099fb11422ad3f2af908d3ccae26ba623035",
+        "reference": "b569f90c1eddd8fdb59b52fe88a656e25a852b42e014a0af992e68d69c181d18",
+        "stale": "1d1167f3d228d1f49425e1ad6fc1d49c5e0fc5590260faaa0fae7237527c4d77"
+      },
+      "certification": "eval/r37d/out/s1-v1-validity.json",
+      "audit": null
+    },
+    {
+      "id": "D2-v1",
+      "category": "decision-override",
+      "status": "specified-not-authored",
+      "design": "An early decision is explicitly replaced by a later authoritative decision. The visible test accepts either value; the hidden checker requires the later one. The stale action is the earlier value.",
+      "goldShape": "decision, later sourceRef, supersedesFactId pointing at the early decision",
+      "referenceAction": "latest",
+      "staleAction": "early",
+      "mustCertify": [
+        "reference passes visible+hidden",
+        "early passes visible and fails hidden",
+        "no gold in task/workspace/visible test"
+      ]
+    },
+    {
+      "id": "N1-v1",
+      "category": "negative-knowledge",
+      "status": "specified-not-authored",
+      "design": "A dependency or approach is explicitly rejected in the history. The workspace is functional without it. The visible test checks behaviour; the hidden checker rejects the forbidden import or call.",
+      "goldShape": "rejected-approach, tool sourceRef, quote contains the rejection",
+      "referenceAction": "without-rejected-dependency",
+      "staleAction": "with-rejected-dependency",
+      "mustCertify": [
+        "reference passes visible+hidden",
+        "stale passes visible and fails hidden",
+        "the rejected name is absent from the workspace and visible test"
+      ]
+    },
+    {
+      "id": "X1-v1",
+      "category": "cross-phase-dependency",
+      "status": "specified-not-authored",
+      "design": "A phase-1 fact is required in phase 3 after at least one fold. The task and workspace do not repeat it. The hidden checker requires the phase-1 value.",
+      "goldShape": "finding or constraint from phase 1, cited across the fold",
+      "referenceAction": "use-phase1-fact",
+      "staleAction": "use-default",
+      "mustCertify": [
+        "the fact survives the fold in S and the summary in B1",
+        "reference passes visible+hidden",
+        "stale fails hidden",
+        "the fact is absent from phase 3 task/workspace"
+      ]
+    },
+    {
+      "id": "M1-v1",
+      "category": "multi-fold-supersession",
+      "status": "specified-not-authored",
+      "design": "A coordinate is revised twice. The first and second values are stale. The hidden checker requires the third value. The visible test accepts any well-formed value.",
+      "goldShape": "three facts at one subjectKey, two superseded, the third current",
+      "referenceAction": "latest",
+      "staleAction": "middle",
+      "mustCertify": [
+        "the final active anchor is the third value",
+        "both stale values fail hidden",
+        "the stale values do not revive after the second fold"
+      ]
+    }
+  ],
+  "counts": {
+    "certified": 2,
+    "specified": 4,
+    "total": 6
+  },
+  "freezeRequirements": [
+    "The gold quote occurs verbatim in every sourceRef message.",
+    "The reference action passes the visible tests and the hidden checker.",
+    "The stale and a plausible alternative action pass the visible test and fail the hidden checker.",
+    "The gold is absent from the task, the initial workspace, the visible test, and the writer handoff.",
+    "The hidden checker is outside the workspace and declares the exact check names.",
+    "A certification artifact records every run and the case digests.",
+    "No provider call is made during certification."
+  ],
+  "nextBatch": {
+    "status": "not-executed",
+    "note": "The next history-use batch must use only certified cases. The four specified cases require authoring, certification, and a new frozen manifest before any live run."
+  },
+  "notes": [
+    "H1-v2 is certified by R37-C and re-audited by R37-D. The R37-D audit adds a us-west-2 alternative that passes visible and fails hidden.",
+    "S1-v1 is authored and certified in R37-D.",
+    "The four specified categories are design briefs, not cases."
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T14:01:28.260Z",
+  "round": "R37-D",
+  "work": "WP6-h1-v2-audit",
+  "caseId": "H1-v2",
+  "status": "passed",
+  "gold": {
+    "factId": "H1-production-region",
+    "statement": "The production deployment region is eu-west-2.",
+    "visibleNeedle": "eu-west-2",
+    "sourceRef": 2
+  },
+  "leakage": {
+    "taskNamesGold": false,
+    "workspaceNamesGold": false,
+    "visibleTestNamesGold": false,
+    "writerHandoffNamesGold": false,
+    "packageNamesGold": false,
+    "transcriptHasGold": true,
+    "checkerContainsGold": true,
+    "checkerInsideWorkspace": false,
+    "visibleTestUsesGenericPattern": true,
+    "visibleTestForbidsStale": true
+  },
+  "runs": {
+    "default": {
+      "visible": {
+        "exitCode": 1,
+        "passed": false
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'us-east-1'\n- 'eu-west-2'\n"
+          }
+        ]
+      }
+    },
+    "reference": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": true,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": true
+          }
+        ]
+      }
+    },
+    "stale": {
+      "visible": {
+        "exitCode": 1,
+        "passed": false
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'us-east-1'\n- 'eu-west-2'\n"
+          }
+        ]
+      }
+    },
+    "alternative": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'us-west-2'\n- 'eu-west-2'\n"
+          }
+        ]
+      }
+    }
+  },
+  "historyNecessary": true,
+  "checks": [
+    {
+      "id": "gold-grounded",
+      "pass": true,
+      "detail": "the transcript sourceRef contains the gold region"
+    },
+    {
+      "id": "task-no-leak",
+      "pass": true,
+      "detail": "the task does not name the region"
+    },
+    {
+      "id": "workspace-no-leak",
+      "pass": true,
+      "detail": "the initial workspace does not name the region"
+    },
+    {
+      "id": "visible-no-leak",
+      "pass": true,
+      "detail": "the visible test does not name the region"
+    },
+    {
+      "id": "handoff-no-leak",
+      "pass": true,
+      "detail": "the writer handoff does not name the region"
+    },
+    {
+      "id": "checker-hidden",
+      "pass": true,
+      "detail": "the hidden checker is not in the workspace"
+    },
+    {
+      "id": "checker-consistent",
+      "pass": true,
+      "detail": "the checker emits the declared check"
+    },
+    {
+      "id": "reference-passes",
+      "pass": true,
+      "detail": "visible 0, hidden true"
+    },
+    {
+      "id": "stale-fails",
+      "pass": true,
+      "detail": "visible 1, hidden false"
+    },
+    {
+      "id": "alternative-passes-visible",
+      "pass": true,
+      "detail": "us-west-2 passes the visible test"
+    },
+    {
+      "id": "alternative-fails-hidden",
+      "pass": true,
+      "detail": "us-west-2 fails the hidden checker"
+    },
+    {
+      "id": "history-necessary",
+      "pass": true,
+      "detail": "a plausible non-gold region passes visible and fails hidden"
+    }
+  ],
+  "certificateAgreement": {
+    "status": "certified",
+    "properties": {
+      "goldGrounded": true,
+      "taskSolvable": true,
+      "visibleTestDoesNotNameFact": true,
+      "staleDefaultFailsVisible": true,
+      "staleDefaultFailsHidden": true,
+      "counterfactualFailsVisible": true,
+      "counterfactualFailsHidden": true,
+      "historicalMemoryNecessary": true
+    },
+    "agrees": true
+  },
+  "notes": [
+    "H1-v2 remains a benchmark certification, not a model result.",
+    "The alternative run uses us-west-2, a region that is not in the case. It is a synthetic control, not an action in the dataset.",
+    "The visible test forbids us-east-1 and accepts any AWS-shaped region; only the hidden checker requires eu-west-2."
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T14:03:07.713Z",
+  "round": "R37-D",
+  "work": "WP6-s1-v1-certification",
+  "caseId": "S1-v1",
+  "status": "certified",
+  "gold": {
+    "factId": "S1-production-timeout",
+    "statement": "The production checkout timeout is 30 seconds.",
+    "visibleNeedle": "30 seconds",
+    "sourceRef": 2,
+    "scope": {
+      "environment": "production"
+    }
+  },
+  "leakage": {
+    "taskNamesGold": false,
+    "workspaceNamesGold": false,
+    "visibleTestNamesGold": false,
+    "writerHandoffNamesGold": false,
+    "transcriptHasGold": true,
+    "checkerContainsGold": false,
+    "checkerInsideWorkspace": false,
+    "visibleTestAllowsStaging": true
+  },
+  "runs": {
+    "default": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "timeout.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n\n5 !== 30\n"
+          }
+        ]
+      }
+    },
+    "reference": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": true,
+        "checks": [
+          {
+            "name": "timeout.production",
+            "pass": true
+          }
+        ]
+      }
+    },
+    "stale": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "timeout.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n\n5 !== 30\n"
+          }
+        ]
+      }
+    },
+    "alternative": {
+      "visible": {
+        "exitCode": 0,
+        "passed": true
+      },
+      "hidden": {
+        "status": "executed",
+        "allPassed": false,
+        "checks": [
+          {
+            "name": "timeout.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n\n10 !== 30\n"
+          }
+        ]
+      }
+    }
+  },
+  "historyNecessary": true,
+  "checks": [
+    {
+      "id": "gold-grounded",
+      "pass": true,
+      "detail": "the transcript sourceRef contains the production timeout"
+    },
+    {
+      "id": "task-no-leak",
+      "pass": true,
+      "detail": "the task does not name the timeout"
+    },
+    {
+      "id": "workspace-no-leak",
+      "pass": true,
+      "detail": "the initial workspace does not name the timeout"
+    },
+    {
+      "id": "visible-no-leak",
+      "pass": true,
+      "detail": "the visible test does not name the timeout"
+    },
+    {
+      "id": "handoff-no-leak",
+      "pass": true,
+      "detail": "the writer handoff does not name the timeout"
+    },
+    {
+      "id": "checker-hidden",
+      "pass": true,
+      "detail": "the hidden checker is not in the workspace"
+    },
+    {
+      "id": "checker-consistent",
+      "pass": true,
+      "detail": "the checker emits the declared check"
+    },
+    {
+      "id": "reference-passes",
+      "pass": true,
+      "detail": "visible 0, hidden true"
+    },
+    {
+      "id": "stale-passes-visible",
+      "pass": true,
+      "detail": "the staging timeout passes the visible test"
+    },
+    {
+      "id": "stale-fails-hidden",
+      "pass": true,
+      "detail": "the staging timeout fails the hidden checker"
+    },
+    {
+      "id": "alternative-passes-visible",
+      "pass": true,
+      "detail": "10 seconds passes the visible test"
+    },
+    {
+      "id": "alternative-fails-hidden",
+      "pass": true,
+      "detail": "10 seconds fails the hidden checker"
+    },
+    {
+      "id": "history-necessary",
+      "pass": true,
+      "detail": "a plausible non-gold timeout passes visible and fails hidden"
+    }
+  ],
+  "notes": [
+    "S1-v1 is an authority-scope case. The staging value is in the workspace; the production value is only in the transcript.",
+    "The visible test accepts any positive integer, so it cannot distinguish staging from production.",
+    "This is a benchmark certification, not a model result."
+  ]
+}

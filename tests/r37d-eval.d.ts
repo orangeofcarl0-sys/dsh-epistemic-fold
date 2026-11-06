@@ -49,3 +49,10 @@ declare module '*/r33/src/action-order.mjs' {
     finishPosition: number
   }
 }
+
+declare module '*/r33/src/schema.mjs' {
+  export const CASE_SCHEMA_VERSION: number
+  export function validateCase(raw: unknown):
+    | { ok: true; case: any }
+    | { ok: false; code: string; detail: string }
+}
