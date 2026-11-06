@@ -188,11 +188,20 @@ if (await exists(ARCHIVE)) {
 
 const integrityPath = join(R37C, 'eval', 'r37c', 'out', 'evidence-integrity.json')
 const inventoryPath = join(R37C, 'eval', 'r37c', 'out', 'evidence-inventory.json')
+const integrity = await exists(integrityPath) ? await readJson(integrityPath) : null
+const inventory = await exists(inventoryPath) ? await readJson(inventoryPath) : null
 baseline.evidence = {
-  integrity: await exists(integrityPath) ? await readJson(integrityPath) : null,
-  inventory: await exists(inventoryPath) ? await readJson(inventoryPath) : null,
+  integrityPath,
+  inventoryPath,
+  integritySha256: integrity === null ? null : await sha256(integrityPath),
+  inventorySha256: inventory === null ? null : await sha256(inventoryPath),
+  integrityStatus: integrity?.status ?? null,
+  totals: inventory?.totals ?? null,
+  cellMatrix: integrity?.cellMatrix ?? null,
+  secrets: integrity?.secrets ?? null,
+  truncation: inventory?.truncatedEvidence ?? null,
 }
-if (baseline.evidence.integrity?.status !== 'passed') {
+if (integrity?.status !== 'passed') {
   discrepancy('evidence', 'R37-C evidence-integrity status is not passed')
 }
 
