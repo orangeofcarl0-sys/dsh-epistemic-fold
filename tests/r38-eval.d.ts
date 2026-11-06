@@ -160,3 +160,18 @@ declare module '*/r38/recent-tail.mjs' {
     readonly stable: boolean
   }
 }
+
+declare module '*/r38/native-context-smoke.mjs' {
+  export function runSmoke(): Promise<{
+    readonly status: string
+    readonly adapter: string
+    readonly modelCalls: number
+    readonly providerCalls: number
+    readonly injection: string
+    readonly journalModified: boolean
+    readonly checkpointRewritten: boolean
+    readonly summary: { readonly checks: number; readonly passed: number; readonly failed: number }
+    readonly checks: readonly { readonly id: string; readonly pass: boolean }[]
+    readonly observations: any
+  }>
+}

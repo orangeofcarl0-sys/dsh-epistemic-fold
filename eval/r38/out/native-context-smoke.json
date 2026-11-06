@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T21:05:10.242Z",
+  "round": "R38-M0",
+  "work": "WP6-native-context-delivery",
+  "status": "passed",
+  "adapter": "scripted",
+  "modelCalls": 0,
+  "providerCalls": 0,
+  "injection": "systemPrompt.context -> runtime-context user/message",
+  "journalModified": false,
+  "checkpointRewritten": false,
+  "overlay": {
+    "one": {
+      "digest": "938129c3fd0f42df5138e6607720d6fc34bfbe9a817402b5124e4380ac8e3098",
+      "selection": "c8c4d031da8f0dbc7d3f92b22fb783d424c6aa6edec5f14e5938b38473884a29",
+      "tokens": 142
+    },
+    "two": {
+      "digest": "7749ab4acedc365f843d7a1bfe2314eec52f1e8f7c38333d1ba469116424bcd5",
+      "selection": "432348c0c7ee9f3a5a3ec32842b3c1b4b8dc23ea3659a7f1d5a6572bb28b96b4",
+      "tokens": 142,
+      "changedBytes": 64
+    },
+    "integrity": {
+      "digest": "fd396a9c4c8223b463c1e33d22a2fa62e46344b4aebcdadfb46880e8e73f506a",
+      "warnings": [
+        "integrity: stale-negative-knowledge: the rejected outbox is still active",
+        "reconcile queue: committed at seq 10; a later user at seq 12 gives \"requires-reconciliation\"; do not assert the old value as the only current one"
+      ]
+    },
+    "recovered": {
+      "digest": "18bf853cafe7661453f806fef8e7e26476e40a5fb992f4c204a99a6049ef633e",
+      "passages": 1
+    }
+  },
+  "summary": {
+    "checks": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "N0-stable-context",
+      "pass": true
+    },
+    {
+      "id": "N1-task-change",
+      "pass": true
+    },
+    {
+      "id": "N2-recent-tail-warning",
+      "pass": true
+    },
+    {
+      "id": "N3-restart-replay",
+      "pass": true
+    },
+    {
+      "id": "N4-integrity-warning",
+      "pass": true
+    },
+    {
+      "id": "N5-archive-recovery",
+      "pass": true
+    }
+  ],
+  "observations": {
+    "n0First": {
+      "overlayDelivered": true,
+      "selectionDigestInMessage": true,
+      "systemHasOverlay": false,
+      "contextEvents": 1,
+      "systemText": "You are an AI agent powered by DeepSeek Harness."
+    },
+    "n0Second": {
+      "overlayDelivered": true,
+      "contextEvents": 1,
+      "digestStable": true,
+      "prefixStable": true
+    },
+    "n1": {
+      "contextEvents": 2,
+      "newSelectionDelivered": true,
+      "digestChanged": true,
+      "changedBytes": 64,
+      "prefixStable": true
+    },
+    "n2": {
+      "warningPresent": true,
+      "unsafeLinePresent": true,
+      "oldValuePresent": true
+    },
+    "n4": {
+      "integrityWarningDelivered": true,
+      "contextEvents": 3
+    },
+    "n5": {
+      "recoveredDelivered": true,
+      "sourceRefDelivered": true,
+      "contextEvents": 4
+    },
+    "n3": {
+      "resumeError": null,
+      "overlayDelivered": true,
+      "selectionDigestDelivered": true,
+      "digestStable": true,
+      "persistedContextEvents": 5
+    }
+  }
+}
