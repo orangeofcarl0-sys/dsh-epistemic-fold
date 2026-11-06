@@ -1,0 +1,1919 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:28:51.845Z",
+  "round": "R37-D",
+  "work": "WP0-r37c-audit",
+  "status": "passed",
+  "source": {
+    "r37cHead": "045cccf275132ffda8c76a9fbdc8620338af6164",
+    "r37cBase": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+    "archive": {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r37c-evidence-archive/r37b-raw-evidence-20261106.tar.gz",
+      "bytes": 3763962,
+      "sha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+      "bytesMatch": true,
+      "sha256Match": true
+    }
+  },
+  "expected": {
+    "r37cBranch": "rc37c-measurement-closure",
+    "r37cHead": "045cccf275132ffda8c76a9fbdc8620338af6164",
+    "r37bHead": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+    "archiveSha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+    "archiveBytes": 3763962,
+    "cells": 24,
+    "contractSuccesses": 19,
+    "taskSuccesses": 22,
+    "finishRequests": 13,
+    "guardTriggered": 4,
+    "guardAssisted": 1,
+    "contractFailures": 5,
+    "contractFailuresNoFinish": 5
+  },
+  "manifests": {
+    "count": 24,
+    "unique": 24,
+    "checks": [
+      {
+        "file": "r37c-c2-B2-B1-G0-r1.json",
+        "runId": "r37c-c2-B2-B1-G0-r1",
+        "sha256": "c7d6378a6bb992666c9933f41e06847ac5d93a01bf6c6d20aad490082769b568",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-B1-G0-r2.json",
+        "runId": "r37c-c2-B2-B1-G0-r2",
+        "sha256": "242c4d98a4a1e82fafa2055b9d95a2e356ec876c4f414106008e2c8eccbc40a8",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-B1-G0-r3.json",
+        "runId": "r37c-c2-B2-B1-G0-r3",
+        "sha256": "61df64e17cbe7a52db7dc9363e1d28fbeba4f1178e9349cf762fe7e9b9f80af3",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-B1-G1-r1.json",
+        "runId": "r37c-c2-B2-B1-G1-r1",
+        "sha256": "417bc1ea9032d24df68e41d58a5580dbf2a09194bebeb291f627ba061fce7ab8",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-B1-G1-r2.json",
+        "runId": "r37c-c2-B2-B1-G1-r2",
+        "sha256": "fbb6b01fd2901e7419d77b8b8ca39b46351e118d3dd33448405ccc7ea7b3399c",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-B1-G1-r3.json",
+        "runId": "r37c-c2-B2-B1-G1-r3",
+        "sha256": "4cdf687b1bfa439e4b65657531f14e147d0d1a3636fe24cff6072eedeb9fb8ee",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G0-r1.json",
+        "runId": "r37c-c2-B2-S-G0-r1",
+        "sha256": "97da4402237ef519e51aaccb72a2f8cdc63feef89f47d6fef9a702271b236cfb",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G0-r2.json",
+        "runId": "r37c-c2-B2-S-G0-r2",
+        "sha256": "7894a8ab78f886333da53633cc865fecf516ac80493fae3a11db5ee1dc9e976c",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G0-r3.json",
+        "runId": "r37c-c2-B2-S-G0-r3",
+        "sha256": "3e32381cffa96f15427564d5770dbfd9b5285329d34bdc1158eb04c0adfddbd1",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G1-r1.json",
+        "runId": "r37c-c2-B2-S-G1-r1",
+        "sha256": "88803d70cf885a98f6cab4eeaf45e469b8e8e52541d83552d38c9cceed501ec2",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G1-r2.json",
+        "runId": "r37c-c2-B2-S-G1-r2",
+        "sha256": "e0747eb4f0e523d31cd91be53a1e6a8fafee490346232d3ff1f451e87e8f36e9",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-B2-S-G1-r3.json",
+        "runId": "r37c-c2-B2-S-G1-r3",
+        "sha256": "34b49047118a73f2965baf293b3c8d5c418dc5117b9daed08f33608486b278d2",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G0-r1.json",
+        "runId": "r37c-c2-D1-v2-B1-G0-r1",
+        "sha256": "870e8dfe99964aae53628814d067b143d3e09e041dfa65d75e4bc23286c85668",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G0-r2.json",
+        "runId": "r37c-c2-D1-v2-B1-G0-r2",
+        "sha256": "f526f4dfadcf054a97cea4aa70b16a60632390dad36ce02137ff0ec954d656b1",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G0-r3.json",
+        "runId": "r37c-c2-D1-v2-B1-G0-r3",
+        "sha256": "b3c9ed2253e0132069da32ecefef880e7bdc1c9a2b59fdf8b74e549c5e5226ef",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": false,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G1-r1.json",
+        "runId": "r37c-c2-D1-v2-B1-G1-r1",
+        "sha256": "2ac5086ed804c8ae577b06fb0eb18425dad66071cacc005b61f8c770245c1f8a",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G1-r2.json",
+        "runId": "r37c-c2-D1-v2-B1-G1-r2",
+        "sha256": "2c1a1867509e1341c56ff950ff88f44fcdf121808fd37808a0e9be588217fc06",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-B1-G1-r3.json",
+        "runId": "r37c-c2-D1-v2-B1-G1-r3",
+        "sha256": "fed397ee941596c78b0a0872e78f5fb19a0485c7321afd7968cb04e3a16726ce",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": true,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G0-r1.json",
+        "runId": "r37c-c2-D1-v2-S-G0-r1",
+        "sha256": "e0d4c525e723517e4382b368ecaba91053c95c5eb0fdc95c8fd643a337b520dc",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G0-r2.json",
+        "runId": "r37c-c2-D1-v2-S-G0-r2",
+        "sha256": "46dda6f8d1fc8fded5171d80696348505ddea6e63729f74e6a4e7d2de73e89d4",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G0-r3.json",
+        "runId": "r37c-c2-D1-v2-S-G0-r3",
+        "sha256": "c3dda7ca39b69e6b48e8612cd19afa109f9790f96775fef7aced1b78f54e8329",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": false,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G1-r1.json",
+        "runId": "r37c-c2-D1-v2-S-G1-r1",
+        "sha256": "38581efb70379aa037d60e0a3a15f582359fbe0f0087e889d3616195f3ba044a",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r1",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G1-r2.json",
+        "runId": "r37c-c2-D1-v2-S-G1-r2",
+        "sha256": "2ccff8ad5b2576efdae69fcf1df4be07b28d7c007795f5d9f6ef13fd66b24af1",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r2",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      },
+      {
+        "file": "r37c-c2-D1-v2-S-G1-r3.json",
+        "runId": "r37c-c2-D1-v2-S-G1-r3",
+        "sha256": "74364de805048baf1652a8f1e98b13dddd2c5f026a68c29fedd4939b1bbd3567",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": true,
+        "replicateId": "r3",
+        "toolProtocol": "P3s",
+        "followUpSteps": 8,
+        "followUpMaxTokens": 1024,
+        "problems": []
+      }
+    ]
+  },
+  "c2": {
+    "summary": {
+      "cells": 24,
+      "contractSuccesses": 19,
+      "taskSuccesses": 22,
+      "finishRequests": 13,
+      "noFinishRequests": 11,
+      "guardTriggered": 4,
+      "guardAssisted": 1,
+      "contractFailures": 5,
+      "contractFailuresNoFinish": 5,
+      "contractFailuresGuardTriggered": 0,
+      "tracesPresent": 24,
+      "workspacesPresent": 24,
+      "totalModelCalls": 163,
+      "totalSteps": 153,
+      "totalTests": 28,
+      "totalRejectedActions": 16,
+      "totalInvalidTurns": 46,
+      "providerFailures": 0
+    },
+    "conditions": {
+      "D1-v2/S/G0": 3,
+      "B2/B1/G1": 3,
+      "B2/S/G0": 3,
+      "D1-v2/S/G1": 3,
+      "D1-v2/B1/G1": 3,
+      "B2/B1/G0": 3,
+      "D1-v2/B1/G0": 3,
+      "B2/S/G1": 3
+    },
+    "cells": [
+      {
+        "runId": "r37c-c2-D1-v2-S-G0-r1",
+        "cellId": "D1-v2-S-G0-r1",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 4,
+        "modelCalls": 5,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 5
+        },
+        "toolCounts": {
+          "read_file": 1,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G1-r2",
+        "cellId": "B2-B1-G1-r2",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActions": 3,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 7,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G0-r1",
+        "cellId": "B2-S-G0-r1",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 6,
+        "rejectedActions": 0,
+        "invalidActions": 2,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 2,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 1,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "stale-verification",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": {
+          "step": 6,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-S-G1-r1",
+        "cellId": "D1-v2-S-G1-r1",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssisted": false,
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 2,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G1-r3",
+        "cellId": "B2-B1-G1-r3",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "contract": false,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 1,
+        "rejectedActions": 7,
+        "invalidActions": 7,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 0,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 0,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": null,
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G1-r3",
+        "cellId": "D1-v2-B1-G1-r3",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActions": 3,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 5,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G0-r2",
+        "cellId": "B2-B1-G0-r2",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "contract": false,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 2,
+        "rejectedActions": 1,
+        "invalidActions": 6,
+        "truncatedTurns": 1,
+        "finishReasonCounts": {
+          "stop": 7,
+          "max-tokens": 1
+        },
+        "toolCounts": {
+          "read_file": 1,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 0,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": null,
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-S-G1-r3",
+        "cellId": "D1-v2-S-G1-r3",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "contract": false,
+        "task": false,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 2,
+        "rejectedActions": 0,
+        "invalidActions": 6,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 0,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G0-r3",
+        "cellId": "D1-v2-B1-G0-r3",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 2,
+        "modelCalls": 3,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 3,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 3
+        },
+        "toolCounts": {
+          "read_file": 0,
+          "write_file": 1,
+          "list_dir": 0,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G1-r1",
+        "cellId": "B2-S-G1-r1",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "contract": false,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 4,
+        "rejectedActions": 4,
+        "invalidActions": 4,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 0,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": null,
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G0-r2",
+        "cellId": "D1-v2-B1-G0-r2",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 4
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G0-r3",
+        "cellId": "B2-B1-G0-r3",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 3,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 12,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 4
+        },
+        "toolCounts": {
+          "read_file": 4,
+          "write_file": 0,
+          "list_dir": 2,
+          "run_tests": 3,
+          "recall": 2,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 2,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-S-G0-r3",
+        "cellId": "D1-v2-S-G0-r3",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 7,
+        "modelCalls": 8,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 9,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 5,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G0-r3",
+        "cellId": "B2-S-G0-r3",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActions": 4,
+        "truncatedTurns": 1,
+        "finishReasonCounts": {
+          "stop": 7,
+          "max-tokens": 1
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 6,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G0-r2",
+        "cellId": "B2-S-G0-r2",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 2,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 10,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 4
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 2,
+          "list_dir": 1,
+          "run_tests": 2,
+          "recall": 1,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 2,
+          "digest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G1-r2",
+        "cellId": "B2-S-G1-r2",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActions": 3,
+        "truncatedTurns": 2,
+        "finishReasonCounts": {
+          "stop": 6,
+          "max-tokens": 2
+        },
+        "toolCounts": {
+          "read_file": 2,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "stale-verification",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": {
+          "step": 4,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G1-r2",
+        "cellId": "D1-v2-B1-G1-r2",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 2,
+        "steps": 5,
+        "modelCalls": 6,
+        "finishRequests": 2,
+        "finishRejections": 1,
+        "guardAssisted": true,
+        "validActions": 11,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 6
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 3,
+          "list_dir": 1,
+          "run_tests": 2,
+          "recall": 0,
+          "finish": 2
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 4,
+          "digest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657"
+        },
+        "verificationArtifact": {
+          "claim": "verified",
+          "testsRun": 1,
+          "testsPassed": 1,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-S-G0-r2",
+        "cellId": "D1-v2-S-G0-r2",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 7,
+        "modelCalls": 8,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActions": 1,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 4,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-S-G1-r3",
+        "cellId": "B2-S-G1-r3",
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 5,
+        "modelCalls": 6,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 9,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 6
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 2,
+          "list_dir": 2,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 4,
+          "digest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r3\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G1-r1",
+        "cellId": "B2-B1-G1-r1",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 7,
+        "rejectedActions": 1,
+        "invalidActions": 3,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 2,
+          "recall": 0,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 7,
+          "digest": "4c51097a43e325863483d2a1755458ff426ee5d8920b8b8ad9f97d15736bcd7d"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "4c51097a43e325863483d2a1755458ff426ee5d8920b8b8ad9f97d15736bcd7d"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G1-r1",
+        "cellId": "D1-v2-B1-G1-r1",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssisted": false,
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActions": 1,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 2,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-B2-B1-G0-r1",
+        "cellId": "B2-B1-G0-r1",
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 7,
+        "rejectedActions": 3,
+        "invalidActions": 3,
+        "truncatedTurns": 2,
+        "finishReasonCounts": {
+          "stop": 6,
+          "max-tokens": 2
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 0,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 2,
+          "finish": 0
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 3,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34"
+        },
+        "verificationArtifact": null,
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r1\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-S-G1-r2",
+        "cellId": "D1-v2-S-G1-r2",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssisted": false,
+        "validActions": 10,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 8
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 3,
+          "list_dir": 1,
+          "run_tests": 2,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": true,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "verified",
+        "verifiedCurrentCode": true,
+        "lastPassingTest": {
+          "step": 6,
+          "digest": "f9afcb9c11155d59018f1858358fa8df2fc4d75123ef4a62abfefc6ba9dac706"
+        },
+        "lastTest": {
+          "passed": true,
+          "exitCode": 0,
+          "digest": "f9afcb9c11155d59018f1858358fa8df2fc4d75123ef4a62abfefc6ba9dac706"
+        },
+        "verificationArtifact": {
+          "claim": "verified",
+          "testsRun": 1,
+          "testsPassed": 1,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r2\\report.json"
+      },
+      {
+        "runId": "r37c-c2-D1-v2-B1-G0-r1",
+        "cellId": "D1-v2-B1-G0-r1",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "contract": true,
+        "task": true,
+        "failedChecks": [],
+        "testsExecuted": 1,
+        "steps": 2,
+        "modelCalls": 3,
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssisted": false,
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActions": 0,
+        "truncatedTurns": 0,
+        "finishReasonCounts": {
+          "stop": 3
+        },
+        "toolCounts": {
+          "read_file": 3,
+          "write_file": 1,
+          "list_dir": 1,
+          "run_tests": 1,
+          "recall": 0,
+          "finish": 1
+        },
+        "stepLimitTermination": false,
+        "providerFailure": null,
+        "delivery": null,
+        "finalVerificationStatus": "not-verified",
+        "verifiedCurrentCode": false,
+        "lastPassingTest": null,
+        "lastTest": {
+          "passed": false,
+          "exitCode": 1,
+          "digest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363"
+        },
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "tracePresent": true,
+        "workspacePresent": true,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r1\\report.json"
+      }
+    ]
+  },
+  "legacyCompletionGap": {
+    "legacyContractSuccesses": 19,
+    "contractWithoutFreshVerification": 10,
+    "contractWithoutAnyPassingTest": 8,
+    "contractWithFailedLastTest": 8,
+    "cells": [
+      {
+        "cellId": "D1-v2-S-G0-r1",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "B2-S-G0-r1",
+        "testsExecuted": 1,
+        "lastTestPassed": true,
+        "lastPassingTest": true,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "stale-verification",
+        "verificationArtifact": null,
+        "finishRequests": 0
+      },
+      {
+        "cellId": "D1-v2-S-G1-r1",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r3",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r2",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "D1-v2-S-G0-r3",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "B2-S-G1-r2",
+        "testsExecuted": 1,
+        "lastTestPassed": true,
+        "lastPassingTest": true,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "stale-verification",
+        "verificationArtifact": null,
+        "finishRequests": 0
+      },
+      {
+        "cellId": "D1-v2-S-G0-r2",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "D1-v2-B1-G1-r1",
+        "testsExecuted": 2,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      },
+      {
+        "cellId": "D1-v2-B1-G0-r1",
+        "testsExecuted": 1,
+        "lastTestPassed": false,
+        "lastPassingTest": false,
+        "verifiedCurrentCode": false,
+        "finalVerificationStatus": "not-verified",
+        "verificationArtifact": {
+          "claim": "not-verified",
+          "testsRun": 1,
+          "testsPassed": 0,
+          "parseError": false
+        },
+        "finishRequests": 1
+      }
+    ]
+  },
+  "aggregateAgreement": {
+    "analysisPresent": true,
+    "trajectoriesPresent": true,
+    "analysisContract": {
+      "B1": {
+        "G0": {
+          "cells": 6,
+          "valid": 6,
+          "contractSuccesses": 5,
+          "taskSuccesses": 6,
+          "contractRate": 0.8333333333333334,
+          "taskRate": 1,
+          "testsExecuted": 7,
+          "finishRequests": 4,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 9,
+          "rejectedActions": 4,
+          "stepLimitCells": 1,
+          "delivery": {
+            "ef-off-basic-context": 6
+          }
+        },
+        "G1": {
+          "cells": 6,
+          "valid": 6,
+          "contractSuccesses": 4,
+          "taskSuccesses": 5,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 0.8333333333333334,
+          "testsExecuted": 8,
+          "finishRequests": 3,
+          "finishRejections": 2,
+          "assistedCompletions": 1,
+          "invalidActionTurns": 17,
+          "rejectedActions": 8,
+          "stepLimitCells": 2,
+          "delivery": {
+            "ef-off-basic-context": 6
+          }
+        }
+      },
+      "S": {
+        "G0": {
+          "cells": 6,
+          "valid": 6,
+          "contractSuccesses": 6,
+          "taskSuccesses": 6,
+          "contractRate": 1,
+          "taskRate": 1,
+          "testsExecuted": 7,
+          "finishRequests": 4,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 7,
+          "rejectedActions": 0,
+          "stepLimitCells": 0,
+          "delivery": {
+            "semantic-committed": 6
+          }
+        },
+        "G1": {
+          "cells": 6,
+          "valid": 6,
+          "contractSuccesses": 4,
+          "taskSuccesses": 5,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 0.8333333333333334,
+          "testsExecuted": 6,
+          "finishRequests": 3,
+          "finishRejections": 2,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 13,
+          "rejectedActions": 4,
+          "stepLimitCells": 2,
+          "delivery": {
+            "semantic-committed-empty": 1,
+            "semantic-committed": 4,
+            "full-history-fallback": 1
+          }
+        }
+      }
+    },
+    "trajectorySummary": {
+      "contractSuccesses": 19,
+      "taskSuccesses": 22,
+      "finishRequests": 13,
+      "noFinishRequests": 11,
+      "guardTriggered": 4,
+      "guardAssisted": 1,
+      "guardOpportunity": 13,
+      "contractFailures": 5,
+      "contractFailuresNoFinish": 5,
+      "contractFailuresGuardTriggered": 0
+    },
+    "trajectoryArchetypes": {
+      "finish-with-test": 9,
+      "test-no-finish": 8,
+      "guard-rejected-stalled": 1,
+      "protocol-stall-no-test": 3,
+      "guard-rejected-recovered-finish": 1,
+      "guard-rejected-recovered-test": 2
+    },
+    "agrees": true
+  },
+  "metricBasis": {
+    "funnelPresent": true,
+    "journalProof": {
+      "valid": 63,
+      "invalid-or-aborted": 9
+    },
+    "commitStatus": {
+      "protocol-not-parsed": 18,
+      "committed": 42,
+      "fold-refused": 9,
+      "nothing-accepted": 3
+    },
+    "committedStage": 0.4791666666666667,
+    "sourceHashes": {
+      "eval/r37c/src/semantic-funnel.mjs": "e31e2f3c4a800e8df2b9057cdfb18512a3d18333af78eb5558e3759c831a2430",
+      "eval/r37c/src/journal-state.mjs": "cb23a045373239026870b2b220661308599bef6e5dc10c1de0c8256d84b42a4e",
+      "eval/r37c/audit-semantic-funnel.mjs": "073a43305f84767faf32fe07868105aaf325f18b26c42ae5141c4ec6d5905b99"
+    }
+  },
+  "native": {
+    "artifactPresent": true,
+    "statuses": {
+      "n0": "passed",
+      "n1": "passed",
+      "n2": "passed"
+    },
+    "sourceSha256": "99da23679bba99c58f1a05cdd907baa010d36f569e98314fc4c24027610c8eba",
+    "importsRealLoop": true,
+    "importsRealTools": true,
+    "importsRealSession": true,
+    "importsRealPersistence": true,
+    "usesVolatile": true,
+    "packageVersions": {
+      "dsh-agent": "0.2.1-rc.3",
+      "dsh-agent-loop": "0.2.1-rc.3",
+      "dsh-tools": "0.2.1-rc.3",
+      "dsh-session": "0.2.1-rc.3",
+      "dsh-llm": "0.2.1-rc.3",
+      "dsh-compaction": "0.2.1-rc.3",
+      "dsh-session-persistence-jsonl": "0.2.1-rc.3"
+    }
+  },
+  "discrepancies": [],
+  "notes": [
+    "The raw reports are read from the R37-C worktree by absolute path; the R37-C worktree is never modified.",
+    "A legacy contract success does not imply a fresh passing test on the final source.",
+    "Trace records are capped at 1,000 characters per turn; per-turn accounting in WP2 must label that limit."
+  ]
+}
