@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:59:22.884Z",
+  "round": "R37-D",
+  "work": "WP4-process-pilot-preflight",
+  "status": "ready-for-authorization",
+  "manifestDigest": "fc08cc08940f551feb0dd752c01e7a5605c0eb99ed1cb4fa23bbedcabb2e0310",
+  "checks": [
+    {
+      "id": "workspace-B2",
+      "status": "passed",
+      "detail": "9ff3e8d7900c… vs 9ff3e8d7900c…"
+    },
+    {
+      "id": "fixture-B2-B1",
+      "status": "passed",
+      "detail": "12dfab6a2f57… vs 12dfab6a2f57…"
+    },
+    {
+      "id": "fixture-B2-S",
+      "status": "passed",
+      "detail": "e51244857f1e… vs e51244857f1e…"
+    },
+    {
+      "id": "workspace-D1-v2",
+      "status": "passed",
+      "detail": "bb92cdaa4b7b… vs bb92cdaa4b7b…"
+    },
+    {
+      "id": "fixture-D1-v2-B1",
+      "status": "passed",
+      "detail": "bdd55d4fab62… vs bdd55d4fab62…"
+    },
+    {
+      "id": "fixture-D1-v2-S",
+      "status": "passed",
+      "detail": "1fd0aa9a96a9… vs 1fd0aa9a96a9…"
+    },
+    {
+      "id": "matrix",
+      "status": "passed",
+      "detail": "24 cells, 24 unique"
+    },
+    {
+      "id": "replicates",
+      "status": "passed",
+      "detail": "{\"B2/B1/P0\":3,\"B2/B1/P1\":3,\"B2/S/P0\":3,\"B2/S/P1\":3,\"D1-v2/B1/P0\":3,\"D1-v2/B1/P1\":3,\"D1-v2/S/P0\":3,\"D1-v2/S/P1\":3}"
+    },
+    {
+      "id": "prompts",
+      "status": "passed",
+      "detail": "P0 0 chars e3b0c44298fc…; P1 124 chars a5540af02068…"
+    },
+    {
+      "id": "prompt-no-gold",
+      "status": "passed",
+      "detail": "0 gold phrases in P1"
+    },
+    {
+      "id": "guard",
+      "status": "passed",
+      "detail": "guard off in all cells"
+    },
+    {
+      "id": "budget",
+      "status": "passed",
+      "detail": "{\"httpAttempts\":240,\"inputTokens\":300000,\"outputTokens\":70000,\"wallClockMs\":3600000}"
+    },
+    {
+      "id": "frozen",
+      "status": "passed",
+      "detail": "model deepseek-v4.1-flash, protocol P3s, runtime custom-json-loop, steps 8, output 1024, scorer 3"
+    },
+    {
+      "id": "authorization",
+      "status": "partial",
+      "detail": "not granted; batch is ready-for-authorization"
+    },
+    {
+      "id": "no-provider",
+      "status": "passed",
+      "detail": "no provider client or credential read in the preflight path"
+    },
+    {
+      "id": "runner",
+      "status": "partial",
+      "detail": "frozen inputs are complete; live adapter wiring is design-only"
+    }
+  ],
+  "authorization": {
+    "required": true,
+    "granted": false,
+    "basis": "The R37-C authorization covered the 24-cell C2 batch. It does not cover this new batch.",
+    "requiredGrant": "a new frozen authorization naming this manifest digest, cell count, model, route, and budget"
+  },
+  "runner": {
+    "status": "design-only",
+    "note": "The frozen inputs are complete. The live adapter wiring is not part of this preflight; it must be implemented and reviewed before an authorized run.",
+    "entryPoint": "eval/r33/live.mjs followUp"
+  },
+  "noProviderCall": true
+}
