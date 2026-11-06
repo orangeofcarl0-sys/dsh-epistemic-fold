@@ -1,0 +1,653 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T21:00:44.429Z",
+  "round": "R38-M0",
+  "work": "WP5-recent-tail",
+  "status": "passed",
+  "writesState": false,
+  "summary": {
+    "cases": 8,
+    "checks": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "determinism": {
+    "first": "fd04b7fa22bc95fb23b7f1bd3b0a711eba55fd5c7bf4f7698bfe70ef48c2f08b",
+    "second": "fd04b7fa22bc95fb23b7f1bd3b0a711eba55fd5c7bf4f7698bfe70ef48c2f08b",
+    "reordered": "fd04b7fa22bc95fb23b7f1bd3b0a711eba55fd5c7bf4f7698bfe70ef48c2f08b",
+    "stable": true
+  },
+  "checks": [
+    {
+      "id": "no-tail-no-warning",
+      "pass": true
+    },
+    {
+      "id": "explicit-user-revision-detected",
+      "pass": true
+    },
+    {
+      "id": "weak-signal-is-not-a-revision",
+      "pass": true
+    },
+    {
+      "id": "tool-cannot-revoke-normative",
+      "pass": true
+    },
+    {
+      "id": "assistant-cannot-override-user",
+      "pass": true
+    },
+    {
+      "id": "different-scope-not-a-conflict",
+      "pass": true
+    },
+    {
+      "id": "stale-frame-reported",
+      "pass": true
+    },
+    {
+      "id": "no-false-warning",
+      "pass": true
+    },
+    {
+      "id": "restart-deterministic",
+      "pass": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "no-tail-update",
+      "description": "no event after the commit watermark; every anchor is safe",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "b63abc98ae26de0641a0ff13295c97aabb80e55830c69dcc833ce7225edff2fc",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "no-later-event",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "no event after the commit watermark"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "no-later-event",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "no event after the commit watermark"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-later-event",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "no event after the commit watermark"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-later-event",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "no event after the commit watermark"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "depth",
+        "queue",
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [],
+      "warnings": [],
+      "verdictOf": {
+        "depth": "no-later-event",
+        "queue": "no-later-event",
+        "release": "no-later-event",
+        "repo-a-gate": "no-later-event"
+      }
+    },
+    {
+      "id": "explicit-user-revision",
+      "description": "a later user message shares the subject and carries a revision cue",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "fd04b7fa22bc95fb23b7f1bd3b0a711eba55fd5c7bf4f7698bfe70ef48c2f08b",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 12,
+          "laterRole": "user",
+          "reasons": [
+            "shared subject: scheduler, queue",
+            "a user instruction does not revoke an empirical finding; it may change its relevance"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "superseded-by-user",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 12,
+          "laterRole": "user",
+          "reasons": [
+            "shared subject: queue",
+            "revision cue in a user message"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [
+        "depth",
+        "queue"
+      ],
+      "warnings": [
+        "reconcile depth: committed at seq 10; a later user at seq 12 gives \"requires-reconciliation\"; do not assert the old value as the only current one",
+        "reconcile queue: committed at seq 10; a later user at seq 12 gives \"superseded-by-user\"; do not assert the old value as the only current one"
+      ],
+      "verdictOf": {
+        "depth": "requires-reconciliation",
+        "queue": "superseded-by-user",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    },
+    {
+      "id": "weak-task-signal",
+      "description": "a later user message is task-relevant but shares no subject with the anchor",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "d47947319a05776444612197de0ad06242fe3246c3e050c8fcda7072f86a2190",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 12,
+          "laterRole": "user",
+          "reasons": [
+            "shared subject: scheduler",
+            "a user instruction does not revoke an empirical finding; it may change its relevance"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 12,
+          "laterRole": "user",
+          "reasons": [
+            "the later user message is relevant to the current task",
+            "the anchor is relevant too, but the texts do not prove a revision"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [
+        "depth",
+        "queue"
+      ],
+      "warnings": [
+        "reconcile depth: committed at seq 10; a later user at seq 12 gives \"requires-reconciliation\"; do not assert the old value as the only current one",
+        "reconcile queue: committed at seq 10; a later user at seq 12 gives \"requires-reconciliation\"; do not assert the old value as the only current one"
+      ],
+      "verdictOf": {
+        "depth": "requires-reconciliation",
+        "queue": "requires-reconciliation",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    },
+    {
+      "id": "tool-observation",
+      "description": "a tool observation cannot revoke a constraint; it may update a finding",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "8f9d1e32a8806491fb20f39ff1fc4fad85cb4074d246a4d9ccf9a264aaff8f53",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 12,
+          "laterRole": "tool",
+          "reasons": [
+            "shared subject: scheduler, queue, depth, is, zero",
+            "new empirical evidence may update the finding"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "tool",
+          "reasons": [
+            "a tool observation cannot revoke a decision anchor"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "tool",
+          "reasons": [
+            "a tool observation cannot revoke a normative anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "tool",
+          "reasons": [
+            "a tool observation cannot revoke a normative anchor"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "queue",
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [
+        "depth"
+      ],
+      "warnings": [
+        "reconcile depth: committed at seq 10; a later tool at seq 12 gives \"requires-reconciliation\"; do not assert the old value as the only current one"
+      ],
+      "verdictOf": {
+        "depth": "requires-reconciliation",
+        "queue": "no-effect",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    },
+    {
+      "id": "assistant-hypothesis",
+      "description": "an assistant proposal cannot override a user constraint",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "439f14c5eed46980dfa3ee516d11c22d40660121676a3fd12bbde21f24ba87bd",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "assistant",
+          "reasons": [
+            "an assistant message cannot override a user constraint"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "assistant",
+          "reasons": [
+            "an assistant message cannot override a user constraint"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "depth",
+        "queue",
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [],
+      "warnings": [],
+      "verdictOf": {
+        "depth": "no-effect",
+        "queue": "no-effect",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    },
+    {
+      "id": "different-scope",
+      "description": "a later user message in another workspace is not a conflict",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "4a6a83271818589e2fd51c8692d0e2b0384525323e791208fdb1076de8bdf76d",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "scope-different",
+          "safeToAssertAsCurrent": true,
+          "laterEventSeq": 12,
+          "laterRole": "user",
+          "reasons": [
+            "the later event is in another scope"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "depth",
+        "queue",
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [],
+      "warnings": [],
+      "verdictOf": {
+        "depth": "no-effect",
+        "queue": "no-effect",
+        "release": "no-effect",
+        "repo-a-gate": "scope-different"
+      }
+    },
+    {
+      "id": "concurrent-advancement",
+      "description": "the session advanced past the frame watermark",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 8,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": true,
+      "snapshotDigest": "958e50289c873f9117efcd005d82d313c4ed7a3cabda14f7d3a795f8ed3a838b",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 14,
+          "laterRole": "user",
+          "reasons": [
+            "shared subject: scheduler",
+            "a user instruction does not revoke an empirical finding; it may change its relevance"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "requires-reconciliation",
+          "safeToAssertAsCurrent": false,
+          "laterEventSeq": 14,
+          "laterRole": "user",
+          "reasons": [
+            "the later user message is relevant to the current task",
+            "the anchor is relevant too, but the texts do not prove a revision"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [
+        "depth",
+        "queue"
+      ],
+      "warnings": [
+        "frame-stale: the task frame watermark is 8 but the session has an event at 14; rebuild the frame before delivery",
+        "reconcile depth: committed at seq 10; a later user at seq 14 gives \"requires-reconciliation\"; do not assert the old value as the only current one",
+        "reconcile queue: committed at seq 10; a later user at seq 14 gives \"requires-reconciliation\"; do not assert the old value as the only current one"
+      ],
+      "verdictOf": {
+        "depth": "requires-reconciliation",
+        "queue": "requires-reconciliation",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    },
+    {
+      "id": "no-evidence",
+      "description": "an unrelated later event produces no warning",
+      "snapshot": {
+        "semanticCommitWatermark": 10,
+        "sessionEventWatermark": 12,
+        "archiveRevision": "cp-1",
+        "taskFrameRevision": "tf-1"
+      },
+      "frameStale": false,
+      "snapshotDigest": "96850a2db070998127066be16326e0a821560ab305fd192c391834894fadcc13",
+      "anchors": [
+        {
+          "anchorId": "depth",
+          "stateKeyText": "semantic/finding/queue-depth",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "queue",
+          "stateKeyText": "semantic/decision/scheduler-queue",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "release",
+          "stateKeyText": "semantic/constraint/release-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        },
+        {
+          "anchorId": "repo-a-gate",
+          "stateKeyText": "semantic/constraint/deploy-gate",
+          "committedAt": 10,
+          "verdict": "no-effect",
+          "safeToAssertAsCurrent": true,
+          "reasons": [
+            "later events exist but none names this anchor"
+          ]
+        }
+      ],
+      "safeAnchorIds": [
+        "depth",
+        "queue",
+        "release",
+        "repo-a-gate"
+      ],
+      "unsafeAnchorIds": [],
+      "warnings": [],
+      "verdictOf": {
+        "depth": "no-effect",
+        "queue": "no-effect",
+        "release": "no-effect",
+        "repo-a-gate": "no-effect"
+      }
+    }
+  ]
+}

@@ -124,3 +124,39 @@ declare module '*/r38/archive-recovery-ablation.mjs' {
   }
   export function runAblation(): Promise<readonly RecoveryRow[]>
 }
+
+declare module '*/r38/recent-tail.mjs' {
+  export interface TailRow {
+    readonly id: string
+    readonly description: string
+    readonly snapshot: {
+      readonly semanticCommitWatermark: number
+      readonly sessionEventWatermark: number
+      readonly archiveRevision: string
+      readonly taskFrameRevision: string
+    }
+    readonly frameStale: boolean
+    readonly snapshotDigest: string
+    readonly anchors: readonly {
+      readonly anchorId: string
+      readonly stateKeyText: string
+      readonly committedAt: number
+      readonly verdict: string
+      readonly safeToAssertAsCurrent: boolean
+      readonly laterEventSeq?: number
+      readonly laterRole?: string
+      readonly reasons: readonly string[]
+    }[]
+    readonly safeAnchorIds: readonly string[]
+    readonly unsafeAnchorIds: readonly string[]
+    readonly warnings: readonly string[]
+    readonly verdictOf: Readonly<Record<string, string>>
+  }
+  export function runCases(): readonly TailRow[]
+  export function runDeterminism(): {
+    readonly first: string
+    readonly second: string
+    readonly reordered: string
+    readonly stable: boolean
+  }
+}
