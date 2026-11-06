@@ -1,19 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T14:07:55.681Z",
+  "generatedAt": "2026-11-06T15:23:19.566Z",
   "round": "R37-D",
-  "status": "attention",
+  "status": "complete",
   "eligibility": {
     "evaluated": 8,
-    "passed": 6,
+    "passed": 8,
     "failed": 0,
-    "nonPass": 2,
-    "eligible": false,
+    "nonPass": 0,
+    "eligible": true,
     "failedIds": [],
-    "nonPassIds": [
-      "R37D-D5",
-      "R37D-D6"
-    ]
+    "nonPassIds": []
   },
   "historicalEvidenceStatus": {
     "r37bProductDecision": "active-not-supported-harm-signal",
@@ -21,16 +18,25 @@
     "note": "Historical status is not repaired by R37-D."
   },
   "currentStageReadiness": {
-    "d5": "ready-for-authorization",
-    "d6": "not-executed",
-    "note": "The process batch is ready for authorization, not executed."
+    "d5": "passed",
+    "d6": "passed",
+    "note": "The process batch was authorized and executed; this is a mechanism result, not a product result."
   },
   "productDecision": "deployment-hold",
+  "deploymentEligible": false,
   "machineProductOutcome": "active-harm-signal",
-  "productRationale": "R37-B contract harm remains; the R37-C metric correction found no Active benefit; the C2 guard had no opportunity in any failing cell; the R37-D process batch is not executed.",
+  "processPilot": {
+    "status": "complete",
+    "executed": 24,
+    "operationalCompletions": 17,
+    "p1MinusP0UnderB1": 0.16666666666666674,
+    "p1MinusP0UnderS": 0,
+    "interaction": -0.16666666666666674
+  },
+  "productRationale": "R37-B contract harm remains; the R37-C metric correction found no Active benefit; the C2 guard had no opportunity in any failing cell; the R37-D process prompt helps D1 and does not help B2, so it is not a uniform process fix. The deployment hold is unchanged.",
   "tests": {
-    "total": 62,
-    "passed": 62,
+    "total": 65,
+    "passed": 65,
     "failed": 0,
     "success": true
   },
@@ -79,23 +85,23 @@
     {
       "id": "R37D-D5",
       "name": "Process pilot readiness",
-      "status": "ready-for-authorization",
-      "detail": "24/24 cells; authorization not granted; runner design-only; failed checks 0",
-      "evidence": "eval/r37d/out/process-pilot-manifest.json, eval/r37d/out/process-pilot-preflight.json"
+      "status": "passed",
+      "detail": "24/24 cells; authorization granted; runner available; failed checks 0",
+      "evidence": "eval/r37d/out/process-pilot-manifest.json, eval/r37d/out/process-pilot-preflight.json, eval/r37d/authorization.json"
     },
     {
       "id": "R37D-D6",
       "name": "Process pilot executed",
-      "status": "not-executed",
-      "detail": "no live result artifact; the batch is ready-for-authorization",
-      "evidence": "eval/r37d/out/process-pilot-results.json"
+      "status": "passed",
+      "detail": "24/24 executed; stop none; legacy 17, operational 17; usage {\"requests\":173,\"inputTokens\":233191,\"outputTokens\":25125,\"wallClockMs\":425585}",
+      "evidence": "eval/r37d/out/process-pilot-results.json, eval/r37d/out/process-pilot-analysis.json"
     },
     {
       "id": "R37D-D7",
       "name": "Product decision",
       "status": "passed",
-      "detail": "EF Active deployment hold; machine outcome active-harm-signal; R37-B contract 1/9 p=0.021484375",
-      "evidence": "eval/r37c/out/statistics-audit.json"
+      "detail": "EF Active deployment hold; machine outcome active-harm-signal; R37-B contract 1/9 p=0.021484375; process pilot 17/24 operational, P1-P0 under B1 0.16666666666666674, under S 0",
+      "evidence": "eval/r37c/out/statistics-audit.json, eval/r37d/out/process-pilot-analysis.json"
     }
   ],
   "notes": [

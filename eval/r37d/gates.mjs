@@ -49,6 +49,8 @@ const preflight = await load('process-pilot-preflight.json')
 const h1 = await load('h1-v2-audit.json')
 const s1 = await load('s1-v1-validity.json')
 const heldOut = await load('held-out-plan.json')
+const pilot = await load('process-pilot-results.json')
+const pilotAnalysis = await load('process-pilot-analysis.json')
 const tests = await load('r37d-tests.json')
 const r37cGates = await exists(join(HERE, '..', 'r37c', 'out', 'gate-status-r37c.json'))
   ? await readJson(join(HERE, '..', 'r37c', 'out', 'gate-status-r37c.json'))
@@ -141,30 +143,39 @@ gates.push({
   evidence: 'eval/r37d/out/native-extended.json',
 })
 
-const d5Status = preflight === null
+const d5Status = manifest === null || preflight === null
   ? 'not-executed'
-  : preflight.status === 'passed' ? 'passed'
-    : preflight.status === 'ready-for-authorization' ? 'ready-for-authorization'
-      : 'failed'
+  : preflight.checks.filter(check => check.status === 'failed').length > 0
+    ? 'failed'
+    : manifest.cells?.length === 24
+      && pilot?.authorization?.granted === true
+      && preflight.runner?.status === 'available' ? 'passed'
+      : 'ready-for-authorization'
 gates.push({
   id: 'R37D-D5',
   name: 'Process pilot readiness',
   status: d5Status,
   detail: `${manifest?.cells?.length ?? 0}/24 cells; `
-    + `authorization ${manifest?.authorization?.granted === true ? 'granted' : 'not granted'}; `
+    + `authorization ${pilot?.authorization?.granted === true ? 'granted' : 'not granted'}; `
     + `runner ${preflight?.runner?.status ?? 'n/a'}; `
     + `failed checks ${(preflight?.checks ?? []).filter(check => check.status === 'failed').length}`,
-  evidence: 'eval/r37d/out/process-pilot-manifest.json, eval/r37d/out/process-pilot-preflight.json',
+  evidence: 'eval/r37d/out/process-pilot-manifest.json, eval/r37d/out/process-pilot-preflight.json, eval/r37d/authorization.json',
 })
 
+const d6Status = pilot === null
+  ? 'not-executed'
+  : pilot.status === 'complete' && pilot.summary?.executed === 24 ? 'passed' : 'partial'
 gates.push({
   id: 'R37D-D6',
   name: 'Process pilot executed',
-  status: await exists(join(HERE, 'out', 'process-pilot-results.json')) ? 'passed' : 'not-executed',
-  detail: await exists(join(HERE, 'out', 'process-pilot-results.json'))
-    ? 'a live result artifact exists'
-    : 'no live result artifact; the batch is ready-for-authorization',
-  evidence: 'eval/r37d/out/process-pilot-results.json',
+  status: d6Status,
+  detail: pilot === null
+    ? 'no live result artifact'
+    : `${pilot.summary?.executed ?? 0}/24 executed; stop ${pilot.stopReason ?? 'none'}; `
+      + `legacy ${pilot.summary?.legacyContractSuccesses ?? 'n/a'}, operational `
+      + `${pilot.summary?.operationalCompletions ?? 'n/a'}; `
+      + `usage ${JSON.stringify(pilot.budget?.used ?? {})}`,
+  evidence: 'eval/r37d/out/process-pilot-results.json, eval/r37d/out/process-pilot-analysis.json',
 })
 
 const statistics = await exists(join(HERE, '..', 'r37c', 'out', 'statistics-audit.json'))
@@ -182,8 +193,11 @@ gates.push({
   status: product === 'active-benefit-signal' ? 'failed' : 'passed',
   detail: `EF Active deployment hold; machine outcome ${product}; `
     + `R37-B contract ${statistics?.contract?.rescue ?? 'n/a'}/${statistics?.contract?.damage ?? 'n/a'} `
-    + `p=${statistics?.contract?.mcnemar?.p ?? 'n/a'}`,
-  evidence: 'eval/r37c/out/statistics-audit.json',
+    + `p=${statistics?.contract?.mcnemar?.p ?? 'n/a'}; `
+    + `process pilot ${pilot?.summary?.operationalCompletions ?? 'n/a'}/24 operational, `
+    + `P1-P0 under B1 ${pilotAnalysis?.effects?.promptUnderB1?.operational?.rateDifference ?? 'n/a'}, `
+    + `under S ${pilotAnalysis?.effects?.promptUnderS?.operational?.rateDifference ?? 'n/a'}`,
+  evidence: 'eval/r37c/out/statistics-audit.json, eval/r37d/out/process-pilot-analysis.json',
 })
 
 const eligibility = gateEvaluation(gates)
@@ -201,13 +215,23 @@ const report = {
   },
   currentStageReadiness: {
     d5: d5Status,
-    d6: gates.find(gate => gate.id === 'R37D-D6')?.status ?? 'unknown',
-    note: 'The process batch is ready for authorization, not executed.',
+    d6: d6Status,
+    note: 'The process batch was authorized and executed; this is a mechanism result, not a product result.',
   },
   productDecision: 'deployment-hold',
+  deploymentEligible: false,
   machineProductOutcome: product,
+  processPilot: {
+    status: pilot?.status ?? 'not-executed',
+    executed: pilot?.summary?.executed ?? 0,
+    operationalCompletions: pilot?.summary?.operationalCompletions ?? 0,
+    p1MinusP0UnderB1: pilotAnalysis?.effects?.promptUnderB1?.operational?.rateDifference ?? null,
+    p1MinusP0UnderS: pilotAnalysis?.effects?.promptUnderS?.operational?.rateDifference ?? null,
+    interaction: pilotAnalysis?.effects?.interaction?.operationalRateDifference ?? null,
+  },
   productRationale: 'R37-B contract harm remains; the R37-C metric correction found no Active benefit; '
-    + 'the C2 guard had no opportunity in any failing cell; the R37-D process batch is not executed.',
+    + 'the C2 guard had no opportunity in any failing cell; the R37-D process prompt helps D1 and does not '
+    + 'help B2, so it is not a uniform process fix. The deployment hold is unchanged.',
   tests: {
     total: tests?.numTotalTests ?? 0,
     passed: tests?.numPassedTests ?? 0,

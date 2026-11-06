@@ -11,6 +11,8 @@ import { describe, expect, it } from 'vitest'
 const ROOT = process.cwd()
 const manifest = JSON.parse(readFileSync(join(ROOT, 'eval', 'r37d', 'out', 'process-pilot-manifest.json'), 'utf8'))
 const preflight = JSON.parse(readFileSync(join(ROOT, 'eval', 'r37d', 'out', 'process-pilot-preflight.json'), 'utf8'))
+const results = JSON.parse(readFileSync(join(ROOT, 'eval', 'r37d', 'out', 'process-pilot-results.json'), 'utf8'))
+const analysis = JSON.parse(readFileSync(join(ROOT, 'eval', 'r37d', 'out', 'process-pilot-analysis.json'), 'utf8'))
 
 describe('R37-D process pilot manifest', () => {
   it('freezes 24 cells across two cases, two arms, two prompts, three replicates', () => {
@@ -65,13 +67,13 @@ describe('R37-D process pilot preflight', () => {
     expect(preflight.status).toBe('ready-for-authorization')
     expect(preflight.authorization.granted).toBe(false)
     expect(preflight.noProviderCall).toBe(true)
-    expect(preflight.runner.status).toBe('design-only')
+    expect(preflight.runner.status).toBe('available')
   })
 
   it('has no failed check', () => {
     expect(preflight.checks.filter((check: any) => check.status === 'failed')).toEqual([])
     expect(preflight.checks.find((check: any) => check.id === 'authorization').status).toBe('partial')
-    expect(preflight.checks.find((check: any) => check.id === 'runner').status).toBe('partial')
+    expect(preflight.checks.find((check: any) => check.id === 'runner').status).toBe('passed')
   })
 
   it('keeps the planning caps at the preregistered values', () => {
@@ -81,5 +83,35 @@ describe('R37-D process pilot preflight', () => {
       outputTokens: 70_000,
       wallClockMs: 3_600_000,
     })
+  })
+})
+
+describe('R37-D process pilot execution', () => {
+  it('executed all 24 cells inside every cap', () => {
+    expect(results.status).toBe('complete')
+    expect(results.stopReason).toBe(null)
+    expect(results.summary.executed).toBe(24)
+    expect(results.summary.measurements).toEqual({ valid: 24 })
+    expect(results.budget.used.requests).toBeLessThanOrEqual(240)
+    expect(results.budget.used.inputTokens).toBeLessThanOrEqual(300_000)
+    expect(results.budget.used.outputTokens).toBeLessThanOrEqual(70_000)
+    expect(results.budget.used.wallClockMs).toBeLessThanOrEqual(3_600_000)
+    expect(results.authorization.granted).toBe(true)
+  })
+
+  it('records the case-dependent prompt effect', () => {
+    expect(results.summary.legacyContractSuccesses).toBe(17)
+    expect(results.summary.operationalCompletions).toBe(17)
+    expect(results.summary.strictFinish).toBe(8)
+    expect(analysis.effects.promptUnderB1.operational.rateDifference).toBeCloseTo(1 / 6, 12)
+    expect(analysis.effects.promptUnderS.operational.rateDifference).toBe(0)
+    expect(analysis.effects.interaction.operationalRateDifference).toBeCloseTo(-1 / 6, 12)
+    expect(analysis.conditions['D1-v2/B1/P1'].operational).toBe(3)
+    expect(analysis.conditions['B2/B1/P1'].operational).toBe(2)
+  })
+
+  it('does not turn the pilot into a product benefit', () => {
+    expect(analysis.conclusions.join(' ')).toMatch(/No significance claim/u)
+    expect(results.notes.join(' ')).toMatch(/fixed context/u)
   })
 })

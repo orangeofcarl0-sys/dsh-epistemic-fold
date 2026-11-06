@@ -3,15 +3,15 @@
 ## 1. Status
 
 ```text
-R37-D offline work     complete
-process pilot          ready-for-authorization
-process pilot run      not-executed
-provider calls         0
+R37-D work             complete
+process pilot          complete (24/24)
+provider calls         173
 EF Active              deployment hold
 ```
 
-R37-D did not run a new live batch. The R37-C authorization covered the C2
-batch; it does not cover the 24-cell process batch.
+The 24-cell process batch was authorized by the user (`均授权`) and executed
+within the frozen caps. It is a fixed-context mechanism result, not a product
+result.
 
 ## 2. Completion semantics
 
@@ -125,6 +125,40 @@ active. The revision had to supersede both coordinates. Superseding only the
 queue coordinate left a contradictory active rejection. The final journal state
 has one active anchor: the durable outbox.
 
+## Process pilot
+
+The authorized 24-cell fixed-context batch executed completely:
+
+```text
+24/24 cells valid; 0 provider failures; 0 scorer failures; 0 retries
+173 HTTP; 233,191 input; 25,125 output; 425,585 ms
+legacy contract 17/24; operational 17/24; accepted finish 8/24
+```
+
+The legacy and operational counts agree cell-for-cell. The seven failures are
+artifact/verification failures, not stale-verification cases.
+
+| case | arm | P0 operational | P1 operational |
+|---|---|---:|---:|
+| B2 | B1 | 3/3 | 2/3 |
+| B2 | S | 2/3 | 1/3 |
+| D1-v2 | B1 | 1/3 | 3/3 |
+| D1-v2 | S | 2/3 | 3/3 |
+
+```text
+P1-P0 under B1   +1/6 (+16.7 pp)
+P1-P0 under S     0/6
+interaction      -1/6 (-16.7 pp)
+```
+
+The prompt is not a uniform fix. It helps D1's artifact delivery (3/6 -> 6/6)
+and does not help B2's protocol-heavy path (5/6 -> 3/6). B2's failures remain
+no-test cells: the agent reads and never reaches `run_tests`. A sentence about
+deliverables cannot repair an unclosed DSML envelope.
+
+This is E2 mechanism evidence. It is not an EF Active product effect and does
+not lift the hold.
+
 ## 6. Benchmark
 
 H1-v2 passes an independent leakage audit. The new control is `us-west-2`:
@@ -157,10 +191,10 @@ The hold is unchanged. R37-D found:
 - no end-to-end Active benefit;
 - the R37-B contract harm direction remains;
 - the C2 guard did not act in any failing cell;
-- the process batch is not executed.
+- the process prompt helps D1 and does not help B2; it is not a uniform fix.
 
-A fixed-context process result would be a mechanism result, not a product
-result. It would not lift the hold by itself.
+The fixed-context process result is a mechanism result, not a product result.
+It does not lift the hold by itself.
 
 ## 8. What would change the decision
 

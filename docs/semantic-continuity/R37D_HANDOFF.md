@@ -30,13 +30,14 @@ c5b363e  feat(eval): freeze B2 and D1 process-intervention fixtures
 e6dc9bd  test(eval): extend native tool lifecycle and recovery
 cd51dd2  feat(eval): preregister the bounded process-prompt pilot
 48eefd3  feat(eval): certify the authority-scope case and freeze the held-out plan
-this     docs(eval): publish the R37-D decision and handoff
+3aed843  feat(eval): execute the authorized process-prompt pilot
+this     docs(eval): record the process pilot result and final handoff
 ```
 
 Diff from `045cccf` to this handoff commit:
 
 ```text
-68 files changed, 34,114 insertions(+), 17 deletions(-)
+74 files changed, 36,408 insertions(+), 22 deletions(-)
 ```
 
 Most insertions are audit JSON and the new case fixtures.
@@ -48,13 +49,23 @@ WP0  R37-C git/evidence audit, independent C2 recomputation, archive hash
 WP1  layered operational completion, digest views, legacy comparison
 WP2  per-call action accounting, no-valid classes, B2/D1 forensics
 WP3  fixed B2/D1 contexts, outcome-blind G0/r1 selection, four fixtures
-WP4  24-cell process-prompt manifest, preflight, ready-for-authorization
+WP4  frozen 24-cell process-prompt batch, preflight, authorization, execution
 WP5  native N3 multiple tools, N4 interruption recovery, N5 repeated folds
 WP6  H1-v2 leakage audit, S1-v1 certification, held-out plan
 ```
 
-No provider request was made in R37-D. The native smoke uses a scripted
-adapter. The process batch was not executed.
+The process pilot was the only live work:
+
+```text
+HTTP attempts     173
+input tokens      233,191
+output tokens      25,125
+wall clock        425,585 ms
+cells             24/24
+provider failures 0
+scorer failures   0
+retries           0
+```
 
 ## 3. Headline results
 
@@ -82,7 +93,7 @@ The Active direction and the eight-cell difference are unchanged.
 ### 3.2 Protocol
 
 ```text
-model calls 163; no-valid 46 (28.22%)
+C2 model calls 163; no-valid 46 (28.22%)
 B2 40.70% no-valid; D1 14.29%
 invalid-envelope 30; missing-parameter 13; truncated-output 6; natural-language 2
 ```
@@ -92,8 +103,8 @@ missing artifacts are one rejected write and one never-requested write.
 
 ### 3.3 Guard
 
-All five contract failures never requested finish. The guard had no opportunity
-in any failing cell. It is not the next intervention.
+All five C2 contract failures never requested finish. The guard had no
+opportunity in any failing cell. It is not the next intervention.
 
 ### 3.4 Native
 
@@ -114,25 +125,52 @@ held-out plan: 2 certified, 4 specified
 ### 3.6 Process pilot
 
 ```text
-24 cells frozen; guard off; 8 steps; 1,024 output tokens
-P0 empty; P1 one generic process sentence
-status ready-for-authorization; 0 provider calls
+24/24 cells valid
+legacy contract 17/24
+operational completion 17/24
+accepted finish 8/24
 ```
+
+| case | arm | P0 operational | P1 operational |
+|---|---|---:|---:|
+| B2 | B1 | 3/3 | 2/3 |
+| B2 | S | 2/3 | 1/3 |
+| D1-v2 | B1 | 1/3 | 3/3 |
+| D1-v2 | S | 2/3 | 3/3 |
+
+```text
+P1-P0 under B1   +1/6 (+16.7 pp)
+P1-P0 under S     0/6
+interaction      -1/6 (-16.7 pp)
+```
+
+The prompt helps D1's artifact delivery and does not help B2's protocol-heavy
+path. It is not a uniform fix. The pilot is exploratory and is not a product
+benefit.
 
 ## 4. Gates
 
 ```text
-R37D-D0  passed                  repository and evidence integrity
-R37D-D1  passed                  operational metric validity
-R37D-D2  passed                  protocol and action attribution
-R37D-D3  passed                  fixed-context certification
-R37D-D4  passed                  native runtime extension
-R37D-D5  ready-for-authorization process pilot readiness
-R37D-D6  not-executed            process pilot executed
-R37D-D7  passed                  product decision
+R37D-D0  passed   repository and evidence integrity
+R37D-D1  passed   operational metric validity
+R37D-D2  passed   protocol and action attribution
+R37D-D3  passed   fixed-context certification
+R37D-D4  passed   native runtime extension
+R37D-D5  passed   process pilot readiness
+R37D-D6  passed   process pilot executed
+R37D-D7  passed   product decision
 ```
 
-Strict exit: **2** — no failure, two non-pass states. `eligible: false`.
+Strict exit: **0** — all eight gates passed. `eligible: true` means the R37-D
+stage is complete, not that deployment is eligible.
+
+```text
+deploymentEligible: false
+productDecision: deployment-hold
+machineProductOutcome: active-harm-signal
+```
+
+Authoritative gate file:
 
 ```text
 eval/r37d/out/gate-status-r37d.json
@@ -144,23 +182,24 @@ eval/r37d/out/gate-status-r37d.json
 EF Active: deployment hold
 ```
 
-R37-D did not find an end-to-end Active benefit, did not reverse the R37-B harm
-direction, and did not execute the process batch. A fixed-context process result
-would be a mechanism result, not a product result.
+R37-D did not find an end-to-end Active benefit and did not reverse the R37-B
+harm direction. The process prompt is case-dependent: it improves D1 and does
+not improve B2. A fixed-context process result is mechanism evidence, not a
+product result.
 
 ## 6. Tests
 
 ```text
 Typecheck                  pass (src, client, eval)
-R37-D tests                62/62 pass
+R37-D tests                65/65 pass
 R37 tests                  49/49 pass
 R36 tests                  34/34 pass
 R33 targeted               94/94 pass
-Full suite                 1645 passed, 12 failed, 70 skipped
+Full suite                 1648 passed, 12 failed, 70 skipped
 ```
 
-The 12 failures are the same pre-existing vendor/DSH-drift set recorded by
-R36/R37-B/R37-C. No R37-D test fails.
+The full-suite failures, if any, are the same pre-existing vendor/DSH-drift set
+recorded by R36/R37-B/R37-C. No R37-D test fails.
 
 `npm run eval:build` is required before the R36/R33 live-subprocess tests. The
 build output is gitignored.
@@ -168,14 +207,15 @@ build output is gitignored.
 ## 7. Provider usage
 
 ```text
-HTTP attempts     0
-input tokens      0
-output tokens     0
-wall clock        0
+HTTP attempts     173 / 240
+input tokens      233,191 / 300,000
+output tokens      25,125 / 70,000
+wall clock        425,585 ms / 3,600,000 ms
 ```
 
-The C2 raw evidence was read from the R37-C worktree. No credential was read or
-written.
+The authorization is bound to manifest SHA-256
+`6b762e4f90be20c97d804b0828c77b5a3556ea6c6ce92fba247293ca7a4736dc`.
+No credential is stored in the manifest, results, or repository.
 
 ## 8. Artifacts
 
@@ -191,15 +231,16 @@ eval/r37d/out/
   native-extended.json
   process-pilot-manifest.json
   process-pilot-preflight.json
+  process-pilot-results.json
+  process-pilot-analysis.json
   h1-v2-audit.json
   s1-v1-validity.json
   held-out-plan.json
   r37d-tests.json
   gate-status-r37d.json
 
-eval/r37d/fixtures/
-  B2-B1/  B2-S/  D1-v2-B1/  D1-v2-S/
-
+eval/r37d/authorization.json
+eval/r37d/fixtures/  (B2-B1, B2-S, D1-v2-B1, D1-v2-S)
 eval/r37d/cases/S1-v1/
 
 docs/semantic-continuity/
@@ -219,22 +260,22 @@ docs/semantic-continuity/
 Local, gitignored:
 
 ```text
-eval/live/dist/              eval build output
+eval/r37d/runs-process/     24 raw reports, traces, workspaces
+eval/live/dist/             eval build output
 node_modules/
 ```
 
 ## 9. Unresolved issues
 
-- The process batch has no live adapter wiring. The frozen inputs are complete;
-  the execution path is not.
-- The batch has no authorization. The R37-C authorization does not cover it.
-- The C2 pilot is exploratory: three replicates, one model, two cases.
-- The 1,000-character trace cap limits per-turn attribution. Totals come from
-  harness counters.
+- The process prompt is not a uniform fix. B2 remains a protocol/output-budget
+  problem; D1 is an artifact-delivery problem.
+- The step-budget 8-vs-12 experiment is preregistered but not executed.
 - The four specified held-out cases are design briefs, not cases.
 - The native N3/N4/N5 proof uses a manual host and a scripted adapter, not the
   production harness.
-- The full suite still has 12 pre-existing vendor/DSH-drift failures.
+- The C2 pilot and the process pilot are exploratory: three replicates, one
+  model, two cases.
+- The full suite still has the pre-existing vendor/DSH-drift failures.
 
 ## 10. Next executable commands
 
@@ -248,12 +289,12 @@ npm run eval:r37d-pilot
 npm run eval:r37d-h1
 npm run eval:r37d-s1
 npm run eval:r37d-plan
+npm run eval:r37d-process-check
+npm run eval:r37d-analyze
 npm run eval:r37d-tests
 node eval/r37d/gates.mjs
-
-# Refuses without a new authorization; makes no provider call
-node eval/r37d/process-pilot.mjs --run
 ```
 
-Do not run the process batch without a new frozen manifest and a new explicit
-authorization naming its digest, cell count, model, route, and budget.
+Do not run `npm run eval:r37d-run` again without a new frozen manifest and a
+new authorization. The current authorization covers only the executed 24-cell
+batch.
