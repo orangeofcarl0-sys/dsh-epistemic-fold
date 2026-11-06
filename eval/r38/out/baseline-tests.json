@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "source": "npx vitest run --reporter=json (R38 baseline, before R38 tests)",
+  "success": false,
+  "total": 1737,
+  "passed": 1656,
+  "failed": 11,
+  "skipped": 70,
+  "failures": [
+    {
+      "file": "bridge-loads.spec.ts",
+      "name": "the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against"
+    },
+    {
+      "file": "checkpoint-residency.spec.ts",
+      "name": "checkpoint retirement writes the retirement, and the report then shows ONE conflict"
+    },
+    {
+      "file": "checkpoint-residency.spec.ts",
+      "name": "checkpoint retirement REFUSES a second retirement of the same checkpoint"
+    },
+    {
+      "file": "eval-corpus.spec.ts",
+      "name": "R0-C2: keyless paired continuation across B1 / E3a0 / E3aR B04-failure-resolution (hard)"
+    },
+    {
+      "file": "p0-regressions.spec.ts",
+      "name": "P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face"
+    },
+    {
+      "file": "persistence-compat.spec.ts",
+      "name": "persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable"
+    },
+    {
+      "file": "persistence-compat.spec.ts",
+      "name": "anchor service durability guard still writes on the in-memory face, where nothing persists the log"
+    },
+    {
+      "file": "plugin-composition.spec.ts",
+      "name": "R0-B: native plugin composition the plugin-provided anchor service refuses a write this host cannot persist"
+    },
+    {
+      "file": "rc3-plugin-packaging.spec.ts",
+      "name": "RC16: the manifest uses the fields DSH actually defines declares the DSH range at engines.dsh, not in an invented dsh.compatibility"
+    },
+    {
+      "file": "rc7-vendored-basic.spec.ts",
+      "name": "RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference"
+    },
+    {
+      "file": "rc7-vendored-basic.spec.ts",
+      "name": "RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
+    }
+  ]
+}

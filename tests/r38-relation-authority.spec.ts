@@ -32,7 +32,7 @@ import {
 import type { Message } from '@deepseek-ai/dsh-llm'
 import { validateDeltas } from '../src/semantic/validate.ts'
 import { applyOps, planCommit } from '../src/semantic/plan.ts'
-import { mayRetire, RETIREMENT_POWER } from '../src/semantic/retirement.ts'
+import { RETIREMENT_POWER } from '../src/semantic/retirement.ts'
 import { replayWithSemanticCommits, verifyCommitStateDigests } from '../src/semantic/replay.ts'
 import type { SemanticCommit } from '../src/semantic/replay.ts'
 import { emptyCurrentState } from '../src/state/state.ts'

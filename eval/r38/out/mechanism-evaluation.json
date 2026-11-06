@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T21:15:28.454Z",
+  "round": "R38-M0",
+  "work": "WP7-mechanism-evaluation",
+  "status": "passed",
+  "liveModelCalls": 0,
+  "layers": [
+    "semantic-integrity",
+    "context-selection",
+    "recent-tail",
+    "operational-continuity"
+  ],
+  "summary": {
+    "cases": 11,
+    "certified": 11,
+    "blocked": 0,
+    "safetyBlockers": 1,
+    "unauthorizedRetirementObserved": 0
+  },
+  "byLayer": {
+    "semantic-integrity": {
+      "total": 5,
+      "certified": 5,
+      "blocked": 0
+    },
+    "context-selection": {
+      "total": 4,
+      "certified": 4,
+      "blocked": 0
+    },
+    "recent-tail": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "operational-continuity": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    }
+  },
+  "byRiskClass": {
+    "unresolved-supersession": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "unauthorized-retirement": {
+      "total": 2,
+      "certified": 2,
+      "blocked": 0
+    },
+    "incorrect-active-state": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "scope-contamination": {
+      "total": 2,
+      "certified": 2,
+      "blocked": 0
+    },
+    "implementation-relevance": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "archive-only": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "negative-knowledge-coverage": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "stale-state-delivery": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    },
+    "artifact-and-verification": {
+      "total": 1,
+      "certified": 1,
+      "blocked": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "n5-cross-coordinate",
+      "layer": "semantic-integrity",
+      "riskClass": "unresolved-supersession",
+      "safetyBlocker": false,
+      "gold": "the complete revision leaves no active stale anchor; the partial revision does",
+      "sourceRefs": [
+        1,
+        2,
+        3
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "staleAnchorActive": false
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "staleAnchorActive": true
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "folds": 2,
+        "anchors": 1
+      },
+      "evidence": {
+        "auditorFinding": {
+          "code": "stale-negative-knowledge",
+          "severity": "requires-review",
+          "anchorIds": [
+            "semantic-f42c00cf513daa46d776a38435438eff",
+            "semantic-0467be580d4f0f3368d05195fc086793"
+          ],
+          "detail": "\"durable outbox\" is ruled out by semantic-f42 but used by semantic-046",
+          "evidence": {
+            "ruledOut": "durable outbox",
+            "rejectedAnchorId": "semantic-f42c00cf513daa46d776a38435438eff",
+            "activeAnchorId": "semantic-0467be580d4f0f3368d05195fc086793"
+          }
+        }
+      }
+    },
+    {
+      "id": "decision-override-vs-tool-attack",
+      "layer": "semantic-integrity",
+      "riskClass": "unauthorized-retirement",
+      "safetyBlocker": false,
+      "gold": "a user revision applies; a tool finding cannot retire the constraint",
+      "sourceRefs": [
+        1,
+        2
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "activeValues": [
+            "Hotfix deploys may skip the signed-release gate."
+          ]
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "refused": [
+            {
+              "deltaId": "240649b132b8659659594b5862b1d11b449a2d35bf6b2a5be0782f7109756c63",
+              "target": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+              "anchorId": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+              "reason": "insufficient-authority"
+            }
+          ]
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "folds": 2
+      }
+    },
+    {
+      "id": "multi-fold-supersession",
+      "layer": "semantic-integrity",
+      "riskClass": "incorrect-active-state",
+      "safetyBlocker": false,
+      "gold": "ordered folds leave exactly the last value active and both earlier values superseded",
+      "sourceRefs": [
+        1,
+        2,
+        3
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "head": "The timeout is 90 seconds.",
+          "superseded": 1
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "outOfOrderHead": "The timeout is 60 seconds."
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "folds": 3
+      }
+    },
+    {
+      "id": "scope-overlap",
+      "layer": "semantic-integrity",
+      "riskClass": "scope-contamination",
+      "safetyBlocker": false,
+      "gold": "the in-scope revision applies; the cross-scope retirement is refused",
+      "sourceRefs": [
+        1,
+        2,
+        3
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "refused": []
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "refused": [
+            {
+              "deltaId": "a13649f49803d23f0f21449e28131ae2579642433ebc8a7b6275f4bb68411e52",
+              "target": "semantic-9ccec02e21b0836eaef42326873c740a",
+              "anchorId": "semantic-9ccec02e21b0836eaef42326873c740a",
+              "reason": "cross-scope"
+            }
+          ]
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "folds": 2
+      }
+    },
+    {
+      "id": "relation-authority-attack",
+      "layer": "semantic-integrity",
+      "riskClass": "unauthorized-retirement",
+      "safetyBlocker": true,
+      "gold": "a tool finding cannot retire a user constraint; a pre-fix retire is blocking",
+      "sourceRefs": [
+        1,
+        2
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "refused": [
+            {
+              "deltaId": "984a18478d02e26d3439934b01ce4bc9864482cbdfff6b34bcde29c8023dc9cd",
+              "target": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+              "anchorId": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+              "reason": "insufficient-authority"
+            }
+          ]
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "blocking": 1
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "folds": 2
+      }
+    },
+    {
+      "id": "b2-v2-implementation-sensitive",
+      "layer": "context-selection",
+      "riskClass": "implementation-relevance",
+      "safetyBlocker": false,
+      "gold": "the file-scoped decision is visible; the recent-first selector omits it under pressure",
+      "sourceRefs": [
+        3,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "selected": [
+            "impl",
+            "noise-6"
+          ]
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "selected": [
+            "noise-6",
+            "noise-5"
+          ]
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "tokens": 98
+      }
+    },
+    {
+      "id": "h1-production-region",
+      "layer": "context-selection",
+      "riskClass": "archive-only",
+      "safetyBlocker": false,
+      "gold": "the production region is absent from state and recovered from the archive",
+      "sourceRefs": [
+        1,
+        2
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "coverage": {
+            "s0": false,
+            "s1": false,
+            "s2": true
+          }
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "coverage": {
+            "s0": false,
+            "s1": false,
+            "s2": true
+          }
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "retrievalCost": 3,
+        "tokenOverhead": 25
+      }
+    },
+    {
+      "id": "s1-authority-scope",
+      "layer": "context-selection",
+      "riskClass": "scope-contamination",
+      "safetyBlocker": false,
+      "gold": "the scoped query returns repository A only; the unscoped query returns repository B too",
+      "sourceRefs": [
+        1,
+        2
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "recovered": [
+            "Repository A uses a 30 second timeout."
+          ]
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "unscoped": [
+            "Repository A uses a 30 second timeout.",
+            "Repository B uses a five minute timeout."
+          ]
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "retrievalCost": 2
+      }
+    },
+    {
+      "id": "b2-negative-knowledge",
+      "layer": "context-selection",
+      "riskClass": "negative-knowledge-coverage",
+      "safetyBlocker": false,
+      "gold": "the rejected outbox is visible to the task that depends on it",
+      "sourceRefs": [
+        2,
+        10
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "critical": 1,
+          "negative": 1
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "critical": 0
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "s0Tokens": 115,
+        "s1Content": 99
+      }
+    },
+    {
+      "id": "recent-tail-reversal",
+      "layer": "recent-tail",
+      "riskClass": "stale-state-delivery",
+      "safetyBlocker": false,
+      "gold": "a later user revision marks the old decision unsafe; no tail leaves it safe",
+      "sourceRefs": [
+        10,
+        12
+      ],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "verdict": "superseded-by-user",
+          "unsafe": [
+            "depth",
+            "queue"
+          ]
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "unsafeWithoutTail": []
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "warnings": 2
+      }
+    },
+    {
+      "id": "operational-pilot-replay",
+      "layer": "operational-continuity",
+      "riskClass": "artifact-and-verification",
+      "safetyBlocker": false,
+      "gold": "the committed 24-cell aggregate replays exactly; the process prompt is not a uniform fix",
+      "sourceRefs": [],
+      "status": "certified",
+      "reference": {
+        "pass": true,
+        "detail": {
+          "executed": 24,
+          "operational": 17
+        }
+      },
+      "counterfactual": {
+        "failsAsIntended": true,
+        "detail": {
+          "b2p0": 5,
+          "b2p1": 3,
+          "d1p0": 3,
+          "d1p1": 6
+        }
+      },
+      "leakage": {
+        "checked": true,
+        "findings": []
+      },
+      "cost": {
+        "testsExecuted": 34,
+        "noValidActionCalls": 51,
+        "archetypes": {
+          "test-no-finish": 9,
+          "protocol-stall-no-test": 5,
+          "finish-with-test": 1,
+          "finish-with-artifact": 7,
+          "finish-with-inconsistent-artifact": 1,
+          "finish-without-artifact": 1
+        }
+      }
+    }
+  ]
+}

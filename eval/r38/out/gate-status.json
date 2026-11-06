@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T21:17:49.309Z",
+  "round": "R38-M0",
+  "status": "complete",
+  "eligibility": {
+    "evaluated": 8,
+    "passed": 8,
+    "failed": 0,
+    "nonPass": 0,
+    "eligible": true,
+    "failedIds": [],
+    "nonPassIds": []
+  },
+  "historicalEvidenceStatus": {
+    "r37bProductDecision": "deployment-hold",
+    "r37cStage1Admission": "gate-not-verifiable",
+    "note": "Historical status is not repaired by R38-M0."
+  },
+  "productDecision": "deployment-hold",
+  "deploymentEligible": false,
+  "mechanismOutcome": "safety-gate-passed; offline coverage improved; ready for a bounded live experiment",
+  "gates": [
+    {
+      "id": "R38-G0",
+      "name": "Repository and baseline integrity",
+      "status": "passed",
+      "detail": "base 7a2c974 -> head 820abfb; tracked changes 0; archive de6102989457…; tests 1656/1737",
+      "evidence": "eval/r38/out/baseline-manifest.json, eval/r38/out/baseline-tests.json"
+    },
+    {
+      "id": "R38-G1",
+      "name": "Relation authorization safety",
+      "status": "passed",
+      "detail": "relation 8/8; idempotency 7/7; attack case certified",
+      "evidence": "eval/r38/out/relation-security-audit.json, eval/r38/out/revision-idempotency.json, eval/r38/out/mechanism-evaluation.json"
+    },
+    {
+      "id": "R38-G2",
+      "name": "Commit and supersession integrity",
+      "status": "passed",
+      "detail": "idempotency 7/7; N5 incomplete true, complete true; multi-fold certified",
+      "evidence": "eval/r38/out/revision-idempotency.json, eval/r38/out/integrity-audit.json"
+    },
+    {
+      "id": "R38-G3",
+      "name": "Integrity auditor validity",
+      "status": "passed",
+      "detail": "auditor 9/9 cases; N5 finding requires-review",
+      "evidence": "eval/r38/out/integrity-audit.json"
+    },
+    {
+      "id": "R38-G4",
+      "name": "Task-aware selection validity",
+      "status": "passed",
+      "detail": "ablation 5/5; greedy true; invariants true; b2-v2 certified",
+      "evidence": "eval/r38/out/working-set-ablation.json"
+    },
+    {
+      "id": "R38-G5",
+      "name": "Archive recovery validity",
+      "status": "passed",
+      "detail": "recovery 8/8; miss not-found-in-checked-scope; bound coverage-not-assessed; H1 certified, S1 certified",
+      "evidence": "eval/r38/out/archive-recovery-ablation.json"
+    },
+    {
+      "id": "R38-G6",
+      "name": "Recent-tail and native delivery",
+      "status": "passed",
+      "detail": "tail 9/9; native 6/6; journal modified false; checkpoint rewritten false",
+      "evidence": "eval/r38/out/recent-tail-consistency.json, eval/r38/out/native-context-smoke.json"
+    },
+    {
+      "id": "R38-G7",
+      "name": "Product and experiment decision",
+      "status": "passed",
+      "detail": "mechanism 11/11 certified; safety blockers 1, observed 0; live calls 0; tests 63/63; M1 prereg true",
+      "evidence": "eval/r38/out/mechanism-evaluation.json, eval/r38/out/r38-tests.json, docs/semantic-continuity/R38_M1_PREREGISTRATION.md"
+    }
+  ],
+  "notes": [
+    "R38-M0 made no live model call.",
+    "A safety gate that cannot be verified is not a pass.",
+    "Offline coverage is not a product benefit.",
+    "EF Active remains on deployment hold."
+  ]
+}

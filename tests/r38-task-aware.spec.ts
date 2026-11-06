@@ -17,6 +17,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { runAblation } from '../eval/r38/working-set-ablation.mjs'
 import { selectTaskAwareContext } from '../eval/r38/src/task-aware-selector.ts'
+import { SessionSeq } from '@deepseek-ai/dsh-session'
 import { emptyCurrentState, stateKeyText } from '../src/state/state.ts'
 import type { Anchor, FoldCurrentState } from '../src/state/state.ts'
 import type { TaskFrame } from '../eval/r38/src/task-aware-selector.ts'
@@ -39,7 +40,7 @@ const anchor = (options: {
   value: options.value,
   authority: options.authority,
   lifecycle: 'active',
-  sourceRefs: [{ seq: options.seq }],
+  sourceRefs: [{ seq: SessionSeq(options.seq) }],
 })
 
 function stateWith(anchors: readonly Anchor[]): FoldCurrentState {

@@ -136,7 +136,19 @@
     "eval:r37d-tests": "vitest run tests/r37d-operational.spec.ts tests/r37d-protocol.spec.ts tests/r37d-fixtures.spec.ts tests/r37d-native.spec.ts tests/r37d-pilot.spec.ts tests/r37d-benchmark.spec.ts tests/r37d-trajectories.spec.ts",
     "eval:r37d-trajectories": "node eval/r37d/analyze-trajectories.mjs",
     "eval:r37d-gates": "node eval/r37d/gates.mjs",
-    "eval:r37d": "npm run eval:r37d-baseline && npm run eval:r37d-operational && npm run eval:r37d-protocol && npm run eval:r37d-fixtures && npm run eval:r37d-native && npm run eval:r37d-pilot && npm run eval:r37d-h1 && npm run eval:r37d-s1 && npm run eval:r37d-plan && npm run eval:r37d-tests && npm run eval:r37d-gates"
+    "eval:r37d": "npm run eval:r37d-baseline && npm run eval:r37d-operational && npm run eval:r37d-protocol && npm run eval:r37d-fixtures && npm run eval:r37d-native && npm run eval:r37d-pilot && npm run eval:r37d-h1 && npm run eval:r37d-s1 && npm run eval:r37d-plan && npm run eval:r37d-tests && npm run eval:r37d-gates",
+    "eval:r38-baseline": "node eval/r38/baseline.mjs",
+    "eval:r38-relations": "node eval/r38/relation-security.mjs",
+    "eval:r38-idempotency": "node eval/r38/revision-idempotency.mjs",
+    "eval:r38-integrity": "node eval/r38/integrity-audit.mjs",
+    "eval:r38-working-set": "node eval/r38/working-set-ablation.mjs",
+    "eval:r38-recovery": "node eval/r38/archive-recovery-ablation.mjs",
+    "eval:r38-tail": "node eval/r38/recent-tail.mjs",
+    "eval:r38-native": "node eval/r38/native-context-smoke.mjs",
+    "eval:r38-mechanism": "node eval/r38/mechanism-evaluation.mjs",
+    "eval:r38-gates": "node eval/r38/gates.mjs",
+    "eval:r38-tests": "vitest run --reporter=json --outputFile=eval/r38/out/r38-tests.json tests/r38-relation-authority.spec.ts tests/r38-integrity-auditor.spec.ts tests/r38-task-aware.spec.ts tests/r38-archive-recovery.spec.ts tests/r38-recent-tail.spec.ts tests/r38-native-context.spec.ts",
+    "eval:r38": "npm run eval:r38-baseline && npm run eval:r38-relations && npm run eval:r38-idempotency && npm run eval:r38-integrity && npm run eval:r38-working-set && npm run eval:r38-recovery && npm run eval:r38-tail && npm run eval:r38-native && npm run eval:r38-mechanism && npm run eval:r38-tests && npm run eval:r38-gates"
   },
   "repository": {
     "type": "git",

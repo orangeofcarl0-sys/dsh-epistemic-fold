@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T21:09:59.396Z",
+  "round": "R38-M0",
+  "work": "WP0-baseline",
+  "repository": "git+https://github.com/orangeofcarl0-sys/dsh-epistemic-fold.git",
+  "git": {
+    "branch": "rc38-mechanism-validation",
+    "head": "820abfb31b41984147eb8ac1be2d890a283e1e09",
+    "base": "7a2c974c479bc1286f172e9f7b203af92e22e629",
+    "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r38-mechanism",
+    "cleanAtStart": true,
+    "statusAtStart": [
+      "?? eval/r38/baseline.mjs",
+      "?? eval/r38/mechanism-evaluation.mjs",
+      "?? eval/r38/out/baseline-manifest.json",
+      "?? eval/r38/out/baseline-tests.json",
+      "?? eval/r38/out/mechanism-evaluation.json"
+    ],
+    "trackedChanges": [],
+    "untracked": [
+      "?? eval/r38/baseline.mjs",
+      "?? eval/r38/mechanism-evaluation.mjs",
+      "?? eval/r38/out/baseline-manifest.json",
+      "?? eval/r38/out/baseline-tests.json",
+      "?? eval/r38/out/mechanism-evaluation.json"
+    ]
+  },
+  "runtime": {
+    "node": "v24.14.1",
+    "npm": "11.11.0"
+  },
+  "dependencies": {
+    "dsh": {
+      "@deepseek-ai/dsh-agent": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-agent-preset": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-atomic-write": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-command-compact": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-commands": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-compaction": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-compaction-basic": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-compaction-tool-result-pruner": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-fs": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-fs-local": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-llm": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-package-manifest": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-persona": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-session": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-session-persistence": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-session-persistence-jsonl": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-session-projection": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-system-prompt": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-token-meter": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-tool-fs": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-tools": "0.2.1-rc.3",
+      "@deepseek-ai/dsh-util-values": "0.2.1-rc.3"
+    },
+    "note": "@deepseek-ai/dsh-agent-loop is installed with --no-save for the native smoke; package.json is unchanged."
+  },
+  "sourceDigests": {
+    "src/semantic/validate.ts": "b00fe98451dc9402d9e38d99d2df0cdb27e320aaa525e7b7eef1fdf20a1b48d0",
+    "src/semantic/plan.ts": "ffb88454f0244cbf95435822333d4298ef4fc9973934c19091f6e5abe0a8268f",
+    "src/semantic/types.ts": "320fd17675e020cbf9715478d30b3345da1557ccdaeabc2e0e6d8bbe3d19328c",
+    "src/semantic/retirement.ts": "51184050d6483abd7445b7bd6683b31404c7b9d737f853affbf99fa248154f57",
+    "src/semantic/working-set-compiler.ts": "740457fd92ac782b26af9150f0afb5645a2dd18d21e5ab0532cbf6e4a84f1697",
+    "src/state/state.ts": "368d2ba210d007007e9df05e39b988919144e690e9c71a2452db5d84eaf9083e",
+    "src/state/authority.ts": "e710c4bbae0d98dbe48bd28e3b3d230343a499a6a996fc14ce745308aaf9df25",
+    "src/fold/engine.ts": "df58e42649f902a4027ee9e191f6c08b16c1528ca34c873def4db2e4b374862e",
+    "src/checkpoint/renderer.ts": "ac88cb11e081b8aa6c2e7eb2c228e309b5c8b4f35d2112068bcf29be90339dab",
+    "src/recall/recall.ts": "c91257b58b2a6390e67c4e6f6a2f367fa901b6b793fe9c7a41205f486572ab76"
+  },
+  "historicalEvidence": {
+    "r37bArchive": {
+      "sha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+      "bytes": 3763962,
+      "expectedSha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+      "expectedBytes": 3763962,
+      "match": true
+    },
+    "digests": {
+      "eval/r37c/out/gate-status-r37c.json": "847200d8b9e48bac57773ef3d19da638cef3b08013a8592eddafd1c8ea697028",
+      "eval/r37c/out/statistics-audit.json": "a16f5d5d62357974e68b86d15706d72d1910b02ac6d1a72ec97269e69f4fb396",
+      "eval/r37c/out/evidence-archive.json": "12a09eed695c728ccbae5e67ab988242b8fda5af0a1ef4cd05468a99f74b000f",
+      "eval/r37d/out/gate-status-r37d.json": "419e48a98e306dde2710385f6391b1f89f5aae59d64d833412ceb8cfc35d0b6a",
+      "eval/r37d/out/process-pilot-results.json": "dd58cbe6063c8ce797040ece943f618a356ada5a1e47cafdd2fb53757d75224d",
+      "eval/r37d/out/process-pilot-trajectories.json": "499bcf034937f0888bb2c80f810f96c148c5f8c960fae2de29c008e0e9426734"
+    }
+  },
+  "testBaseline": {
+    "source": "npx vitest run --reporter=json (R38 baseline, before R38 tests)",
+    "total": 1737,
+    "passed": 1656,
+    "failed": 11,
+    "skipped": 70,
+    "failureFiles": [
+      "bridge-loads.spec.ts",
+      "checkpoint-residency.spec.ts",
+      "eval-corpus.spec.ts",
+      "p0-regressions.spec.ts",
+      "persistence-compat.spec.ts",
+      "plugin-composition.spec.ts",
+      "rc3-plugin-packaging.spec.ts",
+      "rc7-vendored-basic.spec.ts"
+    ],
+    "failures": [
+      {
+        "file": "bridge-loads.spec.ts",
+        "name": "the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against"
+      },
+      {
+        "file": "checkpoint-residency.spec.ts",
+        "name": "checkpoint retirement writes the retirement, and the report then shows ONE conflict"
+      },
+      {
+        "file": "checkpoint-residency.spec.ts",
+        "name": "checkpoint retirement REFUSES a second retirement of the same checkpoint"
+      },
+      {
+        "file": "eval-corpus.spec.ts",
+        "name": "R0-C2: keyless paired continuation across B1 / E3a0 / E3aR B04-failure-resolution (hard)"
+      },
+      {
+        "file": "p0-regressions.spec.ts",
+        "name": "P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face"
+      },
+      {
+        "file": "persistence-compat.spec.ts",
+        "name": "persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable"
+      },
+      {
+        "file": "persistence-compat.spec.ts",
+        "name": "anchor service durability guard still writes on the in-memory face, where nothing persists the log"
+      },
+      {
+        "file": "plugin-composition.spec.ts",
+        "name": "R0-B: native plugin composition the plugin-provided anchor service refuses a write this host cannot persist"
+      },
+      {
+        "file": "rc3-plugin-packaging.spec.ts",
+        "name": "RC16: the manifest uses the fields DSH actually defines declares the DSH range at engines.dsh, not in an invented dsh.compatibility"
+      },
+      {
+        "file": "rc7-vendored-basic.spec.ts",
+        "name": "RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference"
+      },
+      {
+        "file": "rc7-vendored-basic.spec.ts",
+        "name": "RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
+      }
+    ],
+    "note": "The failures are the pre-existing vendor/DSH-drift set recorded by R36/R37-B/R37-C. No R38 test fails. One R37-D failure now passes; the total is unchanged at 1737."
+  },
+  "r37d": {
+    "head": "7a2c974c479bc1286f172e9f7b203af92e22e629",
+    "note": "R37-D handoff HEAD; the R38 worktree was created from it."
+  },
+  "status": "passed"
+}
