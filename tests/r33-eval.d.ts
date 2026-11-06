@@ -133,6 +133,14 @@ declare module '*/r33/src/workspace.mjs' {
   export function runVisibleTests(workspaceRoot: string, timeoutMs?: number, options?: any): Promise<any>
   export function readVerification(workspaceRoot: string): Promise<any>
   export function workspaceDigest(root: string): Promise<{ digest: string; files: number }>
+  export function workspaceDigests(root: string): Promise<{
+    testInputDigest: string
+    testInputFiles: number
+    fullDigest: string
+    fullFiles: number
+    verificationArtifactDigest: string | null
+    verificationArtifactBytes: number | null
+  }>
   export function relativePath(root: string, path: string): string
 }
 

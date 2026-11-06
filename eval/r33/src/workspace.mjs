@@ -351,18 +351,13 @@ export async function listWorkspace(root, options = {}) {
 }
 
 /**
- * A digest of the workspace's SOURCE contents.
+ * Collect the files that participate in a workspace digest.
  *
- * Used to bind a passing test run to the code it actually exercised. The
- * `verification.json` artifact is excluded deliberately: it is task metadata,
- * not source, and writing it after a test run must not make a fresh
- * verification look stale. Symlinks are not followed, for the same containment
- * reason `listWorkspace` gives.
- *
- * @param {string} root - the agent workspace.
- * @returns {Promise<{digest:string, files:number}>}
+ * `verification.json` is task metadata, not source. The historical digest
+ * excludes it at any depth; `workspaceDigests` keeps both views so a caller can
+ * report the artifact without letting it invalidate freshness.
  */
-export async function workspaceDigest(root) {
+async function collectWorkspaceEntries(root) {
   const entries = []
   async function walk(directory, prefix) {
     let listing
@@ -380,10 +375,11 @@ export async function workspaceDigest(root) {
         await walk(join(directory, entry.name), display)
         continue
       }
-      if (!entry.isFile() || entry.name === 'verification.json') continue
+      if (!entry.isFile()) continue
       try {
         entries.push({
           path: display,
+          name: entry.name,
           content: await readFile(join(directory, entry.name)),
         })
       } catch {
@@ -393,6 +389,10 @@ export async function workspaceDigest(root) {
   }
   await walk(root, '')
   entries.sort((left, right) => left.path.localeCompare(right.path))
+  return entries
+}
+
+function digestEntries(entries) {
   const hash = createHash('sha256')
   for (const entry of entries) {
     hash.update(entry.path, 'utf8')
@@ -400,7 +400,55 @@ export async function workspaceDigest(root) {
     hash.update(entry.content)
     hash.update('\0', 'utf8')
   }
-  return { digest: hash.digest('hex'), files: entries.length }
+  return hash.digest('hex')
+}
+
+/**
+ * A digest of the workspace's SOURCE contents.
+ *
+ * Used to bind a passing test run to the code it actually exercised. The
+ * `verification.json` artifact is excluded deliberately: it is task metadata,
+ * not source, and writing it after a test run must not make a fresh
+ * verification look stale. Symlinks are not followed, for the same containment
+ * reason `listWorkspace` gives.
+ *
+ * @param {string} root - the agent workspace.
+ * @returns {Promise<{digest:string, files:number}>}
+ */
+export async function workspaceDigest(root) {
+  const entries = await collectWorkspaceEntries(root)
+  const source = entries.filter(entry => entry.name !== 'verification.json')
+  return { digest: digestEntries(source), files: source.length }
+}
+
+/**
+ * The three workspace views R37-D reports separately.
+ *
+ *   testInputDigest            source, tests, config; excludes verification.json
+ *   fullDigest                 every file, including the verification artifact
+ *   verificationArtifactDigest the root verification.json, or null
+ *
+ * Freshness uses `testInputDigest`. A test that passed, followed by writing
+ * `verification.json`, stays fresh; a change to source, tests, or config does
+ * not. The full digest is for provenance, not for freshness.
+ *
+ * @param {string} root
+ * @returns {Promise<object>}
+ */
+export async function workspaceDigests(root) {
+  const entries = await collectWorkspaceEntries(root)
+  const source = entries.filter(entry => entry.name !== 'verification.json')
+  const artifact = entries.find(entry => entry.path === 'verification.json') ?? null
+  return {
+    testInputDigest: digestEntries(source),
+    testInputFiles: source.length,
+    fullDigest: digestEntries(entries),
+    fullFiles: entries.length,
+    verificationArtifactDigest: artifact === null
+      ? null
+      : createHash('sha256').update(artifact.content).digest('hex'),
+    verificationArtifactBytes: artifact === null ? null : artifact.content.length,
+  }
 }
 
 /**
