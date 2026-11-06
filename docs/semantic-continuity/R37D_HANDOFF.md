@@ -31,13 +31,14 @@ e6dc9bd  test(eval): extend native tool lifecycle and recovery
 cd51dd2  feat(eval): preregister the bounded process-prompt pilot
 48eefd3  feat(eval): certify the authority-scope case and freeze the held-out plan
 3aed843  feat(eval): execute the authorized process-prompt pilot
-this     docs(eval): record the process pilot result and final handoff
+d94446f  docs(eval): record the process pilot result and final handoff
+this     docs(eval): attribute the process-pilot trajectories
 ```
 
 Diff from `045cccf` to this handoff commit:
 
 ```text
-74 files changed, 36,408 insertions(+), 22 deletions(-)
+78 files changed, 44,916 insertions(+), 22 deletions(-)
 ```
 
 Most insertions are audit JSON and the new case fixtures.
@@ -148,6 +149,21 @@ The prompt helps D1's artifact delivery and does not help B2's protocol-heavy
 path. It is not a uniform fix. The pilot is exploratory and is not a product
 benefit.
 
+Trajectory archetypes:
+
+```text
+test-no-finish                    9
+finish-with-artifact              7
+protocol-stall-no-test            5
+finish-with-test                  1
+finish-with-inconsistent-artifact 1
+finish-without-artifact           1
+```
+
+B2's four failures are protocol stalls with no test and no write. D1 P0 has one
+inconsistent artifact (`testsRun: 0` after a test) and one finish without an
+artifact. D1 P1 has six consistent artifacts.
+
 ## 4. Gates
 
 ```text
@@ -191,11 +207,11 @@ product result.
 
 ```text
 Typecheck                  pass (src, client, eval)
-R37-D tests                65/65 pass
+R37-D tests                72/72 pass
 R37 tests                  49/49 pass
 R36 tests                  34/34 pass
 R33 targeted               94/94 pass
-Full suite                 1648 passed, 12 failed, 70 skipped
+Full suite                 1655 passed, 12 failed, 70 skipped
 ```
 
 The full-suite failures, if any, are the same pre-existing vendor/DSH-drift set
@@ -233,6 +249,7 @@ eval/r37d/out/
   process-pilot-preflight.json
   process-pilot-results.json
   process-pilot-analysis.json
+  process-pilot-trajectories.json
   h1-v2-audit.json
   s1-v1-validity.json
   held-out-plan.json
@@ -252,6 +269,7 @@ docs/semantic-continuity/
   R37D_FIXED_CONTEXT.md
   R37D_NATIVE_RUNTIME.md
   R37D_PROCESS_PILOT.md
+  R37D_TRAJECTORY_ANALYSIS.md
   R37D_BENCHMARK_PREREGISTRATION.md
   R37D_DECISION.md
   R37D_HANDOFF.md
@@ -268,7 +286,8 @@ node_modules/
 ## 9. Unresolved issues
 
 - The process prompt is not a uniform fix. B2 remains a protocol/output-budget
-  problem; D1 is an artifact-delivery problem.
+  problem; D1 is an artifact-delivery problem. The trajectory analysis is in
+  `R37D_TRAJECTORY_ANALYSIS.md`.
 - The step-budget 8-vs-12 experiment is preregistered but not executed.
 - The four specified held-out cases are design briefs, not cases.
 - The native N3/N4/N5 proof uses a manual host and a scripted adapter, not the
@@ -291,6 +310,7 @@ npm run eval:r37d-s1
 npm run eval:r37d-plan
 npm run eval:r37d-process-check
 npm run eval:r37d-analyze
+npm run eval:r37d-trajectories
 npm run eval:r37d-tests
 node eval/r37d/gates.mjs
 ```

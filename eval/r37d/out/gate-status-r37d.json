@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T15:23:19.566Z",
+  "generatedAt": "2026-11-06T15:51:03.864Z",
   "round": "R37-D",
   "status": "complete",
   "eligibility": {
@@ -65,8 +65,8 @@
       "id": "R37D-D2",
       "name": "Protocol and action attribution",
       "status": "passed",
-      "detail": "model calls 163, no-valid 46; classes {\"invalid-envelope\":30,\"natural-language-only\":2,\"missing-parameter\":13,\"truncated-output\":6}; D1 phases {\"executed\":10,\"tool-request-rejected\":1,\"budget-exhausted-before-request\":1}",
-      "evidence": "eval/r37d/out/action-accounting.json, eval/r37d/out/protocol-efficiency.json, eval/r37d/out/b2-d1-action-forensics.json"
+      "detail": "model calls 163, no-valid 46; classes {\"invalid-envelope\":30,\"natural-language-only\":2,\"missing-parameter\":13,\"truncated-output\":6}; D1 phases {\"executed\":10,\"tool-request-rejected\":1,\"budget-exhausted-before-request\":1}; process archetypes {\"test-no-finish\":9,\"protocol-stall-no-test\":5,\"finish-with-test\":1,\"finish-with-artifact\":7,\"finish-with-inconsistent-artifact\":1,\"finish-without-artifact\":1}",
+      "evidence": "eval/r37d/out/action-accounting.json, eval/r37d/out/protocol-efficiency.json, eval/r37d/out/b2-d1-action-forensics.json, eval/r37d/out/process-pilot-trajectories.json"
     },
     {
       "id": "R37D-D3",

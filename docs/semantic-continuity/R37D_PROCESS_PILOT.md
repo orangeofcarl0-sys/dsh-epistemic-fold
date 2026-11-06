@@ -217,7 +217,15 @@ this batch after seeing the P0/P1 results.
 eval/r37d/prompts/P0.txt
 eval/r37d/prompts/P1.txt
 eval/r37d/process-pilot.mjs
+eval/r37d/run-process-pilot.mjs
+eval/r37d/authorization.json
 eval/r37d/out/process-pilot-manifest.json
 eval/r37d/out/process-pilot-preflight.json
+eval/r37d/out/process-pilot-results.json
+eval/r37d/out/process-pilot-analysis.json
+eval/r37d/out/process-pilot-trajectories.json
+eval/r37d/analyze-trajectories.mjs
+docs/semantic-continuity/R37D_TRAJECTORY_ANALYSIS.md
 tests/r37d-pilot.spec.ts
+tests/r37d-trajectories.spec.ts
 ```

@@ -51,6 +51,7 @@ const s1 = await load('s1-v1-validity.json')
 const heldOut = await load('held-out-plan.json')
 const pilot = await load('process-pilot-results.json')
 const pilotAnalysis = await load('process-pilot-analysis.json')
+const processTrajectories = await load('process-pilot-trajectories.json')
 const tests = await load('r37d-tests.json')
 const r37cGates = await exists(join(HERE, '..', 'r37c', 'out', 'gate-status-r37c.json'))
   ? await readJson(join(HERE, '..', 'r37c', 'out', 'gate-status-r37c.json'))
@@ -102,11 +103,14 @@ gates.push({
     && Object.keys(protocol?.overall?.noValidActionClasses ?? {}).length >= 4
     && forensics?.D1?.summary?.failurePhase?.['tool-request-rejected'] === 1
     && forensics?.D1?.summary?.failurePhase?.['budget-exhausted-before-request'] === 1
-    && typeof protocol?.multiActionSemantics?.policy === 'string' ? 'passed' : 'failed',
+    && typeof protocol?.multiActionSemantics?.policy === 'string'
+    && processTrajectories?.cellCount === 24
+    && Object.keys(processTrajectories?.archetypes ?? {}).length >= 5 ? 'passed' : 'failed',
   detail: `model calls ${protocol?.overall?.modelCalls ?? 'n/a'}, no-valid ${protocol?.overall?.noValidActionCalls ?? 'n/a'}; `
     + `classes ${JSON.stringify(protocol?.overall?.noValidActionClasses ?? {})}; `
-    + `D1 phases ${JSON.stringify(forensics?.D1?.summary?.failurePhase ?? {})}`,
-  evidence: 'eval/r37d/out/action-accounting.json, eval/r37d/out/protocol-efficiency.json, eval/r37d/out/b2-d1-action-forensics.json',
+    + `D1 phases ${JSON.stringify(forensics?.D1?.summary?.failurePhase ?? {})}; `
+    + `process archetypes ${JSON.stringify(processTrajectories?.archetypes ?? {})}`,
+  evidence: 'eval/r37d/out/action-accounting.json, eval/r37d/out/protocol-efficiency.json, eval/r37d/out/b2-d1-action-forensics.json, eval/r37d/out/process-pilot-trajectories.json',
 })
 
 gates.push({
