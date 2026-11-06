@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T08:44:52.843Z",
+  "round": "R37-C",
+  "work": "C1-C",
+  "packages": {
+    "agentLoop": "0.2.1-rc.3",
+    "session": "0.2.1-rc.3",
+    "tools": "0.2.1-rc.3",
+    "llm": "0.2.1-rc.3",
+    "persistence": "0.2.1-rc.3"
+  },
+  "rootCause": {
+    "symptom": "TOOL_NOT_STARTED",
+    "diagnosis": "AgentLoop was constructed with a plain number for maxParallelToolCalls. The service reads ctx.agentLoop.config.maxParallelToolCalls.get(); a manual host must pass a volatile cell, not a bare number.",
+    "fix": "createVolatile(1) from @deepseek-ai/cosmokit",
+    "scope": "native host construction, not the tool runtime or the EF integration"
+  },
+  "n0": {
+    "status": "passed",
+    "adapterCalls": 2,
+    "sessionId": "r37c-n0-198e1189-5b4b-448c-ba3e-acdc9abbe032",
+    "errors": [],
+    "events": [
+      {
+        "seq": 0,
+        "type": "agent/inbox/spliced"
+      },
+      {
+        "seq": 1,
+        "type": "turn/start"
+      },
+      {
+        "seq": 2,
+        "type": "agent/inbox/spliced"
+      },
+      {
+        "seq": 3,
+        "type": "step/start"
+      },
+      {
+        "seq": 4,
+        "type": "system/message"
+      },
+      {
+        "seq": 5,
+        "type": "user/message"
+      },
+      {
+        "seq": 6,
+        "type": "request/header"
+      },
+      {
+        "seq": 7,
+        "type": "request/context"
+      },
+      {
+        "seq": 8,
+        "type": "assistant/message",
+        "blocks": [
+          {
+            "type": "tool-call",
+            "id": "call-read-1",
+            "name": "read_file",
+            "arguments": "{\"path\":\"hello.txt\"}"
+          }
+        ]
+      },
+      {
+        "seq": 9,
+        "type": "tool/call",
+        "name": "read_file",
+        "callId": "call-read-1"
+      },
+      {
+        "seq": 10,
+        "type": "tool/result",
+        "callId": "call-read-1"
+      },
+      {
+        "seq": 11,
+        "type": "step/end"
+      },
+      {
+        "seq": 12,
+        "type": "step/start"
+      },
+      {
+        "seq": 13,
+        "type": "assistant/message",
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Native tool lifecycle complete."
+          }
+        ]
+      },
+      {
+        "seq": 14,
+        "type": "step/end"
+      },
+      {
+        "seq": 15,
+        "type": "turn/end"
+      }
+    ],
+    "counts": {
+      "toolCalls": 1,
+      "toolResults": 1,
+      "assistantMessages": 2,
+      "repairs": 0
+    },
+    "ordering": true,
+    "repairCodes": []
+  },
+  "n1": {
+    "status": "passed",
+    "first": {
+      "events": [
+        {
+          "seq": 0,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 1,
+          "type": "turn/start"
+        },
+        {
+          "seq": 2,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 3,
+          "type": "step/start"
+        },
+        {
+          "seq": 4,
+          "type": "system/message"
+        },
+        {
+          "seq": 5,
+          "type": "user/message"
+        },
+        {
+          "seq": 6,
+          "type": "request/header"
+        },
+        {
+          "seq": 7,
+          "type": "request/context"
+        },
+        {
+          "seq": 8,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "tool-call",
+              "id": "call-read-1",
+              "name": "read_file",
+              "arguments": "{\"path\":\"hello.txt\"}"
+            }
+          ]
+        },
+        {
+          "seq": 9,
+          "type": "tool/call",
+          "name": "read_file",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 10,
+          "type": "tool/result",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 11,
+          "type": "step/end"
+        },
+        {
+          "seq": 12,
+          "type": "step/start"
+        },
+        {
+          "seq": 13,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Native tool lifecycle complete."
+            }
+          ]
+        },
+        {
+          "seq": 14,
+          "type": "step/end"
+        },
+        {
+          "seq": 15,
+          "type": "turn/end"
+        }
+      ],
+      "counts": {
+        "toolCalls": 1,
+        "toolResults": 1,
+        "assistantMessages": 2,
+        "repairs": 0
+      },
+      "ordering": true,
+      "repairCodes": []
+    },
+    "second": {
+      "events": [
+        {
+          "seq": 0,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 1,
+          "type": "turn/start"
+        },
+        {
+          "seq": 2,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 3,
+          "type": "step/start"
+        },
+        {
+          "seq": 4,
+          "type": "system/message"
+        },
+        {
+          "seq": 5,
+          "type": "user/message"
+        },
+        {
+          "seq": 6,
+          "type": "request/header"
+        },
+        {
+          "seq": 7,
+          "type": "request/context"
+        },
+        {
+          "seq": 8,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "tool-call",
+              "id": "call-read-1",
+              "name": "read_file",
+              "arguments": "{\"path\":\"hello.txt\"}"
+            }
+          ]
+        },
+        {
+          "seq": 9,
+          "type": "tool/call",
+          "name": "read_file",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 10,
+          "type": "tool/result",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 11,
+          "type": "step/end"
+        },
+        {
+          "seq": 12,
+          "type": "step/start"
+        },
+        {
+          "seq": 13,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Native tool lifecycle complete."
+            }
+          ]
+        },
+        {
+          "seq": 14,
+          "type": "step/end"
+        },
+        {
+          "seq": 15,
+          "type": "turn/end"
+        },
+        {
+          "seq": 16,
+          "type": "session/end-seed"
+        }
+      ],
+      "counts": {
+        "toolCalls": 1,
+        "toolResults": 1,
+        "assistantMessages": 2,
+        "repairs": 0
+      },
+      "ordering": true,
+      "repairCodes": []
+    },
+    "persistedBytes": 0
+  },
+  "n2": {
+    "status": "passed",
+    "foldError": null,
+    "checkpointChars": 870,
+    "factVisible": true,
+    "state": null,
+    "native": {
+      "events": [
+        {
+          "seq": 0,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 1,
+          "type": "turn/start"
+        },
+        {
+          "seq": 2,
+          "type": "agent/inbox/spliced"
+        },
+        {
+          "seq": 3,
+          "type": "step/start"
+        },
+        {
+          "seq": 4,
+          "type": "system/message"
+        },
+        {
+          "seq": 5,
+          "type": "user/message"
+        },
+        {
+          "seq": 6,
+          "type": "request/header"
+        },
+        {
+          "seq": 7,
+          "type": "request/context"
+        },
+        {
+          "seq": 8,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "tool-call",
+              "id": "call-read-1",
+              "name": "read_file",
+              "arguments": "{\"path\":\"hello.txt\"}"
+            }
+          ]
+        },
+        {
+          "seq": 9,
+          "type": "tool/call",
+          "name": "read_file",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 10,
+          "type": "tool/result",
+          "callId": "call-read-1"
+        },
+        {
+          "seq": 11,
+          "type": "step/end"
+        },
+        {
+          "seq": 12,
+          "type": "step/start"
+        },
+        {
+          "seq": 13,
+          "type": "assistant/message",
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Native tool lifecycle complete."
+            }
+          ]
+        },
+        {
+          "seq": 14,
+          "type": "step/end"
+        },
+        {
+          "seq": 15,
+          "type": "turn/end"
+        }
+      ],
+      "counts": {
+        "toolCalls": 1,
+        "toolResults": 1,
+        "assistantMessages": 2,
+        "repairs": 0
+      },
+      "ordering": true,
+      "repairCodes": []
+    },
+    "errors": []
+  },
+  "note": "No provider request was made. The adapter is scripted; the tools are deterministic."
+}
