@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T13:59:22.882Z",
+  "generatedAt": "2026-11-06T15:09:06.533Z",
   "round": "R37-D",
   "work": "WP4-process-pilot",
   "status": "ready-for-authorization",
@@ -566,6 +566,14 @@
     "inputTokens": 300000,
     "outputTokens": 70000,
     "wallClockMs": 3600000
+  },
+  "route": {
+    "baseUrlEnv": "R37D_BASE_URL",
+    "apiKeyEnv": "R37D_API_KEY",
+    "contextWindow": 131072,
+    "maxOutputTokens": 32768,
+    "resolvedBy": "eval/live/dist/zcode-config.js",
+    "note": "The runner resolves the local route without printing credentials; no route value is stored in this manifest."
   },
   "authorization": {
     "required": true,

@@ -225,7 +225,10 @@ const providerPatterns = [
 const providerHits = providerPatterns.filter(pattern => pattern.test(source)).map(pattern => pattern.source)
 check('no-provider', providerHits.length === 0 ? 'passed' : 'failed',
   providerHits.length === 0 ? 'no provider client or credential read in the preflight path' : providerHits.join(', '))
-check('runner', 'partial', 'frozen inputs are complete; live adapter wiring is design-only')
+check('runner', existsSync(join(HERE, 'run-process-pilot.mjs')) ? 'passed' : 'partial',
+  existsSync(join(HERE, 'run-process-pilot.mjs'))
+    ? 'live runner is available'
+    : 'frozen inputs are complete; live adapter wiring is design-only')
 
 const failed = checks.filter(entry => entry.status === 'failed')
 const partial = checks.filter(entry => entry.status === 'partial')
@@ -264,6 +267,14 @@ const manifest = {
   fixtures: fixtureManifest.cases,
   workspace: fixtureManifest.workspace,
   limits: LIMITS,
+  route: {
+    baseUrlEnv: 'R37D_BASE_URL',
+    apiKeyEnv: 'R37D_API_KEY',
+    contextWindow: 131_072,
+    maxOutputTokens: 32_768,
+    resolvedBy: 'eval/live/dist/zcode-config.js',
+    note: 'The runner resolves the local route without printing credentials; no route value is stored in this manifest.',
+  },
   authorization,
   cells,
   nextExperiment: {
@@ -284,8 +295,10 @@ const preflight = {
   checks,
   authorization,
   runner: {
-    status: 'design-only',
-    note: 'The frozen inputs are complete. The live adapter wiring is not part of this preflight; it must be implemented and reviewed before an authorized run.',
+    status: existsSync(join(HERE, 'run-process-pilot.mjs')) ? 'available' : 'design-only',
+    note: existsSync(join(HERE, 'run-process-pilot.mjs'))
+      ? 'eval/r37d/run-process-pilot.mjs calls the shared follow-up loop with the frozen context.'
+      : 'The frozen inputs are complete. The live adapter wiring is not part of this preflight.',
     entryPoint: 'eval/r33/live.mjs followUp',
   },
   noProviderCall: true,

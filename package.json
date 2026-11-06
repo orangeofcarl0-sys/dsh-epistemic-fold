@@ -130,6 +130,9 @@
     "eval:r37d-h1": "node eval/r37d/audit-h1-v2.mjs",
     "eval:r37d-s1": "node eval/r37d/certify-s1-v1.mjs",
     "eval:r37d-plan": "node eval/r37d/held-out-plan.mjs",
+    "eval:r37d-process-check": "node eval/r37d/run-process-pilot.mjs --check",
+    "eval:r37d-run": "node eval/r37d/run-process-pilot.mjs --run",
+    "eval:r37d-analyze": "node eval/r37d/analyze-process-pilot.mjs",
     "eval:r37d-tests": "vitest run tests/r37d-operational.spec.ts tests/r37d-protocol.spec.ts tests/r37d-fixtures.spec.ts tests/r37d-native.spec.ts tests/r37d-pilot.spec.ts tests/r37d-benchmark.spec.ts",
     "eval:r37d-gates": "node eval/r37d/gates.mjs",
     "eval:r37d": "npm run eval:r37d-baseline && npm run eval:r37d-operational && npm run eval:r37d-protocol && npm run eval:r37d-fixtures && npm run eval:r37d-native && npm run eval:r37d-pilot && npm run eval:r37d-h1 && npm run eval:r37d-s1 && npm run eval:r37d-plan && npm run eval:r37d-tests && npm run eval:r37d-gates"

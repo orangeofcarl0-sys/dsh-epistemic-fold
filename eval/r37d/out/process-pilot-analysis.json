@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T15:17:07.915Z",
+  "round": "R37-D",
+  "work": "WP4-process-pilot-analysis",
+  "source": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37d-operational\\eval\\r37d\\out\\process-pilot-results.json",
+  "status": "complete",
+  "stopReason": null,
+  "executed": 24,
+  "planned": 24,
+  "conditions": {
+    "B2/B1/P0": {
+      "cells": 3,
+      "legacyContract": 3,
+      "operational": 3,
+      "strictFinish": 0,
+      "testsExecuted": 7,
+      "finishRequests": 0,
+      "stepLimit": 3,
+      "noValidActionCalls": 3
+    },
+    "B2/B1/P1": {
+      "cells": 3,
+      "legacyContract": 2,
+      "operational": 2,
+      "strictFinish": 1,
+      "testsExecuted": 4,
+      "finishRequests": 1,
+      "stepLimit": 2,
+      "noValidActionCalls": 5
+    },
+    "B2/S/P0": {
+      "cells": 3,
+      "legacyContract": 2,
+      "operational": 2,
+      "strictFinish": 0,
+      "testsExecuted": 2,
+      "finishRequests": 0,
+      "stepLimit": 3,
+      "noValidActionCalls": 13
+    },
+    "B2/S/P1": {
+      "cells": 3,
+      "legacyContract": 1,
+      "operational": 1,
+      "strictFinish": 0,
+      "testsExecuted": 4,
+      "finishRequests": 0,
+      "stepLimit": 3,
+      "noValidActionCalls": 15
+    },
+    "D1-v2/B1/P0": {
+      "cells": 3,
+      "legacyContract": 1,
+      "operational": 1,
+      "strictFinish": 1,
+      "testsExecuted": 2,
+      "finishRequests": 2,
+      "stepLimit": 1,
+      "noValidActionCalls": 5
+    },
+    "D1-v2/B1/P1": {
+      "cells": 3,
+      "legacyContract": 3,
+      "operational": 3,
+      "strictFinish": 2,
+      "testsExecuted": 6,
+      "finishRequests": 2,
+      "stepLimit": 1,
+      "noValidActionCalls": 4
+    },
+    "D1-v2/S/P0": {
+      "cells": 3,
+      "legacyContract": 2,
+      "operational": 2,
+      "strictFinish": 1,
+      "testsExecuted": 5,
+      "finishRequests": 2,
+      "stepLimit": 1,
+      "noValidActionCalls": 5
+    },
+    "D1-v2/S/P1": {
+      "cells": 3,
+      "legacyContract": 3,
+      "operational": 3,
+      "strictFinish": 3,
+      "testsExecuted": 4,
+      "finishRequests": 3,
+      "stepLimit": 0,
+      "noValidActionCalls": 1
+    }
+  },
+  "effects": {
+    "promptUnderB1": {
+      "legacyContract": {
+        "p0": 4,
+        "p1": 5,
+        "difference": 1,
+        "p0Rate": 0.6666666666666666,
+        "p1Rate": 0.8333333333333334,
+        "rateDifference": 0.16666666666666674
+      },
+      "operational": {
+        "p0": 4,
+        "p1": 5,
+        "difference": 1,
+        "p0Rate": 0.6666666666666666,
+        "p1Rate": 0.8333333333333334,
+        "rateDifference": 0.16666666666666674
+      }
+    },
+    "promptUnderS": {
+      "legacyContract": {
+        "p0": 4,
+        "p1": 4,
+        "difference": 0,
+        "p0Rate": 0.6666666666666666,
+        "p1Rate": 0.6666666666666666,
+        "rateDifference": 0
+      },
+      "operational": {
+        "p0": 4,
+        "p1": 4,
+        "difference": 0,
+        "p0Rate": 0.6666666666666666,
+        "p1Rate": 0.6666666666666666,
+        "rateDifference": 0
+      }
+    },
+    "byCase": {
+      "B2/B1": {
+        "legacyContract": {
+          "p0": 3,
+          "p1": 2,
+          "difference": -1,
+          "p0Rate": 1,
+          "p1Rate": 0.6666666666666666,
+          "rateDifference": -0.33333333333333337
+        },
+        "operational": {
+          "p0": 3,
+          "p1": 2,
+          "difference": -1,
+          "p0Rate": 1,
+          "p1Rate": 0.6666666666666666,
+          "rateDifference": -0.33333333333333337
+        }
+      },
+      "B2/S": {
+        "legacyContract": {
+          "p0": 2,
+          "p1": 1,
+          "difference": -1,
+          "p0Rate": 0.6666666666666666,
+          "p1Rate": 0.3333333333333333,
+          "rateDifference": -0.3333333333333333
+        },
+        "operational": {
+          "p0": 2,
+          "p1": 1,
+          "difference": -1,
+          "p0Rate": 0.6666666666666666,
+          "p1Rate": 0.3333333333333333,
+          "rateDifference": -0.3333333333333333
+        }
+      },
+      "D1-v2/B1": {
+        "legacyContract": {
+          "p0": 1,
+          "p1": 3,
+          "difference": 2,
+          "p0Rate": 0.3333333333333333,
+          "p1Rate": 1,
+          "rateDifference": 0.6666666666666667
+        },
+        "operational": {
+          "p0": 1,
+          "p1": 3,
+          "difference": 2,
+          "p0Rate": 0.3333333333333333,
+          "p1Rate": 1,
+          "rateDifference": 0.6666666666666667
+        }
+      },
+      "D1-v2/S": {
+        "legacyContract": {
+          "p0": 2,
+          "p1": 3,
+          "difference": 1,
+          "p0Rate": 0.6666666666666666,
+          "p1Rate": 1,
+          "rateDifference": 0.33333333333333337
+        },
+        "operational": {
+          "p0": 2,
+          "p1": 3,
+          "difference": 1,
+          "p0Rate": 0.6666666666666666,
+          "p1Rate": 1,
+          "rateDifference": 0.33333333333333337
+        }
+      }
+    },
+    "interaction": {
+      "operationalRateDifference": -0.16666666666666674,
+      "note": "Exploratory difference-in-differences. The pilot is not powered for an interaction test."
+    }
+  },
+  "conclusions": [
+    "The pilot is exploratory: three replicates per condition, one model, two cases.",
+    "The fixed context is the frozen WP3 checkpoint; no writer was regenerated.",
+    "The guard is off in every cell, so any difference is the process prompt, not the guard.",
+    "No significance claim is made."
+  ]
+}

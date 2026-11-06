@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "round": "R37-D",
+  "batch": "r37d-process",
+  "granted": true,
+  "grantedBy": "user",
+  "grantedAt": "2026-11-06T15:09:14.393Z",
+  "statement": "均授权",
+  "manifestSha256": "6b762e4f90be20c97d804b0828c77b5a3556ea6c6ce92fba247293ca7a4736dc",
+  "cells": 24,
+  "model": "deepseek-v4.1-flash",
+  "limits": {
+    "httpAttempts": 240,
+    "inputTokens": 300000,
+    "outputTokens": 70000,
+    "wallClockMs": 3600000
+  },
+  "note": "Authorizes the frozen 24-cell process-prompt batch in process-pilot-manifest.json only. No other batch is covered."
+}

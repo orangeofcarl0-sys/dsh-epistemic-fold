@@ -60,3 +60,6 @@ eval/r37c/manifests-c2/
 eval/r37c/runs-c2-smoke/
 eval/r37c/manifests-c2-smoke/
 eval/r37c/out/*progress*.json
+
+# R37-D live process runs (raw reports, traces, workspaces)
+eval/r37d/runs-process/

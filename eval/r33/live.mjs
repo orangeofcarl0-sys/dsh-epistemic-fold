@@ -33,8 +33,8 @@
 import { createHash, randomUUID } from 'node:crypto'
 import { access, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { Context } from '@deepseek-ai/cordis'
 import {
   LlmAdapter,
@@ -814,7 +814,7 @@ function parseLiveActions(text) {
   return { actions: parseActions(text), invalid: [], diagnostics: [], protocol: 'P3' }
 }
 
-async function followUp({
+export async function followUp({
   adapter,
   model,
   caseData,
@@ -1206,7 +1206,7 @@ function adapterForRun({ base, arm, caseData, ledger, log, o1Handoff }) {
   return base
 }
 
-function baseAdapter({ live, inner, ledger, log, caseData, plan, writerPayload }) {
+export function baseAdapter({ live, inner, ledger, log, caseData, plan, writerPayload }) {
   if (live) return new RecordingAdapter(inner, log)
   const scripted = new SelfTestAdapter('r34-self-test', caseData, plan, writerPayload)
   return new MeteredAdapter(scripted, ledger, log)
@@ -2503,4 +2503,6 @@ async function main() {
   process.exit(STATUS_EXIT_CODE[status] ?? 7)
 }
 
-await main()
+const invokedDirectly = process.argv[1] !== undefined
+  && pathToFileURL(resolve(process.argv[1])).href === import.meta.url
+if (invokedDirectly) await main()

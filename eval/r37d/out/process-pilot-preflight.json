@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T13:59:22.884Z",
+  "generatedAt": "2026-11-06T15:09:06.534Z",
   "round": "R37-D",
   "work": "WP4-process-pilot-preflight",
   "status": "ready-for-authorization",
-  "manifestDigest": "fc08cc08940f551feb0dd752c01e7a5605c0eb99ed1cb4fa23bbedcabb2e0310",
+  "manifestDigest": "a759b66e40ba0192543767264dc15c4882a0a06787d241093a668e7ef09da071",
   "checks": [
     {
       "id": "workspace-B2",
@@ -83,8 +83,8 @@
     },
     {
       "id": "runner",
-      "status": "partial",
-      "detail": "frozen inputs are complete; live adapter wiring is design-only"
+      "status": "passed",
+      "detail": "live runner is available"
     }
   ],
   "authorization": {
@@ -94,8 +94,8 @@
     "requiredGrant": "a new frozen authorization naming this manifest digest, cell count, model, route, and budget"
   },
   "runner": {
-    "status": "design-only",
-    "note": "The frozen inputs are complete. The live adapter wiring is not part of this preflight; it must be implemented and reviewed before an authorized run.",
+    "status": "available",
+    "note": "eval/r37d/run-process-pilot.mjs calls the shared follow-up loop with the frozen context.",
     "entryPoint": "eval/r33/live.mjs followUp"
   },
   "noProviderCall": true
