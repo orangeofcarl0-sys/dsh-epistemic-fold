@@ -84,3 +84,43 @@ declare module '*/r38/working-set-ablation.mjs' {
   }
   export function runAblation(): readonly AblationRow[]
 }
+
+declare module '*/r38/archive-recovery-ablation.mjs' {
+  export interface RecoveryRow {
+    readonly id: string
+    readonly description: string
+    readonly terms: readonly string[]
+    readonly criticalTerm: string
+    readonly coverage: { readonly s0: boolean; readonly s1: boolean; readonly s2: boolean }
+    readonly recovery: {
+      readonly status: string
+      readonly recovered: number
+      readonly inspectedCheckpoints: readonly string[]
+      readonly searchOperations: number
+      readonly exactPages: number
+      readonly returnedChars: number
+      readonly returnedTokens: number
+      readonly truncated: boolean
+      readonly notes: readonly string[]
+    }
+    readonly metrics: {
+      readonly criticalCoverage: { readonly s0: boolean; readonly s1: boolean; readonly s2: boolean }
+      readonly archiveOnlyRescue: boolean
+      readonly falseRetrieval: number
+      readonly scopeCorrect: number
+      readonly scopeCorrectness: number
+      readonly tokenOverhead: number
+      readonly s0Tokens: number
+      readonly s1Tokens: number
+      readonly s2Tokens: number
+      readonly retrievalCost: number
+    }
+    readonly bounds: Readonly<Record<string, boolean>>
+    readonly authority: {
+      readonly recoveredIsArchive: boolean
+      readonly stateDigestUnchanged: boolean
+      readonly stateUnchangedFlag: boolean
+    }
+  }
+  export function runAblation(): Promise<readonly RecoveryRow[]>
+}

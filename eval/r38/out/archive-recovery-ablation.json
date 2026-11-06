@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T20:54:54.856Z",
+  "round": "R38-M0",
+  "work": "WP4-archive-recovery",
+  "status": "passed",
+  "store": "FileBundleStore",
+  "recall": "recall(detail) -> recall(exact)",
+  "embeddingBackend": false,
+  "summary": {
+    "cases": 5,
+    "checks": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "archive-only-rescue",
+      "pass": true,
+      "detail": [
+        {
+          "id": "h1-production-region",
+          "rescue": true
+        },
+        {
+          "id": "s1-production-timeout",
+          "rescue": true
+        },
+        {
+          "id": "archive-miss",
+          "rescue": false
+        },
+        {
+          "id": "descriptor-budget",
+          "rescue": false
+        },
+        {
+          "id": "scope-mismatch",
+          "rescue": true
+        }
+      ]
+    },
+    {
+      "id": "honest-not-found",
+      "pass": true
+    },
+    {
+      "id": "honest-coverage-not-assessed",
+      "pass": true
+    },
+    {
+      "id": "no-false-retrieval",
+      "pass": true
+    },
+    {
+      "id": "scope-correct",
+      "pass": true
+    },
+    {
+      "id": "state-not-modified",
+      "pass": true
+    },
+    {
+      "id": "bounds-enforced",
+      "pass": true
+    },
+    {
+      "id": "query-does-not-contain-the-gold",
+      "pass": true,
+      "detail": [
+        {
+          "id": "h1-production-region",
+          "terms": [
+            "production",
+            "deployment",
+            "region"
+          ],
+          "critical": "eu-west-2"
+        },
+        {
+          "id": "s1-production-timeout",
+          "terms": [
+            "production",
+            "timeout"
+          ],
+          "critical": "30 seconds"
+        },
+        {
+          "id": "archive-miss",
+          "terms": [
+            "production",
+            "timeout"
+          ],
+          "critical": "30 seconds"
+        },
+        {
+          "id": "descriptor-budget",
+          "terms": [
+            "production",
+            "deployment",
+            "region"
+          ],
+          "critical": "eu-west-2"
+        },
+        {
+          "id": "scope-mismatch",
+          "terms": [
+            "repository a",
+            "timeout"
+          ],
+          "critical": "30 second"
+        }
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "h1-production-region",
+      "description": "the correct production region was never extracted into state",
+      "terms": [
+        "production",
+        "deployment",
+        "region"
+      ],
+      "criticalTerm": "eu-west-2",
+      "coverage": {
+        "s0": false,
+        "s1": false,
+        "s2": true
+      },
+      "recovery": {
+        "status": "found-in-archive-only",
+        "recovered": 1,
+        "inspectedCheckpoints": [
+          "cp-h1-new",
+          "cp-h1-old"
+        ],
+        "searchOperations": 2,
+        "exactPages": 1,
+        "returnedChars": 51,
+        "returnedTokens": 13,
+        "truncated": false,
+        "notes": []
+      },
+      "metrics": {
+        "criticalCoverage": {
+          "s0": false,
+          "s1": false,
+          "s2": true
+        },
+        "archiveOnlyRescue": true,
+        "falseRetrieval": 0,
+        "scopeCorrect": 1,
+        "scopeCorrectness": 1,
+        "tokenOverhead": 25,
+        "s0Tokens": 49,
+        "s1Tokens": 49,
+        "s2Tokens": 74,
+        "retrievalCost": 3
+      },
+      "bounds": {
+        "withinDescriptors": true,
+        "withinSearch": true,
+        "withinExact": true,
+        "withinChars": true,
+        "withinTokens": true
+      },
+      "authority": {
+        "recoveredIsArchive": true,
+        "stateDigestUnchanged": true,
+        "stateUnchangedFlag": true
+      },
+      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+    },
+    {
+      "id": "s1-production-timeout",
+      "description": "the production timeout is archive-only while staging is in state",
+      "terms": [
+        "production",
+        "timeout"
+      ],
+      "criticalTerm": "30 seconds",
+      "coverage": {
+        "s0": false,
+        "s1": false,
+        "s2": true
+      },
+      "recovery": {
+        "status": "found-in-archive-only",
+        "recovered": 1,
+        "inspectedCheckpoints": [
+          "cp-s1"
+        ],
+        "searchOperations": 1,
+        "exactPages": 1,
+        "returnedChars": 44,
+        "returnedTokens": 11,
+        "truncated": false,
+        "notes": []
+      },
+      "metrics": {
+        "criticalCoverage": {
+          "s0": false,
+          "s1": false,
+          "s2": true
+        },
+        "archiveOnlyRescue": true,
+        "falseRetrieval": 0,
+        "scopeCorrect": 1,
+        "scopeCorrectness": 1,
+        "tokenOverhead": 22,
+        "s0Tokens": 27,
+        "s1Tokens": 27,
+        "s2Tokens": 49,
+        "retrievalCost": 2
+      },
+      "bounds": {
+        "withinDescriptors": true,
+        "withinSearch": true,
+        "withinExact": true,
+        "withinChars": true,
+        "withinTokens": true
+      },
+      "authority": {
+        "recoveredIsArchive": true,
+        "stateDigestUnchanged": true,
+        "stateUnchangedFlag": true
+      },
+      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+    },
+    {
+      "id": "archive-miss",
+      "description": "a fact present in neither state nor archive is reported as not found in the checked scope",
+      "terms": [
+        "production",
+        "timeout"
+      ],
+      "criticalTerm": "30 seconds",
+      "coverage": {
+        "s0": false,
+        "s1": false,
+        "s2": false
+      },
+      "recovery": {
+        "status": "not-found-in-checked-scope",
+        "recovered": 0,
+        "inspectedCheckpoints": [
+          "cp-miss"
+        ],
+        "searchOperations": 1,
+        "exactPages": 0,
+        "returnedChars": 0,
+        "returnedTokens": 0,
+        "truncated": false,
+        "notes": []
+      },
+      "metrics": {
+        "criticalCoverage": {
+          "s0": false,
+          "s1": false,
+          "s2": false
+        },
+        "archiveOnlyRescue": false,
+        "falseRetrieval": 0,
+        "scopeCorrect": 0,
+        "scopeCorrectness": 1,
+        "tokenOverhead": 0,
+        "s0Tokens": 0,
+        "s1Tokens": 0,
+        "s2Tokens": 0,
+        "retrievalCost": 1
+      },
+      "bounds": {
+        "withinDescriptors": true,
+        "withinSearch": true,
+        "withinExact": true,
+        "withinChars": true,
+        "withinTokens": true
+      },
+      "authority": {
+        "recoveredIsArchive": true,
+        "stateDigestUnchanged": true,
+        "stateUnchangedFlag": true
+      },
+      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+    },
+    {
+      "id": "descriptor-budget",
+      "description": "one descriptor is inspected; the answer is in the skipped checkpoint",
+      "terms": [
+        "production",
+        "deployment",
+        "region"
+      ],
+      "criticalTerm": "eu-west-2",
+      "coverage": {
+        "s0": false,
+        "s1": false,
+        "s2": false
+      },
+      "recovery": {
+        "status": "coverage-not-assessed",
+        "recovered": 0,
+        "inspectedCheckpoints": [
+          "cp-budget-new"
+        ],
+        "searchOperations": 1,
+        "exactPages": 0,
+        "returnedChars": 0,
+        "returnedTokens": 0,
+        "truncated": false,
+        "notes": [
+          "descriptor-limit: inspected 1 of 2"
+        ]
+      },
+      "metrics": {
+        "criticalCoverage": {
+          "s0": false,
+          "s1": false,
+          "s2": false
+        },
+        "archiveOnlyRescue": false,
+        "falseRetrieval": 0,
+        "scopeCorrect": 0,
+        "scopeCorrectness": 1,
+        "tokenOverhead": 0,
+        "s0Tokens": 0,
+        "s1Tokens": 0,
+        "s2Tokens": 0,
+        "retrievalCost": 1
+      },
+      "bounds": {
+        "withinDescriptors": true,
+        "withinSearch": true,
+        "withinExact": true,
+        "withinChars": true,
+        "withinTokens": true
+      },
+      "authority": {
+        "recoveredIsArchive": true,
+        "stateDigestUnchanged": true,
+        "stateUnchangedFlag": true
+      },
+      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+    },
+    {
+      "id": "scope-mismatch",
+      "description": "the query names repository A; repository B must not be returned",
+      "terms": [
+        "repository a",
+        "timeout"
+      ],
+      "criticalTerm": "30 second",
+      "coverage": {
+        "s0": false,
+        "s1": false,
+        "s2": true
+      },
+      "recovery": {
+        "status": "found-in-archive-only",
+        "recovered": 1,
+        "inspectedCheckpoints": [
+          "cp-scope"
+        ],
+        "searchOperations": 1,
+        "exactPages": 1,
+        "returnedChars": 38,
+        "returnedTokens": 10,
+        "truncated": false,
+        "notes": []
+      },
+      "metrics": {
+        "criticalCoverage": {
+          "s0": false,
+          "s1": false,
+          "s2": true
+        },
+        "archiveOnlyRescue": true,
+        "falseRetrieval": 0,
+        "scopeCorrect": 1,
+        "scopeCorrectness": 1,
+        "tokenOverhead": 22,
+        "s0Tokens": 0,
+        "s1Tokens": 0,
+        "s2Tokens": 22,
+        "retrievalCost": 2
+      },
+      "bounds": {
+        "withinDescriptors": true,
+        "withinSearch": true,
+        "withinExact": true,
+        "withinChars": true,
+        "withinTokens": true
+      },
+      "authority": {
+        "recoveredIsArchive": true,
+        "stateDigestUnchanged": true,
+        "stateUnchangedFlag": true
+      },
+      "root": "C:\\Users\\66494\\AppData\\Local\\Temp\\ef-r38-archive-CWoYRu"
+    }
+  ]
+}
