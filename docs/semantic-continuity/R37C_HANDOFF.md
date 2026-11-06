@@ -22,13 +22,15 @@ fc777ef  test(eval): preserve R37-B evidence and establish the R37-C baseline
 1edb578  fix(eval): harden DSML decoding and protocol admission diagnostics
 c2f1174  test(eval): certify the native agent/tool lifecycle
 77a2439  feat(eval): preregister and run the bounded process-causal pilot
-this     docs(eval): publish the R37-C decision and handoff
+ea7c092  docs(eval): publish the R37-C decision and handoff
+f450483  docs(eval): attribute the C2 guard result to the observed trajectories
+this     docs(eval): finalize the R37-C handoff
 ```
 
 Diff from `5ef6781` to this handoff commit:
 
 ```text
-64 files changed, 98,262 insertions(+), 9 deletions(-)
+67 files changed, 102,492 insertions(+), 9 deletions(-)
 ```
 
 Most insertions are evidence JSON (`evidence-inventory.json`,
@@ -108,7 +110,10 @@ guard under S   -33.3 pp contract
 guard-assisted completions: 1 B1, 0 S
 ```
 
-The guard is not beneficial in this pilot. The pilot is exploratory.
+The guard is not beneficial in this pilot. The trajectory analysis shows why:
+all five contract failures never requested finish, so the guard had no
+opportunity to act. The guard-triggered subset passed but often hit the step
+limit. The pilot is exploratory.
 
 ## 4. Gates
 
@@ -179,7 +184,7 @@ R37-C tests                58/58 pass
 R37 tests                  49/49 pass
 R36 tests                  34/34 pass
 R33 targeted               94/94 pass
-Full suite                 1580 passed, 12 failed, 70 skipped
+Full suite                 1583 passed, 12 failed, 70 skipped
 ```
 
 The 12 failures are the same pre-existing vendor/DSH-drift set recorded by
@@ -202,6 +207,7 @@ eval/r37c/out/
   h1-v2-validity.json
   r37c-c2-results.json
   r37c-c2-analysis.json
+  r37c-c2-trajectories.json
   r37c-tests.json
   gate-status-r37c.json
 
@@ -213,6 +219,7 @@ docs/semantic-continuity/
   R37C_PROTOCOL_INTEGRITY.md
   R37C_NATIVE_SMOKE.md
   R37C_PROCESS_PILOT.md
+  R37C_TRAJECTORY_ANALYSIS.md
   R37C_NEXT_PREREGISTRATION.md
   R37C_DECISION.md
   R37C_HANDOFF.md
