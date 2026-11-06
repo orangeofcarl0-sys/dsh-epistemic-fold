@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T20:43:07.227Z",
+  "round": "R38-M0",
+  "work": "WP2-integrity-auditor",
+  "status": "passed",
+  "readOnly": true,
+  "severities": [
+    "blocking",
+    "requires-review",
+    "informational"
+  ],
+  "summary": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "id": "n5-incomplete",
+      "description": "a revision that supersedes only the queue leaves the rejected outbox active",
+      "expectedCodes": [
+        "stale-negative-knowledge"
+      ],
+      "forbiddenCodes": [
+        "unauthorized-retirement",
+        "missing-source-evidence"
+      ],
+      "actualCodes": [
+        "stale-negative-knowledge"
+      ],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 1,
+        "informational": 0
+      },
+      "anchors": 2,
+      "activeAnchors": 2,
+      "relations": 2,
+      "findings": [
+        {
+          "code": "stale-negative-knowledge",
+          "severity": "requires-review",
+          "anchorIds": [
+            "semantic-f42c00cf513daa46d776a38435438eff",
+            "semantic-0467be580d4f0f3368d05195fc086793"
+          ],
+          "detail": "\"durable outbox\" is ruled out by semantic-f42 but used by semantic-046",
+          "evidence": {
+            "ruledOut": "durable outbox",
+            "rejectedAnchorId": "semantic-f42c00cf513daa46d776a38435438eff",
+            "activeAnchorId": "semantic-0467be580d4f0f3368d05195fc086793"
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "n5-complete",
+      "description": "the complete revision retires both coordinates and leaves no conflict",
+      "expectedCodes": [],
+      "forbiddenCodes": [
+        "stale-negative-knowledge",
+        "unauthorized-retirement"
+      ],
+      "actualCodes": [],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 0,
+        "informational": 0
+      },
+      "anchors": 1,
+      "activeAnchors": 1,
+      "relations": 3,
+      "findings": [],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "cross-scope-opposites",
+      "description": "opposite values in different scopes are informational, never blocking",
+      "expectedCodes": [
+        "cross-scope-conflict-candidate"
+      ],
+      "forbiddenCodes": [
+        "conflicting-active-anchors",
+        "unauthorized-retirement"
+      ],
+      "actualCodes": [
+        "cross-scope-conflict-candidate"
+      ],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 0,
+        "informational": 1
+      },
+      "anchors": 2,
+      "activeAnchors": 2,
+      "relations": 0,
+      "findings": [
+        {
+          "code": "cross-scope-conflict-candidate",
+          "severity": "informational",
+          "anchorIds": [
+            "semantic-00e150eb08aa8ffc97b35f0660e97187",
+            "semantic-f53737bd90f1582f6b73170e3cde1121"
+          ],
+          "detail": "opposite polarity across scopes; not necessarily a conflict",
+          "evidence": {
+            "shared": [
+              "durable",
+              "outbox"
+            ],
+            "left": "Use the durable outbox.",
+            "right": "Avoid the durable outbox."
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "same-scope-opposites",
+      "description": "opposite values in one scope are a requires-review candidate",
+      "expectedCodes": [
+        "conflicting-active-anchors"
+      ],
+      "forbiddenCodes": [
+        "unauthorized-retirement"
+      ],
+      "actualCodes": [
+        "conflicting-active-anchors"
+      ],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 1,
+        "informational": 0
+      },
+      "anchors": 2,
+      "activeAnchors": 2,
+      "relations": 0,
+      "findings": [
+        {
+          "code": "conflicting-active-anchors",
+          "severity": "requires-review",
+          "anchorIds": [
+            "semantic-fb49065144579acf631aeab3e9797b81",
+            "semantic-c92d446053e4c96073b821e564ae4296"
+          ],
+          "detail": "opposite polarity at a shared subject (durable, outbox)",
+          "evidence": {
+            "shared": [
+              "durable",
+              "outbox"
+            ],
+            "left": "Use the durable outbox.",
+            "right": "Avoid the durable outbox."
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "shared-keyword-only",
+      "description": "two unrelated facts sharing a keyword produce no finding",
+      "expectedCodes": [],
+      "forbiddenCodes": [
+        "conflicting-active-anchors",
+        "stale-negative-knowledge",
+        "cross-scope-conflict-candidate"
+      ],
+      "actualCodes": [],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 0,
+        "informational": 0
+      },
+      "anchors": 2,
+      "activeAnchors": 2,
+      "relations": 0,
+      "findings": [],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "historical-unauthorized-retirement",
+      "description": "a pre-fix journal that retired a user constraint is flagged blocking",
+      "expectedCodes": [
+        "unauthorized-retirement"
+      ],
+      "forbiddenCodes": [],
+      "actualCodes": [
+        "unauthorized-retirement"
+      ],
+      "counts": {
+        "blocking": 1,
+        "requires-review": 0,
+        "informational": 0
+      },
+      "anchors": 0,
+      "activeAnchors": 0,
+      "relations": 1,
+      "findings": [
+        {
+          "code": "unauthorized-retirement",
+          "severity": "blocking",
+          "anchorIds": [
+            "semantic-1ff14e54d7e39d0fcff6593e70dde187"
+          ],
+          "detail": "a empirical claim retired a normative anchor",
+          "evidence": {
+            "packetId": "hist-p2",
+            "anchorId": "semantic-1ff14e54d7e39d0fcff6593e70dde187",
+            "declaringDeltaIds": [
+              "240649b132b8659659594b5862b1d11b449a2d35bf6b2a5be0782f7109756c63"
+            ]
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "unresolved-dependency",
+      "description": "a declared dependency on an absent coordinate is reported",
+      "expectedCodes": [
+        "unresolved-dependency"
+      ],
+      "forbiddenCodes": [
+        "unauthorized-retirement"
+      ],
+      "actualCodes": [
+        "unresolved-dependency"
+      ],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 1,
+        "informational": 0
+      },
+      "anchors": 1,
+      "activeAnchors": 1,
+      "relations": 1,
+      "findings": [
+        {
+          "code": "unresolved-dependency",
+          "severity": "requires-review",
+          "anchorIds": [
+            "semantic-c094dac025f6b0785f3f52802c90b4ed"
+          ],
+          "detail": "decision semantic-c09 depends on \"scheduler-queue\", which does not resolve",
+          "evidence": {
+            "packetId": "dep-p1",
+            "dependency": "scheduler-queue"
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "withheld-revision",
+      "description": "an unresolved target is reported as an unresolved supersession",
+      "expectedCodes": [
+        "unresolved-supersession"
+      ],
+      "forbiddenCodes": [
+        "unauthorized-retirement"
+      ],
+      "actualCodes": [
+        "unresolved-supersession"
+      ],
+      "counts": {
+        "blocking": 0,
+        "requires-review": 1,
+        "informational": 0
+      },
+      "anchors": 1,
+      "activeAnchors": 1,
+      "relations": 1,
+      "findings": [
+        {
+          "code": "unresolved-supersession",
+          "severity": "requires-review",
+          "anchorIds": [],
+          "detail": "delta 240649b132b8 was withheld: unresolved-target (semantic-00000000000000000000000000000000)",
+          "evidence": {
+            "packetId": "with-p2",
+            "deltaId": "240649b132b8659659594b5862b1d11b449a2d35bf6b2a5be0782f7109756c63",
+            "reason": "unresolved-target",
+            "targets": [
+              "semantic-00000000000000000000000000000000"
+            ]
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    },
+    {
+      "id": "missing-source-evidence",
+      "description": "an anchor citing an absent seq is blocking",
+      "expectedCodes": [
+        "missing-source-evidence"
+      ],
+      "forbiddenCodes": [],
+      "actualCodes": [
+        "missing-source-evidence"
+      ],
+      "counts": {
+        "blocking": 1,
+        "requires-review": 0,
+        "informational": 0
+      },
+      "anchors": 1,
+      "activeAnchors": 1,
+      "relations": 0,
+      "findings": [
+        {
+          "code": "missing-source-evidence",
+          "severity": "blocking",
+          "anchorIds": [
+            "semantic-missing-source"
+          ],
+          "detail": "anchor cites 1 seq(s) absent from the log",
+          "evidence": {
+            "missing": [
+              99
+            ]
+          }
+        }
+      ],
+      "pass": true,
+      "missing": [],
+      "forbidden": [],
+      "wrongSeverity": []
+    }
+  ]
+}
