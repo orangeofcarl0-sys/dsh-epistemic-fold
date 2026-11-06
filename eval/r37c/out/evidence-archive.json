@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T08:28:45.818Z",
+  "round": "R37-C",
+  "work": "C0-A",
+  "status": "archived",
+  "archive": {
+    "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-evidence-archive\\r37b-raw-evidence-20261106.tar.gz",
+    "sha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+    "bytes": 3763962,
+    "format": "tar.gz"
+  },
+  "sources": [
+    {
+      "name": "runs-b",
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\eval\\r37\\runs-b",
+      "present": true,
+      "files": 1572,
+      "bytes": 0
+    },
+    {
+      "name": "runs-b2",
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\eval\\r37\\runs-b2",
+      "present": true,
+      "files": 2111,
+      "bytes": 0
+    },
+    {
+      "name": "manifests-b",
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\eval\\r37\\manifests-b",
+      "present": true,
+      "files": 165,
+      "bytes": 0
+    },
+    {
+      "name": "manifests-b2",
+      "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37-action\\eval\\r37\\manifests-b2",
+      "present": true,
+      "files": 218,
+      "bytes": 0
+    }
+  ],
+  "authoritative": [
+    "eval/r37/out/r37b-results.json",
+    "eval/r37/out/r37b-stage2-results.json",
+    "eval/r37/out/r37b-stage2-statistics.json",
+    "eval/r37/out/gate-status-r37b.json",
+    "eval/r37/out/gate-status-r37b-stage2.json"
+  ],
+  "secretScan": {
+    "status": "clean",
+    "findings": 0
+  },
+  "archiveDirectory": {
+    "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-evidence-archive",
+    "archives": [
+      "r37b-raw-evidence-20261106.tar.gz"
+    ]
+  },
+  "notes": [
+    "The archive is outside the git worktree; it is not removed by git clean or worktree removal.",
+    "A SHA-256 is recorded here and in evidence-inventory.json when R37C_ARCHIVE is supplied.",
+    "Trace turn text remains capped at 1000 characters; the archive preserves the cap, not a full response."
+  ]
+}

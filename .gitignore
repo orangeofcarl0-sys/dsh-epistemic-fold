@@ -52,3 +52,11 @@ eval/r37/manifests-b/
 eval/r37/runs-b2/
 eval/r37/manifests-b2/
 eval/r37/out/r37b-*progress*.json
+
+# R37-C process pilot archive and generated manifests (local evidence; the
+# aggregate result and analysis are written to eval/r37c/out/)
+eval/r37c/runs-c2/
+eval/r37c/manifests-c2/
+eval/r37c/runs-c2-smoke/
+eval/r37c/manifests-c2-smoke/
+eval/r37c/out/*progress*.json

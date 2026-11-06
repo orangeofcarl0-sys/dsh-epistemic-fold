@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T08:33:20.808Z",
+  "round": "R37-C",
+  "work": "C0-A",
+  "base": {
+    "r37GitHead": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+    "r37cGitHead": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+    "r37cBranch": "rc37c-measurement-closure",
+    "r37cStatusClean": false
+  },
+  "runRoots": [
+    {
+      "stage": 1,
+      "path": "../ef-r37-action/eval/r37/runs-b",
+      "present": true,
+      "runs": 163
+    },
+    {
+      "stage": 2,
+      "path": "../ef-r37-action/eval/r37/runs-b2",
+      "present": true,
+      "runs": 218
+    }
+  ],
+  "totals": {
+    "runs": 381,
+    "rows": 381,
+    "files": 2919,
+    "bytes": 17449050
+  },
+  "authoritative": {
+    "eval/r37/out/r37b-results.json": {
+      "present": true,
+      "sha256": "2ea58f1ea56c42a7e4875507ba12043b6eef7998886cdb306c62b560807d7232",
+      "bytes": 72679
+    },
+    "eval/r37/out/r37b-stage2-results.json": {
+      "present": true,
+      "sha256": "4a699a0e14c7f80032b06ba863621060c028bfef5f9f78bedb4029b9b97d3b86",
+      "bytes": 101997
+    },
+    "eval/r37/out/r37b-stage2-statistics.json": {
+      "present": true,
+      "sha256": "c3b400da2027362c7f95784a41465a93fb396f003d0a97990d641a903f504c2a",
+      "bytes": 2703
+    },
+    "eval/r37/out/gate-status-r37b.json": {
+      "present": true,
+      "sha256": "d242d14dbd4da594e67858f081de916a889f4786d61de37f80d82313d4d17422",
+      "bytes": 2637
+    },
+    "eval/r37/out/gate-status-r37b-stage2.json": {
+      "present": true,
+      "sha256": "8d43a5ed0ce03e3d18ed547552d9eda4da26dedf10640b25b8c6f04c4e181961",
+      "bytes": 2739
+    }
+  },
+  "archive": {
+    "path": "../ef-r37c-evidence-archive/r37b-raw-evidence-20261106.tar.gz",
+    "present": true,
+    "sha256": "de6102989457fba6e5f4c43406478ce91b360f247f2dd462759f252f69de1c92",
+    "bytes": 3763962
+  },
+  "integrityStatus": "passed"
+}

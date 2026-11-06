@@ -1,0 +1,1561 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T08:33:20.808Z",
+  "round": "R37-C",
+  "work": "C0-A",
+  "status": "passed",
+  "cellMatrix": {
+    "expected": 383,
+    "expectedUnique": 360,
+    "observed": 381,
+    "uniqueObserved": 360,
+    "missing": [],
+    "unexpected": [],
+    "expectedDuplicates": [
+      {
+        "key": "1|continuation|C1|B1|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|S|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|A1-v2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|A1-v2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|O2|r1|W1",
+        "count": 3
+      },
+      {
+        "key": "1|continuation|B2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|C1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|C1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|F1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|F1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|H1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|H1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|FP|r1|W1",
+        "count": 3
+      },
+      {
+        "key": "1|continuation|B2|FS|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|writer-only|A1-v2|S|r1|W0",
+        "count": 2
+      },
+      {
+        "key": "1|writer-only|A1-v2|S|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "2|continuation|B2|FN|r2|W1",
+        "count": 2
+      },
+      {
+        "key": "2|continuation|C1|FH|r1|W1",
+        "count": 2
+      }
+    ],
+    "duplicates": [
+      {
+        "key": "1|continuation|C1|B1|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|S|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|A1-v2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|A1-v2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|O2|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|C1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|C1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|D1-v2|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|F1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|F1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|H1|O2|r3|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|H1|O2|r4|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|FP|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|continuation|B2|FS|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "1|writer-only|A1-v2|S|r1|W0",
+        "count": 2
+      },
+      {
+        "key": "1|writer-only|A1-v2|S|r1|W1",
+        "count": 2
+      },
+      {
+        "key": "2|continuation|B2|FN|r2|W1",
+        "count": 2
+      },
+      {
+        "key": "2|continuation|C1|FH|r1|W1",
+        "count": 2
+      }
+    ]
+  },
+  "drift": [],
+  "configuration": {
+    "datasetDigests": [
+      "99b30426c3dab71521ee47e0d2e6fcd61b33fdfd9a26b5b8516fc1fef7bbb3c2"
+    ],
+    "scorerVersions": [
+      3
+    ],
+    "routeEnvs": [
+      "{\"baseUrlEnv\":\"R37B_BASE_URL\",\"apiKeyEnv\":\"R37B_API_KEY\"}"
+    ],
+    "runtimeConfigs": [
+      "{\"toolProtocol\":\"P3e\",\"harnessVersion\":\"H-protocol-e\",\"finishGuard\":false,\"runtime\":\"custom-json-loop\"}"
+    ],
+    "invalidCells": 30
+  },
+  "stage2": {
+    "reports": 218,
+    "rows": 218,
+    "uniqueCells": 180,
+    "validRows": 207,
+    "invalidRows": 11,
+    "invalidByOutcome": {
+      "provider-transport-error": 2,
+      "fold-invalid": 9
+    },
+    "writerAttempts": 72,
+    "o2Rows": 36,
+    "e2eRows": 72,
+    "representationRows": 38,
+    "cost": 1088,
+    "inputTokens": 1250840,
+    "outputTokens": 235317
+  },
+  "summaryComparison": {
+    "writerAttempts": {
+      "recomputed": 72,
+      "reported": 72
+    },
+    "o2Rows": {
+      "recomputed": 36,
+      "reported": 36
+    },
+    "e2ePairs": {
+      "recomputed": 36,
+      "reported": 36
+    },
+    "representationRows": {
+      "recomputed": 38,
+      "reported": 36
+    },
+    "protocolTurns": {
+      "recomputed": 819,
+      "reported": 819
+    },
+    "costAttempts": {
+      "recomputed": 1088,
+      "reported": 1088
+    },
+    "inputTokens": {
+      "recomputed": 1250840,
+      "reported": 1250840
+    },
+    "outputTokens": {
+      "recomputed": 235317,
+      "reported": 235317
+    }
+  },
+  "truncatedEvidence": {
+    "rows": 113,
+    "detail": [
+      {
+        "runId": "r37b-e2e-A1-v2-B1-r3",
+        "caseId": "A1-v2",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r1",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r2",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r2",
+        "cappedTurns": [
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r3",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          4,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r4",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-S-r1",
+        "caseId": "B2",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-S-r4",
+        "caseId": "B2",
+        "arm": "S",
+        "replicateId": "r4",
+        "cappedTurns": [
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r2",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r2",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r3",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r4",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r4-retry1",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r1",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r2",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r3",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r3",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-D1-v2-B1-r1",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-D1-v2-B1-r2",
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "replicateId": "r2",
+        "cappedTurns": [
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-F1-B1-r4",
+        "caseId": "F1",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-H1-B1-r1",
+        "caseId": "H1",
+        "arm": "B1",
+        "replicateId": "r1",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-H1-B1-r3",
+        "caseId": "H1",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-H1-S-r1",
+        "caseId": "H1",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-H1-S-r4",
+        "caseId": "H1",
+        "arm": "S",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r1",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r1-smoke2",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r1",
+        "cappedTurns": [
+          3,
+          4,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r2",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r2",
+        "cappedTurns": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r3-retry1",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r3",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r4-retry1",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r4",
+        "cappedTurns": [
+          0,
+          2,
+          3,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r3-retry1",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r3",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r4-retry1",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-H1-r2",
+        "caseId": "H1",
+        "arm": "O2",
+        "replicateId": "r2",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r1",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r1",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r2",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r2",
+        "cappedTurns": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r3",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r3",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r1",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r1",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r1-smoke2",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r2",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r2",
+        "cappedTurns": [
+          3,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r3",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r3",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r1",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r1",
+        "cappedTurns": [
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r1-retry1",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r1",
+        "cappedTurns": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r2",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r2",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r3",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r3",
+        "cappedTurns": [
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r4",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2,
+          4,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r2",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r3",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r3",
+        "cappedTurns": [
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r4",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r4",
+        "cappedTurns": [
+          0,
+          2,
+          4,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r1",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r2",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r2",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r3",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r3",
+        "cappedTurns": [
+          2,
+          3,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r4",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          4,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r1",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r1",
+        "cappedTurns": [
+          0,
+          2,
+          3,
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r2",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r3",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r3",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r4",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-A1-v2-S-r4",
+        "caseId": "A1-v2",
+        "arm": "S",
+        "replicateId": "r4",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r1",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r2",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r2",
+        "cappedTurns": [
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r3",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-B1-r4",
+        "caseId": "B2",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-S-r1",
+        "caseId": "B2",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-S-r2",
+        "caseId": "B2",
+        "arm": "S",
+        "replicateId": "r2",
+        "cappedTurns": [
+          4,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-B2-S-r5",
+        "caseId": "B2",
+        "arm": "S",
+        "replicateId": "r5",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r1",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r1",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r2",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          4,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r3",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r3",
+        "cappedTurns": [
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-B1-r4",
+        "caseId": "C1",
+        "arm": "B1",
+        "replicateId": "r4",
+        "cappedTurns": [
+          3,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r1",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r2",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r2",
+        "cappedTurns": [
+          3,
+          4,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r3",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r3",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r5",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r5",
+        "cappedTurns": [
+          0,
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-C1-S-r6",
+        "caseId": "C1",
+        "arm": "S",
+        "replicateId": "r6",
+        "cappedTurns": [
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-D1-v2-S-r5",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "replicateId": "r5",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-D1-v2-S-r6",
+        "caseId": "D1-v2",
+        "arm": "S",
+        "replicateId": "r6",
+        "cappedTurns": [
+          0,
+          1,
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-F1-S-r1",
+        "caseId": "F1",
+        "arm": "S",
+        "replicateId": "r1",
+        "cappedTurns": [
+          1
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-e2e-H1-S-r4",
+        "caseId": "H1",
+        "arm": "S",
+        "replicateId": "r4",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r2",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r3",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r3",
+        "cappedTurns": [
+          3,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r4",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r4",
+        "cappedTurns": [
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-B2-r6",
+        "caseId": "B2",
+        "arm": "O2",
+        "replicateId": "r6",
+        "cappedTurns": [
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r1",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r1",
+        "cappedTurns": [
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r2",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r2",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r3",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r3",
+        "cappedTurns": [
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r4",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2,
+          4,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-C1-r5",
+        "caseId": "C1",
+        "arm": "O2",
+        "replicateId": "r5",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-F1-r1",
+        "caseId": "F1",
+        "arm": "O2",
+        "replicateId": "r1",
+        "cappedTurns": [
+          0
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-o2-H1-r5",
+        "caseId": "H1",
+        "arm": "O2",
+        "replicateId": "r5",
+        "cappedTurns": [
+          1
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r3",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r3",
+        "cappedTurns": [
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r4",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r4",
+        "cappedTurns": [
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r5",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r5",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FN-r6",
+        "caseId": "B2",
+        "arm": "FN",
+        "replicateId": "r6",
+        "cappedTurns": [
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r1",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r1",
+        "cappedTurns": [
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r3",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r3",
+        "cappedTurns": [
+          0,
+          3,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FP-r5",
+        "caseId": "B2",
+        "arm": "FP",
+        "replicateId": "r5",
+        "cappedTurns": [
+          3,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r1",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r1",
+        "cappedTurns": [
+          3,
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r2",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r4",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r5",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r5",
+        "cappedTurns": [
+          2,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-B2-FS-r6",
+        "caseId": "B2",
+        "arm": "FS",
+        "replicateId": "r6",
+        "cappedTurns": [
+          2,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r1",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r1",
+        "cappedTurns": [
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r1-retry1",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r1",
+        "cappedTurns": [
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r3",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r3",
+        "cappedTurns": [
+          3,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r4",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r5",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r5",
+        "cappedTurns": [
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FH-r6",
+        "caseId": "C1",
+        "arm": "FH",
+        "replicateId": "r6",
+        "cappedTurns": [
+          2,
+          3,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r1",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r1",
+        "cappedTurns": [
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r2",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r2",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r3",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r3",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r5",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r5",
+        "cappedTurns": [
+          2,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FP-r6",
+        "caseId": "C1",
+        "arm": "FP",
+        "replicateId": "r6",
+        "cappedTurns": [
+          4,
+          5
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r1",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r1",
+        "cappedTurns": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r2",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r2",
+        "cappedTurns": [
+          4,
+          5,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r3",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r3",
+        "cappedTurns": [
+          3,
+          5,
+          6
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r4",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r4",
+        "cappedTurns": [
+          2,
+          3,
+          4
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r5",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r5",
+        "cappedTurns": [
+          2,
+          4,
+          6,
+          7
+        ],
+        "writerRawTruncated": false
+      },
+      {
+        "runId": "r37b-rep-C1-FS-r6",
+        "caseId": "C1",
+        "arm": "FS",
+        "replicateId": "r6",
+        "cappedTurns": [
+          2,
+          3
+        ],
+        "writerRawTruncated": false
+      }
+    ]
+  },
+  "secrets": {
+    "findings": 0,
+    "detail": []
+  },
+  "notes": [
+    "A retry run is a duplicate cell, not a new experimental unit; the analysis dedupes it.",
+    "Nine of the eleven Stage 2 invalid rows are fold-invalid writer-only rows, not provider measurements.",
+    "Trace turn text is capped at 1000 characters; capped turns are marked truncated-evidence."
+  ]
+}
