@@ -1,0 +1,550 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T09:04:03.972Z",
+  "round": "R37-C",
+  "work": "C2",
+  "status": "complete",
+  "stopReason": null,
+  "design": {
+    "cases": [
+      "B2",
+      "D1-v2"
+    ],
+    "arms": [
+      "B1",
+      "S"
+    ],
+    "guards": [
+      "G0",
+      "G1"
+    ],
+    "cells": 24,
+    "planned": 24,
+    "replicates": 3,
+    "protocol": "P3s",
+    "harness": "H-protocol-s",
+    "model": "deepseek-v4.1-flash"
+  },
+  "usage": {
+    "maxHttp": 240,
+    "maxInput": 300000,
+    "maxOutput": 70000,
+    "maxWallMs": 3600000,
+    "used": {
+      "requests": 187,
+      "inputTokens": 226808,
+      "outputTokens": 29980,
+      "wallClockMs": 504096
+    },
+    "remaining": {
+      "requests": 53,
+      "inputTokens": 73192,
+      "outputTokens": 40020,
+      "wallClockMs": 3095904
+    },
+    "admissionNote": "Each cell receives the adapter-required context-window reserve; the global 300k input / 70k output caps are enforced on OBSERVED usage after every cell."
+  },
+  "byArmGuard": {
+    "B1": {
+      "G0": {
+        "cells": 6,
+        "valid": 6,
+        "contractSuccesses": 5,
+        "taskSuccesses": 6,
+        "contractRate": 0.8333333333333334,
+        "taskRate": 1,
+        "testsExecuted": 7,
+        "finishRequests": 4,
+        "finishRejections": 0,
+        "assistedCompletions": 0,
+        "invalidActionTurns": 9,
+        "rejectedActions": 4,
+        "stepLimitCells": 1,
+        "delivery": {
+          "ef-off-basic-context": 6
+        }
+      },
+      "G1": {
+        "cells": 6,
+        "valid": 6,
+        "contractSuccesses": 4,
+        "taskSuccesses": 5,
+        "contractRate": 0.6666666666666666,
+        "taskRate": 0.8333333333333334,
+        "testsExecuted": 8,
+        "finishRequests": 3,
+        "finishRejections": 2,
+        "assistedCompletions": 1,
+        "invalidActionTurns": 17,
+        "rejectedActions": 8,
+        "stepLimitCells": 2,
+        "delivery": {
+          "ef-off-basic-context": 6
+        }
+      }
+    },
+    "S": {
+      "G0": {
+        "cells": 6,
+        "valid": 6,
+        "contractSuccesses": 6,
+        "taskSuccesses": 6,
+        "contractRate": 1,
+        "taskRate": 1,
+        "testsExecuted": 7,
+        "finishRequests": 4,
+        "finishRejections": 0,
+        "assistedCompletions": 0,
+        "invalidActionTurns": 7,
+        "rejectedActions": 0,
+        "stepLimitCells": 0,
+        "delivery": {
+          "semantic-committed": 6
+        }
+      },
+      "G1": {
+        "cells": 6,
+        "valid": 6,
+        "contractSuccesses": 4,
+        "taskSuccesses": 5,
+        "contractRate": 0.6666666666666666,
+        "taskRate": 0.8333333333333334,
+        "testsExecuted": 6,
+        "finishRequests": 3,
+        "finishRejections": 2,
+        "assistedCompletions": 0,
+        "invalidActionTurns": 13,
+        "rejectedActions": 4,
+        "stepLimitCells": 2,
+        "delivery": {
+          "semantic-committed-empty": 1,
+          "semantic-committed": 4,
+          "full-history-fallback": 1
+        }
+      }
+    }
+  },
+  "byCase": {
+    "B2": {
+      "B1": {
+        "G0": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 2,
+          "taskSuccesses": 3,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 1,
+          "testsExecuted": 4,
+          "finishRequests": 1,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 9,
+          "rejectedActions": 4,
+          "stepLimitCells": 1,
+          "delivery": {
+            "ef-off-basic-context": 3
+          }
+        },
+        "G1": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 2,
+          "taskSuccesses": 3,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 1,
+          "testsExecuted": 3,
+          "finishRequests": 0,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 13,
+          "rejectedActions": 8,
+          "stepLimitCells": 1,
+          "delivery": {
+            "ef-off-basic-context": 3
+          }
+        }
+      },
+      "S": {
+        "G0": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 3,
+          "taskSuccesses": 3,
+          "contractRate": 1,
+          "taskRate": 1,
+          "testsExecuted": 4,
+          "finishRequests": 1,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 6,
+          "rejectedActions": 0,
+          "stepLimitCells": 0,
+          "delivery": {
+            "semantic-committed": 3
+          }
+        },
+        "G1": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 2,
+          "taskSuccesses": 3,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 1,
+          "testsExecuted": 2,
+          "finishRequests": 1,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 7,
+          "rejectedActions": 4,
+          "stepLimitCells": 1,
+          "delivery": {
+            "semantic-committed": 2,
+            "full-history-fallback": 1
+          }
+        }
+      }
+    },
+    "D1-v2": {
+      "B1": {
+        "G0": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 3,
+          "taskSuccesses": 3,
+          "contractRate": 1,
+          "taskRate": 1,
+          "testsExecuted": 3,
+          "finishRequests": 3,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 0,
+          "rejectedActions": 0,
+          "stepLimitCells": 0,
+          "delivery": {
+            "ef-off-basic-context": 3
+          }
+        },
+        "G1": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 2,
+          "taskSuccesses": 2,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 0.6666666666666666,
+          "testsExecuted": 5,
+          "finishRequests": 3,
+          "finishRejections": 2,
+          "assistedCompletions": 1,
+          "invalidActionTurns": 4,
+          "rejectedActions": 0,
+          "stepLimitCells": 1,
+          "delivery": {
+            "ef-off-basic-context": 3
+          }
+        }
+      },
+      "S": {
+        "G0": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 3,
+          "taskSuccesses": 3,
+          "contractRate": 1,
+          "taskRate": 1,
+          "testsExecuted": 3,
+          "finishRequests": 3,
+          "finishRejections": 0,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 1,
+          "rejectedActions": 0,
+          "stepLimitCells": 0,
+          "delivery": {
+            "semantic-committed": 3
+          }
+        },
+        "G1": {
+          "cells": 3,
+          "valid": 3,
+          "contractSuccesses": 2,
+          "taskSuccesses": 2,
+          "contractRate": 0.6666666666666666,
+          "taskRate": 0.6666666666666666,
+          "testsExecuted": 4,
+          "finishRequests": 2,
+          "finishRejections": 2,
+          "assistedCompletions": 0,
+          "invalidActionTurns": 6,
+          "rejectedActions": 0,
+          "stepLimitCells": 1,
+          "delivery": {
+            "semantic-committed-empty": 1,
+            "semantic-committed": 2
+          }
+        }
+      }
+    }
+  },
+  "effects": {
+    "guardUnderB1": {
+      "contract": -0.16666666666666674,
+      "task": -0.16666666666666663
+    },
+    "guardUnderS": {
+      "contract": -0.33333333333333337,
+      "task": -0.16666666666666663
+    },
+    "activeUnderG0": {
+      "contract": 0.16666666666666663,
+      "task": 0
+    },
+    "activeUnderG1": {
+      "contract": 0,
+      "task": 0
+    },
+    "interaction": {
+      "contract": -0.16666666666666663,
+      "task": 0,
+      "note": "Exploratory difference-in-differences; the pilot is not powered for an interaction test."
+    }
+  },
+  "pairs": [
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "guard": "G0",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r1",
+      "guard": "G1",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": false,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "damage",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r2",
+      "guard": "G0",
+      "baseline": {
+        "contract": false,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "rescue",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r2",
+      "guard": "G1",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r3",
+      "guard": "G0",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "B2",
+      "replicateId": "r3",
+      "guard": "G1",
+      "baseline": {
+        "contract": false,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "rescue",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r1",
+      "guard": "G0",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r1",
+      "guard": "G1",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r2",
+      "guard": "G0",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r2",
+      "guard": "G1",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r3",
+      "guard": "G0",
+      "baseline": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "treatment": {
+        "contract": true,
+        "task": true,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    },
+    {
+      "caseId": "D1-v2",
+      "replicateId": "r3",
+      "guard": "G1",
+      "baseline": {
+        "contract": false,
+        "task": false,
+        "valid": true
+      },
+      "treatment": {
+        "contract": false,
+        "task": false,
+        "valid": true
+      },
+      "contractOutcome": "tie",
+      "taskOutcome": "tie"
+    }
+  ],
+  "pairSummary": {
+    "G0": {
+      "pairs": 6,
+      "contract": {
+        "rescue": 1,
+        "damage": 0,
+        "ties": 5
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 0,
+        "ties": 6
+      }
+    },
+    "G1": {
+      "pairs": 6,
+      "contract": {
+        "rescue": 1,
+        "damage": 1,
+        "ties": 4
+      },
+      "task": {
+        "rescue": 0,
+        "damage": 0,
+        "ties": 6
+      }
+    }
+  },
+  "conclusions": [
+    "The pilot is descriptive; no significance or product-level benefit claim is made.",
+    "A guard effect is a change in contract or task success between G0 and G1 within one arm.",
+    "The interaction is exploratory and is not a powered test.",
+    "A fold refusal or fallback remains in the assigned-arm denominator."
+  ]
+}

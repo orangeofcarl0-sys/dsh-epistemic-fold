@@ -1,0 +1,1803 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T09:01:06.282Z",
+  "round": "R37-C",
+  "work": "C2",
+  "status": "complete",
+  "stopReason": null,
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "protocol": "P3s",
+  "harness": "H-protocol-s",
+  "plan": {
+    "cases": [
+      "B2",
+      "D1-v2"
+    ],
+    "arms": [
+      "B1",
+      "S"
+    ],
+    "guards": [
+      "G0",
+      "G1"
+    ],
+    "replicates": 3,
+    "cells": 24,
+    "seed": 37
+  },
+  "budget": {
+    "maxHttp": 240,
+    "maxInput": 300000,
+    "maxOutput": 70000,
+    "maxWallMs": 3600000,
+    "used": {
+      "requests": 187,
+      "inputTokens": 226808,
+      "outputTokens": 29980,
+      "wallClockMs": 504096
+    },
+    "remaining": {
+      "requests": 53,
+      "inputTokens": 73192,
+      "outputTokens": 40020,
+      "wallClockMs": 3095904
+    },
+    "admissionNote": "Each cell receives the adapter-required context-window reserve; the global 300k input / 70k output caps are enforced on OBSERVED usage after every cell."
+  },
+  "results": [
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r1",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "cellId": "D1-v2-S-G0-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 15445,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 4,
+        "modelCalls": 5,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 4,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 4,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 6,
+        "inputTokens": 7356,
+        "outputTokens": 749,
+        "wallClockMs": 15097
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r2",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "cellId": "B2-B1-G1-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 19551,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActionTurns": 3,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 7871,
+        "outputTokens": 665,
+        "wallClockMs": 19205
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r1",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "cellId": "B2-S-G0-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 24173,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 6,
+        "rejectedActions": 0,
+        "invalidActionTurns": 2,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 10097,
+        "outputTokens": 1591,
+        "wallClockMs": 23812
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r1",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "cellId": "D1-v2-S-G1-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 21536,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 1,
+          "rejections": 1,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 5,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 5,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "nothing-accepted",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "semantic-committed-empty"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 10103,
+        "outputTokens": 747,
+        "wallClockMs": 21194
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r3",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "cellId": "B2-B1-G1-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 19103,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": false,
+        "taskSuccess": true,
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 1,
+        "rejectedActions": 7,
+        "invalidActionTurns": 7,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 7101,
+        "outputTokens": 650,
+        "wallClockMs": 18751
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r3",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "cellId": "D1-v2-B1-G1-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 7,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 21713,
+        "tail": [
+          "executed-failed: 0/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-failure",
+        "contractSuccess": false,
+        "taskSuccess": false,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActionTurns": 3,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 12386,
+        "outputTokens": 1063,
+        "wallClockMs": 21363
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r2",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "cellId": "B2-B1-G0-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 24051,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": false,
+        "taskSuccess": true,
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 2,
+        "rejectedActions": 1,
+        "invalidActionTurns": 6,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 11885,
+        "outputTokens": 2016,
+        "wallClockMs": 23611
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r3",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "cellId": "D1-v2-S-G1-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 7,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 20179,
+        "tail": [
+          "executed-failed: 0/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-failure",
+        "contractSuccess": false,
+        "taskSuccess": false,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [
+          "constraint.claim-known",
+          "constraint.tests-or-evidence"
+        ],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 2,
+        "rejectedActions": 0,
+        "invalidActionTurns": 6,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 12453,
+        "outputTokens": 922,
+        "wallClockMs": 19819
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r3",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "cellId": "D1-v2-B1-G0-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 13028,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 2,
+        "modelCalls": 3,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 2,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 2,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "fold-refused",
+        "foldFallback": "full-history",
+        "toolProtocol": "P3s",
+        "validActions": 3,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 4,
+        "inputTokens": 3431,
+        "outputTokens": 755,
+        "wallClockMs": 12672
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r1",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "cellId": "B2-S-G1-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 21693,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": false,
+        "taskSuccess": true,
+        "testsExecuted": 0,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 4,
+        "rejectedActions": 4,
+        "invalidActionTurns": 4,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 11043,
+        "outputTokens": 886,
+        "wallClockMs": 21310
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r2",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "cellId": "D1-v2-B1-G0-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 13339,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 3,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 3,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "fold-refused",
+        "foldFallback": "full-history",
+        "toolProtocol": "P3s",
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 5,
+        "inputTokens": 4513,
+        "outputTokens": 722,
+        "wallClockMs": 12967
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r3",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "cellId": "B2-B1-G0-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 15557,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 3,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 3,
+            "requiresTests": true,
+            "testsExecuted": 3,
+            "lastPassingTest": {
+              "step": 2,
+              "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+              "exitCode": 0
+            },
+            "currentDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+            "fresh": true
+          },
+          "checks": [
+            {
+              "step": 3,
+              "requiresTests": true,
+              "testsExecuted": 3,
+              "lastPassingTest": {
+                "step": 2,
+                "digest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+                "exitCode": 0
+              },
+              "currentDigest": "9ff3e8d7900c95bd3c96a64c48d900a5a319191c71c6fa75638662a1131bfd34",
+              "fresh": true
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 12,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 5,
+        "inputTokens": 5409,
+        "outputTokens": 1004,
+        "wallClockMs": 15178
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r3",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "cellId": "D1-v2-S-G0-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 20776,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 7,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 7,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 7,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 9,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 10433,
+        "outputTokens": 756,
+        "wallClockMs": 20408
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r3",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r3",
+        "cellId": "B2-S-G0-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 25440,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActionTurns": 4,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 11775,
+        "outputTokens": 1953,
+        "wallClockMs": 25084
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r2",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "cellId": "B2-S-G0-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 17448,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G0-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 2,
+        "steps": 3,
+        "modelCalls": 4,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 3,
+            "requiresTests": true,
+            "testsExecuted": 2,
+            "lastPassingTest": {
+              "step": 2,
+              "digest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627",
+              "exitCode": 0
+            },
+            "currentDigest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627",
+            "fresh": true
+          },
+          "checks": [
+            {
+              "step": 3,
+              "requiresTests": true,
+              "testsExecuted": 2,
+              "lastPassingTest": {
+                "step": 2,
+                "digest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627",
+                "exitCode": 0
+              },
+              "currentDigest": "abb9a2bcfc0977d7b19348447fa3e3d9ba38e73a7ab5ba97c3dafa687e985627",
+              "fresh": true
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 10,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 5,
+        "inputTokens": 6223,
+        "outputTokens": 1581,
+        "wallClockMs": 17101
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r2",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "cellId": "B2-S-G1-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 32029,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 5,
+        "rejectedActions": 0,
+        "invalidActionTurns": 3,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 18516,
+        "outputTokens": 3627,
+        "wallClockMs": 31681
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r2",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "cellId": "D1-v2-B1-G1-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 18360,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 2,
+        "steps": 5,
+        "modelCalls": 6,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 2,
+          "prematureFinishRequests": 1,
+          "rejections": 1,
+          "assistedCompletion": true,
+          "lastCheck": {
+            "step": 5,
+            "requiresTests": true,
+            "testsExecuted": 2,
+            "lastPassingTest": {
+              "step": 4,
+              "digest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657",
+              "exitCode": 0
+            },
+            "currentDigest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657",
+            "fresh": true
+          },
+          "checks": [
+            {
+              "step": 3,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            },
+            {
+              "step": 5,
+              "requiresTests": true,
+              "testsExecuted": 2,
+              "lastPassingTest": {
+                "step": 4,
+                "digest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657",
+                "exitCode": 0
+              },
+              "currentDigest": "08113ae578d00967ceef23b1983123be2376cbf20cd536cd6828daf78b5a9657",
+              "fresh": true
+            }
+          ],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 2,
+        "finishRejections": 1,
+        "guardAssistedCompletion": true,
+        "failedChecks": [],
+        "writerCommitStatus": "fold-refused",
+        "foldFallback": "full-history",
+        "toolProtocol": "P3s",
+        "validActions": 11,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 7,
+        "inputTokens": 7503,
+        "outputTokens": 1039,
+        "wallClockMs": 18018
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r2",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r2",
+        "cellId": "D1-v2-S-G0-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 19671,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G0-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 7,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 7,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 7,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActionTurns": 1,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 10201,
+        "outputTokens": 764,
+        "wallClockMs": 19323
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r3",
+      "cell": {
+        "caseId": "B2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r3",
+        "cellId": "B2-S-G1-r3"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 18148,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r3\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-S-G1-r3\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 5,
+        "modelCalls": 6,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 5,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": {
+              "step": 4,
+              "digest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03",
+              "exitCode": 0
+            },
+            "currentDigest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03",
+            "fresh": true
+          },
+          "checks": [
+            {
+              "step": 5,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": {
+                "step": 4,
+                "digest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03",
+                "exitCode": 0
+              },
+              "currentDigest": "d10051a4225bb3f403bf14a5c4f449c9b9ee433b62b077f6a8b7b3b71cf82b03",
+              "fresh": true
+            }
+          ],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "fold-refused",
+        "foldFallback": "full-history",
+        "toolProtocol": "P3s",
+        "validActions": 9,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "full-history-fallback"
+      },
+      "usage": {
+        "requests": 7,
+        "inputTokens": 8974,
+        "outputTokens": 1344,
+        "wallClockMs": 17806
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r1",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "cellId": "B2-B1-G1-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 24043,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G1-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 7,
+        "rejectedActions": 1,
+        "invalidActionTurns": 3,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 11740,
+        "outputTokens": 1578,
+        "wallClockMs": 23676
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r1",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r1",
+        "cellId": "D1-v2-B1-G1-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 22231,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G1-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 1,
+          "rejections": 1,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 6,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 6,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "fold-refused",
+        "foldFallback": "full-history",
+        "toolProtocol": "P3s",
+        "validActions": 8,
+        "rejectedActions": 0,
+        "invalidActionTurns": 1,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 10419,
+        "outputTokens": 1028,
+        "wallClockMs": 21835
+      }
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r1",
+      "cell": {
+        "caseId": "B2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "cellId": "B2-B1-G0-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 27797,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-B2-B1-G0-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 0,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": null,
+          "checks": [],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 0,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 7,
+        "rejectedActions": 3,
+        "invalidActionTurns": 3,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 11066,
+        "outputTokens": 2841,
+        "wallClockMs": 27373
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r2",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "S",
+        "guard": "G1",
+        "finishGuard": true,
+        "replicateId": "r2",
+        "cellId": "D1-v2-S-G1-r2"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 45958,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r2\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-S-G1-r2\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 2,
+        "steps": 8,
+        "modelCalls": 8,
+        "finishGuard": {
+          "enabled": true,
+          "policy": "reject-finish-without-fresh-passing-test",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 1,
+          "rejections": 1,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 4,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 4,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "The guard rejects a finish request; it never runs a test, edits code, or writes verification."
+        },
+        "finishRequests": 1,
+        "finishRejections": 1,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "committed",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 10,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "semantic-committed"
+      },
+      "usage": {
+        "requests": 9,
+        "inputTokens": 12906,
+        "outputTokens": 1089,
+        "wallClockMs": 45421
+      }
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r1",
+      "cell": {
+        "caseId": "D1-v2",
+        "arm": "B1",
+        "guard": "G0",
+        "finishGuard": false,
+        "replicateId": "r1",
+        "cellId": "D1-v2-B1-G0-r1"
+      },
+      "status": "executed",
+      "run": {
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 11819,
+        "tail": [
+          "executed-success: 1/1 valid cases passed",
+          "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r1\\report.json"
+        ]
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\runs-c2\\r37c-c2-D1-v2-B1-G0-r1\\report.json",
+      "row": {
+        "valid": true,
+        "measurementValid": true,
+        "outcome": "valid-task-success",
+        "contractSuccess": true,
+        "taskSuccess": true,
+        "testsExecuted": 1,
+        "steps": 2,
+        "modelCalls": 3,
+        "finishGuard": {
+          "enabled": false,
+          "policy": "none",
+          "requiredTests": true,
+          "finishRequests": 1,
+          "prematureFinishRequests": 0,
+          "rejections": 0,
+          "assistedCompletion": false,
+          "lastCheck": {
+            "step": 2,
+            "requiresTests": true,
+            "testsExecuted": 1,
+            "lastPassingTest": null,
+            "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+            "fresh": false
+          },
+          "checks": [
+            {
+              "step": 2,
+              "requiresTests": true,
+              "testsExecuted": 1,
+              "lastPassingTest": null,
+              "currentDigest": "bb92cdaa4b7b74e16083b73905fe320180acca601fcb4058e918c6309b417363",
+              "fresh": false
+            }
+          ],
+          "note": "No finish guard was configured."
+        },
+        "finishRequests": 1,
+        "finishRejections": 0,
+        "guardAssistedCompletion": false,
+        "failedChecks": [],
+        "writerCommitStatus": "not-applicable",
+        "foldFallback": null,
+        "toolProtocol": "P3s",
+        "validActions": 7,
+        "rejectedActions": 0,
+        "invalidActionTurns": 0,
+        "delivery": "ef-off-basic-context"
+      },
+      "usage": {
+        "requests": 4,
+        "inputTokens": 3404,
+        "outputTokens": 610,
+        "wallClockMs": 11391
+      }
+    }
+  ],
+  "notes": [
+    "This is an exploratory pilot, not a confirmatory trial.",
+    "The finish guard rejects a finish request; it never runs a test, edits code, or writes verification.",
+    "Fold refusals and fallbacks remain in the assigned-arm denominator.",
+    "Provider-invalid rows are counted in cost and are not task failures."
+  ],
+  "authorization": "R37-C brief plus the prior explicit live authorization"
+}

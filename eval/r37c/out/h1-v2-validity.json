@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T08:53:28.905Z",
+  "round": "R37-C",
+  "work": "C3",
+  "caseId": "H1-v2",
+  "supersedes": "H1",
+  "status": "certified",
+  "properties": {
+    "goldGrounded": true,
+    "taskSolvable": true,
+    "visibleTestDoesNotNameFact": true,
+    "staleDefaultFailsVisible": true,
+    "staleDefaultFailsHidden": true,
+    "counterfactualFailsVisible": true,
+    "counterfactualFailsHidden": true,
+    "historicalMemoryNecessary": true
+  },
+  "runs": {
+    "default": {
+      "visible": {
+        "exitCode": 1,
+        "checks": null,
+        "allPassed": null,
+        "stdoutTail": [
+          "    operator: 'notStrictEqual',",
+          "    diff: 'simple'",
+          "  }"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      },
+      "hidden": {
+        "exitCode": 1,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'us-east-1'\n- 'eu-west-2'\n"
+          }
+        ],
+        "allPassed": false,
+        "stdoutTail": [
+          "R33_RESULT {\"checks\":[{\"name\":\"region.production\",\"pass\":false,\"detail\":\"Expected values to be strictly equal:\\n+ actual - expected\\n\\n+ 'us-east-1'\\n- 'eu-west-2'\\n\"}]}"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      }
+    },
+    "reference": {
+      "visible": {
+        "exitCode": 0,
+        "checks": null,
+        "allPassed": null,
+        "stdoutTail": [
+          "ℹ skipped 0",
+          "ℹ todo 0",
+          "ℹ duration_ms 133.5297"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      },
+      "hidden": {
+        "exitCode": 0,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": true
+          }
+        ],
+        "allPassed": true,
+        "stdoutTail": [
+          "R33_RESULT {\"checks\":[{\"name\":\"region.production\",\"pass\":true}]}"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      }
+    },
+    "counterfactual": {
+      "visible": {
+        "exitCode": 1,
+        "checks": null,
+        "allPassed": null,
+        "stdoutTail": [
+          "    operator: 'notStrictEqual',",
+          "    diff: 'simple'",
+          "  }"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      },
+      "hidden": {
+        "exitCode": 1,
+        "checks": [
+          {
+            "name": "region.production",
+            "pass": false,
+            "detail": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'us-east-1'\n- 'eu-west-2'\n"
+          }
+        ],
+        "allPassed": false,
+        "stdoutTail": [
+          "R33_RESULT {\"checks\":[{\"name\":\"region.production\",\"pass\":false,\"detail\":\"Expected values to be strictly equal:\\n+ actual - expected\\n\\n+ 'us-east-1'\\n- 'eu-west-2'\\n\"}]}"
+        ],
+        "stderrTail": [
+          ""
+        ]
+      }
+    }
+  },
+  "notes": [
+    "The visible test forbids us-east-1 and requires an AWS-shaped region; it does not name eu-west-2.",
+    "The hidden checker still requires eu-west-2, so the transcript remains necessary.",
+    "H1 is unchanged; H1-v2 is a separate versioned case.",
+    "This is a benchmark certification, not a model result."
+  ],
+  "certified": true
+}

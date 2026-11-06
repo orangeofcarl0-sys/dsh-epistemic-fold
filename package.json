@@ -107,7 +107,19 @@
     "eval:r37": "npm run eval:r37-reconstruct && npm run eval:r37-protocol && npm run eval:r37-benchmark && npm run eval:r37-forensics && npm run eval:r37-gates",
     "eval:r37b": "node eval/r37/live-r37b.mjs",
     "eval:r37b-analyze": "node eval/r37/analyze-r37b.mjs",
-    "eval:r37b-gates": "node eval/r37/gates-r37b.mjs"
+    "eval:r37b-gates": "node eval/r37/gates-r37b.mjs",
+    "eval:r37c-baseline": "node eval/r37c/baseline.mjs",
+    "eval:r37c-archive": "node eval/r37c/archive-evidence.mjs",
+    "eval:r37c-funnel": "node eval/r37c/audit-semantic-funnel.mjs",
+    "eval:r37c-measurement": "node eval/r37c/audit-measurement.mjs",
+    "eval:r37c-statistics": "node eval/r37c/audit-statistics.mjs",
+    "eval:r37c-protocol": "node eval/r37c/audit-protocol-admission.mjs",
+    "eval:r37c-h1v2": "node eval/r37c/certify-h1-v2.mjs",
+    "eval:r37c-native": "node eval/r37c/native-smoke.mjs",
+    "eval:r37c-c2": "node eval/r37c/live-process-pilot.mjs",
+    "eval:r37c-c2-analyze": "node eval/r37c/analyze-process-pilot.mjs",
+    "eval:r37c-tests": "vitest run tests/r37c-semantic-funnel.spec.ts tests/r37c-measurement.spec.ts tests/r37c-gates.spec.ts tests/r37c-stats.spec.ts tests/r37c-dsml.spec.ts tests/r37c-artifacts.spec.ts",
+    "eval:r37c": "npm run eval:r37c-baseline && npm run eval:r37c-funnel && npm run eval:r37c-measurement && npm run eval:r37c-statistics && npm run eval:r37c-protocol && npm run eval:r37c-h1v2 && npm run eval:r37c-native"
   },
   "repository": {
     "type": "git",
