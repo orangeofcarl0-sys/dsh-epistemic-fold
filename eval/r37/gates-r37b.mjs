@@ -14,6 +14,7 @@ import { join } from 'node:path'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readJson, writeJson } from './src/io.mjs'
+import { exitCodeFor, machineProductOutcome } from '../r37c/src/gate-exit.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = process.env.R37B_GATES_OUT === undefined
@@ -30,7 +31,7 @@ const PAIR_EXPECTED = Number(process.env.R37B_PAIR_EXPECTED ?? 24)
 const REP_EXPECTED = Number(process.env.R37B_REP_EXPECTED ?? 24)
 const O2_MIN_VALID = Number(process.env.R37B_O2_MIN_VALID ?? 20)
 const STAGE = Number(process.env.R37B_STAGE_NUMBER ?? 1)
-const PRODUCT_DECISION = process.env.R37B_PRODUCT_DECISION ?? 'insufficient-evidence'
+const RESEARCHER_DECISION = process.env.R37B_PRODUCT_DECISION ?? null
 
 const writer = results.writer?.byPrompt ?? {}
 const o2 = results.o2 ?? { rows: 0, valid: 0, contractSuccesses: 0, taskSuccesses: 0 }
@@ -72,6 +73,21 @@ const determined = treatmentDeliveries.filter(delivery =>
 const deliveryRate = treatmentDeliveries.length === 0 ? null : determined / treatmentDeliveries.length
 const deliveryOk = deliveryRate !== null && deliveryRate >= 0.8
 const deliveryStatus = treatmentDeliveries.length === 0 ? 'not-executed' : (deliveryOk ? 'passed' : 'partial')
+
+let statistics = null
+try {
+  statistics = await readJson(join(HERE, 'out', 'r37b-stage2-statistics.json'))
+} catch {
+  statistics = null
+}
+const machineOutcome = STAGE === 2 && statistics !== null
+  ? machineProductOutcome({
+    rescue: e2e.contract?.rescue ?? 0,
+    damage: e2e.contract?.damage ?? 0,
+    p: statistics.contract?.p ?? null,
+    deliveryRate,
+  })
+  : 'not-applicable'
 
 const protocolOk = Array.isArray(protocol.toolProtocols)
   && protocol.toolProtocols.includes('P3e')
@@ -143,7 +159,9 @@ const report = {
   stage: STAGE,
   status: stage1Complete ? (STAGE === 2 ? 'stage-2-complete' : 'stage-1-complete') : (STAGE === 2 ? 'stage-2-incomplete' : 'stage-1-incomplete'),
   stage2: STAGE === 2 ? (stage1Complete ? 'confirmatory-batch-complete' : 'confirmatory-batch-incomplete') : (stage1Complete ? 'ready-for-stage-2' : 'blocked-on-stage-1'),
-  productDecision: PRODUCT_DECISION,
+  productDecision: machineOutcome,
+  researcherDecision: RESEARCHER_DECISION,
+  decisionAgreement: RESEARCHER_DECISION === null ? null : RESEARCHER_DECISION === machineOutcome,
   exploratory: STAGE !== 2,
   gates,
   cost: {
@@ -156,13 +174,15 @@ const report = {
       : 'Stage 1 is exploratory under R37_B_PREREGISTRATION_AMENDMENT A1.',
     'A partial or provider-invalid gate is not a task failure and is not a pass.',
     STAGE === 2
-      ? 'The product decision is a harm signal under this model/route/harness, not a population estimate.'
+      ? 'The machine product outcome is a signal under this model/route/harness, not a population estimate.'
       : 'Stage 2 remains unstarted; no confirmatory claim is made.',
+    'A researcher decision is recorded separately from the machine outcome; it never replaces the computed gates.',
+    'Exit 2 means the stage is not eligible because a gate is partial/not-executed/blocked/gate-not-verifiable.',
   ],
 }
 await writeJson(OUT, report)
 for (const gate of gates) {
   process.stdout.write(`${gate.id} ${gate.status.toUpperCase()}: ${gate.name}\n   ${gate.detail}\n`)
 }
-process.stdout.write(`stage1: ${report.status}; stage2: ${report.stage2}\n`)
-process.exit(gates.some(gate => gate.status === 'failed') ? 1 : 0)
+process.stdout.write(`stage1: ${report.status}; stage2: ${report.stage2}; product ${report.productDecision}\n`)
+process.exit(exitCodeFor(gates))
