@@ -175,7 +175,7 @@ written to any manifest, report, log, or commit.
 
 ```text
 Typecheck                  pass (src, client, eval)
-R37-C tests                55/55 pass
+R37-C tests                58/58 pass
 R37 tests                  49/49 pass
 R36 tests                  34/34 pass
 R33 targeted               94/94 pass

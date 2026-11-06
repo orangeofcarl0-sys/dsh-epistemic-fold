@@ -119,7 +119,8 @@
     "eval:r37c-c2": "node eval/r37c/live-process-pilot.mjs",
     "eval:r37c-c2-analyze": "node eval/r37c/analyze-process-pilot.mjs",
     "eval:r37c-tests": "vitest run tests/r37c-semantic-funnel.spec.ts tests/r37c-measurement.spec.ts tests/r37c-gates.spec.ts tests/r37c-stats.spec.ts tests/r37c-dsml.spec.ts tests/r37c-artifacts.spec.ts",
-    "eval:r37c": "npm run eval:r37c-baseline && npm run eval:r37c-funnel && npm run eval:r37c-measurement && npm run eval:r37c-statistics && npm run eval:r37c-protocol && npm run eval:r37c-h1v2 && npm run eval:r37c-native"
+    "eval:r37c": "npm run eval:r37c-baseline && npm run eval:r37c-funnel && npm run eval:r37c-measurement && npm run eval:r37c-statistics && npm run eval:r37c-protocol && npm run eval:r37c-h1v2 && npm run eval:r37c-native",
+    "eval:r37c-trajectories": "node eval/r37c/analyze-trajectories.mjs"
   },
   "repository": {
     "type": "git",

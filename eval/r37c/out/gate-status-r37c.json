@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T09:04:04.156Z",
+  "generatedAt": "2026-11-06T09:15:36.473Z",
   "round": "R37-C",
   "status": "attention",
   "eligibility": {
@@ -49,7 +49,7 @@
       "id": "R37C-C1A",
       "name": "DSML byte fidelity",
       "status": "passed",
-      "detail": "55/55 R37-C tests passed; direct and parameter forms round-trip the fidelity corpus; ambiguous input is rejected",
+      "detail": "58/58 R37-C tests passed; direct and parameter forms round-trip the fidelity corpus; ambiguous input is rejected",
       "evidence": "eval/r37c/out/r37c-tests.json, eval/r37c/src/dsml-codec.mjs"
     },
     {
@@ -77,8 +77,8 @@
       "id": "R37C-C2",
       "name": "Bounded process pilot",
       "status": "passed",
-      "detail": "24/24 cells; status complete; stop none; usage {\"requests\":187,\"inputTokens\":226808,\"outputTokens\":29980,\"wallClockMs\":504096}; analysis present",
-      "evidence": "eval/r37c/out/r37c-c2-results.json, eval/r37c/out/r37c-c2-analysis.json"
+      "detail": "24/24 cells; status complete; stop none; usage {\"requests\":187,\"inputTokens\":226808,\"outputTokens\":29980,\"wallClockMs\":504096}; analysis present; trajectories present; guard triggered 4, contract failures without a finish request 5",
+      "evidence": "eval/r37c/out/r37c-c2-results.json, eval/r37c/out/r37c-c2-analysis.json, eval/r37c/out/r37c-c2-trajectories.json"
     },
     {
       "id": "R37C-C3",

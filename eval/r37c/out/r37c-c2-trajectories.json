@@ -1,0 +1,3737 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T09:13:29.944Z",
+  "round": "R37-C",
+  "work": "C2-trajectory",
+  "source": "F:\\Codex_Work_Space\\DSH plugin\\ef-r37c-closure\\eval\\r37c\\out\\r37c-c2-results.json",
+  "cells": [
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r1",
+      "cellId": "D1-v2-S-G0-r1",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 4,
+      "modelCalls": 5,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 1,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "run_tests",
+        "write_file",
+        "read_file",
+        "finish"
+      ],
+      "finishTurns": [
+        4
+      ],
+      "testTurns": [
+        1
+      ],
+      "writeTurns": [
+        2
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 21,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 366,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 209,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 417,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r2",
+      "cellId": "B2-B1-G1-r2",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 3,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        7
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 150,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 132,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 132,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 132,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 126,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 132,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 121,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r1",
+      "cellId": "B2-S-G0-r1",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 2,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 2,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 1,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "recall",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        6
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 102,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 99,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 76,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 170,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 201,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "recall"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 43,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r1",
+      "cellId": "D1-v2-S-G1-r1",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 2,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "finish",
+        "read_file",
+        "write_file"
+      ],
+      "finishTurns": [
+        5
+      ],
+      "testTurns": [
+        3
+      ],
+      "writeTurns": [
+        4,
+        7
+      ],
+      "firstRejectionStep": 5,
+      "testsAtRejection": 1,
+      "postRejectionTestCount": 0,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 83,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 170,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 78,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 46,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 346,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 619,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 146,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 270,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "guard-rejected-stalled",
+      "delivery": "semantic-committed-empty",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r3",
+      "cellId": "B2-B1-G1-r3",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": false,
+      "task": true,
+      "failedChecks": [],
+      "tests": 0,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 7,
+      "rejectedActions": 7,
+      "toolCounts": {
+        "read_file": 0,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 0,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir"
+      ],
+      "finishTurns": [],
+      "testTurns": [],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 171,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 126,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 5,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 7,
+          "textChars": 157,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "nested-invoke",
+            "empty-invoke"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "protocol-stall-no-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r3",
+      "cellId": "D1-v2-B1-G1-r3",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": false,
+      "task": false,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 3,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 5,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "read_file",
+        "read_file"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        2
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 159,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 342,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 175,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 456,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 127,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 424,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 47,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 330,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r2",
+      "cellId": "B2-B1-G0-r2",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": false,
+      "task": true,
+      "failedChecks": [],
+      "tests": 0,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 6,
+      "rejectedActions": 1,
+      "toolCounts": {
+        "read_file": 1,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 0,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file"
+      ],
+      "finishTurns": [],
+      "testTurns": [],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 149,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 134,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 151,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 143,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 5,
+          "textChars": 161,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 95,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 959,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "protocol-stall-no-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r3",
+      "cellId": "D1-v2-S-G1-r3",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": false,
+      "task": false,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 6,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 0,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        1
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 90,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 138,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 148,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 148,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 5,
+          "textChars": 155,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 148,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 7,
+          "textChars": 148,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r3",
+      "cellId": "D1-v2-B1-G0-r3",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 2,
+      "modelCalls": 3,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 0,
+        "write_file": 1,
+        "list_dir": 0,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "run_tests",
+        "write_file",
+        "finish"
+      ],
+      "finishTurns": [
+        2
+      ],
+      "testTurns": [
+        0
+      ],
+      "writeTurns": [
+        1
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 20,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 657,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 470,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": "full-history"
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r1",
+      "cellId": "B2-S-G1-r1",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": false,
+      "task": true,
+      "failedChecks": [],
+      "tests": 0,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 4,
+      "rejectedActions": 4,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 0,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file"
+      ],
+      "finishTurns": [],
+      "testTurns": [],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 160,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 127,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 134,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 122,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 175,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 5,
+          "textChars": 174,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 160,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 7,
+          "textChars": 147,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 1,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "protocol-stall-no-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r2",
+      "cellId": "D1-v2-B1-G0-r2",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 3,
+      "modelCalls": 4,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "finish"
+      ],
+      "finishTurns": [
+        3
+      ],
+      "testTurns": [
+        1
+      ],
+      "writeTurns": [
+        2
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 21,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 165,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file",
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 288,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 328,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": "full-history"
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r3",
+      "cellId": "B2-B1-G0-r3",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 3,
+      "steps": 3,
+      "modelCalls": 4,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 4,
+        "write_file": 0,
+        "list_dir": 2,
+        "run_tests": 3,
+        "recall": 2,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "run_tests",
+        "recall",
+        "recall",
+        "read_file",
+        "list_dir",
+        "run_tests",
+        "read_file",
+        "read_file",
+        "finish"
+      ],
+      "finishTurns": [
+        3
+      ],
+      "testTurns": [
+        0
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 809,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir",
+            "read_file",
+            "run_tests",
+            "recall",
+            "recall",
+            "read_file",
+            "list_dir",
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "duplicate-action",
+            "duplicate-action",
+            "duplicate-action",
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 98,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 603,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r3",
+      "cellId": "D1-v2-S-G0-r3",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 7,
+      "modelCalls": 8,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 5,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "read_file",
+        "write_file",
+        "finish"
+      ],
+      "finishTurns": [
+        7
+      ],
+      "testTurns": [
+        4
+      ],
+      "writeTurns": [
+        6
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 181,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 305,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "duplicate-action",
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 179,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 54,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 82,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 265,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 232,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 569,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r3",
+      "cellId": "B2-S-G0-r3",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 4,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        6
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 150,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 327,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "nested-invoke",
+            "nested-invoke",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 327,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "nested-invoke",
+            "nested-invoke",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 47,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 316,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 96,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 20,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-S-G0-r2",
+      "cellId": "B2-S-G0-r2",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 2,
+      "steps": 3,
+      "modelCalls": 4,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 2,
+        "list_dir": 1,
+        "run_tests": 2,
+        "recall": 1,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "recall",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        1
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 2,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 234,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir",
+            "recall"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 253,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file",
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 3,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-json"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r2",
+      "cellId": "B2-S-G1-r2",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 3,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 2,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        4
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 4,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 150,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "nested-invoke",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 353,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 369,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-tool",
+            "nested-invoke",
+            "truncated-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 112,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke",
+            "truncated-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 7,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r2",
+      "cellId": "D1-v2-B1-G1-r2",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 2,
+      "steps": 5,
+      "modelCalls": 6,
+      "finished": true,
+      "finishRequests": 2,
+      "finishRejections": 1,
+      "assistedCompletion": true,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 3,
+        "list_dir": 1,
+        "run_tests": 2,
+        "recall": 0,
+        "finish": 2
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "finish",
+        "write_file",
+        "run_tests",
+        "write_file",
+        "finish"
+      ],
+      "finishTurns": [
+        3,
+        5
+      ],
+      "testTurns": [
+        2,
+        4
+      ],
+      "writeTurns": [
+        3,
+        4,
+        5
+      ],
+      "firstRejectionStep": 3,
+      "testsAtRejection": 1,
+      "postRejectionTestCount": 1,
+      "postRejectionTests": [],
+      "postRejectionFinish": [
+        5
+      ],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 107,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 98,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 64,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 942,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file",
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 280,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file",
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 781,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file",
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        }
+      ],
+      "archetype": "guard-rejected-recovered-finish",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": "full-history"
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G0-r2",
+      "cellId": "D1-v2-S-G0-r2",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 7,
+      "modelCalls": 8,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 1,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 4,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "run_tests",
+        "read_file",
+        "read_file",
+        "write_file",
+        "read_file",
+        "finish"
+      ],
+      "finishTurns": [
+        7
+      ],
+      "testTurns": [
+        3
+      ],
+      "writeTurns": [
+        5
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 90,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 66,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 42,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 289,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 141,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 161,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 636,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-B2-S-G1-r3",
+      "cellId": "B2-S-G1-r3",
+      "caseId": "B2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 5,
+      "modelCalls": 6,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 2,
+        "list_dir": 2,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "list_dir",
+        "read_file",
+        "write_file",
+        "write_file",
+        "run_tests",
+        "finish"
+      ],
+      "finishTurns": [
+        5
+      ],
+      "testTurns": [
+        4
+      ],
+      "writeTurns": [
+        2,
+        3
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 252,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir",
+            "read_file",
+            "read_file",
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "invalid-json",
+            "duplicate-action",
+            "duplicate-action",
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 182,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 898,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 889,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 556,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "full-history-fallback",
+      "foldFallback": "full-history"
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G1-r1",
+      "cellId": "B2-B1-G1-r1",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 2,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 3,
+      "rejectedActions": 1,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 2,
+        "recall": 0,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "run_tests"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        2,
+        7
+      ],
+      "writeTurns": [
+        6
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 149,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 311,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "truncated-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 4,
+          "textChars": 907,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "invalid-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 5,
+          "textChars": 908,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-invoke",
+            "invalid-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 918,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 144,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G1-r1",
+      "cellId": "D1-v2-B1-G1-r1",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 2,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "assistedCompletion": false,
+      "invalidActionTurns": 1,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 2,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "finish",
+        "run_tests"
+      ],
+      "finishTurns": [
+        6
+      ],
+      "testTurns": [
+        3,
+        7
+      ],
+      "writeTurns": [
+        4
+      ],
+      "firstRejectionStep": 6,
+      "testsAtRejection": 1,
+      "postRejectionTestCount": 1,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 21,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 170,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 317,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 398,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 344,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "invalid-json",
+            "invalid-json"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 6,
+          "textChars": 378,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 225,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        }
+      ],
+      "archetype": "guard-rejected-recovered-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": "full-history"
+    },
+    {
+      "runId": "r37c-c2-B2-B1-G0-r1",
+      "cellId": "B2-B1-G0-r1",
+      "caseId": "B2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 3,
+      "rejectedActions": 3,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 0,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 2,
+        "finish": 0
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "recall",
+        "recall"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        3
+      ],
+      "writeTurns": [],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 2,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 161,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 339,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [],
+          "invalid": 3,
+          "diagnostics": [
+            "empty-invoke",
+            "empty-invoke",
+            "empty-invoke",
+            "multiple-actions"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 2,
+          "textChars": 432,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 219,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "recall"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 218,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "recall"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke"
+          ],
+          "noAction": true
+        },
+        {
+          "step": 7,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "max-tokens",
+          "tools": [],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-parameter",
+            "truncated-invoke",
+            "invalid-json",
+            "truncated-json"
+          ],
+          "noAction": true
+        }
+      ],
+      "archetype": "test-no-finish",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-S-G1-r2",
+      "cellId": "D1-v2-S-G1-r2",
+      "caseId": "D1-v2",
+      "arm": "S",
+      "guard": "G1",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 2,
+      "steps": 8,
+      "modelCalls": 8,
+      "finished": false,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 3,
+        "list_dir": 1,
+        "run_tests": 2,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "write_file",
+        "finish",
+        "write_file",
+        "run_tests",
+        "write_file"
+      ],
+      "finishTurns": [
+        4
+      ],
+      "testTurns": [
+        2,
+        6
+      ],
+      "writeTurns": [
+        3,
+        5,
+        7
+      ],
+      "firstRejectionStep": 4,
+      "testsAtRejection": 1,
+      "postRejectionTestCount": 1,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 0,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 101,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 451,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 147,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 3,
+          "textChars": 412,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 4,
+          "textChars": 863,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "finish"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "invalid-json"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 5,
+          "textChars": 379,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        },
+        {
+          "step": 6,
+          "textChars": 91,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "empty-invoke"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 7,
+          "textChars": 392,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [],
+          "noAction": false
+        }
+      ],
+      "archetype": "guard-rejected-recovered-test",
+      "delivery": "semantic-committed",
+      "foldFallback": null
+    },
+    {
+      "runId": "r37c-c2-D1-v2-B1-G0-r1",
+      "cellId": "D1-v2-B1-G0-r1",
+      "caseId": "D1-v2",
+      "arm": "B1",
+      "guard": "G0",
+      "contract": true,
+      "task": true,
+      "failedChecks": [],
+      "tests": 1,
+      "steps": 2,
+      "modelCalls": 3,
+      "finished": true,
+      "finishRequests": 1,
+      "finishRejections": 0,
+      "assistedCompletion": false,
+      "invalidActionTurns": 0,
+      "rejectedActions": 0,
+      "toolCounts": {
+        "read_file": 3,
+        "write_file": 1,
+        "list_dir": 1,
+        "run_tests": 1,
+        "recall": 0,
+        "finish": 1
+      },
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "run_tests",
+        "read_file",
+        "read_file",
+        "write_file"
+      ],
+      "finishTurns": [],
+      "testTurns": [
+        0
+      ],
+      "writeTurns": [
+        2
+      ],
+      "firstRejectionStep": null,
+      "testsAtRejection": null,
+      "postRejectionTestCount": null,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "cappedTurns": 1,
+      "turns": [
+        {
+          "step": 0,
+          "textChars": 164,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "list_dir",
+            "read_file",
+            "run_tests"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 1,
+          "textChars": 215,
+          "capped": false,
+          "finishReason": "stop",
+          "tools": [
+            "read_file",
+            "read_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "multiple-actions"
+          ],
+          "noAction": false
+        },
+        {
+          "step": 2,
+          "textChars": 1000,
+          "capped": true,
+          "finishReason": "stop",
+          "tools": [
+            "write_file"
+          ],
+          "invalid": 0,
+          "diagnostics": [
+            "truncated-json"
+          ],
+          "noAction": false
+        }
+      ],
+      "archetype": "finish-with-test",
+      "delivery": "ef-off-basic-context",
+      "foldFallback": null
+    }
+  ],
+  "summary": {
+    "contractSuccesses": 19,
+    "taskSuccesses": 22,
+    "finishRequests": 13,
+    "noFinishRequests": 11,
+    "guardTriggered": 4,
+    "guardAssisted": 1,
+    "guardOpportunity": 13,
+    "contractFailures": 5,
+    "contractFailuresNoFinish": 5,
+    "contractFailuresGuardTriggered": 0
+  },
+  "byArchetype": {
+    "finish-with-test": 9,
+    "test-no-finish": 8,
+    "guard-rejected-stalled": 1,
+    "protocol-stall-no-test": 3,
+    "guard-rejected-recovered-finish": 1,
+    "guard-rejected-recovered-test": 2
+  },
+  "byArmGuard": {
+    "B1/G0": {
+      "cells": 6,
+      "contract": 5,
+      "task": 6,
+      "finishRequests": 4,
+      "guardTriggered": 0,
+      "assisted": 0,
+      "archetypes": {
+        "protocol-stall-no-test": 1,
+        "finish-with-test": 4,
+        "test-no-finish": 1
+      }
+    },
+    "B1/G1": {
+      "cells": 6,
+      "contract": 4,
+      "task": 5,
+      "finishRequests": 2,
+      "guardTriggered": 2,
+      "assisted": 1,
+      "archetypes": {
+        "test-no-finish": 3,
+        "protocol-stall-no-test": 1,
+        "guard-rejected-recovered-finish": 1,
+        "guard-rejected-recovered-test": 1
+      }
+    },
+    "S/G0": {
+      "cells": 6,
+      "contract": 6,
+      "task": 6,
+      "finishRequests": 4,
+      "guardTriggered": 0,
+      "assisted": 0,
+      "archetypes": {
+        "finish-with-test": 4,
+        "test-no-finish": 2
+      }
+    },
+    "S/G1": {
+      "cells": 6,
+      "contract": 4,
+      "task": 5,
+      "finishRequests": 3,
+      "guardTriggered": 2,
+      "assisted": 0,
+      "archetypes": {
+        "guard-rejected-stalled": 1,
+        "test-no-finish": 2,
+        "protocol-stall-no-test": 1,
+        "finish-with-test": 1,
+        "guard-rejected-recovered-test": 1
+      }
+    }
+  },
+  "guardTriggeredCells": [
+    {
+      "cellId": "D1-v2-S-G1-r1",
+      "contract": true,
+      "task": true,
+      "tests": 1,
+      "steps": 8,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "firstRejectionStep": 5,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "assistedCompletion": false,
+      "archetype": "guard-rejected-stalled",
+      "failedChecks": []
+    },
+    {
+      "cellId": "D1-v2-B1-G1-r2",
+      "contract": true,
+      "task": true,
+      "tests": 2,
+      "steps": 5,
+      "finishRequests": 2,
+      "finishRejections": 1,
+      "firstRejectionStep": 3,
+      "postRejectionTests": [],
+      "postRejectionFinish": [
+        5
+      ],
+      "assistedCompletion": true,
+      "archetype": "guard-rejected-recovered-finish",
+      "failedChecks": []
+    },
+    {
+      "cellId": "D1-v2-B1-G1-r1",
+      "contract": true,
+      "task": true,
+      "tests": 2,
+      "steps": 8,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "firstRejectionStep": 6,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "assistedCompletion": false,
+      "archetype": "guard-rejected-recovered-test",
+      "failedChecks": []
+    },
+    {
+      "cellId": "D1-v2-S-G1-r2",
+      "contract": true,
+      "task": true,
+      "tests": 2,
+      "steps": 8,
+      "finishRequests": 1,
+      "finishRejections": 1,
+      "firstRejectionStep": 4,
+      "postRejectionTests": [],
+      "postRejectionFinish": [],
+      "assistedCompletion": false,
+      "archetype": "guard-rejected-recovered-test",
+      "failedChecks": []
+    }
+  ],
+  "contractFailures": [
+    {
+      "cellId": "B2-B1-G1-r3",
+      "arm": "B1",
+      "guard": "G1",
+      "task": true,
+      "tests": 0,
+      "steps": 8,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "invalidActionTurns": 7,
+      "rejectedActions": 7,
+      "failedChecks": [],
+      "archetype": "protocol-stall-no-test",
+      "toolSequence": [
+        "list_dir"
+      ],
+      "cappedTurns": 0
+    },
+    {
+      "cellId": "D1-v2-B1-G1-r3",
+      "arm": "B1",
+      "guard": "G1",
+      "task": false,
+      "tests": 1,
+      "steps": 8,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "invalidActionTurns": 3,
+      "rejectedActions": 0,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "archetype": "test-no-finish",
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file",
+        "run_tests",
+        "read_file",
+        "read_file"
+      ],
+      "cappedTurns": 0
+    },
+    {
+      "cellId": "B2-B1-G0-r2",
+      "arm": "B1",
+      "guard": "G0",
+      "task": true,
+      "tests": 0,
+      "steps": 8,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "invalidActionTurns": 6,
+      "rejectedActions": 1,
+      "failedChecks": [],
+      "archetype": "protocol-stall-no-test",
+      "toolSequence": [
+        "list_dir",
+        "read_file"
+      ],
+      "cappedTurns": 1
+    },
+    {
+      "cellId": "D1-v2-S-G1-r3",
+      "arm": "S",
+      "guard": "G1",
+      "task": false,
+      "tests": 1,
+      "steps": 8,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "invalidActionTurns": 6,
+      "rejectedActions": 0,
+      "failedChecks": [
+        "constraint.claim-known",
+        "constraint.tests-or-evidence"
+      ],
+      "archetype": "test-no-finish",
+      "toolSequence": [
+        "list_dir",
+        "run_tests"
+      ],
+      "cappedTurns": 0
+    },
+    {
+      "cellId": "B2-S-G1-r1",
+      "arm": "S",
+      "guard": "G1",
+      "task": true,
+      "tests": 0,
+      "steps": 8,
+      "finishRequests": 0,
+      "finishRejections": 0,
+      "invalidActionTurns": 4,
+      "rejectedActions": 4,
+      "failedChecks": [],
+      "archetype": "protocol-stall-no-test",
+      "toolSequence": [
+        "list_dir",
+        "read_file",
+        "read_file",
+        "read_file"
+      ],
+      "cappedTurns": 0
+    }
+  ],
+  "conclusions": [
+    "The guard can only act when the agent requests finish.",
+    "All five contract failures never requested finish, so the guard had no opportunity to cause or prevent them.",
+    "The intention-to-treat guard difference is therefore not a guard mechanism effect in this pilot.",
+    "The guard-triggered subset is four cells; three recovered enough to pass the contract without a second finish, one completed with a second finish.",
+    "Most failures are step-limit or protocol-waste trajectories: the agent keeps reading or emitting invalid actions instead of running a test.",
+    "A process prompt or a step/test-request intervention is a better next target than another guard."
+  ]
+}

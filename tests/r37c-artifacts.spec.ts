@@ -21,6 +21,7 @@ const measurement = read('measurement-vs-pipeline.json')
 const statistics = read('statistics-audit.json')
 const protocol = read('protocol-admission.json')
 const native = read('native-smoke.json')
+const trajectories = read('r37c-c2-trajectories.json')
 
 describe('R37-C0-A: evidence integrity', () => {
   it('covers the expected cell matrix without a secret', () => {
@@ -127,5 +128,25 @@ describe('R37-C1-C: native lifecycle', () => {
   it('records the configuration root cause instead of blaming the tool runtime', () => {
     expect(native.rootCause.symptom).toBe('TOOL_NOT_STARTED')
     expect(native.rootCause.fix).toMatch(/createVolatile/u)
+  })
+})
+
+describe('R37-C2: trajectory attribution', () => {
+  it('shows the guard had no opportunity in any contract failure', () => {
+    expect(trajectories.summary.contractFailures).toBe(5)
+    expect(trajectories.summary.contractFailuresNoFinish).toBe(5)
+    expect(trajectories.summary.contractFailuresGuardTriggered).toBe(0)
+  })
+
+  it('separates finish-with-test from protocol-stall trajectories', () => {
+    expect(trajectories.byArchetype['finish-with-test']).toBe(9)
+    expect(trajectories.byArchetype['test-no-finish']).toBe(8)
+    expect(trajectories.byArchetype['protocol-stall-no-test']).toBe(3)
+  })
+
+  it('does not attribute the intention-to-treat difference to a guard that never fired', () => {
+    expect(trajectories.summary.guardTriggered).toBe(4)
+    expect(trajectories.summary.guardAssisted).toBe(1)
+    expect(trajectories.conclusions.join(' ')).toMatch(/guard had no opportunity/u)
   })
 })

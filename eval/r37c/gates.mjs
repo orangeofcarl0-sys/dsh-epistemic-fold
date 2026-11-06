@@ -45,6 +45,7 @@ const native = await load('native-smoke.json')
 const h1v2 = await load('h1-v2-validity.json')
 const c2 = await load('r37c-c2-results.json')
 const c2analysis = await load('r37c-c2-analysis.json')
+const trajectories = await load('r37c-c2-trajectories.json')
 const tests = await load('r37c-tests.json')
 
 const gates = []
@@ -161,13 +162,17 @@ gates.push({
 gates.push({
   id: 'R37C-C2',
   name: 'Bounded process pilot',
-  status: c2?.status === 'complete' ? 'passed' : c2 === null ? 'not-executed' : 'partial',
+  status: c2?.status === 'complete' && trajectories !== null ? 'passed'
+    : c2 === null ? 'not-executed' : 'partial',
   detail: c2 === null
     ? 'no C2 result artifact'
     : `${c2.results?.length ?? 0}/${c2.plan?.cells ?? 'n/a'} cells; status ${c2.status}; `
       + `stop ${c2.stopReason ?? 'none'}; usage ${JSON.stringify(c2.budget?.used ?? {})}; `
-      + `analysis ${c2analysis === null ? 'missing' : 'present'}`,
-  evidence: 'eval/r37c/out/r37c-c2-results.json, eval/r37c/out/r37c-c2-analysis.json',
+      + `analysis ${c2analysis === null ? 'missing' : 'present'}; `
+      + `trajectories ${trajectories === null ? 'missing' : 'present'}; `
+      + `guard triggered ${trajectories?.summary?.guardTriggered ?? 'n/a'}, `
+      + `contract failures without a finish request ${trajectories?.summary?.contractFailuresNoFinish ?? 'n/a'}`,
+  evidence: 'eval/r37c/out/r37c-c2-results.json, eval/r37c/out/r37c-c2-analysis.json, eval/r37c/out/r37c-c2-trajectories.json',
 })
 
 gates.push({
