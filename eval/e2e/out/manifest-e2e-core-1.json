@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-core-1",
-  "frozenAt": "2026-11-08T16:06:46.045Z",
+  "frozenAt": "2026-11-08T16:09:16.564Z",
   "work": "EF-E2E",
   "code": {
-    "evaluatedCommit": "98b4fa5515349cdf8af9ba5e90b8af6b917a1fef",
+    "evaluatedCommit": "4760b30ba34c8e0fa03707d438519b52315a1723",
     "branch": "chore/ef-c1-evaluation-foundation",
     "worktreeClean": true,
-    "sourceTreeDigest": "5a3d5ae58a98637595cd25d5e21b85f555c444a3be5d2301cd224e3677ff0ed4",
+    "sourceTreeDigest": "6964dcac9a9df9e634b05cebcd6bdc16852cb2a14694fcfa280a62c48061b648",
     "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
     "dsh": {
       "dsh-agent-loop": "0.2.1-rc.3",
