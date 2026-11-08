@@ -566,16 +566,23 @@ describe('R33 frozen semantic-continuity arms', () => {
     // EF-C1: this test used to rewrite the TRACKED eval/r33/out/offline-report.*
     // on every run. The candidate now goes to an explicit directory: the test's
     // own temp root by default, or EF_R33_OFFLINE_REPORT_OUT for a generator run.
-    const outDir = process.env['EF_R33_OFFLINE_REPORT_OUT'] ?? root
+    // EF_R33_OFFLINE_REPORT_PROMOTE=1 is the explicit promote operation: it
+    // writes the authority path and skips the drift comparison, because the
+    // caller has already accepted the drift.
+    const promote = process.env['EF_R33_OFFLINE_REPORT_PROMOTE'] === '1'
+    const outDir = promote
+      ? join(process.cwd(), 'eval', 'r33', 'out')
+      : (process.env['EF_R33_OFFLINE_REPORT_OUT'] ?? root)
     await mkdir(outDir, { recursive: true })
     await writeFile(join(outDir, 'offline-report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
     await writeFile(join(outDir, 'offline-report.md'), markdown(report), 'utf8')
 
-    // The committed report is historical: it is never rewritten here, and a
-    // difference from the current pipeline must be declared with a cause.
-    // `generatedAt` and `environment` are excluded from the digest: they are
-    // run metadata, not semantic content.
-    const committedRaw = readFileSync(join(process.cwd(), 'eval', 'r33', 'out', 'offline-report.json'), 'utf8')
+    // The committed report is historical: it is never rewritten by an ordinary
+    // run, and a difference from the current pipeline must be declared with a
+    // cause. `generatedAt`, `environment` and wall-clock fields are excluded
+    // from the digest: they are run metadata, not semantic content.
+    if (!promote) {
+      const committedRaw = readFileSync(join(process.cwd(), 'eval', 'r33', 'out', 'offline-report.json'), 'utf8')
     const committed = JSON.parse(committedRaw) as Record<string, unknown>
     const status = stableDigest(committed) === stableDigest(report) ? 'current' : 'stale'
     const registry = JSON.parse(
@@ -595,6 +602,7 @@ describe('R33 frozen semantic-continuity arms', () => {
       expect(entry!.observedSha256, 'the declared drift digest must match the measurement')
         .toBe(stableDigest(report))
       expect(entry!.cause.length, 'a declared drift needs a cause').toBeGreaterThan(0)
+    }
     }
 
     // Validity invariants: a fold happened for every non-FM row, and every

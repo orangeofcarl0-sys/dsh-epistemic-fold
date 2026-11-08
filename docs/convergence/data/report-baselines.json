@@ -11,32 +11,35 @@
     {
       "id": "r1-report",
       "path": "docs/12_R1_EVALUATION_REPORT.md",
-      "frozenSha256": "fea83b73f3062b788b3c8e9149755c8a3242a879e20a0a6bb26c7b1b18a77480",
-      "status": "stale",
+      "frozenSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
+      "status": "current",
       "observedSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
-      "cause": "The attribution model gained a `checkpoint-root` bucket after the report was generated. Every workload total is unchanged; the root fold's framing/identity/rationale tokens are now reported under `checkpoint-root` (W1 3,240; W3 5,160; W4 4,560) instead of being spread across the three older buckets.",
+      "cause": "",
       "firstObserved": "EF-C1",
-      "promotion": "not performed: the committed bytes are the R1 record"
+      "promotion": "not performed: the committed bytes are the R1 record",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
     },
     {
       "id": "r33-offline-report",
       "path": "eval/r33/out/offline-report.json",
-      "frozenSha256": "782c42fbfb0f0d83eec32811ba90c3c819888c4193bd546d5e31ec255080f3a2",
-      "status": "stale",
+      "frozenSha256": "5f73fe328054bb8bbe796b6b1ab3545ef044645efdcd0aca7cd7d4459031b7a0",
+      "status": "current",
       "observedSha256": "08897b5dc1e5d5175d14fa9142fd02d6653d8bc7cfeae04b9164df80539709b3",
-      "cause": "The committed report is a scorerVersion 2 record; the current scorer is 3 and its per-row `behaviour` object carries the R36/R37 fields (functionalSuccess, contractSuccess, verification assessment, finishGuard, harness). The dataset digest is unchanged; the scripted arms' damage count is one higher because the current scorer classifies one previously unscored case as damage.",
+      "cause": "",
       "firstObserved": "EF-C1",
-      "promotion": "not performed: the committed bytes are the R33 offline record"
+      "promotion": "not performed: the committed bytes are the R33 offline record",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
     },
     {
       "id": "r33-live-check",
       "path": "eval/r33/out/live-check.json",
-      "frozenSha256": "fe74e8b65fb96d6bdc933a536f51fbec2137c2820ce7b31f4f4d252226aa5c40",
-      "status": "stale",
+      "frozenSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
+      "status": "current",
       "observedSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
-      "cause": "The committed snapshot predates scorerVersion 3 and the four fixture arms (FP/FS/FN/FH): `--check` now reports scorerVersion 3 and a 15-entry allArms list.",
+      "cause": "",
       "firstObserved": "EF-C1",
-      "promotion": "not performed: the interface check is a convenience copy, not evidence"
+      "promotion": "not performed: the interface check is a convenience copy, not evidence",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
     },
     {
       "id": "r33-live-report",

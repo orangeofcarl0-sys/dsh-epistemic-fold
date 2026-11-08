@@ -75,6 +75,7 @@
     "eval:build": "node scripts/build-eval.mjs",
     "eval:r33": "vitest run tests/r33-arms.spec.ts tests/r33-dataset.spec.ts tests/r33-writer-observation.spec.ts tests/r33-coverage.spec.ts tests/r33-receipt-window.spec.ts tests/r33-live-entry.spec.ts tests/r33-holdout.spec.ts tests/r331-budget-http.spec.ts tests/r331-isolation.spec.ts tests/r331-scoring.spec.ts tests/r331-live-writer.spec.ts tests/r35-contract.spec.ts tests/r35-preflight.spec.ts tests/r35-live-failures.spec.ts",
     "eval:r33-offline-report": "node scripts/run-with-env.mjs EF_R33_OFFLINE_REPORT_OUT=eval/r33/offline-candidate -- npx vitest run tests/r33-arms.spec.ts",
+    "eval:r33-offline-report:promote": "node scripts/run-with-env.mjs EF_R33_OFFLINE_REPORT_PROMOTE=1 -- npx vitest run tests/r33-arms.spec.ts",
     "eval:r33-compare": "node eval/r33/compare-scores.mjs",
     "eval:r33-holdout": "node eval/r33/freeze.mjs --holdout --verify",
     "eval:r33-freeze": "node eval/r33/freeze.mjs",

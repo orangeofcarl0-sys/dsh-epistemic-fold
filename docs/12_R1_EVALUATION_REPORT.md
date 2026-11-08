@@ -13,7 +13,7 @@ Baseline: R0-C at `12a5842`. This report covers R1-A (measurement), R1-B
 
 | Workload | EF folds | EF total | Basic folds | Basic total | Dominant source | Share |
 |---|---:|---:|---:|---:|---|---:|
-| W1-narrative-heavy | 31 | 106443 | 21 | 73689 | `checkpoint-framing` | 40.9% |
+| W1-narrative-heavy | 31 | 106443 | 21 | 73689 | `checkpoint-framing` | 38.5% |
 | W2-state-rich | 8 | 106949 | 5 | 83396 | `raw-assistant` | 28.5% |
 | W3-tool-heavy | 63 | 158485 | 63 | 87340 | `raw-tool-result` | 49.4% |
 | W4-recall-heavy | 12 | 100371 | 8 | 72696 | `checkpoint-framing` | 31.3% |
@@ -30,11 +30,12 @@ Attribution reconciles exactly with the metered prompt total on every arm
 
 | Token source | Tokens | Share |
 |---|---:|---:|
-| checkpoint-framing | 43553 | 40.9% |
+| checkpoint-framing | 40934 | 38.5% |
 | raw-assistant | 37152 | 34.9% |
 | raw-user | 15411 | 14.5% |
-| checkpoint-identity | 5388 | 5.1% |
-| checkpoint-leaf-rationale | 4939 | 4.6% |
+| checkpoint-identity | 5064 | 4.8% |
+| checkpoint-leaf-rationale | 4642 | 4.4% |
+| checkpoint-root | 3240 | 3.0% |
 | **total** | **106443** | 100% |
 
 #### W2-state-rich
@@ -58,9 +59,10 @@ Attribution reconciles exactly with the metered prompt total on every arm
 | Token source | Tokens | Share |
 |---|---:|---:|
 | raw-tool-result | 78249 | 49.4% |
-| checkpoint-framing | 62856 | 39.7% |
-| checkpoint-identity | 7776 | 4.9% |
-| checkpoint-leaf-rationale | 7128 | 4.5% |
+| checkpoint-framing | 58685 | 37.0% |
+| checkpoint-identity | 7260 | 4.6% |
+| checkpoint-leaf-rationale | 6655 | 4.2% |
+| checkpoint-root | 5160 | 3.3% |
 | raw-assistant | 1987 | 1.3% |
 | raw-user | 489 | 0.3% |
 | **total** | **158485** | 100% |
@@ -86,9 +88,10 @@ Attribution reconciles exactly with the metered prompt total on every arm
 | Token source | Tokens | Share |
 |---|---:|---:|
 | raw-tool-result | 65743 | 50.2% |
-| checkpoint-framing | 50246 | 38.3% |
-| checkpoint-identity | 6216 | 4.7% |
-| checkpoint-leaf-rationale | 5698 | 4.3% |
+| checkpoint-framing | 46560 | 35.5% |
+| checkpoint-identity | 5760 | 4.4% |
+| checkpoint-leaf-rationale | 5280 | 4.0% |
+| checkpoint-root | 4560 | 3.5% |
 | raw-assistant | 2354 | 1.8% |
 | raw-user | 819 | 0.6% |
 | **total** | **131076** | 100% |
@@ -100,11 +103,11 @@ number quoted without its regime would be a threshold artifact.
 
 | Workload | Aggressive folds | framing | raw history | Realistic folds | framing | raw history |
 |---|---:|---:|---:|---:|---:|---:|
-| W1-narrative-heavy | 31 | 40.9% | 49.4% | 4 | 3.8% | 95.3% |
+| W1-narrative-heavy | 31 | 38.5% | 49.4% | 4 | 3.8% | 95.3% |
 | W2-state-rich | 8 | 16.8% | 52.3% | 1 | 0.4% | 98.8% |
-| W3-tool-heavy | 63 | 39.7% | 50.9% | 9 | 7.8% | 90.4% |
+| W3-tool-heavy | 63 | 37.0% | 50.9% | 9 | 7.8% | 90.4% |
 | W4-recall-heavy | 12 | 31.3% | 30.7% | 2 | 1.0% | 54.7% |
-| W5-multi-agent | 48 | 38.3% | 52.6% | 6 | 5.4% | 93.3% |
+| W5-multi-agent | 48 | 35.5% | 52.6% | 6 | 5.4% | 93.3% |
 
 **Structural finding.** The frozen prefix is monotonically non-decreasing
 (EF may never re-fold a frozen checkpoint, plan §13). Once it alone exceeds
@@ -126,9 +129,9 @@ idealization. These are UPPER BOUNDS, not achievements.
 |---|---:|---:|---:|---:|---:|---|---|
 | E-delta-oracle | 0.0% | 18.6% | 0.0% | 0.0% | 0.0% | medium | new-mechanism |
 | E-M1-oracle | 0.0% | 0.0% | 47.4% | 0.0% | 48.2% | high | new-mechanism |
-| E-M5-oracle | 33.8% | 31.8% | 33.1% | 25.5% | 31.8% | high | new-mechanism |
-| E-adaptive-root-oracle | 39.2% | 21.6% | 39.9% | 28.5% | 37.5% | low | policy-change |
-| E-framing-oracle | 35.2% | 11.7% | 35.8% | 25.5% | 33.7% | low | policy-change |
+| E-M5-oracle | 31.7% | 31.8% | 30.7% | 25.5% | 29.3% | high | new-mechanism |
+| E-adaptive-root-oracle | 36.7% | 21.6% | 37.0% | 28.5% | 34.6% | low | policy-change |
+| E-framing-oracle | 32.9% | 11.7% | 33.2% | 25.5% | 31.0% | low | policy-change |
 
 ### Idealization assumptions
 
@@ -156,10 +159,10 @@ tokens that would otherwise have been billed as cache hits.
 
 | Profile | ρ | h = 1.0 | h = 0.8 | h = 0.5 |
 |---|---:|---:|---:|---:|
-| deepseek-flash-2026-09 | 0.020 | $0.0003 | $0.0034 | $0.0081 |
-| deepseek-pro-2026-09 | 0.033 | $0.0010 | $0.0072 | $0.0164 |
-| openai-gpt-5.6-2026-09 | 0.100 | $0.0071 | $0.0199 | $0.0390 |
-| synthetic-no-cache | 1.000 | $0.0567 | $0.0567 | $0.0567 |
+| deepseek-flash-2026-09 | 0.020 | $0.0003 | $0.0032 | $0.0075 |
+| deepseek-pro-2026-09 | 0.033 | $0.0010 | $0.0067 | $0.0152 |
+| openai-gpt-5.6-2026-09 | 0.100 | $0.0066 | $0.0184 | $0.0361 |
+| synthetic-no-cache | 1.000 | $0.0526 | $0.0526 | $0.0526 |
 
 A ~67% token saving is worth very different money on a cache-dominant model
 than on one that bills cache writes. Any "N% cheaper" claim without its
