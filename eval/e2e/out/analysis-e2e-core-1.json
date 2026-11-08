@@ -1,0 +1,3089 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T16:34:48.117Z",
+  "campaign": "e2e-core-1",
+  "status": "complete",
+  "budget": {
+    "used": {
+      "requests": 259,
+      "inputTokens": 1214580,
+      "outputTokens": 69166,
+      "wallClockMs": 744552
+    },
+    "limits": {
+      "httpAttempts": 2200,
+      "inputTokens": 18000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 28800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 72,
+      "paidConcurrency": 2
+    }
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "units": {
+    "cell": "one continuation of one task instance under one arm",
+    "template": "a task shape; its two seeds are NOT independent tasks",
+    "note": "pass rates are descriptive; no significance test is claimed"
+  },
+  "byArm": {
+    "B0": {
+      "cells": 13,
+      "checkerPasses": 10,
+      "passRate": 0.769,
+      "folds": 37,
+      "foldFailures": 21,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 111,
+      "auxiliaryRequests": 58,
+      "inputTokens": 424442,
+      "outputTokens": 47222,
+      "cacheReadTokens": 634752,
+      "unknownUsage": 0,
+      "testsExecuted": 8,
+      "falseVerifications": 1,
+      "failureClasses": {
+        "other": 1,
+        "shape-mismatch": 1,
+        "missing-output": 1
+      },
+      "meanRequests": 8.538,
+      "meanInputTokens": 32649.385,
+      "meanOutputTokens": 3632.462,
+      "meanFolds": 2.846
+    },
+    "E0": {
+      "cells": 13,
+      "checkerPasses": 8,
+      "passRate": 0.615,
+      "folds": 29,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 7,
+      "requests": 74,
+      "auxiliaryRequests": 0,
+      "inputTokens": 315536,
+      "outputTokens": 7998,
+      "cacheReadTokens": 360448,
+      "unknownUsage": 0,
+      "testsExecuted": 11,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "missing-output": 3,
+        "shape-mismatch": 2
+      },
+      "meanRequests": 5.692,
+      "meanInputTokens": 24272,
+      "meanOutputTokens": 615.231,
+      "meanFolds": 2.231
+    },
+    "E1": {
+      "cells": 13,
+      "checkerPasses": 11,
+      "passRate": 0.846,
+      "folds": 22,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 74,
+      "auxiliaryRequests": 22,
+      "inputTokens": 474602,
+      "outputTokens": 13946,
+      "cacheReadTokens": 518912,
+      "unknownUsage": 0,
+      "testsExecuted": 8,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "shape-mismatch": 2
+      },
+      "meanRequests": 5.692,
+      "meanInputTokens": 36507.846,
+      "meanOutputTokens": 1072.769,
+      "meanFolds": 1.692
+    }
+  },
+  "byBlock": {
+    "calibration": {
+      "cells": 3,
+      "checkerPasses": 2,
+      "passRate": 0.667,
+      "folds": 9,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 22,
+      "auxiliaryRequests": 7,
+      "inputTokens": 79340,
+      "outputTokens": 6035,
+      "cacheReadTokens": 111744,
+      "unknownUsage": 0,
+      "testsExecuted": 4,
+      "falseVerifications": 1,
+      "failureClasses": {
+        "other": 1
+      },
+      "meanRequests": 7.333,
+      "meanInputTokens": 26446.667,
+      "meanOutputTokens": 2011.667,
+      "meanFolds": 3
+    },
+    "core": {
+      "cells": 36,
+      "checkerPasses": 27,
+      "passRate": 0.75,
+      "folds": 79,
+      "foldFailures": 21,
+      "noFold": 0,
+      "recallCells": 7,
+      "requests": 237,
+      "auxiliaryRequests": 73,
+      "inputTokens": 1135240,
+      "outputTokens": 63131,
+      "cacheReadTokens": 1402368,
+      "unknownUsage": 0,
+      "testsExecuted": 23,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "missing-output": 4,
+        "shape-mismatch": 5
+      },
+      "meanRequests": 6.583,
+      "meanInputTokens": 31534.444,
+      "meanOutputTokens": 1753.639,
+      "meanFolds": 2.194
+    }
+  },
+  "byTemplateArm": {
+    "T1": {
+      "B0": {
+        "cells": 3,
+        "checkerPasses": 2,
+        "passRate": 0.667,
+        "folds": 13,
+        "foldFailures": 1,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 28,
+        "auxiliaryRequests": 14,
+        "inputTokens": 87123,
+        "outputTokens": 13299,
+        "cacheReadTokens": 125440,
+        "unknownUsage": 0,
+        "testsExecuted": 4,
+        "falseVerifications": 1,
+        "failureClasses": {
+          "other": 1
+        },
+        "meanRequests": 9.333,
+        "meanInputTokens": 29041,
+        "meanOutputTokens": 4433,
+        "meanFolds": 4.333
+      },
+      "E0": {
+        "cells": 3,
+        "checkerPasses": 3,
+        "passRate": 1,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 21,
+        "auxiliaryRequests": 0,
+        "inputTokens": 48067,
+        "outputTokens": 2180,
+        "cacheReadTokens": 118912,
+        "unknownUsage": 0,
+        "testsExecuted": 6,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 7,
+        "meanInputTokens": 16022.333,
+        "meanOutputTokens": 726.667,
+        "meanFolds": 2
+      },
+      "E1": {
+        "cells": 3,
+        "checkerPasses": 3,
+        "passRate": 1,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 19,
+        "auxiliaryRequests": 6,
+        "inputTokens": 90105,
+        "outputTokens": 4154,
+        "cacheReadTokens": 115200,
+        "unknownUsage": 0,
+        "testsExecuted": 4,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 6.333,
+        "meanInputTokens": 30035,
+        "meanOutputTokens": 1384.667,
+        "meanFolds": 2
+      }
+    },
+    "T2": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 3,
+        "foldFailures": 3,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 10,
+        "auxiliaryRequests": 6,
+        "inputTokens": 98287,
+        "outputTokens": 3385,
+        "cacheReadTokens": 97664,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 5,
+        "meanInputTokens": 49143.5,
+        "meanOutputTokens": 1692.5,
+        "meanFolds": 1.5
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 1,
+        "requests": 4,
+        "auxiliaryRequests": 0,
+        "inputTokens": 102510,
+        "outputTokens": 977,
+        "cacheReadTokens": 5248,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 2
+        },
+        "meanRequests": 2,
+        "meanInputTokens": 51255,
+        "meanOutputTokens": 488.5,
+        "meanFolds": 2
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 2,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 6,
+        "auxiliaryRequests": 2,
+        "inputTokens": 95301,
+        "outputTokens": 1353,
+        "cacheReadTokens": 98560,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 3,
+        "meanInputTokens": 47650.5,
+        "meanOutputTokens": 676.5,
+        "meanFolds": 1
+      }
+    },
+    "T3": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 7,
+        "foldFailures": 5,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 24,
+        "auxiliaryRequests": 12,
+        "inputTokens": 69603,
+        "outputTokens": 10545,
+        "cacheReadTokens": 121216,
+        "unknownUsage": 0,
+        "testsExecuted": 2,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 12,
+        "meanInputTokens": 34801.5,
+        "meanOutputTokens": 5272.5,
+        "meanFolds": 3.5
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 13,
+        "auxiliaryRequests": 0,
+        "inputTokens": 31956,
+        "outputTokens": 1639,
+        "cacheReadTokens": 35200,
+        "unknownUsage": 0,
+        "testsExecuted": 2,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 6.5,
+        "meanInputTokens": 15978,
+        "meanOutputTokens": 819.5,
+        "meanFolds": 2
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 16,
+        "auxiliaryRequests": 4,
+        "inputTokens": 75108,
+        "outputTokens": 2938,
+        "cacheReadTokens": 97536,
+        "unknownUsage": 0,
+        "testsExecuted": 2,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 8,
+        "meanInputTokens": 37554,
+        "meanOutputTokens": 1469,
+        "meanFolds": 2
+      }
+    },
+    "T4": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 3,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 11,
+        "auxiliaryRequests": 7,
+        "inputTokens": 46393,
+        "outputTokens": 3276,
+        "cacheReadTokens": 50816,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 5.5,
+        "meanInputTokens": 23196.5,
+        "meanOutputTokens": 1638,
+        "meanFolds": 2
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 5,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 8,
+        "auxiliaryRequests": 0,
+        "inputTokens": 44979,
+        "outputTokens": 761,
+        "cacheReadTokens": 55296,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 1,
+          "shape-mismatch": 1
+        },
+        "meanRequests": 4,
+        "meanInputTokens": 22489.5,
+        "meanOutputTokens": 380.5,
+        "meanFolds": 2.5
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 2,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 6,
+        "auxiliaryRequests": 2,
+        "inputTokens": 60876,
+        "outputTokens": 862,
+        "cacheReadTokens": 32512,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 3,
+        "meanInputTokens": 30438,
+        "meanOutputTokens": 431,
+        "meanFolds": 1
+      }
+    },
+    "T5": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 5,
+        "foldFailures": 3,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 15,
+        "auxiliaryRequests": 8,
+        "inputTokens": 81486,
+        "outputTokens": 8272,
+        "cacheReadTokens": 114816,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "shape-mismatch": 1,
+          "missing-output": 1
+        },
+        "meanRequests": 7.5,
+        "meanInputTokens": 40743,
+        "meanOutputTokens": 4136,
+        "meanFolds": 2.5
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 1,
+        "passRate": 0.5,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 15,
+        "auxiliaryRequests": 0,
+        "inputTokens": 55577,
+        "outputTokens": 1526,
+        "cacheReadTokens": 77824,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "shape-mismatch": 1
+        },
+        "meanRequests": 7.5,
+        "meanInputTokens": 27788.5,
+        "meanOutputTokens": 763,
+        "meanFolds": 3
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 12,
+        "auxiliaryRequests": 4,
+        "inputTokens": 90574,
+        "outputTokens": 1922,
+        "cacheReadTokens": 78208,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "shape-mismatch": 2
+        },
+        "meanRequests": 6,
+        "meanInputTokens": 45287,
+        "meanOutputTokens": 961,
+        "meanFolds": 2
+      }
+    },
+    "T6": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 5,
+        "foldFailures": 6,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 23,
+        "auxiliaryRequests": 11,
+        "inputTokens": 41550,
+        "outputTokens": 8445,
+        "cacheReadTokens": 124800,
+        "unknownUsage": 0,
+        "testsExecuted": 2,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 11.5,
+        "meanInputTokens": 20775,
+        "meanOutputTokens": 4222.5,
+        "meanFolds": 2.5
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 13,
+        "auxiliaryRequests": 0,
+        "inputTokens": 32447,
+        "outputTokens": 915,
+        "cacheReadTokens": 67968,
+        "unknownUsage": 0,
+        "testsExecuted": 3,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 6.5,
+        "meanInputTokens": 16223.5,
+        "meanOutputTokens": 457.5,
+        "meanFolds": 2
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 15,
+        "auxiliaryRequests": 4,
+        "inputTokens": 62638,
+        "outputTokens": 2717,
+        "cacheReadTokens": 96896,
+        "unknownUsage": 0,
+        "testsExecuted": 2,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 7.5,
+        "meanInputTokens": 31319,
+        "meanOutputTokens": 1358.5,
+        "meanFolds": 2
+      }
+    }
+  },
+  "rows": [
+    {
+      "cellId": "T1-s1-B0-r0",
+      "block": "calibration",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 0,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 5,
+      "foldAttempts": 5,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 3282,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": false,
+          "detail": "eval/e2e/checkers/T1.mjs exit 1"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 9,
+      "auxiliaryRequests": 5,
+      "inputTokens": 33218,
+      "outputTokens": 3995,
+      "cacheReadTokens": 35200,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": true,
+      "finalText": "Fixed `truncate` in `src/text.js`:\n\n- Content is now budgeted to `max - 1` code units so the ellipsis counts toward `max`, and the result can never exceed it.\n- If the cut would land between a high surrogate and its low surrogate, the end index backs off one unit, so no emoji is split in half.\n\n`node --test` output: 4 tests, 4 pass, 0 fail (`slugify joins words with one dash`, `short text is unchanged`, `the result never exceeds max, ellipsis included`, `a surrogate pair is never split`).",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-B0-r0\\report.json",
+      "reportSha256": "d0e2ce88d97e4312787bbf28e45a4596164d4c79f597ab95e51da30f63d68a8a",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2492
+    },
+    {
+      "cellId": "T1-s1-E0-r0",
+      "block": "calibration",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 0,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16970,
+      "outputTokens": 718,
+      "cacheReadTokens": 38784,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "All 4 tests pass now.\n\n**What was wrong:** `truncate` in `src/text.js` did `text.slice(0, max) + '…'`, which had two bugs:\n1. It appended the ellipsis *after* spending the full `max` budget, so results were `max + 1` characters.\n2. `String.prototype.slice` works on UTF-16 code units, so a cut could land between the two halves of a surrogate pair (e.g. `'a😀b'` → `'a\\uD83D…'`).\n\n**Fix:** the ellipsis is now counted inside the budget (`end = max - 1`), and if the character at that boundary is a high surrogate the cut backs off by one so a pair is never split. Edge cases `max <= 0` and `max === 1",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E0-r0\\report.json",
+      "reportSha256": "37116ffb9224a5144dc78873fb5ade67ea771082ab8462c96eef6b0f173428c2",
+      "engineDecision": "below-threshold 3505<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3744
+    },
+    {
+      "cellId": "T1-s1-E1-r0",
+      "block": "calibration",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 0,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1326,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 29152,
+      "outputTokens": 1322,
+      "cacheReadTokens": 37760,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Fixed `truncate` in `src/text.js`. It now reserves one code unit for the ellipsis (so output never exceeds `max`), backs off one unit when the cut would split a surrogate pair, and handles `max` of 0 or 1 explicitly. `node --test` passes 4/4.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E1-r0\\report.json",
+      "reportSha256": "7f4109937bba51cd7f96f55054568ed50f172bb8e6b645015ac3294dc538f17f",
+      "engineDecision": "below-threshold 3350<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3469
+    },
+    {
+      "cellId": "T1-s1-E0-r1",
+      "block": "core",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15403,
+      "outputTokens": 766,
+      "cacheReadTokens": 40064,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Fixed `truncate` in `src/text.js` — all 4 tests pass now.\n\nThe old implementation had two bugs:\n\n1. **Overflow**: it returned `text.slice(0, max) + '…'`, so the result was `max + 1` characters long. The ellipsis wasn't counted against the budget.\n2. **Split surrogate pairs**: slicing by UTF-16 code units could end on a lone high surrogate (e.g. `'a\\ud83d…'`), producing a broken character.\n\nNew version:\n\n- Returns `text` unchanged when it already fits.\n- Returns `''` for `max <= 0` and `'…'` for `max === 1` (no room for content).\n- For `max >= 2`, slices to `max - 1` characters to leave room fo",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E0-r1\\report.json",
+      "reportSha256": "987c1f706d1a48eeb596f4c30ffe730b03b1a354513925e3b2c9f7d5a41333aa",
+      "engineDecision": "below-threshold 3256<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3560
+    },
+    {
+      "cellId": "T1-s1-E1-r1",
+      "block": "core",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1765,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 2,
+      "inputTokens": 16581,
+      "outputTokens": 1604,
+      "cacheReadTokens": 55552,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Fixed `truncate` in `src/text.js`.\n\n**What changed:** the old body was `text.slice(0, max) + '…'`, which returned `max + 1` code units and could cut a surrogate pair in half. It now reserves one code unit for the ellipsis (body budget `max - 1`), returns `''` for `max <= 0`, and backs off one code unit when the cut point would land between a high and low surrogate.\n\n**Test run (`node --test`):** 4 tests, 4 pass, 0 fail. Before the edit it was 2 pass / 2 fail — `the result never exceeds max, ellipsis included` produced `'a\\ud83d…'` (length 5 for `max` 4) and `a surrogate pair is never split` go",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E1-r1\\report.json",
+      "reportSha256": "f506fd592a69953bf26f02d256e706bd301abd0317171e32c3e1f0d85488529d",
+      "engineDecision": "below-threshold 4179<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4532
+    },
+    {
+      "cellId": "T1-s1-B0-r1",
+      "block": "core",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 5,
+      "foldAttempts": 5,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 3734,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 11,
+      "auxiliaryRequests": 5,
+      "inputTokens": 34991,
+      "outputTokens": 5723,
+      "cacheReadTokens": 41984,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Fixed `truncate` in `src/text.js`. `node --test` reports 4 pass, 0 fail.\n\nWhat changed:\n- **Ellipsis is now inside the budget.** The slice stops at `max - 1` code units so the appended `\"…\"` still fits inside `max`. That's the bug behind the `length_overflow` retries in the feed logs, where results came back at `max + 1`.\n- **Surrogate pairs are never split.** If the cut point lands after a high surrogate (0xD800–0xDBFF), the boundary backs off one code unit, so an emoji is dropped whole instead of being left half-written.\n- **Grapheme tails are trimmed too.** A cut that ends on a zero-width j",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-B0-r1\\report.json",
+      "reportSha256": "29817e2400ffea9c05765fccb36ee9dcd5b61cd59f407e366dd9fe0e3dddd3bc",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 3493
+    },
+    {
+      "cellId": "T2-s1-E1-r1",
+      "block": "core",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1956,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "7f3c9a1e",
+          "1847"
+        ]
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "answer.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 1,
+      "inputTokens": 78251,
+      "outputTokens": 769,
+      "cacheReadTokens": 18944,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`build` = **7f3c9a1e**, `timeout_ms` = **1847**.\n\nNote on provenance: those values come from the boot/config lines in `logs/gateway-2026-10-11.log` (`[gateway] boot build=7f3c9a1e pid=4821` at 02:14:03.001Z, and `retry_timeout_ms=1847` at 02:14:03.004Z), not from `logs/gateway-late.log` — the file I read during this turn contained only request lines (route/status/ms/pool) from 2026-10-14 with no build or timeout fields. `answer.json` has been written.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-E1-r1\\report.json",
+      "reportSha256": "336a59489fd8ff268248c40914981ca48c11cb473d5e0ab2507ca5c8bca72a78",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17896",
+      "thresholdTokens": 8192,
+      "retainedTokens": 18060
+    },
+    {
+      "cellId": "T2-s1-B0-r1",
+      "block": "core",
+      "template": "T2",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 3,
+      "foldFailures": 1,
+      "checkpoint": {
+        "chars": 1995,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "7f3c9a1e",
+          "1847"
+        ]
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "answer.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 3,
+      "inputTokens": 18650,
+      "outputTokens": 1746,
+      "cacheReadTokens": 79488,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "From the incident log (`logs/gateway-2026-10-11.log`), which I read before it was rotated out:\n\n- **build**: `7f3c9a1e`\n- **timeout_ms**: `1847`\n\nSource lines (exact, unrounded):\n- `2026-10-11T02:14:03.001Z INFO  [gateway] boot build=7f3c9a1e pid=4821`\n- `2026-10-11T02:14:03.004Z INFO  [gateway] config retry_timeout_ms=1847`\n\n`answer.json` has been written with exactly those two fields.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-B0-r1\\report.json",
+      "reportSha256": "da405c1c95dab61f7b94ad8fec8a3b182f6f942beedef2827091517fd7bff7a1",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 17125
+    },
+    {
+      "cellId": "T2-s1-E0-r1",
+      "block": "core",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15970,
+      "outputTokens": 407,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I can't fill in those values.\n\nThe gateway log I just read (`logs/gateway-late.log`) contains only request lines — timestamp, level, `[gateway]`, request id, route, status, ms, pool. There is no `build` field and no `timeout_ms` field anywhere in it. So the log doesn't carry the two values you're asking for, and I won't invent them.\n\nI also won't write `answer.json` with fabricated or placeholder values, since that would be a guess dressed up as a verified reading — exactly what you asked me not to do.\n\nIf it helps, here's what I *can* confirm from the log, in case it's useful for locating the",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-E0-r1\\report.json",
+      "reportSha256": "b7328cb7b30024539bdd78a352d4056fc637183af3906cbc974be7c01948259c",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9010",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17657
+    },
+    {
+      "cellId": "T3-s1-B0-r1",
+      "block": "core",
+      "template": "T3",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 6,
+      "foldFailures": 2,
+      "checkpoint": {
+        "chars": 4080,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 12,
+      "auxiliaryRequests": 6,
+      "inputTokens": 49535,
+      "outputTokens": 5111,
+      "cacheReadTokens": 39168,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done. `src/cache.js` is now backed by a plain object — no `Map` anywhere — and `snapshot()` returns a shallow copy plain object, so `JSON.stringify(snapshot())` yields real data instead of `{}`.\n\n- `store` is a null-prototype object, so keys like `__proto__` can't pollute state.\n- `set` / `get` use plain property access.\n- `snapshot()` returns `{ ...store }`, a plain object detached from the live cache, so callers mutating a snapshot can't corrupt the cache.\n\n`node --test`: 2 tests, 2 pass, 0 fail.\n\nOne thing still outstanding from earlier analysis: the intermittent `persist ... ok=false` entr",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-B0-r1\\report.json",
+      "reportSha256": "767188644db4edb589916f66f62f8121b46a9edfd277d4948feecd5d9cdb27c2",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2896
+    },
+    {
+      "cellId": "T3-s1-E0-r1",
+      "block": "core",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 3,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16368,
+      "outputTokens": 870,
+      "cacheReadTokens": 20096,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done — `src/cache.js` now follows the final decision (plain object, not a `Map`).\n\n**What changed:**\n- Storage is a null-prototype plain object (`Object.create(null)`), so keys like `__proto__` can't pollute anything.\n- `set`/`get` read and write properties on that object.\n- `snapshot()` returns a **plain object** copy (`{ ...store }`) rather than the internal store or a `Map`.\n\n**Tests:** `node --test` → 2 passed, 0 failed.\n- `stores and reads a value` ✔\n- `snapshot survives JSON serialization` ✔\n\nThat second test is the one that previously failed: a `Map` serializes to `{}`, which matches th",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-E0-r1\\report.json",
+      "reportSha256": "19c825827407432cf6043b1d1db697bdd3b63650cd36c39fcde57d773d74f86f",
+      "engineDecision": "below-threshold 4286<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4543
+    },
+    {
+      "cellId": "T3-s1-E1-r1",
+      "block": "core",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1867,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 2,
+      "inputTokens": 29718,
+      "outputTokens": 1398,
+      "cacheReadTokens": 56320,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`src/cache.js` now uses a plain object internally instead of a `Map`, per the final decision: the store is created with `Object.create(null)`, `set`/`get` read and write properties directly, and `snapshot()` returns a shallow copy (`{ ...store }`) rather than a live reference — so serialization yields real keys and callers can't mutate the cache through a snapshot.\n\n`node --test` passes both tests (`stores and reads a value`, `snapshot survives JSON serialization`): 2 pass, 0 fail.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-E1-r1\\report.json",
+      "reportSha256": "f1f1c59b16cdbd4f34e0c7ea92e6d473b11d1223caedb57acfbb048bb97e8a69",
+      "engineDecision": "below-threshold 3434<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3593
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "block": "core",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 2,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 14795,
+      "outputTokens": 223,
+      "cacheReadTokens": 2560,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "The folded history records this from `config/deploy.json`:\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n- **release:** `canary`\n\nThe deploy log at `2026-10-14T09:12:05Z` also showed `rollout step=2 healthy=3`, which is consistent with the 3 replicas in the config.\n\nNote this is the value as reading it during that earlier step — worth re-reading `config/deploy.json` if the migration plan needs the *current* live state, since the config may have changed since.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-E0-r1\\report.json",
+      "reportSha256": "246a0421c4ec61eaef4fd6a2284193c44b5959994018addda636205351caee07",
+      "engineDecision": "fold-attempted span=23..45 resultNull=false tokensBefore=15565 tokensAfter=7494",
+      "thresholdTokens": 8192,
+      "retainedTokens": 2877
+    },
+    {
+      "cellId": "T4-s1-E1-r1",
+      "block": "core",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1080,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "eu-west-3",
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 1,
+      "inputTokens": 29964,
+      "outputTokens": 426,
+      "cacheReadTokens": 16128,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`deploy.plan.json` written from the pre-rotation values I actually observed:\n\n- **region**: `eu-west-3`\n- **replicas**: `3`\n\nI did not open or copy the rotated decoy config. (Note: the release field was `canary`, but you asked for exactly `region` and `replicas`, so those are the only keys written.)",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-E1-r1\\report.json",
+      "reportSha256": "1bd7b2a45f0b1887be51e2796823dd2dc53e110da8ffc2bb01dfbdba388556cb",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=14981",
+      "thresholdTokens": 8192,
+      "retainedTokens": 15069
+    },
+    {
+      "cellId": "T4-s1-B0-r1",
+      "block": "core",
+      "template": "T4",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 4,
+      "foldFailures": 1,
+      "checkpoint": {
+        "chars": 2056,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "eu-west-3",
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 4,
+      "inputTokens": 30325,
+      "outputTokens": 2038,
+      "cacheReadTokens": 18688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Written `deploy.plan.json` from the pre-rotation config I inspected:\n\n- **region**: `eu-west-3`\n- **replicas**: `3`\n\n(The rotated copy was left untouched and not read.)",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-B0-r1\\report.json",
+      "reportSha256": "2b73c9c5983c1643377166c0219f1c92edd882f996fb0a2f40cf5e4f54019c66",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 14356
+    },
+    {
+      "cellId": "T5-s1-E1-r1",
+      "block": "core",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1203,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "state.json = {\"batch\":{\"max_attempts\":2,\"window_s\":30},\"general\":{\"max_attempts\":5}}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "state.json = {\"batch\":{\"max_attempts\":2,\"window_s\":30},\"general\":{\"max_attempts\":5}}, expected {\"max_attempts\":2}"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json = {\"batch\":{\"max_attempts\":2,\"window_seconds\":30}}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 53134,
+      "outputTokens": 1063,
+      "cacheReadTokens": 31616,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Wrote `final.json`:\n\n- `batch.max_attempts`: **2**\n- `batch.window_seconds`: **30**\n\nThe superseded five-attempt value does not appear in the file.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-E1-r1\\report.json",
+      "reportSha256": "0d9e94e86af3e624becc3aca9244b13910eb75ac5dd044595bf9fc74fae9d995",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13393",
+      "thresholdTokens": 8192,
+      "retainedTokens": 13441
+    },
+    {
+      "cellId": "T5-s1-B0-r1",
+      "block": "core",
+      "template": "T5",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 5,
+      "foldFailures": 1,
+      "checkpoint": {
+        "chars": 3505,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "state.json = {\"batch\":{\"max_attempts\":2}}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "state.json = {\"batch\":{\"max_attempts\":2}}, expected {\"max_attempts\":2}"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json = {\"batch\":{\"max_attempts\":2,\"window_seconds\":30}}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "5 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 9,
+      "auxiliaryRequests": 5,
+      "inputTokens": 40733,
+      "outputTokens": 4433,
+      "cacheReadTokens": 46848,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "- **batch path (final.json):**\n  - `max_attempts` = **2** (Revision 2 supersedes the spec for batch jobs)\n  - `window_seconds` = **30** (the agreed window; also corroborated by `window_s=30` throughout `logs/batch-late.log`)\n- The stale five-attempt figure appears nowhere in `final.json`.\n- Note: the general/default path keeps the baseline 5 — this override is batch-only.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-B0-r1\\report.json",
+      "reportSha256": "ce358a723f7c9a8ab095b5bc47e8ef9508b8a14ef206ecfa594c7e636140df8e",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 12591
+    },
+    {
+      "cellId": "T5-s1-E0-r1",
+      "block": "core",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 6,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "state.json = {\"batch\":{\"max_attempts\":2}}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "state.json = {\"batch\":{\"max_attempts\":2}}, expected {\"max_attempts\":2}"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json = {\"batch\":{\"max_attempts\":2,\"window_seconds\":30}}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 0,
+      "inputTokens": 28044,
+      "outputTokens": 842,
+      "cacheReadTokens": 45952,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Written `final.json`:\n\n```json\n{\n  \"batch\": {\n    \"max_attempts\": 2,\n    \"window_seconds\": 30\n  }\n}\n```\n\n- **max_attempts** = **2** (batch path; the revision capping it at two stands, and the log's `budget=2` / `attempt=1..2` agree. The general path keeps five, and the stale spec document saying five for batches is not used.)\n- **window_seconds** = **30** (the agreed window)",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-E0-r1\\report.json",
+      "reportSha256": "7f38fb6158fedef0572f15d27c0cd12ee71ab38a19f3f12bd798210bbee566bb",
+      "engineDecision": "below-threshold 5453<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 5574
+    },
+    {
+      "cellId": "T6-s1-B0-r1",
+      "block": "core",
+      "template": "T6",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 5,
+      "foldFailures": 3,
+      "checkpoint": {
+        "chars": 3748,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "250",
+          "four"
+        ]
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 11,
+      "auxiliaryRequests": 5,
+      "inputTokens": 21269,
+      "outputTokens": 3934,
+      "cacheReadTokens": 54528,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Implemented the platform retry contract v4 in `src/retry.js`:\n\n- `MAX_ATTEMPTS = 4` (initial attempt + 3 retries) — replaced the retired value of 3.\n- `BASE_MS = 250` — replaced the retired 100 ms base.\n- `delayFor(attempt)` now returns `250 × attempt`, giving linear backoff (250, 500, 750 ms) across the retries.\n\n`node --test` passes all 3 tests with 0 failures.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-B0-r1\\report.json",
+      "reportSha256": "74a98962c606a93315a92a5dab6201fa96fcb39b47194b5afbc7c08d5795bcc7",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2649
+    },
+    {
+      "cellId": "T6-s1-E0-r1",
+      "block": "core",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15843,
+      "outputTokens": 398,
+      "cacheReadTokens": 38144,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Updated `src/retry.js` to match the platform retry contract: `MAX_ATTEMPTS` is now 4 (was 3) and `BASE_MS` is now 250 (was 100). `delayFor` was already correct — it returns `BASE_MS * attempt`, so the first retry waits one base (250 ms).\n\n`node --test` passes: 3 tests, 3 passing, 0 failing.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-E0-r1\\report.json",
+      "reportSha256": "e282d715ba54d922f132f9dd9a0638c456d1febd413f9ddf4b21bda56b08fc91",
+      "engineDecision": "below-threshold 2439<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 2582
+    },
+    {
+      "cellId": "T6-s1-E1-r1",
+      "block": "core",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1764,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "250",
+          "four"
+        ]
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 2,
+      "inputTokens": 31453,
+      "outputTokens": 1278,
+      "cacheReadTokens": 43392,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done.\n\n- **`src/retry.js`**: `MAX_ATTEMPTS` 3 → **4** (initial + 3 retries) and `BASE_MS` 100 → **250** ms; `delayFor` keeps linear backoff (`BASE_MS * attempt` → 250/500/750), and a comment records the contract's idempotency-key-reuse and final-failure-surfacing rules.\n- **Tests**: `node --test` passes 3/3, 0 failures.\n\nBoth values were taken from the contract rules rather than from log observations.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-E1-r1\\report.json",
+      "reportSha256": "6878fd68241f153e2e7f142472289e1e4b0caa489b2467159ce40c3dd5669037",
+      "engineDecision": "below-threshold 3332<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3507
+    },
+    {
+      "cellId": "T1-s2-E1-r2",
+      "block": "core",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1756,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 44372,
+      "outputTokens": 1228,
+      "cacheReadTokens": 21888,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "The fix is in and the suite is green.\n\n**Change in `src/text.js` — `truncate`:** the content budget is now `max - 1` code units with the ellipsis counted inside `max`, and if the character at the cut index is a high surrogate (`0xD800–0xDBFF`), the cut backs off one more so no surrogate pair is split. `max <= 0` returns an empty string rather than a bare ellipsis.\n\n**Test run (`node --test`):** 4 tests, 4 pass, 0 fail — including \"the result never exceeds max, ellipsis included\" and \"a surrogate pair is never split\".",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-E1-r2\\report.json",
+      "reportSha256": "5927b90398e93aa974e99935fb688dcccf8cd8422e918d85f105a2f059c5e062",
+      "engineDecision": "below-threshold 3189<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3385
+    },
+    {
+      "cellId": "T1-s2-B0-r2",
+      "block": "core",
+      "template": "T1",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 4,
+      "foldFailures": 1,
+      "checkpoint": {
+        "chars": 3539,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 4,
+      "inputTokens": 18914,
+      "outputTokens": 3581,
+      "cacheReadTokens": 48256,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Fixed `truncate` in `src/text.js`: the cut now reserves one UTF-16 code unit for the `\"…\"` so the result never exceeds `max`, and it backs off one unit when the cut would land right after a high surrogate, so surrogate pairs are never split. `max <= 0` returns `''` and `max === 1` returns just `\"…\"`.\n\n`node --test` output: tests 4, pass 4, fail 0 (exit code 0).",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-B0-r2\\report.json",
+      "reportSha256": "6403113d88d3e011260738d7fc81594e7eb012fd5522225f94379e9695015f3c",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2551
+    },
+    {
+      "cellId": "T1-s2-E0-r2",
+      "block": "core",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T1.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15694,
+      "outputTokens": 696,
+      "cacheReadTokens": 40064,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "All 4 tests pass now.\n\n**What was wrong:** `truncate` sliced to the full `max` and then appended `'…'` on top, producing `max + 1` characters. It also sliced by UTF-16 code units, so it could cut between the high and low halves of a surrogate pair (e.g. `'a😀b'` with max 2 → `'a\\ud83d…'`).\n\n**The fix** in `src/text.js`:\n- The ellipsis now counts toward `max`, so only `max - 1` input characters are kept.\n- If that boundary lands right after a high surrogate, the cut backs off by one so the pair is dropped whole rather than split.\n- Added a `max <= 0` guard returning `''` (a lone `'…'` would exc",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-E0-r2\\report.json",
+      "reportSha256": "1328e51724056b3a892847e00158114d07a5d43413e27cbc209894204deed1ce",
+      "engineDecision": "below-threshold 3486<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3724
+    },
+    {
+      "cellId": "T2-s2-B0-r2",
+      "block": "core",
+      "template": "T2",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 3,
+      "foldFailures": 2,
+      "checkpoint": {
+        "chars": 1975,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "c41d08b7",
+          "2311"
+        ]
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "answer.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 3,
+      "inputTokens": 79637,
+      "outputTokens": 1639,
+      "cacheReadTokens": 18176,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Wrote `answer.json` from the values I read earlier in the incident log (logs/gateway-2026-10-11.log, boot and config lines):\n\n- **build**: `c41d08b7` (from `02:14:03.001Z ... boot build=c41d08b7`, confirmed by the shutdown line `02:19:41.552Z ... shutdown build=c41d08b7`)\n- **timeout_ms**: `2311` (from `02:14:03.004Z ... config retry_timeout_ms=2311`)\n\nBoth are exact, unrounded values. Note: the `ms=` figures in individual request lines (e.g. 2313, 2319) are per-request latencies, not the configured retry timeout.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-B0-r2\\report.json",
+      "reportSha256": "9b494d4f3515d4a7f6dd631e0c39cc718c56f06da4a5add0af1a56e6ed50bbe9",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 17190
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "block": "core",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 86540,
+      "outputTokens": 570,
+      "cacheReadTokens": 3968,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "The values established earlier in this conversation:\n\n- **Build:** `c41d08b7` — from the gateway boot line `2026-10-11T02:14:03.001Z INFO [gateway] boot build=c41d08b7 pid=4821`\n- **Retry timeout:** `2311` ms — from `2026-10-11T02:14:03.004Z INFO [gateway] config retry_timeout_ms=2311`\n\nTwo supporting observations from the same log, in case they're what you're after:\n\n- Every `retry id=… attempt=… budget_ms=2311` line matches that configured timeout, so the budget is applied consistently across retries.\n- There are intermittent `WARN [gateway] upstream slow id=… ms=23xx retry=1` lines clustere",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-E0-r2\\report.json",
+      "reportSha256": "b9a719c5110144c5944ac3a8cc7092b674aff5af6081f54cb7a35453391a14cc",
+      "engineDecision": "fold-attempted span=42..46 resultNull=false tokensBefore=30013 tokensAfter=29252",
+      "thresholdTokens": 8192,
+      "retainedTokens": 70907
+    },
+    {
+      "cellId": "T2-s2-E1-r2",
+      "block": "core",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1371,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "c41d08b7",
+          "2311"
+        ]
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "answer.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 1,
+      "inputTokens": 17050,
+      "outputTokens": 584,
+      "cacheReadTokens": 79616,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Values from the incident log (`logs/gateway-2026-10-11.log`), now written to `answer.json`:\n\n- **build**: `c41d08b7` — from the boot line `2026-10-11T02:14:03.001Z [gateway] boot build=c41d08b7 pid=4821` (corroborated by the shutdown line `build=c41d08b7, reason=deploy`)\n- **timeout_ms**: `2311` — from the config line `retry_timeout_ms=2311` at `02:14:03.004Z` (not the observed latency figures like 2313/2319/2360, and not rounded)",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-E1-r2\\report.json",
+      "reportSha256": "76f6f737942b26df201793b20bfc4e18faf0ab7c8bcce196d495c5e176b17994",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17786",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17948
+    },
+    {
+      "cellId": "T3-s2-E0-r2",
+      "block": "core",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 2,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15588,
+      "outputTokens": 769,
+      "cacheReadTokens": 15104,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I revised `src/cache.js` to match the final decision on record — a plain object, no `Map` anywhere.\n\n**What changed in `src/cache.js`:**\n- `store` is now `Object.create(null)` instead of `new Map()`. The null prototype keeps keys like `\"constructor\"` or `\"__proto__\"` from colliding with inherited properties, while still being a plain object.\n- `set` / `get` use bracket assignment and lookup.\n- `snapshot()` returns a shallow copy (`{ ...store }`) — a plain object, so it round-trips through `JSON.stringify` instead of serializing to `{}` the way a `Map` does. Returning a copy also keeps callers ",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-E0-r2\\report.json",
+      "reportSha256": "d30fd9c5c6717c4ed7ffc02c8e181859385ccedecbf22e10801ee14726d1e7e9",
+      "engineDecision": "below-threshold 3714<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4004
+    },
+    {
+      "cellId": "T3-s2-E1-r2",
+      "block": "core",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1981,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 2,
+      "inputTokens": 45390,
+      "outputTokens": 1540,
+      "cacheReadTokens": 41216,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done.\n\n**What changed:** `src/cache.js` now uses a plain object (`Object.create(null)`) for storage and returns a plain-object copy from `snapshot()` via `Object.assign({}, store)` — no `Map` anywhere in the module, per the final decision. The `set`/`get` signatures are unchanged; no eviction/TTL logic existed and none was added.\n\n**Tests:** `node --test` passes 2/2 — value storage/retrieval and `{\"a\":1}` surviving a `JSON.stringify` → `JSON.parse` round trip, which the previous Map-based version would have failed (Map serializes to `{}`).\n\n**Worth noting:** the intermittent `ok=false` persist",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-E1-r2\\report.json",
+      "reportSha256": "e6847526960fa4eaff4cd98e53fe5f7351f89a88a4df8a7862971cbb0511a35a",
+      "engineDecision": "below-threshold 3520<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3754
+    },
+    {
+      "cellId": "T3-s2-B0-r2",
+      "block": "core",
+      "template": "T3",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 6,
+      "foldFailures": 3,
+      "checkpoint": {
+        "chars": 3931,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_not_contains",
+          "pass": true,
+          "detail": "src/cache.js does not contain the required text"
+        },
+        {
+          "kind": "external_script",
+          "pass": true,
+          "detail": "eval/e2e/checkers/T3.mjs exit 0"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 12,
+      "auxiliaryRequests": 6,
+      "inputTokens": 20068,
+      "outputTokens": 5434,
+      "cacheReadTokens": 82048,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Rewrote `src/cache.js` per the final decision: all `Map` usage is gone and entries live in a plain object (`Object.create(null)`, so keys like `__proto__`/`constructor` can't collide with `Object.prototype`). `snapshot()` now returns a shallow copy as a plain object, so `JSON.stringify` produces real entries instead of `{}` — that was the cause of the `serialize empty snapshot keys=N` warnings. I also added `has`/`delete`/`size`/`keys` with straightforward string-key semantics.\n\n`node --test` passes: 2/2 tests (store/read, and snapshot surviving a JSON round-trip).\n\nOne thing still open: the l",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-B0-r2\\report.json",
+      "reportSha256": "82e02670bba96c3ee5ac04a9b3fa1f5c25fc48dcbc1990da7381f2aaf3999e0c",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2899
+    },
+    {
+      "cellId": "T4-s2-E1-r2",
+      "block": "core",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1269,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "ap-south-1",
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 1,
+      "inputTokens": 30912,
+      "outputTokens": 436,
+      "cacheReadTokens": 16384,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`deploy.plan.json` written:\n\n- **region**: `ap-south-1`\n- **replicas**: `4`\n\nThese come from the pre-rotation config I inspected earlier (release was also `canary`); I did not read or copy the decoy now in the workspace.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-E1-r2\\report.json",
+      "reportSha256": "472e2eba8201db2498d1789940cd14626fcd85a46f8a0e56d75c61d18303266c",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=15349",
+      "thresholdTokens": 8192,
+      "retainedTokens": 15418
+    },
+    {
+      "cellId": "T4-s2-B0-r2",
+      "block": "core",
+      "template": "T4",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 3,
+      "foldFailures": 2,
+      "checkpoint": {
+        "chars": 1874,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "ap-south-1",
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 3,
+      "inputTokens": 16068,
+      "outputTokens": 1238,
+      "cacheReadTokens": 32128,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Wrote `deploy.plan.json` from the pre-rotation config I inspected earlier (not the decoy):\n\n- `region`: `ap-south-1`\n- `replicas`: `4`",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-B0-r2\\report.json",
+      "reportSha256": "74199a9ae65c7f4860824b140473e251dd1c373f6c26d55045cadb25b5a41ef8",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 14591
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "block": "core",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "deploy.plan.json = {\"region\":\"ap-south-1\",\"replicas\":4,\"release\":\"canary\"}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json = {\"region\":\"ap-south-1\",\"replicas\":4,\"release\":\"canary\"}, expected {\"region\":\"ap-south-1\",\"replicas\":4}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 30184,
+      "outputTokens": 538,
+      "cacheReadTokens": 52736,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I wrote `deploy.plan.json` using the values I actually observed from the pre-rotation config:\n\n```json\n{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4,\n  \"release\": \"canary\"\n}\n```\n\nThese also corroborate the deploy logs (`logs/deploy.log` WARN and `logs/deploy-late.log` reconcile lines), which consistently report `region=ap-south-1` with `ready=4`.\n\nI deliberately did not read or use `config/deploy.json` now in the workspace, per your note that it's a migration decoy. If you'd like, I can later add a diff step comparing the decoy against this plan to document what the migration would change — but ",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-E0-r2\\report.json",
+      "reportSha256": "4e6953e51487f0b208cea96e0a0c49d6356ff91e676a6574bd335898b75cadb7",
+      "engineDecision": "no-span pricedNodes=14 surfaceNodes=14 firstOpen=4 retain=614 total=16617",
+      "thresholdTokens": 8192,
+      "retainedTokens": 16791
+    },
+    {
+      "cellId": "T5-s2-B0-r2",
+      "block": "core",
+      "template": "T5",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 3,
+      "foldFailures": 2,
+      "checkpoint": {
+        "chars": 2997,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "state.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "state.json is missing"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json = {\"path\":\"batch\",\"max_attempts\":2,\"window_seconds\":45}, expected {\"max_attempts\":2,\"window_seconds\":45}"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 3,
+      "inputTokens": 40753,
+      "outputTokens": 3839,
+      "cacheReadTokens": 67968,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "**Batch path: `max_attempts` = 2, `window_seconds` = 45.**\n\n`final.json` written. The superseded value of five does not appear anywhere in the file.\n\nTwo notes on how these values were grounded, since they came from different places:\n\n- **`max_attempts: 2`** — this one I could now actually verify rather than take on assertion. `logs/batch-late.log` logs `attempt=N budget=2` on every attempt line, with N never exceeding 2 (attempts observed: 1 and 2 only). That's direct evidence the batch budget is 2 and is being enforced — no attempt 3, 4, or 5 anywhere in the file. So the value is confirmed b",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-B0-r2\\report.json",
+      "reportSha256": "59ab11402c020e39a92a209a214a289bac96c4d0ec8f374538dd1baa388343d2",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 25518
+    },
+    {
+      "cellId": "T5-s2-E0-r2",
+      "block": "core",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 6,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 27533,
+      "outputTokens": 684,
+      "cacheReadTokens": 31872,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`final.json` written:\n\n- `max_attempts`: **2** (batch path; the spec's 5 is superseded and deliberately excluded)\n- `window_seconds`: **45** (the agreed window)",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-E0-r2\\report.json",
+      "reportSha256": "614ac295a578f2f14fb5b393eac1e8cfe5c4171a4dc34ca67d6f757351ab044e",
+      "engineDecision": "below-threshold 5526<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 5577
+    },
+    {
+      "cellId": "T5-s2-E1-r2",
+      "block": "core",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1437,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "state.json = {\"batch\":{\"max_attempts\":2}}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "state.json = {\"batch\":{\"max_attempts\":2}}, expected {\"max_attempts\":2}"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 37440,
+      "outputTokens": 859,
+      "cacheReadTokens": 46592,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`final.json` written (48 bytes):\n\n- `max_attempts`: **2** (batch path)\n- `window_seconds`: **45**",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-E1-r2\\report.json",
+      "reportSha256": "a5b976337d530d333994534d86fbba2001cd7da2545b2461f3bb6adf406f1db7",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13207",
+      "thresholdTokens": 8192,
+      "retainedTokens": 13244
+    },
+    {
+      "cellId": "T6-s2-E0-r2",
+      "block": "core",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16604,
+      "outputTokens": 517,
+      "cacheReadTokens": 29824,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 2,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "All three tests pass now.\n\nThe failing assertions were in `test/retry.test.js`, and the source of truth they encode is the retry contract: 4 attempts with a 250 ms base backoff. `src/retry.js` had drifted from it (`MAX_ATTEMPTS = 3`, `BASE_MS = 150`), so I updated the implementation rather than the tests:\n\n- `MAX_ATTEMPTS`: 3 → 4\n- `BASE_MS`: 150 → 250 (which also fixes `delayFor(1)` returning 250, since it's `BASE_MS * attempt`)\n\nTest run: 3 passed, 0 failed.",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-E0-r2\\report.json",
+      "reportSha256": "437d2773974e5f13a8c4e48992129b271e1428b1db4b7d35cf8641b217679883",
+      "engineDecision": "below-threshold 3370<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3564
+    },
+    {
+      "cellId": "T6-s2-E1-r2",
+      "block": "core",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1808,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "250",
+          "four"
+        ]
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 2,
+      "inputTokens": 31185,
+      "outputTokens": 1439,
+      "cacheReadTokens": 53504,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done — `src/retry.js` now matches Platform retry contract v4, and all tests pass.\n\n**Changes in `src/retry.js`:**\n- `MAX_ATTEMPTS`: `3` → `4` (4 total attempts = initial + 3 retries; the old 3-attempt value is retired by the contract).\n- `BASE_MS`: `150` → `250` (contract base; note the code was on 150, not the older 100 ms default).\n- `delayFor(attempt)` left linear as `BASE_MS * attempt`, which now yields 250/500/750 ms — matching the contract's \"linear in attempt number.\"\n- Added a short header comment citing the contract, including the idempotency-key reuse and final-failure-surfacing rule",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-E1-r2\\report.json",
+      "reportSha256": "a216d493c58015f7c83708e08a7f9a8a63622965453274f98f0f55bad561c566",
+      "engineDecision": "fold-attempted span=12..35 resultNull=false tokensBefore=16601 tokensAfter=9667",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3573
+    },
+    {
+      "cellId": "T6-s2-B0-r2",
+      "block": "core",
+      "template": "T6",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 6,
+      "foldFailures": 3,
+      "checkpoint": {
+        "chars": 3496,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "250"
+        ]
+      },
+      "probes": [
+        "250",
+        "four"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "tests",
+          "pass": true,
+          "detail": "node --test exit 0"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        },
+        {
+          "kind": "file_contains",
+          "pass": true,
+          "detail": "src/retry.js contains the required text"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 12,
+      "auxiliaryRequests": 6,
+      "inputTokens": 20281,
+      "outputTokens": 4511,
+      "cacheReadTokens": 70272,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 1,
+      "lastTestExit": 0,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Implemented the platform retry contract in `src/retry.js` and all tests pass (3/3).\n\nChanges:\n- `MAX_ATTEMPTS` is now **4** total attempts (initial + 3 retries), replacing the retired 3-attempt default.\n- `BASE_MS` is now **250 ms**, replacing the old 100/150 ms value.\n- `delayFor(attempt)` stays linear in the attempt number, so sleeps are 250, 500, 750 ms — within the unchanged retry window.\n\nContract items that live outside this module were verified as already satisfied by the design: the idempotency key is computed once per request and reused on every attempt, and the final failure is rethr",
+      "reportPath": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-B0-r2\\report.json",
+      "reportSha256": "20e2674810d982f97bf0f21574be2e872884738da8ae3d127f9aab33ffe341c3",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 2611
+    }
+  ],
+  "evidence": [
+    {
+      "cellId": "T1-s1-B0-r0",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-B0-r0\\report.json",
+      "sha256": "d0e2ce88d97e4312787bbf28e45a4596164d4c79f597ab95e51da30f63d68a8a"
+    },
+    {
+      "cellId": "T1-s1-E0-r0",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E0-r0\\report.json",
+      "sha256": "37116ffb9224a5144dc78873fb5ade67ea771082ab8462c96eef6b0f173428c2"
+    },
+    {
+      "cellId": "T1-s1-E1-r0",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E1-r0\\report.json",
+      "sha256": "7f4109937bba51cd7f96f55054568ed50f172bb8e6b645015ac3294dc538f17f"
+    },
+    {
+      "cellId": "T1-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E0-r1\\report.json",
+      "sha256": "987c1f706d1a48eeb596f4c30ffe730b03b1a354513925e3b2c9f7d5a41333aa"
+    },
+    {
+      "cellId": "T1-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-E1-r1\\report.json",
+      "sha256": "f506fd592a69953bf26f02d256e706bd301abd0317171e32c3e1f0d85488529d"
+    },
+    {
+      "cellId": "T1-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s1-B0-r1\\report.json",
+      "sha256": "29817e2400ffea9c05765fccb36ee9dcd5b61cd59f407e366dd9fe0e3dddd3bc"
+    },
+    {
+      "cellId": "T2-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-E1-r1\\report.json",
+      "sha256": "336a59489fd8ff268248c40914981ca48c11cb473d5e0ab2507ca5c8bca72a78"
+    },
+    {
+      "cellId": "T2-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-B0-r1\\report.json",
+      "sha256": "da405c1c95dab61f7b94ad8fec8a3b182f6f942beedef2827091517fd7bff7a1"
+    },
+    {
+      "cellId": "T2-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s1-E0-r1\\report.json",
+      "sha256": "b7328cb7b30024539bdd78a352d4056fc637183af3906cbc974be7c01948259c"
+    },
+    {
+      "cellId": "T3-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-B0-r1\\report.json",
+      "sha256": "767188644db4edb589916f66f62f8121b46a9edfd277d4948feecd5d9cdb27c2"
+    },
+    {
+      "cellId": "T3-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-E0-r1\\report.json",
+      "sha256": "19c825827407432cf6043b1d1db697bdd3b63650cd36c39fcde57d773d74f86f"
+    },
+    {
+      "cellId": "T3-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s1-E1-r1\\report.json",
+      "sha256": "f1f1c59b16cdbd4f34e0c7ea92e6d473b11d1223caedb57acfbb048bb97e8a69"
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-E0-r1\\report.json",
+      "sha256": "246a0421c4ec61eaef4fd6a2284193c44b5959994018addda636205351caee07"
+    },
+    {
+      "cellId": "T4-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-E1-r1\\report.json",
+      "sha256": "1bd7b2a45f0b1887be51e2796823dd2dc53e110da8ffc2bb01dfbdba388556cb"
+    },
+    {
+      "cellId": "T4-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s1-B0-r1\\report.json",
+      "sha256": "2b73c9c5983c1643377166c0219f1c92edd882f996fb0a2f40cf5e4f54019c66"
+    },
+    {
+      "cellId": "T5-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-E1-r1\\report.json",
+      "sha256": "0d9e94e86af3e624becc3aca9244b13910eb75ac5dd044595bf9fc74fae9d995"
+    },
+    {
+      "cellId": "T5-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-B0-r1\\report.json",
+      "sha256": "ce358a723f7c9a8ab095b5bc47e8ef9508b8a14ef206ecfa594c7e636140df8e"
+    },
+    {
+      "cellId": "T5-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s1-E0-r1\\report.json",
+      "sha256": "7f38fb6158fedef0572f15d27c0cd12ee71ab38a19f3f12bd798210bbee566bb"
+    },
+    {
+      "cellId": "T6-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-B0-r1\\report.json",
+      "sha256": "74a98962c606a93315a92a5dab6201fa96fcb39b47194b5afbc7c08d5795bcc7"
+    },
+    {
+      "cellId": "T6-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-E0-r1\\report.json",
+      "sha256": "e282d715ba54d922f132f9dd9a0638c456d1febd413f9ddf4b21bda56b08fc91"
+    },
+    {
+      "cellId": "T6-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s1-E1-r1\\report.json",
+      "sha256": "6878fd68241f153e2e7f142472289e1e4b0caa489b2467159ce40c3dd5669037"
+    },
+    {
+      "cellId": "T1-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-E1-r2\\report.json",
+      "sha256": "5927b90398e93aa974e99935fb688dcccf8cd8422e918d85f105a2f059c5e062"
+    },
+    {
+      "cellId": "T1-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-B0-r2\\report.json",
+      "sha256": "6403113d88d3e011260738d7fc81594e7eb012fd5522225f94379e9695015f3c"
+    },
+    {
+      "cellId": "T1-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T1-s2-E0-r2\\report.json",
+      "sha256": "1328e51724056b3a892847e00158114d07a5d43413e27cbc209894204deed1ce"
+    },
+    {
+      "cellId": "T2-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-B0-r2\\report.json",
+      "sha256": "9b494d4f3515d4a7f6dd631e0c39cc718c56f06da4a5add0af1a56e6ed50bbe9"
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-E0-r2\\report.json",
+      "sha256": "b9a719c5110144c5944ac3a8cc7092b674aff5af6081f54cb7a35453391a14cc"
+    },
+    {
+      "cellId": "T2-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T2-s2-E1-r2\\report.json",
+      "sha256": "76f6f737942b26df201793b20bfc4e18faf0ab7c8bcce196d495c5e176b17994"
+    },
+    {
+      "cellId": "T3-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-E0-r2\\report.json",
+      "sha256": "d30fd9c5c6717c4ed7ffc02c8e181859385ccedecbf22e10801ee14726d1e7e9"
+    },
+    {
+      "cellId": "T3-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-E1-r2\\report.json",
+      "sha256": "e6847526960fa4eaff4cd98e53fe5f7351f89a88a4df8a7862971cbb0511a35a"
+    },
+    {
+      "cellId": "T3-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T3-s2-B0-r2\\report.json",
+      "sha256": "82e02670bba96c3ee5ac04a9b3fa1f5c25fc48dcbc1990da7381f2aaf3999e0c"
+    },
+    {
+      "cellId": "T4-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-E1-r2\\report.json",
+      "sha256": "472e2eba8201db2498d1789940cd14626fcd85a46f8a0e56d75c61d18303266c"
+    },
+    {
+      "cellId": "T4-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-B0-r2\\report.json",
+      "sha256": "74199a9ae65c7f4860824b140473e251dd1c373f6c26d55045cadb25b5a41ef8"
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T4-s2-E0-r2\\report.json",
+      "sha256": "4e6953e51487f0b208cea96e0a0c49d6356ff91e676a6574bd335898b75cadb7"
+    },
+    {
+      "cellId": "T5-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-B0-r2\\report.json",
+      "sha256": "59ab11402c020e39a92a209a214a289bac96c4d0ec8f374538dd1baa388343d2"
+    },
+    {
+      "cellId": "T5-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-E0-r2\\report.json",
+      "sha256": "614ac295a578f2f14fb5b393eac1e8cfe5c4171a4dc34ca67d6f757351ab044e"
+    },
+    {
+      "cellId": "T5-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T5-s2-E1-r2\\report.json",
+      "sha256": "a5b976337d530d333994534d86fbba2001cd7da2545b2461f3bb6adf406f1db7"
+    },
+    {
+      "cellId": "T6-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-E0-r2\\report.json",
+      "sha256": "437d2773974e5f13a8c4e48992129b271e1428b1db4b7d35cf8641b217679883"
+    },
+    {
+      "cellId": "T6-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-E1-r2\\report.json",
+      "sha256": "a216d493c58015f7c83708e08a7f9a8a63622965453274f98f0f55bad561c566"
+    },
+    {
+      "cellId": "T6-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-core-1\\T6-s2-B0-r2\\report.json",
+      "sha256": "20e2674810d982f97bf0f21574be2e872884738da8ae3d127f9aab33ffe341c3"
+    }
+  ]
+}

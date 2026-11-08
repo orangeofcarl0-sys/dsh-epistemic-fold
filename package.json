@@ -176,7 +176,8 @@
     "eval:e2e-freeze": "node eval/e2e/src/freeze.mjs --campaign e2e-core-1",
     "eval:e2e-authorize": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-core-1.json",
     "eval:e2e-check": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-core-1.json",
-    "eval:e2e-run": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-core-1.json"
+    "eval:e2e-run": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-core-1.json",
+    "eval:e2e-analyze": "node eval/e2e/src/analyze.mjs --campaign e2e-core-1"
   },
   "repository": {
     "type": "git",
