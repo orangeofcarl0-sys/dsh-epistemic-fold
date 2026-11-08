@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T05:30:27.299Z",
+  "claims": 18,
+  "byLevel": {
+    "Deterministic Contract": 5,
+    "Mechanism Certified": 4,
+    "Behavioral Observation": 6,
+    "Product-level Evidence": 0,
+    "Hypothesis": 0,
+    "Invalid / Superseded": 0,
+    "Decision": 1,
+    "Constraint": 2
+  },
+  "missingArtifacts": 0,
+  "arms": 6
+}
