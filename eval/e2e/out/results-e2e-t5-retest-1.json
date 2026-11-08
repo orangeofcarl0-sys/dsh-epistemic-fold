@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T17:27:47.351Z",
+  "campaign": "e2e-t5-retest-1",
+  "manifestSha256": "ab4f738ccd9bfbedfe00e9513a69ee2143f3481b1cb3b9c24de5221d9cf561bb",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "complete",
+  "stopReason": null,
+  "planned": 8,
+  "executed": 8,
+  "budget": {
+    "used": {
+      "requests": 62,
+      "inputTokens": 288422,
+      "outputTokens": 16010,
+      "wallClockMs": 177560
+    },
+    "limits": {
+      "httpAttempts": 1864,
+      "inputTokens": 16504882,
+      "outputTokens": 914879,
+      "wallClockMs": 27841141,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 21,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T5B-s1-B0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 9,
+        "inputTokens": 39437,
+        "outputTokens": 4770,
+        "cacheReadTokens": 85248,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 36682,
+          "outputTokens": 284,
+          "cacheReadTokens": 40064,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 2755,
+          "outputTokens": 4486,
+          "cacheReadTokens": 45184,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T5B-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 8,
+        "inputTokens": 26476,
+        "outputTokens": 558,
+        "cacheReadTokens": 30592,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 26476,
+          "outputTokens": 558,
+          "cacheReadTokens": 30592,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T5B-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 6,
+        "inputTokens": 25273,
+        "outputTokens": 972,
+        "cacheReadTokens": 59264,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 24632,
+          "outputTokens": 193,
+          "cacheReadTokens": 30336,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 641,
+          "outputTokens": 779,
+          "cacheReadTokens": 28928,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s1",
+        "arm": "S",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T5B-s1-S-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 6,
+        "inputTokens": 26657,
+        "outputTokens": 934,
+        "cacheReadTokens": 60160,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 24823,
+          "outputTokens": 171,
+          "cacheReadTokens": 30208,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 1834,
+          "outputTokens": 763,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "writer": 2,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-S-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s2",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T5B-s2-B0-r2",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 9,
+        "inputTokens": 40186,
+        "outputTokens": 4763,
+        "cacheReadTokens": 84604,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 37522,
+          "outputTokens": 300,
+          "cacheReadTokens": 39296,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 2664,
+          "outputTokens": 4463,
+          "cacheReadTokens": 45308,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-B0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s2",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T5B-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "usage": {
+        "requests": 10,
+        "inputTokens": 75757,
+        "outputTokens": 1203,
+        "cacheReadTokens": 119680,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 10,
+          "inputTokens": 75757,
+          "outputTokens": 1203,
+          "cacheReadTokens": 119680,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 10
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s2",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T5B-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 8,
+        "inputTokens": 26290,
+        "outputTokens": 1332,
+        "cacheReadTokens": 88192,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 25175,
+          "outputTokens": 491,
+          "cacheReadTokens": 59264,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 1115,
+          "outputTokens": 841,
+          "cacheReadTokens": 28928,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "retest",
+        "task": "T5B-s2",
+        "arm": "S",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T5B-s2-S-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 6,
+        "inputTokens": 28346,
+        "outputTokens": 1478,
+        "cacheReadTokens": 60032,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 25336,
+          "outputTokens": 187,
+          "cacheReadTokens": 31232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 3010,
+          "outputTokens": 1291,
+          "cacheReadTokens": 28800,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "writer": 2,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-S-r2\\report.json"
+    }
+  ]
+}

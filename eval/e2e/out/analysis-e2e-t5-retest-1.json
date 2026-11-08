@@ -1,0 +1,835 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T17:27:53.601Z",
+  "campaign": "e2e-t5-retest-1",
+  "status": "complete",
+  "budget": {
+    "used": {
+      "requests": 62,
+      "inputTokens": 288422,
+      "outputTokens": 16010,
+      "wallClockMs": 177560
+    },
+    "limits": {
+      "httpAttempts": 1864,
+      "inputTokens": 16504882,
+      "outputTokens": 914879,
+      "wallClockMs": 27841141,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 21,
+      "paidConcurrency": 2
+    }
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "units": {
+    "cell": "one continuation of one task instance under one arm",
+    "template": "a task shape; its two seeds are NOT independent tasks",
+    "note": "pass rates are descriptive; no significance test is claimed"
+  },
+  "byArm": {
+    "B0": {
+      "cells": 2,
+      "checkerPasses": 2,
+      "passRate": 1,
+      "folds": 5,
+      "foldFailures": 5,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 18,
+      "auxiliaryRequests": 10,
+      "inputTokens": 79623,
+      "outputTokens": 9533,
+      "cacheReadTokens": 169852,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": 9,
+      "meanInputTokens": 39811.5,
+      "meanOutputTokens": 4766.5,
+      "meanFolds": 2.5
+    },
+    "E0": {
+      "cells": 2,
+      "checkerPasses": 1,
+      "passRate": 0.5,
+      "folds": 9,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 2,
+      "requests": 18,
+      "auxiliaryRequests": 0,
+      "inputTokens": 102233,
+      "outputTokens": 1761,
+      "cacheReadTokens": 150272,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "shape-mismatch": 1
+      },
+      "meanRequests": 9,
+      "meanInputTokens": 51116.5,
+      "meanOutputTokens": 880.5,
+      "meanFolds": 4.5
+    },
+    "E1": {
+      "cells": 2,
+      "checkerPasses": 2,
+      "passRate": 1,
+      "folds": 4,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 14,
+      "auxiliaryRequests": 4,
+      "inputTokens": 51563,
+      "outputTokens": 2304,
+      "cacheReadTokens": 147456,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": 7,
+      "meanInputTokens": 25781.5,
+      "meanOutputTokens": 1152,
+      "meanFolds": 2
+    },
+    "S": {
+      "cells": 2,
+      "checkerPasses": 2,
+      "passRate": 1,
+      "folds": 4,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 12,
+      "auxiliaryRequests": 4,
+      "inputTokens": 55003,
+      "outputTokens": 2412,
+      "cacheReadTokens": 120192,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": 6,
+      "meanInputTokens": 27501.5,
+      "meanOutputTokens": 1206,
+      "meanFolds": 2
+    }
+  },
+  "byBlock": {
+    "calibration": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "core": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    }
+  },
+  "byTemplateArm": {
+    "T5B": {
+      "B0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 5,
+        "foldFailures": 5,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 18,
+        "auxiliaryRequests": 10,
+        "inputTokens": 79623,
+        "outputTokens": 9533,
+        "cacheReadTokens": 169852,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 9,
+        "meanInputTokens": 39811.5,
+        "meanOutputTokens": 4766.5,
+        "meanFolds": 2.5
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 1,
+        "passRate": 0.5,
+        "folds": 9,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 18,
+        "auxiliaryRequests": 0,
+        "inputTokens": 102233,
+        "outputTokens": 1761,
+        "cacheReadTokens": 150272,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "shape-mismatch": 1
+        },
+        "meanRequests": 9,
+        "meanInputTokens": 51116.5,
+        "meanOutputTokens": 880.5,
+        "meanFolds": 4.5
+      },
+      "E1": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 14,
+        "auxiliaryRequests": 4,
+        "inputTokens": 51563,
+        "outputTokens": 2304,
+        "cacheReadTokens": 147456,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 7,
+        "meanInputTokens": 25781.5,
+        "meanOutputTokens": 1152,
+        "meanFolds": 2
+      },
+      "S": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 4,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 12,
+        "auxiliaryRequests": 4,
+        "inputTokens": 55003,
+        "outputTokens": 2412,
+        "cacheReadTokens": 120192,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 6,
+        "meanInputTokens": 27501.5,
+        "meanOutputTokens": 1206,
+        "meanFolds": 2
+      }
+    }
+  },
+  "rows": [
+    {
+      "cellId": "T5B-s1-B0-r1",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "B0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 5,
+      "foldFailures": 3,
+      "checkpoint": {
+        "chars": 3075,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "5 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 9,
+      "auxiliaryRequests": 5,
+      "inputTokens": 39437,
+      "outputTokens": 4770,
+      "cacheReadTokens": 85248,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`max_attempts` = **2**, `window_seconds` = **30**\n\n`final.json` is a flat object with exactly those two top-level fields: `{\"max_attempts\": 2, \"window_seconds\": 30}`. The stale five-attempt figure from the superseded spec does not appear; the batch log corroborates both values (`attempt=N budget=2`, `window_s=30`).",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-B0-r1\\report.json",
+      "reportSha256": "9bc5dbc4662adfd9c48f951bf6a4086d534e714b8d9a90c4b471f1765c818287",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 24842
+    },
+    {
+      "cellId": "T5B-s1-E0-r1",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 3,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 0,
+      "inputTokens": 26476,
+      "outputTokens": 558,
+      "cacheReadTokens": 30592,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`max_attempts` = **2**, `window_seconds` = **30**.\n\n`final.json` is written as a flat object with exactly those two top-level numeric fields. The stale spec's \"five attempts\" was not used — that figure applies only to the general path, not the batch path.",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E0-r1\\report.json",
+      "reportSha256": "f993ea3410bb09378af8e8a079987a53fa87ed025d49fed2ab49727cd452be05",
+      "engineDecision": "below-threshold 3852<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3921
+    },
+    {
+      "cellId": "T5B-s1-E1-r1",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1265,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 25273,
+      "outputTokens": 972,
+      "cacheReadTokens": 59264,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Wrote `final.json`: `max_attempts` = 2 (batch path), `window_seconds` = 30.",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E1-r1\\report.json",
+      "reportSha256": "595c6aa2f920758046076bc70d952ca8dc76b6c4a666b3619aaac6f2e5559878",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13333",
+      "thresholdTokens": 8192,
+      "retainedTokens": 13366
+    },
+    {
+      "cellId": "T5B-s1-S-r1",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "S",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 2027,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 26657,
+      "outputTokens": 934,
+      "cacheReadTokens": 60160,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`max_attempts`: 2, `window_seconds`: 30.",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-S-r1\\report.json",
+      "reportSha256": "5c3673c7a33879fc8f3bba54340f541ed61ddff87f066dc07744c287ef27ef15",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13468",
+      "thresholdTokens": 8192,
+      "retainedTokens": 13490
+    },
+    {
+      "cellId": "T5B-s2-B0-r2",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "B0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 5,
+      "foldFailures": 2,
+      "checkpoint": {
+        "chars": 3113,
+        "mode": "unmarked",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "5 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 9,
+      "auxiliaryRequests": 5,
+      "inputTokens": 40186,
+      "outputTokens": 4763,
+      "cacheReadTokens": 84604,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`final.json` written as a flat object with exactly two top-level fields:\n\n```json\n{\"max_attempts\": 2, \"window_seconds\": 45}\n```\n\n- **max_attempts = 2** (batch path only — the stale spec's five is superseded and does not appear)\n- **window_seconds = 45** (as agreed; corroborated by every `window_s=45` line in `logs/batch-late.log`)",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-B0-r2\\report.json",
+      "reportSha256": "dd0d521ee5bee641674f706d7e584a0f868bf796732756cddc7dded09e0e0af3",
+      "engineDecision": null,
+      "thresholdTokens": null,
+      "retainedTokens": 24879
+    },
+    {
+      "cellId": "T5B-s2-E0-r2",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 6,
+      "foldAttempts": 6,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 7,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "final.json = {\"max_attempts\":2,\"window_s\":45}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json = {\"max_attempts\":2,\"window_s\":45}, expected {\"max_attempts\":2,\"window_seconds\":45}"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "6 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "step-limit",
+      "stepLimit": true,
+      "requests": 10,
+      "auxiliaryRequests": 0,
+      "inputTokens": 75757,
+      "outputTokens": 1203,
+      "cacheReadTokens": 119680,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E0-r2\\report.json",
+      "reportSha256": "cbea170a541fc046a866d2e5e04c4828ff444aa261ad5213c2a4fc1b36927d2d",
+      "engineDecision": "no-span pricedNodes=20 surfaceNodes=20 firstOpen=7 retain=614 total=33136",
+      "thresholdTokens": 8192,
+      "retainedTokens": 33136
+    },
+    {
+      "cellId": "T5B-s2-E1-r2",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 1319,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 8,
+      "auxiliaryRequests": 2,
+      "inputTokens": 26290,
+      "outputTokens": 1332,
+      "cacheReadTokens": 88192,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`final.json` written as a flat object:\n\n- `max_attempts`: 2 (batch path retry cap)\n- `window_seconds`: 45 (batch window)",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E1-r2\\report.json",
+      "reportSha256": "317d070b2541edf70a9673bc549dfd5130eab37fd6de074e28cdcbb1bf3b55e6",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13409",
+      "thresholdTokens": 8192,
+      "retainedTokens": 13452
+    },
+    {
+      "cellId": "T5B-s2-S-r2",
+      "block": "retest",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "S",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 3062,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 0,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "2 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 2,
+      "inputTokens": 28346,
+      "outputTokens": 1478,
+      "cacheReadTokens": 60032,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`final.json` written:\n\n- `max_attempts`: 2\n- `window_seconds`: 45",
+      "reportPath": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-S-r2\\report.json",
+      "reportSha256": "07e18e0312feec0e5343c4248e4365228a5d2d71d751cb714fd33d8bb68e0e64",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=3 retain=614 total=13980",
+      "thresholdTokens": 8192,
+      "retainedTokens": 14009
+    }
+  ],
+  "evidence": [
+    {
+      "cellId": "T5B-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-B0-r1\\report.json",
+      "sha256": "9bc5dbc4662adfd9c48f951bf6a4086d534e714b8d9a90c4b471f1765c818287"
+    },
+    {
+      "cellId": "T5B-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E0-r1\\report.json",
+      "sha256": "f993ea3410bb09378af8e8a079987a53fa87ed025d49fed2ab49727cd452be05"
+    },
+    {
+      "cellId": "T5B-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-E1-r1\\report.json",
+      "sha256": "595c6aa2f920758046076bc70d952ca8dc76b6c4a666b3619aaac6f2e5559878"
+    },
+    {
+      "cellId": "T5B-s1-S-r1",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s1-S-r1\\report.json",
+      "sha256": "5c3673c7a33879fc8f3bba54340f541ed61ddff87f066dc07744c287ef27ef15"
+    },
+    {
+      "cellId": "T5B-s2-B0-r2",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-B0-r2\\report.json",
+      "sha256": "dd0d521ee5bee641674f706d7e584a0f868bf796732756cddc7dded09e0e0af3"
+    },
+    {
+      "cellId": "T5B-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E0-r2\\report.json",
+      "sha256": "cbea170a541fc046a866d2e5e04c4828ff444aa261ad5213c2a4fc1b36927d2d"
+    },
+    {
+      "cellId": "T5B-s2-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-E1-r2\\report.json",
+      "sha256": "317d070b2541edf70a9673bc549dfd5130eab37fd6de074e28cdcbb1bf3b55e6"
+    },
+    {
+      "cellId": "T5B-s2-S-r2",
+      "path": "eval\\e2e\\runs\\e2e-t5-retest-1\\T5B-s2-S-r2\\report.json",
+      "sha256": "07e18e0312feec0e5343c4248e4365228a5d2d71d751cb714fd33d8bb68e0e64"
+    }
+  ]
+}
