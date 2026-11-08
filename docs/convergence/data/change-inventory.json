@@ -1,0 +1,5159 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T05:23:56.314Z",
+  "work": "EF-C0-WP0",
+  "range": {
+    "from": "93b6666913dab6e00ca67032de9660f1bc75c052",
+    "fromShort": "93b6666",
+    "to": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+    "toShort": "0067020"
+  },
+  "summary": {
+    "files": 630,
+    "added": 353531,
+    "deleted": 572,
+    "trackedBytes": 12921464
+  },
+  "categories": {
+    "configuration-build": {
+      "files": 5,
+      "added": 1520,
+      "deleted": 412,
+      "bytes": 129823
+    },
+    "documentation": {
+      "files": 98,
+      "added": 17786,
+      "deleted": 0,
+      "bytes": 738493
+    },
+    "evaluation-harness": {
+      "files": 2,
+      "added": 44,
+      "deleted": 1,
+      "bytes": 54403
+    },
+    "research-evaluation": {
+      "files": 311,
+      "added": 36929,
+      "deleted": 0,
+      "bytes": 1461051
+    },
+    "generated-evidence": {
+      "files": 103,
+      "added": 274547,
+      "deleted": 0,
+      "bytes": 9302145
+    },
+    "checkpoint-archive-recall": {
+      "files": 3,
+      "added": 215,
+      "deleted": 15,
+      "bytes": 41247
+    },
+    "configuration": {
+      "files": 3,
+      "added": 85,
+      "deleted": 0,
+      "bytes": 38196
+    },
+    "core-runtime": {
+      "files": 5,
+      "added": 1832,
+      "deleted": 73,
+      "bytes": 235598
+    },
+    "semantic-continuity": {
+      "files": 17,
+      "added": 5438,
+      "deleted": 0,
+      "bytes": 224254
+    },
+    "deterministic-state": {
+      "files": 5,
+      "added": 488,
+      "deleted": 65,
+      "bytes": 46843
+    },
+    "tests": {
+      "files": 78,
+      "added": 14647,
+      "deleted": 6,
+      "bytes": 649411
+    }
+  },
+  "r38Production": [
+    {
+      "path": "src/fold/engine.ts",
+      "status": "M",
+      "category": "core-runtime"
+    },
+    {
+      "path": "src/semantic/plan.ts",
+      "status": "M",
+      "category": "semantic-continuity"
+    },
+    {
+      "path": "src/semantic/retirement.ts",
+      "status": "A",
+      "category": "semantic-continuity"
+    },
+    {
+      "path": "src/semantic/types.ts",
+      "status": "M",
+      "category": "semantic-continuity"
+    },
+    {
+      "path": "src/semantic/validate.ts",
+      "status": "M",
+      "category": "semantic-continuity"
+    }
+  ],
+  "sharedRunnerChanges": [
+    "eval/live/openai-adapter.ts",
+    "eval/live/request-budget.ts"
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "status": "M",
+      "category": "configuration-build",
+      "added": 32,
+      "deleted": 0,
+      "bytes": 2095
+    },
+    {
+      "path": "README.md",
+      "status": "M",
+      "category": "documentation",
+      "added": 275,
+      "deleted": 0,
+      "bytes": 33223
+    },
+    {
+      "path": "docs/semantic-continuity/EVALUATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 163,
+      "deleted": 0,
+      "bytes": 8252
+    },
+    {
+      "path": "docs/semantic-continuity/HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 90,
+      "deleted": 0,
+      "bytes": 4527
+    },
+    {
+      "path": "docs/semantic-continuity/HOST_COMPATIBILITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 4623
+    },
+    {
+      "path": "docs/semantic-continuity/INTEGRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 97,
+      "deleted": 0,
+      "bytes": 5110
+    },
+    {
+      "path": "docs/semantic-continuity/R31_COMMIT_PROOF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 162,
+      "deleted": 0,
+      "bytes": 6957
+    },
+    {
+      "path": "docs/semantic-continuity/R31_EVALUATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 200,
+      "deleted": 0,
+      "bytes": 8827
+    },
+    {
+      "path": "docs/semantic-continuity/R31_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 145,
+      "deleted": 0,
+      "bytes": 7170
+    },
+    {
+      "path": "docs/semantic-continuity/R31_LIFECYCLE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 130,
+      "deleted": 0,
+      "bytes": 6417
+    },
+    {
+      "path": "docs/semantic-continuity/R31_PERSISTENCE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 152,
+      "deleted": 0,
+      "bytes": 6663
+    },
+    {
+      "path": "docs/semantic-continuity/R31_SOURCE_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 217,
+      "deleted": 0,
+      "bytes": 11003
+    },
+    {
+      "path": "docs/semantic-continuity/R32_EVALUATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 300,
+      "deleted": 0,
+      "bytes": 10584
+    },
+    {
+      "path": "docs/semantic-continuity/R32_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 210,
+      "deleted": 0,
+      "bytes": 8747
+    },
+    {
+      "path": "docs/semantic-continuity/R32_INTEGRITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 216,
+      "deleted": 0,
+      "bytes": 9537
+    },
+    {
+      "path": "docs/semantic-continuity/R32_RECOVERY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 205,
+      "deleted": 0,
+      "bytes": 9298
+    },
+    {
+      "path": "docs/semantic-continuity/R32_SOURCE_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 383,
+      "deleted": 0,
+      "bytes": 16826
+    },
+    {
+      "path": "docs/semantic-continuity/R33_BASELINE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 168,
+      "deleted": 0,
+      "bytes": 7798
+    },
+    {
+      "path": "docs/semantic-continuity/R33_DATASET.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 148,
+      "deleted": 0,
+      "bytes": 7320
+    },
+    {
+      "path": "docs/semantic-continuity/R33_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 128,
+      "deleted": 0,
+      "bytes": 6548
+    },
+    {
+      "path": "docs/semantic-continuity/R33_FAILURE_ANALYSIS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 127,
+      "deleted": 0,
+      "bytes": 7607
+    },
+    {
+      "path": "docs/semantic-continuity/R33_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 298,
+      "deleted": 0,
+      "bytes": 14075
+    },
+    {
+      "path": "docs/semantic-continuity/R33_LIVE_EVALUATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 160,
+      "deleted": 0,
+      "bytes": 6378
+    },
+    {
+      "path": "docs/semantic-continuity/R33_SPEC.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 176,
+      "deleted": 0,
+      "bytes": 8338
+    },
+    {
+      "path": "docs/semantic-continuity/R34_COST_REPORT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 92,
+      "deleted": 0,
+      "bytes": 3469
+    },
+    {
+      "path": "docs/semantic-continuity/R34_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 98,
+      "deleted": 0,
+      "bytes": 4416
+    },
+    {
+      "path": "docs/semantic-continuity/R34_EVALUATOR_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 379,
+      "deleted": 0,
+      "bytes": 17186
+    },
+    {
+      "path": "docs/semantic-continuity/R34_EXPERIMENT_DESIGN.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 217,
+      "deleted": 0,
+      "bytes": 7689
+    },
+    {
+      "path": "docs/semantic-continuity/R34_FAILURE_ATTRIBUTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 115,
+      "deleted": 0,
+      "bytes": 5840
+    },
+    {
+      "path": "docs/semantic-continuity/R34_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 109,
+      "deleted": 0,
+      "bytes": 4971
+    },
+    {
+      "path": "docs/semantic-continuity/R34_REAL_MODEL_RESULTS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 133,
+      "deleted": 0,
+      "bytes": 6078
+    },
+    {
+      "path": "docs/semantic-continuity/R35_ADJUDICATION.json",
+      "status": "A",
+      "category": "documentation",
+      "added": 395,
+      "deleted": 0,
+      "bytes": 18814
+    },
+    {
+      "path": "docs/semantic-continuity/R35_BEHAVIORAL_COMPARISON.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 175,
+      "deleted": 0,
+      "bytes": 7489
+    },
+    {
+      "path": "docs/semantic-continuity/R35_COST_REPORT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 173,
+      "deleted": 0,
+      "bytes": 6005
+    },
+    {
+      "path": "docs/semantic-continuity/R35_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 156,
+      "deleted": 0,
+      "bytes": 7985
+    },
+    {
+      "path": "docs/semantic-continuity/R35_FAILURE_ATTRIBUTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 272,
+      "deleted": 0,
+      "bytes": 12438
+    },
+    {
+      "path": "docs/semantic-continuity/R35_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 208,
+      "deleted": 0,
+      "bytes": 10509
+    },
+    {
+      "path": "docs/semantic-continuity/R35_LIVE_PREFLIGHT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 324,
+      "deleted": 0,
+      "bytes": 12857
+    },
+    {
+      "path": "docs/semantic-continuity/R35_WRITER_RESULTS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 224,
+      "deleted": 0,
+      "bytes": 11257
+    },
+    {
+      "path": "docs/semantic-continuity/R36_AGENT_CALIBRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 229,
+      "deleted": 0,
+      "bytes": 9098
+    },
+    {
+      "path": "docs/semantic-continuity/R36_BENCHMARK_VALIDITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 203,
+      "deleted": 0,
+      "bytes": 8872
+    },
+    {
+      "path": "docs/semantic-continuity/R36_CAUSAL_COMPARISON.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 202,
+      "deleted": 0,
+      "bytes": 7369
+    },
+    {
+      "path": "docs/semantic-continuity/R36_COST_REPORT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 129,
+      "deleted": 0,
+      "bytes": 5190
+    },
+    {
+      "path": "docs/semantic-continuity/R36_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 166,
+      "deleted": 0,
+      "bytes": 8304
+    },
+    {
+      "path": "docs/semantic-continuity/R36_FAILURE_ATTRIBUTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 230,
+      "deleted": 0,
+      "bytes": 10833
+    },
+    {
+      "path": "docs/semantic-continuity/R36_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 237,
+      "deleted": 0,
+      "bytes": 10626
+    },
+    {
+      "path": "docs/semantic-continuity/R36_R35_EVIDENCE_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 181,
+      "deleted": 0,
+      "bytes": 9815
+    },
+    {
+      "path": "docs/semantic-continuity/R36_WRITER_ABLATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 161,
+      "deleted": 0,
+      "bytes": 6790
+    },
+    {
+      "path": "docs/semantic-continuity/R36_WRITER_CONTRACT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 145,
+      "deleted": 0,
+      "bytes": 6251
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_BASELINE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 140,
+      "deleted": 0,
+      "bytes": 4211
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 156,
+      "deleted": 0,
+      "bytes": 5396
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_EVIDENCE_ARCHIVE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 98,
+      "deleted": 0,
+      "bytes": 2944
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 262,
+      "deleted": 0,
+      "bytes": 7542
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_METRIC_CORRECTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 153,
+      "deleted": 0,
+      "bytes": 5156
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_NATIVE_SMOKE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 156,
+      "deleted": 0,
+      "bytes": 3935
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_NEXT_PREREGISTRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 183,
+      "deleted": 0,
+      "bytes": 4810
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_PROCESS_PILOT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 173,
+      "deleted": 0,
+      "bytes": 5401
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_PROTOCOL_INTEGRITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 197,
+      "deleted": 0,
+      "bytes": 5665
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_R37B_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 146,
+      "deleted": 0,
+      "bytes": 4922
+    },
+    {
+      "path": "docs/semantic-continuity/R37C_TRAJECTORY_ANALYSIS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 209,
+      "deleted": 0,
+      "bytes": 8065
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_ACTION_BUDGET_FORENSICS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 177,
+      "deleted": 0,
+      "bytes": 7479
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_BASELINE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 115,
+      "deleted": 0,
+      "bytes": 3234
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_BENCHMARK_PREREGISTRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 118,
+      "deleted": 0,
+      "bytes": 3498
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 223,
+      "deleted": 0,
+      "bytes": 7266
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_FIXED_CONTEXT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 146,
+      "deleted": 0,
+      "bytes": 5237
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 320,
+      "deleted": 0,
+      "bytes": 9004
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_NATIVE_RUNTIME.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 156,
+      "deleted": 0,
+      "bytes": 4510
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_OPERATIONAL_COMPLETION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 235,
+      "deleted": 0,
+      "bytes": 7257
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_PROCESS_PILOT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 231,
+      "deleted": 0,
+      "bytes": 6860
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_PROTOCOL_EFFICIENCY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 188,
+      "deleted": 0,
+      "bytes": 5858
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_R37C_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 174,
+      "deleted": 0,
+      "bytes": 5950
+    },
+    {
+      "path": "docs/semantic-continuity/R37D_TRAJECTORY_ANALYSIS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 194,
+      "deleted": 0,
+      "bytes": 7705
+    },
+    {
+      "path": "docs/semantic-continuity/R37_BASELINE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 135,
+      "deleted": 0,
+      "bytes": 6056
+    },
+    {
+      "path": "docs/semantic-continuity/R37_BEHAVIORAL_FORENSICS.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 147,
+      "deleted": 0,
+      "bytes": 5880
+    },
+    {
+      "path": "docs/semantic-continuity/R37_BENCHMARK_VALIDITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 122,
+      "deleted": 0,
+      "bytes": 4328
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 182,
+      "deleted": 0,
+      "bytes": 7047
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 281,
+      "deleted": 0,
+      "bytes": 9613
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_PREREGISTRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 248,
+      "deleted": 0,
+      "bytes": 9792
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_PREREGISTRATION_AMENDMENT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 94,
+      "deleted": 0,
+      "bytes": 2913
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_STAGE1.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 201,
+      "deleted": 0,
+      "bytes": 6647
+    },
+    {
+      "path": "docs/semantic-continuity/R37_B_STAGE2.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 211,
+      "deleted": 0,
+      "bytes": 7312
+    },
+    {
+      "path": "docs/semantic-continuity/R37_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 141,
+      "deleted": 0,
+      "bytes": 6078
+    },
+    {
+      "path": "docs/semantic-continuity/R37_EVIDENCE_AUDIT.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 186,
+      "deleted": 0,
+      "bytes": 7098
+    },
+    {
+      "path": "docs/semantic-continuity/R37_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 262,
+      "deleted": 0,
+      "bytes": 9804
+    },
+    {
+      "path": "docs/semantic-continuity/R37_PROTOCOL_ATTRIBUTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 145,
+      "deleted": 0,
+      "bytes": 5345
+    },
+    {
+      "path": "docs/semantic-continuity/R38_ARCHIVE_RECOVERY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 130,
+      "deleted": 0,
+      "bytes": 4868
+    },
+    {
+      "path": "docs/semantic-continuity/R38_BASELINE.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 107,
+      "deleted": 0,
+      "bytes": 2777
+    },
+    {
+      "path": "docs/semantic-continuity/R38_COMMIT_INTEGRITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 140,
+      "deleted": 0,
+      "bytes": 5297
+    },
+    {
+      "path": "docs/semantic-continuity/R38_DECISION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 139,
+      "deleted": 0,
+      "bytes": 5267
+    },
+    {
+      "path": "docs/semantic-continuity/R38_HANDOFF.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 308,
+      "deleted": 0,
+      "bytes": 9475
+    },
+    {
+      "path": "docs/semantic-continuity/R38_M1_PREREGISTRATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 154,
+      "deleted": 0,
+      "bytes": 4569
+    },
+    {
+      "path": "docs/semantic-continuity/R38_MECHANISM_EVALUATION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 124,
+      "deleted": 0,
+      "bytes": 4927
+    },
+    {
+      "path": "docs/semantic-continuity/R38_NATIVE_CONTEXT_DELIVERY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 109,
+      "deleted": 0,
+      "bytes": 4214
+    },
+    {
+      "path": "docs/semantic-continuity/R38_RECENT_TAIL_CONSISTENCY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 141,
+      "deleted": 0,
+      "bytes": 5286
+    },
+    {
+      "path": "docs/semantic-continuity/R38_RELATION_AUTHORITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 152,
+      "deleted": 0,
+      "bytes": 5754
+    },
+    {
+      "path": "docs/semantic-continuity/R38_SEMANTIC_INTEGRITY.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 153,
+      "deleted": 0,
+      "bytes": 5681
+    },
+    {
+      "path": "docs/semantic-continuity/R38_TASK_AWARE_SELECTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 137,
+      "deleted": 0,
+      "bytes": 5231
+    },
+    {
+      "path": "docs/semantic-continuity/REVIEW.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 133,
+      "deleted": 0,
+      "bytes": 10462
+    },
+    {
+      "path": "docs/semantic-continuity/TRANSACTION.md",
+      "status": "A",
+      "category": "documentation",
+      "added": 165,
+      "deleted": 0,
+      "bytes": 8888
+    },
+    {
+      "path": "eval/live/openai-adapter.ts",
+      "status": "M",
+      "category": "evaluation-harness",
+      "added": 32,
+      "deleted": 1,
+      "bytes": 39144
+    },
+    {
+      "path": "eval/live/request-budget.ts",
+      "status": "M",
+      "category": "evaluation-harness",
+      "added": 12,
+      "deleted": 0,
+      "bytes": 15259
+    },
+    {
+      "path": "eval/r31/lifecycle-host.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 457,
+      "deleted": 0,
+      "bytes": 16977
+    },
+    {
+      "path": "eval/r32/live-semantic-eval.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 348,
+      "deleted": 0,
+      "bytes": 12546
+    },
+    {
+      "path": "eval/r33/README.md",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 200,
+      "deleted": 0,
+      "bytes": 9126
+    },
+    {
+      "path": "eval/r33/build-cases.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 1796,
+      "deleted": 0,
+      "bytes": 69346
+    },
+    {
+      "path": "eval/r33/cases/A1/actions/keep-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 223
+    },
+    {
+      "path": "eval/r33/cases/A1/actions/rename-api/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 136
+    },
+    {
+      "path": "eval/r33/cases/A1/actions/rename-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 261
+    },
+    {
+      "path": "eval/r33/cases/A1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 111,
+      "deleted": 0,
+      "bytes": 4813
+    },
+    {
+      "path": "eval/r33/cases/A1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 20,
+      "deleted": 0,
+      "bytes": 1432
+    },
+    {
+      "path": "eval/r33/cases/A1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r33/cases/A1/workspace/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r33/cases/A1/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 80
+    },
+    {
+      "path": "eval/r33/cases/A1/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 305
+    },
+    {
+      "path": "eval/r33/cases/A2/actions/keep-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 223
+    },
+    {
+      "path": "eval/r33/cases/A2/actions/rename-api/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 136
+    },
+    {
+      "path": "eval/r33/cases/A2/actions/rename-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 261
+    },
+    {
+      "path": "eval/r33/cases/A2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 107,
+      "deleted": 0,
+      "bytes": 4689
+    },
+    {
+      "path": "eval/r33/cases/A2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 20,
+      "deleted": 0,
+      "bytes": 1485
+    },
+    {
+      "path": "eval/r33/cases/A2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r33/cases/A2/workspace/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r33/cases/A2/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 80
+    },
+    {
+      "path": "eval/r33/cases/A2/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 305
+    },
+    {
+      "path": "eval/r33/cases/B1/actions/use-memory/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 260
+    },
+    {
+      "path": "eval/r33/cases/B1/actions/use-outbox/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 14,
+      "deleted": 0,
+      "bytes": 392
+    },
+    {
+      "path": "eval/r33/cases/B1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 136,
+      "deleted": 0,
+      "bytes": 5484
+    },
+    {
+      "path": "eval/r33/cases/B1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 1214
+    },
+    {
+      "path": "eval/r33/cases/B1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 122
+    },
+    {
+      "path": "eval/r33/cases/B1/workspace/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 260
+    },
+    {
+      "path": "eval/r33/cases/B1/workspace/tests/scheduler.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 344
+    },
+    {
+      "path": "eval/r33/cases/B2/actions/use-memory/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 260
+    },
+    {
+      "path": "eval/r33/cases/B2/actions/use-outbox/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 14,
+      "deleted": 0,
+      "bytes": 392
+    },
+    {
+      "path": "eval/r33/cases/B2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 134,
+      "deleted": 0,
+      "bytes": 5257
+    },
+    {
+      "path": "eval/r33/cases/B2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 1202
+    },
+    {
+      "path": "eval/r33/cases/B2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 122
+    },
+    {
+      "path": "eval/r33/cases/B2/workspace/src/scheduler.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 260
+    },
+    {
+      "path": "eval/r33/cases/B2/workspace/tests/scheduler.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 344
+    },
+    {
+      "path": "eval/r33/cases/C1/actions/fs-watch/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 156
+    },
+    {
+      "path": "eval/r33/cases/C1/actions/poll/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 12,
+      "deleted": 0,
+      "bytes": 380
+    },
+    {
+      "path": "eval/r33/cases/C1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 142,
+      "deleted": 0,
+      "bytes": 5742
+    },
+    {
+      "path": "eval/r33/cases/C1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 1211
+    },
+    {
+      "path": "eval/r33/cases/C1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 120
+    },
+    {
+      "path": "eval/r33/cases/C1/workspace/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 156
+    },
+    {
+      "path": "eval/r33/cases/C1/workspace/tests/watcher.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 522
+    },
+    {
+      "path": "eval/r33/cases/C2/actions/fs-watch/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 156
+    },
+    {
+      "path": "eval/r33/cases/C2/actions/poll/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 12,
+      "deleted": 0,
+      "bytes": 380
+    },
+    {
+      "path": "eval/r33/cases/C2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 123,
+      "deleted": 0,
+      "bytes": 5087
+    },
+    {
+      "path": "eval/r33/cases/C2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 1279
+    },
+    {
+      "path": "eval/r33/cases/C2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 120
+    },
+    {
+      "path": "eval/r33/cases/C2/workspace/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 156
+    },
+    {
+      "path": "eval/r33/cases/C2/workspace/tests/watcher.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 522
+    },
+    {
+      "path": "eval/r33/cases/D1/actions/report-unverified/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 67
+    },
+    {
+      "path": "eval/r33/cases/D1/actions/trust-history/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r33/cases/D1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 111,
+      "deleted": 0,
+      "bytes": 4846
+    },
+    {
+      "path": "eval/r33/cases/D1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 22,
+      "deleted": 0,
+      "bytes": 1798
+    },
+    {
+      "path": "eval/r33/cases/D1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r33/cases/D1/workspace/src/migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 99
+    },
+    {
+      "path": "eval/r33/cases/D1/workspace/tests/migrate.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 213
+    },
+    {
+      "path": "eval/r33/cases/D2/actions/carry-verification/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 6,
+      "deleted": 0,
+      "bytes": 89
+    },
+    {
+      "path": "eval/r33/cases/D2/actions/claim-unverified/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 67
+    },
+    {
+      "path": "eval/r33/cases/D2/actions/trust-without-evidence/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r33/cases/D2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 109,
+      "deleted": 0,
+      "bytes": 4684
+    },
+    {
+      "path": "eval/r33/cases/D2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 22,
+      "deleted": 0,
+      "bytes": 1798
+    },
+    {
+      "path": "eval/r33/cases/D2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r33/cases/D2/workspace/src/migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 89
+    },
+    {
+      "path": "eval/r33/cases/D2/workspace/tests/migrate.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 213
+    },
+    {
+      "path": "eval/r33/cases/E1/actions/use-v1/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 153
+    },
+    {
+      "path": "eval/r33/cases/E1/actions/use-v2/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 153
+    },
+    {
+      "path": "eval/r33/cases/E1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 101,
+      "deleted": 0,
+      "bytes": 4222
+    },
+    {
+      "path": "eval/r33/cases/E1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 995
+    },
+    {
+      "path": "eval/r33/cases/E1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r33/cases/E1/workspace/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 151
+    },
+    {
+      "path": "eval/r33/cases/E1/workspace/tests/importer.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 318
+    },
+    {
+      "path": "eval/r33/cases/E2/actions/use-v1/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 153
+    },
+    {
+      "path": "eval/r33/cases/E2/actions/use-v2/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 153
+    },
+    {
+      "path": "eval/r33/cases/E2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 96,
+      "deleted": 0,
+      "bytes": 4077
+    },
+    {
+      "path": "eval/r33/cases/E2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 995
+    },
+    {
+      "path": "eval/r33/cases/E2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r33/cases/E2/workspace/src/importer.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 151
+    },
+    {
+      "path": "eval/r33/cases/E2/workspace/tests/importer.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 318
+    },
+    {
+      "path": "eval/r33/cases/F1/actions/delete-legacy/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r33/cases/F1/actions/keep-legacy/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r33/cases/F1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 128,
+      "deleted": 0,
+      "bytes": 5433
+    },
+    {
+      "path": "eval/r33/cases/F1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 18,
+      "deleted": 0,
+      "bytes": 1060
+    },
+    {
+      "path": "eval/r33/cases/F1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 125
+    },
+    {
+      "path": "eval/r33/cases/F1/workspace/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 119
+    },
+    {
+      "path": "eval/r33/cases/F1/workspace/tests/api.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 198
+    },
+    {
+      "path": "eval/r33/cases/F2/actions/delete-legacy/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r33/cases/F2/actions/keep-legacy/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r33/cases/F2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 123,
+      "deleted": 0,
+      "bytes": 5033
+    },
+    {
+      "path": "eval/r33/cases/F2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 18,
+      "deleted": 0,
+      "bytes": 989
+    },
+    {
+      "path": "eval/r33/cases/F2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 125
+    },
+    {
+      "path": "eval/r33/cases/F2/workspace/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 119
+    },
+    {
+      "path": "eval/r33/cases/F2/workspace/tests/api.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 198
+    },
+    {
+      "path": "eval/r33/cases/F3/actions/scoped/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 79
+    },
+    {
+      "path": "eval/r33/cases/F3/actions/unscoped/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 51
+    },
+    {
+      "path": "eval/r33/cases/F3/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 143,
+      "deleted": 0,
+      "bytes": 5265
+    },
+    {
+      "path": "eval/r33/cases/F3/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 922
+    },
+    {
+      "path": "eval/r33/cases/F3/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r33/cases/F3/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 51
+    },
+    {
+      "path": "eval/r33/cases/F3/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 209
+    },
+    {
+      "path": "eval/r33/cases/F4/actions/apply-0/src/validate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 92
+    },
+    {
+      "path": "eval/r33/cases/F4/actions/apply-12/src/validate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 1040
+    },
+    {
+      "path": "eval/r33/cases/F4/actions/apply-all-13/src/validate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 18,
+      "deleted": 0,
+      "bytes": 1128
+    },
+    {
+      "path": "eval/r33/cases/F4/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 458,
+      "deleted": 0,
+      "bytes": 15424
+    },
+    {
+      "path": "eval/r33/cases/F4/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 28,
+      "deleted": 0,
+      "bytes": 2599
+    },
+    {
+      "path": "eval/r33/cases/F4/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r33/cases/F4/workspace/src/validate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 92
+    },
+    {
+      "path": "eval/r33/cases/F4/workspace/tests/validate.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 421
+    },
+    {
+      "path": "eval/r33/cases/G1/actions/implement/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 197
+    },
+    {
+      "path": "eval/r33/cases/G1/actions/wrong/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 143
+    },
+    {
+      "path": "eval/r33/cases/G1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 77,
+      "deleted": 0,
+      "bytes": 3472
+    },
+    {
+      "path": "eval/r33/cases/G1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 18,
+      "deleted": 0,
+      "bytes": 1080
+    },
+    {
+      "path": "eval/r33/cases/G1/workspace/README.md",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 138
+    },
+    {
+      "path": "eval/r33/cases/G1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r33/cases/G1/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 143
+    },
+    {
+      "path": "eval/r33/cases/G1/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 229
+    },
+    {
+      "path": "eval/r33/cases/G2/actions/implement/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r33/cases/G2/actions/wrong/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 56
+    },
+    {
+      "path": "eval/r33/cases/G2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 76,
+      "deleted": 0,
+      "bytes": 3313
+    },
+    {
+      "path": "eval/r33/cases/G2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 17,
+      "deleted": 0,
+      "bytes": 884
+    },
+    {
+      "path": "eval/r33/cases/G2/workspace/README.md",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 65
+    },
+    {
+      "path": "eval/r33/cases/G2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 125
+    },
+    {
+      "path": "eval/r33/cases/G2/workspace/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 56
+    },
+    {
+      "path": "eval/r33/cases/G2/workspace/tests/api.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 180
+    },
+    {
+      "path": "eval/r33/cases/H1/actions/use-eu/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r33/cases/H1/actions/use-us/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r33/cases/H1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 89,
+      "deleted": 0,
+      "bytes": 3933
+    },
+    {
+      "path": "eval/r33/cases/H1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 840
+    },
+    {
+      "path": "eval/r33/cases/H1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r33/cases/H1/workspace/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r33/cases/H1/workspace/tests/client.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 218
+    },
+    {
+      "path": "eval/r33/compare-scores.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 121,
+      "deleted": 0,
+      "bytes": 4503
+    },
+    {
+      "path": "eval/r33/freeze.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 51,
+      "deleted": 0,
+      "bytes": 1908
+    },
+    {
+      "path": "eval/r33/frozen/v1/README.md",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 19,
+      "deleted": 0,
+      "bytes": 957
+    },
+    {
+      "path": "eval/r33/frozen/v1/manifest.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 104,
+      "deleted": 0,
+      "bytes": 3127
+    },
+    {
+      "path": "eval/r33/frozen/v1/reports/live-check.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 41,
+      "deleted": 0,
+      "bytes": 664
+    },
+    {
+      "path": "eval/r33/frozen/v1/reports/live-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 317
+    },
+    {
+      "path": "eval/r33/frozen/v1/reports/offline-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 10163,
+      "deleted": 0,
+      "bytes": 269193
+    },
+    {
+      "path": "eval/r33/frozen/v1/reports/offline-report.md",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 183,
+      "deleted": 0,
+      "bytes": 11350
+    },
+    {
+      "path": "eval/r33/frozen/v1/reports/self-test-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 2276,
+      "deleted": 0,
+      "bytes": 63059
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/actions/keep-string/src/settings.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 132
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/actions/remove-string/src/settings.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 96
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 113,
+      "deleted": 0,
+      "bytes": 4219
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 32,
+      "deleted": 0,
+      "bytes": 1392
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 72
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/workspace/src/consumers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 119
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/workspace/src/settings.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 69
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-A/workspace/tests/settings.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 15,
+      "deleted": 0,
+      "bytes": 448
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/actions/guess/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 84
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/actions/use-artifact/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 84
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 106,
+      "deleted": 0,
+      "bytes": 3501
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 28,
+      "deleted": 0,
+      "bytes": 1093
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 76
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/workspace/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 79
+    },
+    {
+      "path": "eval/r33/holdout/cases/HOLD-B/workspace/tests/client.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 11,
+      "deleted": 0,
+      "bytes": 428
+    },
+    {
+      "path": "eval/r33/holdout/manifest.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 24,
+      "deleted": 0,
+      "bytes": 662
+    },
+    {
+      "path": "eval/r33/live-manifest.example.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 23,
+      "deleted": 0,
+      "bytes": 983
+    },
+    {
+      "path": "eval/r33/live.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 2508,
+      "deleted": 0,
+      "bytes": 94138
+    },
+    {
+      "path": "eval/r33/manifest.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 109,
+      "deleted": 0,
+      "bytes": 3279
+    },
+    {
+      "path": "eval/r33/out/live-check.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 104,
+      "deleted": 0,
+      "bytes": 2527
+    },
+    {
+      "path": "eval/r33/out/live-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 463
+    },
+    {
+      "path": "eval/r33/out/offline-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 12386,
+      "deleted": 0,
+      "bytes": 338563
+    },
+    {
+      "path": "eval/r33/out/offline-report.md",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 183,
+      "deleted": 0,
+      "bytes": 11351
+    },
+    {
+      "path": "eval/r33/out/scorer-comparison.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 209,
+      "deleted": 0,
+      "bytes": 5849
+    },
+    {
+      "path": "eval/r33/out/self-test-report.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 19414,
+      "deleted": 0,
+      "bytes": 635370
+    },
+    {
+      "path": "eval/r33/r331-migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 109,
+      "deleted": 0,
+      "bytes": 4769
+    },
+    {
+      "path": "eval/r33/src/action-order.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 36,
+      "deleted": 0,
+      "bytes": 1118
+    },
+    {
+      "path": "eval/r33/src/budget.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 724,
+      "deleted": 0,
+      "bytes": 32276
+    },
+    {
+      "path": "eval/r33/src/canonical.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 31,
+      "deleted": 0,
+      "bytes": 1254
+    },
+    {
+      "path": "eval/r33/src/context.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 127,
+      "deleted": 0,
+      "bytes": 5249
+    },
+    {
+      "path": "eval/r33/src/dataset.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 230,
+      "deleted": 0,
+      "bytes": 8431
+    },
+    {
+      "path": "eval/r33/src/failures.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 185,
+      "deleted": 0,
+      "bytes": 6312
+    },
+    {
+      "path": "eval/r33/src/grade.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 647,
+      "deleted": 0,
+      "bytes": 28628
+    },
+    {
+      "path": "eval/r33/src/schema.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 290,
+      "deleted": 0,
+      "bytes": 13777
+    },
+    {
+      "path": "eval/r33/src/selection.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 48,
+      "deleted": 0,
+      "bytes": 1931
+    },
+    {
+      "path": "eval/r33/src/tool-protocol.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 142,
+      "deleted": 0,
+      "bytes": 4716
+    },
+    {
+      "path": "eval/r33/src/workspace.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 696,
+      "deleted": 0,
+      "bytes": 25111
+    },
+    {
+      "path": "eval/r35/run-authorized.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 202,
+      "deleted": 0,
+      "bytes": 8382
+    },
+    {
+      "path": "eval/r36/analyze-causal.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 210,
+      "deleted": 0,
+      "bytes": 8386
+    },
+    {
+      "path": "eval/r36/analyze-harness.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 154,
+      "deleted": 0,
+      "bytes": 5713
+    },
+    {
+      "path": "eval/r36/analyze-live.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 223,
+      "deleted": 0,
+      "bytes": 9519
+    },
+    {
+      "path": "eval/r36/audit-r35.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 700,
+      "deleted": 0,
+      "bytes": 29891
+    },
+    {
+      "path": "eval/r36/certify-cases.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 294,
+      "deleted": 0,
+      "bytes": 11389
+    },
+    {
+      "path": "eval/r36/conditions.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 126,
+      "deleted": 0,
+      "bytes": 5123
+    },
+    {
+      "path": "eval/r36/evidence/r35/continuation-writers.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1848,
+      "deleted": 0,
+      "bytes": 154547
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/A1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 1562
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/B2.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2250
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/C1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 3015
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/D1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 1888
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/F1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 2572
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/H1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 11,
+      "deleted": 0,
+      "bytes": 2531
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/A1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 1681
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/B2.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 66,
+      "deleted": 0,
+      "bytes": 2382
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/C1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2455
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/D1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 1430
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/F1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2408
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/H1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 11,
+      "deleted": 0,
+      "bytes": 2362
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/A1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2335
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/B2.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2071
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/C1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 2233
+    },
+    {
+      "path": "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/D1.raw.txt",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 9,
+      "deleted": 0,
+      "bytes": 2275
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102-r2.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 9979,
+      "deleted": 0,
+      "bytes": 385113
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102-r3.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 9520,
+      "deleted": 0,
+      "bytes": 385870
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 8634,
+      "deleted": 0,
+      "bytes": 353797
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102-complete.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 3700,
+      "deleted": 0,
+      "bytes": 168774
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102-r2.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 3791,
+      "deleted": 0,
+      "bytes": 167957
+    },
+    {
+      "path": "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 2585,
+      "deleted": 0,
+      "bytes": 117731
+    },
+    {
+      "path": "eval/r36/evidence/r35/writer-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 2041,
+      "deleted": 0,
+      "bytes": 66496
+    },
+    {
+      "path": "eval/r36/gates.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 191,
+      "deleted": 0,
+      "bytes": 8794
+    },
+    {
+      "path": "eval/r36/manifests/b1-s-o1-o2-frozen.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 49,
+      "deleted": 0,
+      "bytes": 1400
+    },
+    {
+      "path": "eval/r36/manifests/h-combined-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 43,
+      "deleted": 0,
+      "bytes": 1199
+    },
+    {
+      "path": "eval/r36/manifests/h-finish-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 43,
+      "deleted": 0,
+      "bytes": 1216
+    },
+    {
+      "path": "eval/r36/manifests/h-native-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 34,
+      "deleted": 0,
+      "bytes": 960
+    },
+    {
+      "path": "eval/r36/manifests/h-output-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 43,
+      "deleted": 0,
+      "bytes": 1106
+    },
+    {
+      "path": "eval/r36/manifests/h-protocol-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 43,
+      "deleted": 0,
+      "bytes": 1212
+    },
+    {
+      "path": "eval/r36/manifests/h-step-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 46,
+      "deleted": 0,
+      "bytes": 1201
+    },
+    {
+      "path": "eval/r36/manifests/h0-o2.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 39,
+      "deleted": 0,
+      "bytes": 1068
+    },
+    {
+      "path": "eval/r36/manifests/w0-p0-live-control.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 36,
+      "deleted": 0,
+      "bytes": 970
+    },
+    {
+      "path": "eval/r36/manifests/w0-p0-replay.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 31,
+      "deleted": 0,
+      "bytes": 865
+    },
+    {
+      "path": "eval/r36/manifests/w0-p1-replay.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 31,
+      "deleted": 0,
+      "bytes": 873
+    },
+    {
+      "path": "eval/r36/manifests/w1-p0-live.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 36,
+      "deleted": 0,
+      "bytes": 961
+    },
+    {
+      "path": "eval/r36/out/case-certification.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 282,
+      "deleted": 0,
+      "bytes": 7098
+    },
+    {
+      "path": "eval/r36/out/causal-comparison.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1348,
+      "deleted": 0,
+      "bytes": 34006
+    },
+    {
+      "path": "eval/r36/out/conditions.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 322,
+      "deleted": 0,
+      "bytes": 8796
+    },
+    {
+      "path": "eval/r36/out/gate-status.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 559,
+      "deleted": 0,
+      "bytes": 16162
+    },
+    {
+      "path": "eval/r36/out/harness-calibration.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 990,
+      "deleted": 0,
+      "bytes": 29869
+    },
+    {
+      "path": "eval/r36/out/live-results.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 3256,
+      "deleted": 0,
+      "bytes": 83344
+    },
+    {
+      "path": "eval/r36/out/live-writer-analysis.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1017,
+      "deleted": 0,
+      "bytes": 31653
+    },
+    {
+      "path": "eval/r36/out/parser-ablation.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1087,
+      "deleted": 0,
+      "bytes": 28805
+    },
+    {
+      "path": "eval/r36/parser-ablation.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 274,
+      "deleted": 0,
+      "bytes": 11048
+    },
+    {
+      "path": "eval/r36/record-live.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 172,
+      "deleted": 0,
+      "bytes": 6785
+    },
+    {
+      "path": "eval/r36/reference/A1/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 155
+    },
+    {
+      "path": "eval/r36/reference/C1/src/watcher.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 67,
+      "deleted": 0,
+      "bytes": 2100
+    },
+    {
+      "path": "eval/r36/reference/D1/src/migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 111
+    },
+    {
+      "path": "eval/r36/reference/D1/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 6,
+      "deleted": 0,
+      "bytes": 104
+    },
+    {
+      "path": "eval/r36/reference/F1/src/api.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r36/reference/H1/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r36/run-authorized.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 160,
+      "deleted": 0,
+      "bytes": 6420
+    },
+    {
+      "path": "eval/r36/write-manifests.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 337,
+      "deleted": 0,
+      "bytes": 11235
+    },
+    {
+      "path": "eval/r36/writer-protocol.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 346,
+      "deleted": 0,
+      "bytes": 12967
+    },
+    {
+      "path": "eval/r37/analyze-r37b.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 449,
+      "deleted": 0,
+      "bytes": 18989
+    },
+    {
+      "path": "eval/r37/baseline.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 468,
+      "deleted": 0,
+      "bytes": 17938
+    },
+    {
+      "path": "eval/r37/benchmark-validity.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 221,
+      "deleted": 0,
+      "bytes": 9154
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/actions/keep-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 223
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/actions/rename-api/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 136
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/actions/rename-api/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 261
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 118,
+      "deleted": 0,
+      "bytes": 5145
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 20,
+      "deleted": 0,
+      "bytes": 1432
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/reference/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 155
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 115
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/workspace/src/callers.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 126
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 80
+    },
+    {
+      "path": "eval/r37/cases/A1-v2/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 15,
+      "deleted": 0,
+      "bytes": 489
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/actions/report-unverified/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 67
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/actions/trust-history/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 63
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 116,
+      "deleted": 0,
+      "bytes": 5224
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 22,
+      "deleted": 0,
+      "bytes": 1798
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/reference/src/migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 111
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/reference/verification.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 6,
+      "deleted": 0,
+      "bytes": 107
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 118
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/workspace/src/migrate.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 99
+    },
+    {
+      "path": "eval/r37/cases/D1-v2/workspace/tests/migrate.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 213
+    },
+    {
+      "path": "eval/r37/fixtures/B2-F-N/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 88,
+      "deleted": 0,
+      "bytes": 2235
+    },
+    {
+      "path": "eval/r37/fixtures/B2-F-P/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 2414
+    },
+    {
+      "path": "eval/r37/fixtures/B2-F-S/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 3139
+    },
+    {
+      "path": "eval/r37/fixtures/C1-F-H/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 4491
+    },
+    {
+      "path": "eval/r37/fixtures/C1-F-P/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 2434
+    },
+    {
+      "path": "eval/r37/fixtures/C1-F-S/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 86,
+      "deleted": 0,
+      "bytes": 3135
+    },
+    {
+      "path": "eval/r37/forensics.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 490,
+      "deleted": 0,
+      "bytes": 19618
+    },
+    {
+      "path": "eval/r37/gates-r37b.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 188,
+      "deleted": 0,
+      "bytes": 8365
+    },
+    {
+      "path": "eval/r37/gates.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 230,
+      "deleted": 0,
+      "bytes": 9905
+    },
+    {
+      "path": "eval/r37/live-r37b.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 406,
+      "deleted": 0,
+      "bytes": 14316
+    },
+    {
+      "path": "eval/r37/out/baseline-manifest.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1935,
+      "deleted": 0,
+      "bytes": 109112
+    },
+    {
+      "path": "eval/r37/out/benchmark-validity.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 237,
+      "deleted": 0,
+      "bytes": 7958
+    },
+    {
+      "path": "eval/r37/out/forensics.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1740,
+      "deleted": 0,
+      "bytes": 64142
+    },
+    {
+      "path": "eval/r37/out/gate-status-r37b-stage2.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 72,
+      "deleted": 0,
+      "bytes": 2739
+    },
+    {
+      "path": "eval/r37/out/gate-status-r37b.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 72,
+      "deleted": 0,
+      "bytes": 2637
+    },
+    {
+      "path": "eval/r37/out/gate-status.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 79,
+      "deleted": 0,
+      "bytes": 3329
+    },
+    {
+      "path": "eval/r37/out/protocol-ablation.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 15516,
+      "deleted": 0,
+      "bytes": 396499
+    },
+    {
+      "path": "eval/r37/out/r36-evidence-discrepancies.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 391,
+      "deleted": 0,
+      "bytes": 8636
+    },
+    {
+      "path": "eval/r37/out/r36-evidence-reconstruction.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 16902,
+      "deleted": 0,
+      "bytes": 569451
+    },
+    {
+      "path": "eval/r37/out/r37b-results.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 2737,
+      "deleted": 0,
+      "bytes": 72679
+    },
+    {
+      "path": "eval/r37/out/r37b-stage2-results.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 3812,
+      "deleted": 0,
+      "bytes": 101997
+    },
+    {
+      "path": "eval/r37/out/r37b-stage2-statistics.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 102,
+      "deleted": 0,
+      "bytes": 2703
+    },
+    {
+      "path": "eval/r37/out/representation-fixtures.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 183,
+      "deleted": 0,
+      "bytes": 5288
+    },
+    {
+      "path": "eval/r37/protocol-ablation.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 310,
+      "deleted": 0,
+      "bytes": 12411
+    },
+    {
+      "path": "eval/r37/reconstruct-r36.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 619,
+      "deleted": 0,
+      "bytes": 25076
+    },
+    {
+      "path": "eval/r37/src/evidence.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 429,
+      "deleted": 0,
+      "bytes": 19395
+    },
+    {
+      "path": "eval/r37/src/io.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 98,
+      "deleted": 0,
+      "bytes": 3104
+    },
+    {
+      "path": "eval/r37/src/tool-protocol-r37.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 337,
+      "deleted": 0,
+      "bytes": 12379
+    },
+    {
+      "path": "eval/r37/stats-r37b.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 171,
+      "deleted": 0,
+      "bytes": 6564
+    },
+    {
+      "path": "eval/r37c/analyze-process-pilot.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 253,
+      "deleted": 0,
+      "bytes": 10248
+    },
+    {
+      "path": "eval/r37c/analyze-trajectories.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 250,
+      "deleted": 0,
+      "bytes": 10327
+    },
+    {
+      "path": "eval/r37c/archive-evidence.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 167,
+      "deleted": 0,
+      "bytes": 5996
+    },
+    {
+      "path": "eval/r37c/audit-measurement.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 206,
+      "deleted": 0,
+      "bytes": 8877
+    },
+    {
+      "path": "eval/r37c/audit-protocol-admission.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 303,
+      "deleted": 0,
+      "bytes": 13982
+    },
+    {
+      "path": "eval/r37c/audit-semantic-funnel.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 252,
+      "deleted": 0,
+      "bytes": 10363
+    },
+    {
+      "path": "eval/r37c/audit-statistics.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 158,
+      "deleted": 0,
+      "bytes": 6370
+    },
+    {
+      "path": "eval/r37c/baseline.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 482,
+      "deleted": 0,
+      "bytes": 19618
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/actions/use-eu/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/actions/use-us/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 90,
+      "deleted": 0,
+      "bytes": 4224
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 840
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 121
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/workspace/src/client.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 57
+    },
+    {
+      "path": "eval/r37c/cases/H1-v2/workspace/tests/client.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 380
+    },
+    {
+      "path": "eval/r37c/certify-h1-v2.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 129,
+      "deleted": 0,
+      "bytes": 5135
+    },
+    {
+      "path": "eval/r37c/gates.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 216,
+      "deleted": 0,
+      "bytes": 9941
+    },
+    {
+      "path": "eval/r37c/live-process-pilot.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 391,
+      "deleted": 0,
+      "bytes": 14654
+    },
+    {
+      "path": "eval/r37c/native-smoke.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 498,
+      "deleted": 0,
+      "bytes": 18700
+    },
+    {
+      "path": "eval/r37c/out/baseline.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 66,
+      "deleted": 0,
+      "bytes": 1867
+    },
+    {
+      "path": "eval/r37c/out/evidence-archive.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 65,
+      "deleted": 0,
+      "bytes": 1960
+    },
+    {
+      "path": "eval/r37c/out/evidence-integrity.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1561,
+      "deleted": 0,
+      "bytes": 31874
+    },
+    {
+      "path": "eval/r37c/out/evidence-inventory.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 38572,
+      "deleted": 0,
+      "bytes": 1759659
+    },
+    {
+      "path": "eval/r37c/out/gate-status-r37c.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 96,
+      "deleted": 0,
+      "bytes": 4015
+    },
+    {
+      "path": "eval/r37c/out/h1-v2-validity.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 123,
+      "deleted": 0,
+      "bytes": 3318
+    },
+    {
+      "path": "eval/r37c/out/measurement-vs-pipeline.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1531,
+      "deleted": 0,
+      "bytes": 41472
+    },
+    {
+      "path": "eval/r37c/out/native-smoke.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 412,
+      "deleted": 0,
+      "bytes": 8613
+    },
+    {
+      "path": "eval/r37c/out/protocol-admission.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 38108,
+      "deleted": 0,
+      "bytes": 982021
+    },
+    {
+      "path": "eval/r37c/out/r37c-c2-analysis.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 550,
+      "deleted": 0,
+      "bytes": 12813
+    },
+    {
+      "path": "eval/r37c/out/r37c-c2-results.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1803,
+      "deleted": 0,
+      "bytes": 56307
+    },
+    {
+      "path": "eval/r37c/out/r37c-c2-trajectories.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 3737,
+      "deleted": 0,
+      "bytes": 85967
+    },
+    {
+      "path": "eval/r37c/out/r37c-tests.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1,
+      "deleted": 0,
+      "bytes": 20046
+    },
+    {
+      "path": "eval/r37c/out/semantic-funnel-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7011,
+      "deleted": 0,
+      "bytes": 215791
+    },
+    {
+      "path": "eval/r37c/out/statistics-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1584,
+      "deleted": 0,
+      "bytes": 41208
+    },
+    {
+      "path": "eval/r37c/src/dsml-codec.d.mts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 674
+    },
+    {
+      "path": "eval/r37c/src/dsml-codec.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 430,
+      "deleted": 0,
+      "bytes": 15729
+    },
+    {
+      "path": "eval/r37c/src/gate-exit.d.mts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 210
+    },
+    {
+      "path": "eval/r37c/src/gate-exit.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 65,
+      "deleted": 0,
+      "bytes": 2093
+    },
+    {
+      "path": "eval/r37c/src/journal-state.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 160,
+      "deleted": 0,
+      "bytes": 6251
+    },
+    {
+      "path": "eval/r37c/src/measurement.d.mts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 6,
+      "deleted": 0,
+      "bytes": 346
+    },
+    {
+      "path": "eval/r37c/src/measurement.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 149,
+      "deleted": 0,
+      "bytes": 5165
+    },
+    {
+      "path": "eval/r37c/src/semantic-funnel.d.mts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 5,
+      "deleted": 0,
+      "bytes": 290
+    },
+    {
+      "path": "eval/r37c/src/semantic-funnel.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 209,
+      "deleted": 0,
+      "bytes": 9635
+    },
+    {
+      "path": "eval/r37c/src/stats.d.mts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 560
+    },
+    {
+      "path": "eval/r37c/src/stats.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 180,
+      "deleted": 0,
+      "bytes": 7155
+    },
+    {
+      "path": "eval/r37d/analyze-process-pilot.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 135,
+      "deleted": 0,
+      "bytes": 5375
+    },
+    {
+      "path": "eval/r37d/analyze-protocol.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 335,
+      "deleted": 0,
+      "bytes": 13493
+    },
+    {
+      "path": "eval/r37d/analyze-trajectories.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 246,
+      "deleted": 0,
+      "bytes": 10742
+    },
+    {
+      "path": "eval/r37d/audit-h1-v2.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 168,
+      "deleted": 0,
+      "bytes": 7563
+    },
+    {
+      "path": "eval/r37d/audit-r37c.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 618,
+      "deleted": 0,
+      "bytes": 24756
+    },
+    {
+      "path": "eval/r37d/authorization.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 19,
+      "deleted": 0,
+      "bytes": 575
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/actions/use-production/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 50
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/actions/use-staging/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 49
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/case.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 108,
+      "deleted": 0,
+      "bytes": 4829
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/check.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 15,
+      "deleted": 0,
+      "bytes": 795
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/workspace/package.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 8,
+      "deleted": 0,
+      "bytes": 123
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/workspace/src/config.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 3,
+      "deleted": 0,
+      "bytes": 49
+    },
+    {
+      "path": "eval/r37d/cases/S1-v1/workspace/tests/config.test.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 321
+    },
+    {
+      "path": "eval/r37d/certify-s1-v1.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 154,
+      "deleted": 0,
+      "bytes": 6908
+    },
+    {
+      "path": "eval/r37d/fixtures/B2-B1/context.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 16,
+      "deleted": 0,
+      "bytes": 1668
+    },
+    {
+      "path": "eval/r37d/fixtures/B2-B1/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 41,
+      "deleted": 0,
+      "bytes": 1515
+    },
+    {
+      "path": "eval/r37d/fixtures/B2-S/context.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 2126
+    },
+    {
+      "path": "eval/r37d/fixtures/B2-S/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 48,
+      "deleted": 0,
+      "bytes": 2123
+    },
+    {
+      "path": "eval/r37d/fixtures/D1-v2-B1/context.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 1454
+    },
+    {
+      "path": "eval/r37d/fixtures/D1-v2-B1/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 30,
+      "deleted": 0,
+      "bytes": 1363
+    },
+    {
+      "path": "eval/r37d/fixtures/D1-v2-S/context.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 13,
+      "deleted": 0,
+      "bytes": 1940
+    },
+    {
+      "path": "eval/r37d/fixtures/D1-v2-S/fixture.json",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 37,
+      "deleted": 0,
+      "bytes": 1929
+    },
+    {
+      "path": "eval/r37d/freeze-fixtures.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 358,
+      "deleted": 0,
+      "bytes": 14665
+    },
+    {
+      "path": "eval/r37d/gates.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 265,
+      "deleted": 0,
+      "bytes": 12469
+    },
+    {
+      "path": "eval/r37d/held-out-plan.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 197,
+      "deleted": 0,
+      "bytes": 7898
+    },
+    {
+      "path": "eval/r37d/native-extended.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 795,
+      "deleted": 0,
+      "bytes": 30722
+    },
+    {
+      "path": "eval/r37d/operational-completion.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 316,
+      "deleted": 0,
+      "bytes": 11873
+    },
+    {
+      "path": "eval/r37d/out/action-accounting.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 6640,
+      "deleted": 0,
+      "bytes": 206051
+    },
+    {
+      "path": "eval/r37d/out/b2-d1-action-forensics.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 655,
+      "deleted": 0,
+      "bytes": 18884
+    },
+    {
+      "path": "eval/r37d/out/baseline.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1625,
+      "deleted": 0,
+      "bytes": 36057
+    },
+    {
+      "path": "eval/r37d/out/fixed-context-manifest.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 547,
+      "deleted": 0,
+      "bytes": 20610
+    },
+    {
+      "path": "eval/r37d/out/gate-status-r37d.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 112,
+      "deleted": 0,
+      "bytes": 4718
+    },
+    {
+      "path": "eval/r37d/out/h1-v2-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 177,
+      "deleted": 0,
+      "bytes": 4554
+    },
+    {
+      "path": "eval/r37d/out/held-out-plan.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 150,
+      "deleted": 0,
+      "bytes": 6335
+    },
+    {
+      "path": "eval/r37d/out/native-extended.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 871,
+      "deleted": 0,
+      "bytes": 23894
+    },
+    {
+      "path": "eval/r37d/out/operational-completion.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 12400,
+      "deleted": 0,
+      "bytes": 407766
+    },
+    {
+      "path": "eval/r37d/out/process-pilot-analysis.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 215,
+      "deleted": 0,
+      "bytes": 5434
+    },
+    {
+      "path": "eval/r37d/out/process-pilot-manifest.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1144,
+      "deleted": 0,
+      "bytes": 49017
+    },
+    {
+      "path": "eval/r37d/out/process-pilot-preflight.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 102,
+      "deleted": 0,
+      "bytes": 2908
+    },
+    {
+      "path": "eval/r37d/out/process-pilot-results.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1283,
+      "deleted": 0,
+      "bytes": 50449
+    },
+    {
+      "path": "eval/r37d/out/process-pilot-trajectories.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 7942,
+      "deleted": 0,
+      "bytes": 230619
+    },
+    {
+      "path": "eval/r37d/out/protocol-efficiency.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 243,
+      "deleted": 0,
+      "bytes": 6577
+    },
+    {
+      "path": "eval/r37d/out/r37c-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1919,
+      "deleted": 0,
+      "bytes": 57506
+    },
+    {
+      "path": "eval/r37d/out/r37d-tests.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1,
+      "deleted": 0,
+      "bytes": 24781
+    },
+    {
+      "path": "eval/r37d/out/s1-v1-validity.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 169,
+      "deleted": 0,
+      "bytes": 4169
+    },
+    {
+      "path": "eval/r37d/process-pilot.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 322,
+      "deleted": 0,
+      "bytes": 12111
+    },
+    {
+      "path": "eval/r37d/prompts/P0.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 0,
+      "deleted": 0,
+      "bytes": 0
+    },
+    {
+      "path": "eval/r37d/prompts/P1.txt",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 1,
+      "deleted": 0,
+      "bytes": 124
+    },
+    {
+      "path": "eval/r37d/run-process-pilot.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 400,
+      "deleted": 0,
+      "bytes": 15303
+    },
+    {
+      "path": "eval/r37d/src/action-accounting.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 267,
+      "deleted": 0,
+      "bytes": 10799
+    },
+    {
+      "path": "eval/r37d/src/operational-completion.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 310,
+      "deleted": 0,
+      "bytes": 12592
+    },
+    {
+      "path": "eval/r38/archive-recovery-ablation.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 405,
+      "deleted": 0,
+      "bytes": 15159
+    },
+    {
+      "path": "eval/r38/baseline.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 138,
+      "deleted": 0,
+      "bytes": 4930
+    },
+    {
+      "path": "eval/r38/gates.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 212,
+      "deleted": 0,
+      "bytes": 10425
+    },
+    {
+      "path": "eval/r38/integrity-audit.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 470,
+      "deleted": 0,
+      "bytes": 17988
+    },
+    {
+      "path": "eval/r38/mechanism-evaluation.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 658,
+      "deleted": 0,
+      "bytes": 26587
+    },
+    {
+      "path": "eval/r38/native-context-smoke.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 419,
+      "deleted": 0,
+      "bytes": 15448
+    },
+    {
+      "path": "eval/r38/out/archive-recovery-ablation.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 398,
+      "deleted": 0,
+      "bytes": 9224
+    },
+    {
+      "path": "eval/r38/out/baseline-manifest.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 146,
+      "deleted": 0,
+      "bytes": 6783
+    },
+    {
+      "path": "eval/r38/out/baseline-tests.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 55,
+      "deleted": 0,
+      "bytes": 2086
+    },
+    {
+      "path": "eval/r38/out/gate-status.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 87,
+      "deleted": 0,
+      "bytes": 3238
+    },
+    {
+      "path": "eval/r38/out/integrity-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 356,
+      "deleted": 0,
+      "bytes": 9513
+    },
+    {
+      "path": "eval/r38/out/mechanism-evaluation.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 518,
+      "deleted": 0,
+      "bytes": 12209
+    },
+    {
+      "path": "eval/r38/out/native-context-smoke.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 111,
+      "deleted": 0,
+      "bytes": 2854
+    },
+    {
+      "path": "eval/r38/out/r38-tests.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 1,
+      "deleted": 0,
+      "bytes": 21875
+    },
+    {
+      "path": "eval/r38/out/recent-tail-consistency.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 653,
+      "deleted": 0,
+      "bytes": 20262
+    },
+    {
+      "path": "eval/r38/out/relation-security-audit.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 185,
+      "deleted": 0,
+      "bytes": 5047
+    },
+    {
+      "path": "eval/r38/out/revision-idempotency.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 102,
+      "deleted": 0,
+      "bytes": 3384
+    },
+    {
+      "path": "eval/r38/out/working-set-ablation.json",
+      "status": "A",
+      "category": "generated-evidence",
+      "added": 492,
+      "deleted": 0,
+      "bytes": 12982
+    },
+    {
+      "path": "eval/r38/recent-tail.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 283,
+      "deleted": 0,
+      "bytes": 9471
+    },
+    {
+      "path": "eval/r38/relation-security.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 320,
+      "deleted": 0,
+      "bytes": 12553
+    },
+    {
+      "path": "eval/r38/revision-idempotency.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 309,
+      "deleted": 0,
+      "bytes": 11251
+    },
+    {
+      "path": "eval/r38/src/archive-recovery.ts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 318,
+      "deleted": 0,
+      "bytes": 10598
+    },
+    {
+      "path": "eval/r38/src/context-overlay.ts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 161,
+      "deleted": 0,
+      "bytes": 5966
+    },
+    {
+      "path": "eval/r38/src/integrity-auditor.ts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 437,
+      "deleted": 0,
+      "bytes": 17311
+    },
+    {
+      "path": "eval/r38/src/recent-tail.ts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 333,
+      "deleted": 0,
+      "bytes": 12789
+    },
+    {
+      "path": "eval/r38/src/task-aware-selector.ts",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 417,
+      "deleted": 0,
+      "bytes": 16277
+    },
+    {
+      "path": "eval/r38/working-set-ablation.mjs",
+      "status": "A",
+      "category": "research-evaluation",
+      "added": 415,
+      "deleted": 0,
+      "bytes": 16459
+    },
+    {
+      "path": "package-lock.json",
+      "status": "M",
+      "category": "configuration-build",
+      "added": 1298,
+      "deleted": 404,
+      "bytes": 106438
+    },
+    {
+      "path": "package.json",
+      "status": "M",
+      "category": "configuration-build",
+      "added": 103,
+      "deleted": 5,
+      "bytes": 13801
+    },
+    {
+      "path": "scripts/build-eval.mjs",
+      "status": "A",
+      "category": "configuration-build",
+      "added": 59,
+      "deleted": 0,
+      "bytes": 2330
+    },
+    {
+      "path": "src/checkpoint/rationale.ts",
+      "status": "M",
+      "category": "checkpoint-archive-recall",
+      "added": 10,
+      "deleted": 1,
+      "bytes": 12400
+    },
+    {
+      "path": "src/checkpoint/renderer.ts",
+      "status": "M",
+      "category": "checkpoint-archive-recall",
+      "added": 129,
+      "deleted": 3,
+      "bytes": 13617
+    },
+    {
+      "path": "src/checkpoint/residency.ts",
+      "status": "M",
+      "category": "checkpoint-archive-recall",
+      "added": 76,
+      "deleted": 11,
+      "bytes": 15230
+    },
+    {
+      "path": "src/config/ef-keys.ts",
+      "status": "M",
+      "category": "configuration",
+      "added": 4,
+      "deleted": 0,
+      "bytes": 5141
+    },
+    {
+      "path": "src/config/plugin-config.ts",
+      "status": "M",
+      "category": "configuration",
+      "added": 7,
+      "deleted": 0,
+      "bytes": 3809
+    },
+    {
+      "path": "src/config/policy.ts",
+      "status": "M",
+      "category": "configuration",
+      "added": 74,
+      "deleted": 0,
+      "bytes": 29246
+    },
+    {
+      "path": "src/fold/engine.ts",
+      "status": "M",
+      "category": "core-runtime",
+      "added": 1651,
+      "deleted": 72,
+      "bytes": 167015
+    },
+    {
+      "path": "src/index.ts",
+      "status": "M",
+      "category": "core-runtime",
+      "added": 140,
+      "deleted": 1,
+      "bytes": 9391
+    },
+    {
+      "path": "src/plugin.ts",
+      "status": "M",
+      "category": "core-runtime",
+      "added": 1,
+      "deleted": 0,
+      "bytes": 16184
+    },
+    {
+      "path": "src/semantic/admission.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 57,
+      "deleted": 0,
+      "bytes": 2194
+    },
+    {
+      "path": "src/semantic/changes.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 136,
+      "deleted": 0,
+      "bytes": 5463
+    },
+    {
+      "path": "src/semantic/commit.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 154,
+      "deleted": 0,
+      "bytes": 5621
+    },
+    {
+      "path": "src/semantic/evidence.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 241,
+      "deleted": 0,
+      "bytes": 9189
+    },
+    {
+      "path": "src/semantic/integrity.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 382,
+      "deleted": 0,
+      "bytes": 14423
+    },
+    {
+      "path": "src/semantic/journal.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 748,
+      "deleted": 0,
+      "bytes": 30585
+    },
+    {
+      "path": "src/semantic/observation.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 146,
+      "deleted": 0,
+      "bytes": 6045
+    },
+    {
+      "path": "src/semantic/ops.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 236,
+      "deleted": 0,
+      "bytes": 8968
+    },
+    {
+      "path": "src/semantic/plan.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 484,
+      "deleted": 0,
+      "bytes": 19708
+    },
+    {
+      "path": "src/semantic/proof.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 565,
+      "deleted": 0,
+      "bytes": 24034
+    },
+    {
+      "path": "src/semantic/record.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 130,
+      "deleted": 0,
+      "bytes": 5411
+    },
+    {
+      "path": "src/semantic/replay.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 186,
+      "deleted": 0,
+      "bytes": 7443
+    },
+    {
+      "path": "src/semantic/retirement.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 118,
+      "deleted": 0,
+      "bytes": 4244
+    },
+    {
+      "path": "src/semantic/types.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 589,
+      "deleted": 0,
+      "bytes": 23735
+    },
+    {
+      "path": "src/semantic/validate.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 609,
+      "deleted": 0,
+      "bytes": 25730
+    },
+    {
+      "path": "src/semantic/working-set-compiler.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 385,
+      "deleted": 0,
+      "bytes": 15852
+    },
+    {
+      "path": "src/semantic/writer.ts",
+      "status": "A",
+      "category": "semantic-continuity",
+      "added": 272,
+      "deleted": 0,
+      "bytes": 15609
+    },
+    {
+      "path": "src/state/anchor-service.ts",
+      "status": "M",
+      "category": "deterministic-state",
+      "added": 54,
+      "deleted": 55,
+      "bytes": 7803
+    },
+    {
+      "path": "src/state/authority.ts",
+      "status": "M",
+      "category": "deterministic-state",
+      "added": 57,
+      "deleted": 0,
+      "bytes": 4926
+    },
+    {
+      "path": "src/state/plugin-events.ts",
+      "status": "A",
+      "category": "deterministic-state",
+      "added": 283,
+      "deleted": 0,
+      "bytes": 11741
+    },
+    {
+      "path": "src/state/projection.ts",
+      "status": "M",
+      "category": "deterministic-state",
+      "added": 37,
+      "deleted": 2,
+      "bytes": 6179
+    },
+    {
+      "path": "src/state/state.ts",
+      "status": "M",
+      "category": "deterministic-state",
+      "added": 57,
+      "deleted": 8,
+      "bytes": 16194
+    },
+    {
+      "path": "src/status/command.ts",
+      "status": "M",
+      "category": "core-runtime",
+      "added": 10,
+      "deleted": 0,
+      "bytes": 13563
+    },
+    {
+      "path": "src/status/status.ts",
+      "status": "M",
+      "category": "core-runtime",
+      "added": 30,
+      "deleted": 0,
+      "bytes": 29445
+    },
+    {
+      "path": "tests/checkpoint-residency.spec.ts",
+      "status": "M",
+      "category": "tests",
+      "added": 57,
+      "deleted": 0,
+      "bytes": 9761
+    },
+    {
+      "path": "tests/eval-semantic.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 539,
+      "deleted": 0,
+      "bytes": 20630
+    },
+    {
+      "path": "tests/harness.ts",
+      "status": "M",
+      "category": "tests",
+      "added": 18,
+      "deleted": 3,
+      "bytes": 19223
+    },
+    {
+      "path": "tests/m3a-state.spec.ts",
+      "status": "M",
+      "category": "tests",
+      "added": 71,
+      "deleted": 0,
+      "bytes": 24309
+    },
+    {
+      "path": "tests/p0-regressions.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 222,
+      "deleted": 0,
+      "bytes": 9893
+    },
+    {
+      "path": "tests/r32-baseline-fork-repro.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 163,
+      "deleted": 0,
+      "bytes": 6367
+    },
+    {
+      "path": "tests/r32-baseline-repro.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 148,
+      "deleted": 0,
+      "bytes": 6617
+    },
+    {
+      "path": "tests/r32-capacity.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 240,
+      "deleted": 0,
+      "bytes": 9413
+    },
+    {
+      "path": "tests/r32-fixtures.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 222,
+      "deleted": 0,
+      "bytes": 8189
+    },
+    {
+      "path": "tests/r32-integrity.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 227,
+      "deleted": 0,
+      "bytes": 9025
+    },
+    {
+      "path": "tests/r32-live-entry.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 64,
+      "deleted": 0,
+      "bytes": 2367
+    },
+    {
+      "path": "tests/r32-perf.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 182,
+      "deleted": 0,
+      "bytes": 7028
+    },
+    {
+      "path": "tests/r32-process-faults.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 271,
+      "deleted": 0,
+      "bytes": 10832
+    },
+    {
+      "path": "tests/r32-recovery.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 312,
+      "deleted": 0,
+      "bytes": 13086
+    },
+    {
+      "path": "tests/r32-scope.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 171,
+      "deleted": 0,
+      "bytes": 7190
+    },
+    {
+      "path": "tests/r33-arms.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 607,
+      "deleted": 0,
+      "bytes": 26282
+    },
+    {
+      "path": "tests/r33-coverage.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 161,
+      "deleted": 0,
+      "bytes": 6531
+    },
+    {
+      "path": "tests/r33-dataset.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 104,
+      "deleted": 0,
+      "bytes": 4822
+    },
+    {
+      "path": "tests/r33-eval.d.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 253,
+      "deleted": 0,
+      "bytes": 9439
+    },
+    {
+      "path": "tests/r33-holdout.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 87,
+      "deleted": 0,
+      "bytes": 3853
+    },
+    {
+      "path": "tests/r33-live-entry.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 191,
+      "deleted": 0,
+      "bytes": 7834
+    },
+    {
+      "path": "tests/r33-receipt-window.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 208,
+      "deleted": 0,
+      "bytes": 8736
+    },
+    {
+      "path": "tests/r33-writer-observation.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 239,
+      "deleted": 0,
+      "bytes": 9553
+    },
+    {
+      "path": "tests/r331-budget-http.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 191,
+      "deleted": 0,
+      "bytes": 6807
+    },
+    {
+      "path": "tests/r331-isolation.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 229,
+      "deleted": 0,
+      "bytes": 9630
+    },
+    {
+      "path": "tests/r331-live-writer.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 127,
+      "deleted": 0,
+      "bytes": 5469
+    },
+    {
+      "path": "tests/r331-scoring.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 334,
+      "deleted": 0,
+      "bytes": 12349
+    },
+    {
+      "path": "tests/r35-contract.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 367,
+      "deleted": 0,
+      "bytes": 13980
+    },
+    {
+      "path": "tests/r35-live-failures.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 589,
+      "deleted": 0,
+      "bytes": 24086
+    },
+    {
+      "path": "tests/r35-preflight.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 172,
+      "deleted": 0,
+      "bytes": 7012
+    },
+    {
+      "path": "tests/r36-agent-calibration.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 248,
+      "deleted": 0,
+      "bytes": 9054
+    },
+    {
+      "path": "tests/r36-benchmark-validity.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 169,
+      "deleted": 0,
+      "bytes": 6242
+    },
+    {
+      "path": "tests/r36-conditions.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 83,
+      "deleted": 0,
+      "bytes": 3154
+    },
+    {
+      "path": "tests/r36-eval-api.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 42,
+      "deleted": 0,
+      "bytes": 1628
+    },
+    {
+      "path": "tests/r36-tool-protocol.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 121,
+      "deleted": 0,
+      "bytes": 4805
+    },
+    {
+      "path": "tests/r36-writer-contract.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 120,
+      "deleted": 0,
+      "bytes": 4907
+    },
+    {
+      "path": "tests/r37-baseline.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 64,
+      "deleted": 0,
+      "bytes": 2979
+    },
+    {
+      "path": "tests/r37-benchmark-validity.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 80,
+      "deleted": 0,
+      "bytes": 3209
+    },
+    {
+      "path": "tests/r37-eval.d.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 56,
+      "deleted": 0,
+      "bytes": 2396
+    },
+    {
+      "path": "tests/r37-evidence.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 219,
+      "deleted": 0,
+      "bytes": 8632
+    },
+    {
+      "path": "tests/r37-forensics.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 119,
+      "deleted": 0,
+      "bytes": 4858
+    },
+    {
+      "path": "tests/r37-gates.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 49,
+      "deleted": 0,
+      "bytes": 1766
+    },
+    {
+      "path": "tests/r37-protocol.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 158,
+      "deleted": 0,
+      "bytes": 6279
+    },
+    {
+      "path": "tests/r37c-artifacts.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 152,
+      "deleted": 0,
+      "bytes": 6449
+    },
+    {
+      "path": "tests/r37c-dsml.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 104,
+      "deleted": 0,
+      "bytes": 4600
+    },
+    {
+      "path": "tests/r37c-gates.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 46,
+      "deleted": 0,
+      "bytes": 1824
+    },
+    {
+      "path": "tests/r37c-measurement.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 131,
+      "deleted": 0,
+      "bytes": 4059
+    },
+    {
+      "path": "tests/r37c-semantic-funnel.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 141,
+      "deleted": 0,
+      "bytes": 4774
+    },
+    {
+      "path": "tests/r37c-stats.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 62,
+      "deleted": 0,
+      "bytes": 2409
+    },
+    {
+      "path": "tests/r37d-benchmark.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 88,
+      "deleted": 0,
+      "bytes": 3707
+    },
+    {
+      "path": "tests/r37d-eval.d.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 58,
+      "deleted": 0,
+      "bytes": 1670
+    },
+    {
+      "path": "tests/r37d-fixtures.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 121,
+      "deleted": 0,
+      "bytes": 4763
+    },
+    {
+      "path": "tests/r37d-native.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 93,
+      "deleted": 0,
+      "bytes": 3669
+    },
+    {
+      "path": "tests/r37d-operational.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 305,
+      "deleted": 0,
+      "bytes": 12966
+    },
+    {
+      "path": "tests/r37d-pilot.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 117,
+      "deleted": 0,
+      "bytes": 4938
+    },
+    {
+      "path": "tests/r37d-protocol.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 169,
+      "deleted": 0,
+      "bytes": 8613
+    },
+    {
+      "path": "tests/r37d-trajectories.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 93,
+      "deleted": 0,
+      "bytes": 3797
+    },
+    {
+      "path": "tests/r38-archive-recovery.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 75,
+      "deleted": 0,
+      "bytes": 2912
+    },
+    {
+      "path": "tests/r38-eval.d.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 177,
+      "deleted": 0,
+      "bytes": 6305
+    },
+    {
+      "path": "tests/r38-integrity-auditor.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 74,
+      "deleted": 0,
+      "bytes": 3127
+    },
+    {
+      "path": "tests/r38-native-context.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 77,
+      "deleted": 0,
+      "bytes": 3241
+    },
+    {
+      "path": "tests/r38-recent-tail.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 77,
+      "deleted": 0,
+      "bytes": 2967
+    },
+    {
+      "path": "tests/r38-relation-authority.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 516,
+      "deleted": 0,
+      "bytes": 21446
+    },
+    {
+      "path": "tests/r38-task-aware.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 142,
+      "deleted": 0,
+      "bytes": 5888
+    },
+    {
+      "path": "tests/release-hygiene.spec.ts",
+      "status": "M",
+      "category": "tests",
+      "added": 7,
+      "deleted": 3,
+      "bytes": 8256
+    },
+    {
+      "path": "tests/semantic-commit-proof.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 329,
+      "deleted": 0,
+      "bytes": 13927
+    },
+    {
+      "path": "tests/semantic-concurrency.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 124,
+      "deleted": 0,
+      "bytes": 4331
+    },
+    {
+      "path": "tests/semantic-continuity.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 351,
+      "deleted": 0,
+      "bytes": 15352
+    },
+    {
+      "path": "tests/semantic-core.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 464,
+      "deleted": 0,
+      "bytes": 19226
+    },
+    {
+      "path": "tests/semantic-fork.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 356,
+      "deleted": 0,
+      "bytes": 15634
+    },
+    {
+      "path": "tests/semantic-host-0.2.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 154,
+      "deleted": 0,
+      "bytes": 6809
+    },
+    {
+      "path": "tests/semantic-journal-v4.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 222,
+      "deleted": 0,
+      "bytes": 8620
+    },
+    {
+      "path": "tests/semantic-lifecycle.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 279,
+      "deleted": 0,
+      "bytes": 12306
+    },
+    {
+      "path": "tests/semantic-longchain.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 245,
+      "deleted": 0,
+      "bytes": 10825
+    },
+    {
+      "path": "tests/semantic-longrun-real.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 262,
+      "deleted": 0,
+      "bytes": 10639
+    },
+    {
+      "path": "tests/semantic-process-restart.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 162,
+      "deleted": 0,
+      "bytes": 6552
+    },
+    {
+      "path": "tests/semantic-recovery.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 445,
+      "deleted": 0,
+      "bytes": 17747
+    },
+    {
+      "path": "tests/semantic-replay-order.spec.ts",
+      "status": "A",
+      "category": "tests",
+      "added": 135,
+      "deleted": 0,
+      "bytes": 4841
+    },
+    {
+      "path": "vitest.config.ts",
+      "status": "M",
+      "category": "configuration-build",
+      "added": 28,
+      "deleted": 3,
+      "bytes": 5159
+    }
+  ],
+  "method": "Category is assigned by path (and by reading the file where the path is ambiguous), never by commit message. Renames are reported as add+delete because the inventory is a path census, not a similarity analysis."
+}
