@@ -7,6 +7,16 @@
 //
 // Run after rebasing the vendor clone onto a new DSH version. Idempotent:
 // tsconfig.json's non-paths content is preserved, only `paths` is replaced.
+//
+// ## Verify / generate / promote (EF-C1)
+//
+//   node scripts/generate-maps.cjs                 write in place (old behavior)
+//   node scripts/generate-maps.cjs --check         compare only; exit 2 on drift
+//   node scripts/generate-maps.cjs --output <dir>  write candidates to <dir>
+//
+// `--check` never writes a tracked path. The default stays `--write` because CI
+// and the documented rebase procedure call the bare command and then diff; a
+// silent behavior change there would make the CI step pass vacuously.
 const fs = require('fs')
 const path = require('path')
 
@@ -14,6 +24,31 @@ const root = path.join(__dirname, '..')
 const vendorRoot = path.join(root, 'vendor', 'deepseek-harness')
 const baseConfigPath = path.join(vendorRoot, 'tsconfig.base.json')
 const VENDOR_PREFIX = './vendor/deepseek-harness/'
+
+const argv = process.argv.slice(2)
+const flag = (name) => {
+  const at = argv.indexOf(`--${name}`)
+  return at === -1 ? undefined : argv[at + 1]
+}
+const check = argv.includes('--check')
+const output = flag('output')
+const write = argv.includes('--write') || (!check && output === undefined)
+
+if (check && output !== undefined) {
+  console.error('generate-maps: --check and --output are mutually exclusive')
+  process.exit(1)
+}
+if (output !== undefined && argv.includes('--write')) {
+  console.error('generate-maps: --write and --output are mutually exclusive')
+  process.exit(1)
+}
+if (!fs.existsSync(baseConfigPath)) {
+  // A worktree without the gitignored vendor tree cannot derive the maps. That
+  // is a "not-verifiable" state, not a silent success: --check exits 2 so CI
+  // can tell it apart from a match.
+  console.error(`generate-maps: no vendored DSH at ${baseConfigPath}`)
+  process.exit(check ? 2 : 1)
+}
 
 // --- extract the `paths` object from the (commented) vendor base config ---
 const src = fs.readFileSync(baseConfigPath, 'utf8')
@@ -100,7 +135,6 @@ function filterExisting(map, dirEntry = 'index.ts') {
 }
 
 const srcMap = filterExisting(rewritten(vendorPaths))
-fs.writeFileSync(path.join(root, 'scripts', 'vendor-paths.json'), JSON.stringify(srcMap.map, null, 2) + '\n')
 
 // Types map: src dir → lib/types dir, src/X.ts → lib/types/X.d.ts
 const typesTargets = {}
@@ -109,7 +143,6 @@ for (const [key, targets] of Object.entries(srcMap.map)) {
     .map(t => t.replace(/\/src\/([^/]+)\.ts$/, '/lib/types/$1.d.ts').replace(/\/src$/, '/lib/types'))
 }
 const typesMap = filterExisting(typesTargets, 'index.d.ts')
-fs.writeFileSync(path.join(root, 'scripts', 'vendor-types-paths.json'), JSON.stringify(typesMap.map, null, 2) + '\n')
 
 // --- tsconfig.json: replace only compilerOptions.paths ---
 const tsconfigPath = path.join(root, 'tsconfig.json')
@@ -120,8 +153,48 @@ tsconfig.compilerOptions.paths = {
   // unify with the vendored session-projection's zod.
   zod: ['./vendor/deepseek-harness/node_modules/.pnpm/zod@4.4.3/node_modules/zod'],
 }
-fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2) + '\n')
 
-console.log(`src paths: ${Object.keys(srcMap.map).length} entries (${srcMap.dropped} dropped)`)
-console.log(`types paths: ${Object.keys(typesMap.map).length} entries (${typesMap.dropped} dropped)`)
-console.log('tsconfig.json paths updated')
+const rendered = {
+  'scripts/vendor-paths.json': JSON.stringify(srcMap.map, null, 2) + '\n',
+  'scripts/vendor-types-paths.json': JSON.stringify(typesMap.map, null, 2) + '\n',
+  'tsconfig.json': JSON.stringify(tsconfig, null, 2) + '\n',
+}
+
+/** Normalize line endings so a CRLF checkout does not read as a content change. */
+const normalized = (text) => text.replace(/\r\n/g, '\n')
+
+if (check) {
+  const drift = []
+  for (const [rel, next] of Object.entries(rendered)) {
+    const current = fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), 'utf8') : ''
+    if (normalized(current) !== normalized(next)) drift.push(rel)
+  }
+  console.log(`src paths: ${Object.keys(srcMap.map).length} entries (${srcMap.dropped} dropped)`)
+  console.log(`types paths: ${Object.keys(typesMap.map).length} entries (${typesMap.dropped} dropped)`)
+  if (drift.length === 0) {
+    console.log('resolution maps are current for the vendored DSH')
+    process.exit(0)
+  }
+  console.error(`resolution maps are OUT OF DATE: ${drift.join(', ')}`)
+  process.exit(2)
+}
+
+if (output !== undefined) {
+  fs.mkdirSync(output, { recursive: true })
+  for (const [rel, next] of Object.entries(rendered)) {
+    fs.writeFileSync(path.join(output, path.basename(rel)), next)
+  }
+  console.log(`src paths: ${Object.keys(srcMap.map).length} entries (${srcMap.dropped} dropped)`)
+  console.log(`types paths: ${Object.keys(typesMap.map).length} entries (${typesMap.dropped} dropped)`)
+  console.log(`wrote candidates to ${output}`)
+  process.exit(0)
+}
+
+if (write) {
+  fs.writeFileSync(path.join(root, 'scripts', 'vendor-paths.json'), rendered['scripts/vendor-paths.json'])
+  fs.writeFileSync(path.join(root, 'scripts', 'vendor-types-paths.json'), rendered['scripts/vendor-types-paths.json'])
+  fs.writeFileSync(tsconfigPath, rendered['tsconfig.json'])
+  console.log(`src paths: ${Object.keys(srcMap.map).length} entries (${srcMap.dropped} dropped)`)
+  console.log(`types paths: ${Object.keys(typesMap.map).length} entries (${typesMap.dropped} dropped)`)
+  console.log('tsconfig.json paths updated')
+}

@@ -43,10 +43,11 @@ jobs:
       - name: Install plugin tooling
         run: npm ci
 
-      - name: Regenerate resolution maps and verify they are current
-        run: |
-          node scripts/generate-maps.cjs
-          git diff --exit-code -- scripts/vendor-paths.json scripts/vendor-types-paths.json
+      - name: Verify resolution maps are current
+        run: node scripts/generate-maps.cjs --check
+
+      - name: Verify the generated preset block is current
+        run: node scripts/generate-presets.mjs --check
 
       - name: Type check
         run: npx tsc --noEmit -p tsconfig.json
@@ -80,8 +81,11 @@ jobs:
 
       - name: R1 report is reproducible and up to date
         run: |
-          npm run eval:r1-report
+          npm run eval:r1-report:check
           git diff --exit-code -- docs/12_R1_EVALUATION_REPORT.md docs/MANIFEST.json
+
+      - name: Docs manifest is current
+        run: node scripts/generate-docs-manifest.mjs --check
 
       # The live tier is opt-in and credential-gated. In CI it runs only when a
       # route is provided; without one every live test SKIPS (it never silently
