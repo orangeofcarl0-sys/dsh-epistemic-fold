@@ -148,7 +148,13 @@
     "eval:r38-mechanism": "node eval/r38/mechanism-evaluation.mjs",
     "eval:r38-gates": "node eval/r38/gates.mjs",
     "eval:r38-tests": "vitest run --reporter=json --outputFile=eval/r38/out/r38-tests.json tests/r38-relation-authority.spec.ts tests/r38-integrity-auditor.spec.ts tests/r38-task-aware.spec.ts tests/r38-archive-recovery.spec.ts tests/r38-recent-tail.spec.ts tests/r38-native-context.spec.ts",
-    "eval:r38": "npm run eval:r38-baseline && npm run eval:r38-relations && npm run eval:r38-idempotency && npm run eval:r38-integrity && npm run eval:r38-working-set && npm run eval:r38-recovery && npm run eval:r38-tail && npm run eval:r38-native && npm run eval:r38-mechanism && npm run eval:r38-tests && npm run eval:r38-gates"
+    "eval:r38": "npm run eval:r38-baseline && npm run eval:r38-relations && npm run eval:r38-idempotency && npm run eval:r38-integrity && npm run eval:r38-working-set && npm run eval:r38-recovery && npm run eval:r38-tail && npm run eval:r38-native && npm run eval:r38-mechanism && npm run eval:r38-tests && npm run eval:r38-gates",
+    "eval:c0-audit": "node eval/c0/git-audit.mjs",
+    "eval:c0-config": "node eval/c0/config-matrix.mjs",
+    "eval:c0-evidence": "node eval/c0/evidence-registry.mjs",
+    "eval:c0-tests": "vitest run --reporter=json --outputFile=eval/c0/out/c0-tests.json tests/convergence-config.spec.ts tests/convergence-boundaries.spec.ts tests/convergence-evidence.spec.ts tests/convergence-gates.spec.ts",
+    "eval:c0-gates": "node eval/c0/gates.mjs",
+    "eval:c0": "npm run eval:c0-audit && npm run eval:c0-config && npm run eval:c0-evidence && npm run eval:c0-tests && npm run eval:c0-gates"
   },
   "repository": {
     "type": "git",
