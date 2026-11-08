@@ -22,6 +22,7 @@
  */
 
 import { createHash } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
@@ -55,6 +56,35 @@ async function loadTask(id) {
 async function loadManifest(path) {
   const text = await readFile(path, 'utf8')
   return { manifest: JSON.parse(text), digest: sha256(text) }
+}
+
+const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim()
+
+/**
+ * Verify that the code and the task files are the ones the manifest froze.
+ *
+ * The manifest and its authorization are committed after the freeze, so HEAD
+ * itself must move; the source tree digest excludes exactly those two paths and
+ * nothing else. A modified task file is a different experiment.
+ */
+async function verifyBinding(manifest) {
+  const digest = sha256(git('ls-tree', '-r', 'HEAD', '--', '.',
+    ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/authorization.json'))
+  if (digest !== manifest.code.sourceTreeDigest) {
+    return { ok: false, reason: 'the source tree differs from the frozen manifest' }
+  }
+  const dirty = git('status', '--porcelain', '--', '.',
+    ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/runs')
+  if (dirty.length > 0) {
+    return { ok: false, reason: `the worktree is dirty outside the evidence directories:\n${dirty}` }
+  }
+  for (const task of manifest.tasks) {
+    const text = await readFile(join(ROOT, task.file), 'utf8')
+    if (sha256(text) !== task.digest) {
+      return { ok: false, reason: `${task.file} differs from the frozen digest` }
+    }
+  }
+  return { ok: true }
 }
 
 async function verifyAuthorization(manifest, digest) {
@@ -105,6 +135,11 @@ async function main() {
       process.exit(2)
     }
     const { manifest, digest } = await loadManifest(manifestPath)
+    const binding = await verifyBinding(manifest)
+    if (!binding.ok) {
+      process.stderr.write(`e2e: ${binding.reason}\n`)
+      process.exit(2)
+    }
     const authorization = await verifyAuthorization(manifest, digest)
     if (!authorization.ok) {
       process.stderr.write(`e2e: ${authorization.reason}\n`)
@@ -150,6 +185,11 @@ async function main() {
 
   const manifestPath = value('manifest', join(OUT, 'manifest.json'))
   const { manifest, digest } = await loadManifest(manifestPath)
+  const binding = await verifyBinding(manifest)
+  if (!binding.ok) {
+    process.stderr.write(`e2e: ${binding.reason}; no request was made\n`)
+    process.exit(2)
+  }
   const authorization = await verifyAuthorization(manifest, digest)
   if (!authorization.ok) {
     process.stderr.write(`e2e: ${authorization.reason}; no request was made\n`)

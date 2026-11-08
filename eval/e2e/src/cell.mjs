@@ -77,10 +77,11 @@ function messageSummary(message) {
  * that could alter the response would be measuring itself.
  */
 export class RecordingAdapter extends LlmAdapter {
-  constructor(inner, log) {
+  constructor(inner, log, { defaultMaxTokens = 1024 } = {}) {
     super()
     this.inner = inner
     this.log = log
+    this.defaultMaxTokens = defaultMaxTokens
   }
 
   providerInfo(provider) {
@@ -91,31 +92,40 @@ export class RecordingAdapter extends LlmAdapter {
     return this.inner.providerRetryPolicy?.(provider)
   }
 
-  resolveModel(provider, model) {
-    return this.inner.resolveModel(provider, model)
+  async resolveModel(provider, model) {
+    const info = await this.inner.resolveModel(provider, model)
+    // The native loop does not invent an output cap. Without one the budget
+    // ledger cannot reserve an upper bound and refuses the request as
+    // `unknown-output-bound` BEFORE it is sent. Declaring the cap here makes it
+    // part of the resolved model and the logged header, so every arm and every
+    // auxiliary call carries the same bound.
+    return { ...info, defaultMaxTokens: this.defaultMaxTokens }
   }
 
   async *stream(options) {
+    const effective = options.maxTokens === undefined || options.maxTokens === null
+      ? { ...options, maxTokens: this.defaultMaxTokens }
+      : options
     const entry = {
       index: this.log.requests.length,
       at: new Date().toISOString(),
-      purpose: purposeOf(options),
-      maxTokens: options.maxTokens ?? null,
-      system: options.system === undefined ? null : {
-        chars: options.system.length,
-        digest: sha256(options.system),
-        preview: options.system.slice(0, 400),
-        truncated: options.system.length > 400,
+      purpose: purposeOf(effective),
+      maxTokens: effective.maxTokens ?? null,
+      system: effective.system === undefined ? null : {
+        chars: effective.system.length,
+        digest: sha256(effective.system),
+        preview: effective.system.slice(0, 400),
+        truncated: effective.system.length > 400,
       },
-      messages: (options.messages ?? []).map(messageSummary),
-      tools: (options.tools ?? []).map(tool => tool.name ?? tool.function?.name ?? 'unknown'),
+      messages: (effective.messages ?? []).map(messageSummary),
+      tools: (effective.tools ?? []).map(tool => tool.name ?? tool.function?.name ?? 'unknown'),
       usage: null,
       finish: null,
       durationMs: null,
     }
     const started = Date.now()
     this.log.requests.push(entry)
-    for await (const chunk of this.inner.stream(options)) {
+    for await (const chunk of this.inner.stream(effective)) {
       if (chunk.type === 'usage') entry.usage = chunk.usage
       if (chunk.type === 'finish') entry.finish = chunk.reason
       yield chunk
@@ -254,7 +264,23 @@ function checkpointOf(session) {
     if (!isCompactCheckpointSource(message.source)) continue
     return {
       seq: Number(nodes[index]),
+      source: 'surface',
       text: message.content.map(block => block.type === 'text' ? block.text : '').join('\n'),
+    }
+  }
+  // A replacement can leave the checkpoint event in the log but not in the
+  // derived surface (for example when the fold was followed by a second
+  // replacement). The log is the authority for WHAT was written; the surface
+  // says what the model can still see. Record the difference rather than
+  // reporting "no checkpoint" for a fold that clearly produced one.
+  for (const event of session.snapshotEvents()) {
+    if (event.type !== 'user/message') continue
+    const message = event.data.message
+    if (!isCompactCheckpointSource(message?.source)) continue
+    return {
+      seq: Number(event.seq),
+      source: 'log-only',
+      text: (message.content ?? []).map(block => block.type === 'text' ? block.text : '').join('\n'),
     }
   }
   return null
@@ -483,6 +509,7 @@ export async function runCell({
     compactions: summary.compactions,
     checkpoint: checkpoint === null ? null : {
       seq: checkpoint.seq,
+      source: checkpoint.source,
       chars: checkpoint.text.length,
       mode: foldMode(checkpoint),
       text: checkpoint.text,

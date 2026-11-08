@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-core-1",
-  "frozenAt": "2026-11-08T15:51:31.791Z",
+  "frozenAt": "2026-11-08T15:53:29.446Z",
   "work": "EF-E2E",
   "code": {
-    "evaluatedCommit": "9101285b1ba196b0041c42c1ebc4d53c15b1565c",
+    "evaluatedCommit": "67a4040d445b3c4de86c1f06fc792f4560601637",
     "branch": "chore/ef-c1-evaluation-foundation",
     "worktreeClean": true,
     "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
@@ -146,19 +146,19 @@
       "block": "calibration",
       "task": "T1-s1",
       "arm": "B0",
-      "replicate": 1
+      "replicate": 0
     },
     {
       "block": "calibration",
       "task": "T1-s1",
       "arm": "E0",
-      "replicate": 1
+      "replicate": 0
     },
     {
       "block": "calibration",
       "task": "T1-s1",
       "arm": "E1",
-      "replicate": 1
+      "replicate": 0
     },
     {
       "block": "core",

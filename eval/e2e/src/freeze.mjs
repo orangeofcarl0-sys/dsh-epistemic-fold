@@ -117,6 +117,11 @@ async function main() {
       evaluatedCommit: git('rev-parse', 'HEAD'),
       branch: git('branch', '--show-current') || '(detached)',
       worktreeClean: true,
+      // The manifest and its authorization are committed AFTER the freeze, so
+      // HEAD necessarily moves by one commit. The binding is the source tree
+      // excluding eval/e2e/out, which no later evidence commit may change.
+      sourceTreeDigest: sha256(git('ls-tree', '-r', 'HEAD', '--', '.',
+        ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/authorization.json')),
       lockSha256: sha256(lock),
       dsh: dshVersions,
     },
