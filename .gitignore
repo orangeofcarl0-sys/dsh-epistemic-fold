@@ -76,3 +76,8 @@ eval/r37d/runs-process/
 eval/e2e/runs/
 eval/e2e/probe-fold.mjs
 eval/e2e/candidate/
+
+# Full vitest JSON and raw log (the tracked summary is full-tests-summary.json)
+eval/e2e/out/full-tests.json
+eval/e2e/out/full-tests.log
+eval/e2e/out/run-e2e-*.log
