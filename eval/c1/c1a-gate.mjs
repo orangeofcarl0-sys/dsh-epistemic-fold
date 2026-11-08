@@ -126,7 +126,9 @@ function main() {
 
   // A4 also depends on the report baselines being declared, not silently stale.
   const reportBaselinesOk = (baselines?.reports ?? []).length >= 4
-    && baselines.reports.every(row => typeof row.cause === 'string' && row.cause.length > 0)
+    && baselines.reports.every(row =>
+      ['current', 'stale', 'superseded'].includes(row.status)
+      && (row.status !== 'stale' || (typeof row.cause === 'string' && row.cause.length > 0)))
 
   const report = {
     schemaVersion: 1,

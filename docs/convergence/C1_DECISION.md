@@ -38,14 +38,19 @@ the property for the cheap compare modes on every run.
 - Preset block: `--output` / `--write`; `--check` exits 2 on drift.
 - Resolution maps: `--output` / default write; `--check` exits 2 on drift.
 
-The historical reports are stale and were **not** promoted. Their drift is
+The historical reports were stale and were **promoted as an explicit,
+authorized operation** in the C1 follow-up. Their pre-promotion drift is
 declared with a cause and a digest in
-`docs/convergence/data/report-baselines.json`:
+`docs/convergence/data/report-baselines.json`; the previous bytes remain in git
+at `327598f`.
 
 - R1 report: a `checkpoint-root` attribution bucket was added; totals unchanged.
 - R33 offline report: scorerVersion 2 → 3, with the R36/R37 behaviour fields.
 - R33 live check: scorerVersion 3 and four fixture arms.
-- R33 live report: a superseded refusal record.
+- R33 live report: a superseded refusal record (not promoted).
+
+Promotion used `eval:r1-report:write`, `eval:r33-offline-report:promote` and
+`live.mjs --check`; no test promoted anything implicitly.
 
 ## B. Test accounting
 
@@ -240,8 +245,8 @@ the Active/S0 line only.
    The README and the tree disagree.
 3. The CI pinned lane (`0.2.0-rc.2` vendor + `0.2.1-rc.3` install) was not
    reproducible here.
-4. The R1 report and the R33 offline report are stale; their promotion is a
-   separate decision.
+4. The R1 report and the R33 offline report are now current; the next drift
+   needs a new declaration, and promotion remains an explicit operation.
 5. `docs/MANIFEST.json` must be regenerated after this round's docs (done in the
    final commit).
 6. Semantic decision authority (Track B) remains unsplit.

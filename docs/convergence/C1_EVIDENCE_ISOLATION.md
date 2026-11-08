@@ -100,20 +100,32 @@ Two details that matter:
   replaces the latest live report. `R35_WRITE_LATEST=0` still means "do not
   write", so the old opt-out is compatible.
 
-## 4. The historical reports are stale, and that is recorded
+## 4. The historical reports were stale, then promoted explicitly
 
-Fixing the side effect exposed a second fact: two committed reports do not
-reproduce from the current code. They are historical records; this round did
-not rewrite them and did not edit their numbers.
+Fixing the side effect exposed a second fact: two committed reports did not
+reproduce from the current code. They were not rewritten by any test. The
+drift was declared first, and then **promoted as an explicit, authorized
+operation** in the C1 follow-up:
 
-`docs/convergence/data/report-baselines.json` declares each one:
+| Report | Pre-promotion | Now | Cause of the drift |
+|---|---|---|---|
+| `docs/12_R1_EVALUATION_REPORT.md` | stale | **current** | the attribution model gained a `checkpoint-root` bucket; totals unchanged, root-fold tokens (W1 3,240, W3 5,160, W4 4,560) moved out of framing/identity/rationale |
+| `eval/r33/out/offline-report.json` | stale | **current** | the old report was scorerVersion 2; the current scorer is 3 and its rows carry the R36/R37 behaviour fields |
+| `eval/r33/out/live-check.json` | stale | **current** | the old snapshot predated scorerVersion 3 and the four fixture arms (FP/FS/FN/FH) |
+| `eval/r33/out/live-report.json` | superseded | superseded | a 2026-11-01 gate-refusal record; refusals are now run-scoped |
 
-| Report | Status | Cause |
-|---|---|---|
-| `docs/12_R1_EVALUATION_REPORT.md` | stale | the attribution model gained a `checkpoint-root` bucket; totals unchanged, root-fold tokens (W1 3,240, W3 5,160, W4 4,560) moved out of framing/identity/rationale |
-| `eval/r33/out/offline-report.json` | stale | the committed report is scorerVersion 2; the current scorer is 3 and its rows carry the R36/R37 behaviour fields |
-| `eval/r33/out/live-check.json` | stale | the snapshot predates scorerVersion 3 and the four fixture arms (FP/FS/FN/FH) |
-| `eval/r33/out/live-report.json` | superseded | a 2026-11-01 gate-refusal record; refusals are now run-scoped |
+Promotion was performed by explicit commands, never by a test:
+
+```bash
+npm run eval:r1-report:write
+npm run eval:r33-offline-report:promote
+node eval/r33/live.mjs --check
+```
+
+The previous bytes remain in git at `327598f` (pre-C1) and in the
+`frozenSha256` field of `report-baselines.json`; the promoted hashes are
+recorded there with a `promoted` note. `EF_R33_OFFLINE_REPORT_PROMOTE=1` is
+the only path that writes the R33 authority file from the test.
 
 The verification tests (`tests/r1-report.spec.ts`, `tests/r33-arms.spec.ts`,
 `tests/r33-live-entry.spec.ts`) enforce two rules:
@@ -129,9 +141,8 @@ semantic content, and a digest that included them could never be pinned.
 ## 5. What this does not prove
 
 - It does not prove the reports are correct; it proves they were not silently
-  changed, and that any drift is declared.
-- It does not promote the stale reports. Whether to regenerate the R1 report and
-  the R33 offline report is a separate decision (see `C1_DECISION.md`).
+  changed, and that any drift is declared. Promotion records the current
+  generator's output, not a new experiment.
 - It does not cover a future test that writes a new tracked path. The
   inventory makes that visible only after the scan is re-run; the isolation
   test checks that no CURRENT site is unclassified.

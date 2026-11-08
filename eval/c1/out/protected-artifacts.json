@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "work": "EF-C1",
   "generator": "eval/c1/protected-artifacts.mjs",
-  "sourceCommit": "9e0c93cf236f69f035eee20953dc3436139c4eb5",
-  "generatedAt": "2026-11-08T09:43:56.990Z",
+  "sourceCommit": "b551ee7f66446b334aa271fefb14e5907d19e8e0",
+  "generatedAt": "2026-11-08T10:00:47.324Z",
   "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation",
   "rule": "an ordinary test must not write a protected path",
   "counts": {
@@ -32,11 +32,11 @@
       "risk": "high",
       "tracked": true,
       "present": true,
-      "bytes": 12965,
-      "headSha256": "fea83b73f3062b788b3c8e9149755c8a3242a879e20a0a6bb26c7b1b18a77480",
-      "worktreeSha256": "fea83b73f3062b788b3c8e9149755c8a3242a879e20a0a6bb26c7b1b18a77480",
+      "bytes": 13067,
+      "headSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
+      "worktreeSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
       "worktreeMatchesHead": true,
-      "rawWorktreeSha256": "fea83b73f3062b788b3c8e9149755c8a3242a879e20a0a6bb26c7b1b18a77480"
+      "rawWorktreeSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036"
     },
     {
       "path": "docs/MANIFEST.json",
@@ -50,10 +50,10 @@
       "tracked": true,
       "present": true,
       "bytes": 23567,
-      "headSha256": "96d01e3a599f0a32d9a2c398153601afdcfa71d8ef6e8fd92edddf9a1e983464",
-      "worktreeSha256": "96d01e3a599f0a32d9a2c398153601afdcfa71d8ef6e8fd92edddf9a1e983464",
+      "headSha256": "f71d0902fd8a3e910c33ba7d2dd01bde4877070dbc80f3f317f2eb0644c5f2a7",
+      "worktreeSha256": "f71d0902fd8a3e910c33ba7d2dd01bde4877070dbc80f3f317f2eb0644c5f2a7",
       "worktreeMatchesHead": true,
-      "rawWorktreeSha256": "96d01e3a599f0a32d9a2c398153601afdcfa71d8ef6e8fd92edddf9a1e983464"
+      "rawWorktreeSha256": "f71d0902fd8a3e910c33ba7d2dd01bde4877070dbc80f3f317f2eb0644c5f2a7"
     },
     {
       "path": "cordis.patch.yml",
@@ -151,11 +151,11 @@
       "risk": "high",
       "tracked": true,
       "present": true,
-      "bytes": 2527,
-      "headSha256": "fe74e8b65fb96d6bdc933a536f51fbec2137c2820ce7b31f4f4d252226aa5c40",
-      "worktreeSha256": "fe74e8b65fb96d6bdc933a536f51fbec2137c2820ce7b31f4f4d252226aa5c40",
+      "bytes": 2567,
+      "headSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
+      "worktreeSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
       "worktreeMatchesHead": true,
-      "rawWorktreeSha256": "fe74e8b65fb96d6bdc933a536f51fbec2137c2820ce7b31f4f4d252226aa5c40"
+      "rawWorktreeSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23"
     },
     {
       "path": "eval/r33/out/offline-report.json",
@@ -168,11 +168,11 @@
       "risk": "high",
       "tracked": true,
       "present": true,
-      "bytes": 338563,
-      "headSha256": "782c42fbfb0f0d83eec32811ba90c3c819888c4193bd546d5e31ec255080f3a2",
-      "worktreeSha256": "782c42fbfb0f0d83eec32811ba90c3c819888c4193bd546d5e31ec255080f3a2",
+      "bytes": 473408,
+      "headSha256": "5f73fe328054bb8bbe796b6b1ab3545ef044645efdcd0aca7cd7d4459031b7a0",
+      "worktreeSha256": "5f73fe328054bb8bbe796b6b1ab3545ef044645efdcd0aca7cd7d4459031b7a0",
       "worktreeMatchesHead": true,
-      "rawWorktreeSha256": "782c42fbfb0f0d83eec32811ba90c3c819888c4193bd546d5e31ec255080f3a2"
+      "rawWorktreeSha256": "5f73fe328054bb8bbe796b6b1ab3545ef044645efdcd0aca7cd7d4459031b7a0"
     },
     {
       "path": "eval/r33/out/offline-report.md",
@@ -186,10 +186,10 @@
       "tracked": true,
       "present": true,
       "bytes": 11351,
-      "headSha256": "24a75ac7c99c9f2d97b0eb29406fac53400964d7fa856bf57b24833cac009ab8",
-      "worktreeSha256": "24a75ac7c99c9f2d97b0eb29406fac53400964d7fa856bf57b24833cac009ab8",
+      "headSha256": "167f4215802092da6ec4b8eccccdebd08242bb1189a50c9983914d5cfa903b4f",
+      "worktreeSha256": "167f4215802092da6ec4b8eccccdebd08242bb1189a50c9983914d5cfa903b4f",
       "worktreeMatchesHead": true,
-      "rawWorktreeSha256": "24a75ac7c99c9f2d97b0eb29406fac53400964d7fa856bf57b24833cac009ab8"
+      "rawWorktreeSha256": "167f4215802092da6ec4b8eccccdebd08242bb1189a50c9983914d5cfa903b4f"
     },
     {
       "path": "eval/r33/out/self-test-report.json",

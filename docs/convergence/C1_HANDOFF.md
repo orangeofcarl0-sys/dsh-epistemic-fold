@@ -24,10 +24,12 @@ afterwards; no historical evidence was left changed.
 1  fix(eval): isolate historical report generation from test and install runs
 2  test(eval): certify evidence isolation, DSH compatibility and the core baseline
 3  docs(eval): publish the C1 isolation, compatibility and baseline decisions
-4  chore(eval): record the C1 evidence outputs and this handoff
+4  chore(eval): record the C1 evidence outputs
+5  chore(eval): promote the regenerated R1 and R33 reports
+6  chore(eval): refresh the C1 evidence after the promotion
 ```
 
-The final report states the four SHAs. Commit 4 changes no source and no
+The final report states the six SHAs. Commit 6 changes no source and no
 frozen evidence; it records the generated outputs.
 
 ## 3. What was executed
@@ -216,8 +218,8 @@ No cost claim. Cache read/write was not measured.
    suspect.
 2. The local vendor tree is `0.1.7-rc.2` while the code declares `>=0.2.0-rc.2`.
 3. The CI pinned lane was not reproducible locally.
-4. The R1 report and the R33 offline report are stale; promotion is a separate
-   decision.
+4. The R1 report and the R33 offline report were promoted in the C1 follow-up;
+   the next drift needs a new declaration, and promotion remains explicit.
 5. Semantic decision authority is unsplit (Track B).
 6. No live experiment is authorized.
 
