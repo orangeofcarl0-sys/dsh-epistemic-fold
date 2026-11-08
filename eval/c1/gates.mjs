@@ -197,7 +197,13 @@ export function evaluateGates(options = {}) {
 
   // C1-G7 — Product / research separation
   {
-    const changed = git(['diff', '--name-only', '327598f342dfca4fab2a779442af56a9ab510ece', '--', 'src/semantic'])
+    // The claim is about the C1 ROUND, not about every later round. A frozen
+    // range (C0 base .. C1 final) keeps the historical fact true after a later
+    // round legitimately changes the semantic runtime; comparing to HEAD made
+    // a later round's work look like a C1 regression.
+    const C0_BASE = '327598f342dfca4fab2a779442af56a9ab510ece'
+    const C1_FINAL = 'f6b10f32eed41f3d1d68f332b59e887e28367d41'
+    const changed = git(['diff', '--name-only', C0_BASE, C1_FINAL, '--', 'src/semantic'])
     const statuses = reportBaselines?.reports?.map(row => row.status) ?? []
     const semanticArms = (baseline?.arms ?? []).filter(row => row.arm === 'E0' || row.arm === 'E1')
     const ok = changed.length === 0
@@ -206,9 +212,10 @@ export function evaluateGates(options = {}) {
       && statuses.every(status => ['current', 'stale', 'superseded'].includes(status))
     gates.push(gate('C1-G7', 'Product / research separation', ok ? 'passed' : 'failed',
       changed.length === 0
-        ? `src/semantic unchanged since C0; E0/E1 continuity ${semanticArms.map(row => row.semanticContinuity).join('/') || 'missing'}`
-        : `src/semantic changed: ${changed}`,
-      'git diff + core-baseline.json'))
+        ? `src/semantic unchanged across EF-C1 (${C0_BASE.slice(0, 7)}..${C1_FINAL.slice(0, 7)}); `
+          + `E0/E1 continuity ${semanticArms.map(row => row.semanticContinuity).join('/') || 'missing'}`
+        : `src/semantic changed during EF-C1: ${changed}`,
+      'git diff (frozen C1 range) + core-baseline.json'))
   }
 
   const eligibility = {

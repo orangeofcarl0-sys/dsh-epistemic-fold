@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "work": "EF-C1",
   "generator": "eval/c1/side-effects.mjs",
-  "sourceCommit": "438dfa95b661f976feecf58952063308281b5e80",
-  "generatedAt": "2026-11-08T15:25:54.372Z",
+  "sourceCommit": "0b76e9788847ef7f0af983f8aabceefe0fd2c98c",
+  "generatedAt": "2026-11-08T17:37:03.671Z",
   "rule": "a tracked path may only be written by an explicit generate/promote operation",
   "scan": {
     "roots": [
@@ -11,21 +11,22 @@
       "eval",
       "scripts"
     ],
-    "files": 84,
-    "sites": 180,
+    "files": 92,
+    "sites": 197,
     "byApi": {
-      "writeFile": 122,
+      "writeFile": 136,
       "mkdirSync": 3,
       "writeFileSync": 44,
       "rmSync": 4,
       "copyFile": 3,
-      "mkdir": 2,
+      "mkdir": 5,
       "appendFileSync": 2
     },
     "byClassification": {
       "temporary-test-output": 87,
       "frozen-historical-artifact": 59,
       "tracked-generated-config": 27,
+      "explicit-run-evidence": 17,
       "latest-convenience-copy": 3,
       "build-artifact": 3,
       "tracked-generated-source": 1
@@ -221,6 +222,19 @@
       "defaultBehavior": "write their own output",
       "safeOverride": "several accept R37B_OUT / R37C_OUT / R37D_OUT style overrides",
       "existingTests": "the r3*-*.spec.ts suites read the outputs",
+      "risk": "medium"
+    },
+    {
+      "id": "e2e-evidence",
+      "file": "eval/e2e/**",
+      "via": "explicit E2E commands (freeze / authorize / run / certify / analyze / tasks)",
+      "target": "eval/e2e/out/** (tracked summaries) and eval/e2e/runs/** (gitignored raw cells)",
+      "tracked": true,
+      "category": "explicit-run-evidence",
+      "trigger": "npm run eval:e2e-* (never a test)",
+      "defaultBehavior": "write their own campaign evidence; raw cell directories stay gitignored",
+      "safeOverride": "the frozen manifest and authorization bound every run; the runner refuses outside them",
+      "existingTests": "eval/e2e/src/certify-tasks.mjs (offline), eval/e2e/src/candidate-smoke.mjs",
       "risk": "medium"
     },
     {
@@ -1105,7 +1119,7 @@
     },
     {
       "file": "eval/c1/gates.mjs",
-      "line": 257,
+      "line": 264,
       "api": "writeFileSync",
       "target": "join(OUT",
       "curated": "c1-generators",
@@ -1137,7 +1151,7 @@
     },
     {
       "file": "eval/c1/side-effects.mjs",
-      "line": 392,
+      "line": 405,
       "api": "writeFileSync",
       "target": "join(OUT",
       "curated": "c1-generators",
@@ -1166,6 +1180,142 @@
       "target": "join(OUT",
       "curated": "c1-generators",
       "classification": "tracked-generated-config"
+    },
+    {
+      "file": "eval/e2e/src/analyze.mjs",
+      "line": 239,
+      "api": "writeFile",
+      "target": "join(OUT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/analyze.mjs",
+      "line": 240,
+      "api": "writeFile",
+      "target": "join(OUT, `evidence-index-${campaign}.json`), `${JSON.stringify({",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/analyze.mjs",
+      "line": 282,
+      "api": "writeFile",
+      "target": "join(OUT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/authorize.mjs",
+      "line": 65,
+      "api": "writeFile",
+      "target": "join(OUT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/cell.mjs",
+      "line": 42,
+      "api": "writeFile",
+      "target": "full",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/cell.mjs",
+      "line": 604,
+      "api": "writeFile",
+      "target": "join(cellRoot",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/cell.mjs",
+      "line": 605,
+      "api": "writeFile",
+      "target": "join(cellRoot",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/certify-tasks.mjs",
+      "line": 42,
+      "api": "writeFile",
+      "target": "full",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/certify-tasks.mjs",
+      "line": 127,
+      "api": "mkdir",
+      "target": "join(ROOT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/certify-tasks.mjs",
+      "line": 128,
+      "api": "writeFile",
+      "target": "join(ROOT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/freeze.mjs",
+      "line": 221,
+      "api": "writeFile",
+      "target": "path",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/run.mjs",
+      "line": 174,
+      "api": "mkdir",
+      "target": "outRoot",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/run.mjs",
+      "line": 216,
+      "api": "mkdir",
+      "target": "outRoot",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/run.mjs",
+      "line": 324,
+      "api": "writeFile",
+      "target": "join(OUT",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/tools.mjs",
+      "line": 108,
+      "api": "writeFile",
+      "target": "file",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/src/tools.mjs",
+      "line": 131,
+      "api": "writeFile",
+      "target": "file",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
+    },
+    {
+      "file": "eval/e2e/tasks/generate.mjs",
+      "line": 675,
+      "api": "writeFile",
+      "target": "path",
+      "curated": "e2e-evidence",
+      "classification": "explicit-run-evidence"
     },
     {
       "file": "eval/lhtb/watchdog.ts",

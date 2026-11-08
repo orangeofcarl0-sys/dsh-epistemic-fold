@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "work": "EF-C1",
-  "generatedAt": "2026-11-08T15:26:33.114Z",
-  "sourceCommit": "438dfa95b661f976feecf58952063308281b5e80",
+  "generatedAt": "2026-11-08T17:37:34.194Z",
+  "sourceCommit": "0b76e9788847ef7f0af983f8aabceefe0fd2c98c",
   "gates": [
     {
       "id": "C1-G0",
       "name": "Git / baseline integrity",
       "status": "passed",
-      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD 438dfa95b661, C0 base present true, R38 present true, tracked evidence clean true",
+      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD 0b76e9788847, C0 base present true, R38 present true, tracked evidence clean true",
       "evidence": "git rev-parse / diff"
     },
     {
@@ -57,8 +57,8 @@
       "id": "C1-G7",
       "name": "Product / research separation",
       "status": "passed",
-      "detail": "src/semantic unchanged since C0; E0/E1 continuity off/off",
-      "evidence": "git diff + core-baseline.json"
+      "detail": "src/semantic unchanged across EF-C1 (327598f..f6b10f3); E0/E1 continuity off/off",
+      "evidence": "git diff (frozen C1 range) + core-baseline.json"
     }
   ],
   "eligibility": {
