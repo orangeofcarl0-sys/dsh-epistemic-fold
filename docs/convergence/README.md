@@ -86,7 +86,7 @@ node eval/c0/gates.mjs
 npm run eval:c1-evidence      # protected registry + side-effect inventory
 npm run eval:c1-compat        # DSH fingerprint
 npm run eval:c1-readiness     # live readiness (not-authorized)
-npm run eval:c1-tests         # 37 targeted tests
+npm run eval:c1-tests         # 33 targeted tests
 npm run eval:c1-gates         # C1-G0..G7
 npm run eval:c1a-gate         # C1A A0..A5
 ```

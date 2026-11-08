@@ -72,7 +72,10 @@ export function evaluateGates(options = {}) {
     ?? (has('eval/c0/out/c0-tests.json') ? readJson(join(OUT, 'c0-tests.json')) : null)
 
   const r38 = git('rev-parse', 'origin/rc38-mechanism-validation')
-  const upstream = git('rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}')
+  // The governance claim is about EF-C0: THAT branch was never pushed. The
+  // current branch may be a descendant that is pushed (EF-C1), so asking
+  // `@{u}` on HEAD would turn a historical fact into a false failure.
+  const upstream = git('rev-parse', '--abbrev-ref', '--symbolic-full-name', 'chore/ef-c0-convergence@{u}')
 
   const gates = []
 
@@ -199,7 +202,7 @@ export function evaluateGates(options = {}) {
       name: 'Governance',
       status: failed.length === 0 ? 'passed' : 'failed',
       detail: failed.length === 0
-        ? 'branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; branch has no upstream (not pushed)'
+        ? 'branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; C0 branch has no upstream (not pushed)'
         : `failed checks: ${failed.join(', ')}`,
       evidence: 'docs/convergence/REPOSITORY_GOVERNANCE.md, baseline-comparison-manifest.json',
     })

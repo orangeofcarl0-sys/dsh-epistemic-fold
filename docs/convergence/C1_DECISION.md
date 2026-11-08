@@ -115,16 +115,18 @@ environment mismatch (no vendor tree)        4
 host API hardening / fixture incompatibility 2
 known upstream drift                         4
 stale generated configuration                1
-unknown                                      1
+eval query bug (fixed)                       1
 real plugin regression confirmed             0
 ```
 
-**Which are real compatibility risks?** The unknown one:
-`eval-corpus > B04-failure-resolution`. Under `0.2.1-rc.3`, the deterministic
-state oracle does not retire a resolved failure
-(`failure-retired FAILED: failure failure:call-1`). This is the only failure
-that could be a product defect and it must be investigated before any product
-claim.
+11 remain after the B04 fix (4 + 2 + 4 + 1).
+
+**Which are real compatibility risks?** None of the 12 is a confirmed product
+defect. The only candidate was `eval-corpus > B04-failure-resolution`: the eval
+query `verifiedFailureIds` read the raw `ef/anchor` type, while the 0.2.1
+plugin-record transport writes `plugin:epistemic-fold/anchor`. The production
+reducer already read both; the query now uses `efPluginRecordOf` and
+`tests/eval-corpus.spec.ts` passes 19/19. No `src/` change was needed.
 
 **Is there a fully passing supported Core Lane?** Not on this machine. The
 `0.2.1-rc.3` lane has the 12 failures above; the `0.1.7` lane has the
@@ -194,8 +196,8 @@ deletion.
 
 **How do Track A and Track B continue independently?**
 
-- Track A (product) lives on `main` and the C1 foundation. Its next work is the
-  `eval-corpus` B04 investigation and a supported-lane declaration.
+- Track A (product) lives on `main` and the C1 foundation. Its next work is a
+  supported-lane declaration and the vendor alignment.
 - Track B (semantic continuity) lives on the R38 line. It must not enter the
   C1 arms; E0/E1 run with `semanticContinuity: off`.
 
@@ -239,15 +241,13 @@ the Active/S0 line only.
 
 ## Unresolved issues
 
-1. `eval-corpus > B04-failure-resolution` fails under `0.2.1-rc.3`; real-defect
-   suspect, not investigated in C1.
-2. The local vendor tree is `0.1.7-rc.2` while the code declares `>=0.2.0-rc.2`.
+1. The local vendor tree is `0.1.7-rc.2` while the code declares `>=0.2.0-rc.2`.
    The README and the tree disagree.
-3. The CI pinned lane (`0.2.0-rc.2` vendor + `0.2.1-rc.3` install) was not
+2. The CI pinned lane (`0.2.0-rc.2` vendor + `0.2.1-rc.3` install) was not
    reproducible here.
-4. The R1 report and the R33 offline report are now current; the next drift
+3. The R1 report and the R33 offline report are now current; the next drift
    needs a new declaration, and promotion remains an explicit operation.
-5. `docs/MANIFEST.json` must be regenerated after this round's docs (done in the
+4. `docs/MANIFEST.json` must be regenerated after this round's docs (done in the
    final commit).
-6. Semantic decision authority (Track B) remains unsplit.
-7. No live experiment is authorized.
+5. Semantic decision authority (Track B) remains unsplit.
+6. No live experiment is authorized.

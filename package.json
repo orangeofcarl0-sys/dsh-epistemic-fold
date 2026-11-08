@@ -166,7 +166,7 @@
     "eval:c1-evidence": "node eval/c1/protected-artifacts.mjs && node eval/c1/side-effects.mjs",
     "eval:c1-compat": "node eval/c1/dsh-compatibility.mjs",
     "eval:c1-readiness": "node eval/c1/live-readiness.mjs",
-    "eval:c1-tests": "vitest run --reporter=json --outputFile=eval/c1/out/c1-tests.json tests/c1-evidence-isolation.spec.ts tests/c1-core-baseline.spec.ts tests/c1-basic-compatibility.spec.ts tests/c1-gates.spec.ts tests/r1-report.spec.ts tests/r33-arms.spec.ts tests/r33-live-entry.spec.ts",
+    "eval:c1-tests": "vitest run --reporter=json --outputFile=eval/c1/out/c1-tests.json tests/c1-evidence-isolation.spec.ts tests/c1-core-baseline.spec.ts tests/c1-basic-compatibility.spec.ts tests/r1-report.spec.ts tests/r33-arms.spec.ts tests/r33-live-entry.spec.ts",
     "eval:c1-gates": "node eval/c1/gates.mjs",
     "eval:c1a-gate": "node eval/c1/c1a-gate.mjs",
     "eval:c1-accounting": "node eval/c1/test-accounting.mjs",

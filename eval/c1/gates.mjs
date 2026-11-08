@@ -72,7 +72,10 @@ export function evaluateGates(options = {}) {
     const evidenceDirty = git([
       'diff', '--name-only', '--',
       'eval/r31/out', 'eval/r32/out', 'eval/r33/out', 'eval/r35/out', 'eval/r36/out',
-      'eval/r37/out', 'eval/r37c/out', 'eval/r37d/out', 'eval/r38/out', 'docs/convergence/data',
+      'eval/r37/out', 'eval/r37c/out', 'eval/r37d/out', 'eval/r38/out',
+      'docs/convergence/data/git-stage-map.json',
+      'docs/convergence/data/artifact-manifest.json',
+      'docs/convergence/data/evidence-registry.json',
     ])
     const base = git(['rev-parse', '327598f342dfca4fab2a779442af56a9ab510ece'])
     const r38 = git(['rev-parse', '006702023e8cf2fcdfd4a814e7be5f2ddf3534ec'])

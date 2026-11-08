@@ -72,7 +72,7 @@ install. They are not one phenomenon.
 | 9 | `persistence-compat > anchor service durability guard` | `'plugin:epistemic-fold/anchor' !== 'ef/anchor'` | known upstream drift |
 | 10 | `plugin-composition > the anchor service refuses a write this host cannot persist` | expected a throw, none thrown | known upstream drift: the host now persists the record |
 | 11 | `rc7-inplace-drift > each preset differs ONLY inside the compaction group` | row count 19 vs 22 | generated configuration stale vs installed DSH `0.2.1-rc.3` |
-| 12 | `eval-corpus > B04-failure-resolution (hard)` | oracle `failure-retired FAILED: failure failure:call-1` | **unknown — real-regression suspect** |
+| 12 | `eval-corpus > B04-failure-resolution (hard)` | oracle `failure-retired FAILED: failure failure:call-1` | **eval query bug — fixed in the C1 follow-up** |
 
 Summary:
 
@@ -81,14 +81,19 @@ environment mismatch (no vendor tree)     4
 host API hardening / fixture incompatibility 2
 known upstream drift                      4
 stale generated configuration             1
-unknown                                   1
+eval query bug (fixed)                    1
 real plugin regression confirmed           0
 ```
 
-The one unknown is the only failure that could be a product defect. It is not
-dismissed as "vendor drift": under `0.2.1-rc.3`, the deterministic state oracle
-does not retire a resolved failure. That must be investigated before any
-product claim, and it is recorded as an open issue in `C1_DECISION.md`.
+11 remain after the B04 fix (4 + 2 + 4 + 1).
+
+The last row was the only candidate for a product defect, and it is not one.
+`eval/src/session-queries.ts` read verified failures by the raw `ef/anchor`
+event type. On `0.2.1-rc.3` the plugin-record transport writes
+`plugin:epistemic-fold/anchor`, so the eval oracle saw every verified failure as
+still open. The production reducer already read both transports
+(`efPluginRecordOf`); the query now does too. `tests/eval-corpus.spec.ts`
+passes 19/19, and the production code was not changed.
 
 ## 4. The undeclared dependency
 
@@ -128,6 +133,8 @@ CI pinned lane, which this round could not reproduce (no network clone of
   The four upstream-drift failures are evidence that they are not.
 - It does not prove the vendored `0.1.7-rc.2` tree matches the code's declared
   line. `bridge-loads` says it does not.
-- It does not resolve the `eval-corpus` B04 failure.
+- It does not resolve the `eval-corpus` B04 failure by changing production
+  code: the failure was in an eval query, and the production reducer was
+  already transport-neutral.
 - It does not certify a Basic version as "the" Basic; `C1_CORE_BASELINE.md`
   records which object each arm actually loaded.

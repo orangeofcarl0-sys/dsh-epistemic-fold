@@ -27,9 +27,11 @@ afterwards; no historical evidence was left changed.
 4  chore(eval): record the C1 evidence outputs
 5  chore(eval): promote the regenerated R1 and R33 reports
 6  chore(eval): refresh the C1 evidence after the promotion
+7  fix(eval): read verified failures through the plugin-event transport
+8  chore(eval): refresh the C1 evidence after the B04 fix
 ```
 
-The final report states the six SHAs. Commit 6 changes no source and no
+The final report states the eight SHAs. Commit 8 changes no source and no
 frozen evidence; it records the generated outputs.
 
 ## 3. What was executed
@@ -88,18 +90,22 @@ CI pinned     0.2.0-rc.2   at 639ed01, not reproducible here
 The README says the vendored checkout is `0.2.0-rc.2`. It is not. No local lane
 has all three identities equal.
 
-### 4.4 The 12 failures are five different things
+### 4.4 The 12 observed failures are six different things
 
 ```text
 environment mismatch (no vendor tree)         4
 host API hardening / fixture incompatibility  2
 known upstream drift                          4
 stale generated configuration                 1
-unknown / real-defect suspect                 1   eval-corpus B04-failure-resolution
+eval query bug (fixed)                        1   eval-corpus B04-failure-resolution
+real plugin regression confirmed              0
 ```
 
-The unknown is the only one that could be a product defect. It is not dismissed
-as vendor drift.
+11 remain after the B04 fix. The only candidate for a product defect was B04.
+It is not one: the eval query read verified failures by the raw `ef/anchor`
+type, while 0.2.1 writes `plugin:epistemic-fold/anchor`. The production reducer
+already read both; the query now uses `efPluginRecordOf`, and
+`tests/eval-corpus.spec.ts` passes 19/19.
 
 ### 4.5 Basic is compatible on the contract; E0/E1 are isolated variables
 
@@ -151,11 +157,11 @@ Strict exit: **0**. `stageComplete: true`, `coreReleaseEligible: false`,
 typecheck (src, client, eval)     pass
 build                             pass (79 modules)
 eval:build                        pass (3 modules)
-C1 targeted                       37/37 pass
-full suite                        1860 total, 1778 passed, 12 failed, 70 skipped
+C1 targeted                       33/33 pass
+full suite                        1860 total, 1779 passed, 11 failed, 70 skipped
 ```
 
-The 12 failures are the known set in §4.4. No C1 test fails.
+The 11 failures are the known set in §4.4 (B04 fixed). No C1 test fails.
 `eval/c1/out/c1-tests.json`, `eval/c1/out/full-tests-summary.json`.
 
 ## 8. Protected artifact audit
@@ -214,8 +220,8 @@ No cost claim. Cache read/write was not measured.
 
 ## 13. Known blockers
 
-1. `eval-corpus > B04-failure-resolution` fails under `0.2.1-rc.3`; real-defect
-   suspect.
+1. `eval-corpus B04-failure-resolution` was fixed in the follow-up (eval query,
+   not production); `tests/eval-corpus.spec.ts` passes 19/19.
 2. The local vendor tree is `0.1.7-rc.2` while the code declares `>=0.2.0-rc.2`.
 3. The CI pinned lane was not reproducible locally.
 4. The R1 report and the R33 offline report were promoted in the C1 follow-up;

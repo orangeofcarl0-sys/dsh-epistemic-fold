@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T05:34:26.003Z",
+  "generatedAt": "2026-11-08T10:12:53.282Z",
   "round": "EF-C0",
   "status": "complete",
   "eligibility": {
@@ -47,7 +47,7 @@
       "id": "C0-G4",
       "name": "Governance",
       "status": "passed",
-      "detail": "branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; branch has no upstream (not pushed)",
+      "detail": "branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; C0 branch has no upstream (not pushed)",
       "evidence": "docs/convergence/REPOSITORY_GOVERNANCE.md, baseline-comparison-manifest.json"
     },
     {
