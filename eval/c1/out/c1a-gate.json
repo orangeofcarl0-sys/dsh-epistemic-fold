@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1A",
+  "generatedAt": "2026-11-08T09:44:33.102Z",
+  "sourceCommit": "9e0c93cf236f69f035eee20953dc3436139c4eb5",
+  "checks": [
+    {
+      "id": "A0",
+      "name": "baseline verified",
+      "status": "passed",
+      "detail": "branch chore/ef-c1-evaluation-foundation, base 327598f342df is an ancestor: true"
+    },
+    {
+      "id": "A1",
+      "name": "protected artifacts identified",
+      "status": "passed",
+      "detail": "287 protected path(s); missing none"
+    },
+    {
+      "id": "A2",
+      "name": "ordinary tests do not overwrite historical evidence",
+      "status": "passed",
+      "detail": "4/4 post observations at 0 drift, isolation test ran true, C1 tests success true"
+    },
+    {
+      "id": "A3",
+      "name": "report generation is explicit",
+      "status": "passed",
+      "detail": "missing commands: none; verify/generate/promote flags present: true"
+    },
+    {
+      "id": "A4",
+      "name": "test identity accounting is consistent",
+      "status": "passed",
+      "detail": "net 24 = 33 added - 9 missing; agent-loop declared 0.2.1-rc.3"
+    },
+    {
+      "id": "A5",
+      "name": "no new Core regressions",
+      "status": "passed",
+      "detail": "same failure set across R38/C0: true; status changes 0"
+    }
+  ],
+  "reportBaselinesDeclared": true,
+  "inventoryUncovered": 0,
+  "passed": 6,
+  "failed": 0,
+  "eligible": true
+}

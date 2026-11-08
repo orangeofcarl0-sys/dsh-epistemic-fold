@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "tests/c1-basic-compatibility.spec.ts",
+  "generatedAt": "2026-11-08T09:31:57.952Z",
+  "executionKind": "scripted adapter; contract-level comparison, not a model result",
+  "arms": [
+    {
+      "arm": "B0",
+      "case": "leaf",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "B0",
+      "case": "tool-pair",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "B0",
+      "case": "summary-failure",
+      "folded": false,
+      "checkpoints": 0,
+      "surfaceBefore": 4,
+      "surfaceAfter": 4,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "B0",
+      "case": "abort",
+      "folded": false,
+      "checkpoints": 0,
+      "surfaceBefore": 4,
+      "surfaceAfter": 4,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "B0",
+      "case": "restart",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "leaf",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "tool-pair",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "summary-failure",
+      "folded": false,
+      "checkpoints": 0,
+      "surfaceBefore": 4,
+      "surfaceAfter": 4,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "abort",
+      "folded": false,
+      "checkpoints": 0,
+      "surfaceBefore": 4,
+      "surfaceAfter": 4,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "restart",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "B0",
+      "case": "parity",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "arm": "Bv",
+      "case": "parity",
+      "folded": true,
+      "checkpoints": 1,
+      "surfaceBefore": 4,
+      "surfaceAfter": 1,
+      "span": {
+        "start": 1,
+        "end": 10
+      }
+    }
+  ],
+  "note": "B0 resolves to the installed host Basic; Bv is EF mode:basic over src/basic. Byte parity is asserted only where both resolve to the same source (see rc7-vendored-basic)."
+}

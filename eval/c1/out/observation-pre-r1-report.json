@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/observe.mjs",
+  "id": "pre-r1-report",
+  "command": [
+    "npx",
+    "vitest",
+    "run",
+    "tests/r1-report.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationMs": 8460,
+  "observedAt": "2026-11-08T08:58:19.754Z",
+  "protectedArtifacts": 423,
+  "drifted": 2,
+  "drift": [
+    {
+      "path": "docs/12_R1_EVALUATION_REPORT.md",
+      "before": "fea83b73f3062b788b3c8e9149755c8a3242a879e20a0a6bb26c7b1b18a77480",
+      "after": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036"
+    },
+    {
+      "path": "docs/MANIFEST.json",
+      "before": "847ab4326239a61984f74dfa37bffca3fb1e279c8d2a094935e9c90c70ad6c63",
+      "after": "f71d0902fd8a3e910c33ba7d2dd01bde4877070dbc80f3f317f2eb0644c5f2a7"
+    }
+  ]
+}

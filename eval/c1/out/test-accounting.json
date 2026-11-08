@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/test-accounting.mjs",
+  "generatedAt": "2026-11-08T09:35:45.397Z",
+  "inputs": {
+    "r38": {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-c1-candidate/r38-full.json",
+      "sha256": "c6a644d6f789b109c2cde8fd2ec5445badbaca5d8664909d2911b733a27b7e47",
+      "summary": {
+        "success": false,
+        "total": 1800,
+        "passed": 1718,
+        "failed": 12,
+        "skipped": 70,
+        "files": 204,
+        "runner": "unknown"
+      }
+    },
+    "c0": {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-c1-candidate/c0-full.json",
+      "sha256": "34ae09f5408bf5acf89cb3dcb46013cbd6642902136843efaf4379be490cc5f6",
+      "summary": {
+        "success": false,
+        "total": 1824,
+        "passed": 1742,
+        "failed": 12,
+        "skipped": 70,
+        "files": 208,
+        "runner": "unknown"
+      }
+    }
+  },
+  "identityLists": {
+    "note": "The full identity lists are derived data, not evidence. They live under eval/c1/out/raw/ (gitignored) because each is ~600 KB; the digests below pin them.",
+    "r38": {
+      "path": "eval/c1/out/raw/test-identity-r38.json",
+      "rows": 1800,
+      "sha256": "462a7159a0081458258c5c1f5037671cd035088631fc8ebcfbe84e9d0325408a"
+    },
+    "c0": {
+      "path": "eval/c1/out/raw/test-identity-c0.json",
+      "rows": 1824,
+      "sha256": "3346722f6e7ac724ff56897c1abc303d13526a4f526894bf3e571c407e05a2d7"
+    }
+  },
+  "arithmetic": {
+    "r38Total": 1800,
+    "c0Total": 1824,
+    "net": 24,
+    "added": 33,
+    "missing": 9,
+    "changedStatus": 0,
+    "check": true
+  },
+  "added": [
+    {
+      "id": "convergence-boundaries.spec.ts > C1: Core works with semantic off the fold commits a bundle and a body with no semantic layer",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C1: Core works with semantic off the fold commits a bundle and a body with no semantic layer",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C2: a semantic failure cannot corrupt the fold transaction a writer error leaves the bundle and checkpoint intact",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C2: a semantic failure cannot corrupt the fold transaction a writer error leaves the bundle and checkpoint intact",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C3: semantic state cannot rewrite canonical history a claim that contradicts the user message leaves the raw event unchanged",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C3: semantic state cannot rewrite canonical history a claim that contradicts the user message leaves the raw event unchanged",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C4: selection cannot mutate authoritative state the task-aware selector leaves its input state byte-identical",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C4: selection cannot mutate authoritative state the task-aware selector leaves its input state byte-identical",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C4: selection cannot mutate authoritative state the selector source contains no write API",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C4: selection cannot mutate authoritative state the selector source contains no write API",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C5: feature off means no hidden semantic effect off creates no journal directory and no packet",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C5: feature off means no hidden semantic effect off creates no journal directory and no packet",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C6: basic mode mounts no EF surface no anchor service, no recall tools, no EF bundle",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C6: basic mode mounts no EF surface no anchor service, no recall tools, no EF bundle",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-boundaries.spec.ts > C7: archive stays recoverable after a semantic refusal a refused delta does not prevent exact recall of the folded span",
+      "file": "convergence-boundaries.spec.ts",
+      "name": "C7: archive stays recoverable after a semantic refusal a refused delta does not prevent exact recall of the folded span",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them every tier carries the rationale face; they differ in budget, not in whether they ask",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them every tier carries the rationale face; they differ in budget, not in whether they ask",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them an explicit key beats the tier, and the reporter agrees with the resolver",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them an explicit key beats the tier, and the reporter agrees with the resolver",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them retainRatio is not an override when the tier never owned it",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them retainRatio is not an override when the tier never owned it",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them the zero-LLM profile is expressible and explicit",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them the zero-LLM profile is expressible and explicit",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them semantic continuity cannot run under semanticMode none",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them semantic continuity cannot run under semanticMode none",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: the three tiers as the resolver actually produces them an unknown mode is an error, not a silent legacy fallthrough",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: the three tiers as the resolver actually produces them an unknown mode is an error, not a silent legacy fallthrough",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: auxiliary calls on the real fold path semanticMode none + continuity off makes ZERO auxiliary calls",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: auxiliary calls on the real fold path semanticMode none + continuity off makes ZERO auxiliary calls",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: auxiliary calls on the real fold path semanticMode rationale + continuity off makes ONE rationale call",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: auxiliary calls on the real fold path semanticMode rationale + continuity off makes ONE rationale call",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: auxiliary calls on the real fold path shadow makes the visible rationale call PLUS one diagnostic writer call",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: auxiliary calls on the real fold path shadow makes the visible rationale call PLUS one diagnostic writer call",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: auxiliary calls on the real fold path active makes ONE combined writer call, not a rationale plus a writer",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: auxiliary calls on the real fold path active makes ONE combined writer call, not a rationale plus a writer",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: auxiliary calls on the real fold path rationale is CONFIGURED but not EXECUTED when no state projection is mounted",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: auxiliary calls on the real fold path rationale is CONFIGURED but not EXECUTED when no state projection is mounted",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: basic mode mounts nothing and calls nothing semantic no EF surface, no EF tools, and the fold is Basic summary only",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: basic mode mounts nothing and calls nothing semantic no EF surface, no EF tools, and the fold is Basic summary only",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-config.spec.ts > EF-C0 config: basic mode mounts nothing and calls nothing semantic basic + semanticContinuity active still performs no semantic call and writes no journal",
+      "file": "convergence-config.spec.ts",
+      "name": "EF-C0 config: basic mode mounts nothing and calls nothing semantic basic + semanticContinuity active still performs no semantic call and writes no journal",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: registry integrity every claim has a present, unchanged artifact",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: registry integrity every claim has a present, unchanged artifact",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: registry integrity no mechanism result is labelled Product-level Evidence",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: registry integrity no mechanism result is labelled Product-level Evidence",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: registry integrity R37-B stays a behavioral observation, not a product result",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: registry integrity R37-B stays a behavioral observation, not a product result",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: registry integrity the historical B1 arm is explicitly not B0",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: registry integrity the historical B1 arm is explicitly not B0",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: repository facts every stage in the chain is an ancestor of the next",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: repository facts every stage in the chain is an ancestor of the next",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: repository facts three stages have commits but no remote ref",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: repository facts three stages have commits but no remote ref",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: repository facts the R37-B archive identity matches when the archive is available",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: repository facts the R37-B archive identity matches when the archive is available",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-evidence.spec.ts > EF-C0 evidence: repository facts the six historical result digests still match",
+      "file": "convergence-evidence.spec.ts",
+      "name": "EF-C0 evidence: repository facts the six historical result digests still match",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-gates.spec.ts > EF-C0 gates reports six gates and passes when the evidence is coherent",
+      "file": "convergence-gates.spec.ts",
+      "name": "EF-C0 gates reports six gates and passes when the evidence is coherent",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-gates.spec.ts > EF-C0 gates fails the configuration and boundary gates when the test suite failed",
+      "file": "convergence-gates.spec.ts",
+      "name": "EF-C0 gates fails the configuration and boundary gates when the test suite failed",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-gates.spec.ts > EF-C0 gates does not treat a document existing as a pass on its own",
+      "file": "convergence-gates.spec.ts",
+      "name": "EF-C0 gates does not treat a document existing as a pass on its own",
+      "status": "passed"
+    },
+    {
+      "id": "convergence-gates.spec.ts > EF-C0 gates keeps the product decision separate from stage readiness",
+      "file": "convergence-gates.spec.ts",
+      "name": "EF-C0 gates keeps the product decision separate from stage readiness",
+      "status": "passed"
+    }
+  ],
+  "missing": [
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery passes every native check",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery passes every native check",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery delivers the overlay through the runtime-context channel only",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery delivers the overlay through the runtime-context channel only",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery keeps one snapshot for identical input and a stable prefix",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery keeps one snapshot for identical input and a stable prefix",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery emits a new snapshot when the task changes",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery emits a new snapshot when the task changes",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery marks the old decision unsafe to assert under a recent tail",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery marks the old decision unsafe to assert under a recent tail",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery survives a real JSONL restart with the same overlay digest",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery survives a real JSONL restart with the same overlay digest",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery carries integrity warnings and archive source refs",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery carries integrity warnings and archive source refs",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery does not rewrite the journal or the checkpoint",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery does not rewrite the journal or the checkpoint",
+      "status": "passed"
+    },
+    {
+      "id": "r38-native-context.spec.ts > R38-WP6: native context delivery uses the context channel, not a system-prompt section or a second loop",
+      "file": "r38-native-context.spec.ts",
+      "name": "R38-WP6: native context delivery uses the context channel, not a system-prompt section or a second loop",
+      "status": "passed"
+    }
+  ],
+  "changedStatus": [],
+  "failures": {
+    "r38": [
+      "bridge-loads.spec.ts > the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against",
+      "checkpoint-residency.spec.ts > checkpoint retirement writes the retirement, and the report then shows ONE conflict",
+      "checkpoint-residency.spec.ts > checkpoint retirement REFUSES a second retirement of the same checkpoint",
+      "eval-corpus.spec.ts > R0-C2: keyless paired continuation across B1 / E3a0 / E3aR B04-failure-resolution (hard)",
+      "p0-regressions.spec.ts > P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face",
+      "persistence-compat.spec.ts > persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable",
+      "persistence-compat.spec.ts > anchor service durability guard still writes on the in-memory face, where nothing persists the log",
+      "plugin-composition.spec.ts > R0-B: native plugin composition the plugin-provided anchor service refuses a write this host cannot persist",
+      "rc3-plugin-packaging.spec.ts > RC16: the manifest uses the fields DSH actually defines declares the DSH range at engines.dsh, not in an invented dsh.compatibility",
+      "rc7-inplace-drift.spec.ts > RC7-T2: the in-place preset block matches the installed DSH each preset differs from the reference ONLY inside the compaction group",
+      "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference",
+      "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
+    ],
+    "c0": [
+      "bridge-loads.spec.ts > the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against",
+      "checkpoint-residency.spec.ts > checkpoint retirement writes the retirement, and the report then shows ONE conflict",
+      "checkpoint-residency.spec.ts > checkpoint retirement REFUSES a second retirement of the same checkpoint",
+      "eval-corpus.spec.ts > R0-C2: keyless paired continuation across B1 / E3a0 / E3aR B04-failure-resolution (hard)",
+      "p0-regressions.spec.ts > P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face",
+      "persistence-compat.spec.ts > persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable",
+      "persistence-compat.spec.ts > anchor service durability guard still writes on the in-memory face, where nothing persists the log",
+      "plugin-composition.spec.ts > R0-B: native plugin composition the plugin-provided anchor service refuses a write this host cannot persist",
+      "rc3-plugin-packaging.spec.ts > RC16: the manifest uses the fields DSH actually defines declares the DSH range at engines.dsh, not in an invented dsh.compatibility",
+      "rc7-inplace-drift.spec.ts > RC7-T2: the in-place preset block matches the installed DSH each preset differs from the reference ONLY inside the compaction group",
+      "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference",
+      "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
+    ],
+    "same": true,
+    "note": "The same 12 tests fail in both clean-install runs; no new Core regression was introduced by C0."
+  },
+  "fileDeltas": [
+    {
+      "file": "convergence-config.spec.ts",
+      "r38": 0,
+      "c0": 13,
+      "delta": 13
+    },
+    {
+      "file": "r38-native-context.spec.ts",
+      "r38": 9,
+      "c0": 0,
+      "delta": -9
+    },
+    {
+      "file": "convergence-boundaries.spec.ts",
+      "r38": 0,
+      "c0": 8,
+      "delta": 8
+    },
+    {
+      "file": "convergence-evidence.spec.ts",
+      "r38": 0,
+      "c0": 8,
+      "delta": 8
+    },
+    {
+      "file": "convergence-gates.spec.ts",
+      "r38": 0,
+      "c0": 4,
+      "delta": 4
+    }
+  ],
+  "explanation": [
+    "The C0 convergence suite contains 33 tests in four new files.",
+    "The full-suite net gain is 24 because 9 tests executed under R38 are no longer executed under C0.",
+    "All 9 are tests/r38-native-context.spec.ts: it imports eval/r38/native-context-smoke.mjs, which imports",
+    "@deepseek-ai/dsh-agent-loop. That package was present in the R38 worktree node_modules but is absent",
+    "from package.json and package-lock.json, so a clean install cannot collect the file (0 tests, not 9).",
+    "EF-C1 declares the dependency at 0.2.1-rc.3, which restores the 9 tests in a clean install.",
+    "No historical identity was merged or renamed silently: a renamed test appears as one missing and one added row."
+  ]
+}

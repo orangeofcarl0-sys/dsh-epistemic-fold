@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/observe.mjs",
+  "id": "post-r33-arms",
+  "command": [
+    "npx",
+    "vitest",
+    "run",
+    "tests/r33-arms.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationMs": 29257,
+  "observedAt": "2026-11-08T09:14:19.258Z",
+  "protectedArtifacts": 287,
+  "drifted": 0,
+  "drift": []
+}
