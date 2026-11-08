@@ -34,6 +34,9 @@ const anchorSchema = z.looseObject({
   stateKey: z.looseObject({ namespace: z.string(), entity: z.string(), property: z.string() }).optional(),
   value: z.json(),
   authority: z.enum(['normative', 'empirical', 'procedural', 'decision', 'narrative', 'hypothesis']),
+  // Absent on anchors written before the producer was recorded. Optional so a
+  // historical row still validates; the retirement check treats it as unknown.
+  sourceAuthority: z.enum(['user', 'system', 'tool', 'assistant', 'unknown']).optional(),
   lifecycle: z.enum(['active', 'superseded', 'retired']),
   failureState: z.enum(['open', 'investigating', 'resolved', 'verified']).optional(),
   supersededBy: z.string().optional(),

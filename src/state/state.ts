@@ -21,7 +21,7 @@
  */
 
 import type { SessionId, SessionSeq } from '@deepseek-ai/dsh-session'
-import type { AuthorityDomain } from './authority.ts'
+import type { AuthorityDomain, SourceAuthority } from './authority.ts'
 
 declare module '@deepseek-ai/dsh-session/types' {
   interface SessionEventMap {
@@ -90,6 +90,14 @@ export interface Anchor {
   readonly stateKey?: StateKey
   readonly value: unknown
   readonly authority: AuthorityDomain
+  /**
+   * WHO produced the claim (user, system, tool, assistant).
+   *
+   * Absent on anchors written before the field existed. The retirement check
+   * treats absent as `unknown` and refuses an assistant-origin decision from
+   * retiring it; historical replay does not re-run that check.
+   */
+  readonly sourceAuthority?: SourceAuthority
   /** General lifecycle; failures additionally carry `failureState`. */
   readonly lifecycle: AnchorLifecycle
   /** Failure-specific lifecycle; present only for `failure` anchors. */

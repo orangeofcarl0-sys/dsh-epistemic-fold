@@ -32,6 +32,7 @@ import type {
   FailureState,
   StateKey,
 } from '../state/state.ts'
+import { SOURCE_AUTHORITIES } from '../state/authority.ts'
 import type { AuthorityDomain } from '../state/authority.ts'
 import { SEMANTIC_SCHEMA_VERSION } from './types.ts'
 
@@ -132,6 +133,10 @@ function isAnchor(value: unknown): value is Anchor {
   if (!isStateKey(value['stateKey'])) return false
   if (!Object.prototype.hasOwnProperty.call(value, 'value')) return false
   if (typeof value['authority'] !== 'string' || !AUTHORITY_SET.has(value['authority'])) return false
+  const sourceAuthority = value['sourceAuthority']
+  if (sourceAuthority !== undefined
+    && (typeof sourceAuthority !== 'string'
+      || !(SOURCE_AUTHORITIES as readonly string[]).includes(sourceAuthority))) return false
   if (typeof value['lifecycle'] !== 'string' || !LIFECYCLE_SET.has(value['lifecycle'])) return false
   const failureState = value['failureState']
   if (failureState !== undefined

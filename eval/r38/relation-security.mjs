@@ -30,7 +30,7 @@ import { emptyCurrentState } from '../../lib/state/state.js'
 import { writeJson } from '../r37/src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'relation-security-audit.json')
+const OUT = process.env['R38_RELATION_SECURITY_OUT'] ?? join(HERE, 'out', 'relation-security-audit.json')
 
 const user = text => createUserMessage({ content: [{ type: 'text', text }], source: { kind: 'user' } })
 const model = text => createMessage({

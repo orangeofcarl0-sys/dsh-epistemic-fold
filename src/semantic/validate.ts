@@ -30,7 +30,7 @@
  * @module dsh-epistemic-fold/semantic/validate
  */
 
-import { canVerify, isAuthorityGrounded } from '../state/authority.ts'
+import { canVerify, isAuthorityGrounded, sourceAuthorityOf } from '../state/authority.ts'
 import type { AuthorityDomain, AuthoritativeEventKind } from '../state/authority.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
 import type { AnchorKind, StateKey } from '../state/state.ts'
@@ -568,6 +568,7 @@ function validateOne(
     grantedStatus: granted.granted,
     evidence: resolved.evidence,
     authority,
+    sourceAuthority: sourceAuthorityOf(resolved.kinds),
     anchorKind: rule.anchorKind,
     stateKey: rule.anchorKind === undefined ? undefined : semanticStateKey(kind, subjectKey, scope),
     ...(rule.failureState === undefined ? {} : { failureState: rule.failureState }),

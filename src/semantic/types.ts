@@ -42,7 +42,7 @@
 import type { WriterObservation } from './observation.ts'
 
 import type { SessionId } from '@deepseek-ai/dsh-session'
-import type { AuthorityDomain } from '../state/authority.ts'
+import type { AuthorityDomain, SourceAuthority } from '../state/authority.ts'
 import type { AnchorKind, EfAnchorEventData, FailureState, StateKey } from '../state/state.ts'
 
 /**
@@ -259,6 +259,11 @@ export interface AcceptedDelta {
   /** Authority domain the runtime derived; the writer never names one. */
   readonly authority: AuthorityDomain
   /**
+   * WHO produced the cited evidence. Derived by the runtime from the raw event
+   * kinds, exactly like `authority`; the writer cannot name it either.
+   */
+  readonly sourceAuthority: SourceAuthority
+  /**
    * The tool-result evidence a `verified` grant rests on, when one was
    * required. Absent for every other status.
    */
@@ -299,7 +304,7 @@ export interface AcceptedDelta {
 export interface SemanticRetirementAudit {
   readonly withheld: readonly {
     readonly deltaId: string
-    readonly reason: 'unresolved-target' | 'ambiguous-target'
+    readonly reason: 'unresolved-target' | 'ambiguous-target' | 'unauthorized-replacement'
     readonly targets: readonly string[]
   }[]
   readonly refused: readonly {

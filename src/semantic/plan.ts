@@ -71,10 +71,10 @@ export interface PlannedDelta {
   readonly withheld?: WithheldDelta['reason']
 }
 
-/** A delta whose revision could not be resolved, so it was not applied. */
+/** A delta whose revision could not be resolved or authorized, so it was not applied. */
 export interface WithheldDelta {
   readonly deltaId: string
-  readonly reason: 'unresolved-target' | 'ambiguous-target'
+  readonly reason: 'unresolved-target' | 'ambiguous-target' | 'unauthorized-replacement'
   readonly targets: readonly string[]
 }
 
@@ -146,7 +146,7 @@ type TargetResolution =
   | { readonly kind: 'previous-absent' }
   | { readonly kind: 'already-retired' }
   | { readonly kind: 'resolved'; readonly anchor: Anchor; readonly sameCoordinate: boolean }
-  | { readonly kind: 'sibling'; readonly anchorId: string; readonly authority: Anchor['authority'] }
+  | { readonly kind: 'sibling'; readonly anchorId: string; readonly authority: Anchor['authority']; readonly sourceAuthority: Anchor['sourceAuthority'] }
   | { readonly kind: 'cross-scope'; readonly anchor: Anchor }
   | { readonly kind: 'ambiguous'; readonly anchorIds: readonly string[] }
   | { readonly kind: 'unknown' }
@@ -183,7 +183,12 @@ function resolveTarget(
     && candidate.stateKey.namespace === stateKey.namespace
     && sameScope(candidate.scope, delta.scope))
   if (sibling !== undefined) {
-    return { kind: 'sibling', anchorId: anchorIdOf(sibling.deltaId), authority: sibling.authority }
+    return {
+      kind: 'sibling',
+      anchorId: anchorIdOf(sibling.deltaId),
+      authority: sibling.authority,
+      sourceAuthority: sibling.sourceAuthority,
+    }
   }
 
   const anchors = uniqueAnchors(state)
@@ -277,6 +282,7 @@ export function planCommit(
     const supersededHere = new Set<string>()
     const blocking: string[] = []
     const ambiguous: string[] = []
+    const refusedReplacements: string[] = []
 
     for (const target of delta.supersedes) {
       const resolution = resolveTarget(options.state, target, delta, accepted)
@@ -312,6 +318,8 @@ export function planCommit(
             declaring: delta.authority,
             target: resolution.authority,
             sameScope: true,
+            declaringSource: delta.sourceAuthority,
+            targetSource: resolution.sourceAuthority ?? 'unknown',
           })
           if (!authorization.allowed) {
             refusedRetirements.push({
@@ -334,6 +342,36 @@ export function planCommit(
         }
         case 'resolved': {
           if (resolution.sameCoordinate) {
+            // A same-coordinate replacement used to skip authorization
+            // entirely: the coordinate itself was treated as the permission.
+            // It is not. Replacing a user's decision with an assistant's at
+            // the same coordinate retires the user's value just as surely as
+            // naming it explicitly, so the same source check runs here. A
+            // refusal WITHHOLDS the delta: declaring it anyway would overwrite
+            // the anchor through the reducer's same-key path.
+            const authorization = mayRetire({
+              declaring: delta.authority,
+              target: resolution.anchor.authority,
+              sameScope: true,
+              declaringSource: delta.sourceAuthority,
+              targetSource: resolution.anchor.sourceAuthority ?? 'unknown',
+            })
+            if (!authorization.allowed) {
+              refusedRetirements.push({
+                deltaId: delta.deltaId,
+                target,
+                anchorId: resolution.anchor.id,
+                reason: authorization.reason,
+              })
+              refusedReplacements.push(target)
+              resolved.push({
+                target,
+                anchorId: resolution.anchor.id,
+                via: 'same-coordinate',
+                refusal: authorization.reason,
+              })
+              continue
+            }
             resolved.push({ target, anchorId: resolution.anchor.id, via: 'same-coordinate' })
             continue
           }
@@ -341,6 +379,8 @@ export function planCommit(
             declaring: delta.authority,
             target: resolution.anchor.authority,
             sameScope: sameScope(resolution.anchor.scope, delta.scope),
+            declaringSource: delta.sourceAuthority,
+            targetSource: resolution.anchor.sourceAuthority ?? 'unknown',
           })
           if (!authorization.allowed) {
             refusedRetirements.push({
@@ -366,12 +406,14 @@ export function planCommit(
     // A revision whose target cannot be resolved is NOT applied. Declaring it
     // anyway would leave the value it claimed to replace live next to the new
     // claim — the N5 stale-anchor failure — while looking like a clean commit.
-    if (blocking.length > 0 || ambiguous.length > 0) {
-      const reason = ambiguous.length > 0 ? 'ambiguous-target' : 'unresolved-target'
+    if (blocking.length > 0 || ambiguous.length > 0 || refusedReplacements.length > 0) {
+      const reason = ambiguous.length > 0
+        ? 'ambiguous-target'
+        : refusedReplacements.length > 0 ? 'unauthorized-replacement' : 'unresolved-target'
       withheld.push({
         deltaId: delta.deltaId,
         reason,
-        targets: [...blocking, ...ambiguous],
+        targets: [...blocking, ...ambiguous, ...refusedReplacements],
       })
       planned.push({ deltaId: delta.deltaId, anchorId, kind: delta.kind, supersedes: resolved, withheld: reason })
       continue
@@ -406,6 +448,7 @@ export function planCommit(
       stateKey,
       value,
       authority: delta.authority,
+      sourceAuthority: delta.sourceAuthority,
       lifecycle: 'active',
       ...(delta.failureState === undefined ? {} : { failureState: delta.failureState }),
       sourceRefs: delta.evidence.map(entry => ({ seq: SessionSeq(entry.seq) })),

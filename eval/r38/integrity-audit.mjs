@@ -29,7 +29,7 @@ import { auditSemanticIntegrity } from './src/integrity-auditor.ts'
 import { writeJson } from '../r37/src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'integrity-audit.json')
+const OUT = process.env['R38_INTEGRITY_OUT'] ?? join(HERE, 'out', 'integrity-audit.json')
 
 const user = text => createUserMessage({ content: [{ type: 'text', text }], source: { kind: 'user' } })
 const model = text => createMessage({

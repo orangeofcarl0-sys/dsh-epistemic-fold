@@ -39,7 +39,7 @@
  * @module dsh-epistemic-fold/semantic/retirement
  */
 
-import type { AuthorityDomain } from '../state/authority.ts'
+import type { AuthorityDomain, SourceAuthority } from '../state/authority.ts'
 
 /**
  * How much retirement standing each authority domain carries.
@@ -60,6 +60,7 @@ export type RetirementRefusalReason =
   | 'declaring-narrative'
   | 'target-narrative'
   | 'insufficient-authority'
+  | 'insufficient-source-authority'
   | 'cross-scope'
 
 /** The verdict for one (declaring claim, target anchor) pair. */
@@ -83,6 +84,10 @@ export function mayRetire(input: {
   readonly declaring: AuthorityDomain
   readonly target: AuthorityDomain
   readonly sameScope: boolean
+  /** Who produced the declaring claim; absent means historical/unknown. */
+  readonly declaringSource?: SourceAuthority
+  /** Who produced the target anchor; absent means historical/unknown. */
+  readonly targetSource?: SourceAuthority
 }): RetirementAuthorization {
   if (input.declaring === 'narrative') {
     return {
@@ -112,6 +117,27 @@ export function mayRetire(input: {
       allowed: false,
       reason: 'insufficient-authority',
       detail: `a ${input.declaring} claim may not retire a ${input.target} anchor`,
+    }
+  }
+  // SOURCE, not rank. `decision` is grounded by both a user message and an
+  // assistant message, so the domain alone cannot tell a user's decision from
+  // the assistant's own. Without this check an assistant could retire the
+  // user's decision at the same coordinate (where no rank check used to run)
+  // or by naming it explicitly (where the ranks are equal).
+  //
+  // `unknown` is a HISTORICAL anchor: it was written before the producer was
+  // recorded. New writes are conservative and refuse the retirement; a user
+  // decision may still revise it. Historical replay never re-runs this check,
+  // so an old journal keeps its recorded outcome.
+  const declaringSource = input.declaringSource ?? 'unknown'
+  const targetSource = input.targetSource ?? 'unknown'
+  if (input.declaring === 'decision' && input.target === 'decision'
+    && declaringSource === 'assistant' && targetSource !== 'assistant') {
+    return {
+      allowed: false,
+      reason: 'insufficient-source-authority',
+      detail: `an assistant-origin decision may not retire a decision whose source is ${targetSource}; `
+        + 'the user must revise it, or the assistant must propose it as a new claim in another coordinate',
     }
   }
   return { allowed: true }

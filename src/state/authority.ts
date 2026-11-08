@@ -24,6 +24,52 @@ export type AuthoritativeEventKind =
   | 'assistant/message'
 
 /**
+ * WHO produced a claim, as distinct from what KIND of claim it is.
+ *
+ * The domain says a `decision` was taken. It does not say whether the user took
+ * it or the assistant proposed it, and those are not the same standing: an
+ * assistant suggestion must not retire a decision the user made. Historical
+ * anchors written before this field existed carry `unknown`, which is treated
+ * conservatively on NEW retirements.
+ */
+export type SourceAuthority = 'user' | 'system' | 'tool' | 'assistant' | 'unknown'
+
+/** Every admitted source authority, for runtime validation. */
+export const SOURCE_AUTHORITIES: readonly SourceAuthority[] = [
+  'user', 'system', 'tool', 'assistant', 'unknown',
+]
+
+const SOURCE_RANK: Record<SourceAuthority, number> = {
+  user: 4,
+  system: 3,
+  tool: 2,
+  assistant: 1,
+  unknown: 0,
+}
+
+/**
+ * The strongest producer behind a set of cited raw events.
+ *
+ * A claim that cites both a user message and an assistant message is
+ * user-sourced: the normative statement is the user's, and the assistant's
+ * restatement does not weaken it.
+ */
+export function sourceAuthorityOf(kinds: readonly AuthoritativeEventKind[]): SourceAuthority {
+  let best: SourceAuthority = 'unknown'
+  for (const kind of kinds) {
+    const source: SourceAuthority = kind === 'user/message'
+      ? 'user'
+      : kind === 'system/message'
+        ? 'system'
+        : kind === 'tool/result'
+          ? 'tool'
+          : 'assistant'
+    if (SOURCE_RANK[source] > SOURCE_RANK[best]) best = source
+  }
+  return best
+}
+
+/**
  * The producer of a derived message, as far as authority is concerned.
  *
  * A `user/message` is not automatically the human user: DSH injects context,
