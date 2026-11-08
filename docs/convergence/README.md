@@ -1,0 +1,90 @@
+# Epistemic Fold — Convergence (EF-C0)
+
+Status: current project entry, 2026-11-08.
+
+This directory is the single authoritative entry for the project's current
+state. Historical round documents under `docs/semantic-continuity/` remain the
+research archive; they are not rewritten.
+
+## The five core documents
+
+| Document | Answers |
+|---|---|
+| [PROJECT_CHARTER.md](PROJECT_CHARTER.md) | what EF is, the three tracks, ownership, non-goals |
+| [ARCHITECTURE_BASELINE.md](ARCHITECTURE_BASELINE.md) | what the code actually does |
+| [REPOSITORY_GOVERNANCE.md](REPOSITORY_GOVERNANCE.md) | branch roles, push/PR/merge/release discipline |
+| [EVIDENCE_REGISTRY.md](EVIDENCE_REGISTRY.md) | what is proven, at what level, with which artifact |
+| [RESEARCH_ROADMAP.md](RESEARCH_ROADMAP.md) | what remains open and how it can be promoted |
+
+Supporting documents:
+
+```text
+REPOSITORY_HISTORY.md        stage map, ancestry, change distribution
+EVIDENCE_INVENTORY.md        artifact census, external archive, reconstruction
+FEATURE_AND_SCOPE_MATRIX.md  Core / Optional / Research / Deferred / Deprecated
+CONFIGURATION_TRUTH.md       tiers, switches, auxiliary calls, doc drift
+BOUNDARY_CONTRACTS.md        C1-C7, mechanism and test
+BASELINE_EVIDENCE_REVIEW.md  the five evidence questions
+PRODUCT_INTEGRATION_PLAN.md  how Track B could reach main, and why it does not yet
+CI_AND_RELEASE_GATES.md      current CI, proposed gates, release checklist
+NEXT_MILESTONES.md           the next five questions
+EF_C0_DECISION.md            the convergence decision, A-G
+```
+
+## The state in one screen
+
+```text
+Product            EF Active: deployment hold
+deploymentEligible false
+Track A            Compression Runtime — product baseline, works with semantic off
+Track B            Semantic Continuity — optional, default off, mechanism evidence only
+Track C            Context Intelligence — research, eval code, no runtime path
+
+origin/main        93b6666   Track A only; no src/semantic
+R38 research       0067020   96 commits ahead of main; Track A + B + C
+Product-level
+evidence           0
+Live calls in R38  0
+```
+
+## What convergence changed
+
+```text
+- a verified repository/stage/evidence map
+- a configuration truth table generated from the resolver
+- C1-C7 boundary contracts with tests
+- an 18-claim evidence registry with hashed artifacts
+- branch/push/PR/release governance
+- a research roadmap that keeps Track B/C open
+```
+
+It did **not** merge R38 into main, rebase it, delete a branch, create a tag, or
+push anything.
+
+## How to verify this round
+
+```bash
+node eval/c0/git-audit.mjs
+node eval/c0/config-matrix.mjs
+node eval/c0/evidence-registry.mjs
+npx vitest run tests/convergence-config.spec.ts tests/convergence-boundaries.spec.ts
+node eval/c0/gates.mjs
+```
+
+The gate report is `docs/convergence/data/gate-status.json`.
+
+## Reading order for a new contributor
+
+```text
+1. this README
+2. PROJECT_CHARTER.md
+3. ARCHITECTURE_BASELINE.md
+4. CONFIGURATION_TRUTH.md
+5. BOUNDARY_CONTRACTS.md
+6. EVIDENCE_REGISTRY.md
+7. RESEARCH_ROADMAP.md
+```
+
+A historical round document is evidence, not current policy. When it disagrees
+with a convergence document, the convergence document is current and the
+historical document is history.
