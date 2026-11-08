@@ -171,7 +171,18 @@ async function main() {
   let stopReason = null
   const started = Date.now()
 
-  for (const cell of manifest.cells) {
+  // A calibration filter. It does not reorder anything; it names a subset of
+  // the frozen list so one cell can prove the live path before the batch. Every
+  // request still counts against the same ledger, and the results file records
+  // which cells were not executed.
+  const only = value('only', null)
+  const planned = only === null ? manifest.cells : manifest.cells.filter(cell => `${cell.block}-${cell.task}-${cell.arm}-r${cell.replicate}` === only)
+  if (planned.length === 0) {
+    process.stderr.write(`e2e: --only ${only} names no cell in the manifest\n`)
+    process.exit(2)
+  }
+
+  for (const cell of planned) {
     if (stopReason !== null) {
       results.push({ cell, status: 'not-executed', reason: stopReason })
       continue

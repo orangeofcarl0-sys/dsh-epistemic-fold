@@ -80,7 +80,7 @@ async function main() {
   // Calibration: one instance, three arms. It proves the pipeline and is
   // excluded from the core comparison.
   for (const arm of ['B0', 'E0', 'E1']) {
-    cells.push({ block: 'calibration', task: 'T1-s1', arm, replicate: 1 })
+    cells.push({ block: 'calibration', task: 'T1-s1', arm, replicate: 0 })
   }
   // Core: 6 templates × 2 seeds × 3 arms = 36. Replicate r1 uses seed 1, r2
   // uses seed 2; arms rotate inside each replicate block.
