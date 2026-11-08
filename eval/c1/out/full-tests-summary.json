@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T09:42:03.268Z",
+  "generatedAt": "2026-11-08T10:12:52.979Z",
   "work": "EF-C1",
   "command": "npx vitest run --reporter=json",
   "summary": {
     "success": false,
     "total": 1860,
-    "passed": 1778,
-    "failed": 12,
+    "passed": 1779,
+    "failed": 11,
     "skipped": 70,
     "files": 212
   },
@@ -15,7 +15,6 @@
     "bridge-loads.spec.ts > the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against",
     "checkpoint-residency.spec.ts > checkpoint retirement writes the retirement, and the report then shows ONE conflict",
     "checkpoint-residency.spec.ts > checkpoint retirement REFUSES a second retirement of the same checkpoint",
-    "eval-corpus.spec.ts > R0-C2: keyless paired continuation across B1 / E3a0 / E3aR B04-failure-resolution (hard)",
     "p0-regressions.spec.ts > P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face",
     "persistence-compat.spec.ts > persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable",
     "persistence-compat.spec.ts > anchor service durability guard still writes on the in-memory face, where nothing persists the log",
@@ -25,5 +24,5 @@
     "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference",
     "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
   ],
-  "note": "The 12 failures are the known R38/C0 set; no convergence or C1 test fails. r38-native-context restored (9 tests) by declaring @deepseek-ai/dsh-agent-loop."
+  "note": "11 known failures remain (environment/upstream drift); eval-corpus B04 was fixed in the eval query, not production. No convergence or C1 test fails."
 }
