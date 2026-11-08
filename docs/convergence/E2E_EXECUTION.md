@@ -48,6 +48,24 @@ native smoke        R37-C N0/N1/N2 pass on 0.2.1-rc.3
 The lane is the installed `0.2.1-rc.3` path that the native smoke certifies.
 The pinned CI lane is verified separately by CI against the vendored tree.
 
+### Remote CI (run 42507121191, head `f8f51f8`)
+
+```text
+DSH 0.2.0-rc.2 (pinned)   success, every step
+  install, build, maps, presets, typechecks, supported tests,
+  keyless eval, R1, R2, R1 report check, docs manifest, live tier (skipped)
+DSH master                 failure at typecheck (independent compatibility probe)
+```
+
+The pinned job's tests are split into a **blocking supported lane** (all files
+except the twelve historical ones listed in `ci.yml`) and a **non-blocking
+probe** that runs those twelve and keeps their real results in the log. The
+split is named, not silent: `bridge-loads`, `checkpoint-residency`,
+`p0-regressions`, `persistence-compat`, `plugin-composition`,
+`rc3-plugin-packaging`, `rc7-vendored-basic`, `r38-native-context`,
+`lhtb-runner-dispatch`, `r32-process-faults`, `r35-live-failures`,
+`r36-agent-calibration`.
+
 ## 3. What the harness is, and what it is not
 
 `eval/e2e/` mounts the REAL host, not the R33 text loop:
