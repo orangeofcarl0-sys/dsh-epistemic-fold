@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T16:05:05.977Z",
+  "campaign": "e2e-calibration-smoke3",
+  "manifestSha256": "8dd3493da66d082c9a283325b03dde3ae5fa77071fb025eb543d42ce37842fc6",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "failed",
+  "stopReason": "runner-error: Cannot read properties of undefined (reading 'kind')",
+  "planned": 39,
+  "executed": 0,
+  "budget": {
+    "used": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "wallClockMs": 0
+    },
+    "limits": {
+      "httpAttempts": 2200,
+      "inputTokens": 18000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 28800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 72,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "calibration",
+        "task": "T1-s1",
+        "arm": "B0",
+        "replicate": 0
+      },
+      "status": "error",
+      "reason": "runner-error: Cannot read properties of undefined (reading 'kind')"
+    }
+  ]
+}

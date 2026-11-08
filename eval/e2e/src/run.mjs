@@ -269,7 +269,7 @@ async function main() {
         cellLimits,
       })
     } catch (error) {
-      stopReason = `runner-error: ${error instanceof Error ? error.message : String(error)}`
+      stopReason = `runner-error: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`
       results.push({ cell, status: 'error', reason: stopReason })
       continue
     }
