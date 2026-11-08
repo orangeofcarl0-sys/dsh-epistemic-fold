@@ -71,11 +71,14 @@ export function evaluateGates(options = {}) {
   const tests = options.testsOverride
     ?? (has('eval/c0/out/c0-tests.json') ? readJson(join(OUT, 'c0-tests.json')) : null)
 
-  const r38 = git('rev-parse', 'origin/rc38-mechanism-validation')
-  // The governance claim is about EF-C0: THAT branch was never pushed. The
-  // current branch may be a descendant that is pushed (EF-C1), so asking
-  // `@{u}` on HEAD would turn a historical fact into a false failure.
-  const upstream = git('rev-parse', '--abbrev-ref', '--symbolic-full-name', 'chore/ef-c0-convergence@{u}')
+  // Live refs when the checkout has them, the frozen stage map otherwise. CI
+  // checks out one merge ref at depth 1, so a gate that insisted on
+  // `origin/rc38-mechanism-validation` could never pass there — and a gate
+  // that only passes on the author's machine is not a gate.
+  const r38Live = git('rev-parse', 'origin/rc38-mechanism-validation')
+  const r38Frozen = stageMap?.head?.sha ?? null
+  const r38 = r38Live ?? r38Frozen
+  const r38Source = r38Live !== null ? 'live ref' : 'frozen stage map'
 
   const gates = []
 
@@ -99,7 +102,7 @@ export function evaluateGates(options = {}) {
       name: 'Repository integrity',
       status: failed.length === 0 ? 'passed' : 'failed',
       detail: failed.length === 0
-        ? `R38 baseline ${r38?.slice(0, 7)}; ${stageMap.ancestry.checks.length} ancestry checks; `
+        ? `R38 baseline ${r38?.slice(0, 7)} (${r38Source}); ${stageMap.ancestry.checks.length} ancestry checks; `
           + `ahead ${stageMap.ancestry.mainToR38.ahead}; archive and digests match`
         : `failed checks: ${failed.join(', ')}`,
       evidence: 'docs/convergence/data/git-stage-map.json, change-inventory.json, artifact-manifest.json',
@@ -191,10 +194,14 @@ export function evaluateGates(options = {}) {
       governanceDoc: has('docs/convergence/REPOSITORY_GOVERNANCE.md'),
       integrationDoc: has('docs/convergence/PRODUCT_INTEGRATION_PLAN.md'),
       ciDoc: has('docs/convergence/CI_AND_RELEASE_GATES.md'),
-      pr4Recorded: docContains('docs/convergence/REPOSITORY_GOVERNANCE.md', 'Open PR #4'),
+      // Frozen records, not live claims. PR #4 is now closed and the C0
+      // branch does not exist on a CI checkout; requiring "open" or "no
+      // upstream" today would fail for having been true yesterday.
+      pr4Recorded: docContains('docs/convergence/REPOSITORY_GOVERNANCE.md', 'PR #4 was open at EF-C0 convergence'),
+      pr4ClosedRecorded: docContains('docs/convergence/REPOSITORY_GOVERNANCE.md', 'closed as superseded by'),
       m1OnHold: baseline?.r38M1?.status === 'on hold pending convergence',
       refsRecorded: (stageMap?.refsWithoutRemote ?? []).length === 3,
-      noUpstream: upstream === null,
+      noUpstreamRecorded: docContains('docs/convergence/REPOSITORY_GOVERNANCE.md', 'never pushed (no upstream)'),
     }
     const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name)
     gates.push({
@@ -202,7 +209,8 @@ export function evaluateGates(options = {}) {
       name: 'Governance',
       status: failed.length === 0 ? 'passed' : 'failed',
       detail: failed.length === 0
-        ? 'branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; C0 branch has no upstream (not pushed)'
+        ? 'branch roles and push/PR/merge discipline recorded; PR #4 open-at-C0 and closed-superseded recorded; '
+          + 'C0 branch never pushed recorded; M1 hold recorded'
         : `failed checks: ${failed.join(', ')}`,
       evidence: 'docs/convergence/REPOSITORY_GOVERNANCE.md, baseline-comparison-manifest.json',
     })

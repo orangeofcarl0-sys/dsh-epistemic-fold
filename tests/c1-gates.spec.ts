@@ -39,9 +39,12 @@ describe('EF-C1 gates: the real artifacts', () => {
   it('keeps stage completion, core release and semantic active SEPARATE', () => {
     const report = evaluateGates({ testsOverride: passing })
     expect(report.eligibility.stageComplete).toBe(true)
-    // Offline completion is not product evidence.
+    // Offline completion is not product evidence. The reason must name the
+    // actual gap (no product-quality experiment), not a defect that was fixed:
+    // a stale blocker text is how a resolved issue keeps suppressing a release.
     expect(report.decisions.coreReleaseEligible).toBe(false)
-    expect(report.decisions.coreReleaseReason).toContain('B04')
+    expect(report.decisions.coreReleaseReason).toContain('offline-only')
+    expect(report.decisions.coreReleaseReason).not.toContain('B04')
     // Deployment hold is not lifted by an offline result.
     expect(report.decisions.semanticActiveEligible).toBe(false)
     expect(report.product.deploymentEligible).toBe(false)

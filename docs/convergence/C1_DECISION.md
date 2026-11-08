@@ -142,7 +142,7 @@ vendor reference; it passes when the vendor tree is present and reports
 
 **Which behaviors match the current host?** On the shared fixture, B0
 (`0.2.1-rc.3`) and Bv (EF's `0.1.7` copy) produce the same checkpoint body
-(347 chars), the same prefix fingerprint, the same retained tokens, no EF
+(347 chars), the same checkpoint body digest, the same retained tokens, no EF
 bundle, and the same contract outcomes for leaf fold, tool-pair boundary,
 summary failure, abort and restart.
 
@@ -159,13 +159,13 @@ event-log reconstruction.
 ## E. EF Core baseline
 
 **Is E0 truly zero auxiliary calls?** Yes: `calls = 0` under the scripted
-adapter, with one checkpoint and two archive writes.
+adapter, with one checkpoint and two archive files.
 
 **Does E1 add only the rationale?** Yes: `calls = 1`, `rationaleCalls = 1`,
 `writerCalls = 0`.
 
 **Do E0 and E1 share the fold policy?** Yes: same legal span (1-10), same
-surface node count after the fold, same checkpoint count, same archive writes.
+surface node count after the fold, same checkpoint count, same archive files.
 The checkpoint is 20 characters longer under E1 (47 → 67) and 5 prompt tokens
 heavier (20 → 25); that is the rationale text.
 

@@ -46,8 +46,18 @@ const END = '# <<< epistemic-fold preset overrides'
 /** The presets EF substitutes into. `minimal` is deliberately absent. */
 const TARGETS = ['standard', 'ptc', 'cordis'] as const
 
-/** Locate the installed DSH's shipped presets, or undefined. */
+/**
+ * Locate the shipped presets, or undefined.
+ *
+ * Order: an explicit `EF_DSH_REFERENCE` (CI names the PINNED checkout), then
+ * the vendored source tree, then an installed profile. The first two are fixed
+ * versions; only the last can drift with whatever the developer installed.
+ */
 function referenceDir(): string | undefined {
+  const explicit = process.env['EF_DSH_REFERENCE']
+  if (explicit !== undefined && existsSync(explicit)) return explicit
+  const vendored = join(ROOT, 'vendor', 'deepseek-harness', 'packages', 'bundle', 'web-app', 'presets')
+  if (existsSync(vendored)) return vendored
   const home = process.env['DSH_HOME'] ?? join(homedir(), '.dsh')
   const base = join(home, 'profiles', 'node_modules', '@deepseek-ai')
   return [
@@ -57,18 +67,18 @@ function referenceDir(): string | undefined {
 }
 
 /**
- * The YAML reader, loaded from the DSH installation.
+ * The YAML reader, loaded from the repository's own dependency tree.
  *
- * The repository has no YAML dependency, and adding one to compare two files
- * would be a dependency bought for a test. DSH already ships `js-yaml`, and this
- * test only runs on a machine that has DSH installed.
+ * This used to load `js-yaml` from the installed DSH profile. That made the
+ * test un-runnable on CI (no profile) and coupled a comparison of two FILES to
+ * a global installation. `js-yaml` is already a repository dependency, so the
+ * comparison needs neither.
  */
 interface YamlReader {
   load(text: string): unknown
 }
 function yamlReader(): YamlReader {
-  const home = process.env['DSH_HOME'] ?? join(homedir(), '.dsh')
-  const requireFrom = createRequire(join(home, 'profiles', 'package.json'))
+  const requireFrom = createRequire(join(ROOT, 'package.json'))
   const yaml = requireFrom('js-yaml') as {
     Type: new (tag: string, options: { kind: string; construct: (d: string) => string }) => unknown
     DEFAULT_SCHEMA: { extend(types: unknown[]): unknown }

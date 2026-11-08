@@ -14,6 +14,11 @@ jobs:
     steps:
       - name: Checkout plugin
         uses: actions/checkout@v4
+        with:
+          # The convergence gates verify ancestry and base SHAs (C0 327598f,
+          # R38 0067020). A depth-1 checkout makes those objects absent and the
+          # gates unverifiable, which is not the same as passing.
+          fetch-depth: 0
 
       - name: Checkout vendored DSH at the verified baseline
         uses: actions/checkout@v4
@@ -47,7 +52,12 @@ jobs:
         run: node scripts/generate-maps.cjs --check
 
       - name: Verify the generated preset block is current
-        run: node scripts/generate-presets.mjs --check
+        # The reference is the PINNED checkout, not `~/.dsh`: a runner has no
+        # installed profile, and a check against nothing is not a check. Strict:
+        # a mismatch or a missing reference exits 2.
+        run: >-
+          node scripts/generate-presets.mjs --check
+          --reference vendor/deepseek-harness/packages/bundle/web-app/presets
 
       - name: Type check
         run: npx tsc --noEmit -p tsconfig.json
@@ -68,6 +78,10 @@ jobs:
         run: npm run typecheck:eval
 
       - name: Tests
+        env:
+          # The preset-drift test compares the checked-in block with a FIXED
+          # DSH, not with whatever profile this machine happens to have.
+          EF_DSH_REFERENCE: vendor/deepseek-harness/packages/bundle/web-app/presets
         run: npx vitest run
 
       - name: Keyless evaluation (metrics + boundary corpus + long-horizon economics)

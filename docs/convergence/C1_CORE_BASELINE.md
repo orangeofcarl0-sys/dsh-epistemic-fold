@@ -28,7 +28,7 @@ thresholdRatio 0.15   headroomTokens 0   retainTokens 300   maxTokens 3000
 
 ## 2. Measured matrix
 
-| Arm | aux calls | writer | rationale | summary | legal span | checkpoints | checkpoint chars | retained tokens | archive writes | bundled |
+| Arm | aux calls | writer | rationale | summary | legal span | checkpoints | checkpoint chars | retained tokens | archive files | bundled |
 |---|---:|---:|---:|---:|---|---:|---:|---:|---:|---|
 | B0 | 1 | 0 | 0 | 1 | 1-10 | 1 | 347 | 104 | 0 | no |
 | Bv | 1 | 0 | 0 | 1 | 1-10 | 1 | 347 | 104 | 0 | no |
@@ -49,7 +49,7 @@ E1  7d50795c8f04007cee8c8666d8d22a5d05a27f1a9249e93db61d261746af7199
 ### E0 is truly zero-LLM
 
 `calls = 0`. No writer, no rationale, no summary call. The fold still lands:
-one checkpoint, one legal span, two archive writes. This is the arm a deployment
+one checkpoint, one legal span, two archive files. This is the arm a deployment
 can run with no auxiliary model budget.
 
 ### E1 adds exactly the rationale

@@ -44,11 +44,19 @@
  * ## Usage
  *
  *   node scripts/generate-presets.mjs [--dsh <path>] [--mode <tier>] [--check]
+ *   node scripts/generate-presets.mjs --reference <presets-dir> --check
  *   node scripts/generate-presets.mjs --output <path>
  *   node scripts/generate-presets.mjs --write
  *
  * The DSH path defaults to `$DSH_HOME` or `~/.dsh`. The mode defaults to
  * `economy`, the one tier with measured end-to-end evidence.
+ *
+ * `--reference` names a directory that holds `standard.patch.yml`,
+ * `ptc.patch.yml` and `cordis.patch.yml` directly: either an installed
+ * `dsh-web-app/presets` directory or the DSH source tree's
+ * `packages/bundle/web-app/presets`. CI uses it to verify the block against the
+ * PINNED DSH checkout instead of a `~/.dsh` that does not exist on a runner.
+ * A reference is a fixed version by construction and is never fetched.
  *
  * ## Verify / generate / promote (EF-C1)
  *
@@ -117,6 +125,22 @@ function presetDirCandidates(dshHome) {
     join(base, 'dsh', 'node_modules', '@deepseek-ai', 'dsh-web-app', 'presets'),
     join(base, 'dsh-web-app', 'presets'),
   ]
+}
+
+/**
+ * Resolve the preset directory: an explicit `--reference` wins, otherwise the
+ * installed-DSH candidates.
+ *
+ * An explicit reference is not a fallback for a missing install; it is the
+ * caller naming the exact version to compare against. CI has no `~/.dsh`, so
+ * without this the strict check can only say "not-verifiable" forever.
+ */
+function resolvePresetDir(dshHome, reference) {
+  if (reference !== undefined) {
+    const complete = TARGETS.every(name => existsSync(join(reference, `${name}.patch.yml`)))
+    return complete ? reference : undefined
+  }
+  return presetDirCandidates(dshHome).find(candidate => existsSync(candidate))
 }
 
 /**
@@ -298,13 +322,12 @@ function spliceBlock(existing, block) {
 }
 
 /**
- * Build the generated block for one installed DSH home.
+ * Build the generated block from one preset directory.
  *
- * Returns `{ found: false }` when no DSH presets are installed: that is not an
- * error, because `prepare` runs on machines that do not have DSH yet.
+ * Returns `{ found: false }` when no reference resolves: that is not an error,
+ * because `prepare` runs on machines that do not have DSH yet.
  */
-function buildBlock(dshHome, mode) {
-  const dir = presetDirCandidates(dshHome).find(candidate => existsSync(candidate))
+function buildBlock(dir, mode) {
   if (dir === undefined) return { found: false }
 
   const rows = []
@@ -356,6 +379,7 @@ function differingPresets(existing, candidate) {
 
 function main() {
   const dshHome = arg('dsh', process.env['DSH_HOME'] ?? join(homedir(), '.dsh'))
+  const reference = arg('reference')
   const mode = arg('mode', 'economy')
   const check = process.argv.includes('--check')
   const write = process.argv.includes('--write')
@@ -366,8 +390,16 @@ function main() {
     console.error('generate-presets: --write and --output are mutually exclusive')
     process.exit(1)
   }
+  if (reference !== undefined && !existsSync(reference)) {
+    // A caller that names a reference expects that exact tree to be checked.
+    // Falling back to an installed DSH here would silently verify a different
+    // version, which is the failure this option exists to prevent.
+    console.error(`generate-presets: --reference ${reference} does not exist`)
+    process.exit(2)
+  }
 
-  const built = buildBlock(dshHome, mode)
+  const dir = resolvePresetDir(dshHome, reference)
+  const built = buildBlock(dir, mode)
   if (!built.found) {
     // NO DSH FOUND. This runs from `prepare` on every install, including on a
     // machine that has no DSH yet, so it must NOT throw: a failing `prepare`
@@ -375,8 +407,10 @@ function main() {
     // get the DSH it needs. The checked-in block stays as generated (it is
     // pinned to the release it was built against) and the boot-time doctor
     // reports if it does not match the DSH that eventually runs it.
-    const message = `generate-presets: no installed dsh-web-app presets under ${dshHome}; keeping the `
-      + 'checked-in block. Re-run this after installing a DSH web profile, or pass --dsh <path>.'
+    const message = reference === undefined
+      ? `generate-presets: no installed dsh-web-app presets under ${dshHome}; keeping the `
+        + 'checked-in block. Re-run this after installing a DSH web profile, or pass --dsh <path>.'
+      : `generate-presets: ${reference} holds no preset patch files; keeping the checked-in block.`
     if (check && !warnOnly) {
       console.error(message)
       process.exit(2) // not-verifiable, not a silent pass
@@ -405,7 +439,7 @@ function main() {
 
   // Default: compare, never write.
   if (next === existing) {
-    console.log('cordis.patch.yml is current for the installed DSH')
+    console.log(`cordis.patch.yml is current for the ${reference === undefined ? 'installed DSH' : 'named reference'}`)
     return
   }
   const changed = differingPresets(existing, next)

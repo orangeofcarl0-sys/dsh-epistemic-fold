@@ -42,7 +42,7 @@ import { buildContextOverlay } from './src/context-overlay.ts'
 import { writeJson } from '../r37/src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'native-context-smoke.json')
+const OUT = process.env['R38_NATIVE_OUT'] ?? join(HERE, 'out', 'native-context-smoke.json')
 const PROVIDER = 'r38-scripted'
 const MODEL = 'r38-native-smoke'
 const OVERLAY_NAME = 'epistemic-fold-overlay'

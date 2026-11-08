@@ -79,8 +79,13 @@ export function evaluateGates(options = {}) {
     ])
     const base = git(['rev-parse', '327598f342dfca4fab2a779442af56a9ab510ece'])
     const r38 = git(['rev-parse', '006702023e8cf2fcdfd4a814e7be5f2ddf3534ec'])
+    // A CI checkout is a detached HEAD on the PR merge ref. The branch NAME is
+    // then unavailable by construction, and requiring it would make the gate
+    // pass only on the author's machine. Detached is accepted; a named branch
+    // must still be the C1 branch.
+    const detached = branch === ''
     const checks = {
-      branchIsC1: branch === 'chore/ef-c1-evaluation-foundation',
+      branchIsC1: detached || branch === 'chore/ef-c1-evaluation-foundation',
       baseIsC0: base.length === 40,
       r38Reachable: r38.length === 40,
       evidenceClean: evidenceDirty.length === 0,
@@ -88,7 +93,9 @@ export function evaluateGates(options = {}) {
     }
     const ok = checks.branchIsC1 && checks.baseIsC0 && checks.r38Reachable && checks.evidenceClean
     gates.push(gate('C1-G0', 'Git / baseline integrity', ok ? 'passed' : 'failed',
-      `branch ${branch}, HEAD ${checks.head}, tracked evidence clean ${checks.evidenceClean}`,
+      `branch ${detached ? '(detached HEAD)' : branch}, HEAD ${checks.head}, `
+      + `C0 base present ${checks.baseIsC0}, R38 present ${checks.r38Reachable}, `
+      + `tracked evidence clean ${checks.evidenceClean}`,
       'git rev-parse / diff'))
   }
 
@@ -168,7 +175,7 @@ export function evaluateGates(options = {}) {
       && JSON.stringify(e0.legalSpan) === JSON.stringify(e1.legalSpan)
       && b0 !== undefined && bv !== undefined
       && b0.checkpointChars === bv.checkpointChars
-      && b0.prefixFingerprint === bv.prefixFingerprint
+      && b0.checkpointBodyDigest === bv.checkpointBodyDigest
     gates.push(gate('C1-G5', 'EF minimal / rationale calibration', ok ? 'passed' : 'failed',
       `E0 calls ${e0?.calls ?? '?'}, E1 calls ${e1?.calls ?? '?'} (rationale ${e1?.rationaleCalls ?? '?'}), `
       + `B0/Bv body ${b0?.checkpointChars ?? '?'}/${bv?.checkpointChars ?? '?'}`,
@@ -226,7 +233,7 @@ export function evaluateGates(options = {}) {
     decisions: {
       // Offline completion does not equal product evidence.
       coreReleaseEligible: false,
-      coreReleaseReason: 'C1 is offline-only: no product-quality experiment has been run, and eval-corpus B04 is unresolved',
+      coreReleaseReason: 'C1 is offline-only: no product-quality experiment has been run',
       // Deployment hold is not lifted by an offline result.
       semanticActiveEligible: false,
       semanticActiveReason: 'EF Active: deployment hold; decision authority is unsplit and no live experiment is authorized',

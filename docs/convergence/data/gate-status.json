@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T10:12:53.282Z",
+  "generatedAt": "2026-11-08T15:19:28.081Z",
   "round": "EF-C0",
   "status": "complete",
   "eligibility": {
@@ -19,7 +19,7 @@
       "id": "C0-G0",
       "name": "Repository integrity",
       "status": "passed",
-      "detail": "R38 baseline 0067020; 11 ancestry checks; ahead 96; archive and digests match",
+      "detail": "R38 baseline 0067020 (live ref); 11 ancestry checks; ahead 96; archive and digests match",
       "evidence": "docs/convergence/data/git-stage-map.json, change-inventory.json, artifact-manifest.json"
     },
     {
@@ -47,7 +47,7 @@
       "id": "C0-G4",
       "name": "Governance",
       "status": "passed",
-      "detail": "branch roles, push/PR/merge discipline, PR #4, M1 hold recorded; C0 branch has no upstream (not pushed)",
+      "detail": "branch roles and push/PR/merge discipline recorded; PR #4 open-at-C0 and closed-superseded recorded; C0 branch never pushed recorded; M1 hold recorded",
       "evidence": "docs/convergence/REPOSITORY_GOVERNANCE.md, baseline-comparison-manifest.json"
     },
     {

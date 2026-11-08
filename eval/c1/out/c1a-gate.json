@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "work": "EF-C1A",
-  "generatedAt": "2026-11-08T10:15:19.617Z",
-  "sourceCommit": "6da47094199ab85569aa61829775986620ae5a84",
+  "generatedAt": "2026-11-08T15:22:05.822Z",
+  "sourceCommit": "f6b10f32eed41f3d1d68f332b59e887e28367d41",
   "checks": [
     {
       "id": "A0",
@@ -19,8 +19,8 @@
     {
       "id": "A2",
       "name": "ordinary tests do not overwrite historical evidence",
-      "status": "passed",
-      "detail": "4/4 post observations at 0 drift, isolation test ran true, C1 tests success true"
+      "status": "failed",
+      "detail": "4/4 post observations at 0 drift, isolation test ran true, C1 tests success false"
     },
     {
       "id": "A3",
@@ -43,7 +43,7 @@
   ],
   "reportBaselinesDeclared": true,
   "inventoryUncovered": 0,
-  "passed": 6,
-  "failed": 0,
-  "eligible": true
+  "passed": 5,
+  "failed": 1,
+  "eligible": false
 }

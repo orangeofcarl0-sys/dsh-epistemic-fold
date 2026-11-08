@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "work": "EF-C1",
   "generator": "eval/c1/protected-artifacts.mjs",
-  "sourceCommit": "9a4ec76e1f5db3c9779e0560f628cac2d91f4816",
-  "generatedAt": "2026-11-08T10:13:49.297Z",
+  "sourceCommit": "f6b10f32eed41f3d1d68f332b59e887e28367d41",
+  "generatedAt": "2026-11-08T15:23:29.677Z",
   "root": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation",
   "rule": "an ordinary test must not write a protected path",
   "counts": {

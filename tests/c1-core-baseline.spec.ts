@@ -84,8 +84,8 @@ interface ArmResult {
   readonly checkpointBody: string | null
   readonly retainedTokens: number
   readonly surfaceNodes: number
-  readonly prefixFingerprint: string | null
-  readonly archiveWrites: number
+  readonly checkpointBodyDigest: string | null
+  readonly archiveFiles: number
   readonly bundled: boolean
   readonly semanticMode: string
   readonly semanticContinuity: string
@@ -160,10 +160,10 @@ async function measureArm(arm: string, config: EpistemicFoldConfig, basic: boole
     checkpointBody: body,
     retainedTokens: h.ctx.tokenMeter.measure(session).totalTokens,
     surfaceNodes: session.surface.nodes.length,
-    prefixFingerprint: body === null
+    checkpointBodyDigest: body === null
       ? null
       : createHash('sha256').update(body).digest('hex'),
-    archiveWrites: countFiles(join(root, 'bundles')),
+    archiveFiles: countFiles(join(root, 'bundles')),
     bundled: h.engine.publishedBundle !== undefined,
     semanticMode: config.semanticMode ?? 'n/a',
     semanticContinuity: config.semanticContinuity ?? 'off',
@@ -203,7 +203,7 @@ describe('EF-C1 core baseline: B0 / Bv / E0 / E1', () => {
     expect(bv.checkpoints, 'EF mode:basic must fold').toBe(1)
     expect(bv.checkpointBody).toBe(b0.checkpointBody)
     expect(bv.bundled, 'mode:basic publishes no EF bundle').toBe(false)
-    expect(bv.archiveWrites).toBe(0)
+    expect(bv.archiveFiles).toBe(0)
     // Basic's summary call is the only call either arm makes.
     expect(b0.calls).toBe(1)
     expect(bv.calls).toBe(1)
@@ -222,7 +222,7 @@ describe('EF-C1 core baseline: B0 / Bv / E0 / E1', () => {
     // Both publish an EF bundle: the archive contract is the same.
     expect(e0.bundled).toBe(true)
     expect(e1.bundled).toBe(true)
-    expect(e0.archiveWrites).toBe(e1.archiveWrites)
+    expect(e0.archiveFiles).toBe(e1.archiveFiles)
     // Retention is a property of the fold: the same raw tail survives. The
     // token TOTAL differs because E1's checkpoint carries the rationale text,
     // which is the intervention, not a different retention policy.

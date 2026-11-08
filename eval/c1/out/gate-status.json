@@ -1,20 +1,20 @@
 {
   "schemaVersion": 1,
   "work": "EF-C1",
-  "generatedAt": "2026-11-08T10:15:19.346Z",
-  "sourceCommit": "6da47094199ab85569aa61829775986620ae5a84",
+  "generatedAt": "2026-11-08T15:22:04.656Z",
+  "sourceCommit": "f6b10f32eed41f3d1d68f332b59e887e28367d41",
   "gates": [
     {
       "id": "C1-G0",
       "name": "Git / baseline integrity",
-      "status": "passed",
-      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD 6da47094199a, tracked evidence clean true",
+      "status": "failed",
+      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD f6b10f32eed4, C0 base present true, R38 present true, tracked evidence clean false",
       "evidence": "git rev-parse / diff"
     },
     {
       "id": "C1-G1",
       "name": "Evidence isolation",
-      "status": "passed",
+      "status": "failed",
       "detail": "post observations 4/4 at 0 drift, frozen drift 0 (generated-config drift 0), 0 unclassified",
       "evidence": "eval/c1/out/observation-*.json"
     },
@@ -63,16 +63,19 @@
   ],
   "eligibility": {
     "evaluated": 8,
-    "passed": 8,
-    "failed": 0,
+    "passed": 6,
+    "failed": 2,
     "nonPass": 0,
-    "failedIds": [],
+    "failedIds": [
+      "C1-G0",
+      "C1-G1"
+    ],
     "nonPassIds": [],
-    "stageComplete": true
+    "stageComplete": false
   },
   "decisions": {
     "coreReleaseEligible": false,
-    "coreReleaseReason": "C1 is offline-only: no product-quality experiment has been run, and eval-corpus B04 is unresolved",
+    "coreReleaseReason": "C1 is offline-only: no product-quality experiment has been run",
     "semanticActiveEligible": false,
     "semanticActiveReason": "EF Active: deployment hold; decision authority is unsplit and no live experiment is authorized"
   },

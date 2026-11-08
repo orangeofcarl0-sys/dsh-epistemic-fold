@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "work": "EF-C1",
   "generator": "tests/c1-core-baseline.spec.ts",
-  "generatedAt": "2026-11-08T09:31:58.046Z",
+  "generatedAt": "2026-11-08T15:20:55.221Z",
   "executionKind": "scripted adapter; deterministic mechanism measurement, not a model result",
   "sharedPolicy": {
     "thresholdRatio": 0.15,
@@ -25,8 +25,8 @@
       "checkpointChars": 347,
       "retainedTokens": 104,
       "surfaceNodes": 1,
-      "prefixFingerprint": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
-      "archiveWrites": 0,
+      "checkpointBodyDigest": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
+      "archiveFiles": 0,
       "bundled": false,
       "semanticMode": "n/a",
       "semanticContinuity": "off"
@@ -45,8 +45,8 @@
       "checkpointChars": 347,
       "retainedTokens": 104,
       "surfaceNodes": 1,
-      "prefixFingerprint": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
-      "archiveWrites": 0,
+      "checkpointBodyDigest": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
+      "archiveFiles": 0,
       "bundled": false,
       "semanticMode": "n/a",
       "semanticContinuity": "off"
@@ -65,8 +65,8 @@
       "checkpointChars": 47,
       "retainedTokens": 20,
       "surfaceNodes": 1,
-      "prefixFingerprint": "344fa8586f30e84b192923ccb8b2c3f58188e9a9fac64aea26542e3e8a3d2b58",
-      "archiveWrites": 2,
+      "checkpointBodyDigest": "e50eec68e31eeb20a316088bc7bd3d513633fbce2d72f315fe7c042e3cbeb874",
+      "archiveFiles": 2,
       "bundled": true,
       "semanticMode": "none",
       "semanticContinuity": "off"
@@ -85,8 +85,8 @@
       "checkpointChars": 67,
       "retainedTokens": 25,
       "surfaceNodes": 1,
-      "prefixFingerprint": "4da71224982ac6e5417a0dd3892bb2b86c3fc5ae57aee0295eadb31a06811fa4",
-      "archiveWrites": 2,
+      "checkpointBodyDigest": "4f7a773fbb0b3a415f3fb9f901e529e562d3480b95a2578437b37005fdff265b",
+      "archiveFiles": 2,
       "bundled": true,
       "semanticMode": "rationale",
       "semanticContinuity": "off"

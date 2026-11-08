@@ -49,7 +49,7 @@ import { writeJson } from '../r37/src/io.mjs'
 import { readJournalState } from '../r37c/src/journal-state.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'native-extended.json')
+const OUT = process.env['R37D_NATIVE_OUT'] ?? join(HERE, 'out', 'native-extended.json')
 const MODEL = 'r37d-scripted-native'
 const PROVIDER = 'r37d-scripted'
 

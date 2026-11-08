@@ -18,9 +18,24 @@ Current branches mapped:
 main                            stable product line
 rc38-mechanism-validation       frozen research milestone (do not rename now)
 rc36/rc37c/rc37d                research stages; commits reachable, no remote ref
-rc29-working-set-observer       side line + open PR #4
+rc29-working-set-observer       side line; PR #4 (historical state below)
 chore/ef-c0-convergence         this round's audit branch
 ```
+
+Historical facts frozen at EF-C0 (the current state may differ; these are
+records, not live claims):
+
+```text
+chore/ef-c0-convergence was never pushed (no upstream) as of 327598f.
+PR #4 was open at EF-C0 convergence; it was closed as superseded by PR #5
+on 2026-11-08, and its branch was preserved. The closure is recorded in
+docs/convergence/C1_DECISION.md and in the PR #4 comment.
+```
+
+A gate that re-checks "PR #4 is open" or "the branch has no upstream" would
+turn a frozen record into a claim about today, and would fail on a CI checkout
+that has neither the local branch nor the PR. The gates read the frozen text
+above instead.
 
 `rc38-mechanism-validation` is a **frozen research milestone**. Renaming it
 would break the SHA references in R38 evidence and is not worth the churn.
@@ -80,23 +95,25 @@ safe from a commit-loss perspective, but their refs are still the only local
 names for those stages. Deleting them would make the stage map depend on the
 registry alone. Do not delete them in this round.
 
-## 6. Open PR #4 (RC29)
+## 6. PR #4 (RC29) — closed as superseded
 
 ```text
 PR            4
 title         RC29: thermal working-set observer and shadow folding policy
 branch        rc29-working-set-observer
 target        main
-state         OPEN since 2026-10-19
+state         open at EF-C0 convergence (2026-10-19); closed as superseded by
+              PR #5 on 2026-11-08
 ```
 
 The thermal observer already exists on the main line: `src/state/thermal.ts`
 (413 lines) was added by `377515b`, which is an ancestor of both `origin/main`
 and R38. The RC29 branch is not an ancestor of R38.
 
-Recommendation: **review, then close as superseded** if the remaining diff adds
-nothing beyond `377515b`. Do not merge it blindly; do not delete the branch
-without the deletion checklist. This round takes no remote action.
+The EF-C1 round reviewed the branch, found a real but narrow delta
+(`src/working-set.ts`, `src/shadow-policy.ts`, `src/working-set-observer.ts`),
+and closed PR #4 with that delta recorded in its comment. The branch was not
+deleted. Do not reopen or delete it without a new authorization.
 
 ## 7. Branch protection (recommended, not enabled)
 
