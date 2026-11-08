@@ -171,10 +171,20 @@ export function truncate(text, max) {
     return [
       { role: 'user', text: `The activity feed is cutting emoji in half. The excerpt helper is in src/text.js. We ship build ${build}. I want the fix finished today, not another investigation.` },
       { role: 'assistant', text: 'I will read the helper and its tests first, then fix the truncation boundary. The rule I am working to: the returned string must never exceed max, and it must never split a UTF-16 surrogate pair. The ellipsis counts toward max.' },
+      // The long log is EARLY on purpose. A history whose only large content is
+      // the most recent tool result leaves Basic almost nothing it may fold
+      // (it retains the recent tail), so its summary is larger than the
+      // foldable span and it refuses every compaction. Real long tasks
+      // accumulate large evidence throughout, and the seed must do the same.
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/feed.log"}', text: log },
       { role: 'tool', name: 'read_file', arguments: '{"path":"src/text.js"}', text: 'export function truncate(text, max) {\n  if (text.length <= max) return text\n  return text.slice(0, max) + "…"\n}\n' },
       { role: 'tool', name: 'read_file', arguments: '{"path":"test/text.test.js"}', text: 'test("the result never exceeds max, ellipsis included", ...)\ntest("a surrogate pair is never split", ...)\n' },
-      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/feed.log"}', text: log },
       { role: 'assistant', text: `The failures are consistent with a boundary bug, not a rendering bug: build ${build} logs length_overflow retries whenever a card ends on an emoji. I have the helper and the failing assertions in context. Next step is the edit, then node --test.` },
+      // A LATE large block. Basic retains the recent tail by TOKENS: if the
+      // only large content is early, it becomes the retention boundary and
+      // almost nothing before it is foldable. Real long tasks keep producing
+      // evidence, so the seed does too.
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/feed-late.log"}', text: serviceLog({ seed: seed * 71, count: 320, lines: (r, i, stamp) => `${stamp} INFO  [feed] window=${i} batch=${hex(r, 6)} items=${10 + Math.floor(r() * 90)} truncated=${Math.floor(r() * 9)} glyphs=${20 + Math.floor(r() * 300)}` }) },
       { role: 'user', text: 'Continue. Run the tests yourself and only report what they actually say.' },
     ]
   },
@@ -236,6 +246,7 @@ const T2 = {
       { role: 'assistant', text: 'Reading the log now. I will take the values from the boot line and the config line, not from the summary at the end.' },
       { role: 'tool', name: 'read_file', arguments: '{"path":"logs/gateway-2026-10-11.log"}', text: log },
       { role: 'assistant', text: `The boot line says build=${values.build}. The config line says retry_timeout_ms=${values.timeout_ms}. The later retry lines reuse the same budget, which is consistent. I will record both verbatim.` },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/gateway-late.log"}', text: serviceLog({ seed: seed * 73, count: 340, lines: (r, i, stamp) => `${stamp} INFO  [gateway] request id=${hex(r, 10)} route=/v1/items status=${r() > 0.1 ? 200 : 503} ms=${10 + Math.floor(r() * 400)} pool=${Math.floor(r() * 32)}` }) },
       { role: 'user', text: 'The log has been rotated out of the workspace for retention reasons. Write answer.json with the build and timeout_ms you just read. If you do not have them, say so instead of guessing.' },
     ]
   },
@@ -338,10 +349,13 @@ export function createCache() {
     return [
       { role: 'user', text: 'Use a Map for the cache. It is faster for the hot path and we do not need to serialize it today.' },
       { role: 'assistant', text: 'Implemented with a Map. set/get are O(1), snapshot returns the Map itself.' },
+      // The log is early so the fold has a real span to summarize; the
+      // REVISION stays in the recent tail, because recalling it is the task.
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/cache.log"}', text: log },
       { role: 'user', text: 'Correction, and this supersedes the Map instruction: the cache must survive JSON.stringify for the persistence layer. Do not use a Map anywhere in src/cache.js. Use a plain object, and snapshot must return a plain object.' },
       { role: 'assistant', text: 'Understood. The final decision is a plain object. The current src/cache.js is still the Map version, so it will fail the serialization test until I revise it.' },
-      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/cache.log"}', text: log },
       { role: 'assistant', text: 'The persistence failures in the log are all empty snapshots, which is what a Map serializes to. That is consistent with the revision.' },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/cache-late.log"}', text: serviceLog({ seed: seed * 79, count: 330, lines: (r, i, stamp) => `${stamp} INFO  [cache] persist key=session:${hex(r, 8)} bytes=${200 + Math.floor(r() * 2000)} ok=${r() > 0.1} mode=${r() > 0.5 ? 'json' : 'memory'}` }) },
       { role: 'user', text: 'Finish it per the final decision. Run the tests.' },
     ]
   },
@@ -392,10 +406,14 @@ const T4 = {
     })
     return [
       { role: 'user', text: 'Read config/deploy.json and tell me the live region and replica count before we plan the migration.' },
-      { role: 'assistant', text: 'Reading the config.' },
+      { role: 'assistant', text: 'I will check the deploy log first, then read the live config.' },
+      // The long log is early and the observed config follows it, so the
+      // OBSERVATION is inside the foldable span rather than in the retained
+      // tail. That is what makes this task a test of the fold.
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/deploy.log"}', text: log },
       { role: 'tool', name: 'read_file', arguments: '{"path":"config/deploy.json"}', text: `{\n  "region": "${values.region}",\n  "replicas": ${values.replicas},\n  "release": "canary"\n}` },
       { role: 'assistant', text: `Observed region=${values.region}, replicas=${values.replicas}, release=canary.` },
-      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/deploy.log"}', text: log },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/deploy-late.log"}', text: serviceLog({ seed: seed * 83, count: 340, lines: (r, i, stamp) => `${stamp} INFO  [deploy] reconcile region=${values.region} step=${i} ready=${values.replicas} nodes=${Math.floor(r() * 12)}` }) },
       { role: 'user', text: 'The config file was rotated after you read it. The copy now in the workspace is a migration decoy, not the config you observed. Write deploy.plan.json from the values you actually saw, and do not use the decoy.' },
     ]
   },
@@ -448,10 +466,11 @@ const T5 = {
     })
     return [
       { role: 'user', text: 'The platform spec says a batch job may attempt five times. That is the baseline.' },
-      { role: 'assistant', text: 'Recorded: max_attempts=5 for the general path.' },
+      { role: 'assistant', text: 'Recorded: max_attempts=5 for the general path. I will read the batch log before changing anything.' },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/batch.log"}', text: log },
       { role: 'user', text: 'Revision for the batch path only: cap it at two attempts. Five caused the retry storm. This revision supersedes the spec for batch jobs.' },
       { role: 'assistant', text: 'Batch path: max_attempts=2. The general path keeps five.' },
-      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/batch.log"}', text: log },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/batch-late-a.log"}', text: serviceLog({ seed: seed * 89, count: 330, lines: (r, i, stamp) => `${stamp} INFO  [batch] attempt=${1 + Math.floor(r() * 2)} job=${hex(r, 6)} rows=${100 + Math.floor(r() * 900)} window_s=${window}` }) },
     ]
   },
   stageB(seed) {

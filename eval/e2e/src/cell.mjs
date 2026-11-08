@@ -468,6 +468,11 @@ export async function runCell({
       sourceKind: message?.source?.kind ?? null,
     }
   })
+  const userMessages = events.filter(event => event.type === 'user/message').slice(-10).map(event => ({
+    seq: Number(event.seq),
+    sourceKind: event.data.message?.source?.kind ?? null,
+    chars: (event.data.message?.content ?? []).reduce((sum, block) => sum + (block.type === 'text' ? block.text.length : 0), 0),
+  }))
   const summary = summarizeEvents(events)
   const surfaceNodes = session === null ? 0 : session.surface.nodes.length
   const retainedTokens = session === null ? null : (host?.ctx.tokenMeter.measure(session).totalTokens ?? null)
@@ -533,6 +538,7 @@ export async function runCell({
     },
     surfaceNodes,
     surfaceTail,
+    userMessages,
     retainedTokens,
     engineDecision,
     thresholdTokens,

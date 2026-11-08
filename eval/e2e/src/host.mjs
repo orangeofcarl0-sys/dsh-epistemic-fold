@@ -89,7 +89,7 @@ export async function mountHost({
     // never fire. 512 is the same value both arms get; it is not an EF-specific
     // advantage. `maxTokens` stays at the per-request cap so the summary call
     // itself is not truncated to the headroom.
-    new BasicCompaction(ctx, { auto: true, thresholdRatio, headroomTokens: 512, maxTokens: 1024 })
+    new BasicCompaction(ctx, { auto: true, thresholdRatio, retainRatio: 0.04, headroomTokens: 512, maxTokens: 1024 })
   } else {
     const { default: EpistemicFoldPlugin } = await import('../../../lib/plugin.js')
     await mkdir(roots.bundleRoot, { recursive: true })
@@ -97,6 +97,7 @@ export async function mountHost({
     plugin = new EpistemicFoldPlugin(ctx, {
       auto: true,
       thresholdRatio,
+      retainRatio: 0.04,
       headroomTokens: 512,
       maxTokens: 1024,
       mode: spec.mode,

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T16:03:49.810Z",
+  "generatedAt": "2026-11-08T16:16:36.696Z",
   "work": "EF-E2E",
   "tasks": [
     {
@@ -10,7 +10,7 @@
       "category": "implementation",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9374,
+      "seedTokens": 16880,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -73,7 +73,7 @@
       "category": "implementation",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9265,
+      "seedTokens": 16771,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -136,7 +136,7 @@
       "category": "exact-recall",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 18307,
+      "seedTokens": 27223,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -184,7 +184,7 @@
       "category": "exact-recall",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 18212,
+      "seedTokens": 27124,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -232,7 +232,7 @@
       "category": "decision-revision",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9500,
+      "seedTokens": 17596,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -310,7 +310,7 @@
       "category": "decision-revision",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9531,
+      "seedTokens": 17634,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -388,7 +388,7 @@
       "category": "tool-dependency",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9258,
+      "seedTokens": 17110,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -436,7 +436,7 @@
       "category": "tool-dependency",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 9380,
+      "seedTokens": 17318,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -484,9 +484,9 @@
       "category": "multi-fold",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 8573,
+      "seedTokens": 15305,
       "seedAboveThreshold": true,
-      "stageBTokens": 14649,
+      "stageBTokens": 21381,
       "stageBAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -549,9 +549,9 @@
       "category": "multi-fold",
       "budgetTokens": 16384,
       "thresholdTokens": 8192,
-      "seedTokens": 8571,
+      "seedTokens": 15303,
       "seedAboveThreshold": true,
-      "stageBTokens": 14688,
+      "stageBTokens": 21420,
       "stageBAboveThreshold": true,
       "outcomes": {
         "initial": {
