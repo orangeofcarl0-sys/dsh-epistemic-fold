@@ -1,7 +1,7 @@
 {
   "granted": true,
-  "grantedAt": "2026-11-08T16:09:17.227Z",
-  "manifestSha256": "8120ed9cd9a572780c02406762217ce9a883e747c0071e596d1f104c4f613deb",
+  "grantedAt": "2026-11-08T16:16:59.821Z",
+  "manifestSha256": "19a15d516a8e4167bbe1d3044c75c3147613daac3d92f4c6fb212d679ffb5d43",
   "campaign": "e2e-core-1",
   "cells": 39,
   "statement": "Delegated authorization under the EF-E2E work package: the envelope is authorized, this manifest is inside it, and the run may not exceed the manifest limits.",

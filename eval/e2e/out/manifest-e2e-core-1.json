@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-core-1",
-  "frozenAt": "2026-11-08T16:09:16.564Z",
+  "frozenAt": "2026-11-08T16:16:59.056Z",
   "work": "EF-E2E",
   "code": {
-    "evaluatedCommit": "4760b30ba34c8e0fa03707d438519b52315a1723",
+    "evaluatedCommit": "5d5c744a28fb45e197850f49005859b90d8bed5a",
     "branch": "chore/ef-c1-evaluation-foundation",
     "worktreeClean": true,
-    "sourceTreeDigest": "6964dcac9a9df9e634b05cebcd6bdc16852cb2a14694fcfa280a62c48061b648",
+    "sourceTreeDigest": "3935886608c56a9c15139e7d747c92febe8c8415da3ac382c47646e29230ebbb",
     "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
     "dsh": {
       "dsh-agent-loop": "0.2.1-rc.3",
@@ -62,70 +62,70 @@
       "id": "T1-s1",
       "template": "T1",
       "seed": 1,
-      "digest": "d35294df7288f9177a1de713e1a6bd1da95f8673ba1f545deb60b192c84d15e8"
+      "digest": "5df9173d30be7dd7df9c453ffd47bbf23aa3d03b3774247982b3b7bfe257e27b"
     },
     {
       "file": "eval/e2e/tasks/T1-s2.json",
       "id": "T1-s2",
       "template": "T1",
       "seed": 2,
-      "digest": "0e9a326cd7caaf0d666b34d1f4d804e8df8772b33133b170d63ce1470136c5c8"
+      "digest": "5ff2305a87ea3e8bfd87c614401387e729c8ac08941bf70ee754120b2023b257"
     },
     {
       "file": "eval/e2e/tasks/T2-s1.json",
       "id": "T2-s1",
       "template": "T2",
       "seed": 1,
-      "digest": "7ee597db02bbc6368a654111edafdf6026ba59b06633e465aaac76049881311b"
+      "digest": "4fad0f021759a4df2cdd425888c5ab345441e2bb894e58758e73638cc4cb90e8"
     },
     {
       "file": "eval/e2e/tasks/T2-s2.json",
       "id": "T2-s2",
       "template": "T2",
       "seed": 2,
-      "digest": "574a2c26b01d29edde52342400d15ab1bb90e1b937ca547c57fad3dbe37b1fcb"
+      "digest": "40bc6da374492cff10a0b81cf92b6c9bd9a1a0d9fb00264f05e33517236bbe27"
     },
     {
       "file": "eval/e2e/tasks/T3-s1.json",
       "id": "T3-s1",
       "template": "T3",
       "seed": 1,
-      "digest": "c63a66cdae2a19d177ac9c3b93a23b414ad3204a7eeb233f2660f8d6b166f498"
+      "digest": "ae3259f4ab9723dfec1b7e865e9d8a60f85baa62bd13e1e29f6f55cc8dfc63cc"
     },
     {
       "file": "eval/e2e/tasks/T3-s2.json",
       "id": "T3-s2",
       "template": "T3",
       "seed": 2,
-      "digest": "6494873a94d4b4e7ba5522997557feeb75a85aa8ec9378e5e181ece28a48f9dd"
+      "digest": "9583495eb2498a053adb0bfad097e974921eda2bd273d31ec6d950c89db5aacd"
     },
     {
       "file": "eval/e2e/tasks/T4-s1.json",
       "id": "T4-s1",
       "template": "T4",
       "seed": 1,
-      "digest": "a8990f5b17c971cf0954718400c7ff7b161c7ddf0f843a0c669d06bcbd916f82"
+      "digest": "1a3211f3d7487a0e9ef370ef4129d7d4845649a201a753204ec8c16e4f205e8e"
     },
     {
       "file": "eval/e2e/tasks/T4-s2.json",
       "id": "T4-s2",
       "template": "T4",
       "seed": 2,
-      "digest": "767cc2af5726ced06e0f062cfc93c756345630c936297968090d7ed19c5a6313"
+      "digest": "a079bf20a6c6116d201bb359abad4e392c141f18407c8805d45770b3bdeeabfb"
     },
     {
       "file": "eval/e2e/tasks/T5-s1.json",
       "id": "T5-s1",
       "template": "T5",
       "seed": 1,
-      "digest": "28058225992f0d11772a87632220aadf4adee67c68b1716df328a3ca29968b1b"
+      "digest": "726f9424d4e31b5619292f5ce718328f411fe6d4bbe88aaddf1405b0025edd0a"
     },
     {
       "file": "eval/e2e/tasks/T5-s2.json",
       "id": "T5-s2",
       "template": "T5",
       "seed": 2,
-      "digest": "e98cbe4bafb92058064b19bfd4bb15a8718085e453dce6d5705da22b75960d4a"
+      "digest": "39f1f93ccb8ba8c1782ef30d50a021d56338fe4effb32858e0825ac86fac5d86"
     },
     {
       "file": "eval/e2e/tasks/T6-s1.json",
