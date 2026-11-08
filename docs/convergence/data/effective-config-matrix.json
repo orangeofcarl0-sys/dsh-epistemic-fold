@@ -1,0 +1,1532 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T05:24:07.309Z",
+  "work": "EF-C0-WP2",
+  "source": "src/config/policy.ts#resolveEfConfig + src/config/effective-config.ts",
+  "tiers": {
+    "economy": {
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 400,
+        "framingMode": "system-dedup"
+      },
+      "evidence": "measured",
+      "steadinessMechanism": "none — this tier makes no steadiness claim"
+    },
+    "balanced": {
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 800,
+        "framingMode": "system-dedup",
+        "retainRatio": 0.24
+      },
+      "evidence": "hypothesis",
+      "steadinessMechanism": "a larger verbatim recent tail, so more facts never leave the surface at all and depend on neither the checkpoint nor recall"
+    },
+    "quality": {
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 1600,
+        "framingMode": "system-dedup",
+        "retainRatio": 0.24
+      },
+      "evidence": "hypothesis",
+      "steadinessMechanism": "a larger verbatim tail AND narrative checkpoints, so facts are protected both on the surface and across a fold"
+    }
+  },
+  "defaults": {
+    "semanticMode": "rationale",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 800,
+    "retainRatio": 0.16,
+    "leafAdmission": "legacy",
+    "rootPolicy": "legacy",
+    "framingMode": "legacy"
+  },
+  "rows": [
+    {
+      "id": "legacy-default",
+      "requestedMode": "legacy",
+      "explicit": null,
+      "valid": true,
+      "resolvedMode": "legacy",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "legacy-none",
+      "requestedMode": "legacy",
+      "explicit": {
+        "semanticMode": "none"
+      },
+      "valid": true,
+      "resolvedMode": "legacy",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "legacy-shadow",
+      "requestedMode": "legacy",
+      "explicit": {
+        "semanticContinuity": "shadow"
+      },
+      "valid": true,
+      "resolvedMode": "legacy",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "shadow",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call-plus-one-diagnostic-writer",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "legacy-active",
+      "requestedMode": "legacy",
+      "explicit": {
+        "semanticContinuity": "active"
+      },
+      "valid": true,
+      "resolvedMode": "legacy",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "active",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-combined-writer-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "legacy-none-active",
+      "requestedMode": "legacy",
+      "explicit": {
+        "semanticMode": "none",
+        "semanticContinuity": "active"
+      },
+      "valid": false,
+      "invalidReason": "epistemic-fold: semanticContinuity requires semanticMode \"rationale\" — the semantic writer shares the rationale call, and semanticMode \"none\" is the zero-LLM profile it must not upgrade"
+    },
+    {
+      "id": "basic-default",
+      "requestedMode": "basic",
+      "explicit": null,
+      "valid": true,
+      "resolvedMode": "basic",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": false,
+        "efSurfaceMounted": false
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": false,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "basic-none",
+      "requestedMode": "basic",
+      "explicit": {
+        "semanticMode": "none"
+      },
+      "valid": true,
+      "resolvedMode": "basic",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": false,
+        "efSurfaceMounted": false
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": false,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "basic-shadow",
+      "requestedMode": "basic",
+      "explicit": {
+        "semanticContinuity": "shadow"
+      },
+      "valid": true,
+      "resolvedMode": "basic",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "shadow",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call-plus-one-diagnostic-writer",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": false,
+        "efSurfaceMounted": false
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": false,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "basic-active",
+      "requestedMode": "basic",
+      "explicit": {
+        "semanticContinuity": "active"
+      },
+      "valid": true,
+      "resolvedMode": "basic",
+      "settings": {
+        "leafAdmission": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "rootPolicy": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "engine-default"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "engine-default"
+        },
+        "framingMode": {
+          "value": "legacy",
+          "origin": "engine-default"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "active",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.16,
+        "leafAdmission": "legacy",
+        "rootPolicy": "legacy",
+        "framingMode": "legacy",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-combined-writer-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": false,
+        "efSurfaceMounted": false
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": false,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": null
+    },
+    {
+      "id": "economy-default",
+      "requestedMode": "economy",
+      "explicit": null,
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 400,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "economy-none",
+      "requestedMode": "economy",
+      "explicit": {
+        "semanticMode": "none"
+      },
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 400,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [
+        {
+          "key": "semanticMode",
+          "preset": "rationale",
+          "explicit": "none"
+        }
+      ],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "economy-shadow",
+      "requestedMode": "economy",
+      "explicit": {
+        "semanticContinuity": "shadow"
+      },
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 400,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "shadow",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call-plus-one-diagnostic-writer",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "economy-active",
+      "requestedMode": "economy",
+      "explicit": {
+        "semanticContinuity": "active"
+      },
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 400,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "active",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-combined-writer-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "economy-none-shadow",
+      "requestedMode": "economy",
+      "explicit": {
+        "semanticMode": "none",
+        "semanticContinuity": "shadow"
+      },
+      "valid": false,
+      "invalidReason": "epistemic-fold: semanticContinuity requires semanticMode \"rationale\" — the semantic writer shares the rationale call, and semanticMode \"none\" is the zero-LLM profile it must not upgrade"
+    },
+    {
+      "id": "economy-hint-override",
+      "requestedMode": "economy",
+      "explicit": {
+        "rationaleHintTokens": 1200
+      },
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 1200,
+          "origin": "explicit"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.16,
+          "origin": "engine-default"
+        }
+      },
+      "overrides": [
+        {
+          "key": "rationaleHintTokens",
+          "preset": 400,
+          "explicit": 1200
+        }
+      ],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 1200,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "economy-retain-override",
+      "requestedMode": "economy",
+      "explicit": {
+        "retainRatio": 0.3
+      },
+      "valid": true,
+      "resolvedMode": "economy",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 400,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.3,
+          "origin": "explicit"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.3,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "measured"
+    },
+    {
+      "id": "balanced-default",
+      "requestedMode": "balanced",
+      "explicit": null,
+      "valid": true,
+      "resolvedMode": "balanced",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "balanced-none",
+      "requestedMode": "balanced",
+      "explicit": {
+        "semanticMode": "none"
+      },
+      "valid": true,
+      "resolvedMode": "balanced",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [
+        {
+          "key": "semanticMode",
+          "preset": "rationale",
+          "explicit": "none"
+        }
+      ],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "balanced-shadow",
+      "requestedMode": "balanced",
+      "explicit": {
+        "semanticContinuity": "shadow"
+      },
+      "valid": true,
+      "resolvedMode": "balanced",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "shadow",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call-plus-one-diagnostic-writer",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "balanced-active",
+      "requestedMode": "balanced",
+      "explicit": {
+        "semanticContinuity": "active"
+      },
+      "valid": true,
+      "resolvedMode": "balanced",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 800,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "active",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-combined-writer-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "quality-default",
+      "requestedMode": "quality",
+      "explicit": null,
+      "valid": true,
+      "resolvedMode": "quality",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 1600,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "quality-none",
+      "requestedMode": "quality",
+      "explicit": {
+        "semanticMode": "none"
+      },
+      "valid": true,
+      "resolvedMode": "quality",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 1600,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [
+        {
+          "key": "semanticMode",
+          "preset": "rationale",
+          "explicit": "none"
+        }
+      ],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "quality-shadow",
+      "requestedMode": "quality",
+      "explicit": {
+        "semanticContinuity": "shadow"
+      },
+      "valid": true,
+      "resolvedMode": "quality",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 1600,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "shadow",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-rationale-call-plus-one-diagnostic-writer",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "quality-active",
+      "requestedMode": "quality",
+      "explicit": {
+        "semanticContinuity": "active"
+      },
+      "valid": true,
+      "resolvedMode": "quality",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "rationale",
+          "origin": "preset"
+        },
+        "rationaleHintTokens": {
+          "value": 1600,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [],
+      "effective": {
+        "semanticMode": "rationale",
+        "semanticContinuity": "active",
+        "semanticWriterEnabled": true,
+        "journalEnabled": true,
+        "rationaleEnabled": true,
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "one-combined-writer-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    },
+    {
+      "id": "quality-zero-llm",
+      "requestedMode": "quality",
+      "explicit": {
+        "semanticMode": "none",
+        "semanticContinuity": "off"
+      },
+      "valid": true,
+      "resolvedMode": "quality",
+      "settings": {
+        "leafAdmission": {
+          "value": "economic",
+          "origin": "preset"
+        },
+        "rootPolicy": {
+          "value": "economics",
+          "origin": "preset"
+        },
+        "semanticMode": {
+          "value": "none",
+          "origin": "explicit"
+        },
+        "rationaleHintTokens": {
+          "value": 1600,
+          "origin": "preset"
+        },
+        "framingMode": {
+          "value": "system-dedup",
+          "origin": "preset"
+        },
+        "retainRatio": {
+          "value": 0.24,
+          "origin": "preset"
+        }
+      },
+      "overrides": [
+        {
+          "key": "semanticMode",
+          "preset": "rationale",
+          "explicit": "none"
+        }
+      ],
+      "effective": {
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "semanticWriterEnabled": false,
+        "journalEnabled": false,
+        "rationaleEnabled": false,
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "workingSetTokens": 1024,
+        "checkpointTokens": 4096
+      },
+      "declaredAuxiliaryCalls": "no-auxiliary-call",
+      "hostDependent": {
+        "stateProjectionMounted": "host-dependent",
+        "recallToolsMounted": "host-dependent (requires ctx.tools)",
+        "efSurfaceMounted": true
+      },
+      "runtimeSwitch": {
+        "modeSwitchAllowed": true,
+        "continuitySwitchAllowed": false,
+        "framingSwitchAllowed": false
+      },
+      "tierEvidence": "hypothesis"
+    }
+  ],
+  "summary": {
+    "scenarios": 25,
+    "valid": 23,
+    "invalid": 2,
+    "tiersWithRationale": [
+      "economy",
+      "balanced",
+      "quality"
+    ],
+    "tiersWithSemanticNone": []
+  }
+}

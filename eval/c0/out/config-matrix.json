@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T05:24:07.309Z",
+  "scenarios": 25,
+  "valid": 23,
+  "invalid": 2,
+  "tiersWithRationale": [
+    "economy",
+    "balanced",
+    "quality"
+  ],
+  "tiersWithSemanticNone": []
+}

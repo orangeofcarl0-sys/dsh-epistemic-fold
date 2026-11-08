@@ -216,19 +216,27 @@ All tiers resolve to ordinary configuration values; there is no mode-specific br
 
 ```text
 Economy
-  retain 0.16
-  semantic none
+  retain 0.16 (engine default)
+  semantic rationale, hint 400
 
 Balanced
   retain 0.24
-  semantic none
+  semantic rationale, hint 800
 
 Quality
   retain 0.24
-  semantic rationale
+  semantic rationale, hint 1600
 ```
 
-This makes the ladder attributable: Economy → Balanced changes retention; Balanced → Quality changes semantic redundancy.
+Current implementation, as of 2026-11-08: **every tier carries the rationale
+face** and the rungs differ in token budget, not in whether they ask. The
+pre-2026-10-18 configuration — `economy` and `balanced` at `semantic none` — is
+historical; it is preserved and explained in
+[convergence/CONFIGURATION_TRUTH.md](convergence/CONFIGURATION_TRUTH.md).
+
+`semanticMode: none` remains available as the explicit zero-LLM choice, and no
+product tier selects it. `semanticContinuity` is a separate switch (default
+`off`) and is refused under `semanticMode: none`.
 
 `legacy` is EF's compatibility baseline. `basic` delegates to the vendored Basic backend and mounts no EF user/model surface.
 
