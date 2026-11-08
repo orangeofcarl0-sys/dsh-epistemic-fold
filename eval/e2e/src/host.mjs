@@ -47,6 +47,10 @@ export const ARMS = Object.freeze({
   Bv: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'basic' },
   E0: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy' },
   E1: { backend: 'ef', ef: true, semanticMode: 'rationale', semanticContinuity: 'off', mode: 'economy' },
+  // S-safe: the same EF core, with semantic continuity ACTIVE after the
+  // source-authority fix. The writer is a real model call; every failure is
+  // counted in the assigned arm, never filtered to successful commits.
+  S: { backend: 'ef', ef: true, semanticMode: 'rationale', semanticContinuity: 'active', mode: 'economy' },
 })
 
 /**

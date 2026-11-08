@@ -92,17 +92,31 @@ async function main() {
 
   const templates = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']
   const cells = []
-  // Calibration: one instance, three arms. It proves the pipeline and is
-  // excluded from the core comparison.
-  for (const arm of ['B0', 'E0', 'E1']) {
-    cells.push({ block: 'calibration', task: 'T1-s1', arm, replicate: 0 })
-  }
-  // Core: 6 templates × 2 seeds × 3 arms = 36. Replicate r1 uses seed 1, r2
-  // uses seed 2; arms rotate inside each replicate block.
-  for (const replicate of [1, 2]) {
-    for (const [templateIndex, template] of templates.entries()) {
-      for (const arm of armRotation(templateIndex, replicate)) {
-        cells.push({ block: 'core', task: `${template}-s${replicate}`, arm, replicate })
+  const pilot = argv.includes('--pilot')
+  if (pilot) {
+    // Semantic pilot: three memory-sensitive tasks × {E1, S-safe} × 2
+    // replicates. The E1 rows run in the SAME batch as S, not reused from the
+    // core campaign, so the pairing is contemporaneous.
+    for (const task of ['T2-s1', 'T3-s1', 'T5-s1']) {
+      for (const replicate of [1, 2]) {
+        for (const arm of ['E1', 'S']) {
+          cells.push({ block: 'pilot', task, arm, replicate })
+        }
+      }
+    }
+  } else {
+    // Calibration: one instance, three arms. It proves the pipeline and is
+    // excluded from the core comparison.
+    for (const arm of ['B0', 'E0', 'E1']) {
+      cells.push({ block: 'calibration', task: 'T1-s1', arm, replicate: 0 })
+    }
+    // Core: 6 templates × 2 seeds × 3 arms = 36. Replicate r1 uses seed 1, r2
+    // uses seed 2; arms rotate inside each replicate block.
+    for (const replicate of [1, 2]) {
+      for (const [templateIndex, template] of templates.entries()) {
+        for (const arm of armRotation(templateIndex, replicate)) {
+          cells.push({ block: 'core', task: `${template}-s${replicate}`, arm, replicate })
+        }
       }
     }
   }
@@ -120,6 +134,17 @@ async function main() {
     } catch {
       dshVersions[name] = null
     }
+  }
+
+  // The envelope is cumulative across phases. A pilot manifest carries only
+  // what the core campaign left, so a second campaign cannot silently spend
+  // the same tokens twice.
+  let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
+  let priorCells = 0
+  if (pilot) {
+    const prior = JSON.parse(await readFile(join(OUT, 'results-e2e-core-1.json'), 'utf8'))
+    priorUsage = prior.budget.used
+    priorCells = prior.executed
   }
 
   const lock = await readFile(join(ROOT, 'package-lock.json'), 'utf8')
@@ -154,20 +179,20 @@ async function main() {
       core: cells.filter(cell => cell.block === 'core').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
-      operationalBudgetTokens: 'per task (4096); an operational budget, not the model window',
+      operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
       maxSteps: 8,
       outputTokensPerRequest: 1024,
       cachePolicy: 'no arm pre-warms or clears a provider cache; cross-cell prefix reuse is recorded, not controlled',
     },
     perCell: PER_CELL,
     limits: {
-      httpAttempts: ENVELOPE.httpAttempts,
-      inputTokens: ENVELOPE.inputTokens,
-      outputTokens: ENVELOPE.outputTokens,
-      wallClockMs: ENVELOPE.wallClockMs,
+      httpAttempts: ENVELOPE.httpAttempts - priorUsage.requests,
+      inputTokens: ENVELOPE.inputTokens - priorUsage.inputTokens,
+      outputTokens: ENVELOPE.outputTokens - priorUsage.outputTokens,
+      wallClockMs: ENVELOPE.wallClockMs - priorUsage.wallClockMs,
       monetaryUsd: ENVELOPE.monetaryUsd,
       monetaryNote: 'no per-token price is verifiable for this local route; token and request caps are the enforced bound',
-      continuationCells: ENVELOPE.continuationCells,
+      continuationCells: ENVELOPE.continuationCells - priorCells,
       paidConcurrency: ENVELOPE.paidConcurrency,
     },
     authorizationEnvelope: {

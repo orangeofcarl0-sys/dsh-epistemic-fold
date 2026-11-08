@@ -569,6 +569,10 @@ export async function runCell({
       ...usage,
       primary: primaryUsage,
       auxiliary: auxiliaryUsage,
+      byPurpose: log.requests.reduce((counts, entry) => {
+        counts[entry.purpose] = (counts[entry.purpose] ?? 0) + 1
+        return counts
+      }, {}),
       note: usage.unknownUsage > 0
         ? `${usage.unknownUsage} request(s) reported no usage; they are counted as unknown, not zero`
         : 'every request reported usage',

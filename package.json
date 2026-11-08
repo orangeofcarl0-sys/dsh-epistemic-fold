@@ -177,7 +177,12 @@
     "eval:e2e-authorize": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-core-1.json",
     "eval:e2e-check": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-core-1.json",
     "eval:e2e-run": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-core-1.json",
-    "eval:e2e-analyze": "node eval/e2e/src/analyze.mjs --campaign e2e-core-1"
+    "eval:e2e-analyze": "node eval/e2e/src/analyze.mjs --campaign e2e-core-1",
+    "eval:e2e-freeze-pilot": "node eval/e2e/src/freeze.mjs --campaign e2e-pilot-1 --pilot",
+    "eval:e2e-authorize-pilot": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
+    "eval:e2e-check-pilot": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
+    "eval:e2e-run-pilot": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
+    "eval:e2e-analyze-pilot": "node eval/e2e/src/analyze.mjs --campaign e2e-pilot-1"
   },
   "repository": {
     "type": "git",
