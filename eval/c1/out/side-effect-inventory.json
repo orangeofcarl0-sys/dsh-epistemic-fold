@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "work": "EF-C1",
   "generator": "eval/c1/side-effects.mjs",
-  "sourceCommit": "9e0c93cf236f69f035eee20953dc3436139c4eb5",
-  "generatedAt": "2026-11-08T09:43:57.629Z",
+  "sourceCommit": "438dfa95b661f976feecf58952063308281b5e80",
+  "generatedAt": "2026-11-08T15:25:54.372Z",
   "rule": "a tracked path may only be written by an explicit generate/promote operation",
   "scan": {
     "roots": [
@@ -585,7 +585,7 @@
     },
     {
       "file": "tests/r33-arms.spec.ts",
-      "line": 570,
+      "line": 576,
       "api": "mkdir",
       "target": "outDir",
       "curated": "r33-offline-report",
@@ -593,7 +593,7 @@
     },
     {
       "file": "tests/r33-arms.spec.ts",
-      "line": 571,
+      "line": 577,
       "api": "writeFile",
       "target": "join(outDir",
       "curated": "r33-offline-report",
@@ -601,7 +601,7 @@
     },
     {
       "file": "tests/r33-arms.spec.ts",
-      "line": 572,
+      "line": 578,
       "api": "writeFile",
       "target": "join(outDir",
       "curated": "r33-offline-report",
@@ -1065,7 +1065,7 @@
     },
     {
       "file": "eval/c0/gates.mjs",
-      "line": 272,
+      "line": 283,
       "api": "writeFileSync",
       "target": "join(DATA",
       "curated": "c0-generators",
@@ -1089,7 +1089,7 @@
     },
     {
       "file": "eval/c1/c1a-gate.mjs",
-      "line": 145,
+      "line": 147,
       "api": "writeFileSync",
       "target": "join(OUT",
       "curated": "c1-generators",
@@ -1105,7 +1105,7 @@
     },
     {
       "file": "eval/c1/gates.mjs",
-      "line": 247,
+      "line": 257,
       "api": "writeFileSync",
       "target": "join(OUT",
       "curated": "c1-generators",
@@ -1761,7 +1761,7 @@
     },
     {
       "file": "scripts/generate-presets.mjs",
-      "line": 395,
+      "line": 429,
       "api": "writeFileSync",
       "target": "output",
       "curated": "presets",
@@ -1769,7 +1769,7 @@
     },
     {
       "file": "scripts/generate-presets.mjs",
-      "line": 401,
+      "line": 435,
       "api": "writeFileSync",
       "target": "OUT_FILE",
       "curated": "presets",
