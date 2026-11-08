@@ -276,7 +276,10 @@ function checkpointOf(session) {
   for (const event of session.snapshotEvents()) {
     if (event.type !== 'user/message') continue
     const message = event.data.message
-    if (!isCompactCheckpointSource(message?.source)) continue
+    // A user/message event without a source is not a checkpoint; passing
+    // `undefined` to the predicate throws instead of answering false.
+    if (message?.source === undefined) continue
+    if (!isCompactCheckpointSource(message.source)) continue
     return {
       seq: Number(event.seq),
       source: 'log-only',

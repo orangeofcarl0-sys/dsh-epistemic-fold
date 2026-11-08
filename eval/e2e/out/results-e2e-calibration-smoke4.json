@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T16:06:13.406Z",
+  "campaign": "e2e-calibration-smoke4",
+  "manifestSha256": "223e2bd5a53cce6861dd23e780cb74181e01f92915ece31bf5d2b5dacd35e6f1",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "failed",
+  "stopReason": "runner-error: TypeError: Cannot read properties of undefined (reading 'kind')\n    at isCompactCheckpointSource (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/node_modules/@deepseek-ai/dsh-compaction/lib/index.js:129:16)\n    at checkpointOf (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:279:10)\n    at runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:454:48)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:259:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:331:1",
+  "planned": 39,
+  "executed": 0,
+  "budget": {
+    "used": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "wallClockMs": 0
+    },
+    "limits": {
+      "httpAttempts": 2200,
+      "inputTokens": 18000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 28800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 72,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "calibration",
+        "task": "T1-s1",
+        "arm": "B0",
+        "replicate": 0
+      },
+      "status": "error",
+      "reason": "runner-error: TypeError: Cannot read properties of undefined (reading 'kind')\n    at isCompactCheckpointSource (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/node_modules/@deepseek-ai/dsh-compaction/lib/index.js:129:16)\n    at checkpointOf (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:279:10)\n    at runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:454:48)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:259:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:331:1"
+    }
+  ]
+}
