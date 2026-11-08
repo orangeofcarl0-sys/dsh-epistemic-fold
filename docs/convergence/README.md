@@ -27,6 +27,18 @@ research archive; they are not rewritten.
 | [C1_DECISION.md](C1_DECISION.md) | the C1 answers, A-G, and the Track B handoff |
 | [C1_HANDOFF.md](C1_HANDOFF.md) | the round report: commits, gates, tests, blockers |
 
+## EF-E2E — real tasks, native host, bounded live runs
+
+| Document | Answers |
+|---|---|
+| [E2E_EXECUTION.md](E2E_EXECUTION.md) | scope, envelope, native harness, tasks, frozen manifests, evidence layout |
+| [E2E_RESULT.md](E2E_RESULT.md) | what the core/pilot/retest campaigns show, what was fixed, what remains unknown |
+
+The E2E campaigns executed 59 cells on `deepseek-v4.1-flash` inside the
+envelope's request/token/time caps. Results are exploratory: two seeds per
+template, one model, one route. The deployment hold stands, and no default is
+recommended by this round.
+
 Supporting documents:
 
 ```text
