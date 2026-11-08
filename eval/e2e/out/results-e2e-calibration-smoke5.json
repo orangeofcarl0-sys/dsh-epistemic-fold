@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T16:07:24.064Z",
+  "campaign": "e2e-calibration-smoke5",
+  "manifestSha256": "95847b178b2a12f8f98db5d6201db0dd9b8e5f24f324fee02707ae594562dd7d",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": null,
+  "planned": 39,
+  "executed": 1,
+  "budget": {
+    "used": {
+      "requests": 10,
+      "inputTokens": 2016,
+      "outputTokens": 3844,
+      "wallClockMs": 36854
+    },
+    "limits": {
+      "httpAttempts": 2200,
+      "inputTokens": 18000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 28800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 72,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "calibration",
+        "task": "T1-s1",
+        "arm": "B0",
+        "replicate": 0
+      },
+      "status": "executed",
+      "cellId": "T1-s1-B0-r0",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "finish",
+      "usage": {
+        "requests": 10,
+        "inputTokens": 2016,
+        "outputTokens": 3844,
+        "cacheReadTokens": 88192,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 958,
+          "outputTokens": 652,
+          "cacheReadTokens": 83584,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 1058,
+          "outputTokens": 3192,
+          "cacheReadTokens": 4608,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-calibration-smoke5\\T1-s1-B0-r0\\report.json"
+    }
+  ]
+}

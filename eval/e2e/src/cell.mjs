@@ -455,6 +455,19 @@ export async function runCell({
   const events = handle === null ? [] : handle.agent.session.snapshotEvents()
   const session = handle?.agent.session ?? null
   const checkpoint = session === null ? null : checkpointOf(session)
+  // Diagnostic for the checkpoint reader: the last surface nodes with their
+  // source kind. If a fold produced a checkpoint the reader cannot see, this
+  // says whether the message is missing, mis-sourced or outside the surface.
+  const surfaceTail = session === null ? [] : [...session.surface.nodes].slice(-8).map(seq => {
+    const event = session.eventAt(seq)
+    const message = session.deriveEventMessage(event)
+    return {
+      seq: Number(seq),
+      type: event.type,
+      role: message?.role ?? null,
+      sourceKind: message?.source?.kind ?? null,
+    }
+  })
   const summary = summarizeEvents(events)
   const surfaceNodes = session === null ? 0 : session.surface.nodes.length
   const retainedTokens = session === null ? null : (host?.ctx.tokenMeter.measure(session).totalTokens ?? null)
@@ -519,6 +532,7 @@ export async function runCell({
       digest: sha256(checkpoint.text),
     },
     surfaceNodes,
+    surfaceTail,
     retainedTokens,
     engineDecision,
     thresholdTokens,
