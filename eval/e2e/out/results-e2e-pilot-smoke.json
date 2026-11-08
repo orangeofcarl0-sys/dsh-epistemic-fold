@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T16:50:56.997Z",
+  "campaign": "e2e-pilot-smoke",
+  "manifestSha256": "24177766ad92513b458b7c6eeb6320cb20be9bbab78cccd169704fd4545854cf",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": null,
+  "planned": 12,
+  "executed": 1,
+  "budget": {
+    "used": {
+      "requests": 3,
+      "inputTokens": 18231,
+      "outputTokens": 876,
+      "wallClockMs": 9721
+    },
+    "limits": {
+      "httpAttempts": 1941,
+      "inputTokens": 16785420,
+      "outputTokens": 930834,
+      "wallClockMs": 28055448,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 33,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "pilot",
+        "task": "T2-s1",
+        "arm": "S",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T2-s1-S-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18231,
+        "outputTokens": 876,
+        "cacheReadTokens": 80128,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16808,
+          "outputTokens": 234,
+          "cacheReadTokens": 18944,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 1423,
+          "outputTokens": 642,
+          "cacheReadTokens": 61184,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "writer": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-pilot-smoke\\T2-s1-S-r1\\report.json"
+    }
+  ]
+}

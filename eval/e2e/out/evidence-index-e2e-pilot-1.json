@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-pilot-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T2-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T2-s1-E1-r1\\report.json",
+      "sha256": "2fd055f82cae3f4c69bf5e00173b603d1c0b7c5a4a00235e799da8a0dc0203c1"
+    },
+    {
+      "cellId": "T2-s1-S-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T2-s1-S-r1\\report.json",
+      "sha256": "646c3e453de3947543ad79817b038b236a8517345499b2be540f92a51e7a0e34"
+    },
+    {
+      "cellId": "T2-s1-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T2-s1-E1-r2\\report.json",
+      "sha256": "40cf75e390c7359f5247229362b8f7efc89e1d548fe3bf271f76499634d69d95"
+    },
+    {
+      "cellId": "T2-s1-S-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T2-s1-S-r2\\report.json",
+      "sha256": "4fae75f6ec2661f3d7f759ff2e8114bd5ae818bb05a158c60fab7dba049a8978"
+    },
+    {
+      "cellId": "T3-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T3-s1-E1-r1\\report.json",
+      "sha256": "7fea70f5133d4d655e8b623111ec56c3739801de79cf39a81f48127c72eb091d"
+    },
+    {
+      "cellId": "T3-s1-S-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T3-s1-S-r1\\report.json",
+      "sha256": "7ac786e89a92294776a39c6c4069956a2b596918e2bc6b83cd7862b5e95b202b"
+    },
+    {
+      "cellId": "T3-s1-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T3-s1-E1-r2\\report.json",
+      "sha256": "74491ce283d94b21b82022d000d710f23c22d27a3125125a336ed2bbe59fa11c"
+    },
+    {
+      "cellId": "T3-s1-S-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T3-s1-S-r2\\report.json",
+      "sha256": "f95ce47320313bfca001f3ec67e2802be1f0ef001d4cf6a8dc308ab69ddca40a"
+    },
+    {
+      "cellId": "T5-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T5-s1-E1-r1\\report.json",
+      "sha256": "03c01c5dbe3f8530ca651dd48ccaedffedc6569727da55d1978540449a2f056f"
+    },
+    {
+      "cellId": "T5-s1-S-r1",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T5-s1-S-r1\\report.json",
+      "sha256": "f6a3f0a9ff28019dad8572431f29bbeeaece64a621946555e51809e387f0b0f8"
+    },
+    {
+      "cellId": "T5-s1-E1-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T5-s1-E1-r2\\report.json",
+      "sha256": "32b75cd6e3d38ed3f334c9250f05fb68121ba2be247e7a81de837e2b35a1eba0"
+    },
+    {
+      "cellId": "T5-s1-S-r2",
+      "path": "eval\\e2e\\runs\\e2e-pilot-1\\T5-s1-S-r2\\report.json",
+      "sha256": "529032ce5ce44932fdce5877db26b8ae4c33c0461dcac96a8a179bbdc05aa274"
+    }
+  ]
+}

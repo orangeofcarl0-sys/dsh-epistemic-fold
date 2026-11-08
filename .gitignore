@@ -75,3 +75,4 @@ eval/r37d/runs-process/
 # written to eval/e2e/out/, which IS tracked.
 eval/e2e/runs/
 eval/e2e/probe-fold.mjs
+eval/e2e/candidate/

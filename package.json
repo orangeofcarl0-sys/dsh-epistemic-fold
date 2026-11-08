@@ -41,7 +41,8 @@
     "THIRD_PARTY_NOTICES.md",
     "scripts",
     "docs",
-    "profiles"
+    "profiles",
+    "!docs/semantic-continuity"
   ],
   "scripts": {
     "test": "vitest run",
@@ -182,7 +183,11 @@
     "eval:e2e-authorize-pilot": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
     "eval:e2e-check-pilot": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
     "eval:e2e-run-pilot": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-pilot-1.json",
-    "eval:e2e-analyze-pilot": "node eval/e2e/src/analyze.mjs --campaign e2e-pilot-1"
+    "eval:e2e-analyze-pilot": "node eval/e2e/src/analyze.mjs --campaign e2e-pilot-1",
+    "eval:e2e-freeze-retest": "node eval/e2e/src/freeze.mjs --campaign e2e-t5-retest-1 --retest",
+    "eval:e2e-authorize-retest": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-t5-retest-1.json",
+    "eval:e2e-run-retest": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-t5-retest-1.json",
+    "eval:e2e-analyze-retest": "node eval/e2e/src/analyze.mjs --campaign e2e-t5-retest-1"
   },
   "repository": {
     "type": "git",

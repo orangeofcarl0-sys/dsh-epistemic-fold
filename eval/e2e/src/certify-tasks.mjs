@@ -45,7 +45,7 @@ async function materialize(files, workspace) {
 
 async function listTaskFiles() {
   const names = await readdir(TASKS)
-  return names.filter(name => /^T\d-s\d\.json$/u.test(name)).sort()
+  return names.filter(name => /^T\d+[A-Za-z]?-s\d\.json$/u.test(name)).sort()
 }
 
 function measure(events) {

@@ -82,7 +82,7 @@ async function main() {
     process.exit(2)
   }
 
-  const taskFiles = (await readdir(TASKS)).filter(name => /^T\d-s\d\.json$/u.test(name)).sort()
+  const taskFiles = (await readdir(TASKS)).filter(name => /^T\d+[A-Za-z]?-s\d\.json$/u.test(name)).sort()
   const tasks = []
   for (const name of taskFiles) {
     const text = await readFile(join(TASKS, name), 'utf8')
@@ -93,7 +93,16 @@ async function main() {
   const templates = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']
   const cells = []
   const pilot = argv.includes('--pilot')
-  if (pilot) {
+  const retest = argv.includes('--retest')
+  if (retest) {
+    // Fault-retest reserve: T5b (the explicit-shape version) across the four
+    // arms, both seeds. The original T5 cells keep their recorded outcome.
+    for (const seed of [1, 2]) {
+      for (const arm of ['B0', 'E0', 'E1', 'S']) {
+        cells.push({ block: 'retest', task: `T5B-s${seed}`, arm, replicate: seed })
+      }
+    }
+  } else if (pilot) {
     // Semantic pilot: three memory-sensitive tasks × {E1, S-safe} × 2
     // replicates. The E1 rows run in the SAME batch as S, not reused from the
     // core campaign, so the pairing is contemporaneous.
@@ -141,10 +150,15 @@ async function main() {
   // the same tokens twice.
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  if (pilot) {
-    const prior = JSON.parse(await readFile(join(OUT, 'results-e2e-core-1.json'), 'utf8'))
-    priorUsage = prior.budget.used
-    priorCells = prior.executed
+  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1']) {
+    const path = join(OUT, `results-${priorCampaign}.json`)
+    if (!existsSync(path)) continue
+    const prior = JSON.parse(await readFile(path, 'utf8'))
+    priorUsage.requests += prior.budget.used.requests
+    priorUsage.inputTokens += prior.budget.used.inputTokens
+    priorUsage.outputTokens += prior.budget.used.outputTokens
+    priorUsage.wallClockMs += prior.budget.used.wallClockMs
+    priorCells += prior.executed
   }
 
   const lock = await readFile(join(ROOT, 'package-lock.json'), 'utf8')

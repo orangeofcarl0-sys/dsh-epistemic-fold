@@ -45,7 +45,7 @@ function probesFor(task) {
     const answer = JSON.parse(reference['deploy.plan.json'] ?? '{}')
     return [answer.region, String(answer.replicas)].filter(value => typeof value === 'string')
   }
-  if (task.template === 'T5') {
+  if (task.template === 'T5' || task.template === 'T5B') {
     const answer = JSON.parse(reference['final.json'] ?? '{}')
     return [String(answer.max_attempts), String(answer.window_seconds)].filter(value => typeof value === 'string')
   }
@@ -206,7 +206,7 @@ async function main() {
   })
 
   const byTemplateArm = {}
-  for (const template of ['T1', 'T2', 'T3', 'T4', 'T5', 'T6']) {
+  for (const template of [...new Set(executed.map(row => row.template))].sort()) {
     byTemplateArm[template] = {}
     for (const arm of ['B0', 'E0', 'E1', 'S']) {
       byTemplateArm[template][arm] = aggregate(executed.filter(row => row.template === template && row.arm === arm))

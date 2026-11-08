@@ -500,6 +500,22 @@ const T5 = {
   gold: { revision: 'batch max_attempts=2', stale: 5, window: 'seed-dependent' },
 }
 
+/**
+ * T5b: the same multi-fold task with the JSON SHAPE stated explicitly.
+ *
+ * The core T5 runs produced the right values nested under `batch` in every
+ * arm; the checker required a flat object. That is a task-contract defect, not
+ * a model failure, so the affected cells are re-run under a new template and a
+ * new campaign instead of being reinterpreted after the fact.
+ */
+const T5B = {
+  ...T5,
+  id: 'T5B',
+  title: 'Two folds, no stale revival (explicit output contract)',
+  task: 'Stage 1: write `state.json` as a FLAT JSON object with exactly one top-level field, `max_attempts` (number), for the batch path. Do not nest it under another key. Then reply with the value and no further tool calls.',
+  taskB: 'Stage 2: write `final.json` as a FLAT JSON object with exactly two top-level fields, `max_attempts` (number) and `window_seconds` (number). Do not nest them under another key. Then reply with the values and no further tool calls.',
+}
+
 const T6 = {
   id: 'T6',
   category: 'cache-pressure',
@@ -615,7 +631,7 @@ export function delayFor(attempt) {
   gold: { max_attempts: 4, base_ms: 250 },
 }
 
-const TEMPLATES = { T1, T2, T3, T4, T5, T6 }
+const TEMPLATES = { T1, T2, T3, T4, T5, T5B, T6 }
 
 function resolveValue(value, seed) {
   return typeof value === 'function' ? value(seed) : value

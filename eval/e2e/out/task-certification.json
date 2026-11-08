@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T16:16:36.696Z",
+  "generatedAt": "2026-11-08T16:58:28.256Z",
   "work": "EF-E2E",
   "tasks": [
     {
@@ -545,6 +545,136 @@
     {
       "id": "T5-s2",
       "template": "T5",
+      "seed": 2,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15303,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21420,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":45}, expected {\"max_attempts\":2,\"window_seconds\":45}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5B-s1",
+      "template": "T5B",
+      "seed": 1,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15305,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21381,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":30}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5B-s2",
+      "template": "T5B",
       "seed": 2,
       "category": "multi-fold",
       "budgetTokens": 16384,
