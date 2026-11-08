@@ -61,10 +61,10 @@ const ENVELOPE = {
 }
 
 const PER_CELL = {
-  requests: 12,
-  inputTokens: 120_000,
-  outputTokens: 8_000,
-  wallClockMs: 240_000,
+  requests: 24,
+  inputTokens: 250_000,
+  outputTokens: 20_000,
+  wallClockMs: 300_000,
 }
 
 function armRotation(templateIndex, replicate) {

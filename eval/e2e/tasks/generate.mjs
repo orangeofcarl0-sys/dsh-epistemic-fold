@@ -67,7 +67,7 @@ const T1 = {
   id: 'T1',
   category: 'implementation',
   title: 'Finish the excerpt truncation fix',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace(seed) {
     return {
@@ -159,7 +159,7 @@ export function truncate(text, max) {
     const build = hex(random, 8)
     const log = serviceLog({
       seed: seed * 7,
-      count: 130,
+      count: 450,
       lines: (r, i, stamp) => pick(r, [
         `${stamp} INFO  [feed] excerpt batch=${hex(r, 6)} items=${10 + Math.floor(r() * 90)} truncated=${Math.floor(r() * 9)}`,
         `${stamp} WARN  [feed] excerpt retry batch=${hex(r, 6)} reason=length_overflow attempt=${1 + Math.floor(r() * 3)}`,
@@ -186,7 +186,7 @@ const T2 = {
   id: 'T2',
   category: 'exact-recall',
   title: 'Record the incident build and timeout exactly',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace() {
     return {
@@ -220,7 +220,7 @@ const T2 = {
       '2026-10-11T02:14:03.004Z INFO  [gateway] config retry_timeout_ms=' + values.timeout_ms,
       ...serviceLog({
         seed: seed * 13,
-        count: 120,
+        count: 460,
         lines: (r, i, stamp) => pick(r, [
           `${stamp} INFO  [gateway] request id=${hex(r, 10)} route=/v1/items status=200 ms=${10 + Math.floor(r() * 400)}`,
           `${stamp} WARN  [gateway] upstream slow id=${hex(r, 10)} ms=${values.timeout_ms + Math.floor(r() * 50)} retry=1`,
@@ -247,7 +247,7 @@ const T3 = {
   id: 'T3',
   category: 'decision-revision',
   title: 'Follow the revised cache decision',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace() {
     return {
@@ -327,7 +327,7 @@ export function createCache() {
   history(seed) {
     const log = serviceLog({
       seed: seed * 17,
-      count: 110,
+      count: 500,
       lines: (r, i, stamp) => pick(r, [
         `${stamp} INFO  [cache] set key=session:${hex(r, 8)} bytes=${20 + Math.floor(r() * 400)}`,
         `${stamp} INFO  [cache] persist snapshot bytes=${200 + Math.floor(r() * 2000)} ok=${r() > 0.1}`,
@@ -353,7 +353,7 @@ const T4 = {
   id: 'T4',
   category: 'tool-dependency',
   title: 'Use the observed deploy values, not the decoy',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace() {
     return {
@@ -382,7 +382,7 @@ const T4 = {
       : { region: 'ap-south-1', replicas: 4 }
     const log = serviceLog({
       seed: seed * 19,
-      count: 120,
+      count: 480,
       lines: (r, i, stamp) => pick(r, [
         `${stamp} INFO  [deploy] reconcile region=${values.region} replicas=${values.replicas} ready=${values.replicas}`,
         `${stamp} INFO  [deploy] rollout step=${1 + Math.floor(r() * 5)} healthy=${values.replicas}`,
@@ -407,7 +407,7 @@ const T5 = {
   id: 'T5',
   category: 'multi-fold',
   title: 'Two folds, no stale revival',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace() {
     return {
@@ -439,7 +439,7 @@ const T5 = {
     const window = seed === 1 ? 30 : 45
     const log = serviceLog({
       seed: seed * 23,
-      count: 140,
+      count: 470,
       lines: (r, i, stamp) => pick(r, [
         `${stamp} INFO  [batch] attempt=${1 + Math.floor(r() * 5)} max_attempts=5 window_s=${window}`,
         `${stamp} WARN  [batch] retry storm job=${hex(r, 6)} attempts=${1 + Math.floor(r() * 5)}`,
@@ -464,7 +464,7 @@ const T5 = {
         arguments: '{"path":"logs/batch-late.log"}',
         text: serviceLog({
           seed: seed * 29,
-          count: 120,
+          count: 380,
           lines: (r, i, stamp) => pick(r, [
             `${stamp} INFO  [batch] window_s=${window} drain=${Math.floor(r() * 20)}`,
             `${stamp} INFO  [batch] attempt=${1 + Math.floor(r() * 2)} budget=2`,
@@ -485,7 +485,7 @@ const T6 = {
   id: 'T6',
   category: 'cache-pressure',
   title: 'Implement the retry contract under a stable long prefix',
-  operationalBudgetTokens: 4096,
+  operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace(seed) {
     const base = seed === 1 ? 100 : 150
@@ -577,7 +577,7 @@ export function delayFor(attempt) {
     ].join('\n')
     const log = serviceLog({
       seed: seed * 31,
-      count: 110,
+      count: 410,
       lines: (r, i, stamp) => pick(r, [
         `${stamp} INFO  [retry] attempt=${1 + Math.floor(r() * 4)} max_attempts=4 base_ms=250`,
         `${stamp} WARN  [retry] exhausted id=${hex(r, 8)} attempts=4`,

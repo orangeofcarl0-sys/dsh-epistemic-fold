@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T15:50:11.098Z",
+  "generatedAt": "2026-11-08T16:03:49.810Z",
   "work": "EF-E2E",
   "tasks": [
     {
@@ -8,9 +8,9 @@
       "template": "T1",
       "seed": 1,
       "category": "implementation",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 3041,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9374,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -71,9 +71,9 @@
       "template": "T1",
       "seed": 2,
       "category": "implementation",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2936,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9265,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -134,9 +134,9 @@
       "template": "T2",
       "seed": 1,
       "category": "exact-recall",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 4913,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 18307,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -182,9 +182,9 @@
       "template": "T2",
       "seed": 2,
       "category": "exact-recall",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 4879,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 18212,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -230,9 +230,9 @@
       "template": "T3",
       "seed": 1,
       "category": "decision-revision",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2322,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9500,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -308,9 +308,9 @@
       "template": "T3",
       "seed": 2,
       "category": "decision-revision",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2320,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9531,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -386,9 +386,9 @@
       "template": "T4",
       "seed": 1,
       "category": "tool-dependency",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2472,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9258,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -434,9 +434,9 @@
       "template": "T4",
       "seed": 2,
       "category": "tool-dependency",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2505,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9380,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -482,11 +482,11 @@
       "template": "T5",
       "seed": 1,
       "category": "multi-fold",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2669,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8573,
       "seedAboveThreshold": true,
-      "stageBTokens": 4686,
+      "stageBTokens": 14649,
       "stageBAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -547,11 +547,11 @@
       "template": "T5",
       "seed": 2,
       "category": "multi-fold",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 2671,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8571,
       "seedAboveThreshold": true,
-      "stageBTokens": 4701,
+      "stageBTokens": 14688,
       "stageBAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -612,9 +612,9 @@
       "template": "T6",
       "seed": 1,
       "category": "cache-pressure",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 3407,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8722,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
@@ -690,9 +690,9 @@
       "template": "T6",
       "seed": 2,
       "category": "cache-pressure",
-      "budgetTokens": 4096,
-      "thresholdTokens": 2048,
-      "seedTokens": 3416,
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8697,
       "seedAboveThreshold": true,
       "outcomes": {
         "initial": {
