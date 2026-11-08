@@ -69,3 +69,9 @@ eval/r37c/out/*progress*.json
 
 # R37-D live process runs (raw reports, traces, workspaces)
 eval/r37d/runs-process/
+
+# EF-E2E: raw run directories (workspaces, full requests, bundles) are local
+# evidence. The aggregate results and the per-cell reports' measured fields are
+# written to eval/e2e/out/, which IS tracked.
+eval/e2e/runs/
+eval/e2e/probe-fold.mjs

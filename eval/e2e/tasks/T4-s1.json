@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "T4-s1",
+  "template": "T4",
+  "seed": 1,
+  "category": "tool-dependency",
+  "title": "Use the observed deploy values, not the decoy",
+  "operationalBudgetTokens": 4096,
+  "thresholdRatio": 0.5,
+  "seededHistory": true,
+  "workspace": {
+    "package.json": "{\n  \"name\": \"deploy-plan\",\n  \"type\": \"module\",\n  \"private\": true\n}\n",
+    "config/deploy.json": "{\n  \"region\": \"us-east-1\",\n  \"replicas\": 5,\n  \"release\": \"stable\",\n  \"_note\": \"migration decoy; not the observed config\"\n}\n",
+    "README.md": "# Deploy plan\n\nWrite `deploy.plan.json` with the region and replica count you actually observed in the pre-rotation config.\n"
+  },
+  "history": [
+    {
+      "role": "user",
+      "text": "Read config/deploy.json and tell me the live region and replica count before we plan the migration."
+    },
+    {
+      "role": "assistant",
+      "text": "Reading the config."
+    },
+    {
+      "role": "tool",
+      "name": "read_file",
+      "arguments": "{\"path\":\"config/deploy.json\"}",
+      "text": "{\n  \"region\": \"eu-west-3\",\n  \"replicas\": 3,\n  \"release\": \"canary\"\n}"
+    },
+    {
+      "role": "assistant",
+      "text": "Observed region=eu-west-3, replicas=3, release=canary."
+    },
+    {
+      "role": "tool",
+      "name": "read_file",
+      "arguments": "{\"path\":\"logs/deploy.log\"}",
+      "text": "2026-10-14T09:12:05.365Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:12:37.144Z WARN  [deploy] node drain region=eu-west-3 id=4b75ae\n2026-10-14T09:12:44.733Z WARN  [deploy] node drain region=eu-west-3 id=372a68\n2026-10-14T09:12:48.677Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:12:54.027Z WARN  [deploy] node drain region=eu-west-3 id=5bf70d\n2026-10-14T09:13:30.603Z WARN  [deploy] node drain region=eu-west-3 id=3b7624\n2026-10-14T09:13:38.695Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:14:18.083Z WARN  [deploy] node drain region=eu-west-3 id=45cf72\n2026-10-14T09:14:30.866Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:14:40.344Z DEBUG [deploy] quota region=eu-west-3 used=0\n2026-10-14T09:14:53.174Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:15:12.057Z DEBUG [deploy] quota region=eu-west-3 used=9\n2026-10-14T09:15:25.179Z DEBUG [deploy] quota region=eu-west-3 used=33\n2026-10-14T09:15:31.241Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:15:39.171Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:16:18.210Z DEBUG [deploy] quota region=eu-west-3 used=0\n2026-10-14T09:16:58.225Z WARN  [deploy] node drain region=eu-west-3 id=acafae\n2026-10-14T09:17:05.940Z WARN  [deploy] node drain region=eu-west-3 id=dd0ba8\n2026-10-14T09:17:11.279Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:17:40.692Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:18:19.651Z WARN  [deploy] node drain region=eu-west-3 id=91f311\n2026-10-14T09:18:42.732Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:19:22.999Z WARN  [deploy] node drain region=eu-west-3 id=9b6dfb\n2026-10-14T09:19:27.730Z DEBUG [deploy] quota region=eu-west-3 used=26\n2026-10-14T09:19:55.703Z WARN  [deploy] node drain region=eu-west-3 id=3aeda5\n2026-10-14T09:20:15.499Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:20:24.044Z DEBUG [deploy] quota region=eu-west-3 used=22\n2026-10-14T09:20:57.539Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:21:10.307Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:21:40.969Z DEBUG [deploy] quota region=eu-west-3 used=15\n2026-10-14T09:21:55.168Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:22:14.411Z INFO  [deploy] rollout step=5 healthy=3\n2026-10-14T09:22:52.419Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:23:06.844Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:23:38.824Z DEBUG [deploy] quota region=eu-west-3 used=1\n2026-10-14T09:23:47.251Z DEBUG [deploy] quota region=eu-west-3 used=14\n2026-10-14T09:23:59.364Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:24:06.052Z WARN  [deploy] node drain region=eu-west-3 id=81f621\n2026-10-14T09:24:11.237Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:24:21.282Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:24:53.603Z DEBUG [deploy] quota region=eu-west-3 used=6\n2026-10-14T09:25:34.095Z WARN  [deploy] node drain region=eu-west-3 id=7bd232\n2026-10-14T09:25:35.197Z DEBUG [deploy] quota region=eu-west-3 used=26\n2026-10-14T09:25:49.770Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:25:55.304Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:25:56.618Z DEBUG [deploy] quota region=eu-west-3 used=5\n2026-10-14T09:26:19.488Z WARN  [deploy] node drain region=eu-west-3 id=cfac43\n2026-10-14T09:26:51.276Z DEBUG [deploy] quota region=eu-west-3 used=34\n2026-10-14T09:27:19.202Z INFO  [deploy] rollout step=5 healthy=3\n2026-10-14T09:27:58.141Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:28:33.210Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:28:50.044Z DEBUG [deploy] quota region=eu-west-3 used=17\n2026-10-14T09:29:21.337Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:29:22.666Z DEBUG [deploy] quota region=eu-west-3 used=20\n2026-10-14T09:29:27.777Z WARN  [deploy] node drain region=eu-west-3 id=82f671\n2026-10-14T09:30:01.471Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:30:23.528Z WARN  [deploy] node drain region=eu-west-3 id=0c1874\n2026-10-14T09:30:42.867Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:31:09.501Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:31:41.833Z WARN  [deploy] node drain region=eu-west-3 id=871ec1\n2026-10-14T09:32:11.814Z DEBUG [deploy] quota region=eu-west-3 used=12\n2026-10-14T09:32:26.861Z INFO  [deploy] rollout step=4 healthy=3\n2026-10-14T09:32:35.430Z WARN  [deploy] node drain region=eu-west-3 id=e8584d\n2026-10-14T09:32:56.205Z INFO  [deploy] rollout step=4 healthy=3\n2026-10-14T09:33:10.981Z WARN  [deploy] node drain region=eu-west-3 id=1c5c12\n2026-10-14T09:33:22.429Z WARN  [deploy] node drain region=eu-west-3 id=e2a837\n2026-10-14T09:33:26.753Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:33:55.103Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:34:34.917Z DEBUG [deploy] quota region=eu-west-3 used=21\n2026-10-14T09:34:49.997Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:35:04.491Z WARN  [deploy] node drain region=eu-west-3 id=dcb4b1\n2026-10-14T09:35:19.985Z DEBUG [deploy] quota region=eu-west-3 used=14\n2026-10-14T09:35:31.870Z WARN  [deploy] node drain region=eu-west-3 id=bea7e2\n2026-10-14T09:36:12.274Z DEBUG [deploy] quota region=eu-west-3 used=32\n2026-10-14T09:36:35.276Z INFO  [deploy] rollout step=4 healthy=3\n2026-10-14T09:36:39.806Z DEBUG [deploy] quota region=eu-west-3 used=2\n2026-10-14T09:37:09.364Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:37:44.170Z WARN  [deploy] node drain region=eu-west-3 id=f62cd2\n2026-10-14T09:37:55.750Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:38:22.028Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:38:54.710Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:39:35.374Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:39:56.328Z DEBUG [deploy] quota region=eu-west-3 used=27\n2026-10-14T09:40:18.411Z INFO  [deploy] rollout step=4 healthy=3\n2026-10-14T09:40:40.753Z DEBUG [deploy] quota region=eu-west-3 used=26\n2026-10-14T09:41:04.237Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:41:18.274Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:41:55.012Z DEBUG [deploy] quota region=eu-west-3 used=10\n2026-10-14T09:42:02.286Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:42:43.021Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:42:59.742Z DEBUG [deploy] quota region=eu-west-3 used=8\n2026-10-14T09:43:33.708Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:43:57.591Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:44:27.139Z WARN  [deploy] node drain region=eu-west-3 id=9fe540\n2026-10-14T09:44:52.884Z DEBUG [deploy] quota region=eu-west-3 used=33\n2026-10-14T09:45:09.628Z DEBUG [deploy] quota region=eu-west-3 used=2\n2026-10-14T09:45:48.973Z DEBUG [deploy] quota region=eu-west-3 used=21\n2026-10-14T09:46:16.286Z WARN  [deploy] node drain region=eu-west-3 id=6ca992\n2026-10-14T09:46:36.844Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:47:08.511Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:47:22.611Z INFO  [deploy] rollout step=4 healthy=3\n2026-10-14T09:47:59.109Z DEBUG [deploy] quota region=eu-west-3 used=38\n2026-10-14T09:48:26.426Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:48:30.695Z WARN  [deploy] node drain region=eu-west-3 id=b10582\n2026-10-14T09:48:40.489Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:49:09.212Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:49:17.028Z DEBUG [deploy] quota region=eu-west-3 used=13\n2026-10-14T09:49:40.522Z DEBUG [deploy] quota region=eu-west-3 used=34\n2026-10-14T09:49:42.460Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:49:49.203Z INFO  [deploy] reconcile region=eu-west-3 replicas=3 ready=3\n2026-10-14T09:50:01.619Z DEBUG [deploy] quota region=eu-west-3 used=27\n2026-10-14T09:50:12.745Z WARN  [deploy] node drain region=eu-west-3 id=506c2d\n2026-10-14T09:50:33.366Z INFO  [deploy] rollout step=2 healthy=3\n2026-10-14T09:50:37.840Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:50:54.015Z INFO  [deploy] rollout step=3 healthy=3\n2026-10-14T09:50:57.370Z DEBUG [deploy] quota region=eu-west-3 used=28\n2026-10-14T09:51:32.081Z DEBUG [deploy] quota region=eu-west-3 used=33\n2026-10-14T09:51:53.744Z INFO  [deploy] rollout step=5 healthy=3\n2026-10-14T09:52:34.719Z INFO  [deploy] rollout step=1 healthy=3\n2026-10-14T09:53:10.560Z DEBUG [deploy] quota region=eu-west-3 used=1"
+    },
+    {
+      "role": "user",
+      "text": "The config file was rotated after you read it. The copy now in the workspace is a migration decoy, not the config you observed. Write deploy.plan.json from the values you actually saw, and do not use the decoy."
+    }
+  ],
+  "task": "Write `deploy.plan.json` with exactly `region` and `replicas` from the pre-rotation config you inspected. Do not read or copy the decoy. Then reply with the values and no further tool calls.",
+  "reference": {
+    "deploy.plan.json": "{\n  \"region\": \"eu-west-3\",\n  \"replicas\": 3\n}\n"
+  },
+  "counterfactual": {
+    "deploy.plan.json": "{\n  \"region\": \"us-east-1\",\n  \"replicas\": 5\n}\n"
+  },
+  "checks": [
+    {
+      "kind": "json_equals",
+      "path": "deploy.plan.json",
+      "value": {
+        "region": "eu-west-3",
+        "replicas": 3
+      }
+    }
+  ],
+  "gold": {
+    "note": "observed values exist only in the seeded tool result"
+  }
+}

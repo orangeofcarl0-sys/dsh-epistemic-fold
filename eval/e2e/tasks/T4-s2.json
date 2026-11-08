@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "id": "T4-s2",
+  "template": "T4",
+  "seed": 2,
+  "category": "tool-dependency",
+  "title": "Use the observed deploy values, not the decoy",
+  "operationalBudgetTokens": 4096,
+  "thresholdRatio": 0.5,
+  "seededHistory": true,
+  "workspace": {
+    "package.json": "{\n  \"name\": \"deploy-plan\",\n  \"type\": \"module\",\n  \"private\": true\n}\n",
+    "config/deploy.json": "{\n  \"region\": \"us-east-1\",\n  \"replicas\": 5,\n  \"release\": \"stable\",\n  \"_note\": \"migration decoy; not the observed config\"\n}\n",
+    "README.md": "# Deploy plan\n\nWrite `deploy.plan.json` with the region and replica count you actually observed in the pre-rotation config.\n"
+  },
+  "history": [
+    {
+      "role": "user",
+      "text": "Read config/deploy.json and tell me the live region and replica count before we plan the migration."
+    },
+    {
+      "role": "assistant",
+      "text": "Reading the config."
+    },
+    {
+      "role": "tool",
+      "name": "read_file",
+      "arguments": "{\"path\":\"config/deploy.json\"}",
+      "text": "{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4,\n  \"release\": \"canary\"\n}"
+    },
+    {
+      "role": "assistant",
+      "text": "Observed region=ap-south-1, replicas=4, release=canary."
+    },
+    {
+      "role": "tool",
+      "name": "read_file",
+      "arguments": "{\"path\":\"logs/deploy.log\"}",
+      "text": "2026-10-14T09:12:05.413Z WARN  [deploy] node drain region=ap-south-1 id=e926e2\n2026-10-14T09:12:31.096Z DEBUG [deploy] quota region=ap-south-1 used=7\n2026-10-14T09:13:10.322Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:13:50.527Z INFO  [deploy] rollout step=4 healthy=4\n2026-10-14T09:14:20.162Z WARN  [deploy] node drain region=ap-south-1 id=3725cb\n2026-10-14T09:14:56.315Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:15:13.257Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:15:37.619Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:15:56.032Z WARN  [deploy] node drain region=ap-south-1 id=609272\n2026-10-14T09:16:28.662Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:16:55.589Z INFO  [deploy] rollout step=4 healthy=4\n2026-10-14T09:17:23.060Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:17:26.682Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:17:52.427Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:17:58.369Z WARN  [deploy] node drain region=ap-south-1 id=cb8ac8\n2026-10-14T09:18:35.931Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:18:42.772Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:19:21.354Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:19:22.907Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:19:40.557Z WARN  [deploy] node drain region=ap-south-1 id=20e816\n2026-10-14T09:20:05.243Z DEBUG [deploy] quota region=ap-south-1 used=28\n2026-10-14T09:20:35.681Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:20:57.254Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:21:37.659Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:21:58.682Z WARN  [deploy] node drain region=ap-south-1 id=8a93f4\n2026-10-14T09:22:02.954Z WARN  [deploy] node drain region=ap-south-1 id=18ffda\n2026-10-14T09:22:21.600Z WARN  [deploy] node drain region=ap-south-1 id=8cbc0a\n2026-10-14T09:23:01.570Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:23:29.879Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:24:06.938Z DEBUG [deploy] quota region=ap-south-1 used=15\n2026-10-14T09:24:24.558Z DEBUG [deploy] quota region=ap-south-1 used=18\n2026-10-14T09:24:33.498Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:25:09.321Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:25:30.799Z DEBUG [deploy] quota region=ap-south-1 used=3\n2026-10-14T09:26:07.724Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:26:31.470Z DEBUG [deploy] quota region=ap-south-1 used=9\n2026-10-14T09:26:52.087Z WARN  [deploy] node drain region=ap-south-1 id=286913\n2026-10-14T09:27:17.258Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:27:26.669Z WARN  [deploy] node drain region=ap-south-1 id=46369f\n2026-10-14T09:28:06.500Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:28:43.236Z WARN  [deploy] node drain region=ap-south-1 id=f3b23f\n2026-10-14T09:29:04.456Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:29:37.430Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:29:54.194Z WARN  [deploy] node drain region=ap-south-1 id=244ecc\n2026-10-14T09:29:58.422Z DEBUG [deploy] quota region=ap-south-1 used=26\n2026-10-14T09:30:03.197Z WARN  [deploy] node drain region=ap-south-1 id=a21612\n2026-10-14T09:30:10.940Z DEBUG [deploy] quota region=ap-south-1 used=11\n2026-10-14T09:30:43.471Z INFO  [deploy] rollout step=4 healthy=4\n2026-10-14T09:30:59.265Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:31:06.163Z WARN  [deploy] node drain region=ap-south-1 id=23d220\n2026-10-14T09:31:44.274Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:32:16.261Z WARN  [deploy] node drain region=ap-south-1 id=e7ed62\n2026-10-14T09:32:42.090Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:33:06.152Z DEBUG [deploy] quota region=ap-south-1 used=18\n2026-10-14T09:33:45.746Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:34:23.785Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:34:26.557Z DEBUG [deploy] quota region=ap-south-1 used=15\n2026-10-14T09:34:46.355Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:35:20.633Z DEBUG [deploy] quota region=ap-south-1 used=34\n2026-10-14T09:35:27.476Z DEBUG [deploy] quota region=ap-south-1 used=27\n2026-10-14T09:35:31.188Z WARN  [deploy] node drain region=ap-south-1 id=19f805\n2026-10-14T09:35:38.876Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:36:06.738Z DEBUG [deploy] quota region=ap-south-1 used=18\n2026-10-14T09:36:25.577Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:36:48.668Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:37:03.205Z WARN  [deploy] node drain region=ap-south-1 id=b7a6eb\n2026-10-14T09:37:35.610Z WARN  [deploy] node drain region=ap-south-1 id=638363\n2026-10-14T09:38:14.565Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:38:22.692Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:38:36.630Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:39:00.757Z WARN  [deploy] node drain region=ap-south-1 id=6f4fbe\n2026-10-14T09:39:27.512Z DEBUG [deploy] quota region=ap-south-1 used=5\n2026-10-14T09:39:33.193Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:39:54.124Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:40:18.245Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:40:30.849Z WARN  [deploy] node drain region=ap-south-1 id=2eda7b\n2026-10-14T09:40:36.633Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:40:48.328Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:41:09.501Z INFO  [deploy] rollout step=4 healthy=4\n2026-10-14T09:41:41.323Z WARN  [deploy] node drain region=ap-south-1 id=e4f6af\n2026-10-14T09:42:15.079Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:42:17.894Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:42:19.909Z WARN  [deploy] node drain region=ap-south-1 id=fe41d3\n2026-10-14T09:42:59.347Z WARN  [deploy] node drain region=ap-south-1 id=eb1161\n2026-10-14T09:43:05.242Z WARN  [deploy] node drain region=ap-south-1 id=4a6583\n2026-10-14T09:43:45.408Z INFO  [deploy] rollout step=4 healthy=4\n2026-10-14T09:43:52.391Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:43:56.920Z WARN  [deploy] node drain region=ap-south-1 id=c220e7\n2026-10-14T09:44:08.686Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:44:10.381Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:44:20.076Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:44:50.007Z WARN  [deploy] node drain region=ap-south-1 id=c11f5c\n2026-10-14T09:44:53.191Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:45:05.767Z DEBUG [deploy] quota region=ap-south-1 used=15\n2026-10-14T09:45:17.426Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:45:38.990Z DEBUG [deploy] quota region=ap-south-1 used=27\n2026-10-14T09:45:42.346Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:46:22.143Z WARN  [deploy] node drain region=ap-south-1 id=c81a9c\n2026-10-14T09:46:48.094Z DEBUG [deploy] quota region=ap-south-1 used=33\n2026-10-14T09:46:51.449Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:47:29.944Z DEBUG [deploy] quota region=ap-south-1 used=30\n2026-10-14T09:47:52.770Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:48:27.532Z WARN  [deploy] node drain region=ap-south-1 id=5eefda\n2026-10-14T09:48:39.547Z WARN  [deploy] node drain region=ap-south-1 id=7ab94a\n2026-10-14T09:48:42.110Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:48:46.818Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:49:22.666Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:49:46.716Z INFO  [deploy] rollout step=3 healthy=4\n2026-10-14T09:50:14.093Z INFO  [deploy] rollout step=1 healthy=4\n2026-10-14T09:50:15.151Z DEBUG [deploy] quota region=ap-south-1 used=24\n2026-10-14T09:50:39.814Z WARN  [deploy] node drain region=ap-south-1 id=101fd3\n2026-10-14T09:50:54.881Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:51:18.768Z DEBUG [deploy] quota region=ap-south-1 used=5\n2026-10-14T09:51:54.066Z DEBUG [deploy] quota region=ap-south-1 used=27\n2026-10-14T09:52:13.986Z DEBUG [deploy] quota region=ap-south-1 used=17\n2026-10-14T09:52:47.136Z INFO  [deploy] rollout step=5 healthy=4\n2026-10-14T09:52:56.728Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:53:25.256Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4\n2026-10-14T09:53:38.666Z INFO  [deploy] rollout step=2 healthy=4\n2026-10-14T09:53:41.203Z INFO  [deploy] reconcile region=ap-south-1 replicas=4 ready=4"
+    },
+    {
+      "role": "user",
+      "text": "The config file was rotated after you read it. The copy now in the workspace is a migration decoy, not the config you observed. Write deploy.plan.json from the values you actually saw, and do not use the decoy."
+    }
+  ],
+  "task": "Write `deploy.plan.json` with exactly `region` and `replicas` from the pre-rotation config you inspected. Do not read or copy the decoy. Then reply with the values and no further tool calls.",
+  "reference": {
+    "deploy.plan.json": "{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4\n}\n"
+  },
+  "counterfactual": {
+    "deploy.plan.json": "{\n  \"region\": \"us-east-1\",\n  \"replicas\": 5\n}\n"
+  },
+  "checks": [
+    {
+      "kind": "json_equals",
+      "path": "deploy.plan.json",
+      "value": {
+        "region": "ap-south-1",
+        "replicas": 4
+      }
+    }
+  ],
+  "gold": {
+    "note": "observed values exist only in the seeded tool result"
+  }
+}

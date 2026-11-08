@@ -170,7 +170,13 @@
     "eval:c1-gates": "node eval/c1/gates.mjs",
     "eval:c1a-gate": "node eval/c1/c1a-gate.mjs",
     "eval:c1-accounting": "node eval/c1/test-accounting.mjs",
-    "eval:c1": "npm run eval:c1-evidence && npm run eval:c1-compat && npm run eval:c1-readiness && npm run eval:c1-tests && npm run eval:c1-gates && npm run eval:c1a-gate"
+    "eval:c1": "npm run eval:c1-evidence && npm run eval:c1-compat && npm run eval:c1-readiness && npm run eval:c1-tests && npm run eval:c1-gates && npm run eval:c1a-gate",
+    "eval:e2e-tasks": "node eval/e2e/tasks/generate.mjs && node eval/e2e/src/certify-tasks.mjs",
+    "eval:e2e-self-test": "node eval/e2e/src/run.mjs --self-test",
+    "eval:e2e-freeze": "node eval/e2e/src/freeze.mjs --campaign e2e-core-1",
+    "eval:e2e-authorize": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-core-1.json",
+    "eval:e2e-check": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-core-1.json",
+    "eval:e2e-run": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-core-1.json"
   },
   "repository": {
     "type": "git",

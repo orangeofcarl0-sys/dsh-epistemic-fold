@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "id": "T3-s1",
+  "template": "T3",
+  "seed": 1,
+  "category": "decision-revision",
+  "title": "Follow the revised cache decision",
+  "operationalBudgetTokens": 4096,
+  "thresholdRatio": 0.5,
+  "seededHistory": true,
+  "workspace": {
+    "package.json": "{\n  \"name\": \"cache-service\",\n  \"type\": \"module\",\n  \"private\": true\n}\n",
+    "src/cache.js": "/**\n * Session cache. The first design used a Map.\n */\nexport function createCache() {\n  const store = new Map()\n  return {\n    set(key, value) { store.set(key, value) },\n    get(key) { return store.get(key) },\n    snapshot() { return store },\n  }\n}\n",
+    "test/cache.test.js": "import assert from 'node:assert/strict'\nimport test from 'node:test'\nimport { createCache } from '../src/cache.js'\n\ntest('stores and reads a value', () => {\n  const cache = createCache()\n  cache.set('a', 1)\n  assert.equal(cache.get('a'), 1)\n})\n\ntest('snapshot survives JSON serialization', () => {\n  const cache = createCache()\n  cache.set('a', 1)\n  const round = JSON.parse(JSON.stringify(cache.snapshot()))\n  assert.deepEqual(round, { a: 1 })\n})\n"
+  },
+  "history": [
+    {
+      "role": "user",
+      "text": "Use a Map for the cache. It is faster for the hot path and we do not need to serialize it today."
+    },
+    {
+      "role": "assistant",
+      "text": "Implemented with a Map. set/get are O(1), snapshot returns the Map itself."
+    },
+    {
+      "role": "user",
+      "text": "Correction, and this supersedes the Map instruction: the cache must survive JSON.stringify for the persistence layer. Do not use a Map anywhere in src/cache.js. Use a plain object, and snapshot must return a plain object."
+    },
+    {
+      "role": "assistant",
+      "text": "Understood. The final decision is a plain object. The current src/cache.js is still the Map version, so it will fail the serialization test until I revise it."
+    },
+    {
+      "role": "tool",
+      "name": "read_file",
+      "arguments": "{\"path\":\"logs/cache.log\"}",
+      "text": "2026-10-14T09:12:05.360Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:12:33.146Z INFO  [cache] persist snapshot bytes=1053 ok=true\n2026-10-14T09:13:00.157Z WARN  [cache] serialize empty snapshot keys=4\n2026-10-14T09:13:21.853Z INFO  [cache] set key=session:9413df60 bytes=141\n2026-10-14T09:13:24.980Z INFO  [cache] set key=session:a4cb135c bytes=356\n2026-10-14T09:13:38.400Z INFO  [cache] persist snapshot bytes=511 ok=true\n2026-10-14T09:13:44.669Z INFO  [cache] set key=session:5f1939ad bytes=112\n2026-10-14T09:13:55.734Z INFO  [cache] set key=session:6f70a571 bytes=169\n2026-10-14T09:14:33.426Z INFO  [cache] persist snapshot bytes=1269 ok=true\n2026-10-14T09:14:51.154Z DEBUG [cache] evict key=session:c0b39f8f age_s=602\n2026-10-14T09:15:00.081Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:15:13.173Z INFO  [cache] persist snapshot bytes=1757 ok=true\n2026-10-14T09:15:30.516Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:15:42.540Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:15:51.470Z DEBUG [cache] evict key=session:c0a5c858 age_s=623\n2026-10-14T09:16:22.148Z INFO  [cache] set key=session:3d463694 bytes=393\n2026-10-14T09:16:39.176Z INFO  [cache] persist snapshot bytes=895 ok=true\n2026-10-14T09:16:44.241Z INFO  [cache] persist snapshot bytes=1773 ok=true\n2026-10-14T09:16:58.276Z INFO  [cache] set key=session:46d1e56d bytes=122\n2026-10-14T09:17:06.329Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:17:12.035Z INFO  [cache] set key=session:cbb1a80b bytes=330\n2026-10-14T09:17:33.602Z INFO  [cache] set key=session:84797f0a bytes=69\n2026-10-14T09:18:07.157Z INFO  [cache] persist snapshot bytes=853 ok=true\n2026-10-14T09:18:45.082Z INFO  [cache] persist snapshot bytes=1631 ok=true\n2026-10-14T09:18:49.275Z DEBUG [cache] evict key=session:1858bd21 age_s=799\n2026-10-14T09:19:28.188Z INFO  [cache] set key=session:758ac3bb bytes=212\n2026-10-14T09:19:47.329Z DEBUG [cache] evict key=session:fab083f9 age_s=652\n2026-10-14T09:20:09.843Z INFO  [cache] persist snapshot bytes=2170 ok=true\n2026-10-14T09:20:48.412Z INFO  [cache] set key=session:3ba3c3a9 bytes=212\n2026-10-14T09:21:23.627Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:21:52.268Z WARN  [cache] serialize empty snapshot keys=0\n2026-10-14T09:21:59.049Z DEBUG [cache] evict key=session:e254f7c3 age_s=97\n2026-10-14T09:22:28.427Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:22:48.506Z INFO  [cache] persist snapshot bytes=743 ok=true\n2026-10-14T09:23:17.588Z DEBUG [cache] evict key=session:e5446121 age_s=718\n2026-10-14T09:23:46.210Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:23:56.549Z INFO  [cache] set key=session:47d87f7a bytes=372\n2026-10-14T09:24:05.732Z INFO  [cache] persist snapshot bytes=916 ok=true\n2026-10-14T09:24:44.381Z INFO  [cache] set key=session:855fb18d bytes=176\n2026-10-14T09:24:54.450Z INFO  [cache] persist snapshot bytes=426 ok=false\n2026-10-14T09:25:15.787Z WARN  [cache] serialize empty snapshot keys=0\n2026-10-14T09:25:35.427Z INFO  [cache] set key=session:4f0c1580 bytes=354\n2026-10-14T09:26:12.211Z DEBUG [cache] evict key=session:03d8667a age_s=176\n2026-10-14T09:26:31.176Z DEBUG [cache] evict key=session:da852dd0 age_s=839\n2026-10-14T09:27:09.904Z INFO  [cache] set key=session:be8cc991 bytes=172\n2026-10-14T09:27:27.185Z INFO  [cache] set key=session:96832263 bytes=187\n2026-10-14T09:27:37.264Z DEBUG [cache] evict key=session:4998a180 age_s=611\n2026-10-14T09:28:04.392Z INFO  [cache] persist snapshot bytes=1126 ok=true\n2026-10-14T09:28:29.340Z INFO  [cache] persist snapshot bytes=1136 ok=true\n2026-10-14T09:28:37.848Z WARN  [cache] serialize empty snapshot keys=0\n2026-10-14T09:29:04.318Z DEBUG [cache] evict key=session:15093157 age_s=326\n2026-10-14T09:29:28.268Z INFO  [cache] set key=session:a53e7c7f bytes=120\n2026-10-14T09:29:54.037Z DEBUG [cache] evict key=session:1d351076 age_s=168\n2026-10-14T09:30:31.375Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:31:06.673Z INFO  [cache] set key=session:e6ec9f8e bytes=278\n2026-10-14T09:31:14.380Z INFO  [cache] set key=session:78c924e0 bytes=145\n2026-10-14T09:31:37.106Z INFO  [cache] set key=session:7284d54f bytes=120\n2026-10-14T09:32:06.884Z INFO  [cache] persist snapshot bytes=481 ok=true\n2026-10-14T09:32:12.261Z INFO  [cache] set key=session:c2304e59 bytes=223\n2026-10-14T09:32:19.655Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:32:48.578Z INFO  [cache] persist snapshot bytes=933 ok=true\n2026-10-14T09:33:28.856Z INFO  [cache] persist snapshot bytes=202 ok=true\n2026-10-14T09:33:34.618Z DEBUG [cache] evict key=session:82792019 age_s=437\n2026-10-14T09:33:52.145Z INFO  [cache] set key=session:09fb04a3 bytes=88\n2026-10-14T09:34:04.612Z INFO  [cache] set key=session:832fb2b6 bytes=149\n2026-10-14T09:34:30.453Z DEBUG [cache] evict key=session:d05c3811 age_s=781\n2026-10-14T09:34:41.858Z WARN  [cache] serialize empty snapshot keys=1\n2026-10-14T09:34:49.993Z WARN  [cache] serialize empty snapshot keys=4\n2026-10-14T09:34:53.082Z WARN  [cache] serialize empty snapshot keys=4\n2026-10-14T09:35:14.167Z INFO  [cache] set key=session:2fc88bab bytes=191\n2026-10-14T09:35:16.514Z INFO  [cache] persist snapshot bytes=924 ok=true\n2026-10-14T09:35:33.829Z INFO  [cache] set key=session:ebe875be bytes=60\n2026-10-14T09:35:56.579Z DEBUG [cache] evict key=session:42943a01 age_s=555\n2026-10-14T09:36:35.851Z DEBUG [cache] evict key=session:117ace43 age_s=605\n2026-10-14T09:36:57.550Z DEBUG [cache] evict key=session:7bcf6a6d age_s=289\n2026-10-14T09:37:16.829Z INFO  [cache] persist snapshot bytes=823 ok=false\n2026-10-14T09:37:18.099Z DEBUG [cache] evict key=session:e3cf26dd age_s=285\n2026-10-14T09:37:58.276Z INFO  [cache] set key=session:4da61913 bytes=312\n2026-10-14T09:38:22.013Z DEBUG [cache] evict key=session:8ad5e790 age_s=874\n2026-10-14T09:38:56.306Z INFO  [cache] persist snapshot bytes=909 ok=true\n2026-10-14T09:39:33.341Z DEBUG [cache] evict key=session:266e7d4c age_s=330\n2026-10-14T09:40:05.718Z INFO  [cache] set key=session:682166e5 bytes=335\n2026-10-14T09:40:41.682Z DEBUG [cache] evict key=session:6b1b9fbe age_s=113\n2026-10-14T09:40:54.138Z INFO  [cache] set key=session:44f71a7e bytes=139\n2026-10-14T09:41:26.328Z DEBUG [cache] evict key=session:90fa1a60 age_s=723\n2026-10-14T09:41:51.038Z WARN  [cache] serialize empty snapshot keys=4\n2026-10-14T09:42:07.110Z DEBUG [cache] evict key=session:c6800517 age_s=241\n2026-10-14T09:42:31.220Z DEBUG [cache] evict key=session:2dd27703 age_s=394\n2026-10-14T09:43:09.705Z DEBUG [cache] evict key=session:ed1d755a age_s=761\n2026-10-14T09:43:22.007Z INFO  [cache] set key=session:97f10766 bytes=36\n2026-10-14T09:43:23.081Z WARN  [cache] serialize empty snapshot keys=3\n2026-10-14T09:43:53.913Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:44:06.018Z INFO  [cache] set key=session:89c11ba2 bytes=75\n2026-10-14T09:44:07.142Z WARN  [cache] serialize empty snapshot keys=2\n2026-10-14T09:44:31.798Z DEBUG [cache] evict key=session:f1d964eb age_s=341\n2026-10-14T09:45:04.444Z INFO  [cache] persist snapshot bytes=2061 ok=false\n2026-10-14T09:45:23.623Z INFO  [cache] set key=session:6d7fa560 bytes=304\n2026-10-14T09:45:49.550Z WARN  [cache] serialize empty snapshot keys=0\n2026-10-14T09:46:01.711Z DEBUG [cache] evict key=session:b5ae68e5 age_s=521\n2026-10-14T09:46:28.155Z INFO  [cache] persist snapshot bytes=1336 ok=false\n2026-10-14T09:47:03.806Z INFO  [cache] persist snapshot bytes=1483 ok=true\n2026-10-14T09:47:34.428Z INFO  [cache] set key=session:d812f3f3 bytes=54\n2026-10-14T09:47:56.895Z DEBUG [cache] evict key=session:ef3226a8 age_s=891\n2026-10-14T09:48:09.727Z DEBUG [cache] evict key=session:1c9c5b6f age_s=540\n2026-10-14T09:48:27.122Z DEBUG [cache] evict key=session:b29d414c age_s=620\n2026-10-14T09:48:50.276Z INFO  [cache] set key=session:98ddb81e bytes=159\n2026-10-14T09:49:10.123Z WARN  [cache] serialize empty snapshot keys=3\n2026-10-14T09:49:27.583Z INFO  [cache] persist snapshot bytes=1937 ok=true\n2026-10-14T09:49:56.198Z INFO  [cache] set key=session:6f3fe91b bytes=64\n2026-10-14T09:50:36.516Z WARN  [cache] serialize empty snapshot keys=1"
+    },
+    {
+      "role": "assistant",
+      "text": "The persistence failures in the log are all empty snapshots, which is what a Map serializes to. That is consistent with the revision."
+    },
+    {
+      "role": "user",
+      "text": "Finish it per the final decision. Run the tests."
+    }
+  ],
+  "task": "Finish `src/cache.js` according to our final decision. Run `node --test` and make every test pass. Then reply with a short summary and no further tool calls.",
+  "reference": {
+    "src/cache.js": "/**\n * Session cache. Plain object by the final decision: it must serialize.\n */\nexport function createCache() {\n  let store = Object.create(null)\n  return {\n    set(key, value) { store[key] = value },\n    get(key) { return store[key] },\n    snapshot() { return { ...store } },\n  }\n}\n"
+  },
+  "counterfactual": {
+    "src/cache.js": "/**\n * Session cache. Keeps the Map and adds a serializer.\n */\nexport function createCache() {\n  const store = new Map()\n  return {\n    set(key, value) { store.set(key, value) },\n    get(key) { return store.get(key) },\n    snapshot() {\n      const out = {}\n      for (const [key, value] of store) out[key] = value\n      return out\n    },\n  }\n}\n"
+  },
+  "checks": [
+    {
+      "kind": "tests"
+    },
+    {
+      "kind": "file_not_contains",
+      "path": "src/cache.js",
+      "needle": "new Map("
+    },
+    {
+      "kind": "external_script",
+      "path": "eval/e2e/checkers/T3.mjs"
+    }
+  ],
+  "gold": {
+    "decision": "plain object, no Map, snapshot returns a plain object"
+  }
+}
