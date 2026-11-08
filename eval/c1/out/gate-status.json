@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "work": "EF-C1",
-  "generatedAt": "2026-11-08T10:14:40.715Z",
-  "sourceCommit": "9a4ec76e1f5db3c9779e0560f628cac2d91f4816",
+  "generatedAt": "2026-11-08T10:15:19.346Z",
+  "sourceCommit": "6da47094199ab85569aa61829775986620ae5a84",
   "gates": [
     {
       "id": "C1-G0",
       "name": "Git / baseline integrity",
       "status": "passed",
-      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD 9a4ec76e1f5d, tracked evidence clean true",
+      "detail": "branch chore/ef-c1-evaluation-foundation, HEAD 6da47094199a, tracked evidence clean true",
       "evidence": "git rev-parse / diff"
     },
     {
