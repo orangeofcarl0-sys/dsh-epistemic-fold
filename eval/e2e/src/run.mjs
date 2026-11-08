@@ -67,16 +67,25 @@ const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8'
  * itself must move; the source tree digest excludes exactly those two paths and
  * nothing else. A modified task file is a different experiment.
  */
+function sourceTreeDigest() {
+  const lines = git('ls-tree', '-r', 'HEAD').split('\n').filter(line => {
+    const path = line.slice(line.indexOf('\t') + 1)
+    return path !== 'eval/e2e/authorization.json' && !path.startsWith('eval/e2e/out/')
+  })
+  return sha256(lines.join('\n'))
+}
+
 async function verifyBinding(manifest) {
-  const digest = sha256(git('ls-tree', '-r', 'HEAD', '--', '.',
-    ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/authorization.json'))
+  const digest = sourceTreeDigest()
   if (digest !== manifest.code.sourceTreeDigest) {
     return { ok: false, reason: 'the source tree differs from the frozen manifest' }
   }
-  const dirty = git('status', '--porcelain', '--', '.',
-    ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/runs')
+  const dirty = git('status', '--porcelain').split('\n').filter(line => {
+    const path = line.slice(3)
+    return path.length > 0 && !path.startsWith('eval/e2e/out/') && !path.startsWith('eval/e2e/runs/')
+  })
   if (dirty.length > 0) {
-    return { ok: false, reason: `the worktree is dirty outside the evidence directories:\n${dirty}` }
+    return { ok: false, reason: `the worktree is dirty outside the evidence directories:\n${dirty.join('\n')}` }
   }
   for (const task of manifest.tasks) {
     const text = await readFile(join(ROOT, task.file), 'utf8')

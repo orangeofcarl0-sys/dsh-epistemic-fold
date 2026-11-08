@@ -34,6 +34,21 @@ const value = (name, fallback) => {
 const sha256 = text => createHash('sha256').update(text, 'utf8').digest('hex')
 const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim()
 
+/**
+ * The tracked source tree, minus the two paths a freeze necessarily adds
+ * afterwards: the manifest/results directory and the authorization.
+ *
+ * `git ls-tree` does not accept `:(exclude)` pathspec magic, so the filter is
+ * applied to its output. The line format is `<mode> <type> <sha>\t<path>`.
+ */
+function sourceTreeDigest() {
+  const lines = git('ls-tree', '-r', 'HEAD').split('\n').filter(line => {
+    const path = line.slice(line.indexOf('\t') + 1)
+    return path !== 'eval/e2e/authorization.json' && !path.startsWith('eval/e2e/out/')
+  })
+  return sha256(lines.join('\n'))
+}
+
 /** The envelope's hard caps (work package §2.3). Not a target. */
 const ENVELOPE = {
   continuationCells: 72,
@@ -120,8 +135,7 @@ async function main() {
       // The manifest and its authorization are committed AFTER the freeze, so
       // HEAD necessarily moves by one commit. The binding is the source tree
       // excluding eval/e2e/out, which no later evidence commit may change.
-      sourceTreeDigest: sha256(git('ls-tree', '-r', 'HEAD', '--', '.',
-        ':(exclude)eval/e2e/out', ':(exclude)eval/e2e/authorization.json')),
+      sourceTreeDigest: sourceTreeDigest(),
       lockSha256: sha256(lock),
       dsh: dshVersions,
     },
