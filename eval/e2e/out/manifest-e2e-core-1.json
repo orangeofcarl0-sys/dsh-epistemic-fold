@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-core-1",
-  "frozenAt": "2026-11-08T16:00:28.175Z",
+  "frozenAt": "2026-11-08T16:04:12.596Z",
   "work": "EF-E2E",
   "code": {
-    "evaluatedCommit": "b7d5b67291598f8b86f5f87a1cb0209d9e01db04",
+    "evaluatedCommit": "993f4612fb10665948b366b51c545c77b5a30c0a",
     "branch": "chore/ef-c1-evaluation-foundation",
     "worktreeClean": true,
-    "sourceTreeDigest": "938c5904da998c99eafb95fc634073e9abf7bb507a2d711029f40b2102d84b72",
+    "sourceTreeDigest": "2ed3960bb6573db7a2daeeabb348ffa7343ba29f902d8eecc1b691645c061cc3",
     "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
     "dsh": {
       "dsh-agent-loop": "0.2.1-rc.3",
@@ -62,84 +62,84 @@
       "id": "T1-s1",
       "template": "T1",
       "seed": 1,
-      "digest": "2cf7e39510d96a9730cc3924a840fcad006d9af5c088ce4464137aa70b3ffc28"
+      "digest": "d35294df7288f9177a1de713e1a6bd1da95f8673ba1f545deb60b192c84d15e8"
     },
     {
       "file": "eval/e2e/tasks/T1-s2.json",
       "id": "T1-s2",
       "template": "T1",
       "seed": 2,
-      "digest": "1396e1bf404cfa02fdafd205813263368e8c17a9847b8023cf80d60fbcfa562d"
+      "digest": "0e9a326cd7caaf0d666b34d1f4d804e8df8772b33133b170d63ce1470136c5c8"
     },
     {
       "file": "eval/e2e/tasks/T2-s1.json",
       "id": "T2-s1",
       "template": "T2",
       "seed": 1,
-      "digest": "ccbd80349f10bd0f1f6caa3cf7f450cce2c465b429f81d10ab47edbc9fea6c50"
+      "digest": "7ee597db02bbc6368a654111edafdf6026ba59b06633e465aaac76049881311b"
     },
     {
       "file": "eval/e2e/tasks/T2-s2.json",
       "id": "T2-s2",
       "template": "T2",
       "seed": 2,
-      "digest": "a51aff398464ba5af5404c47a420415b931f2122d507262455b584925a9d66c1"
+      "digest": "574a2c26b01d29edde52342400d15ab1bb90e1b937ca547c57fad3dbe37b1fcb"
     },
     {
       "file": "eval/e2e/tasks/T3-s1.json",
       "id": "T3-s1",
       "template": "T3",
       "seed": 1,
-      "digest": "52e4e7af5e9f89fe1a9809d4ff85d1a4d9107d218cd34300b489f736dbe015e9"
+      "digest": "c63a66cdae2a19d177ac9c3b93a23b414ad3204a7eeb233f2660f8d6b166f498"
     },
     {
       "file": "eval/e2e/tasks/T3-s2.json",
       "id": "T3-s2",
       "template": "T3",
       "seed": 2,
-      "digest": "5bb8a3ced946c91465b29cf5b6725412000361d19622d385f57d29f26aee65e6"
+      "digest": "6494873a94d4b4e7ba5522997557feeb75a85aa8ec9378e5e181ece28a48f9dd"
     },
     {
       "file": "eval/e2e/tasks/T4-s1.json",
       "id": "T4-s1",
       "template": "T4",
       "seed": 1,
-      "digest": "0c8815965efb3e3d5d57c64b624989ffd8750c08017420e0cb503e242c88e64f"
+      "digest": "a8990f5b17c971cf0954718400c7ff7b161c7ddf0f843a0c669d06bcbd916f82"
     },
     {
       "file": "eval/e2e/tasks/T4-s2.json",
       "id": "T4-s2",
       "template": "T4",
       "seed": 2,
-      "digest": "b840b0923c8df30444dab06821541c4652d16ff39d01e844137f331452a0b58d"
+      "digest": "767cc2af5726ced06e0f062cfc93c756345630c936297968090d7ed19c5a6313"
     },
     {
       "file": "eval/e2e/tasks/T5-s1.json",
       "id": "T5-s1",
       "template": "T5",
       "seed": 1,
-      "digest": "7d2d0ccb3645ca486bcba53e852ecfe04b1d662e3fd87d668c0fb3d330174023"
+      "digest": "28058225992f0d11772a87632220aadf4adee67c68b1716df328a3ca29968b1b"
     },
     {
       "file": "eval/e2e/tasks/T5-s2.json",
       "id": "T5-s2",
       "template": "T5",
       "seed": 2,
-      "digest": "1a10185eb9c99bf74ddadf4c2a1178fc8b121c0b379e9fbb5485e92bc3d460d0"
+      "digest": "e98cbe4bafb92058064b19bfd4bb15a8718085e453dce6d5705da22b75960d4a"
     },
     {
       "file": "eval/e2e/tasks/T6-s1.json",
       "id": "T6-s1",
       "template": "T6",
       "seed": 1,
-      "digest": "7838c26f4d90aee2b07216e7bde7c930c0924a9a9188395aa3b6d37782a4b9e7"
+      "digest": "6d245324b4904dd1f27e5ebebbe7462cf33a5a01f0ec2c482470d6d63d2f858d"
     },
     {
       "file": "eval/e2e/tasks/T6-s2.json",
       "id": "T6-s2",
       "template": "T6",
       "seed": 2,
-      "digest": "79b8f977ed4cbc4c178f62a3e19c5e6d2031431b1b8de9eb4f4e6f8fcae27775"
+      "digest": "4e4ba85debd9fda385f87b9fddc74d83d4cfbc6f7423035482311e7ad50b6366"
     }
   ],
   "cells": [
@@ -389,10 +389,10 @@
     "cachePolicy": "no arm pre-warms or clears a provider cache; cross-cell prefix reuse is recorded, not controlled"
   },
   "perCell": {
-    "requests": 12,
-    "inputTokens": 120000,
-    "outputTokens": 8000,
-    "wallClockMs": 240000
+    "requests": 24,
+    "inputTokens": 250000,
+    "outputTokens": 20000,
+    "wallClockMs": 300000
   },
   "limits": {
     "httpAttempts": 2200,
