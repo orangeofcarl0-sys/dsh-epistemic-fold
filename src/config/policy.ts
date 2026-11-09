@@ -146,6 +146,19 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly foldedSpanIndex: boolean
   /**
+   * EXPERIMENTAL: render an EXECUTABLE address for the folded tool results.
+   *
+   * Default `false`. A locator names the archived message index and the
+   * `context_recall` call that opens it, so the model cannot mistake a
+   * historical observation for the current contents of a workspace path. The
+   * E2E index campaign measured the failure this addresses: the prose form of
+   * `Archived calls` led the model to re-issue `read_file` on a rotated path.
+   *
+   * Off until an experiment shows the address pays for its tokens. It adds no
+   * tool and intercepts nothing: `context_recall` is the existing reader.
+   */
+  readonly archiveLocator: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -347,6 +360,11 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    */
   foldedSpanIndex?: boolean
   /**
+   * EXPERIMENTAL: render an executable archive address for folded tool
+   * results. Default `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  archiveLocator?: boolean
+  /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
@@ -488,6 +506,12 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof foldedSpanIndex !== 'boolean') {
     throw new Error('epistemic-fold: foldedSpanIndex must be a boolean')
   }
+  // EXPERIMENTAL, off by default. Renders executable archive addresses into
+  // the checkpoint body; see `archiveLocator` in the resolved config.
+  const archiveLocator = expanded.archiveLocator ?? false
+  if (typeof archiveLocator !== 'boolean') {
+    throw new Error('epistemic-fold: archiveLocator must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -531,6 +555,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     referentialArchive,
     recallAffordance,
     foldedSpanIndex,
+    archiveLocator,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,

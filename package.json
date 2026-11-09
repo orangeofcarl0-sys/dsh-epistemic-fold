@@ -202,6 +202,7 @@
     "eval:e2e-stages": "node eval/e2e/src/stage-attribution.mjs",
     "eval:e2e-archive": "node eval/e2e/src/archive-research.mjs",
     "eval:ef-r1-authority": "node eval/ef-r1/operation-authority.mjs",
+    "eval:ef-r1-locator": "node eval/ef-r1/locator-contract.mjs",
     "eval:ef-r1-repo": "node eval/ef-r1/repository-state.mjs"
   },
   "repository": {

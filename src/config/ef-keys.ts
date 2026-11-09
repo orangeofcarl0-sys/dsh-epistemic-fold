@@ -75,6 +75,11 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   // distractor log, folds the useful observation, and then concludes the value
   // is unknown. The generic affordance did not help; WHAT was folded might.
   { name: 'foldedSpanIndex', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: render an EXECUTABLE archive address for the
+  // folded tool results. The measured failure is a model that re-issues
+  // `read_file` against a path the fold archived; this names the archive
+  // message and the `context_recall` call that opens it.
+  { name: 'archiveLocator', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },

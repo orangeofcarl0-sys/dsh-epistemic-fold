@@ -70,6 +70,8 @@ import { evaluateRootRebase } from '../policy/root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
 import { archivedCallsFromMessages, describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
 import type { ArchivedCall } from '../checkpoint/renderer.ts'
+import { selectArchiveLocators } from '../checkpoint/locator.ts'
+import type { ArchiveLocator } from '../checkpoint/locator.ts'
 import { rationaleOnly, rationaleOutputFor } from '../checkpoint/rationale.ts'
 import {
   conversationTarget,
@@ -2033,6 +2035,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         const stateText = this.structuredStateText(
           mountedState, candidate.checkpointId, semanticText, candidate.mode,
           this.efConfig.foldedSpanIndex ? archivedCallsFromMessages(shadowedMessages) : undefined,
+          this.efConfig.archiveLocator
+            ? selectArchiveLocators(shadowedMessages, candidate.checkpointId)
+            : undefined,
         )
         renderedText = stateText ?? (semanticText === undefined
           ? fallbackText
@@ -3629,11 +3634,13 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     semanticText: string | undefined,
     mode: FoldMode,
     archivedCalls?: readonly ArchivedCall[],
+    locators?: readonly ArchiveLocator[],
   ): string | undefined {
     if (state === undefined) return undefined
     return renderStructuredCheckpoint(state, checkpointId, semanticText, mode, {
       recallAffordance: this.efConfig.recallAffordance,
       ...(archivedCalls === undefined ? {} : { archivedCalls }),
+      ...(locators === undefined ? {} : { locators }),
     })
   }
 

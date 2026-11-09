@@ -10,6 +10,8 @@
 
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
+import { renderArchiveLocatorSection } from './locator.ts'
+import type { ArchiveLocator } from './locator.ts'
 import { stateKeyText } from '../state/state.ts'
 import type { Anchor, FoldCurrentState } from '../state/state.ts'
 import type { FoldMode } from '../types.ts'
@@ -258,6 +260,7 @@ export function renderStructuredCheckpoint(
   options: {
     readonly recallAffordance?: boolean
     readonly archivedCalls?: readonly ArchivedCall[]
+    readonly locators?: readonly ArchiveLocator[]
   } = {},
 ): string {
   const presentation = projectForCheckpoint(state)
@@ -311,6 +314,15 @@ export function renderStructuredCheckpoint(
     for (const call of options.archivedCalls) {
       lines.push(call.detail === undefined ? `- ${call.name}` : `- ${call.name} ${call.detail}`)
     }
+  }
+
+  // The EXECUTABLE form of the list above. `Archived calls` says what was
+  // folded; this says where the observation lives and how to open it, so the
+  // model does not re-issue `read_file` against a rotated workspace path.
+  // Bounded, default off, and omitted entirely when it does not fit.
+  if (options.locators !== undefined && options.locators.length > 0) {
+    const section = renderArchiveLocatorSection(options.locators)
+    if (section.length > 0) lines.push('', section)
   }
 
   return lines.join('\n')
