@@ -1,15 +1,15 @@
 # EF-E2E — trajectory and variance attribution
 
-Executed cells analysed: **72**. Ordered trajectories: **1**; the rest use request deltas + tool counts.
+Executed cells analysed: **96**. Ordered trajectories: **25**; the rest use request deltas + tool counts.
 
 ## Output-file tasks: what separates a pass from a failure
 
 | Behaviour | Pass | Fail |
 |---|---|---|
-| wrote an output (write_file/edit_file) | 22 | 17 |
-| wrote nothing | 0 | 8 |
-| called recall | 5 | 11 |
-| never called recall | 17 | 14 |
+| wrote an output (write_file/edit_file) | 25 | 20 |
+| wrote nothing | 0 | 26 |
+| called recall | 8 | 22 |
+| never called recall | 17 | 24 |
 
 ## Repeat-run flips (same task + seed + arm, different campaign)
 
@@ -56,6 +56,13 @@ What I actually read (`logs/gateway-late.log`) was a series of gateway request l
 ```json
 {
   "build": "UNK |
+| e2e-index-1 | fail (missing-output) | 3 | 3 | 3 | 0 | I found it — the values are in the `logs/gateway-2026-10-11.log` file, read at the top of that log.
+
+**Build id:** `7f3c9a1e`
+- Boot line: `2026-10-11T02:14:03. |
+| e2e-index-1 | fail (missing-output) | 1 | 1 | 0 | 0 | I can't fill those in honestly — the file I read had neither value.
+
+`logs/gateway-late.log` contained only request lines (`timestamp, level, [gateway], request |
 
 ### T4:1:E0
 
@@ -74,6 +81,10 @@ The deploy log at `2026-10-14 |
 - **replicas:** `3`
 
 These come from the pre-rotation config I read earlier (`config/deploy.json`), not f |
+| e2e-index-1 | fail (shape-mismatch) | 2 | 3 | 1 | 1 | I've written `deploy.plan.json` with `region: "eu-west-3"`, `replicas: 3`, and `release: "canary"`, tagged with its source.
+
+Two corrections to what I said a mo |
+| e2e-index-1 | pass | 5 | 6 | 7 | 1 | Values from the pre-rotation config: region = **eu-west-3**, replicas = **3**. `deploy.plan.json` written with exactly those two fields. |
 
 ### T2:2:E0
 
@@ -86,6 +97,10 @@ These come from the pre-rotation config I read earlier (`config/deploy.json`), n
 **timeout_ms:** unknown — never observed in the log
 
 `answer.json` has been written with both fields set to `null |
+| e2e-index-1 | fail (missing-output) | 1 | 1 | 0 | 0 | I don't have those values. The log I read (`logs/gateway-late.log`) contained only gateway request lines — timestamp, level, `[gateway]`, request id, route, sta |
+| e2e-index-1 | fail (wrong-value) | 1 | 2 | 0 | 1 | I could not obtain the values you asked for, and I won't guess at them.
+
+**What the log actually contained:** `logs/gateway-late.log` was a plain access log fro |
 
 ### T4:2:E0
 
@@ -104,6 +119,15 @@ These come from the pre-rotation config I read earlier (`config/deploy.json`), n
 - **replicas:** `4`
 
 (The current workspace copy of the c |
+| e2e-index-1 | pass | 2 | 5 | 5 | 1 | Done — `deploy.plan.json` written with exactly `region` and `replicas` from the pre-rotation config I actually observed:
+
+- **region:** `ap-south-1`
+- **replica |
+| e2e-index-1 | fail (missing-output) | 2 | 3 | 3 | 0 | I have to correct my previous message — the pre-rotation config **is** on record. Here it is, from the archived `read_file` of `config/deploy.json`:
+
+```json
+{
+ |
 
 ### T5B:1:E0
 
@@ -126,6 +150,39 @@ These come from the pre-rotation config I read earlier (`config/deploy.json`), n
 ```
 
 **`max_attempts` = 2** for the batch path. |
+
+### T2:1:E0i
+
+| Campaign | Outcome | Folds | Requests | Recall | Writes | Final claim |
+|---|---|---|---|---|---|---|
+| e2e-index-1 | fail (wrong-value) | 1 | 2 | 0 | 1 | I don't have the values, and I won't invent them.
+
+**What happened:** the file I read was `logs/gateway-late.log`. Its lines look like:
+
+```
+2026-10-14T09:12:05 |
+| e2e-index-1 | fail (missing-output) | 2 | 2 | 1 | 0 | I have the values from the archived log — no rounding needed:
+
+- **Build id:** `7f3c9a1e`
+- **Retry timeout:** `1847` ms (`retry_timeout_ms=1847`)
+
+Source lines |
+
+### T4:2:E0ai
+
+| Campaign | Outcome | Folds | Requests | Recall | Writes | Final claim |
+|---|---|---|---|---|---|---|
+| e2e-index-1 | fail (missing-output) | 4 | 4 | 3 | 0 | Here are the values from the earlier read of `config/deploy.json`:
+
+\| Field \| Value \|
+\|---\|---\|
+\| region \| `ap-south-1` \|
+\| replicas \| `4` \|
+\| release \| `canary |
+| e2e-index-1 | pass | 4 | 4 | 2 | 1 | `deploy.plan.json` written from the pre-rotation config I inspected:
+
+- **region:** `ap-south-1`
+- **replicas:** `4` |
 
 ## The guard smoke: a full ordered trajectory
 

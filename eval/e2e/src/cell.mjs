@@ -518,8 +518,8 @@ export async function runCell({
   })
   const userMessages = events.filter(event => event.type === 'user/message').slice(-10).map(event => ({
     seq: Number(event.seq),
-    sourceKind: event.data.message?.source?.kind ?? null,
-    chars: (event.data.message?.content ?? []).reduce((sum, block) => sum + (block.type === 'text' ? block.text.length : 0), 0),
+    sourceKind: (event.data.message ?? event.data)?.source?.kind ?? null,
+    chars: ((event.data.message ?? event.data)?.content ?? []).reduce((sum, block) => sum + (block.type === 'text' ? block.text.length : 0), 0),
   }))
   const summary = summarizeEvents(events)
   // The ordered trajectory: what the model saw and did, in log order. This is
@@ -561,12 +561,17 @@ export async function runCell({
         }
       }
       if (event.type === 'user/message') {
-        const text = (event.data.message?.content ?? [])
+        // A user/message stores the UserMessage DIRECTLY as data; assistant
+        // and tool results nest theirs under `message`. Getting this wrong
+        // made every trajectory's user text empty while the other events
+        // were fine.
+        const message = event.data.message ?? event.data
+        const text = (message.content ?? [])
           .map(block => block.type === 'text' ? block.text : '').join('\n')
         return {
           seq,
           type: 'user',
-          sourceKind: event.data.message?.source?.kind ?? null,
+          sourceKind: message.source?.kind ?? null,
           ...cap(text, 800),
         }
       }

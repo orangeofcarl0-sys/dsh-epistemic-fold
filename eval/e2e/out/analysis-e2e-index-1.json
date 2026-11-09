@@ -1,0 +1,1993 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T13:17:39.424Z",
+  "campaign": "e2e-index-1",
+  "status": "complete",
+  "budget": {
+    "used": {
+      "requests": 68,
+      "inputTokens": 860374,
+      "outputTokens": 12428,
+      "wallClockMs": 213965
+    },
+    "limits": {
+      "httpAttempts": 720,
+      "inputTokens": 6000000,
+      "outputTokens": 250000,
+      "wallClockMs": 10800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 24,
+      "paidConcurrency": 1
+    }
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "units": {
+    "cell": "one continuation of one task instance under one arm",
+    "template": "a task shape; its two seeds are NOT independent tasks",
+    "note": "pass rates are descriptive; no significance test is claimed"
+  },
+  "byArm": {
+    "B0": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "E0": {
+      "cells": 8,
+      "checkerPasses": 2,
+      "passRate": 0.25,
+      "folds": 17,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 5,
+      "requests": 24,
+      "auxiliaryRequests": 0,
+      "inputTokens": 232191,
+      "outputTokens": 5437,
+      "cacheReadTokens": 61312,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 1,
+      "failureClasses": {
+        "missing-output": 4,
+        "shape-mismatch": 1,
+        "wrong-value": 1
+      },
+      "meanRequests": 3,
+      "meanInputTokens": 29023.875,
+      "meanOutputTokens": 679.625,
+      "meanFolds": 2.125
+    },
+    "E0a": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "E0i": {
+      "cells": 8,
+      "checkerPasses": 0,
+      "passRate": 0,
+      "folds": 16,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 4,
+      "requests": 18,
+      "auxiliaryRequests": 0,
+      "inputTokens": 304954,
+      "outputTokens": 3588,
+      "cacheReadTokens": 57344,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "wrong-value": 1,
+        "missing-output": 7
+      },
+      "meanRequests": 2.25,
+      "meanInputTokens": 38119.25,
+      "meanOutputTokens": 448.5,
+      "meanFolds": 2
+    },
+    "E0ai": {
+      "cells": 8,
+      "checkerPasses": 1,
+      "passRate": 0.125,
+      "folds": 22,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 5,
+      "requests": 26,
+      "auxiliaryRequests": 0,
+      "inputTokens": 323229,
+      "outputTokens": 3403,
+      "cacheReadTokens": 75008,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "missing-output": 7
+      },
+      "meanRequests": 3.25,
+      "meanInputTokens": 40403.625,
+      "meanOutputTokens": 425.375,
+      "meanFolds": 2.75
+    },
+    "E1": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "S": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    }
+  },
+  "byBlock": {
+    "calibration": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "core": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    }
+  },
+  "byTemplateArm": {
+    "T2": {
+      "B0": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0": {
+        "cells": 4,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 1,
+        "requests": 7,
+        "auxiliaryRequests": 0,
+        "inputTokens": 135814,
+        "outputTokens": 2087,
+        "cacheReadTokens": 25088,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 1,
+        "failureClasses": {
+          "missing-output": 3,
+          "wrong-value": 1
+        },
+        "meanRequests": 1.75,
+        "meanInputTokens": 33953.5,
+        "meanOutputTokens": 521.75,
+        "meanFolds": 1.5
+      },
+      "E0a": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0i": {
+        "cells": 4,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 5,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 1,
+        "requests": 6,
+        "auxiliaryRequests": 0,
+        "inputTokens": 134357,
+        "outputTokens": 1613,
+        "cacheReadTokens": 23936,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "wrong-value": 1,
+          "missing-output": 3
+        },
+        "meanRequests": 1.5,
+        "meanInputTokens": 33589.25,
+        "meanOutputTokens": 403.25,
+        "meanFolds": 1.25
+      },
+      "E0ai": {
+        "cells": 4,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 1,
+        "requests": 8,
+        "auxiliaryRequests": 0,
+        "inputTokens": 135075,
+        "outputTokens": 1163,
+        "cacheReadTokens": 42624,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 4
+        },
+        "meanRequests": 2,
+        "meanInputTokens": 33768.75,
+        "meanOutputTokens": 290.75,
+        "meanFolds": 1.5
+      },
+      "E1": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "S": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      }
+    },
+    "T4": {
+      "B0": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0": {
+        "cells": 4,
+        "checkerPasses": 2,
+        "passRate": 0.5,
+        "folds": 11,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 4,
+        "requests": 17,
+        "auxiliaryRequests": 0,
+        "inputTokens": 96377,
+        "outputTokens": 3350,
+        "cacheReadTokens": 36224,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "shape-mismatch": 1,
+          "missing-output": 1
+        },
+        "meanRequests": 4.25,
+        "meanInputTokens": 24094.25,
+        "meanOutputTokens": 837.5,
+        "meanFolds": 2.75
+      },
+      "E0a": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0i": {
+        "cells": 4,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 11,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 3,
+        "requests": 12,
+        "auxiliaryRequests": 0,
+        "inputTokens": 170597,
+        "outputTokens": 1975,
+        "cacheReadTokens": 33408,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 4
+        },
+        "meanRequests": 3,
+        "meanInputTokens": 42649.25,
+        "meanOutputTokens": 493.75,
+        "meanFolds": 2.75
+      },
+      "E0ai": {
+        "cells": 4,
+        "checkerPasses": 1,
+        "passRate": 0.25,
+        "folds": 16,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 4,
+        "requests": 18,
+        "auxiliaryRequests": 0,
+        "inputTokens": 188154,
+        "outputTokens": 2240,
+        "cacheReadTokens": 32384,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 3
+        },
+        "meanRequests": 4.5,
+        "meanInputTokens": 47038.5,
+        "meanOutputTokens": 560,
+        "meanFolds": 4
+      },
+      "E1": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "S": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      }
+    }
+  },
+  "rows": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 87526,
+      "outputTokens": 864,
+      "cacheReadTokens": 3968,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I found it — the values are in the `logs/gateway-2026-10-11.log` file, read at the top of that log.\n\n**Build id:** `7f3c9a1e`\n- Boot line: `2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821`\n- Confirmed by the shutdown line later in the same file: `2026-10-11T02:19:41.552Z INFO [gateway] shutdown build=7f3c9a1e reason=deploy`\n\n**Retry timeout:** `1847` ms\n- Config line: `2026-10-11T02:14:03.004Z INFO [gateway] config retry_timeout_ms=1847`\n- Corroborated by every retry event in the window, which all carry `budget_ms=1847` (e.g. `retry id=ee68b2ad2b attempt=2 budget_ms=1847`)",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0-r1\\report.json",
+      "reportSha256": "613f62de575b4a5aeb4092644fe151ea2b64b349a8bc4bd2d0b68c93bd2d40a0",
+      "engineDecision": "fold-attempted span=42..46 resultNull=false tokensBefore=30780 tokensAfter=29803",
+      "thresholdTokens": 8192,
+      "retainedTokens": 71983
+    },
+    {
+      "cellId": "T2-s1-E0i-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0i",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 103,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "wrong-value",
+      "failureDetail": "answer.json = {\"build\":\"UNKNOWN - not present in the log that was read (logs/gateway-late.log contained only request access lines with no build field); log has since been rotated out\",\"timeout_ms\":0}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json = {\"build\":\"UNKNOWN - not present in the log that was read (logs/gateway-late.log contained only request access lines with no build field); log has since been rotated out\",\"timeout_ms\":0}, expected {\"build\":\"7f3c9a1e\",\"timeout_ms\":1847}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16131,
+      "outputTokens": 674,
+      "cacheReadTokens": 18688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I don't have the values, and I won't invent them.\n\n**What happened:** the file I read was `logs/gateway-late.log`. Its lines look like:\n\n```\n2026-10-14T09:12:05.501Z INFO [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6\n```\n\nThat's a pure per-request access log — timestamp, request id, route, HTTP status, latency, and a pool index. There is no `build` line and no `timeout_ms` field in it. So neither value was ever available to me from that source, and the log is now rotated out of the workspace.\n\n**On the file:** I wrote `answer.json` so it doesn't silently pollute anyt",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0i-r1\\report.json",
+      "reportSha256": "8da19d32d246efe18a48d77be4d0d39023908e9da827a4c6e31366e57cc75937",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17544",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17966
+    },
+    {
+      "cellId": "T2-s1-E0ai-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0ai",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 202,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16436,
+      "outputTokens": 396,
+      "cacheReadTokens": 35968,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "The logs are gone: `logs/gateway-late.log` is unavailable and `gateway-2026-10-11.log` no longer exists, so no file holds the build or timeout values. I won't guess — I'm not writing `answer.json` with fabricated data, and the two fields you asked for can't be filled with numbers I don't have.\n\nWhat I can tell you about the log I did read (`logs/gateway-late.log`, covering 2026-10-14T09:12–11:11Z): it's a gateway request log with only `timestamp, level, request id, route=/v1/items, status, ms, pool`. It contains no build tag, version string, or timeout_ms field in any line, so those values wer",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0ai-r1\\report.json",
+      "reportSha256": "f1dadb3e4dc9a20023a47fb0c1113c509c2dfb883648decfb01760c325ff4387",
+      "engineDecision": "no-span pricedNodes=11 surfaceNodes=11 firstOpen=2 retain=614 total=17583",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17851
+    },
+    {
+      "cellId": "T2-s2-E0-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16046,
+      "outputTokens": 242,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I don't have those values. The log I read (`logs/gateway-late.log`) contained only gateway request lines — timestamp, level, `[gateway]`, request id, route, status, ms, and pool. There was no `build` field and no `timeout_ms` anywhere in it, and I never saw another log file.\n\nSo I can't write `answer.json` with real values, and I won't guess. Two options:\n\n1. If the build/timeout values came from an earlier part of the conversation that's no longer on the surface, tell me and I'll search the folded history for them rather than inventing numbers.\n2. If they only ever existed in the rotated log,",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0-r1\\report.json",
+      "reportSha256": "d9856bdfe976cb832bd959fdf854ebbfa63549c6c381986a5b68c65e4bd96f6f",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9006",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17568
+    },
+    {
+      "cellId": "T2-s2-E0i-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0i",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 103,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16062,
+      "outputTokens": 168,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I don't have those values. The log I read (`logs/gateway-late.log`) contains only request lines — timestamp, level, component, request id, route, status, duration, pool — and no build identifier or `timeout_ms` field anywhere in it. Writing them would mean guessing.\n\nSo I can't create `answer.json` with the requested fields:\n\n- `build`: unknown — not present in the log content I inspected\n- `timeout_ms`: unknown — not present in the log content I inspected\n\nI'm reporting this rather than fabricating values. If the earlier rotated log (`logs/gateway-2026-10-11.log`) or another incident log is t",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0i-r1\\report.json",
+      "reportSha256": "d4c9359ade9b7715d1e4dad890afe61d18a440c47d016017f3f0e02234059299",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9020",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17510
+    },
+    {
+      "cellId": "T2-s2-E0ai-r1",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0ai",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 219,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 2,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 86544,
+      "outputTokens": 338,
+      "cacheReadTokens": 4096,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I have the gateway log context. What would you like me to do with it? For reference, the key facts established:\n\n- **Build:** `c41d08b7`, boot at `2026-10-11T02:14:03.001Z`, shutdown `02:19:41.552Z` (reason `deploy`)\n- **Config:** `retry_timeout_ms=2311` — every retry line reuses that same 2311 ms budget\n- **Patterns:** frequent `upstream slow … retry=1` warnings, occasional `health ok=false` blips that recover, `retry id=… attempt=1..3`, and mixed `pool active/idle` debug lines\n\nLet me know if you want a summarized incident timeline, a count of slow upstreams vs. failed health checks, or some",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0ai-r1\\report.json",
+      "reportSha256": "2cf4bcd11a573ded48eb6e30ddb92e4e38a5e724213230cc3a92f2ae86e75717",
+      "engineDecision": "fold-attempted span=40..44 resultNull=false tokensBefore=29988 tokensAfter=29335",
+      "thresholdTokens": 8192,
+      "retainedTokens": 70899
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 1,
+      "checkerPass": false,
+      "failureClass": "shape-mismatch",
+      "failureDetail": "deploy.plan.json = {\"region\":\"eu-west-3\",\"replicas\":3,\"release\":\"canary\",\"source\":\"config/deploy.json\"}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json = {\"region\":\"eu-west-3\",\"replicas\":3,\"release\":\"canary\",\"source\":\"config/deploy.json\"}, expected {\"region\":\"eu-west-3\",\"replicas\":3}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 14653,
+      "outputTokens": 842,
+      "cacheReadTokens": 5120,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I've written `deploy.plan.json` with `region: \"eu-west-3\"`, `replicas: 3`, and `release: \"canary\"`, tagged with its source.\n\nTwo corrections to what I said a moment ago, since they matter for trusting this file:\n\n- **The values are real observations, not log noise.** I claimed I'd never read a config file and that these numbers were likely misread from `ready=3` in a log. That was wrong. The folded history shows `config/deploy.json` being read and returning exactly these values. I misremembered my own past actions rather than checking first — the search settled it.\n- **Provenance is slightly o",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0-r1\\report.json",
+      "reportSha256": "25249cb4c6650dcd01a70169f787e1f0a58fc0d39620c4cf8c96c49e133949aa",
+      "engineDecision": "below-threshold 2720<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 2983
+    },
+    {
+      "cellId": "T4-s1-E0i-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0i",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 122,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 13345,
+      "outputTokens": 304,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I can't do that. I never actually saw the config contents — I haven't read `config/deploy.json` in this conversation at all.\n\nWhat I do have from the folded history is that `read_file config/deploy.json` was called earlier, but the archived record isn't on the current surface, and any values in it would come from the decoy anyway now. The log I just read does show `region=eu-west-3` consistently across 340 reconcile steps, and a steady `ready=3` — but I won't invent a `replicas` value from that, since `ready=3` is a readiness count, not necessarily the configured replica count, and I have no o",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0i-r1\\report.json",
+      "reportSha256": "ad4403e76fa71e892a5e918034142ca5acb91a67306d867aa9f5a7bb4c3c4636",
+      "engineDecision": "fold-attempted span=4..20 resultNull=false tokensBefore=17110 tokensAfter=7961",
+      "thresholdTokens": 8192,
+      "retainedTokens": 14929
+    },
+    {
+      "cellId": "T4-s1-E0ai-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0ai",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 195,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 2,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 31356,
+      "outputTokens": 412,
+      "cacheReadTokens": 2688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "The folded history does have it. From the archived read of `config/deploy.json`:\n\n```json\n{\n  \"region\": \"eu-west-3\",\n  \"replicas\": 3,\n  \"release\": \"canary\"\n}\n```\n\n- **Live region:** `eu-west-3`\n- **Replica count:** `3`\n- **Release channel:** `canary`\n\nThe archived `logs/deploy.log` read is consistent with this — every `reconcile` line reports `region=eu-west-3 replicas=3 ready=3`, and all node-drain warnings are in `eu-west-3`.\n\nOne caveat worth flagging before the migration plan: these values are from the pre-rotation state at the time of that read. There's also a `logs/deploy-late.log` that ",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0ai-r1\\report.json",
+      "reportSha256": "b4eb98c1c45703931c85b1dc5449e208e25858fd6af17ceb8e7d103924f60927",
+      "engineDecision": "fold-attempted span=23..45 resultNull=false tokensBefore=25301 tokensAfter=17267",
+      "thresholdTokens": 8192,
+      "retainedTokens": 19602
+    },
+    {
+      "cellId": "T4-s2-E0-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 5,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16761,
+      "outputTokens": 1101,
+      "cacheReadTokens": 14592,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done — `deploy.plan.json` written with exactly `region` and `replicas` from the pre-rotation config I actually observed:\n\n- **region:** `ap-south-1`\n- **replicas:** `4`\n\nSource was the archived `config/deploy.json` read (the object also carried `release: \"canary\"`, which I deliberately omitted since the task specified exactly two keys). I did not open `config/deploy.json` in its current form, so the decoy never entered the plan.\n\nOne correction worth flagging: my first message claimed the pre-rotation values weren't available to me. That was wrong — I asserted it before searching the folded hi",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0-r1\\report.json",
+      "reportSha256": "249dc26fe137d83c6e7e8e25ad547d42c579977c1dffc5ec00767e411570e7ff",
+      "engineDecision": "below-threshold 4805<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 5030
+    },
+    {
+      "cellId": "T4-s2-E0i-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0i",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 96,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 1,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 31394,
+      "outputTokens": 301,
+      "cacheReadTokens": 2688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "From the earlier read of `config/deploy.json`, the pre-rotation values you asked about were:\n\n- **Region:** `ap-south-1`\n- **Replicas:** `4`\n- **Release mode:** `canary`\n\nThe deploy log from that same period corroborates this — repeated `reconcile region=ap-south-1 replicas=4 ready=4` lines across the whole window, with no evidence of a different region or replica count.\n\nOne caveat worth flagging: those values were captured *before* the rotation, so they describe the config as it stood then, not necessarily the live state now. I haven't read the post-rotation config in this session yet. If yo",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0i-r1\\report.json",
+      "reportSha256": "513f0164a249cc5b74c29122d9e8a68505e32d0d744902e11da3dff9e928caec",
+      "engineDecision": "fold-attempted span=23..45 resultNull=false tokensBefore=25180 tokensAfter=17035",
+      "thresholdTokens": 8192,
+      "retainedTokens": 19296
+    },
+    {
+      "cellId": "T4-s2-E0ai-r1",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0ai",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 4,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 179,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 4,
+      "auxiliaryRequests": 0,
+      "inputTokens": 63639,
+      "outputTokens": 495,
+      "cacheReadTokens": 5632,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Here are the values from the earlier read of `config/deploy.json`:\n\n| Field | Value |\n|---|---|\n| region | `ap-south-1` |\n| replicas | `4` |\n| release | `canary` |\n\nThese are corroborated by `logs/deploy.log`, where every `reconcile` line reports `region=ap-south-1 replicas=4 ready=4`, and all `rollout` steps show `healthy=4` — so 4 replicas were fully healthy at the time.\n\nTwo caveats before you plan the migration:\n\n- This was the state *at that point* in the log window (which ran to roughly 11:56 on 2026-10-14). If the config has been rotated since, these may be stale.\n- The log also shows h",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0ai-r1\\report.json",
+      "reportSha256": "1e22ea9419ece3d9067d542cc4940451b452469c0076a4573c5d164c3a84559d",
+      "engineDecision": "fold-attempted span=57..59 resultNull=false tokensBefore=26118 tokensAfter=17394",
+      "thresholdTokens": 8192,
+      "retainedTokens": 19496
+    },
+    {
+      "cellId": "T2-s1-E0-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15966,
+      "outputTokens": 366,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": true,
+      "finalText": "I can't fill those in honestly — the file I read had neither value.\n\n`logs/gateway-late.log` contained only request lines (`timestamp, level, [gateway], request id, route, status, ms, pool`). There was no build identifier and no `timeout_ms` anywhere in it, so I have nothing to copy into `answer.json`.\n\nI could search the folded conversation history for an earlier mention of a build or timeout value — but that would come from earlier context, not \"the incident log you inspected,\" and I don't want to pass off a value from another source as if it came from this file. If you'd like me to check th",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0-r2\\report.json",
+      "reportSha256": "eebda5cd07e72ee8862971368b527975b2d88f1c9659de77b5d2aa89b025da35",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9010",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17612
+    },
+    {
+      "cellId": "T2-s1-E0i-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0i",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 97,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 1,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 86102,
+      "outputTokens": 511,
+      "cacheReadTokens": 2688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I have the values from the archived log — no rounding needed:\n\n- **Build id:** `7f3c9a1e`\n- **Retry timeout:** `1847` ms (`retry_timeout_ms=1847`)\n\nSource lines, verbatim:\n\n```\n2026-10-11T02:14:03.001Z INFO  [gateway] boot build=7f3c9a1e pid=4821\n2026-10-11T02:14:03.004Z INFO  [gateway] config retry_timeout_ms=1847\n```\n\nTwo corroborating details worth noting in the postmortem:\n\n- Every `retry` line in the window logs `budget_ms=1847`, and no other build id appears; the shutdown line also reports `build=7f3c9a1e`.\n- The `retry_timeout_ms` value is embedded in the config line as a 4-character st",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0i-r2\\report.json",
+      "reportSha256": "4d6324b373365cceb9c02860c5074e5c93ab4b9b83d904c21242e192edf7925b",
+      "engineDecision": "fold-attempted span=18..40 resultNull=false tokensBefore=45297 tokensAfter=36162",
+      "thresholdTokens": 8192,
+      "retainedTokens": 71824
+    },
+    {
+      "cellId": "T2-s1-E0ai-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0ai",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 202,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16010,
+      "outputTokens": 198,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I don't have those values, so I won't write the file.\n\nI read `logs/gateway-late.log`, but it contains only request lines of the form:\n\n`timestamp LEVEL [gateway] request id=… route=… status=… ms=… pool=…`\n\nThere is no build identifier and no `timeout_ms` field anywhere in what I inspected. The requested values were apparently in the earlier, now-rotated log (`logs/gateway-2026-10-11.log`), which was never surfaced to me in readable form — only listed as an archived tool call.\n\nSo rather than guess, I have to report: **unknown** — I cannot provide `build` or `timeout_ms`, and writing `answer.j",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0ai-r2\\report.json",
+      "reportSha256": "dcba44d32a748692468db060e4239d0d1c2211f64a6a25390c0530ebede5fe0b",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9049",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17488
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "wrong-value",
+      "failureDetail": "answer.json = {\"build\":\"unavailable\",\"timeout_ms\":0}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json = {\"build\":\"unavailable\",\"timeout_ms\":0}, expected {\"build\":\"c41d08b7\",\"timeout_ms\":2311}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16276,
+      "outputTokens": 615,
+      "cacheReadTokens": 18560,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I could not obtain the values you asked for, and I won't guess at them.\n\n**What the log actually contained:** `logs/gateway-late.log` was a plain access log from `/v1/items` traffic between 09:12 and 11:11 UTC on 2026‑10‑14. Every line had the same shape:\n\n```\n<timestamp> INFO [gateway] request id=<id> route=/v1/items status=<code> ms=<latency> pool=<n>\n```\n\nThat gives request ids, status codes (including scattered `503`s), latency in milliseconds, and pool occupancy — nothing else. There was no build identifier or build string, and no timeout configuration of any kind. Latency values like `ms",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0-r2\\report.json",
+      "reportSha256": "0bf5eafb84cc1d0189c10c3ba7b8bd82659bebff0217b949cc62e7f2797fc0a2",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17506",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17962
+    },
+    {
+      "cellId": "T2-s2-E0i-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0i",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 103,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16062,
+      "outputTokens": 260,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I can't provide those values — they aren't in what I read, so writing them would mean guessing.\n\nTwo problems:\n\n1. **The file I read doesn't contain `build` or `timeout_ms`.** The log I inspected (`logs/gateway-late.log`) is a request log with only `timestamp`, `level`, `request id`, `route`, `status`, `ms`, and `pool` fields. There is no build identifier or timeout value anywhere in it.\n2. **I never read the incident log.** The archived history shows a single earlier `read_file` call against `logs/gateway-2026-10-11.log`, but its *result* was never part of my context — I only see the call, no",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0i-r2\\report.json",
+      "reportSha256": "74053dfa2d0b32ca4fc3e71a6b41f8c0162eee9912b92e9d1ed514d0ae46ea24",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9020",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17602
+    },
+    {
+      "cellId": "T2-s2-E0ai-r2",
+      "block": "index",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0ai",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 202,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16085,
+      "outputTokens": 231,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I don't have those values, and I won't guess.\n\nWhat I actually read was `logs/gateway-late.log` — a plain request log with lines of the form `timestamp LEVEL [gateway] request id=… route=… status=… ms=… pool=…`. It contains no build identifier and no `timeout_ms` setting. (I requested that path after the folded history mentioned `logs/gateway-2026-10-11.log`, but the content returned was the gateway request log, not an incident log with configuration.)\n\nSo writing `answer.json` with a `build` string and a numeric `timeout_ms` would mean fabricating them. Instead, here is the honest state of th",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0ai-r2\\report.json",
+      "reportSha256": "336aed9a039a285fb4635023a6734159fa8473870d160902ef2bcff50b7cae29",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9045",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17596
+    },
+    {
+      "cellId": "T4-s1-E0-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 5,
+      "foldAttempts": 5,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 7,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 49069,
+      "outputTokens": 778,
+      "cacheReadTokens": 10880,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Values from the pre-rotation config: region = **eu-west-3**, replicas = **3**. `deploy.plan.json` written with exactly those two fields.",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0-r2\\report.json",
+      "reportSha256": "60e2c1261e90a113e50bb50ebe797f6ac8234ab823a84208f476af0304b3c409",
+      "engineDecision": "below-threshold 4246<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4288
+    },
+    {
+      "cellId": "T4-s1-E0i-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0i",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 4,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 80,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 4,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 0,
+      "inputTokens": 62181,
+      "outputTokens": 700,
+      "cacheReadTokens": 23936,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "From the earlier config read, the values before the rotation were:\n\n- **Live region:** `eu-west-3`\n- **Replica count:** `3`\n- **Release:** `canary`\n\nThe deploy log corroborates this — every `reconcile` line reports `region=eu-west-3 replicas=3 ready=3` throughout.\n\nTwo caveats worth flagging before you plan the migration:\n\n1. **These are pre-rotation values.** You asked for the state \"before we plan the migration,\" and the follow-up log file (`logs/deploy-late.log`) was read but I don't have its contents on this surface. If the question you actually want answered is what the config looks like ",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0i-r2\\report.json",
+      "reportSha256": "c7f9c7459ae80b2b9a3978785e54248adb5d0be1212e26c13edfe5c9a25e30c6",
+      "engineDecision": "fold-attempted span=62..64 resultNull=false tokensBefore=25641 tokensAfter=16972",
+      "thresholdTokens": 8192,
+      "retainedTokens": 18965
+    },
+    {
+      "cellId": "T4-s1-E0ai-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0ai",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 6,
+      "foldAttempts": 6,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 255,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 9,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "step-limit",
+      "stepLimit": true,
+      "requests": 8,
+      "auxiliaryRequests": 0,
+      "inputTokens": 50114,
+      "outputTokens": 1049,
+      "cacheReadTokens": 17664,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0ai-r2\\report.json",
+      "reportSha256": "4c35c5bb99a614a1e967e0476bce32b5bd5d0a25b48d4bc69a791ccd57e2ce98",
+      "engineDecision": "fold-attempted span=87..101 resultNull=false tokensBefore=13839 tokensAfter=11212",
+      "thresholdTokens": 8192,
+      "retainedTokens": 11212
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 3,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15894,
+      "outputTokens": 629,
+      "cacheReadTokens": 5632,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I have to correct my previous message — the pre-rotation config **is** on record. Here it is, from the archived `read_file` of `config/deploy.json`:\n\n```json\n{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4,\n  \"release\": \"canary\"\n}\n```\n\n- **Region:** `ap-south-1`\n- **Replicas:** `4`\n- **Release channel:** `canary`\n\nTwo notes for the migration planning:\n\n1. My first reply in this turn was wrong. I claimed the deploy log was the only content I had and that no config had been observed; that was an unjustified conclusion drawn from the current surface rather than from the folded history. The read did h",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0-r2\\report.json",
+      "reportSha256": "afd0ffd0fa88252b31cbb7a35de0c87a1fb42967118468ab3a805b3d280cabf5",
+      "engineDecision": "below-threshold 3495<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3900
+    },
+    {
+      "cellId": "T4-s2-E0i-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0i",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 4,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 80,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 4,
+      "auxiliaryRequests": 0,
+      "inputTokens": 63677,
+      "outputTokens": 670,
+      "cacheReadTokens": 5504,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "That checkpoint gives the *pre-rotation* config. But there's no question in your message yet — so let me lay out what I've recovered and flag what I'm missing.\n\n**Pre-rotation live config (`config/deploy.json`, from the archived read):**\n\n| Field | Value |\n|---|---|\n| `region` | `ap-south-1` |\n| `replicas` | `4` |\n| `release` | `canary` |\n\nThe accompanying `logs/deploy.log` (09:12–11:56 on 2026-10-14) is consistent with that: every `reconcile` line reports `region=ap-south-1 replicas=4 ready=4`, and all `node drain` / `rollout` lines are in `ap-south-1`. Quota usage fluctuates (0–39) throughou",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0i-r2\\report.json",
+      "reportSha256": "53c69b13d97f7358b2d7e7c00f64dfc55d339ff941c5c9803d25fd3ada5e0be7",
+      "engineDecision": "fold-attempted span=57..59 resultNull=false tokensBefore=26118 tokensAfter=17362",
+      "thresholdTokens": 8192,
+      "retainedTokens": 19524
+    },
+    {
+      "cellId": "T4-s2-E0ai-r2",
+      "block": "index",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0ai",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 4,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 214,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 2,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 4,
+      "auxiliaryRequests": 0,
+      "inputTokens": 43045,
+      "outputTokens": 284,
+      "cacheReadTokens": 6400,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`deploy.plan.json` written from the pre-rotation config I inspected:\n\n- **region:** `ap-south-1`\n- **replicas:** `4`",
+      "reportPath": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0ai-r2\\report.json",
+      "reportSha256": "42c9ab280bcd622657b510665f57934c3cb050449a28dbce1d7694aefb517b74",
+      "engineDecision": "no-span pricedNodes=8 surfaceNodes=8 firstOpen=4 retain=614 total=15820",
+      "thresholdTokens": 8192,
+      "retainedTokens": 15872
+    }
+  ],
+  "evidence": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0-r1\\report.json",
+      "sha256": "613f62de575b4a5aeb4092644fe151ea2b64b349a8bc4bd2d0b68c93bd2d40a0"
+    },
+    {
+      "cellId": "T2-s1-E0i-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0i-r1\\report.json",
+      "sha256": "8da19d32d246efe18a48d77be4d0d39023908e9da827a4c6e31366e57cc75937"
+    },
+    {
+      "cellId": "T2-s1-E0ai-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0ai-r1\\report.json",
+      "sha256": "f1dadb3e4dc9a20023a47fb0c1113c509c2dfb883648decfb01760c325ff4387"
+    },
+    {
+      "cellId": "T2-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0-r1\\report.json",
+      "sha256": "d9856bdfe976cb832bd959fdf854ebbfa63549c6c381986a5b68c65e4bd96f6f"
+    },
+    {
+      "cellId": "T2-s2-E0i-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0i-r1\\report.json",
+      "sha256": "d4c9359ade9b7715d1e4dad890afe61d18a440c47d016017f3f0e02234059299"
+    },
+    {
+      "cellId": "T2-s2-E0ai-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0ai-r1\\report.json",
+      "sha256": "2cf4bcd11a573ded48eb6e30ddb92e4e38a5e724213230cc3a92f2ae86e75717"
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0-r1\\report.json",
+      "sha256": "25249cb4c6650dcd01a70169f787e1f0a58fc0d39620c4cf8c96c49e133949aa"
+    },
+    {
+      "cellId": "T4-s1-E0i-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0i-r1\\report.json",
+      "sha256": "ad4403e76fa71e892a5e918034142ca5acb91a67306d867aa9f5a7bb4c3c4636"
+    },
+    {
+      "cellId": "T4-s1-E0ai-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0ai-r1\\report.json",
+      "sha256": "b4eb98c1c45703931c85b1dc5449e208e25858fd6af17ceb8e7d103924f60927"
+    },
+    {
+      "cellId": "T4-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0-r1\\report.json",
+      "sha256": "249dc26fe137d83c6e7e8e25ad547d42c579977c1dffc5ec00767e411570e7ff"
+    },
+    {
+      "cellId": "T4-s2-E0i-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0i-r1\\report.json",
+      "sha256": "513f0164a249cc5b74c29122d9e8a68505e32d0d744902e11da3dff9e928caec"
+    },
+    {
+      "cellId": "T4-s2-E0ai-r1",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0ai-r1\\report.json",
+      "sha256": "1e22ea9419ece3d9067d542cc4940451b452469c0076a4573c5d164c3a84559d"
+    },
+    {
+      "cellId": "T2-s1-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0-r2\\report.json",
+      "sha256": "eebda5cd07e72ee8862971368b527975b2d88f1c9659de77b5d2aa89b025da35"
+    },
+    {
+      "cellId": "T2-s1-E0i-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0i-r2\\report.json",
+      "sha256": "4d6324b373365cceb9c02860c5074e5c93ab4b9b83d904c21242e192edf7925b"
+    },
+    {
+      "cellId": "T2-s1-E0ai-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s1-E0ai-r2\\report.json",
+      "sha256": "dcba44d32a748692468db060e4239d0d1c2211f64a6a25390c0530ebede5fe0b"
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0-r2\\report.json",
+      "sha256": "0bf5eafb84cc1d0189c10c3ba7b8bd82659bebff0217b949cc62e7f2797fc0a2"
+    },
+    {
+      "cellId": "T2-s2-E0i-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0i-r2\\report.json",
+      "sha256": "74053dfa2d0b32ca4fc3e71a6b41f8c0162eee9912b92e9d1ed514d0ae46ea24"
+    },
+    {
+      "cellId": "T2-s2-E0ai-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T2-s2-E0ai-r2\\report.json",
+      "sha256": "336aed9a039a285fb4635023a6734159fa8473870d160902ef2bcff50b7cae29"
+    },
+    {
+      "cellId": "T4-s1-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0-r2\\report.json",
+      "sha256": "60e2c1261e90a113e50bb50ebe797f6ac8234ab823a84208f476af0304b3c409"
+    },
+    {
+      "cellId": "T4-s1-E0i-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0i-r2\\report.json",
+      "sha256": "c7f9c7459ae80b2b9a3978785e54248adb5d0be1212e26c13edfe5c9a25e30c6"
+    },
+    {
+      "cellId": "T4-s1-E0ai-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s1-E0ai-r2\\report.json",
+      "sha256": "4c35c5bb99a614a1e967e0476bce32b5bd5d0a25b48d4bc69a791ccd57e2ce98"
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0-r2\\report.json",
+      "sha256": "afd0ffd0fa88252b31cbb7a35de0c87a1fb42967118468ab3a805b3d280cabf5"
+    },
+    {
+      "cellId": "T4-s2-E0i-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0i-r2\\report.json",
+      "sha256": "53c69b13d97f7358b2d7e7c00f64dfc55d339ff941c5c9803d25fd3ada5e0be7"
+    },
+    {
+      "cellId": "T4-s2-E0ai-r2",
+      "path": "eval\\e2e\\runs\\e2e-index-1\\T4-s2-E0ai-r2\\report.json",
+      "sha256": "42c9ab280bcd622657b510665f57934c3cb050449a28dbce1d7694aefb517b74"
+    }
+  ]
+}

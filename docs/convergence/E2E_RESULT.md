@@ -54,13 +54,19 @@ e2e-pilot-1          12        12        77       280,538         15,955    3.6 
 e2e-t5-retest-1       8         8        62       288,422         16,010    3.0 min
 e2e-recall-1         12        12        51       310,376          6,418    2.0 min
 e2e-guard-smoke-1    1         1         3        16,903            590    0.2 min
-total                72        72       452     2,110,819        108,139   21.1 min
+e2e-index-1          24        24        68       860,374         12,428    3.6 min
+total                96        96       520     2,971,193        120,567   24.7 min
 ```
 
-Envelope used: 452 / 2,200 requests, 2.11M / 18M input, 108k / 1M output,
-21.1 min / 8 h. **Continuation cells: 72 / 72, exhausted.** No monetary claim: the route has no verifiable per-token price.
+Original envelope: 452 / 2,200 requests, 2.11M / 18M input, 108k / 1M output,
+21.1 min / 8 h. **Continuation cells: 72 / 72, closed.**
 
-All 72 cells reached at least one successful fold. No cell is `no-fold`.
+Follow-up envelope (`e2e-index-1`): 68 / 720 requests, 0.86M / 6M input,
+12.4k / 250k output, 3.6 min / 3 h. **Cells: 24 / 24, closed.**
+
+No monetary claim: the route has no verifiable per-token price.
+
+All 96 cells reached at least one successful fold. No cell is `no-fold`.
 
 ## 3. Core campaign (36 core cells + 3 calibration)
 
@@ -238,9 +244,49 @@ Archived calls
 ```
 
 It costs 56 characters (~14 tokens) on the T2 fixture and names the exact log
-the model needed. It is unit- and self-test-certified, but **not live-tested**:
-the continuation-cell envelope is exhausted (72/72). The live comparison needs
-a new envelope.
+the model needed. Unit- and self-test-certified; live-tested below.
+
+## 5d. Folded-span index (negative)
+
+The original 72-cell envelope was closed. A separate 24-cell follow-up
+envelope (`e2e-index-1`, 720 requests / 6M input / 250k output / 3h) ran the
+paired arms on T2/T4, two seeds, two replicates.
+
+| Arm | Pass | Recall calls | Writes | Folded-path `read_file`/`list_dir` | ENOENT |
+|---|---|---|---|---|---|
+| E0 | 2/8 | 19 | 4 | 0 | 0 |
+| E0i (index) | 0/8 | 9 | 1 | 0 | 0 |
+| E0ai (index + instruction) | 1/8 | 18 | 1 | 2 | 2 |
+
+**The index did not help.** E0i halved recall and passed none; E0ai restored
+recall but produced the worst behaviour in the whole round — the model read the
+archived path with the WORKSPACE tool:
+
+```text
+checkpoint: Archived calls / - read_file logs/gateway-2026-10-11.log
+assistant:  I can't provide those values — the rotated-out log I read
+            (logs/gateway-late.log) contains only gateway request lines...
+tool/call   read_file logs/gateway-2026-10-11.log
+tool/result Error: ENOENT: no such file or directory
+tool/call   list_dir logs
+tool/result Error: ENOENT
+assistant:  The logs are gone...
+```
+
+The index names a PAST tool call. The model resolves it with `read_file`,
+which only sees the workspace; the failure then reinforces "the evidence is
+gone". Naming the tool that was used is not the same as naming the tool that
+can retrieve it.
+
+The baseline also moved: E0 passed 2/8 here against 0/4 for T2/T4 in the core
+campaign, with the same tasks and seeds. The variance is now observed in every
+campaign, not just once.
+
+**What this points to.** The next product change is not more checkpoint text:
+it is archive-aware path resolution (`read_file` on a folded path resolves the
+archived message) or an unambiguous instruction that says the path is NOT in
+the workspace and only `context_recall` can open it. Either needs its own
+24-cell paired campaign under a new envelope.
 
 ## 6. Semantic authority
 
@@ -354,7 +400,7 @@ deploymentEligible            false   (EF Active: deployment hold)
 researchPRReady               false   (a reviewer's call, not this round's)
 recallAffordance              off     (negative live result)
 completionGuard               experimental, not a default
-foldedSpanIndex               experimental, off, not live-tested
+foldedSpanIndex               off     (negative live result: E0 2/8, E0i 0/8, E0ai 1/8)
 ```
 
 The candidate build is installable and smoke-tested (1.38 MB, 393 files, no
@@ -362,16 +408,20 @@ raw runs, no credentials, no checkout path). It is a candidate, not a release.
 
 ## 11. What would change the answer
 
-- **A new continuation-cell envelope.** The current one is exhausted (72/72).
-  The next live test needs its own cells: a paired `foldedSpanIndex` campaign
-  (T2/T4 × {E0, E0i} × 2 seeds × 3 repeats = 24 cells) plus a guard × index
-  factorial if budget allows. Without it, the span index stays offline-only.
+- **Archive-aware path resolution.** The index experiment showed the model
+  resolving an archived path with `read_file`, getting ENOENT, and concluding
+  the evidence was gone. The next product change is either `read_file` resolving
+  a folded path from the archive, or wording that says the path is not in the
+  workspace and only `context_recall` can open it. It needs a new 24-cell
+  paired campaign; both existing envelopes are closed.
 - More templates, more seeds, and repeated runs per cell, so a per-template
   rate can be estimated rather than described. The T4 flip between campaigns
   shows that one run per cell is not enough for an arm comparison.
 - A study of the output contract on top of the retrieval cue: the guard proves
   the write gate can be closed, but the guard smoke wrote UNKNOWN because the
-  model still did not know that the useful log was folded. The span index is
-  the cue; the guard is the completion check; they address different gates.
+  model still did not know that the useful log was folded. The index named the
+  call and the model still used the wrong tool. The guard is the completion
+  check; the retrieval affordance must be a TOOL the model uses, not a line it
+  reads.
 - A second model/route, to separate the mechanism from the model's tool habits.
 - A price-verifiable route, if a monetary comparison is wanted.

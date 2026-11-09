@@ -29,7 +29,7 @@ const ROOT = resolve(HERE, '..', '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const RUNS = join(ROOT, 'eval', 'e2e', 'runs')
 
-const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']
+const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1']
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, 'utf8'))
