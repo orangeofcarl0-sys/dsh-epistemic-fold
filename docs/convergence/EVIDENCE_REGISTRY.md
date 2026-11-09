@@ -115,3 +115,21 @@ docs/convergence/data/baseline-comparison-manifest.json
 eval/c0/out/evidence-registry-summary.json
 docs/convergence/EVIDENCE_INVENTORY.md   artifact census and hashes
 ```
+
+## 7. EF-R1 companion registry
+
+EF-R1 did not rewrite the 18 C0 claims. Its claims are a separate, hashed
+registry:
+
+```text
+eval/ef-r1/evidence-claims.mjs
+eval/ef-r1/out/evidence-claims.json   8 claims: authority, stages, locator,
+                                      tasks, design, archive, candidate, no-live-calls
+docs/convergence/EF_R1.md             readable index and limitations
+```
+
+The strongest EF-R1 claim is a Deterministic Contract (16 authority cases,
+11 locator cases, 22 task certifications). The stage attribution is a
+Behavioral Observation re-derived from the existing 96 cells. The locator and
+the completion guard have no behavioural result, and the 120-cell design is a
+Constraint with no authorization.
