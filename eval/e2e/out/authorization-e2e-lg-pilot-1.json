@@ -1,0 +1,16 @@
+{
+  "granted": true,
+  "grantedAt": "2026-11-09T19:05:27.354Z",
+  "manifestSha256": "c71c0b3820c37a0ef6e6d564c9179da3e5488e7f29fdd78e42d3edd8386c2667",
+  "campaign": "e2e-lg-pilot-1",
+  "cells": 24,
+  "statement": "Delegated authorization under the EF-E2E work package: the user authorized this envelope, the manifest is inside it, and the run may not exceed the manifest limits.",
+  "envelopeName": "lg-pilot",
+  "envelope": {
+    "continuationCells": 32,
+    "httpAttempts": 800,
+    "inputTokens": 4000000,
+    "outputTokens": 150000,
+    "wallClockMs": 7200000
+  }
+}
