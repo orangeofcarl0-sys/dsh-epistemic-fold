@@ -1,0 +1,1940 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP4",
+  "generatedAt": "2026-11-09T17:07:05.890Z",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "authorizationNote": "Both earlier envelopes are closed. This design makes no provider request; execution requires an explicit user authorization of the envelope below.",
+  "question": "Does an executable archive address (L) improve historical recovery, does a shared completion guard (G) improve delivery, and do they interact?",
+  "design": {
+    "type": "2x2 factorial with an independent rationale reference arm",
+    "factors": {
+      "L": "archiveLocator",
+      "G": "completion guard (cell-level, not an EF feature)"
+    },
+    "arms": [
+      {
+        "id": "E0",
+        "locator": false,
+        "guard": false,
+        "role": "2x2-reference",
+        "ef": {
+          "semanticMode": "none",
+          "archiveLocator": false
+        }
+      },
+      {
+        "id": "E0-L",
+        "locator": true,
+        "guard": false,
+        "role": "2x2",
+        "ef": {
+          "semanticMode": "none",
+          "archiveLocator": true
+        }
+      },
+      {
+        "id": "E0-G",
+        "locator": false,
+        "guard": true,
+        "role": "2x2",
+        "ef": {
+          "semanticMode": "none",
+          "archiveLocator": false
+        }
+      },
+      {
+        "id": "E0-LG",
+        "locator": true,
+        "guard": true,
+        "role": "2x2",
+        "ef": {
+          "semanticMode": "none",
+          "archiveLocator": true
+        }
+      },
+      {
+        "id": "E1",
+        "locator": false,
+        "guard": false,
+        "role": "rationale-reference",
+        "ef": {
+          "semanticMode": "rationale",
+          "archiveLocator": false
+        }
+      }
+    ],
+    "templates": [
+      "T2",
+      "T4",
+      "T7",
+      "T8",
+      "T9",
+      "T10"
+    ],
+    "seeds": [
+      1,
+      2
+    ],
+    "replicates": [
+      1,
+      2
+    ],
+    "cells": 120,
+    "faultReserveCells": 18,
+    "envelopeCellCap": 138,
+    "primaryUnit": "task instance (template + seed), not cell",
+    "pairing": "both replicates of one task instance run the same arm set; arm order rotates by template/seed/replicate"
+  },
+  "requestedEnvelope": {
+    "continuationCells": 138,
+    "httpAttempts": 4200,
+    "inputTokens": 30000000,
+    "outputTokens": 1200000,
+    "wallClockMs": 21600000,
+    "paidConcurrency": 2,
+    "monetaryUsd": 25,
+    "monetaryNote": "No per-token price is verifiable for the local route; requests/tokens/time are the enforced bound."
+  },
+  "analysisPlan": {
+    "primary": [
+      "E0 vs E0-L: paired difference in correctValueProduced, outputWritten, checkerPassed per task instance",
+      "E0 vs E0-G: paired difference in outputWritten and checkerPassed",
+      "E0-LG vs E0: interaction; report whether L and G are additive, redundant, or interfering",
+      "E1: reported separately as a reference; never pooled into the 2x2"
+    ],
+    "statistics": "exact two-sided McNemar on discordant task instances; report the discordant counts and a paired risk difference, not only a p-value",
+    "stageReporting": "reuse the WP2 stage labels (observe/produce/write/schema/verify), with C-unknown counted apart",
+    "grouping": "per template and per task instance; no pooling of 120 cells as independent samples",
+    "stopping": "no interim analysis; stop only on provider failure, unknown usage, budget exhaustion, or an integrity violation"
+  },
+  "taskInstances": [
+    {
+      "id": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "category": "exact-recall",
+      "digest": "4fad0f021759a4df2cdd425888c5ab345441e2bb894e58758e73638cc4cb90e8",
+      "certified": true,
+      "seedTokens": 27223,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 2,
+        "maxLocators": 3,
+        "labels": [
+          "logs/gateway-2026-10-11.log",
+          "logs/gateway-late.log"
+        ],
+        "sectionChars": 510,
+        "sectionTokensEstimate": 128
+      }
+    },
+    {
+      "id": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "category": "exact-recall",
+      "digest": "40bc6da374492cff10a0b81cf92b6c9bd9a1a0d9fb00264f05e33517236bbe27",
+      "certified": true,
+      "seedTokens": 27124,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 2,
+        "maxLocators": 3,
+        "labels": [
+          "logs/gateway-2026-10-11.log",
+          "logs/gateway-late.log"
+        ],
+        "sectionChars": 510,
+        "sectionTokensEstimate": 128
+      }
+    },
+    {
+      "id": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "category": "tool-dependency",
+      "digest": "1a3211f3d7487a0e9ef370ef4129d7d4845649a201a753204ec8c16e4f205e8e",
+      "certified": true,
+      "seedTokens": 17110,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "logs/deploy.log",
+          "config/deploy.json",
+          "logs/deploy-late.log"
+        ],
+        "sectionChars": 662,
+        "sectionTokensEstimate": 166
+      }
+    },
+    {
+      "id": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "category": "tool-dependency",
+      "digest": "a079bf20a6c6116d201bb359abad4e392c141f18407c8805d45770b3bdeeabfb",
+      "certified": true,
+      "seedTokens": 17318,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "logs/deploy.log",
+          "config/deploy.json",
+          "logs/deploy-late.log"
+        ],
+        "sectionChars": 662,
+        "sectionTokensEstimate": 166
+      }
+    },
+    {
+      "id": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "category": "historical-test-result",
+      "digest": "0107766cd199aabb44f3a5752c2d71931d5f7fd05e5ee5c5ace044ed8f21c344",
+      "certified": true,
+      "seedTokens": 8971,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 1,
+        "maxLocators": 3,
+        "labels": [
+          null
+        ],
+        "sectionChars": 314,
+        "sectionTokensEstimate": 79
+      }
+    },
+    {
+      "id": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "category": "historical-test-result",
+      "digest": "1104e9497f1b47c2abc012c0989076e8cd00e403be1ae37fab4834b0b0706801",
+      "certified": true,
+      "seedTokens": 9311,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 1,
+        "maxLocators": 3,
+        "labels": [
+          null
+        ],
+        "sectionChars": 314,
+        "sectionTokensEstimate": 79
+      }
+    },
+    {
+      "id": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "category": "expired-configuration",
+      "digest": "c2f94e0cbe3fed10409ce0d8d04fc4d838199d27d4efbf2d174144c57f527864",
+      "certified": true,
+      "seedTokens": 9289,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 1,
+        "maxLocators": 3,
+        "labels": [
+          "config/service.yaml"
+        ],
+        "sectionChars": 334,
+        "sectionTokensEstimate": 84
+      }
+    },
+    {
+      "id": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "category": "expired-configuration",
+      "digest": "2558f343792e24eaa106ba32160f0c18d43d3a208bff1fe544eb19c8bc92c2b8",
+      "certified": true,
+      "seedTokens": 9310,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 1,
+        "maxLocators": 3,
+        "labels": [
+          "config/service.yaml"
+        ],
+        "sectionChars": 334,
+        "sectionTokensEstimate": 84
+      }
+    },
+    {
+      "id": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "category": "cross-file-recovery",
+      "digest": "bc4f23d59e72322c07d5543a00ff791f4a446511aaad04c5813e15cb5feceb7c",
+      "certified": true,
+      "seedTokens": 9253,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "deploy/app.yaml",
+          "deploy/release.json",
+          "logs/deploy.log"
+        ],
+        "sectionChars": 658,
+        "sectionTokensEstimate": 165
+      }
+    },
+    {
+      "id": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "category": "cross-file-recovery",
+      "digest": "1a4261d81938d9d2c7f6598c96b8336c7d25445e6755197cf18bb535e201e69d",
+      "certified": true,
+      "seedTokens": 9240,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "deploy/app.yaml",
+          "deploy/release.json",
+          "logs/deploy.log"
+        ],
+        "sectionChars": 658,
+        "sectionTokensEstimate": 165
+      }
+    },
+    {
+      "id": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "category": "multi-revision-history",
+      "digest": "cab7b4b693371679ffc4f7ca5ff7adb799f2c1073c3ad4c68737c7ebab3276fc",
+      "certified": true,
+      "seedTokens": 9544,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "config/flags.json",
+          "config/flags.json",
+          "logs/flags.log"
+        ],
+        "sectionChars": 657,
+        "sectionTokensEstimate": 165
+      }
+    },
+    {
+      "id": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "category": "multi-revision-history",
+      "digest": "7cd05f6e182f131086a7593ae9dcba8e2151ba603a2be0e4bbc7ad5492a40de5",
+      "certified": true,
+      "seedTokens": 9506,
+      "thresholdTokens": 8192,
+      "locatorEstimate": {
+        "locators": 3,
+        "maxLocators": 3,
+        "labels": [
+          "config/flags.json",
+          "config/flags.json",
+          "logs/flags.log"
+        ],
+        "sectionChars": 657,
+        "sectionTokensEstimate": 165
+      }
+    }
+  ],
+  "cells": [
+    {
+      "cellId": "T2-s1-E0-G-r1",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-LG-r1",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s1-E1-r1",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-r1",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-L-r1",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-LG-r2",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s1-E1-r2",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-r2",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-L-r2",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s1-E0-G-r2",
+      "task": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-LG-r1",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s2-E1-r1",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-r1",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-L-r1",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-G-r1",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E1-r2",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-L-r2",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-G-r2",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T2-s2-E0-LG-r2",
+      "task": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-LG-r1",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s1-E1-r1",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-L-r1",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-G-r1",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E1-r2",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-r2",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-L-r2",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-G-r2",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s1-E0-LG-r2",
+      "task": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s2-E1-r1",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-r1",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-L-r1",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-G-r1",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-LG-r1",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-L-r2",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-G-r2",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T4-s2-E0-LG-r2",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T4-s2-E1-r2",
+      "task": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E1-r1",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-r1",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-L-r1",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-G-r1",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-LG-r1",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-r2",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-L-r2",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-G-r2",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s1-E0-LG-r2",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s1-E1-r2",
+      "task": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-r1",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-L-r1",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-G-r1",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-LG-r1",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-L-r2",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-G-r2",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-LG-r2",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T7-s2-E1-r2",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T7-s2-E0-r2",
+      "task": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-r1",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-L-r1",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-G-r1",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-LG-r1",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s1-E1-r1",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-L-r2",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-G-r2",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-LG-r2",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s1-E1-r2",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s1-E0-r2",
+      "task": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-L-r1",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-G-r1",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-LG-r1",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s2-E1-r1",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-r1",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-G-r2",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-LG-r2",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T8-s2-E1-r2",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-r2",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T8-s2-E0-L-r2",
+      "task": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-L-r1",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-G-r1",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-LG-r1",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s1-E1-r1",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-r1",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-G-r2",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-LG-r2",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s1-E1-r2",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-r2",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s1-E0-L-r2",
+      "task": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-G-r1",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-LG-r1",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s2-E1-r1",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-r1",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-L-r1",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-LG-r2",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s2-E1-r2",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-r2",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-L-r2",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T9-s2-E0-G-r2",
+      "task": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-G-r1",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-LG-r1",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-r1",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-L-r1",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-LG-r2",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s1-E1-r2",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-r2",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-L-r2",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s1-E0-G-r2",
+      "task": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-LG-r1",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-r1",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-L-r1",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-G-r1",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E1-r2",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E1",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "rationale",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-r2",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-L-r2",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-L",
+      "replicate": 2,
+      "guard": false,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-G-r2",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-G",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": false
+      }
+    },
+    {
+      "cellId": "T10-s2-E0-LG-r2",
+      "task": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-LG",
+      "replicate": 2,
+      "guard": true,
+      "ef": {
+        "semanticMode": "none",
+        "archiveLocator": true
+      }
+    }
+  ],
+  "preflight": {
+    "checks": [
+      "every task certified (initial fail, reference pass, counterfactual fail, seed above threshold)",
+      "each cell unique and assigned to a known task",
+      "L appears only in E0-L/E0-LG; G only in E0-G/E0-LG; E1 carries neither",
+      "arms balanced",
+      "locator estimate within the renderer budget"
+    ],
+    "problems": [],
+    "pass": true
+  },
+  "prerequisites": [
+    "the E0-L/E0-G/E0-LG arms exist in eval/e2e/src/host.mjs (added, never executed)",
+    "a new freeze/authorize cycle must bind the code tree, task digests and cells",
+    "the analysis must use the stage attribution, not only the checker bit"
+  ],
+  "provenance": {
+    "evaluatorCommit": "bd1907d7373e1ed62c50beca43bee16cce0a11eb",
+    "certification": "eval/ef-r1/out/task-certification-e2e2.json",
+    "liveCalls": 0
+  },
+  "verdict": "preflight-pass"
+}

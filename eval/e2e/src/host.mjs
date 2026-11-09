@@ -60,6 +60,14 @@ export const ARMS = Object.freeze({
   // source-authority fix. The writer is a real model call; every failure is
   // counted in the assigned arm, never filtered to successful commits.
   S: { backend: 'ef', ef: true, semanticMode: 'rationale', semanticContinuity: 'active', mode: 'economy' },
+  // EF-R1 L×G design. L is the executable archive locator; G is the shared
+  // completion guard, which lives on the CELL (`guard: true`) because it is a
+  // harness/runtime behaviour, not an EF feature. These arms exist so the
+  // design can be executed without changing the host later; no campaign has
+  // been run under them.
+  'E0-L': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', archiveLocator: true },
+  'E0-G': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy' },
+  'E0-LG': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', archiveLocator: true },
 })
 
 /**
@@ -117,6 +125,7 @@ export async function mountHost({
       semanticMode: spec.semanticMode,
       ...(spec.recallAffordance === undefined ? {} : { recallAffordance: spec.recallAffordance }),
       ...(spec.foldedSpanIndex === undefined ? {} : { foldedSpanIndex: spec.foldedSpanIndex }),
+      ...(spec.archiveLocator === undefined ? {} : { archiveLocator: spec.archiveLocator }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,

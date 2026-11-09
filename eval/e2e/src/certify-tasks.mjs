@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Offline certification of the twelve task instances.
+ * Offline certification of every frozen task instance.
  *
  * For every instance, three runs of the SAME checker:
  *
@@ -34,6 +34,16 @@ import { buildSeed, appendTurn } from './seed.mjs'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..', '..')
 const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
+/**
+ * Where the report lands.
+ *
+ * The first round's certification is historical evidence and must not be
+ * replaced by a later round's run. A caller can name a new path; the default
+ * stays the original file so existing commands do not change meaning.
+ */
+const OUT = process.env.EF_E2E_CERTIFICATION_OUT === undefined
+  ? join(ROOT, 'eval', 'e2e', 'out', 'task-certification.json')
+  : resolve(process.env.EF_E2E_CERTIFICATION_OUT)
 
 async function materialize(files, workspace) {
   for (const [path, content] of Object.entries(files)) {
@@ -124,7 +134,7 @@ const out = {
   tasks: report,
   pass: !failed,
 }
-await mkdir(join(ROOT, 'eval', 'e2e', 'out'), { recursive: true })
-await writeFile(join(ROOT, 'eval', 'e2e', 'out', 'task-certification.json'), `${JSON.stringify(out, null, 2)}\n`, 'utf8')
+await mkdir(dirname(OUT), { recursive: true })
+await writeFile(OUT, `${JSON.stringify(out, null, 2)}\n`, 'utf8')
 process.stdout.write(`task certification: ${out.pass ? 'pass' : 'FAIL'}\n`)
 process.exit(out.pass ? 0 : 1)

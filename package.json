@@ -203,6 +203,8 @@
     "eval:e2e-archive": "node eval/e2e/src/archive-research.mjs",
     "eval:ef-r1-authority": "node eval/ef-r1/operation-authority.mjs",
     "eval:ef-r1-locator": "node eval/ef-r1/locator-contract.mjs",
+    "eval:ef-r1-certify": "node scripts/run-with-env.mjs EF_E2E_CERTIFICATION_OUT=eval/ef-r1/out/task-certification-e2e2.json -- node eval/e2e/src/certify-tasks.mjs",
+    "eval:ef-r1-design": "node eval/ef-r1/ablation-design.mjs",
     "eval:ef-r1-repo": "node eval/ef-r1/repository-state.mjs"
   },
   "repository": {

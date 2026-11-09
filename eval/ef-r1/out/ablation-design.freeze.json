@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "path": "eval/ef-r1/out/ablation-design.json",
+  "sha256": "1c52fed8818b858fbc64776e41c029efae562a958775715b8d1aa1d15edd7245",
+  "frozenAt": "2026-11-09T17:07:05.890Z",
+  "cells": 120,
+  "envelopeCellCap": 138,
+  "executionAuthorized": false
+}

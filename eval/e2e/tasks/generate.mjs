@@ -631,7 +631,262 @@ export function delayFor(attempt) {
   gold: { max_attempts: 4, base_ms: 250 },
 }
 
-const TEMPLATES = { T1, T2, T3, T4, T5, T5B, T6 }
+/**
+ * T7 — a HISTORICAL TEST RESULT.
+ *
+ * The question is not "do the tests pass now" but "how many failed in the run
+ * before the fix". The workspace carries a newer, passing run; the incident
+ * count exists only in the archived tool result.
+ */
+const T7 = {
+  id: 'T7',
+  category: 'historical-test-result',
+  title: 'Recover the failure count from the pre-fix test run',
+  operationalBudgetTokens: 16384,
+  thresholdRatio: 0.5,
+  workspace(seed) {
+    const suite = seed === 1 ? 'retry' : 'billing'
+    return {
+      'README.md': '# Test history\n\nThe latest run is in `test-results-latest.txt`. It is NOT the run the reviewer asked about.\n',
+      'test-results-latest.txt': `suite: ${suite}\n# tests 42\n# pass 42\n# fail 0\n`,
+    }
+  },
+  reference(seed) {
+    const failed = seed === 1 ? 3 : 5
+    const suite = seed === 1 ? 'retry' : 'billing'
+    return { 'test-history.json': `${JSON.stringify({ failed, suite }, null, 2)}\n` }
+  },
+  counterfactual(seed) {
+    const suite = seed === 1 ? 'retry' : 'billing'
+    return { 'test-history.json': `${JSON.stringify({ failed: 0, suite }, null, 2)}\n` }
+  },
+  checks: [
+    { kind: 'json_equals', path: 'test-history.json', value: seed => seed === 1
+      ? { failed: 3, suite: 'retry' }
+      : { failed: 5, suite: 'billing' } },
+  ],
+  history(seed) {
+    const failed = seed === 1 ? 3 : 5
+    const suite = seed === 1 ? 'retry' : 'billing'
+    const passed = 42 - failed
+    const log = serviceLog({
+      seed: seed * 17,
+      count: 560,
+      lines: (r, i, stamp) => pick(r, [
+        `${stamp} INFO  [${suite}] case ${hex(r, 6)} started`,
+        `${stamp} WARN  [${suite}] retry attempt=${1 + Math.floor(r() * 3)} id=${hex(r, 8)}`,
+        `${stamp} INFO  [${suite}] request id=${hex(r, 10)} status=${r() > 0.1 ? 200 : 503}`,
+        `${stamp} DEBUG [${suite}] queue depth=${Math.floor(r() * 40)}`,
+      ]),
+    })
+    return [
+      { role: 'user', text: `Run the ${suite} suite before we change anything. I need the failure count from THIS run for the incident review.` },
+      { role: 'assistant', text: `Running the ${suite} suite now. I will record the summary line verbatim.` },
+      {
+        role: 'tool',
+        name: 'run_tests',
+        arguments: JSON.stringify({ suite }),
+        text: `# ${suite} suite\n# tests 42\n# pass ${passed}\n# fail ${failed}\n${log}`,
+      },
+      { role: 'assistant', text: `The pre-fix run failed ${failed} of 42 tests in the ${suite} suite. I will report that exact count.` },
+      { role: 'user', text: 'We have since fixed the suite. The old run output is no longer in the workspace; the latest file is a different run.' },
+    ]
+  },
+  task: 'Write `test-history.json` with `failed` (number) and `suite` (string) from the PRE-FIX run you inspected, not from `test-results-latest.txt`. Then reply with the values and no further tool calls.',
+  gold: { note: 'the failure count exists only in the archived run_tests result' },
+}
+
+/**
+ * T8 — a CONFIGURATION THAT WAS IN EFFECT AND HAS SINCE CHANGED.
+ *
+ * The workspace holds the new value. The question is what was live during the
+ * incident, which is a historical observation.
+ */
+const T8 = {
+  id: 'T8',
+  category: 'expired-configuration',
+  title: 'Recover the timeout that was in effect during the incident',
+  operationalBudgetTokens: 16384,
+  thresholdRatio: 0.5,
+  workspace(seed) {
+    const current = seed === 1 ? 900 : 1200
+    return {
+      'README.md': '# Service configuration\n\n`config/service.yaml` is the CURRENT configuration. It was changed after the incident.\n',
+      'config/service.yaml': `service: checkout\nretry:\n  timeout_ms: ${current}\n  attempts: 4\n`,
+      'CHANGELOG.md': '# Changelog\n\n## After the incident\n- retry.timeout_ms changed. The incident review needs the value that was live during the incident.\n',
+    }
+  },
+  reference(seed) {
+    const timeout = seed === 1 ? 1847 : 2311
+    return { 'incident-config.json': `${JSON.stringify({ timeout_ms: timeout }, null, 2)}\n` }
+  },
+  counterfactual(seed) {
+    const current = seed === 1 ? 900 : 1200
+    return { 'incident-config.json': `${JSON.stringify({ timeout_ms: current }, null, 2)}\n` }
+  },
+  checks: [
+    { kind: 'json_equals', path: 'incident-config.json', value: seed => seed === 1
+      ? { timeout_ms: 1847 }
+      : { timeout_ms: 2311 } },
+  ],
+  history(seed) {
+    const timeout = seed === 1 ? 1847 : 2311
+    const config = `service: checkout\nretry:\n  timeout_ms: ${timeout}\n  attempts: 4\n  backoff: exponential\n# this file is the configuration the incident ran with\n`
+    const log = serviceLog({
+      seed: seed * 29,
+      count: 470,
+      lines: (r, i, stamp) => pick(r, [
+        `${stamp} INFO  [checkout] retry budget_ms=${timeout} attempt=${1 + Math.floor(r() * 3)} id=${hex(r, 8)}`,
+        `${stamp} WARN  [checkout] upstream slow ms=${timeout + Math.floor(r() * 30)} retry=1`,
+        `${stamp} INFO  [checkout] request id=${hex(r, 10)} status=${r() > 0.1 ? 200 : 503}`,
+      ]),
+    })
+    return [
+      { role: 'user', text: 'Read the checkout service configuration before we change it. I need the timeout that is live right now for the incident timeline.' },
+      { role: 'assistant', text: 'Reading the configuration file now.' },
+      {
+        role: 'tool',
+        name: 'read_file',
+        arguments: '{"path":"config/service.yaml"}',
+        text: `${config}${log}`,
+      },
+      { role: 'assistant', text: `The live retry timeout is ${timeout} ms. Recording it verbatim.` },
+      { role: 'user', text: 'After the incident we changed the timeout. The workspace now holds the new file; the old value is only in the conversation.' },
+    ]
+  },
+  task: 'Write `incident-config.json` with `timeout_ms` (number) that was in effect during the incident, not the current value in `config/service.yaml`. Then reply with the value and no further tool calls.',
+  gold: { note: 'the incident value exists only in the archived configuration read' },
+}
+
+/**
+ * T9 — CROSS-FILE EVIDENCE.
+ *
+ * The answer needs a service name from one historical read and a release id
+ * from another. Both files have since been redeployed, so the workspace carries
+ * two decoys and neither half can be taken from it.
+ */
+const T9 = {
+  id: 'T9',
+  category: 'cross-file-recovery',
+  title: 'Assemble the incident deploy from two archived reads',
+  operationalBudgetTokens: 16384,
+  thresholdRatio: 0.5,
+  workspace(seed) {
+    const tag = seed === 1 ? 'v2.8.0' : 'v1.9.5'
+    const release = seed === 1 ? 'rel-a81d' : 'rel-77bb'
+    return {
+      'README.md': '# Deploy records\n\n`deploy/app.yaml` and `deploy/release.json` describe the CURRENT deploy, not the one that caused the incident.\n',
+      'deploy/app.yaml': `service: ${seed === 1 ? 'checkout' : 'billing'}\nimage: registry/${seed === 1 ? 'checkout' : 'billing'}:${tag}\n`,
+      'deploy/release.json': `${JSON.stringify({ release, tag }, null, 2)}\n`,
+    }
+  },
+  reference(seed) {
+    const values = seed === 1
+      ? { service: 'checkout', release: 'rel-9f2c', tag: 'v2.7.1' }
+      : { service: 'billing', release: 'rel-4d71', tag: 'v1.9.4' }
+    return { 'incident-deploy.json': `${JSON.stringify(values, null, 2)}\n` }
+  },
+  counterfactual(seed) {
+    const values = seed === 1
+      ? { service: 'checkout', release: 'rel-a81d', tag: 'v2.8.0' }
+      : { service: 'billing', release: 'rel-77bb', tag: 'v1.9.5' }
+    return { 'incident-deploy.json': `${JSON.stringify(values, null, 2)}\n` }
+  },
+  checks: [
+    { kind: 'json_equals', path: 'incident-deploy.json', value: seed => seed === 1
+      ? { service: 'checkout', release: 'rel-9f2c', tag: 'v2.7.1' }
+      : { service: 'billing', release: 'rel-4d71', tag: 'v1.9.4' } },
+  ],
+  history(seed) {
+    const values = seed === 1
+      ? { service: 'checkout', release: 'rel-9f2c', tag: 'v2.7.1' }
+      : { service: 'billing', release: 'rel-4d71', tag: 'v1.9.4' }
+    const app = `service: ${values.service}\nimage: registry/${values.service}:${values.tag}\nreplicas: 3\n`
+    const release = JSON.stringify({ release: values.release, tag: values.tag, created: '2026-10-11T02:10:00Z' }, null, 2)
+    const log = serviceLog({
+      seed: seed * 41,
+      count: 520,
+      lines: (r, i, stamp) => pick(r, [
+        `${stamp} INFO  [deploy] image=${values.service}:${values.tag} release=${values.release}`,
+        `${stamp} INFO  [deploy] pod ready id=${hex(r, 8)}`,
+        `${stamp} WARN  [deploy] rollout paused revision=${1 + Math.floor(r() * 9)}`,
+      ]),
+    })
+    return [
+      { role: 'user', text: 'Read the deploy manifest and the release record for the incident window. I need the service, release id and image tag that were deployed then.' },
+      { role: 'assistant', text: 'Reading both files; they identify different halves of the same deploy.' },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"deploy/app.yaml"}', text: app },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"deploy/release.json"}', text: release },
+      { role: 'assistant', text: `The deployed service is ${values.service}, release ${values.release}, tag ${values.tag}. Both files agree.` },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/deploy.log"}', text: log },
+      { role: 'user', text: 'The deploy has been replaced since; both workspace files now describe the current deploy. The incident deploy exists only in the conversation.' },
+    ]
+  },
+  task: 'Write `incident-deploy.json` with exactly `service` (string), `release` (string) and `tag` (string) from the INCIDENT deploy you inspected, not from the current workspace files. Then reply with the values and no further tool calls.',
+  gold: { note: 'the answer requires one fact from each of two archived reads' },
+}
+
+/**
+ * T10 — ONE IDENTIFIER REVISED MULTIPLE TIMES.
+ *
+ * Three reads of the same file show three values. The question names a time,
+ * so the model must pick the version that was in effect then, not the first,
+ * the latest, or the workspace's current value.
+ */
+const T10 = {
+  id: 'T10',
+  category: 'multi-revision-history',
+  title: 'Recover the value in effect at a named time',
+  operationalBudgetTokens: 16384,
+  thresholdRatio: 0.5,
+  workspace(seed) {
+    const current = seed === 1 ? 12 : 9
+    return {
+      'README.md': '# Flag history\n\n`config/flags.json` is the CURRENT value. It is not the value at 10:00.\n',
+      'config/flags.json': `${JSON.stringify({ concurrency: current }, null, 2)}\n`,
+      'CHANGELOG.md': '# Flag changes\n\n- 09:40 concurrency raised.\n- 09:55 concurrency raised again.\n- 10:10 concurrency raised to the current value.\n',
+    }
+  },
+  reference(seed) {
+    const at10 = seed === 1 ? 8 : 6
+    return { 'flag-at-10.json': `${JSON.stringify({ concurrency: at10 }, null, 2)}\n` }
+  },
+  counterfactual(seed) {
+    const current = seed === 1 ? 12 : 9
+    return { 'flag-at-10.json': `${JSON.stringify({ concurrency: current }, null, 2)}\n` }
+  },
+  checks: [
+    { kind: 'json_equals', path: 'flag-at-10.json', value: seed => seed === 1
+      ? { concurrency: 8 }
+      : { concurrency: 6 } },
+  ],
+  history(seed) {
+    const versions = seed === 1 ? [4, 8, 12] : [3, 6, 9]
+    const stamps = ['09:40', '09:55', '10:10']
+    const log = serviceLog({
+      seed: seed * 53,
+      count: 560,
+      lines: (r, i, stamp) => pick(r, [
+        `${stamp} INFO  [flags] concurrency=${versions[Math.floor(r() * 3)]} reader=${hex(r, 6)}`,
+        `${stamp} DEBUG [flags] reload generation=${1 + Math.floor(r() * 5)}`,
+        `${stamp} INFO  [flags] request id=${hex(r, 10)} status=${r() > 0.1 ? 200 : 503}`,
+      ]),
+    })
+    return [
+      { role: 'user', text: 'Track the concurrency flag through today. Read it at each change; the incident review needs the value at 10:00 exactly.' },
+      { role: 'assistant', text: 'Reading the flag file after each change and recording the time.' },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"config/flags.json"}', text: `${JSON.stringify({ concurrency: versions[0] }, null, 2)}\n# observed at ${stamps[0]}` },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"config/flags.json"}', text: `${JSON.stringify({ concurrency: versions[1] }, null, 2)}\n# observed at ${stamps[1]}` },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"config/flags.json"}', text: `${JSON.stringify({ concurrency: versions[2] }, null, 2)}\n# observed at ${stamps[2]}` },
+      { role: 'tool', name: 'read_file', arguments: '{"path":"logs/flags.log"}', text: log },
+      { role: 'user', text: 'The current file has moved past the incident time. The 10:00 value exists only in the conversation.' },
+    ]
+  },
+  task: 'Write `flag-at-10.json` with `concurrency` (number) that was in effect at 10:00, not the first value and not the current one. Then reply with the value and no further tool calls.',
+  gold: { note: 'the middle revision is the only correct value; first and last are decoys' },
+}
+
+const TEMPLATES = { T1, T2, T3, T4, T5, T5B, T6, T7, T8, T9, T10 }
 
 function resolveValue(value, seed) {
   return typeof value === 'function' ? value(seed) : value
