@@ -123,8 +123,10 @@ registry:
 
 ```text
 eval/ef-r1/evidence-claims.mjs
-eval/ef-r1/out/evidence-claims.json   8 claims: authority, stages, locator,
-                                      tasks, design, archive, candidate, no-live-calls
+eval/ef-r1/out/evidence-claims.json   12 claims: authority, stages, locator,
+                                      tasks, design, archive, candidate, ablation,
+                                      prompt folding, writer audit, combined archive,
+                                      campaign authorization
 docs/convergence/EF_R1.md             readable index and limitations
 ```
 
