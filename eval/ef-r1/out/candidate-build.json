@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T17:18:40.616Z",
+  "work": "EF-R1",
+  "installDir": "eval\\ef-r1\\candidate\\install",
+  "packageDir": "eval\\ef-r1\\candidate\\install\\node_modules\\dsh-epistemic-fold",
+  "checks": [
+    {
+      "id": "loads-plugin",
+      "pass": true,
+      "detail": "lib/plugin.js exports a class"
+    },
+    {
+      "id": "loads-entry",
+      "pass": true,
+      "detail": "lib/entry.js imports"
+    },
+    {
+      "id": "loads-doctor",
+      "pass": true,
+      "detail": "lib/doctor.js imports"
+    },
+    {
+      "id": "mounts-basic",
+      "pass": true,
+      "detail": "basic: ctx.compaction is the EF engine"
+    },
+    {
+      "id": "basic-flag-basic",
+      "pass": true,
+      "detail": "basic: isBasic() is true"
+    },
+    {
+      "id": "mounts-economy",
+      "pass": true,
+      "detail": "economy: ctx.compaction is the EF engine"
+    },
+    {
+      "id": "basic-flag-economy",
+      "pass": true,
+      "detail": "economy: isBasic() is false"
+    },
+    {
+      "id": "mounts-quality",
+      "pass": true,
+      "detail": "quality: ctx.compaction is the EF engine"
+    },
+    {
+      "id": "basic-flag-quality",
+      "pass": true,
+      "detail": "quality: isBasic() is false"
+    },
+    {
+      "id": "semantic-off",
+      "pass": true,
+      "detail": "semanticContinuity resolved to off"
+    },
+    {
+      "id": "tarball-sha256",
+      "pass": true,
+      "detail": "306d387b0f2bf0eac4fb909a81e92fae17b427905000f30ff8daa8993cfadf3f (1402669 bytes)"
+    },
+    {
+      "id": "tarball-no-raw-or-secret",
+      "pass": true,
+      "detail": "0 suspicious path(s)"
+    },
+    {
+      "id": "tarball-no-build-path",
+      "pass": true,
+      "detail": "0 file(s) contain the checkout path"
+    }
+  ],
+  "pass": true
+}
