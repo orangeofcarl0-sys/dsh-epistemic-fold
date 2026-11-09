@@ -42,10 +42,10 @@ recorded ops still apply as recorded, and the new matrix includes that case.
 Evidence:
 
 ```text
-eval/ef-r1/out/operation-authority.json   15/15 required cases, verdict authority-closed
+eval/ef-r1/out/operation-authority.json   16/16 required cases, verdict authority-closed
 eval/ef-r1/out/probe-before.txt           four vulnerable paths at cb218cc
 eval/ef-r1/out/probe-after.txt            the same four paths, zero declares
-tests/ef-r1-operation-authority.spec.ts   the 15-case matrix
+tests/ef-r1-operation-authority.spec.ts   the 16-case matrix
 ```
 
 The four probe outputs are the before/after comparison. The probes were run with

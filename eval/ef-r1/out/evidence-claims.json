@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "work": "EF-R1",
-  "generatedAt": "2026-11-09T17:18:56.818Z",
-  "evaluatedCommit": "aab99a9c9a42b6d35ac0ce2d6fb8326aa7175457",
+  "generatedAt": "2026-11-09T17:21:38.198Z",
+  "evaluatedCommit": "e82e75b80d32d67c67902709df3112da7381335e",
   "claims": [
     {
       "claimId": "R1-OPERATION-AUTHORITY",
@@ -11,13 +11,13 @@
       "experimentId": "EF-R1 WP1",
       "gitSha": "135124b",
       "artifact": "eval/ef-r1/out/operation-authority.json",
-      "harness": "15-case matrix; real validator, planner and reducer",
+      "harness": "16-case matrix; real validator, planner and reducer",
       "configuration": "assistant decision vs user decision; no supersedes, unrelated target, same-packet conflict, mixed source, stale quote",
-      "datasetVersion": "15 named cases + four before/after probes",
+      "datasetVersion": "16 named cases + four before/after probes",
       "scorerVersion": "vitest + explicit verdict",
       "limitation": "Deterministic contract only; it says nothing about model behaviour or product quality. The stale-source rule uses message order, not semantic entailment.",
       "artifactPresent": true,
-      "artifactSha256": "e98b352c4b33670d7b310f873580f61b7b4eb5d121456b7c1df99138a2b8a504",
+      "artifactSha256": "d92b71df3a1e8c53c75f15acc405b5686d2a4b3c184f44c8700a35d52bb72729",
       "status": "current"
     },
     {
@@ -105,7 +105,7 @@
       "claim": "The EF-R1 tarball installs and mounts basic/economy/quality with semantic continuity off, and contains no raw run, credential or checkout path.",
       "evidenceLevel": "Deterministic Contract",
       "experimentId": "EF-R1 WP5",
-      "gitSha": "aab99a9c9a42b6d35ac0ce2d6fb8326aa7175457",
+      "gitSha": "e82e75b80d32d67c67902709df3112da7381335e",
       "artifact": "eval/ef-r1/out/candidate-build.json",
       "harness": "installed-tarball smoke",
       "configuration": "basic/economy/quality; semantic off",
@@ -121,7 +121,7 @@
       "claim": "EF-R1 made zero provider requests and zero remote Git operations.",
       "evidenceLevel": "Constraint",
       "experimentId": "EF-R1",
-      "gitSha": "aab99a9c9a42b6d35ac0ce2d6fb8326aa7175457",
+      "gitSha": "e82e75b80d32d67c67902709df3112da7381335e",
       "artifact": "eval/ef-r1/out/ablation-design.json",
       "harness": "no runner was invoked",
       "configuration": "offline only",

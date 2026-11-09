@@ -35,6 +35,7 @@ const REQUIRED = [
   'refuses an implicit replacement even when the named supersedes is unrelated',
   'refuses a same-packet second declare that would displace an unauthorized head',
   'allows an authorized same-coordinate revision and records the supersession link',
+  'does not let an assistant decision retire a system-grounded constraint',
   'allows the user to revise the user decision with a newer statement',
   'does not let a tool result raise an assistant decision to tool standing',
   'does not accept the user’s OLD statement as authority for its opposite',

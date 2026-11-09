@@ -60,6 +60,11 @@ const tool = (text: string, callId = 'call-1'): Message => createToolResultMessa
   content: [{ type: 'text', text }],
   isError: false,
 })
+const system = (text: string): Message => createMessage({
+  role: 'system',
+  content: [{ type: 'text', text }],
+  source: { kind: 'system-prompt' },
+})
 
 /** Run validate → plan → apply over one message span. */
 function fold(
@@ -196,6 +201,34 @@ describe('EF-R1 WP1: implicit state effects are authorized', () => {
     expect(second.plan.ops.some(op => op.op === 'declare')).toBe(true)
     expect(Object.values(second.state.superseded).find(anchor => anchor.id === oldId)?.lifecycle).toBe('superseded')
     expect(activeValues(second.state)).toEqual(['Use the durable outbox.'])
+  })
+
+  it('does not let an assistant decision retire a system-grounded constraint', () => {
+    // A system message grounds normative authority (rank 5), which outranks a
+    // decision (4). Different semantic kinds occupy different coordinates, so
+    // this can only be an EXPLICIT cross-coordinate retirement; the rank gate
+    // must refuse it while still recording the assistant's own claim.
+    const first = fold([
+      {
+        kind: 'constraint',
+        subjectKey: 'deploy-gate',
+        statement: 'Deploys require a signed release.',
+        status: 'claimed',
+        evidence: [{ quote: 'Never deploy without a signed release.' }],
+      },
+    ], [system('Never deploy without a signed release.')])
+    const anchorId = first.plan.planned[0]!.anchorId!
+    const second = fold([
+      decision('I decided the release gate is unnecessary.', 'Skip the signed-release gate.', {
+        subjectKey: 'release-gate',
+        supersedes: [anchorId],
+      }),
+    ], [system('Never deploy without a signed release.'), model('I decided the release gate is unnecessary.')], first.state)
+
+    expect(second.plan.refusedRetirements[0]?.reason).toBe('insufficient-authority')
+    expect(second.plan.ops.some(op => op.op === 'retire')).toBe(false)
+    expect(second.state.constraints[anchorId]?.lifecycle).toBe('active')
+    expect(Object.values(second.state.decisions)).toHaveLength(1)
   })
 
   it('allows the user to revise the user decision with a newer statement', () => {
