@@ -2,20 +2,20 @@
 
 Reconstructed offline from the 96 executed cells. No model call was made.
 
-Cells: **120**, passed **56**, failed **64**. Ordered trajectories: **49**; the rest use request previews with a `truncated` flag.
+Cells: **240**, passed **129**, failed **111**. Ordered trajectories: **169**; the rest use request previews with a `truncated` flag.
 
 ## Where the failures stop
 
 | Stage | Meaning | Failed cells |
 |---|---|---|
 | observe | the fact was not in any tool result the model received | 0 |
-| produce | nothing was written and the value was not stated | 24 |
-| write | the value was stated, but the deliverable was not written | 17 |
-| schema | the deliverable exists but its keys/types are wrong | 13 |
-| verify | the deliverable parses, but its values or tests fail | 10 |
+| produce | nothing was written and the value was not stated | 39 |
+| write | the value was stated, but the deliverable was not written | 27 |
+| schema | the deliverable exists but its keys/types are wrong | 18 |
+| verify | the deliverable parses, but its values or tests fail | 27 |
 | unknown | no recorded stage explains the result | 0 |
 
-**C is unknown in 35 memory-task cells** (19 of them failures). A truncated tool preview cannot prove absence, so those are counted apart rather than labelled `observe`.
+**C is unknown in 45 memory-task cells** (22 of them failures). A truncated tool preview cannot prove absence, so those are counted apart rather than labelled `observe`.
 
 No cell can be shown to have failed at **observation** with the recorded evidence: every memory-task failure either had the fact visible in a tool text or had a truncated text where absence proves nothing. That is a limit of the evidence coverage, not a claim that observation never failed.
 
@@ -23,35 +23,39 @@ No cell can be shown to have failed at **observation** with the recorded evidenc
 
 | Path | Memory-task cells |
 |---|---|
-| every value was seen in a primary tool result | 27 |
+| every value was seen in a primary tool result | 107 |
 | every value was explained by the checkpoint (some also by a tool result) | 13 |
 | every value was explained by the checkpoint or task prompt (some also by a tool) | 10 |
-| at least one value has no visible source in tool, checkpoint or prompt | 5 |
-| the value was not produced | 40 |
+| at least one value has no visible source in tool, checkpoint or prompt | 25 |
+| the value was not produced | 60 |
 | value production unknown (no gold pair) | 0 |
 
 The checkpoint path is why an E1 cell can pass T2 without calling recall: the semantic state carried the exact value inline. It is also why a B0 cell can pass: Basic's summary contained the build and timeout verbatim. Neither is a retrieval success, and neither is evidence that the archive was used.
+
+## Did the task prompt itself survive?
+
+The active task prompt was folded during the continuation in **113** cells (74 of them failures). That is a different failure from losing a historical fact: the model no longer has the instruction. At the 16k operational budget a long continuation can fold the request itself, and the locator is then recovering the TASK, not only the evidence. Read every L×G result with this covariate in view.
 
 Verification failures split by the failing checker:
 
 | Sub-stage | Cells |
 |---|---|
 | external-check | 1 |
-| wrong-value | 9 |
+| wrong-value | 26 |
 
 ## Memory tasks by arm
 
 | Arm | Cells | Passed | Failure stages |
 |---|---|---|---|
 | B0 | 8 | 6 | schema 1, write 1 |
-| E0 | 29 | 6 | produce 11, schema 4, write 5, verify 3 |
-| E0-G | 6 | 2 | schema 1, verify 3 |
-| E0-L | 6 | 2 | produce 2, write 2 |
-| E0-LG | 6 | 3 | verify 2, produce 1 |
+| E0 | 53 | 15 | produce 19, schema 4, write 9, verify 6 |
+| E0-G | 30 | 17 | schema 4, verify 9 |
+| E0-L | 30 | 17 | produce 6, write 6, verify 1 |
+| E0-LG | 30 | 19 | verify 6, produce 3, schema 2 |
 | E0a | 6 | 1 | schema 1, produce 3, write 1 |
 | E0ai | 8 | 1 | produce 4, write 3 |
 | E0i | 8 | 0 | verify 1, produce 3, write 4 |
-| E1 | 12 | 7 | schema 4, write 1 |
+| E1 | 36 | 25 | schema 4, write 3, verify 3, produce 1 |
 | S | 6 | 4 | schema 2 |
 
 ## What this changes
@@ -63,14 +67,16 @@ The 47 failures are not one mechanism. Seventeen never put the value anywhere, t
 | Template | Cells | Passed | Failure stages |
 |---|---|---|---|
 | T1 | 9 | 8 | verify 1 |
-| T10 | 8 | 3 | produce 3, verify 2 |
-| T2 | 35 | 8 | produce 14, write 6, schema 4, verify 3 |
+| T10 | 28 | 8 | produce 10, verify 9, schema 1 |
+| T2 | 55 | 15 | produce 21, write 8, schema 7, verify 4 |
 | T3 | 10 | 10 | — |
-| T4 | 22 | 9 | produce 4, verify 2, write 7 |
+| T4 | 42 | 23 | produce 5, verify 5, write 9 |
 | T5 | 10 | 1 | schema 8, write 1 |
 | T5B | 12 | 8 | schema 1, produce 3 |
 | T6 | 6 | 6 | — |
-| T9 | 8 | 3 | verify 2, write 3 |
+| T7 | 20 | 16 | verify 3, write 1 |
+| T8 | 20 | 18 | verify 2 |
+| T9 | 28 | 16 | verify 3, write 8, schema 1 |
 
 ## The cells that matter most
 
@@ -139,3 +145,50 @@ The 47 failures are not one mechanism. Seventeen never put the value anywhere, t
 | e2e-lg-pilot-1 | T10-s2-E0-L-r1 | no | false | true | false | produce |
 | e2e-lg-pilot-1 | T10-s2-E0-LG-r1 | no | false | true | true | verify |
 | e2e-lg-pilot-1 | T10-s2-E0-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s1-E0-LG-r1 | no | false | true | true | schema |
+| e2e-lg-confirm-1 | T2-s1-E0-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s1-E0-L-r1 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T2-s1-E0-LG-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s1-E0-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s2-E0-LG-r1 | no | true | true | true | schema |
+| e2e-lg-confirm-1 | T2-s2-E0-r1 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T2-s2-E0-L-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s2-E0-G-r1 | no | false | true | true | verify |
+| e2e-lg-confirm-1 | T2-s2-E0-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s2-E0-L-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T2-s2-E0-G-r2 | no | false | true | true | schema |
+| e2e-lg-confirm-1 | T2-s2-E0-LG-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T4-s1-E0-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T4-s1-E0-G-r1 | no | false | true | true | verify |
+| e2e-lg-confirm-1 | T4-s1-E0-r2 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T4-s2-E0-r1 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T4-s2-E0-G-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T4-s2-E0-G-r2 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T7-s1-E0-r1 | no | true | null | true | verify |
+| e2e-lg-confirm-1 | T7-s1-E0-L-r2 | no | true | null | false | write |
+| e2e-lg-confirm-1 | T7-s1-E1-r2 | no | true | null | true | verify |
+| e2e-lg-confirm-1 | T7-s2-E0-r2 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T8-s1-E0-LG-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T8-s2-E0-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T9-s1-E0-G-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T9-s1-E1-r1 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T9-s1-E1-r2 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T9-s1-E0-L-r2 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T9-s2-E0-G-r1 | no | true | true | true | schema |
+| e2e-lg-confirm-1 | T9-s2-E0-r2 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T9-s2-E0-L-r2 | no | true | true | false | write |
+| e2e-lg-confirm-1 | T10-s1-E0-LG-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T10-s1-E1-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s1-E0-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s1-E0-LG-r2 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T10-s1-E0-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s1-E0-L-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s1-E0-G-r2 | no | false | true | true | verify |
+| e2e-lg-confirm-1 | T10-s2-E0-LG-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T10-s2-E1-r1 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T10-s2-E0-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s2-E0-L-r1 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s2-E0-G-r1 | no | true | true | true | schema |
+| e2e-lg-confirm-1 | T10-s2-E1-r2 | no | true | true | true | verify |
+| e2e-lg-confirm-1 | T10-s2-E0-r2 | no | false | true | false | produce |
+| e2e-lg-confirm-1 | T10-s2-E0-L-r2 | no | true | true | true | verify |

@@ -53,7 +53,7 @@ const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const RUNS = join(ROOT, 'eval', 'e2e', 'runs')
 const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
 
-const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1', 'e2e-lg-pilot-1']
+const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1', 'e2e-lg-pilot-1', 'e2e-lg-confirm-1']
 const MEMORY_TEMPLATES = new Set(['T2', 'T4', 'T5', 'T5B', 'T7', 'T8', 'T9', 'T10'])
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
@@ -288,6 +288,26 @@ function toolTexts(report, fullRequests = []) {
   return texts
 }
 
+/**
+ * Whether the ACTIVE task prompt was still visible in the primary requests.
+ *
+ * At the 16k operational budget a long continuation can fold the task prompt
+ * itself, not only the evidence. That is a different failure from losing a
+ * historical fact: the model no longer has the instruction. The first and last
+ * primary requests answer "was it delivered" and "did it survive".
+ */
+function taskPromptVisibility(report, task) {
+  const normalize = text => String(text ?? '').replace(/\s+/gu, ' ').trim()
+  const needle = normalize(task.task).slice(0, 60)
+  const primary = (report.requests ?? []).filter(request => request.purpose === 'primary')
+  if (primary.length === 0 || needle.length === 0) return { atStart: null, atEnd: null, lost: null }
+  const seen = request => (request.messages ?? []).some(message =>
+    normalize(message.preview).includes(needle))
+  const atStart = seen(primary[0])
+  const atEnd = seen(primary[primary.length - 1])
+  return { atStart, atEnd, lost: atStart === true && atEnd === false, requests: primary.length }
+}
+
 /** The checkpoint text the task model saw, when the report carries one. */
 function checkpointText(report) {
   const checkpoint = report.checkpoint
@@ -447,6 +467,7 @@ for (const campaign of CAMPAIGNS) {
     const observed = memoryTask
       ? observedStage(report, pairs, fullRequests)
       : { value: null, basis: 'not a historical-recovery task', matched: 0 }
+    const promptVisibility = taskPromptVisibility(report, task)
 
     const stages = {
       A: archiveStage(report, arm),
@@ -492,6 +513,10 @@ for (const campaign of CAMPAIGNS) {
       writes: (report.tools?.byName?.write_file ?? 0) + (report.tools?.byName?.edit_file ?? 0),
       hasTrajectory: Array.isArray(report.trajectory) && report.trajectory.length > 0,
       fullPrimaryMessages: fullRequests.length,
+      taskPromptVisibleAtStart: promptVisibility.atStart,
+      taskPromptVisibleAtEnd: promptVisibility.atEnd,
+      taskPromptLost: promptVisibility.lost,
+      primaryRequests: promptVisibility.requests ?? null,
     })
   }
 }
@@ -570,6 +595,8 @@ const output = {
     deliveryPaths,
     cUnknownMemoryCells: cUnknown.length,
     cUnknownFailedMemoryCells: cUnknownFailures.length,
+    taskPromptLostCells: rows.filter(row => row.taskPromptLost === true).length,
+    taskPromptLostFailures: rows.filter(row => row.taskPromptLost === true && !row.checkerPassed).length,
   },
   byTemplate: Object.fromEntries(Object.entries(byTemplate).sort(([left], [right]) => left.localeCompare(right))),
   byArmMemoryTasks: Object.fromEntries(Object.entries(byArm).sort(([left], [right]) => left.localeCompare(right))),
@@ -619,6 +646,10 @@ md.push(`| the value was not produced | ${deliveryPaths.valueNotProduced} |`)
 md.push(`| value production unknown (no gold pair) | ${deliveryPaths.valueUnknown} |`)
 md.push('')
 md.push('The checkpoint path is why an E1 cell can pass T2 without calling recall: the semantic state carried the exact value inline. It is also why a B0 cell can pass: Basic\'s summary contained the build and timeout verbatim. Neither is a retrieval success, and neither is evidence that the archive was used.')
+md.push('')
+md.push('## Did the task prompt itself survive?')
+md.push('')
+md.push(`The active task prompt was folded during the continuation in **${output.totals.taskPromptLostCells}** cells (${output.totals.taskPromptLostFailures} of them failures). That is a different failure from losing a historical fact: the model no longer has the instruction. At the 16k operational budget a long continuation can fold the request itself, and the locator is then recovering the TASK, not only the evidence. Read every L×G result with this covariate in view.`)
 md.push('')
 if (Object.keys(verifySubstages).length > 0) {
   md.push('Verification failures split by the failing checker:')

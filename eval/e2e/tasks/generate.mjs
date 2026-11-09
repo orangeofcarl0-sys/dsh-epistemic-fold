@@ -840,11 +840,11 @@ const T10 = {
   operationalBudgetTokens: 16384,
   thresholdRatio: 0.5,
   workspace(seed) {
-    const current = seed === 1 ? 12 : 9
+    const versions = seed === 1 ? [4, 8, 12] : [3, 6, 9]
     return {
       'README.md': '# Flag history\n\n`config/flags.json` is the CURRENT value. It is not the value at 10:00.\n',
-      'config/flags.json': `${JSON.stringify({ concurrency: current }, null, 2)}\n`,
-      'CHANGELOG.md': '# Flag changes\n\n- 09:40 concurrency raised.\n- 09:55 concurrency raised again.\n- 10:10 concurrency raised to the current value.\n',
+      'config/flags.json': `${JSON.stringify({ concurrency: versions[2] }, null, 2)}\n`,
+      'CHANGELOG.md': `# Flag changes\n\n- 09:41 concurrency set to ${versions[0]}.\n- 09:56 raised to ${versions[1]}.\n- 10:11 raised to ${versions[2]}.\n`,
     }
   },
   reference(seed) {
@@ -862,12 +862,21 @@ const T10 = {
   ],
   history(seed) {
     const versions = seed === 1 ? [4, 8, 12] : [3, 6, 9]
-    const stamps = ['09:40', '09:55', '10:10']
+    // At the boundary times: 09:56 is the first minute of the middle value,
+    // 10:11 the first minute of the last. The task asks for 10:00, which is
+    // unambiguously inside the middle window.
+    const stamps = ['09:41', '09:56', '10:11']
+    const versionAt = stamp => {
+      const clock = stamp.slice(11, 16)
+      if (clock < '09:56') return versions[0]
+      if (clock < '10:11') return versions[1]
+      return versions[2]
+    }
     const log = serviceLog({
       seed: seed * 53,
       count: 560,
       lines: (r, i, stamp) => pick(r, [
-        `${stamp} INFO  [flags] concurrency=${versions[Math.floor(r() * 3)]} reader=${hex(r, 6)}`,
+        `${stamp} INFO  [flags] concurrency=${versionAt(stamp)} reader=${hex(r, 6)}`,
         `${stamp} DEBUG [flags] reload generation=${1 + Math.floor(r() * 5)}`,
         `${stamp} INFO  [flags] request id=${hex(r, 10)} status=${r() > 0.1 ? 200 : 503}`,
       ]),

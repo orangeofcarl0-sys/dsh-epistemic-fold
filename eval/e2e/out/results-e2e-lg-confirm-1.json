@@ -1,0 +1,5460 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T19:33:53.873Z",
+  "campaign": "e2e-lg-confirm-1",
+  "manifestSha256": "16c1d5e9ecd5a14d3f7a6a92805fbea9c28570a4175fb2aad54e94fb9db7c72f",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "complete",
+  "stopReason": null,
+  "planned": 120,
+  "executed": 120,
+  "budget": {
+    "used": {
+      "requests": 514,
+      "inputTokens": 3703265,
+      "outputTokens": 72960,
+      "wallClockMs": 1262874
+    },
+    "limits": {
+      "httpAttempts": 4200,
+      "inputTokens": 30000000,
+      "outputTokens": 1200000,
+      "wallClockMs": 21600000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 138,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 10,
+        "inputTokens": 89042,
+        "outputTokens": 2014,
+        "cacheReadTokens": 91264,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 10,
+          "inputTokens": 89042,
+          "outputTokens": 2014,
+          "cacheReadTokens": 91264,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 10
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 86255,
+        "outputTokens": 1026,
+        "cacheReadTokens": 145664,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 86255,
+          "outputTokens": 1026,
+          "cacheReadTokens": 145664,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 16805,
+        "outputTokens": 604,
+        "cacheReadTokens": 80128,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16622,
+          "outputTokens": 202,
+          "cacheReadTokens": 18816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 183,
+          "outputTokens": 402,
+          "cacheReadTokens": 61312,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 15969,
+        "outputTokens": 196,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 15969,
+          "outputTokens": 196,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 86569,
+        "outputTokens": 465,
+        "cacheReadTokens": 2688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 86569,
+          "outputTokens": 465,
+          "cacheReadTokens": 2688,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 159628,
+        "outputTokens": 1123,
+        "cacheReadTokens": 80000,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 2,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 159628,
+          "outputTokens": 1123,
+          "cacheReadTokens": 80000,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 2
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "2 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 16713,
+        "outputTokens": 920,
+        "cacheReadTokens": 80384,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16530,
+          "outputTokens": 565,
+          "cacheReadTokens": 19072,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 183,
+          "outputTokens": 355,
+          "cacheReadTokens": 61312,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 15970,
+        "outputTokens": 355,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 15970,
+          "outputTokens": 355,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 125261,
+        "outputTokens": 1057,
+        "cacheReadTokens": 99712,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 125261,
+          "outputTokens": 1057,
+          "cacheReadTokens": 99712,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 18128,
+        "outputTokens": 718,
+        "cacheReadTokens": 10496,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 18128,
+          "outputTokens": 718,
+          "cacheReadTokens": 10496,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 85825,
+        "outputTokens": 793,
+        "cacheReadTokens": 144512,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 85825,
+          "outputTokens": 793,
+          "cacheReadTokens": 144512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 16925,
+        "outputTokens": 670,
+        "cacheReadTokens": 79872,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16669,
+          "outputTokens": 324,
+          "cacheReadTokens": 18944,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 256,
+          "outputTokens": 346,
+          "cacheReadTokens": 60928,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 87246,
+        "outputTokens": 673,
+        "cacheReadTokens": 3968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 87246,
+          "outputTokens": 673,
+          "cacheReadTokens": 3968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 16136,
+        "outputTokens": 248,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 16136,
+          "outputTokens": 248,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 16271,
+        "outputTokens": 470,
+        "cacheReadTokens": 18560,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16271,
+          "outputTokens": 470,
+          "cacheReadTokens": 18560,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 16979,
+        "outputTokens": 621,
+        "cacheReadTokens": 79872,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16723,
+          "outputTokens": 205,
+          "cacheReadTokens": 18944,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 256,
+          "outputTokens": 416,
+          "cacheReadTokens": 60928,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17924,
+        "outputTokens": 654,
+        "cacheReadTokens": 5504,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17924,
+          "outputTokens": 654,
+          "cacheReadTokens": 5504,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 103448,
+        "outputTokens": 1164,
+        "cacheReadTokens": 6016,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 103448,
+          "outputTokens": 1164,
+          "cacheReadTokens": 6016,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 17782,
+        "outputTokens": 1430,
+        "cacheReadTokens": 15232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 17782,
+          "outputTokens": 1430,
+          "cacheReadTokens": 15232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T2-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17399,
+        "outputTokens": 926,
+        "cacheReadTokens": 20096,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17399,
+          "outputTokens": 926,
+          "cacheReadTokens": 20096,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T2-s2-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 13952,
+        "outputTokens": 262,
+        "cacheReadTokens": 31232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 13952,
+          "outputTokens": 262,
+          "cacheReadTokens": 31232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 13966,
+        "outputTokens": 397,
+        "cacheReadTokens": 32128,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 13717,
+          "outputTokens": 148,
+          "cacheReadTokens": 16128,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 249,
+          "outputTokens": 249,
+          "cacheReadTokens": 16000,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14529,
+        "outputTokens": 388,
+        "cacheReadTokens": 4736,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14529,
+          "outputTokens": 388,
+          "cacheReadTokens": 4736,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 13946,
+        "outputTokens": 278,
+        "cacheReadTokens": 31232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 13946,
+          "outputTokens": 278,
+          "cacheReadTokens": 31232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 32606,
+        "outputTokens": 1011,
+        "cacheReadTokens": 41728,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 32606,
+          "outputTokens": 1011,
+          "cacheReadTokens": 41728,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14098,
+        "outputTokens": 446,
+        "cacheReadTokens": 32128,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 13849,
+          "outputTokens": 128,
+          "cacheReadTokens": 16128,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 249,
+          "outputTokens": 318,
+          "cacheReadTokens": 16000,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14631,
+        "outputTokens": 407,
+        "cacheReadTokens": 4864,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14631,
+          "outputTokens": 407,
+          "cacheReadTokens": 4864,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 13996,
+        "outputTokens": 250,
+        "cacheReadTokens": 31232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 13996,
+          "outputTokens": 250,
+          "cacheReadTokens": 31232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 15391,
+        "outputTokens": 440,
+        "cacheReadTokens": 10624,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 15391,
+          "outputTokens": 440,
+          "cacheReadTokens": 10624,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 13936,
+        "outputTokens": 253,
+        "cacheReadTokens": 31232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 13936,
+          "outputTokens": 253,
+          "cacheReadTokens": 31232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14334,
+        "outputTokens": 441,
+        "cacheReadTokens": 33024,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 14133,
+          "outputTokens": 155,
+          "cacheReadTokens": 16512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 201,
+          "outputTokens": 286,
+          "cacheReadTokens": 16512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 15788,
+        "outputTokens": 708,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15788,
+          "outputTokens": 708,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14454,
+        "outputTokens": 246,
+        "cacheReadTokens": 31744,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14454,
+          "outputTokens": 246,
+          "cacheReadTokens": 31744,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 15700,
+        "outputTokens": 589,
+        "cacheReadTokens": 8320,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 15700,
+          "outputTokens": 589,
+          "cacheReadTokens": 8320,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14360,
+        "outputTokens": 278,
+        "cacheReadTokens": 31872,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14360,
+          "outputTokens": 278,
+          "cacheReadTokens": 31872,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 15563,
+        "outputTokens": 349,
+        "cacheReadTokens": 10368,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 15563,
+          "outputTokens": 349,
+          "cacheReadTokens": 10368,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14462,
+        "outputTokens": 257,
+        "cacheReadTokens": 31744,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14462,
+          "outputTokens": 257,
+          "cacheReadTokens": 31744,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 15859,
+        "outputTokens": 555,
+        "cacheReadTokens": 11392,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 15859,
+          "outputTokens": 555,
+          "cacheReadTokens": 11392,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14458,
+        "outputTokens": 290,
+        "cacheReadTokens": 31744,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 14458,
+          "outputTokens": 290,
+          "cacheReadTokens": 31744,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T4-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T4-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 14315,
+        "outputTokens": 466,
+        "cacheReadTokens": 33024,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 14114,
+          "outputTokens": 176,
+          "cacheReadTokens": 16512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 201,
+          "outputTokens": 290,
+          "cacheReadTokens": 16512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T4-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 18109,
+        "outputTokens": 539,
+        "cacheReadTokens": 21248,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17625,
+          "outputTokens": 121,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 484,
+          "outputTokens": 418,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17601,
+        "outputTokens": 112,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17601,
+          "outputTokens": 112,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17601,
+        "outputTokens": 135,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17601,
+          "outputTokens": 135,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17601,
+        "outputTokens": 103,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17601,
+          "outputTokens": 103,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17626,
+        "outputTokens": 146,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17626,
+          "outputTokens": 146,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17603,
+        "outputTokens": 115,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17603,
+          "outputTokens": 115,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 17393,
+        "outputTokens": 262,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 17393,
+          "outputTokens": 262,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17601,
+        "outputTokens": 100,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17601,
+          "outputTokens": 100,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17616,
+        "outputTokens": 142,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17616,
+          "outputTokens": 142,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 829,
+        "outputTokens": 767,
+        "cacheReadTokens": 38528,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 473,
+          "outputTokens": 131,
+          "cacheReadTokens": 36992,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 356,
+          "outputTokens": 636,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17783,
+        "outputTokens": 84,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17783,
+          "outputTokens": 84,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17785,
+        "outputTokens": 97,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17785,
+          "outputTokens": 97,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17783,
+        "outputTokens": 96,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17783,
+          "outputTokens": 96,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17705,
+        "outputTokens": 145,
+        "cacheReadTokens": 20096,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17705,
+          "outputTokens": 145,
+          "cacheReadTokens": 20096,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 18927,
+        "outputTokens": 1038,
+        "cacheReadTokens": 62208,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 18159,
+          "outputTokens": 201,
+          "cacheReadTokens": 57728,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 768,
+          "outputTokens": 837,
+          "cacheReadTokens": 4480,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 4,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17787,
+        "outputTokens": 99,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17787,
+          "outputTokens": 99,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17787,
+        "outputTokens": 131,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17787,
+          "outputTokens": 131,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17921,
+        "outputTokens": 128,
+        "cacheReadTokens": 38784,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17921,
+          "outputTokens": 128,
+          "cacheReadTokens": 38784,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 751,
+        "outputTokens": 509,
+        "cacheReadTokens": 38912,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 399,
+          "outputTokens": 98,
+          "cacheReadTokens": 37376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 352,
+          "outputTokens": 411,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T7-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T7-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17789,
+        "outputTokens": 117,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17789,
+          "outputTokens": 117,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T7-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17154,
+        "outputTokens": 102,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17154,
+          "outputTokens": 102,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17164,
+        "outputTokens": 76,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17164,
+          "outputTokens": 76,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17158,
+        "outputTokens": 126,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17158,
+          "outputTokens": 126,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17094,
+        "outputTokens": 222,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17094,
+          "outputTokens": 222,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 18102,
+        "outputTokens": 720,
+        "cacheReadTokens": 40320,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17371,
+          "outputTokens": 145,
+          "cacheReadTokens": 37504,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 3,
+          "inputTokens": 731,
+          "outputTokens": 575,
+          "cacheReadTokens": 2816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 3,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17154,
+        "outputTokens": 87,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17154,
+          "outputTokens": 87,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17158,
+        "outputTokens": 71,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17158,
+          "outputTokens": 71,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17256,
+        "outputTokens": 142,
+        "cacheReadTokens": 37760,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17256,
+          "outputTokens": 142,
+          "cacheReadTokens": 37760,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 986,
+        "outputTokens": 802,
+        "cacheReadTokens": 57472,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 511,
+          "outputTokens": 161,
+          "cacheReadTokens": 54400,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 3,
+          "inputTokens": 475,
+          "outputTokens": 641,
+          "cacheReadTokens": 3072,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 3,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17160,
+        "outputTokens": 104,
+        "cacheReadTokens": 19328,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17160,
+          "outputTokens": 104,
+          "cacheReadTokens": 19328,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 17574,
+        "outputTokens": 219,
+        "cacheReadTokens": 56192,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 17574,
+          "outputTokens": 219,
+          "cacheReadTokens": 56192,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17150,
+        "outputTokens": 107,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17150,
+          "outputTokens": 107,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17152,
+        "outputTokens": 97,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17152,
+          "outputTokens": 97,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 17370,
+        "outputTokens": 490,
+        "cacheReadTokens": 21120,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17032,
+          "outputTokens": 99,
+          "cacheReadTokens": 19584,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 338,
+          "outputTokens": 391,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17162,
+        "outputTokens": 108,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17162,
+          "outputTokens": 108,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17148,
+        "outputTokens": 103,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17148,
+          "outputTokens": 103,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17152,
+        "outputTokens": 87,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17152,
+          "outputTokens": 87,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 752,
+        "outputTokens": 654,
+        "cacheReadTokens": 37760,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 414,
+          "outputTokens": 209,
+          "cacheReadTokens": 36224,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 338,
+          "outputTokens": 445,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17192,
+        "outputTokens": 127,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17192,
+          "outputTokens": 127,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T8-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T8-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 17150,
+        "outputTokens": 128,
+        "cacheReadTokens": 19456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17150,
+          "outputTokens": 128,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T8-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18927,
+        "outputTokens": 364,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18927,
+          "outputTokens": 364,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 39759,
+        "outputTokens": 1590,
+        "cacheReadTokens": 45184,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 11,
+          "inputTokens": 39759,
+          "outputTokens": 1590,
+          "cacheReadTokens": 45184,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 11
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 39671,
+        "outputTokens": 998,
+        "cacheReadTokens": 13568,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 39671,
+          "outputTokens": 998,
+          "cacheReadTokens": 13568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 18056,
+        "outputTokens": 634,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 17636,
+          "outputTokens": 369,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 420,
+          "outputTokens": 265,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 42070,
+        "outputTokens": 900,
+        "cacheReadTokens": 19072,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 42070,
+          "outputTokens": 900,
+          "cacheReadTokens": 19072,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 19699,
+        "outputTokens": 284,
+        "cacheReadTokens": 8192,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 19699,
+          "outputTokens": 284,
+          "cacheReadTokens": 8192,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18865,
+        "outputTokens": 354,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18865,
+          "outputTokens": 354,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 2320,
+        "outputTokens": 869,
+        "cacheReadTokens": 39040,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 1921,
+          "outputTokens": 76,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 399,
+          "outputTokens": 793,
+          "cacheReadTokens": 19072,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 19717,
+        "outputTokens": 289,
+        "cacheReadTokens": 8192,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 19717,
+          "outputTokens": 289,
+          "cacheReadTokens": 8192,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 54177,
+        "outputTokens": 901,
+        "cacheReadTokens": 26752,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 54177,
+          "outputTokens": 901,
+          "cacheReadTokens": 26752,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 18928,
+        "outputTokens": 1054,
+        "cacheReadTokens": 13440,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 18928,
+          "outputTokens": 1054,
+          "cacheReadTokens": 13440,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18562,
+        "outputTokens": 342,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18562,
+          "outputTokens": 342,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18029,
+        "outputTokens": 365,
+        "cacheReadTokens": 19840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17612,
+          "outputTokens": 175,
+          "cacheReadTokens": 19840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 417,
+          "outputTokens": 190,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 36584,
+        "outputTokens": 564,
+        "cacheReadTokens": 25472,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 36584,
+          "outputTokens": 564,
+          "cacheReadTokens": 25472,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18568,
+        "outputTokens": 391,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18568,
+          "outputTokens": 391,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 57015,
+        "outputTokens": 1206,
+        "cacheReadTokens": 67456,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 57015,
+          "outputTokens": 1206,
+          "cacheReadTokens": 67456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 17977,
+        "outputTokens": 693,
+        "cacheReadTokens": 21760,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 17463,
+          "outputTokens": 130,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 514,
+          "outputTokens": 563,
+          "cacheReadTokens": 1792,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 18701,
+        "outputTokens": 335,
+        "cacheReadTokens": 2560,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 18701,
+          "outputTokens": 335,
+          "cacheReadTokens": 2560,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 18377,
+        "outputTokens": 475,
+        "cacheReadTokens": 2816,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 18377,
+          "outputTokens": 475,
+          "cacheReadTokens": 2816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T9-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 55926,
+        "outputTokens": 656,
+        "cacheReadTokens": 28672,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 55926,
+          "outputTokens": 656,
+          "cacheReadTokens": 28672,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T9-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": true,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 13,
+        "inputTokens": 78311,
+        "outputTokens": 1338,
+        "cacheReadTokens": 33536,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 13,
+          "inputTokens": 78311,
+          "outputTokens": 1338,
+          "cacheReadTokens": 33536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 13
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 9,
+        "inputTokens": 38945,
+        "outputTokens": 1617,
+        "cacheReadTokens": 26880,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 9,
+          "inputTokens": 38945,
+          "outputTokens": 1617,
+          "cacheReadTokens": 26880,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 9
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 19751,
+        "outputTokens": 1493,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 19158,
+          "outputTokens": 748,
+          "cacheReadTokens": 11648,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 593,
+          "outputTokens": 745,
+          "cacheReadTokens": 18176,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18913,
+        "outputTokens": 576,
+        "cacheReadTokens": 4736,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18913,
+          "outputTokens": 576,
+          "cacheReadTokens": 4736,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 53231,
+        "outputTokens": 325,
+        "cacheReadTokens": 7296,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 53231,
+          "outputTokens": 325,
+          "cacheReadTokens": 7296,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 10,
+        "inputTokens": 79533,
+        "outputTokens": 1787,
+        "cacheReadTokens": 24064,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 10,
+          "inputTokens": 79533,
+          "outputTokens": 1787,
+          "cacheReadTokens": 24064,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 10
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-LG-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 942,
+        "outputTokens": 811,
+        "cacheReadTokens": 37888,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 412,
+          "outputTokens": 126,
+          "cacheReadTokens": 36096,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 530,
+          "outputTokens": 685,
+          "cacheReadTokens": 1792,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-r2",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 60018,
+        "outputTokens": 1159,
+        "cacheReadTokens": 32512,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 60018,
+          "outputTokens": 1159,
+          "cacheReadTokens": 32512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 18609,
+        "outputTokens": 408,
+        "cacheReadTokens": 8576,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 18609,
+          "outputTokens": 408,
+          "cacheReadTokens": 8576,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s1",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 11,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 17,
+        "inputTokens": 125039,
+        "outputTokens": 2026,
+        "cacheReadTokens": 69120,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 17,
+          "inputTokens": 125039,
+          "outputTokens": 2026,
+          "cacheReadTokens": 69120,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 17
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s1-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 12,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 17,
+        "inputTokens": 131719,
+        "outputTokens": 2240,
+        "cacheReadTokens": 70144,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 17,
+          "inputTokens": 131719,
+          "outputTokens": 2240,
+          "cacheReadTokens": 70144,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 17
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E1",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 17640,
+        "outputTokens": 809,
+        "cacheReadTokens": 20992,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 16854,
+          "outputTokens": 138,
+          "cacheReadTokens": 19456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 786,
+          "outputTokens": 671,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 83010,
+        "outputTokens": 1075,
+        "cacheReadTokens": 27648,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 83010,
+          "outputTokens": 1075,
+          "cacheReadTokens": 27648,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 79477,
+        "outputTokens": 1292,
+        "cacheReadTokens": 33792,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 79477,
+          "outputTokens": 1292,
+          "cacheReadTokens": 33792,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 76906,
+        "outputTokens": 1975,
+        "cacheReadTokens": 93440,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 12,
+          "inputTokens": 76906,
+          "outputTokens": 1975,
+          "cacheReadTokens": 93440,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 12
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E1",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 744,
+        "outputTokens": 969,
+        "cacheReadTokens": 37888,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 342,
+          "outputTokens": 239,
+          "cacheReadTokens": 35968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 402,
+          "outputTokens": 730,
+          "cacheReadTokens": 1920,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-r2",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 62098,
+        "outputTokens": 1072,
+        "cacheReadTokens": 13568,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 62098,
+          "outputTokens": 1072,
+          "cacheReadTokens": 13568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-L",
+        "replicate": 2,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-L-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 53124,
+        "outputTokens": 739,
+        "cacheReadTokens": 27008,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 53124,
+          "outputTokens": 739,
+          "cacheReadTokens": 27008,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-L-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-G",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-G-r2",
+      "exposure": "fold",
+      "compactions": 10,
+      "checker": true,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 17,
+        "inputTokens": 145005,
+        "outputTokens": 2777,
+        "cacheReadTokens": 65280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 17,
+          "inputTokens": 145005,
+          "outputTokens": 2777,
+          "cacheReadTokens": 65280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 17
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-G-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-confirm",
+        "task": "T10-s2",
+        "arm": "E0-LG",
+        "replicate": 2,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-LG-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 37917,
+        "outputTokens": 1333,
+        "cacheReadTokens": 66688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 37917,
+          "outputTokens": 1333,
+          "cacheReadTokens": 66688,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-confirm-1\\T10-s2-E0-LG-r2\\report.json"
+    }
+  ]
+}

@@ -58,6 +58,7 @@ const value = name => {
   return at === -1 ? undefined : argv[at + 1]
 }
 const ARCHIVE = resolve(value('out') ?? join(ROOT, '..', 'EF_E2E_RESEARCH_ARCHIVE'))
+const POINTER = resolve(value('pointer') ?? join(ROOT, 'eval', 'e2e', 'out', 'research-archive.json'))
 
 const CAMPAIGNS = [
   'e2e-core-1',
@@ -66,6 +67,8 @@ const CAMPAIGNS = [
   'e2e-recall-1',
   'e2e-guard-smoke-1',
   'e2e-index-1',
+  'e2e-lg-pilot-1',
+  'e2e-lg-confirm-1',
 ]
 
 const sha256Bytes = bytes => createHash('sha256').update(bytes).digest('hex')
@@ -396,7 +399,8 @@ function main() {
     scan: manifest.scan,
     note: 'The archive is external to the repository. Verify a copy with `sha256sum -c SHA256SUMS` at its root.',
   }
-  writeFileSync(join(OUT_DIR, 'research-archive.json'), `${JSON.stringify(pointer, null, 2)}\n`, 'utf8')
+  mkdirSync(dirname(POINTER), { recursive: true })
+  writeFileSync(POINTER, `${JSON.stringify(pointer, null, 2)}\n`, 'utf8')
 
   process.stdout.write(`archive: ${ARCHIVE}\n`)
   process.stdout.write(`files ${manifest.counts.files}, bytes ${manifest.counts.bytes}, cells ${manifest.counts.cells}\n`)

@@ -1,13 +1,15 @@
 # EF-R1 — Authority Closure and Executable Historical Recovery
 
-Status: complete for the offline scope, 2026-11-09.
+Status: complete, 2026-11-09. Offline work first, then a 24-cell pilot and a
+120-cell confirmatory campaign under explicit authorization.
 
-This round did **not** make a model call, open a live envelope, push, merge,
-release or deploy. Both earlier envelopes are closed (72/72 and 24/24), and the
-work package did not authorize a new one. What it does contain is a security
-fix verified through the production path, a stage-level re-analysis of the 96
-executed cells, an executable archive address behind an opt-in flag, four new
-recovery tasks, a frozen 120-cell design, and a preservable research archive.
+The round contains a security fix verified through the production path, a
+stage-level re-analysis of the 96 E2E cells, an executable archive address
+behind an opt-in flag, four new recovery tasks, a preservable research archive,
+and two live campaigns that test the address and a completion guard. It made no
+merge, release or deployment; the branch was pushed for CI, and the candidate
+is an installable build, not a release. Both earlier envelopes remain closed
+(72/72 and 24/24); the 144 new cells ran under two separate grants.
 
 Machine evidence lives under `eval/ef-r1/out/` and `eval/e2e/out/`. The E2E
 round's result is not rewritten; [E2E_RESULT.md](E2E_RESULT.md) remains the
@@ -75,7 +77,28 @@ the package marked unsafe, not silently cleaned.
 
 One archive tag is not backed by any remote
 (`archive/snapshot-pre-semantic-audit-v1`); the bundle is the copy that protects
-it. No worktree, branch, tag, PR or remote was changed by this round.
+it.
+
+After the pilot and confirm, a second package
+(`../EF_R1_RESEARCH_ARCHIVE`) was built over the combined evidence:
+
+```text
+files            3,018
+bytes            72,984,436
+campaigns/cells  8 / 240
+git bundle       23,829,277 bytes, verified
+credentials      0
+safeToShare      true
+pointer          eval/ef-r1/out/research-archive-r1.json
+```
+
+It was verified against the pointer, copied to `E:/EF_R1_RESEARCH_ARCHIVE`, and
+the copy was verified again with the same pointer and `SHA256SUMS`. That is a
+second volume on this machine, **not** an off-machine backup; the distinction is
+in §8. Neither archive overwrites the other, and the E2E pointer still names the
+96-cell package.
+
+No worktree, branch, tag or remote was changed by the archive work.
 
 ## 3. The 96 cells, attributed to a stage
 
@@ -103,20 +126,29 @@ observation failure. No cell can be shown to have failed at observation with
 the evidence that exists — a limit of coverage, not a claim that observation
 never failed.
 
-How passing values actually arrived:
+How passing values actually arrived, after adding a task-prompt source and a
+loose prose match for checkpoint delivery:
 
 | Path | Cells |
 |---|---:|
-| from a primary tool result | 22 |
-| from the checkpoint alone | 7 |
-| neither visible source | 12 |
+| every value seen in a primary tool result | 13 |
+| every value explained by the checkpoint (some also by a tool) | 13 |
+| every value explained by checkpoint or task prompt (some also by a tool) | 10 |
+| at least one value has no visible source | 5 |
 | value not produced | 30 |
 
-The checkpoint path is why a Basic cell can pass T2 (`B0`'s summary contained
-both values) and why an E1 cell can pass without recall. A pass is not evidence
-that the archive was used.
+The five unexplained cells are T2/T4 cells whose short second value sat beyond
+a truncated preview; they are the class full-message capture removes. The
+checkpoint path is why a Basic cell can pass T2 (`B0`'s summary contained both
+values) and why an E1 cell can pass without recall. A pass is not evidence that
+the archive was used.
 
-Evidence: `eval/e2e/out/stage-attribution.json` (per-cell) and `.md`.
+New runs write `raw/messages.json` with the exact primary messages, so C is
+decidable: all 24 pilot cells have C=true from a full message or a trajectory.
+The 96 old cells cannot be repaired; their unknowns stay unknown.
+
+Evidence: `eval/e2e/out/stage-attribution.json` (per-cell) and `.md`; the
+current run covers 240 cells (96 E2E + 24 pilot + 120 confirm).
 
 ## 4. An executable address for archived evidence
 
@@ -147,7 +179,7 @@ real and must be measured, not assumed.
 Evidence: `eval/ef-r1/out/locator-contract.json`, 11/11 cases;
 `tests/archive-locator.spec.ts`.
 
-## 5. Four new recovery problems and a frozen design
+## 5. Four new recovery problems, then two campaigns
 
 The 96-cell round concentrated its retrieval evidence in T2/T4. Four templates
 were added, each a different recovery shape:
@@ -159,56 +191,130 @@ were added, each a different recovery shape:
 | T9 | service + release + tag of the incident deploy | two files, both since redeployed |
 | T10 | concurrency at 10:00 | three revisions; first and current are both wrong |
 
-All **22/22** instances certify: initial fails, reference passes, counterfactual
-fails, seed above the pressure threshold
-(`eval/ef-r1/out/task-certification-e2e2.json`). The original 14 task files are
-byte-identical; the generator only added the new ones.
+All 22 instances certified before the campaigns. The pilot then exposed a
+**fixture defect in T10**: its random log contained concurrency values at times
+that contradicted the changelog, so a model could answer from the log and be
+defensibly right while the checker required the middle revision. T10 was fixed
+(time-based values, unambiguous windows) and re-certified, but the 120-cell
+campaign had already been frozen with the ambiguous version. **Every T10 cell in
+the confirm is excluded from the primary estimate and reported separately.** No
+other template was changed after certification.
 
-The next behavioural step is designed, not run. A 2×2 factorial separates the
-locator (L) from the completion guard (G), with E1 as an independent reference:
+### 5.1 Pilot: 24 cells
 
-```text
-E0      L off, G off       E0-L    L on,  G off
-E0-G    L off, G on        E0-LG   L on,  G on
-E1      rationale reference, never pooled into the 2x2
-```
+T2/T9/T10 × 2 seeds × {E0, E0-L, E0-G, E0-LG}, one paired replicate, under a
+32-cell cap. 24/24 executed; 124 requests, 1.18M input, 17.7k output, 5.0 min.
 
-6 templates × 2 seeds × 2 paired replicates × 5 arms = **120 cells**, plus 18
-fault reserve, cap 138. The primary unit is the task instance, not the cell.
-The frozen design is `eval/ef-r1/out/ablation-design.json`
-(SHA-256 `1c52fed8818b858fbc64776e41c029efae562a958775715b8d1aa1d15edd7245`),
-with a zero-request preflight in
-`eval/ef-r1/out/ablation-design.freeze.json`. `executionAuthorized` is false:
-the requested envelope (138 cells, 4,200 requests, 30M input, 1.2M output, 6h,
-concurrency 2, monetary 25 with no verifiable price) is **not granted**.
+| Arm | Pass | Cells |
+|---|---:|---|
+| E0 | 0 | 6 |
+| E0-L | 2 | 6 |
+| E0-G | 2 | 6 |
+| E0-LG | 3 | 6 |
+
+No arm lost a cell E0 passed. The locator converted T9/T10 write failures into
+passes; the guard converted T2/T10 produce/write failures. The pre-registered
+gate was positive, so the confirmatory design was run.
+
+### 5.2 Confirm: 120 cells
+
+6 templates × 2 seeds × 2 paired replicates × {E0, E0-L, E0-G, E0-LG, E1},
+under a separate 138-cell cap. 120/120 executed; 514 requests, 3.70M input,
+72,960 output, 21 minutes. No budget stop, no provider failure.
+
+| Arm | Pass | Rate | Requests | Input | Output |
+|---|---:|---:|---:|---:|---:|
+| E0 | 9/24 | 0.375 | 83 | 678,175 | 10,569 |
+| E0-L | 15/24 | 0.625 | 77 | 842,370 | 9,963 |
+| E0-G | 15/24 | 0.625 | 145 | 919,738 | 19,764 |
+| E0-LG | 16/24 | 0.667 | 113 | 967,562 | 15,937 |
+| E1 | 18/24 | 0.750 | 96 | 295,420 | 16,727 |
+
+Paired by task instance and replicate (24 pairs per comparison):
+
+| Comparison | Left only | Right only | McNemar p | Instances L/R/tied |
+|---|---:|---:|---:|---:|
+| E0-L vs E0 | 8 | 2 | 0.109 | 6/1/5 |
+| E0-G vs E0 | 9 | 3 | 0.146 | 7/2/3 |
+| E0-LG vs E0 | 8 | 1 | 0.039 | 7/1/4 |
+| E0-LG vs E0-L | 4 | 3 | 1.000 | 4/3/5 |
+| E0-LG vs E0-G | 5 | 4 | 1.000 | 4/3/5 |
+| E1 vs E0 | 12 | 3 | 0.035 | 8/1/3 |
+
+Excluding the ambiguous T10 (100 cells, 20 per arm):
+
+| Arm | Pass | Paired vs E0 | p |
+|---|---:|---|---:|
+| E0 | 9/20 | — | — |
+| E0-L | 14/20 | +7 / −2 | 0.180 |
+| E0-G | 13/20 | +7 / −3 | 0.344 |
+| E0-LG | 15/20 | +7 / −1 | 0.070 |
+| E1 | 17/20 | +11 / −3 | 0.057 |
+
+**After excluding the defective fixture, no L/G arm is significant at 0.05.**
+The direction is positive for both mechanisms, but the pilot's signal did not
+confirm as a general effect. It is template-specific: E0-L is 4/4 on T4 and E0-G
+is 4/4 on T7, while E0-LG is 4/4 on T4 and T9 but 0/4 on T2. The combination
+does not beat either mechanism alone (both p=1.0).
+
+### 5.3 The task prompt itself is foldable
+
+At the 16k operational budget the active request is sometimes archived during
+the continuation, not only the evidence. In the confirm, **44/120 cells lost
+the task prompt by the last primary request** (27/100 excluding T10). The
+covariate:
+
+| Arm | Pass, prompt lost | Pass, prompt visible |
+|---|---:|---:|
+| E0 | 2/12 | 7/12 |
+| E0-L | 2/9 | 13/15 |
+| E0-G | 4/11 | 11/13 |
+| E0-LG | 3/10 | 13/14 |
+| E1 | 0/2 | 18/22 |
+
+The locator's benefit is concentrated where the prompt survives; it does not
+recover a lost task. This is a separate product defect: **the current request
+must be protected from folding**, not merely better addressed in the archive.
+The pilot's T9-s1 E0 cell failed with "I don't see a question in your latest
+message — just the folded context markers" after three folds.
+
+### 5.4 Reading
+
+- The locator is a correct address with a template-specific benefit, not a
+  general retrieval win. It is strongest on T4 (expired configuration) and in
+  combination on T9 (cross-file), and it hurts T2 in this batch.
+- The guard moves failures from produce/write to verify (wrong value): it makes
+  the model deliver, not retrieve. 145 requests and 920k input for 15/24.
+- E1 (rationale) is the strongest and cheapest arm (17/20 excluding T10) but
+  p=0.057; it deserves a dedicated evaluation, not an automatic default.
+- T10 must be re-run with the fixed fixture before any claim about
+  multi-revision recovery.
 
 ## 6. Integration and the candidate
 
 ```text
 typecheck:src/client/eval    pass
-supported lane               1,726 passed, 66 skipped, 204 files
-local-only failure           rc7-inplace-drift (installed DSH 0.2.1-rc.3 has
-                             19 preset rows; the pinned CI tree has 22)
-candidate tarball            built and installed; size/hash in the smoke report
+supported lane               1,726 passed / 66 skipped / 0 failed
+                             12 historical files excluded; rc7-inplace-drift
+                             excluded as a local environment divergence
+CI run 42681223364           DSH 0.2.0-rc.2 pinned: success
+                              DSH master probe: failure (independent, non-blocking)
+candidate tarball            rebuilt after the anchor-service fix
 install smoke                basic/economy/quality mount, semantic off,
                              no raw run, no credential, no checkout path
 ```
 
-The tarball is not tracked (the repository carries the source and the report,
-not the 1.4 MB artifact). Its SHA-256, file count and every smoke check are in
-`eval/ef-r1/out/candidate-build.json`; a reader can rebuild it and compare. The
-hash is deliberately not repeated in this document: the document is inside the
-tarball, so a hash written here would describe a package that did not contain
-it.
+The local-only `rc7-inplace-drift` failure was an environment divergence:
+this machine runs installed DSH `0.2.1-rc.3`, whose preset block has 19 rows
+against the pinned tree's 22. The pinned CI lane passed on the first pushed
+commit; the final run ID (after the anchor-service fix) is recorded in PR #5.
 
-The supported lane's only failure is an environment divergence, not a code
-regression: this worktree runs the installed `0.2.1-rc.3`, while the pinned CI
-lane checks the vendored `0.2.0-rc.2` preset tree. Remote CI was **not** run:
-this round's work package does not authorize remote Git operations, and no push
-was made.
+The candidate tarball is not tracked. Its SHA-256, size and every check are in
+`eval/ef-r1/out/candidate-build.json`. The hash is not repeated here because
+this document is inside the tarball.
 
-Candidate: `eval/ef-r1/candidate/dsh-epistemic-fold-0.1.0.tgz`, smoke report
-`eval/ef-r1/out/candidate-build.json`.
+No merge, release or deployment was performed. The branch is pushed; PR #5
+remains a research integration record, not a product change.
 
 ## 7. Decisions
 
@@ -217,37 +323,45 @@ EF Core default            unchanged
 Semantic Active            Deployment Hold (unchanged)
 recallAffordance           Off
 foldedSpanIndex            Off
-completionGuard            Research-only (not an EF feature)
-archiveLocator             Research candidate, default Off
-Operation-level authority  Fixed and certified; not a product release
+archiveLocator             Research candidate, default Off;
+                           general benefit NOT confirmed (p=0.070 excluding T10)
+completionGuard            Research-only; hand to DSH Agent Runtime, not EF
+Operation-level authority  Fixed, invariant-tested; not a product release
+E1 rationale               strongest reference (17/20), p=0.057; dedicated
+                           evaluation recommended, no default change
+Task-prompt protection     new product candidate; the active request must
+                           not be foldable
 ```
 
-The authority fix is a correctness fix, not a product benefit claim. The locator
-has a deterministic contract and no behavioural result. The stage attribution
-does not show that any EF configuration is better than another; it shows that
-"compression failed" was too coarse to be useful.
+The authority fix is a correctness fix. The locator and guard are not product
+features on this evidence. The most important product finding is not the
+locator at all: it is that the active request can be folded at a 16k budget.
 
 ## 8. Limits
 
-- No live call, so no new behavioural or product-level evidence.
-- The 96-cell attribution is observational and post hoc; C is unknown in 35
-  memory cells because the raw tool bytes were not captured.
-- The four new tasks are certified offline but have never met a model.
-- The locator is an address, not a retrieval success; whether a model uses it is
-  the next experiment and is not authorized.
-- The archive is external to the repository. Its pointer is tracked; its bytes
-  are not. A reader who has a copy can verify it; a reader who has only the
-  repository cannot.
-- The supported lane has one local-only, environment-specific failure; remote CI
-  was not run in this round.
+- 120 confirmatory cells, six templates, two seeds, two replicates, one model,
+  one route, one machine. The primary unit is the task instance; 12 instances
+  (10 without T10) cannot support a product-level claim.
+- T10's confirm cells are invalidated by the fixture defect described in §5;
+  the fixed T10 has not been run.
+- Task-prompt loss is both a finding and a confound. The L/G estimate is
+  reported with and without the covariate, and no arm is significant at 0.05
+  once T10 is excluded.
+- The 96-cell attribution remains post hoc; C is unknown in 35 memory cells
+  because those runs predate full-message capture. New runs are decidable.
+- The archive is external to the repository; a second copy is on another local
+  volume, not off-machine.
+- The candidate is installable and smoke-tested, not released or deployed.
 
 ## 9. Verify
 
 ```bash
-node eval/ef-r1/operation-authority.mjs   # WP1 matrix + before/after probes
-node eval/e2e/src/stage-attribution.mjs   # WP2, offline
-node eval/ef-r1/locator-contract.mjs      # WP3, 11 cases
+node eval/ef-r1/operation-authority.mjs      # 16-case matrix + probes
+node eval/ef-r1/state-write-audit.mjs       # every writer + 180-pair invariant
+node eval/e2e/src/stage-attribution.mjs     # stage labels, 240 cells
+node eval/ef-r1/ablation-analysis.mjs       # 120-cell paired analysis
+EF_R1_EXCLUDE_TEMPLATES=T10 node eval/ef-r1/ablation-analysis.mjs
+node eval/ef-r1/locator-contract.mjs        # 11 contract cases
 node eval/ef-r1/ablation-design.mjs --check
-node eval/e2e/src/archive-research.mjs --out ../EF_E2E_RESEARCH_ARCHIVE
-npx vitest run tests/ef-r1-operation-authority.spec.ts tests/archive-locator.spec.ts
+node eval/e2e/src/verify-archive.mjs        # external archive vs pointer
 ```

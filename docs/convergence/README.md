@@ -43,13 +43,17 @@ by that round.
 
 | Document | Answers |
 |---|---|
-| [EF_R1.md](EF_R1.md) | operation-level authority, stage attribution, archive locator, four new tasks, frozen design, decisions |
+| [EF_R1.md](EF_R1.md) | operation-level authority, stage attribution, archive locator, four new tasks, the 24-cell pilot and 120-cell confirm, decisions |
 
-EF-R1 made no model call and no remote Git operation. It reproduced and fixed an
-implicit same-coordinate overwrite of a user decision through the production
-`validate → plan → commit` path, attributed the 96 E2E failures to the stage that
-actually failed, added an opt-in executable archive address, certified four new
-recovery tasks, and froze a 120-cell L×G design that is **not authorized**.
+EF-R1 reproduced and fixed an implicit same-coordinate overwrite of a user
+decision through the production `validate → plan → commit` path, attributed the
+E2E failures to the stage that actually failed, added an opt-in executable
+archive address, and certified four new recovery tasks. A 24-cell pilot and a
+120-cell confirm followed: E0 9/24, E0-L 15/24, E0-G 15/24, E0-LG 16/24, E1
+18/24; excluding the defective T10 fixture, no L/G arm is significant at 0.05.
+The locator is a template-specific address, the guard belongs to the DSH runtime,
+and the active task prompt was folded in 44/120 cells — the most important
+finding of the round.
 
 Supporting documents:
 
@@ -116,10 +120,12 @@ npm run eval:c1-tests         # 33 targeted tests
 npm run eval:c1-gates         # C1-G0..G7
 npm run eval:c1a-gate         # C1A A0..A5
 
-# EF-R1 (offline; no provider call)
+# EF-R1 (offline analysis; the campaigns are already executed)
 node eval/ef-r1/operation-authority.mjs
+npm run eval:ef-r1-audit
 npm run eval:e2e-stages
 npm run eval:ef-r1-locator
+node eval/ef-r1/ablation-analysis.mjs
 npm run eval:ef-r1-design -- --check
 ```
 
