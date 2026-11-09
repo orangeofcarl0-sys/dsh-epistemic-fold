@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP5",
+  "generatedAt": "2026-11-09T19:13:55.533Z",
+  "writers": [
+    {
+      "path": "src/semantic/plan.ts",
+      "entry": "planCommit",
+      "writes": "declare, transition, retire operations",
+      "authorization": "mayRetire for every named target AND for every displaced head; a refused effect withholds the delta and emits no op",
+      "test": "tests/ef-r1-operation-authority.spec.ts",
+      "present": true,
+      "artifactSha256": "e25e4b82cd9aa4179e329ed3c761f64b715d57fd40da2b30682c8587c52d82ad",
+      "testPresent": true
+    },
+    {
+      "path": "src/state/anchor-service.ts",
+      "entry": "declare",
+      "writes": "a single declare event",
+      "authorization": "mayRetire for the head at the draft coordinate before the append",
+      "test": "tests/ef-r1-effect-invariant.spec.ts",
+      "present": true,
+      "artifactSha256": "179fff811d3c39e421479e0f4cdc946585a0031bbd0cf8495ec380c377b5dbda",
+      "testPresent": true
+    },
+    {
+      "path": "src/state/anchor-service.ts",
+      "entry": "retire",
+      "writes": "a retire event",
+      "authorization": "PRIVILEGED runtime operation: no claiming identity; not reachable from a model tool or the semantic writer",
+      "test": "tests/ef-r1-effect-invariant.spec.ts",
+      "risk": "privileged-api",
+      "present": true,
+      "artifactSha256": "179fff811d3c39e421479e0f4cdc946585a0031bbd0cf8495ec380c377b5dbda",
+      "testPresent": true
+    },
+    {
+      "path": "src/fold/engine.ts",
+      "entry": "applyOps",
+      "writes": "the candidate checkpoint view",
+      "authorization": "consumes planCommit.ops; the authorization ran when those ops were planned",
+      "test": "tests/ef-r1-operation-authority.spec.ts",
+      "present": true,
+      "artifactSha256": "16c41b759b889047bf808ac1ae9b9829b4f5e7a1b268ac0e46da88147bde5306",
+      "testPresent": true
+    },
+    {
+      "path": "src/state/state.ts",
+      "entry": "reduceEvent",
+      "writes": "the deterministic reducer",
+      "authorization": "NOT a writer: it applies committed operations; it has no policy and must not acquire one",
+      "test": "tests/ef-r1-effect-invariant.spec.ts",
+      "present": true,
+      "artifactSha256": "507dedd0e2653c5b287acc91a0cd142b552ec1ccf2c98a6dd230c0188e9b23aa",
+      "testPresent": true
+    },
+    {
+      "path": "src/semantic/replay.ts",
+      "entry": "applyOps",
+      "writes": "recorded operations at their commit position",
+      "authorization": "NOT re-authorized by design: replay is mechanical over recorded ops; historical outcomes are not rewritten",
+      "test": "tests/r38-relation-authority.spec.ts",
+      "present": true,
+      "artifactSha256": "35d9bb1d1137ab02541c2b7db006e3a2f8128c072d6b4996781cf2ade007c5eb",
+      "testPresent": true
+    },
+    {
+      "path": "src/semantic/record.ts",
+      "entry": "applyOps",
+      "writes": "recorded operations from a legacy session record",
+      "authorization": "NOT re-authorized by design: the record is a committed fact; the reconciler migrates it",
+      "test": "tests/r38-relation-authority.spec.ts",
+      "present": true,
+      "artifactSha256": "75d25899e55b2846a869f612e519a6d59e9f6c3682cd36533995146a74c640b1",
+      "testPresent": true
+    },
+    {
+      "path": "src/state/projection.ts",
+      "entry": "reduceSessionEvent",
+      "writes": "the bounded state projection",
+      "authorization": "NOT a writer: it folds committed events; it cannot invent one",
+      "test": "tests/r38-relation-authority.spec.ts",
+      "present": true,
+      "artifactSha256": "34acc5da4528773b4bbe22a0e310d61fdee3979a91be6053ed121d0025bf4609",
+      "testPresent": true
+    }
+  ],
+  "callSites": [
+    "src/fold/engine.ts:2152:          const candidateState = applyOps(mountedState, plan.ops)",
+    "src/semantic/plan.ts:622:export function applyOps(state: FoldCurrentState, ops: readonly EfAnchorEventData[]): FoldCurrentState {",
+    "src/semantic/plan.ts:624:    (next, op, index) => reduceEvent(next, { type: 'ef/anchor', seq: index, data: op }),",
+    "src/semantic/record.ts:117:    next = applyOps(next, record.payload.ops)",
+    "src/semantic/record.ts:128:  for (const ops of opsByPacket) next = applyOps(next, ops)",
+    "src/semantic/replay.ts:107:    state = reduceSessionEvent(state, event)",
+    "src/semantic/replay.ts:111:      state = applyOps(state, commit.operations)",
+    "src/state/anchor-service.ts:113:  for (const event of session.snapshotEvents()) state = reduceSessionEvent(state, event)",
+    "src/state/projection.ts:111:export function reduceSessionEvent(state: FoldCurrentState, event: SessionEvent): FoldCurrentState {",
+    "src/state/projection.ts:116:    return reduceEvent(state, { type: 'ef/anchor', seq: record.seq, data: record.data })",
+    "src/state/projection.ts:118:  return reduceEvent(state, event)",
+    "src/state/state.ts:247:export function reduceEvent(state: FoldCurrentState, event: { type: string; seq: number; data: unknown }): FoldCurrentState {"
+  ],
+  "unclassifiedFiles": [],
+  "missingFiles": [],
+  "invariantTests": {
+    "total": 18,
+    "passed": 18,
+    "failed": 0,
+    "runError": null,
+    "titles": [
+      {
+        "title": "holds for every declaring authority/source against every target",
+        "status": "passed"
+      },
+      {
+        "title": "the public anchor-service writer enforces the same effect check",
+        "status": "passed"
+      },
+      {
+        "title": "refuses an undeclared same-coordinate replacement of a user decision",
+        "status": "passed"
+      },
+      {
+        "title": "refuses an implicit replacement even when the named supersedes is unrelated",
+        "status": "passed"
+      },
+      {
+        "title": "refuses a same-packet second declare that would displace an unauthorized head",
+        "status": "passed"
+      },
+      {
+        "title": "allows an authorized same-coordinate revision and records the supersession link",
+        "status": "passed"
+      },
+      {
+        "title": "does not let an assistant decision retire a system-grounded constraint",
+        "status": "passed"
+      },
+      {
+        "title": "allows the user to revise the user decision with a newer statement",
+        "status": "passed"
+      },
+      {
+        "title": "does not let a tool result raise an assistant decision to tool standing",
+        "status": "passed"
+      },
+      {
+        "title": "does not accept the user’s OLD statement as authority for its opposite",
+        "status": "passed"
+      },
+      {
+        "title": "allows a user revision grounded in a NEWER user statement",
+        "status": "passed"
+      },
+      {
+        "title": "allows a same-value restatement from the same statement (it changes nothing)",
+        "status": "passed"
+      },
+      {
+        "title": "refuses an assistant revision of a historical anchor with no source",
+        "status": "passed"
+      },
+      {
+        "title": "keeps historical replay mechanical: a recorded op applies even when a NEW plan would refuse it",
+        "status": "passed"
+      },
+      {
+        "title": "applies an explicitly authorized cross-coordinate revision with a newer user statement",
+        "status": "passed"
+      },
+      {
+        "title": "refuses a decision revision whose evidence is not newer",
+        "status": "passed"
+      },
+      {
+        "title": "allows the same value at the same evidence position",
+        "status": "passed"
+      },
+      {
+        "title": "derives decision origin only from decision-capable producers",
+        "status": "passed"
+      }
+    ]
+  },
+  "verdict": "state-write-audit-closed"
+}
