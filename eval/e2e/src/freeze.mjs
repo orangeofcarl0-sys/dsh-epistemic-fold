@@ -32,7 +32,7 @@ const value = (name, fallback) => {
 }
 
 const sha256 = text => createHash('sha256').update(text, 'utf8').digest('hex')
-const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim()
+const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trimEnd()
 
 /**
  * The tracked source tree, minus the two paths a freeze necessarily adds

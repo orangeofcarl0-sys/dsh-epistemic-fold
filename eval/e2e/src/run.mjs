@@ -61,7 +61,7 @@ async function loadManifest(path) {
   return { manifest: JSON.parse(text), digest: sha256(text) }
 }
 
-const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim()
+const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trimEnd()
 
 /**
  * Verify that the code and the task files are the ones the manifest froze.
