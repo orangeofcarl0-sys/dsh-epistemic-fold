@@ -94,7 +94,16 @@ async function main() {
   const cells = []
   const pilot = argv.includes('--pilot')
   const retest = argv.includes('--retest')
-  if (retest) {
+  const recall = argv.includes('--recall')
+  if (recall) {
+    // Recall-affordance experiment: E0 vs E0+affordance on the memory-sensitive
+    // tasks, contemporaneous, the same seeds.
+    for (const task of ['T2-s1', 'T2-s2', 'T4-s1', 'T4-s2', 'T5B-s1', 'T5B-s2']) {
+      for (const arm of ['E0', 'E0a']) {
+        cells.push({ block: 'recall', task, arm, replicate: Number(task.slice(-1)) })
+      }
+    }
+  } else if (retest) {
     // Fault-retest reserve: T5b (the explicit-shape version) across the four
     // arms, both seeds. The original T5 cells keep their recorded outcome.
     for (const seed of [1, 2]) {
@@ -150,7 +159,7 @@ async function main() {
   // the same tokens twice.
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1']) {
+  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1']) {
     const path = join(OUT, `results-${priorCampaign}.json`)
     if (!existsSync(path)) continue
     const prior = JSON.parse(await readFile(path, 'utf8'))

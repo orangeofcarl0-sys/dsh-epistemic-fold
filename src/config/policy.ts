@@ -130,6 +130,16 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly referentialArchive: boolean
   /**
+   * EXPERIMENTAL: append a short recall affordance to the checkpoint body.
+   *
+   * Default `false`. The E2E campaign measured the failure it addresses: E0
+   * checkpoints were a bare marker, the recall tools existed, and several
+   * cells never invoked them. The affordance names the tools in the body. It
+   * costs a few tokens per checkpoint and is OFF until an experiment shows it
+   * pays for them.
+   */
+  readonly recallAffordance: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -321,6 +331,11 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    */
   referentialArchive?: boolean
   /**
+   * EXPERIMENTAL: append a recall affordance to the checkpoint body. Default
+   * `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  recallAffordance?: boolean
+  /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
@@ -452,6 +467,12 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof referentialArchive !== 'boolean') {
     throw new Error('epistemic-fold: referentialArchive must be a boolean')
   }
+  // EXPERIMENTAL, off by default. Appends one recall-affordance section to the
+  // checkpoint body; see `recallAffordance` in the resolved config.
+  const recallAffordance = expanded.recallAffordance ?? false
+  if (typeof recallAffordance !== 'boolean') {
+    throw new Error('epistemic-fold: recallAffordance must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -493,6 +514,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     minReclaimRatio,
     framingMode,
     referentialArchive,
+    recallAffordance,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,

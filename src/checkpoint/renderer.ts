@@ -198,6 +198,7 @@ export function renderStructuredCheckpoint(
   checkpointId: string,
   rationale?: string,
   mode: FoldMode = 'leaf',
+  options: { readonly recallAffordance?: boolean } = {},
 ): string {
   const presentation = projectForCheckpoint(state)
   const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
@@ -226,6 +227,20 @@ export function renderStructuredCheckpoint(
   if (rationaleText.length > 0) {
     lines.push('', 'Rationale')
     for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
+  }
+
+  // A static affordance, not state. The E2E campaign measured the failure it
+  // addresses: with a bare marker, the model read the current workspace, did
+  // not call the recall tools that were available, and answered from what it
+  // could see. Naming the tools is the smallest change that tests whether the
+  // checkpoint, rather than the task prompt, has to carry that affordance.
+  // Off by default; the experiment that turns it on measures its token cost.
+  if (options.recallAffordance === true) {
+    lines.push(
+      '',
+      'Recall',
+      '- Folded history is archived. Use context_search to find it, or context_recall to open it.',
+    )
   }
 
   return lines.join('\n')

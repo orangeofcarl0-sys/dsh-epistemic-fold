@@ -3628,7 +3628,9 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     mode: FoldMode,
   ): string | undefined {
     if (state === undefined) return undefined
-    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode)
+    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode, {
+      recallAffordance: this.efConfig.recallAffordance,
+    })
   }
 
   /**

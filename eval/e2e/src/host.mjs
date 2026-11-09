@@ -47,6 +47,9 @@ export const ARMS = Object.freeze({
   Bv: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'basic' },
   E0: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy' },
   E1: { backend: 'ef', ef: true, semanticMode: 'rationale', semanticContinuity: 'off', mode: 'economy' },
+  // E0a: the same EF Minimal, plus one recall-affordance section in the
+  // checkpoint body. The only difference from E0 is that section.
+  E0a: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', recallAffordance: true },
   // S-safe: the same EF core, with semantic continuity ACTIVE after the
   // source-authority fix. The writer is a real model call; every failure is
   // counted in the assigned arm, never filtered to successful commits.
@@ -106,6 +109,7 @@ export async function mountHost({
       maxTokens: 1024,
       mode: spec.mode,
       semanticMode: spec.semanticMode,
+      ...(spec.recallAffordance === undefined ? {} : { recallAffordance: spec.recallAffordance }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,

@@ -187,7 +187,11 @@
     "eval:e2e-freeze-retest": "node eval/e2e/src/freeze.mjs --campaign e2e-t5-retest-1 --retest",
     "eval:e2e-authorize-retest": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-t5-retest-1.json",
     "eval:e2e-run-retest": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-t5-retest-1.json",
-    "eval:e2e-analyze-retest": "node eval/e2e/src/analyze.mjs --campaign e2e-t5-retest-1"
+    "eval:e2e-analyze-retest": "node eval/e2e/src/analyze.mjs --campaign e2e-t5-retest-1",
+    "eval:e2e-freeze-recall": "node eval/e2e/src/freeze.mjs --campaign e2e-recall-1 --recall",
+    "eval:e2e-authorize-recall": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-recall-1.json",
+    "eval:e2e-run-recall": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-recall-1.json",
+    "eval:e2e-analyze-recall": "node eval/e2e/src/analyze.mjs --campaign e2e-recall-1"
   },
   "repository": {
     "type": "git",

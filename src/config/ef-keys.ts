@@ -65,6 +65,11 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   { name: 'framingMode', presetOwned: true, efOwned: true, default: 'legacy' },
   { name: 'mode', presetOwned: false, efOwned: true },
   { name: 'referentialArchive', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: append a recall affordance to the checkpoint
+  // body. The E2E campaign measured a model that did not invoke recall from a
+  // bare marker even though the tools existed; this flag tests whether naming
+  // them closes that gap.
+  { name: 'recallAffordance', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },
