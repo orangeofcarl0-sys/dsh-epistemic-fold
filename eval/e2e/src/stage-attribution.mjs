@@ -1,0 +1,547 @@
+#!/usr/bin/env node
+/**
+ * EF-R1 WP2 — where did each cell actually fail?
+ *
+ * The E2E reports answer "did the checker pass". That is one bit, and the
+ * round's own variance analysis showed it is not enough: a model can find the
+ * right value and not write it, write it with the wrong value, or never find it
+ * at all. Treating all three as "compression lost the fact" is the attribution
+ * error this script exists to stop.
+ *
+ * ## The five stages
+ *
+ *   A archiveAvailable          the folded evidence exists in an archive
+ *   B evidenceLocated           the model asked the archive/retrieval interface
+ *   C correctEvidenceObserved   a tool result the model received carried the fact
+ *   D correctValueProduced      the model's final text carries the fact
+ *   E outputWritten             the required deliverable exists
+ *   F outputSchemaValid         the deliverable satisfies its declarative shape
+ *   G checkerPassed             the task contract passed
+ *
+ * Stage B is NOT a prerequisite for C: an EF checkpoint can carry the value
+ * inline, and a passing cell that never called recall is not a retrieval
+ * failure. The failure label therefore uses the first stage that is actually
+ * missing from the DELIVERY chain (D → E → F → G), with A/B/C as the explanatory
+ * context. A missing C with a produced D is a produce failure; a produced D
+ * with no file is a write failure.
+ *
+ * ## What is unknown, and why it is not guessed
+ *
+ * The first 71 cells predate ordered trajectory capture. Their reports store
+ * message previews with a `truncated` flag, not the full tool result. If the
+ * fact is visible in a preview, C is true (the model saw that text). If every
+ * tool text was complete and the fact is absent, C is false. If a tool text was
+ * truncated and the fact is not visible, C is `unknown` — absence from a prefix
+ * proves nothing. The output counts those separately and never folds them into
+ * a failure.
+ *
+ * No model call is made. Every input already exists on disk.
+ *
+ *   node eval/e2e/src/stage-attribution.mjs
+ *
+ * @module eval/e2e/src/stage-attribution
+ */
+
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { join, resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { isDeepStrictEqual } from 'node:util'
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const ROOT = resolve(HERE, '..', '..', '..')
+const OUT = join(ROOT, 'eval', 'e2e', 'out')
+const RUNS = join(ROOT, 'eval', 'e2e', 'runs')
+const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
+
+const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1']
+const MEMORY_TEMPLATES = new Set(['T2', 'T4', 'T5', 'T5B'])
+
+const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
+const escapeRe = text => text.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')
+
+const tasksById = new Map()
+for (const name of readdirSync(TASKS).filter(name => /^T\d+[A-Za-z]?-s\d\.json$/u.test(name))) {
+  const task = readJson(join(TASKS, name))
+  tasksById.set(task.id, task)
+}
+
+/** Every top-level key/value pair a json_equals check requires. */
+function goldPairs(task) {
+  const pairs = []
+  for (const check of task.checks ?? []) {
+    if (check.kind !== 'json_equals' || check.value === null || typeof check.value !== 'object') continue
+    for (const [key, value] of Object.entries(check.value)) pairs.push({ key, value, path: check.path })
+  }
+  return pairs
+}
+
+/** Whether `text` states a required pair, not merely the number somewhere. */
+function mentionsPair(text, pair) {
+  const value = String(pair.value)
+  const quoted = `["']?${escapeRe(value)}["']?`
+  const keyed = new RegExp(`${escapeRe(pair.key)}["']?\\s*[:=]\\s*${quoted}(?![0-9A-Za-z])`, 'iu')
+  if (keyed.test(text)) return true
+  // A distinctive string (hex id, region) is evidence on its own; a bare short
+  // number is not: "2" appears in timestamps and step counts.
+  const distinctive = String(pair.value).length >= 6 && /[A-Za-z]/u.test(String(pair.value))
+  return distinctive && new RegExp(`(?<![0-9A-Za-z])${escapeRe(value)}(?![0-9A-Za-z])`, 'u').test(text)
+}
+
+function mentionsAll(text, pairs) {
+  const unique = new Map(pairs.map(pair => [`${pair.key}:${String(pair.value)}`, pair]))
+  if (unique.size === 0) return null
+  const matched = [...unique.values()].filter(pair => mentionsPair(text, pair))
+  return { value: matched.length === unique.size, matched: matched.length, total: unique.size }
+}
+
+function workspaceOf(campaign, cellId, report) {
+  if (typeof report.workspace === 'string' && existsSync(report.workspace)) return report.workspace
+  const fallback = join(RUNS, campaign, cellId, 'workspace')
+  return existsSync(fallback) ? fallback : undefined
+}
+
+/**
+ * The declarative file checks, evaluated against the FINAL workspace.
+ *
+ * `value` is the SHAPE: the file exists, parses, and has every expected key
+ * with the expected primitive type. Whether the VALUES match is `contract`,
+ * because a correctly shaped file with the wrong number is a value failure,
+ * not a schema failure. The round's T5 defect (right values nested under
+ * `batch`) is a shape failure; a `"build": "UNKNOWN"` file is a value failure.
+ */
+function schemaOf(task, workspace) {
+  const fileChecks = (task.checks ?? []).filter(check =>
+    ['json_equals', 'file_contains', 'file_not_contains', 'file_exists', 'file_absent'].includes(check.kind))
+  if (fileChecks.length === 0) return { value: null, contract: null, reason: 'no declarative file check', rows: [] }
+  if (workspace === undefined) return { value: null, contract: null, reason: 'workspace not preserved', rows: [] }
+  const rows = []
+  for (const check of fileChecks) {
+    const path = join(workspace, check.path)
+    if (check.kind === 'file_exists') {
+      rows.push({ kind: check.kind, path: check.path, shape: existsSync(path), contract: existsSync(path) })
+      continue
+    }
+    if (check.kind === 'file_absent') {
+      rows.push({ kind: check.kind, path: check.path, shape: !existsSync(path), contract: !existsSync(path) })
+      continue
+    }
+    if (!existsSync(path)) {
+      rows.push({ kind: check.kind, path: check.path, shape: false, contract: false, missing: true })
+      continue
+    }
+    const text = readFileSync(path, 'utf8')
+    if (check.kind === 'file_contains') {
+      rows.push({ kind: check.kind, path: check.path, shape: true, contract: text.includes(check.needle) })
+      continue
+    }
+    if (check.kind === 'file_not_contains') {
+      rows.push({ kind: check.kind, path: check.path, shape: true, contract: !text.includes(check.needle) })
+      continue
+    }
+    let parsed
+    try {
+      parsed = JSON.parse(text)
+    } catch {
+      rows.push({ kind: check.kind, path: check.path, shape: false, contract: false, invalidJson: true })
+      continue
+    }
+    const expected = check.value
+    const shape = parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+      && expected !== null && typeof expected === 'object'
+      && Object.entries(expected).every(([key, value]) =>
+        Object.hasOwn(parsed, key) && typeof parsed[key] === typeof value)
+    rows.push({
+      kind: check.kind,
+      path: check.path,
+      shape,
+      contract: isDeepStrictEqual(parsed, expected),
+    })
+  }
+  const missing = rows.some(row => row.missing === true)
+  return {
+    value: missing ? null : rows.every(row => row.shape),
+    contract: missing ? null : rows.every(row => row.contract),
+    reason: missing ? 'a required file is missing (write stage)' : undefined,
+    rows,
+  }
+}
+
+/** Whether the written deliverable itself carries every expected value. */
+function deliverableHasValues(task, workspace) {
+  const checks = (task.checks ?? []).filter(check => check.kind === 'json_equals')
+  if (checks.length === 0) return null
+  if (workspace === undefined) return null
+  let seen = 0
+  for (const check of checks) {
+    const path = join(workspace, check.path)
+    if (!existsSync(path)) return null
+    let parsed
+    try {
+      parsed = JSON.parse(readFileSync(path, 'utf8'))
+    } catch {
+      return false
+    }
+    if (!isDeepStrictEqual(parsed, check.value)) return false
+    seen += 1
+  }
+  return seen > 0
+}
+
+/** Tool texts the model actually received, with whether each was complete. */
+function toolTexts(report) {
+  const texts = []
+  for (const event of report.trajectory ?? []) {
+    if (event.type !== 'tool/result') continue
+    texts.push({
+      source: 'trajectory',
+      text: String(event.text ?? ''),
+      truncated: event.truncated === true,
+      name: event.name ?? null,
+    })
+  }
+  for (const request of report.requests ?? []) {
+    // Auxiliary calls are a different reader: the semantic writer and the
+    // compaction engine both see the span, but the TASK model does not act on
+    // what they were shown. Counting their tool texts as the model's
+    // observation would make every EF cell look informed.
+    if (request.purpose !== 'primary') continue
+    for (const message of request.messages ?? []) {
+      if (message.role !== 'tool') continue
+      texts.push({
+        source: 'request-preview',
+        text: String(message.preview ?? ''),
+        truncated: message.truncated === true,
+        name: null,
+      })
+    }
+  }
+  return texts
+}
+
+/** The checkpoint text the task model saw, when the report carries one. */
+function checkpointText(report) {
+  const checkpoint = report.checkpoint
+  if (typeof checkpoint === 'string') return checkpoint
+  if (checkpoint !== null && typeof checkpoint === 'object' && typeof checkpoint.text === 'string') return checkpoint.text
+  return ''
+}
+
+function observedStage(report, pairs) {
+  const texts = toolTexts(report)
+  if (texts.length === 0) return { value: null, basis: 'no tool result recorded', matched: 0 }
+  const matched = texts.filter(entry => pairs.some(pair => mentionsPair(entry.text, pair)))
+  if (matched.length > 0) {
+    return {
+      value: true,
+      basis: matched.some(entry => entry.source === 'trajectory') ? 'trajectory' : 'request-preview',
+      matched: matched.length,
+      truncatedMatch: matched.some(entry => entry.truncated),
+    }
+  }
+  if (texts.some(entry => entry.truncated)) {
+    return {
+      value: null,
+      basis: 'absent from every visible text, but at least one tool text was truncated',
+      matched: 0,
+      truncated: texts.filter(entry => entry.truncated).length,
+    }
+  }
+  return { value: false, basis: 'complete tool text(s) do not contain the fact', matched: 0 }
+}
+
+function archiveStage(report, arm) {
+  const compactions = Array.isArray(report.compactions) ? report.compactions.length : 0
+  const checkpoint = typeof report.checkpoint === 'string' && report.checkpoint.length > 0
+  return {
+    value: compactions > 0,
+    exact: arm !== 'B0',
+    modelReadable: arm !== 'B0',
+    basis: arm === 'B0'
+      ? 'Basic compaction; the session log retains the messages but exposes no exact-read interface'
+      : 'EF fold; the folded span is archived and context_recall can read it',
+    compactions,
+    checkpoint,
+  }
+}
+
+function locateStage(report, arm) {
+  const byName = report.tools?.byName ?? {}
+  const recall = (byName.context_recall ?? 0) + (byName.context_search ?? 0)
+  if (arm === 'B0') {
+    return { value: false, calls: 0, basis: 'B0 exposes no archive retrieval interface' }
+  }
+  return {
+    value: recall > 0,
+    calls: recall,
+    basis: recall > 0 ? 'called context_search/context_recall' : 'no archive retrieval call',
+  }
+}
+
+function writeStage(task, workspace) {
+  const outputs = [...new Set((task.checks ?? [])
+    .filter(check => ['json_equals', 'file_contains', 'file_not_contains', 'file_exists', 'file_absent'].includes(check.kind))
+    .map(check => check.path))]
+  if (outputs.length === 0) return { value: null, outputs, basis: 'no declared output file' }
+  if (workspace === undefined) return { value: null, outputs, basis: 'workspace not preserved' }
+  const rows = outputs.map(path => ({ path, exists: existsSync(join(workspace, path)) }))
+  return { value: rows.every(row => row.exists), outputs: rows, basis: 'final workspace file existence' }
+}
+
+function failureSubstage(report) {
+  const failing = (report.checker?.checks ?? []).find(check => check.pass !== true)
+  if (failing === undefined) return 'checker-failed'
+  switch (failing.kind) {
+    case 'json_equals': return 'wrong-value'
+    case 'tests': return 'tests'
+    case 'external_script': return 'external-check'
+    case 'file_contains':
+    case 'file_not_contains': return 'text-mismatch'
+    case 'file_exists':
+    case 'file_absent': return 'missing-output'
+    default: return failing.kind
+  }
+}
+
+function failureStage(stages, task, checkerPassed, report) {
+  if (checkerPassed) return { stage: 'none', detail: 'checker passed' }
+  // The FILE is the deliverable. Prose is optional: a cell that never states
+  // the value but writes a correct file passes, so D may not outrank E/F.
+  if (stages.E.value === false) {
+    if (stages.D.value === true) return { stage: 'write', detail: 'the fact was stated, but the required deliverable was not written' }
+    if (stages.C.value === false) {
+      return { stage: 'observe', detail: 'the fact was available, but no tool result the model received carried it' }
+    }
+    if (stages.C.value === null) {
+      return {
+        stage: 'produce',
+        detail: 'nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)',
+        caveat: 'C-unknown',
+      }
+    }
+    return { stage: 'produce', detail: 'the fact was observed, but neither the answer nor the deliverable carries it' }
+  }
+  if (stages.F.value === false) return { stage: 'schema', detail: 'the deliverable exists but its shape/keys/types are wrong' }
+  if (stages.G === false) {
+    return {
+      stage: 'verify',
+      substage: failureSubstage(report),
+      detail: 'the deliverable exists and parses, but its values or tests do not satisfy the task contract',
+    }
+  }
+  return { stage: 'unknown', detail: 'no stage explains the checker result' }
+}
+
+const rows = []
+for (const campaign of CAMPAIGNS) {
+  const resultsPath = join(OUT, `results-${campaign}.json`)
+  if (!existsSync(resultsPath)) continue
+  const results = readJson(resultsPath)
+  for (const cell of results.results ?? []) {
+    if (cell.status !== 'executed') continue
+    const task = tasksById.get(cell.cell.task)
+    const reportPath = join(RUNS, campaign, cell.cellId, 'report.json')
+    if (task === undefined || !existsSync(reportPath)) continue
+    const report = readJson(reportPath)
+    const arm = cell.cell.arm
+    const template = task.template
+    const pairs = goldPairs(task)
+    const memoryTask = MEMORY_TEMPLATES.has(template)
+    const workspace = workspaceOf(campaign, cell.cellId, report)
+    const checkerPassed = cell.checker === true
+    const schema = schemaOf(task, workspace)
+    const finalText = String(report.behaviour?.finalText ?? '')
+    const textValues = memoryTask ? mentionsAll(finalText, pairs) : null
+    const deliveredValues = memoryTask ? deliverableHasValues(task, workspace) : null
+    const checkpointValues = memoryTask ? mentionsAll(checkpointText(report), pairs) : null
+    const observed = memoryTask ? observedStage(report, pairs) : { value: null, basis: 'not a historical-recovery task', matched: 0 }
+
+    const stages = {
+      A: archiveStage(report, arm),
+      B: memoryTask ? locateStage(report, arm) : { value: null, calls: 0, basis: 'not a historical-recovery task' },
+      C: memoryTask ? {
+        ...observed,
+        checkpointCarried: checkpointValues === null ? null : checkpointValues.value,
+        checkpointMatched: checkpointValues?.matched ?? null,
+        checkpointTotal: checkpointValues?.total ?? null,
+      } : { value: null, basis: 'not a historical-recovery task', matched: 0 },
+      D: memoryTask ? {
+        value: textValues === null && deliveredValues === null
+          ? null
+          : textValues?.value === true || deliveredValues === true,
+        text: textValues?.value ?? null,
+        matchedInText: textValues?.matched ?? null,
+        total: textValues?.total ?? null,
+        deliverable: deliveredValues,
+        basis: 'final assistant text OR the written deliverable',
+      } : { value: null, basis: 'no gold value for this contract' },
+      E: writeStage(task, workspace),
+      F: schema,
+      G: checkerPassed,
+    }
+    const failure = failureStage(stages, task, checkerPassed, report)
+    rows.push({
+      campaign,
+      cellId: cell.cellId,
+      template,
+      seed: task.seed,
+      arm,
+      block: cell.cell.block,
+      checkerPassed,
+      stages,
+      failureStage: failure.stage,
+      failureDetail: failure.detail,
+      ...(failure.substage === undefined ? {} : { failureSubstage: failure.substage }),
+      ...(failure.caveat === undefined ? {} : { caveat: failure.caveat }),
+      recallCalls: stages.B.calls,
+      writes: (report.tools?.byName?.write_file ?? 0) + (report.tools?.byName?.edit_file ?? 0),
+      hasTrajectory: Array.isArray(report.trajectory) && report.trajectory.length > 0,
+    })
+  }
+}
+
+const byTemplate = {}
+for (const row of rows) {
+  const bucket = byTemplate[row.template] ?? { cells: 0, passed: 0, stages: {} }
+  bucket.cells += 1
+  if (row.checkerPassed) bucket.passed += 1
+  bucket.stages[row.failureStage] = (bucket.stages[row.failureStage] ?? 0) + 1
+  byTemplate[row.template] = bucket
+}
+const failures = rows.filter(row => !row.checkerPassed)
+const stageCounts = {}
+for (const row of failures) stageCounts[row.failureStage] = (stageCounts[row.failureStage] ?? 0) + 1
+const cUnknown = rows.filter(row => row.stages.C.value === null && MEMORY_TEMPLATES.has(row.template))
+const cUnknownFailures = cUnknown.filter(row => !row.checkerPassed)
+const verifySubstages = {}
+for (const row of failures.filter(entry => entry.failureStage === 'verify')) {
+  verifySubstages[row.failureSubstage ?? 'unknown'] = (verifySubstages[row.failureSubstage ?? 'unknown'] ?? 0) + 1
+}
+const memoryRows = rows.filter(row => MEMORY_TEMPLATES.has(row.template))
+const valueDelivered = memoryRows.filter(row => row.stages.D.value === true)
+const deliveryPaths = {
+  fromToolResult: valueDelivered.filter(row => row.stages.C.value === true).length,
+  fromCheckpointOnly: valueDelivered.filter(row => row.stages.C.value !== true && row.stages.C.checkpointCarried === true).length,
+  unattributed: valueDelivered.filter(row => row.stages.C.value !== true && row.stages.C.checkpointCarried !== true).length,
+  valueNotProduced: memoryRows.filter(row => row.stages.D.value === false).length,
+  valueUnknown: memoryRows.filter(row => row.stages.D.value === null).length,
+}
+const byArm = {}
+for (const row of rows.filter(entry => MEMORY_TEMPLATES.has(entry.template))) {
+  const bucket = byArm[row.arm] ?? { cells: 0, passed: 0, stages: {} }
+  bucket.cells += 1
+  if (row.checkerPassed) bucket.passed += 1
+  else bucket.stages[row.failureStage] = (bucket.stages[row.failureStage] ?? 0) + 1
+  byArm[row.arm] = bucket
+}
+
+const output = {
+  schemaVersion: 1,
+  work: 'EF-R1 WP2',
+  generatedAt: new Date().toISOString(),
+  sources: {
+    campaigns: CAMPAIGNS.filter(campaign => existsSync(join(OUT, `results-${campaign}.json`))),
+    cells: rows.length,
+    orderedTrajectories: rows.filter(row => row.hasTrajectory).length,
+    requestPreviewCells: rows.filter(row => !row.hasTrajectory).length,
+    note: 'Pre-trajectory cells expose truncated previews. C is unknown where a visible prefix lacks the fact; it is never inferred from the checker.',
+  },
+  totals: {
+    cells: rows.length,
+    passed: rows.filter(row => row.checkerPassed).length,
+    failed: failures.length,
+    failureStages: stageCounts,
+    verifySubstages,
+    deliveryPaths,
+    cUnknownMemoryCells: cUnknown.length,
+    cUnknownFailedMemoryCells: cUnknownFailures.length,
+  },
+  byTemplate: Object.fromEntries(Object.entries(byTemplate).sort(([left], [right]) => left.localeCompare(right))),
+  byArmMemoryTasks: Object.fromEntries(Object.entries(byArm).sort(([left], [right]) => left.localeCompare(right))),
+  rows,
+}
+writeFileSync(join(OUT, 'stage-attribution.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8')
+
+const md = []
+md.push('# EF-E2E — stage attribution')
+md.push('')
+md.push('Reconstructed offline from the 96 executed cells. No model call was made.')
+md.push('')
+md.push(`Cells: **${rows.length}**, passed **${rows.filter(row => row.checkerPassed).length}**, failed **${failures.length}**. Ordered trajectories: **${output.sources.orderedTrajectories}**; the rest use request previews with a \`truncated\` flag.`)
+md.push('')
+md.push('## Where the failures stop')
+md.push('')
+md.push('| Stage | Meaning | Failed cells |')
+md.push('|---|---|---|')
+const MEANING = {
+  observe: 'the fact was not in any tool result the model received',
+  produce: 'nothing was written and the value was not stated',
+  write: 'the value was stated, but the deliverable was not written',
+  schema: 'the deliverable exists but its keys/types are wrong',
+  verify: 'the deliverable parses, but its values or tests fail',
+  archive: 'the evidence was not archived',
+  locate: 'the archive was never queried',
+  unknown: 'no recorded stage explains the result',
+  none: 'checker passed',
+}
+for (const stage of ['observe', 'produce', 'write', 'schema', 'verify', 'unknown']) {
+  md.push(`| ${stage} | ${MEANING[stage]} | ${stageCounts[stage] ?? 0} |`)
+}
+md.push('')
+md.push(`**C is unknown in ${cUnknown.length} memory-task cells** (${cUnknownFailures.length} of them failures). A truncated tool preview cannot prove absence, so those are counted apart rather than labelled \`observe\`.`)
+md.push('')
+md.push('No cell can be shown to have failed at **observation** with the recorded evidence: every memory-task failure either had the fact visible in a tool text or had a truncated text where absence proves nothing. That is a limit of the evidence coverage, not a claim that observation never failed.')
+md.push('')
+md.push('## How the value reached the answer')
+md.push('')
+md.push('| Path | Memory-task cells |')
+md.push('|---|---|')
+md.push(`| the final text/deliverable carries the value, seen in a primary tool result | ${deliveryPaths.fromToolResult} |`)
+md.push(`| the value was carried by the CHECKPOINT, not a tool result | ${deliveryPaths.fromCheckpointOnly} |`)
+md.push(`| the value was produced with neither visible source | ${deliveryPaths.unattributed} |`)
+md.push(`| the value was not produced | ${deliveryPaths.valueNotProduced} |`)
+md.push(`| value production unknown (no gold pair) | ${deliveryPaths.valueUnknown} |`)
+md.push('')
+md.push('The checkpoint path is why an E1 cell can pass T2 without calling recall: the semantic state carried the exact value inline. It is also why a B0 cell can pass: Basic\'s summary contained the build and timeout verbatim. Neither is a retrieval success, and neither is evidence that the archive was used.')
+md.push('')
+if (Object.keys(verifySubstages).length > 0) {
+  md.push('Verification failures split by the failing checker:')
+  md.push('')
+  md.push('| Sub-stage | Cells |')
+  md.push('|---|---|')
+  for (const [name, count] of Object.entries(verifySubstages)) md.push(`| ${name} | ${count} |`)
+  md.push('')
+}
+md.push('## Memory tasks by arm')
+md.push('')
+md.push('| Arm | Cells | Passed | Failure stages |')
+md.push('|---|---|---|---|')
+for (const [arm, bucket] of Object.entries(output.byArmMemoryTasks)) {
+  const stages = Object.entries(bucket.stages).map(([stage, count]) => `${stage} ${count}`).join(', ')
+  md.push(`| ${arm} | ${bucket.cells} | ${bucket.passed} | ${stages || '—'} |`)
+}
+md.push('')
+md.push('## What this changes')
+md.push('')
+md.push('The 47 failures are not one mechanism. Seventeen never put the value anywhere, thirteen stated it but wrote no file, twelve wrote a wrong shape, and five wrote a shape-correct file whose values or tests fail. `B0` is not uniformly worse for the same reason: its compaction summary can carry the exact values inline (the T2-s1 summary contains both), so a short task can pass without any archive interface; an EF fold applies a retention policy that may move the same tool result into the archive, so the continuation must retrieve it. The stage table makes that trade visible instead of calling both outcomes "compression quality".')
+md.push('')
+md.push('## Per template')
+md.push('')
+md.push('| Template | Cells | Passed | Failure stages |')
+md.push('|---|---|---|---|')
+for (const [template, bucket] of Object.entries(output.byTemplate)) {
+  const stages = Object.entries(bucket.stages).filter(([stage]) => stage !== 'none').map(([stage, count]) => `${stage} ${count}`).join(', ')
+  md.push(`| ${template} | ${bucket.cells} | ${bucket.passed} | ${stages || '—'} |`)
+}
+md.push('')
+md.push('## The cells that matter most')
+md.push('')
+md.push('| Campaign | Cell | Pass | D value | C observed | Written | Failure |')
+md.push('|---|---|---|---|---|---|---|')
+for (const row of rows.filter(entry => !entry.checkerPassed && MEMORY_TEMPLATES.has(entry.template))) {
+  md.push(`| ${row.campaign} | ${row.cellId} | ${row.checkerPassed ? 'yes' : 'no'} | ${String(row.stages.D.value)} | ${String(row.stages.C.value)} | ${String(row.stages.E.value)} | ${row.failureStage} |`)
+}
+writeFileSync(join(OUT, 'stage-attribution.md'), `${md.join('\n')}\n`, 'utf8')
+
+process.stdout.write(`stage attribution: ${rows.length} cells, ${failures.length} failures\n`)
+process.stdout.write(`  stages ${JSON.stringify(stageCounts)}\n`)
+process.stdout.write(`  C unknown (memory tasks): ${cUnknown.length} (${cUnknownFailures.length} failed)\n`)

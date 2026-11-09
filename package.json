@@ -198,7 +198,11 @@
     "eval:e2e-freeze-index": "node eval/e2e/src/freeze.mjs --campaign e2e-index-1 --index",
     "eval:e2e-authorize-index": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-index-1.json",
     "eval:e2e-run-index": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-index-1.json",
-    "eval:e2e-analyze-index": "node eval/e2e/src/analyze.mjs --campaign e2e-index-1"
+    "eval:e2e-analyze-index": "node eval/e2e/src/analyze.mjs --campaign e2e-index-1",
+    "eval:e2e-stages": "node eval/e2e/src/stage-attribution.mjs",
+    "eval:e2e-archive": "node eval/e2e/src/archive-research.mjs",
+    "eval:ef-r1-authority": "node eval/ef-r1/operation-authority.mjs",
+    "eval:ef-r1-repo": "node eval/ef-r1/repository-state.mjs"
   },
   "repository": {
     "type": "git",

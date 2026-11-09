@@ -1,0 +1,6821 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP2",
+  "generatedAt": "2026-11-09T16:47:42.977Z",
+  "sources": {
+    "campaigns": [
+      "e2e-core-1",
+      "e2e-pilot-1",
+      "e2e-t5-retest-1",
+      "e2e-recall-1",
+      "e2e-guard-smoke-1",
+      "e2e-index-1"
+    ],
+    "cells": 96,
+    "orderedTrajectories": 25,
+    "requestPreviewCells": 71,
+    "note": "Pre-trajectory cells expose truncated previews. C is unknown where a visible prefix lacks the fact; it is never inferred from the checker."
+  },
+  "totals": {
+    "cells": 96,
+    "passed": 49,
+    "failed": 47,
+    "failureStages": {
+      "verify": 5,
+      "produce": 17,
+      "schema": 12,
+      "write": 13
+    },
+    "verifySubstages": {
+      "external-check": 1,
+      "wrong-value": 4
+    },
+    "deliveryPaths": {
+      "fromToolResult": 22,
+      "fromCheckpointOnly": 7,
+      "unattributed": 12,
+      "valueNotProduced": 30,
+      "valueUnknown": 0
+    },
+    "cUnknownMemoryCells": 35,
+    "cUnknownFailedMemoryCells": 19
+  },
+  "byTemplate": {
+    "T1": {
+      "cells": 9,
+      "passed": 8,
+      "stages": {
+        "verify": 1,
+        "none": 8
+      }
+    },
+    "T2": {
+      "cells": 27,
+      "passed": 7,
+      "stages": {
+        "none": 7,
+        "produce": 10,
+        "write": 5,
+        "schema": 3,
+        "verify": 2
+      }
+    },
+    "T3": {
+      "cells": 10,
+      "passed": 10,
+      "stages": {
+        "none": 10
+      }
+    },
+    "T4": {
+      "cells": 22,
+      "passed": 9,
+      "stages": {
+        "produce": 4,
+        "none": 9,
+        "verify": 2,
+        "write": 7
+      }
+    },
+    "T5": {
+      "cells": 10,
+      "passed": 1,
+      "stages": {
+        "schema": 8,
+        "write": 1,
+        "none": 1
+      }
+    },
+    "T5B": {
+      "cells": 12,
+      "passed": 8,
+      "stages": {
+        "none": 8,
+        "schema": 1,
+        "produce": 3
+      }
+    },
+    "T6": {
+      "cells": 6,
+      "passed": 6,
+      "stages": {
+        "none": 6
+      }
+    }
+  },
+  "byArmMemoryTasks": {
+    "B0": {
+      "cells": 8,
+      "passed": 6,
+      "stages": {
+        "schema": 1,
+        "write": 1
+      }
+    },
+    "E0": {
+      "cells": 23,
+      "passed": 6,
+      "stages": {
+        "produce": 7,
+        "schema": 4,
+        "write": 3,
+        "verify": 3
+      }
+    },
+    "E0a": {
+      "cells": 6,
+      "passed": 1,
+      "stages": {
+        "schema": 1,
+        "produce": 3,
+        "write": 1
+      }
+    },
+    "E0ai": {
+      "cells": 8,
+      "passed": 1,
+      "stages": {
+        "produce": 4,
+        "write": 3
+      }
+    },
+    "E0i": {
+      "cells": 8,
+      "passed": 0,
+      "stages": {
+        "verify": 1,
+        "produce": 3,
+        "write": 4
+      }
+    },
+    "E1": {
+      "cells": 12,
+      "passed": 7,
+      "stages": {
+        "schema": 4,
+        "write": 1
+      }
+    },
+    "S": {
+      "cells": 6,
+      "passed": 4,
+      "stages": {
+        "schema": 2
+      }
+    }
+  },
+  "rows": [
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-B0-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "block": "calibration",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": false
+      },
+      "failureStage": "verify",
+      "failureDetail": "the deliverable exists and parses, but its values or tests do not satisfy the task contract",
+      "failureSubstage": "external-check",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E0-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "block": "calibration",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E1-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "block": "calibration",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E0-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E1-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-B0-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-E1-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-B0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-E0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 1,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-B0-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-E0-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-E1-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-E0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-E1-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 2,
+          "truncatedMatch": true,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-B0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 2,
+          "truncatedMatch": true,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-E1-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-B0-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-E0-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 6,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 19,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 6,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-B0-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-E0-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-E1-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-E1-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-B0-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-E0-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": null,
+          "outputs": [],
+          "basis": "no declared output file"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "no declarative file check",
+          "rows": []
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-B0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-E0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-E1-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-E0-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-E1-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-B0-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-E1-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 2,
+          "truncatedMatch": true,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-B0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 2,
+          "truncatedMatch": true,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-E0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "verify",
+      "failureDetail": "the deliverable exists and parses, but its values or tests do not satisfy the task contract",
+      "failureSubstage": "wrong-value",
+      "recallCalls": 3,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-B0-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 5,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": false
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-E0-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 6,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 18,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 6,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-E1-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-E0-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-E1-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E1",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-B0-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "B0",
+      "block": "core",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/retry.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "file_contains",
+              "path": "src/retry.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-E1-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-S-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-E1-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 1,
+          "checkpointCarried": true,
+          "checkpointMatched": 2,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-S-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-E1-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-S-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-E1-r2",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-S-r2",
+      "template": "T3",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": null,
+          "calls": 0,
+          "basis": "not a historical-recovery task"
+        },
+        "C": {
+          "value": null,
+          "basis": "not a historical-recovery task",
+          "matched": 0
+        },
+        "D": {
+          "value": null,
+          "basis": "no gold value for this contract"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "src/cache.js",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "file_not_contains",
+              "path": "src/cache.js",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-E1-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-S-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 13,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 3,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-E1-r2",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "block": "pilot",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-S-r2",
+      "template": "T5",
+      "seed": 1,
+      "arm": "S",
+      "block": "pilot",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": false,
+              "contract": false
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-B0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "B0",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 6,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-E0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 15,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 3,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-E1-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E1",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-S-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "S",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-B0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "B0",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": false,
+          "modelReadable": false,
+          "basis": "Basic compaction; the session log retains the messages but exposes no exact-read interface",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "B0 exposes no archive retrieval interface"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 6,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-E0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "block": "retest",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 7,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 15,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 7,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-E1-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E1",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 6,
+          "checkpointCarried": false,
+          "checkpointMatched": 1,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-S-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "S",
+      "block": "retest",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 4,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s1-E0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 1,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s1-E0a-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s2-E0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 2,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s2-E0a-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 1,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s1-E0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 7,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 2,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 7,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s1-E0a-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 1,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s2-E0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 3,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s2-E0a-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "request-preview",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s1-E0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 8,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 10,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 16,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 10,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s1-E0a-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 8,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 3,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s2-E0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "block": "recall",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 11,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "nothing was written and the model did not state the fact; whether it observed it is unknown (truncated tool text)",
+      "caveat": "C-unknown",
+      "recallCalls": 3,
+      "writes": 1,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s2-E0a-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0a",
+      "block": "recall",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": null,
+          "basis": "absent from every visible text, but at least one tool text was truncated",
+          "matched": 0,
+          "truncated": 7,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "state.json",
+              "exists": true
+            },
+            {
+              "path": "final.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "state.json",
+              "shape": true,
+              "contract": true
+            },
+            {
+              "kind": "json_equals",
+              "path": "final.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 1,
+      "writes": 2,
+      "hasTrajectory": false
+    },
+    {
+      "campaign": "e2e-guard-smoke-1",
+      "cellId": "T2-s1-E0-r0",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "block": "guard-smoke",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": false,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "schema",
+      "failureDetail": "the deliverable exists but its shape/keys/types are wrong",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 3,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0i-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "verify",
+      "failureDetail": "the deliverable exists and parses, but its values or tests do not satisfy the task contract",
+      "failureSubstage": "wrong-value",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0ai-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0-r1",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0i-r1",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0ai-r1",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 3,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 4,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 5,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "verify",
+      "failureDetail": "the deliverable exists and parses, but its values or tests do not satisfy the task contract",
+      "failureSubstage": "wrong-value",
+      "recallCalls": 1,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0i-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 4,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0ai-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 4,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0-r1",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 5,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 11,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 5,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0i-r1",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 4,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 1,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0ai-r1",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 5,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0i-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 1,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s1-E0ai-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": false,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": false,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": true,
+              "contract": false
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "verify",
+      "failureDetail": "the deliverable exists and parses, but its values or tests do not satisfy the task contract",
+      "failureSubstage": "wrong-value",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0i-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T2-s2-E0ai-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 1,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "answer.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "answer.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 0,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0-r2",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 5,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 7,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 8,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 7,
+      "writes": 1,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0i-r2",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 4,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 7,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 4,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s1-E0ai-r2",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 9,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 7,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 9,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 7,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0i-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0i",
+      "block": "index",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 5,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 2,
+          "total": 2,
+          "deliverable": null,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": true
+    },
+    {
+      "campaign": "e2e-index-1",
+      "cellId": "T4-s2-E0ai-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0ai",
+      "block": "index",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 4,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "trajectory",
+          "matched": 6,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 2
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 1,
+          "total": 2,
+          "deliverable": true,
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "deploy.plan.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "deploy.plan.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 2,
+      "writes": 1,
+      "hasTrajectory": true
+    }
+  ]
+}
