@@ -74,7 +74,7 @@ split is named, not silent: `bridge-loads`, `checkpoint-residency`,
 Context + LlmRuntime + SessionStore + SessionProjectionRegistry + TokenMeter
 + SystemPrompt + ToolRuntime + AgentRegistry + AgentLoop
 + one compaction backend (B0: @deepseek-ai/dsh-compaction-basic;
-  Bv/E0/E1/S: dsh-epistemic-fold/plugin)
+  Bv/E0/E0a/E1/S: dsh-epistemic-fold/plugin)
 + the live OpenAI-compatible adapter behind a recording wrapper
 ```
 
@@ -153,6 +153,11 @@ counterfactual also passes, is not shipped.
 | `e2e-core-1` | 39 (3 calibration + 36 core) | `19a15d516a8e` | `5d5c744a28fb` |
 | `e2e-pilot-1` | 12 (T2/T3/T5 × {E1,S} × 2) | `24177766ad92` | `d0e5771acad8` |
 | `e2e-t5-retest-1` | 8 (T5B × {B0,E0,E1,S} × 2) | `ab4f738ccd9b` | `74698849a816` |
+| `e2e-recall-1` | 12 (T2/T4/T5B × {E0,E0a} × 2) | `9685ce6b2317` | `5aa7179d7a11` |
+
+`E0a` is E0 plus the experimental `recallAffordance` section. The only
+difference between the paired arms is that section; the flag defaults to false
+and stays false after the negative result in `E2E_RESULT.md` §5b.
 
 Each manifest binds the code tree (excluding the evidence directory and the
 authorization), the lockfile, the installed DSH versions, every task digest,
@@ -230,7 +235,7 @@ node eval/e2e/src/candidate-smoke.mjs --install eval/e2e/candidate/install
 - It does not price the runs: the route has no verifiable per-token price.
 - The history is SEEDED; only the continuation after the fold is model
   behaviour. Every report says `seededHistory: true`.
-- A `no-fold` cell would be a measurement, not a failure; in fact all 67
+- A `no-fold` cell would be a measurement, not a failure; in fact all 71
   executed cells folded.
 - Bv is not part of the main comparison; compatibility is certified in
   `C1_CORE_BASELINE.md`, and the main experiment compares B0/E0/E1 (and S in the

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T16:54:15.387Z",
+  "generatedAt": "2026-11-09T04:14:09.430Z",
   "work": "EF-E2E",
   "buildReady": true,
   "supportedLaneVerified": true,
@@ -11,17 +11,17 @@
   "semanticActiveRecommended": false,
   "reasons": {
     "researchPRReady": "PR #5 is a research integration PR; marking it ready for review is a user decision, and the remote CI result is recorded separately.",
-    "coreDefaultRecommended": "The core campaign is 39 cells on one model and two seeds per template; that is exploratory, not a default-change warrant.",
+    "coreDefaultRecommended": "The campaigns are exploratory and the recall experiment showed run-to-run variance that flips cells; no default change.",
     "semanticActiveRecommended": "The pilot is exploratory and the deployment hold is not lifted by it."
   },
   "tarball": {
     "path": "eval/e2e/candidate/dsh-epistemic-fold-0.1.0.tgz",
-    "sha256": "e88075f581eb60204a4883b07f87b03477e25a3de0007dbd813d5e785ad4cd2c",
-    "bytes": 1371000
+    "sha256": "187fc38a4ba90269ebd8c5ad78ae6510646d07803728a8966338a184bdeb889b",
+    "bytes": 1380543
   },
   "smoke": {
     "schemaVersion": 1,
-    "generatedAt": "2026-11-08T16:54:15.316Z",
+    "generatedAt": "2026-11-09T04:14:09.316Z",
     "work": "EF-E2E",
     "installDir": "eval\\e2e\\candidate\\install",
     "packageDir": "eval\\e2e\\candidate\\install\\node_modules\\dsh-epistemic-fold",
@@ -79,7 +79,7 @@
       {
         "id": "tarball-sha256",
         "pass": true,
-        "detail": "e88075f581eb60204a4883b07f87b03477e25a3de0007dbd813d5e785ad4cd2c (1371000 bytes)"
+        "detail": "187fc38a4ba90269ebd8c5ad78ae6510646d07803728a8966338a184bdeb889b (1380543 bytes)"
       },
       {
         "id": "tarball-no-raw-or-secret",

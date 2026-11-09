@@ -10,11 +10,17 @@ show, what they do NOT show, and what was fixed because of them.
 resources?** In this setup, partly. E0 uses zero auxiliary calls and the least
 input (298,566 tokens over 12 core cells vs 391,224 for B0 and 445,450 for E1),
 but it passes 7/12 core cells against 10/12 for both B0 and E1. The loss is
-concentrated in exact-recall tasks (T2/T4: 0/4). The archive holds the facts —
-E0 recalled correctly in 5 of 12 core cells — but a 47-character checkpoint
-marker does not reliably tell the model that recall exists or that it should
-write a file after recalling. Two of the four T2/T4 failures had the right
-values in the final answer and never wrote the required file.
+concentrated in exact-recall tasks (T2/T4: 0/4 in the core campaign). The
+archive holds the facts — E0 recalled correctly in 5 of 12 core cells — but a
+47-character checkpoint marker does not reliably tell the model that recall
+exists or that it should write a file after recalling. Two of the four T2/T4
+failures had the right values in the final answer and never wrote the file.
+
+A follow-up experiment (§5b) added an explicit recall-affordance section to the
+checkpoint and tested it against E0 on the same tasks: **it did not help** (E0
+2/6, E0a 1/6) and the model invoked recall LESS often. The flag stays
+experimental and off. The same experiment re-ran core E0 cells and found
+run-to-run variance large enough to flip T4 from 0/2 to 2/2; see §5b and §9.
 
 **2. Does Rationale pay for its extra call?** E1 passes 10/12 core and 2/2 T5b,
 with 20 rationale calls and 12,624 output tokens across core (vs B0's 53
@@ -46,13 +52,14 @@ campaign          cells  executed  requests  input tokens  output tokens  wall
 e2e-core-1           39        39       259     1,214,580         69,166   12.4 min
 e2e-pilot-1          12        12        77       280,538         15,955    3.6 min
 e2e-t5-retest-1       8         8        62       288,422         16,010    3.0 min
-total                59        59       398     1,783,540        101,131   18.9 min
+e2e-recall-1         12        12        51       310,376          6,418    2.0 min
+total                71        71       449     2,093,916        107,549   20.9 min
 ```
 
-Envelope used: 398 / 2,200 requests, 1.78M / 18M input, 101k / 1M output,
-18.9 min / 8 h. No monetary claim: the route has no verifiable per-token price.
+Envelope used: 449 / 2,200 requests, 2.09M / 18M input, 108k / 1M output,
+20.9 min / 8 h. No monetary claim: the route has no verifiable per-token price.
 
-All 59 cells reached at least one successful fold. No cell is `no-fold`.
+All 71 cells reached at least one successful fold. No cell is `no-fold`.
 
 ## 3. Core campaign (36 core cells + 3 calibration)
 
@@ -123,6 +130,32 @@ Per task:
 The S checkpoint carries the semantic state (objective/evidence lines); the E1
 checkpoint carries the rationale. Both carried the T2 values. The difference is
 one output-file behaviour, not a memory effect.
+
+## 5b. Recall-affordance experiment (negative)
+
+The core campaign's most actionable finding was that E0's bare marker did not
+prompt recall. A flag (`recallAffordance`, default off) appends one section:
+
+```text
+Recall
+- Folded history is archived. Use context_search to find it, or context_recall to open it.
+```
+
+Cost on the E2E fixture: 47 → 146 characters (~25 tokens).
+
+| Arm | Pass | Cells | Recall calls | Input | Output |
+|---|---|---|---|---|---|
+| E0 | 2/6 | T2/T4/T5B × 2 | 23 | 178,848 | 3,486 |
+| E0a (affordance) | 1/6 | same | 7 | 131,528 | 2,932 |
+
+**The affordance did not help.** E0a invoked recall LESS often and passed one
+fewer cell; the failures are still mostly `missing-output` (the model has the
+value and does not write the file). The flag stays experimental and OFF.
+
+The same campaign re-ran the core E0 tasks and seeds. T4 went from 0/2 in the
+core campaign to 2/2 here, with the same task, seed and budget. That is direct
+run-to-run variance at this scale, and it is the main reason the per-arm rates
+in §3 are descriptions, not estimates.
 
 ## 6. Semantic authority
 
@@ -206,21 +239,25 @@ A few structural facts from the core campaign:
 1. **Exploratory scale.** Six templates × two seeds, one model
    (`deepseek-v4.1-flash`), one local route, one machine. No significance test
    is claimed; the two seeds of a template are not independent tasks.
-2. **Seeded history.** Only the continuation after the fold is model behaviour.
+2. **Run-to-run variance.** The recall campaign re-ran the core E0 cells with
+   the same tasks, seeds and budget: T4 moved from 0/2 to 2/2. Single runs per
+   cell are noisy, so an arm difference of one or two cells is not a finding.
+   The core rates are descriptions of these runs, not estimates of a rate.
+3. **Seeded history.** Only the continuation after the fold is model behaviour.
    The fold itself is real (auto pre-step pressure), but the history was
    scripted.
-3. **Operational budget.** 16,384 tokens is an experiment budget, not the
+4. **Operational budget.** 16,384 tokens is an experiment budget, not the
    model's window, and it is small enough that Basic re-summarizes repeatedly.
-4. **No currency cost.** The route has no verifiable per-token price. Tokens,
+5. **No currency cost.** The route has no verifiable per-token price. Tokens,
    requests and wall-clock are the enforced and reported limits.
-5. **Task-contract sensitivity.** The T5 shape defect moved 5 cells from
+6. **Task-contract sensitivity.** The T5 shape defect moved 5 cells from
    "correct values" to "failed". The retest fixes it; the original cells keep
    their recorded outcome.
-6. **Windows teardown warning.** The S arm occasionally printed a libuv
+7. **Windows teardown warning.** The S arm occasionally printed a libuv
    `UV_HANDLE_CLOSING` assertion at process exit AFTER the result was written.
    It did not affect any measurement; it is recorded as a known teardown noise,
    not fixed blind.
-7. **Bv** is certified for compatibility (C1) but is not part of the main
+8. **Bv** is certified for compatibility (C1) but is not part of the main
    comparison.
 
 ## 10. Decisions
@@ -232,15 +269,17 @@ deploymentEligible            false   (EF Active: deployment hold)
 researchPRReady               false   (a reviewer's call, not this round's)
 ```
 
-The candidate build is installable and smoke-tested (1.34 MB, 391 files, no
+The candidate build is installable and smoke-tested (1.38 MB, 393 files, no
 raw runs, no credentials, no checkout path). It is a candidate, not a release.
 
 ## 11. What would change the answer
 
-- More templates and more seeds, so a per-template rate can be estimated
-  rather than described.
-- A task set where E0's recall is prompted by the product surface, not by the
-  experimenter; the current failure is as much a checkpoint-affordance finding
-  as a model finding.
+- More templates, more seeds, and repeated runs per cell, so a per-template
+  rate can be estimated rather than described. The T4 flip between campaigns
+  shows that one run per cell is not enough for an arm comparison.
+- A study of the OUTPUT CONTRACT rather than the checkpoint: E0a's failures are
+  predominantly `missing-output` — the model has the value and does not write
+  the file. More recall affordance is not the lever; the instruction and the
+  model's tool habits are.
 - A second model/route, to separate the mechanism from the model's tool habits.
 - A price-verifiable route, if a monetary comparison is wanted.
