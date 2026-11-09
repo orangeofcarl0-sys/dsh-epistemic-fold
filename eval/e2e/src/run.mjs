@@ -124,9 +124,9 @@ function makeLiveAdapter({ route, model }) {
   }
 }
 
-function makeSelfTestAdapter({ model }) {
+function makeSelfTestAdapter({ model, stopFirst = false }) {
   return ({ task }) => {
-    const adapter = new ScriptedSolverAdapter(task)
+    const adapter = new ScriptedSolverAdapter(task, { stopFirst })
     adapter.resolveModel = (provider, id) => Promise.resolve({
       provider, id, name: id, context: { contextWindow: task.operationalBudgetTokens },
     })
@@ -178,7 +178,8 @@ async function main() {
       arm,
       replicate: 1,
       mode: 'self-test',
-      makeAdapter: makeSelfTestAdapter({ model: 'scripted' }),
+      makeAdapter: makeSelfTestAdapter({ model: 'scripted', stopFirst: flag('stop-first') }),
+      guard: flag('guard') || flag('stop-first'),
       outRoot,
       provider: 'ef-e2e',
       model: 'scripted',
@@ -263,6 +264,7 @@ async function main() {
         replicate: cell.replicate,
         mode: 'live',
         makeAdapter: makeLiveAdapter({ route, model: manifest.model }),
+        guard: cell.guard === true,
         outRoot,
         provider: 'ef-e2e',
         model: manifest.model,
@@ -285,6 +287,7 @@ async function main() {
       compactions: report.compactions.length,
       checker: report.checker.pass,
       termination: report.termination.kind,
+      guard: cell.guard === true,
       usage: report.usage,
       reportPath: join(outRoot, report.cellId, 'report.json'),
     })

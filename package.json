@@ -191,7 +191,10 @@
     "eval:e2e-freeze-recall": "node eval/e2e/src/freeze.mjs --campaign e2e-recall-1 --recall",
     "eval:e2e-authorize-recall": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-recall-1.json",
     "eval:e2e-run-recall": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-recall-1.json",
-    "eval:e2e-analyze-recall": "node eval/e2e/src/analyze.mjs --campaign e2e-recall-1"
+    "eval:e2e-analyze-recall": "node eval/e2e/src/analyze.mjs --campaign e2e-recall-1",
+    "eval:e2e-freeze-guard": "node eval/e2e/src/freeze.mjs --campaign e2e-guard-smoke-1 --guard-smoke",
+    "eval:e2e-authorize-guard": "node eval/e2e/src/authorize.mjs --manifest eval/e2e/out/manifest-e2e-guard-smoke-1.json",
+    "eval:e2e-run-guard": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-guard-smoke-1.json"
   },
   "repository": {
     "type": "git",

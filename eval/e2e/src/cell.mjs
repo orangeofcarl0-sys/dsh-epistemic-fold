@@ -13,6 +13,7 @@
 
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { LlmAdapter, ToolCallId, createUserMessage } from '@deepseek-ai/dsh-llm'
@@ -142,9 +143,11 @@ export class RecordingAdapter extends LlmAdapter {
  * host, the tools, the fold and the checker are wired together.
  */
 class ScriptedSolverAdapter extends LlmAdapter {
-  constructor(task) {
+  constructor(task, { stopFirst = false } = {}) {
     super()
     this.task = task
+    this.stopFirst = stopFirst
+    this.stopped = false
     this.calls = 0
     this.written = new Set()
     this.stage = 0
@@ -178,6 +181,16 @@ class ScriptedSolverAdapter extends LlmAdapter {
       return
     }
     this.calls += 1
+    // Stop-first mode: the model ends its turn with a prose answer and NO
+    // write_file. The completion guard injects a corrective message; the next
+    // call sees it and does the write. This is how the guard's refusal path is
+    // exercised without a live model call.
+    const guardMessage = text.includes('do not exist yet')
+    if (this.stopFirst && !this.stopped && !guardMessage) {
+      this.stopped = true
+      yield* this.emitText('I have the values from the archived history: ' + JSON.stringify(this.task.reference).slice(0, 160))
+      return
+    }
     const pending = Object.entries(this.files).filter(([path]) => !this.written.has(path))
     if (pending.length > 0) {
       const [path, content] = pending[0]
@@ -351,6 +364,7 @@ export async function runCell({
   provider,
   model,
   cellLimits,
+  guard = false,
 }) {
   const cellId = `${task.id}-${arm}-r${replicate}`
   const cellRoot = join(outRoot, cellId)
@@ -379,6 +393,7 @@ export async function runCell({
   let idleOutcome = 'idle'
   let error = null
   let stageB = null
+  const completionGuard = { enabled: guard, attempts: 0, missing: [], missingAtEnd: null }
 
   try {
     host = await mountHost({
@@ -448,6 +463,39 @@ export async function runCell({
       }
       if (secondIdle === 'timeout') idleOutcome = 'timeout'
     }
+
+    // The completion guard. The measured failure mode is a model that ends its
+    // turn with the values in prose and NO `write_file` — it does not call the
+    // finish tool, so a tool-level guard would never fire. This checks the
+    // declared output files after the turn is idle and, when one is missing,
+    // injects a corrective message and lets the model act.
+    //
+    // It writes nothing itself. The message source is `completion-guard`, not
+    // `user`, so it cannot ground a normative claim or a decision: the
+    // authority model only accepts a `user/message` whose producer is `user`.
+    // The guard is the same for every arm.
+    const requiredOutputs = [...new Set((task.checks ?? [])
+      .filter(check => check.kind === 'json_equals')
+      .map(check => check.path))]
+    if (guard && requiredOutputs.length > 0 && idleOutcome === 'idle') {
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const missing = requiredOutputs.filter(path => !existsSync(join(workspace, path)))
+        if (missing.length === 0) break
+        completionGuard.attempts += 1
+        completionGuard.missing = missing
+        handle.agent.followup(createUserMessage({
+          content: [{
+            type: 'text',
+            text: `The required output file(s) ${missing.join(', ')} do not exist yet. `
+              + 'Use write_file to create them with the values you have. Do not only describe the values.',
+          }],
+          source: { kind: 'completion-guard' },
+        }))
+        idleOutcome = await waitIdle(handle.agent, cellLimits.wallClockMs)
+        if (idleOutcome === 'timeout') break
+      }
+      completionGuard.missingAtEnd = requiredOutputs.filter(path => !existsSync(join(workspace, path)))
+    }
   } catch (thrown) {
     error = thrown instanceof Error ? `${thrown.name}: ${thrown.message}` : String(thrown)
   }
@@ -474,6 +522,61 @@ export async function runCell({
     chars: (event.data.message?.content ?? []).reduce((sum, block) => sum + (block.type === 'text' ? block.text.length : 0), 0),
   }))
   const summary = summarizeEvents(events)
+  // The ordered trajectory: what the model saw and did, in log order. This is
+  // the evidence a per-cell count cannot carry — whether it read, recalled,
+  // wrote, tested, or simply stopped. Tool results and assistant text are
+  // truncated EXPLICITLY; the raw text stays in the run directory.
+  const cap = (text, limit) => ({
+    text: text.length > limit ? text.slice(0, limit) : text,
+    truncated: text.length > limit,
+    chars: text.length,
+  })
+  const trajectory = events
+    .filter(event => ['user/message', 'assistant/message', 'tool/call', 'tool/result', 'compaction/start', 'compaction/end']
+      .includes(event.type))
+    .map(event => {
+      const seq = Number(event.seq)
+      if (event.type === 'tool/call') {
+        return { seq, type: 'tool/call', name: event.data.name, args: cap(String(event.data.arguments ?? ''), 800) }
+      }
+      if (event.type === 'tool/result') {
+        const text = (event.data.message?.content ?? [])
+          .map(block => block.type === 'text' ? block.text : '').join('\n')
+        return {
+          seq,
+          type: 'tool/result',
+          callId: String(event.data.message?.source?.callId ?? event.data.callId ?? ''),
+          isError: event.data.error !== undefined,
+          ...cap(text, 1500),
+        }
+      }
+      if (event.type === 'assistant/message') {
+        const text = (event.data.message?.content ?? [])
+          .filter(block => block.type === 'text').map(block => block.text).join('\n')
+        return {
+          seq,
+          type: 'assistant',
+          toolCalls: (event.data.message?.content ?? []).filter(block => block.type === 'tool-call').length,
+          ...cap(text, 1500),
+        }
+      }
+      if (event.type === 'user/message') {
+        const text = (event.data.message?.content ?? [])
+          .map(block => block.type === 'text' ? block.text : '').join('\n')
+        return {
+          seq,
+          type: 'user',
+          sourceKind: event.data.message?.source?.kind ?? null,
+          ...cap(text, 800),
+        }
+      }
+      return {
+        seq,
+        type: event.type,
+        id: event.data.compactionId === undefined ? null : String(event.data.compactionId),
+        error: event.data.error === undefined ? null : String(event.data.error?.message ?? event.data.error),
+      }
+    })
   const surfaceNodes = session === null ? 0 : session.surface.nodes.length
   const retainedTokens = session === null ? null : (host?.ctx.tokenMeter.measure(session).totalTokens ?? null)
   const engineDecision = host?.plugin?.engine?.lastLeafDecision ?? null
@@ -539,6 +642,8 @@ export async function runCell({
     surfaceNodes,
     surfaceTail,
     userMessages,
+    trajectory,
+    completionGuard,
     retainedTokens,
     engineDecision,
     thresholdTokens,
@@ -602,6 +707,7 @@ export async function runCell({
 
   await mkdir(join(cellRoot, 'raw'), { recursive: true })
   await writeFile(join(cellRoot, 'raw', 'requests.json'), `${JSON.stringify(log.requests, null, 2)}\n`, 'utf8')
+  await writeFile(join(cellRoot, 'raw', 'trajectory.json'), `${JSON.stringify(trajectory, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
   return report
 }

@@ -95,7 +95,12 @@ async function main() {
   const pilot = argv.includes('--pilot')
   const retest = argv.includes('--retest')
   const recall = argv.includes('--recall')
-  if (recall) {
+  const guardSmoke = argv.includes('--guard-smoke')
+  if (guardSmoke) {
+    // The ONE remaining continuation cell under the envelope (71/72 used).
+    // A single live demonstration of the completion guard, labelled n=1.
+    cells.push({ block: 'guard-smoke', task: 'T2-s1', arm: 'E0', replicate: 0, guard: true })
+  } else if (recall) {
     // Recall-affordance experiment: E0 vs E0+affordance on the memory-sensitive
     // tasks, contemporaneous, the same seeds.
     for (const task of ['T2-s1', 'T2-s2', 'T4-s1', 'T4-s2', 'T5B-s1', 'T5B-s2']) {
