@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "work": "EF-R1",
-  "generatedAt": "2026-11-09T17:21:38.198Z",
-  "evaluatedCommit": "e82e75b80d32d67c67902709df3112da7381335e",
+  "generatedAt": "2026-11-09T17:22:39.747Z",
+  "evaluatedCommit": "309a65cf1e2ce7b21ab909af956e5cf967e0c884",
   "claims": [
     {
       "claimId": "R1-OPERATION-AUTHORITY",
@@ -105,7 +105,7 @@
       "claim": "The EF-R1 tarball installs and mounts basic/economy/quality with semantic continuity off, and contains no raw run, credential or checkout path.",
       "evidenceLevel": "Deterministic Contract",
       "experimentId": "EF-R1 WP5",
-      "gitSha": "e82e75b80d32d67c67902709df3112da7381335e",
+      "gitSha": "309a65cf1e2ce7b21ab909af956e5cf967e0c884",
       "artifact": "eval/ef-r1/out/candidate-build.json",
       "harness": "installed-tarball smoke",
       "configuration": "basic/economy/quality; semantic off",
@@ -113,7 +113,7 @@
       "scorerVersion": "candidate-smoke.mjs",
       "limitation": "Construction and composition only; no provider request and no behavioural claim.",
       "artifactPresent": true,
-      "artifactSha256": "dca6ef061c644f9cced3c07e29cb160b1ba79179a50a60e3201161f07097384a",
+      "artifactSha256": "24bce0bfd2c9da99a5cc4b95b4d0ec7d9361738d54262df2ceee92a87c4a60bc",
       "status": "current"
     },
     {
@@ -121,7 +121,7 @@
       "claim": "EF-R1 made zero provider requests and zero remote Git operations.",
       "evidenceLevel": "Constraint",
       "experimentId": "EF-R1",
-      "gitSha": "e82e75b80d32d67c67902709df3112da7381335e",
+      "gitSha": "309a65cf1e2ce7b21ab909af956e5cf967e0c884",
       "artifact": "eval/ef-r1/out/ablation-design.json",
       "harness": "no runner was invoked",
       "configuration": "offline only",
