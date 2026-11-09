@@ -34,10 +34,22 @@ research archive; they are not rewritten.
 | [E2E_EXECUTION.md](E2E_EXECUTION.md) | scope, envelope, native harness, tasks, frozen manifests, evidence layout |
 | [E2E_RESULT.md](E2E_RESULT.md) | what the core/pilot/retest campaigns show, what was fixed, what remains unknown |
 
-The E2E campaigns executed 59 cells on `deepseek-v4.1-flash` inside the
-envelope's request/token/time caps. Results are exploratory: two seeds per
-template, one model, one route. The deployment hold stands, and no default is
-recommended by this round.
+The E2E campaigns executed 96 cells on `deepseek-v4.1-flash` inside two closed
+envelopes (72/72 and 24/24). Results are exploratory: two seeds per template,
+one model, one route. The deployment hold stands, and no default is recommended
+by that round.
+
+## EF-R1 — authority closure and executable historical recovery
+
+| Document | Answers |
+|---|---|
+| [EF_R1.md](EF_R1.md) | operation-level authority, stage attribution, archive locator, four new tasks, frozen design, decisions |
+
+EF-R1 made no model call and no remote Git operation. It reproduced and fixed an
+implicit same-coordinate overwrite of a user decision through the production
+`validate → plan → commit` path, attributed the 96 E2E failures to the stage that
+actually failed, added an opt-in executable archive address, certified four new
+recovery tasks, and froze a 120-cell L×G design that is **not authorized**.
 
 Supporting documents:
 
@@ -62,6 +74,8 @@ deploymentEligible false
 Track A            Compression Runtime — product baseline, works with semantic off
 Track B            Semantic Continuity — optional, default off, mechanism evidence only
 Track C            Context Intelligence — research, eval code, no runtime path
+archiveLocator     research candidate, default off
+completionGuard    research harness behaviour, not an EF feature
 
 origin/main        93b6666   Track A only; no src/semantic
 R38 research       0067020   96 commits ahead of main; Track A + B + C
@@ -101,10 +115,17 @@ npm run eval:c1-readiness     # live readiness (not-authorized)
 npm run eval:c1-tests         # 33 targeted tests
 npm run eval:c1-gates         # C1-G0..G7
 npm run eval:c1a-gate         # C1A A0..A5
+
+# EF-R1 (offline; no provider call)
+node eval/ef-r1/operation-authority.mjs
+npm run eval:e2e-stages
+npm run eval:ef-r1-locator
+npm run eval:ef-r1-design -- --check
 ```
 
 The C0 gate report is `docs/convergence/data/gate-status.json`; the C1 reports
-are `eval/c1/out/gate-status.json` and `eval/c1/out/c1a-gate.json`.
+are `eval/c1/out/gate-status.json` and `eval/c1/out/c1a-gate.json`. The EF-R1
+reports are under `eval/ef-r1/out/`.
 
 ## Reading order for a new contributor
 

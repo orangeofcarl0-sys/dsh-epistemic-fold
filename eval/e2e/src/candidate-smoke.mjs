@@ -35,7 +35,12 @@ const argv = process.argv.slice(2)
 const at = argv.indexOf('--install')
 const installDir = at === -1 ? join(ROOT, 'eval', 'e2e', 'candidate', 'install') : resolve(argv[at + 1])
 const packageDir = join(installDir, 'node_modules', 'dsh-epistemic-fold')
-const tarball = join(ROOT, 'eval', 'e2e', 'candidate', 'dsh-epistemic-fold-0.1.0.tgz')
+const tarballAt = argv.indexOf('--tarball')
+const tarball = tarballAt === -1
+  ? join(ROOT, 'eval', 'e2e', 'candidate', 'dsh-epistemic-fold-0.1.0.tgz')
+  : resolve(argv[tarballAt + 1])
+const workAt = argv.indexOf('--work')
+const work = workAt === -1 ? 'EF-E2E' : argv[workAt + 1]
 
 class StubAdapter extends LlmAdapter {
   providerInfo(provider) {
@@ -151,7 +156,7 @@ if (existsSync(tarball)) {
 const report = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
-  work: 'EF-E2E',
+  work,
   installDir: installDir.slice(ROOT.length + 1),
   packageDir: packageDir.slice(ROOT.length + 1),
   checks,
