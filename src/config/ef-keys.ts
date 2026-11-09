@@ -70,6 +70,11 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   // bare marker even though the tools existed; this flag tests whether naming
   // them closes that gap.
   { name: 'recallAffordance', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: list the folded span's tool calls in the
+  // checkpoint. The measured failure is a model that keeps the recent
+  // distractor log, folds the useful observation, and then concludes the value
+  // is unknown. The generic affordance did not help; WHAT was folded might.
+  { name: 'foldedSpanIndex', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },

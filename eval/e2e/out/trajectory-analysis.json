@@ -1,0 +1,4938 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T11:32:12.083Z",
+  "work": "EF-E2E",
+  "sources": {
+    "orderedTrajectories": [
+      "e2e-guard-smoke-1/T2-s1-E0-r0"
+    ],
+    "reconstructed": 71,
+    "note": "Pre-trajectory cells expose request deltas and tool counts, not an ordered event log. The 71 original cells predate trajectory capture."
+  },
+  "crossTab": {
+    "cells": 47,
+    "wroteAndPassed": 22,
+    "wroteAndFailed": 17,
+    "noWriteAndPassed": 0,
+    "noWriteAndFailed": 8,
+    "recalledAndPassed": 5,
+    "recalledAndFailed": 11,
+    "noRecallAndPassed": 17,
+    "noRecallAndFailed": 14
+  },
+  "repeats": [
+    {
+      "key": "T1:1:B0",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": false,
+          "failureClass": null,
+          "folds": 5,
+          "requests": 9,
+          "recallCalls": 0,
+          "writes": 1,
+          "tests": 1,
+          "finalText": "Fixed `truncate` in `src/text.js`:\n\n- Content is now budgeted to `max - 1` code units so the ellipsis counts toward `max`, and the result can never exceed it.\n-"
+        },
+        {
+          "campaign": "e2e-core-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 5,
+          "requests": 11,
+          "recallCalls": 0,
+          "writes": 2,
+          "tests": 2,
+          "finalText": "Fixed `truncate` in `src/text.js`. `node --test` reports 4 pass, 0 fail.\n\nWhat changed:\n- **Ellipsis is now inside the budget.** The slice stops at `max - 1` co"
+        }
+      ]
+    },
+    {
+      "key": "T2:1:E1",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 1,
+          "requests": 3,
+          "recallCalls": 0,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "`build` = **7f3c9a1e**, `timeout_ms` = **1847**.\n\nNote on provenance: those values come from the boot/config lines in `logs/gateway-2026-10-11.log` (`[gateway] "
+        },
+        {
+          "campaign": "e2e-pilot-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 1,
+          "requests": 3,
+          "recallCalls": 0,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "**build:** `7f3c9a1e`\n**timeout_ms:** `1847`\n\nNote on sourcing: the values come from the earlier inspection of `logs/gateway-2026-10-11.log` (boot line `2026-10"
+        },
+        {
+          "campaign": "e2e-pilot-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 1,
+          "requests": 2,
+          "recallCalls": 0,
+          "writes": 0,
+          "tests": 0,
+          "finalText": "I don't have those values, so I won't write them.\n\nThe file I just read (`logs/gateway-late.log`) contains only per-request HTTP access lines — timestamps, requ"
+        }
+      ]
+    },
+    {
+      "key": "T2:1:E0",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 1,
+          "requests": 1,
+          "recallCalls": 0,
+          "writes": 0,
+          "tests": 0,
+          "finalText": "I can't fill in those values.\n\nThe gateway log I just read (`logs/gateway-late.log`) contains only request lines — timestamp, level, `[gateway]`, request id, ro"
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 1,
+          "requests": 1,
+          "recallCalls": 0,
+          "writes": 0,
+          "tests": 0,
+          "finalText": "I can't fill in those values, because the log I read didn't contain them.\n\nWhat I actually read (`logs/gateway-late.log`) was a series of gateway request lines "
+        },
+        {
+          "campaign": "e2e-guard-smoke-1",
+          "pass": false,
+          "failureClass": "wrong-value",
+          "folds": 2,
+          "requests": 3,
+          "recallCalls": 0,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "I created `answer.json`, but I want to be clear about what's in it: it records that the values are unknown, not that they were found.\n\n```json\n{\n  \"build\": \"UNK"
+        }
+      ]
+    },
+    {
+      "key": "T4:1:E0",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 2,
+          "requests": 2,
+          "recallCalls": 2,
+          "writes": 0,
+          "tests": 0,
+          "finalText": "The folded history records this from `config/deploy.json`:\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n- **release:** `canary`\n\nThe deploy log at `2026-10-14"
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 4,
+          "requests": 6,
+          "recallCalls": 7,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "`deploy.plan.json` written.\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n\nThese come from the pre-rotation config I read earlier (`config/deploy.json`), not f"
+        }
+      ]
+    },
+    {
+      "key": "T2:2:E0",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 3,
+          "requests": 3,
+          "recallCalls": 3,
+          "writes": 0,
+          "tests": 0,
+          "finalText": "The values established earlier in this conversation:\n\n- **Build:** `c41d08b7` — from the gateway boot line `2026-10-11T02:14:03.001Z INFO [gateway] boot build=c"
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": false,
+          "failureClass": "wrong-value",
+          "folds": 1,
+          "requests": 2,
+          "recallCalls": 0,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "**build:** unknown — never observed in the log\n**timeout_ms:** unknown — never observed in the log\n\n`answer.json` has been written with both fields set to `null"
+        }
+      ]
+    },
+    {
+      "key": "T4:2:E0",
+      "runs": [
+        {
+          "campaign": "e2e-core-1",
+          "pass": false,
+          "failureClass": "shape-mismatch",
+          "folds": 3,
+          "requests": 6,
+          "recallCalls": 3,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "I wrote `deploy.plan.json` using the values I actually observed from the pre-rotation config:\n\n```json\n{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4,\n  \"release\":"
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 2,
+          "requests": 5,
+          "recallCalls": 3,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "Done — `deploy.plan.json` written from the pre-rotation config I observed:\n\n- **region:** `ap-south-1`\n- **replicas:** `4`\n\n(The current workspace copy of the c"
+        }
+      ]
+    },
+    {
+      "key": "T5B:1:E0",
+      "runs": [
+        {
+          "campaign": "e2e-t5-retest-1",
+          "pass": true,
+          "failureClass": null,
+          "folds": 3,
+          "requests": 8,
+          "recallCalls": 3,
+          "writes": 2,
+          "tests": 0,
+          "finalText": "`max_attempts` = **2**, `window_seconds` = **30**.\n\n`final.json` is written as a flat object with exactly those two top-level numeric fields. The stale spec's \""
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 8,
+          "requests": 10,
+          "recallCalls": 10,
+          "writes": 1,
+          "tests": 0,
+          "finalText": ""
+        }
+      ]
+    },
+    {
+      "key": "T5B:2:E0",
+      "runs": [
+        {
+          "campaign": "e2e-t5-retest-1",
+          "pass": false,
+          "failureClass": "shape-mismatch",
+          "folds": 6,
+          "requests": 10,
+          "recallCalls": 7,
+          "writes": 2,
+          "tests": 1,
+          "finalText": ""
+        },
+        {
+          "campaign": "e2e-recall-1",
+          "pass": false,
+          "failureClass": "missing-output",
+          "folds": 3,
+          "requests": 6,
+          "recallCalls": 3,
+          "writes": 1,
+          "tests": 0,
+          "finalText": "`state.json` is confirmed on disk with exactly one top-level field:\n\n```json\n{\"max_attempts\": 2}\n```\n\n**`max_attempts` = 2** for the batch path."
+        }
+      ]
+    }
+  ],
+  "guardCase": {
+    "cellId": "T2-s1-E0-r0",
+    "pass": false,
+    "failureClass": "wrong-value",
+    "guardAttempts": 1,
+    "guardMissingAtEnd": [],
+    "trajectory": [
+      {
+        "seq": 4,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 7,
+        "type": "assistant",
+        "toolCalls": 0,
+        "text": "Reading the log now. I will take the values from the boot line and the config line, not from the summary at the end.",
+        "truncated": false,
+        "chars": 116
+      },
+      {
+        "seq": 10,
+        "type": "assistant",
+        "toolCalls": 1,
+        "text": "Reading read_file.",
+        "truncated": false,
+        "chars": 18
+      },
+      {
+        "seq": 11,
+        "type": "tool/call",
+        "name": "read_file",
+        "args": {
+          "text": "{\"path\":\"logs/gateway-2026-10-11.log\"}",
+          "truncated": false,
+          "chars": 38
+        }
+      },
+      {
+        "seq": 12,
+        "type": "tool/result",
+        "callId": "call-1-3-42451271",
+        "isError": false,
+        "text": "2026-10-11T02:14:03.001Z INFO  [gateway] boot build=7f3c9a1e pid=4821\n2026-10-11T02:14:03.004Z INFO  [gateway] config retry_timeout_ms=1847\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n2\n:\n0\n5\n.\n3\n5\n0\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\ne\ne\n6\n8\nb\n2\na\nd\n2\nb\n \na\nt\nt\ne\nm\np\nt\n=\n2\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n2\n:\n2\n7\n.\n7\n3\n7\nZ\n \nW\nA\nR\nN\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nu\np\ns\nt\nr\ne\na\nm\n \ns\nl\no\nw\n \ni\nd\n=\na\n8\n9\nc\n9\n8\n8\n2\ne\nc\n \nm\ns\n=\n1\n8\n9\n2\n \nr\ne\nt\nr\ny\n=\n1\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n0\n3\n.\n8\n9\n8\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nq\nu\ne\ns\nt\n \ni\nd\n=\n3\nd\n1\n9\nf\n1\n8\nc\n6\n1\n \nr\no\nu\nt\ne\n=\n/\nv\n1\n/\ni\nt\ne\nm\ns\n \ns\nt\na\nt\nu\ns\n=\n2\n0\n0\n \nm\ns\n=\n9\n5\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n4\n4\n.\n4\n0\n6\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\n0\n3\n2\n6\nd\na\n7\ne\nb\n7\n \na\nt\nt\ne\nm\np\nt\n=\n2\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n5\n1\n.\n6\n4\n9\nZ\n \nD\nE\nB\nU\nG\n \n[\ng\na\nt\ne\nw\na\ny\n]\n \np\no\no\nl\n \na\nc\nt\ni\nv\ne\n=\n2\n6\n \ni\nd\nl\ne\n=\n2\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n4\n:\n2\n3\n.\n9\n7\n1\nZ\n \nD\nE\nB\nU\nG\n \n[\ng\na\nt\ne\nw\na\ny\n]\n \np\no\no\nl\n \na\nc\nt\ni\nv\ne\n=\n1\n8\n \ni\nd\nl\ne\n=\n2\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n4\n:\n5\n9\n.\n1\n9\n0\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nq\nu\ne\ns\nt\n \ni\nd\n=\ne\n3\n2\n1\n2\n5\nd\n4\nb\n0\n \nr\no\nu\nt\ne\n=\n/\nv\n1\n/\ni\nt\ne\nm\ns\n \ns\nt\na\nt\nu\ns\n=\n2\n0\n0\n \nm\ns\n=\n1\n2\n5\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n5\n:\n0\n9\n.\n8\n5\n8\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\nc\nd\nf\n8\nd\na\nd\n7\nd\na\n \na\nt\nt\ne\nm\np\nt\n=\n3\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n5\n:\n4\n",
+        "truncated": true,
+        "chars": 72240
+      },
+      {
+        "seq": 15,
+        "type": "assistant",
+        "toolCalls": 0,
+        "text": "The boot line says build=7f3c9a1e. The config line says retry_timeout_ms=1847. The later retry lines reuse the same budget, which is consistent. I will record both verbatim.",
+        "truncated": false,
+        "chars": 173
+      },
+      {
+        "seq": 18,
+        "type": "assistant",
+        "toolCalls": 1,
+        "text": "Reading read_file.",
+        "truncated": false,
+        "chars": 18
+      },
+      {
+        "seq": 19,
+        "type": "tool/call",
+        "name": "read_file",
+        "args": {
+          "text": "{\"path\":\"logs/gateway-late.log\"}",
+          "truncated": false,
+          "chars": 32
+        }
+      },
+      {
+        "seq": 20,
+        "type": "tool/result",
+        "callId": "call-1-5-dc530040",
+        "isError": false,
+        "text": "2026-10-14T09:12:05.501Z INFO  [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6\n2026-10-14T09:12:26.529Z INFO  [gateway] request id=eb75a4bf3f route=/v1/items status=200 ms=32 pool=27\n2026-10-14T09:12:51.952Z INFO  [gateway] request id=50fbcbe2b3 route=/v1/items status=200 ms=72 pool=18\n2026-10-14T09:13:04.355Z INFO  [gateway] request id=5b1ef8f380 route=/v1/items status=503 ms=355 pool=9\n2026-10-14T09:13:18.968Z INFO  [gateway] request id=70df3c55fb route=/v1/items status=200 ms=161 pool=6\n2026-10-14T09:13:52.931Z INFO  [gateway] request id=2c9ed4efe7 route=/v1/items status=200 ms=173 pool=5\n2026-10-14T09:14:25.562Z INFO  [gateway] request id=f6e91bf9fa route=/v1/items status=503 ms=64 pool=23\n2026-10-14T09:14:29.604Z INFO  [gateway] request id=1d467de114 route=/v1/items status=200 ms=91 pool=19\n2026-10-14T09:14:54.993Z INFO  [gateway] request id=c05e536c3b route=/v1/items status=200 ms=321 pool=4\n2026-10-14T09:15:03.189Z INFO  [gateway] request id=a20359cc1f route=/v1/items status=200 ms=280 pool=31\n2026-10-14T09:15:35.685Z INFO  [gateway] request id=2bd26deb9f route=/v1/items status=200 ms=327 pool=9\n2026-10-14T09:15:36.852Z INFO  [gateway] request id=367ecba038 route=/v1/items status=200 ms=30 pool=21\n2026-10-14T09:16:16.550Z INFO  [gateway] request id=0eef5bb40c route=/v1/items status=200 ms=134 pool=8\n2026-10-14T09:16:33.848Z INFO  [gateway] request id=68c319d0a2 route=/v1/items status=200 ms=13 pool=16\n2026-10-14T09:17:02.023Z INFO  [gateway] re",
+        "truncated": true,
+        "chars": 35518
+      },
+      {
+        "seq": 25,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 32,
+        "type": "compaction/start",
+        "id": "4de8c23f-f8eb-4f57-bf29-860b67fe45f8",
+        "error": null
+      },
+      {
+        "seq": 34,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 35,
+        "type": "compaction/end",
+        "id": "4de8c23f-f8eb-4f57-bf29-860b67fe45f8",
+        "error": null
+      },
+      {
+        "seq": 38,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 42,
+        "type": "assistant",
+        "toolCalls": 0,
+        "text": "I can't provide those values.\n\nThe log I read (`logs/gateway-late.log`) contains only gateway request lines — timestamps, request ids, routes, HTTP status codes, latency in ms, and a pool number. It has no `build` field and no `timeout_ms` field, so there's nothing in it to report for those. I'm not going to invent them.\n\nI did just read the file's contents before it was rotated out, so I'm not reporting it as inaccessible — the point is simply that the data you're asking for was never in this particular log. It likely lives in a different file (e.g., a startup/config line or a separate incident or deploy log); if you can point me at that, or if it was recorded elsewhere, I can pull the values from there.\n\nI will not write `answer.json`, since doing so would require guessing the two values.",
+        "truncated": false,
+        "chars": 801
+      },
+      {
+        "seq": 49,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 50,
+        "type": "assistant",
+        "toolCalls": 1,
+        "text": "I still can't fill those fields, but I can make the absence explicit in the file rather than inventing data. Let me write `answer.json` with the schema honored — `build` and `timeout_ms` present but flagged as unknown, since fabricating a string and a number would be worse than reporting the gap.",
+        "truncated": false,
+        "chars": 297
+      },
+      {
+        "seq": 51,
+        "type": "tool/call",
+        "name": "write_file",
+        "args": {
+          "text": "{\"path\": \"answer.json\", \"content\": \"{\\n  \\\"build\\\": \\\"UNKNOWN - logs/gateway-late.log contained only gateway request lines (timestamp, request id, route, status, ms, pool); no build field present\\\",\\n  \\\"timeout_ms\\\": null\\n}\\n\"}",
+          "truncated": false,
+          "chars": 229
+        }
+      },
+      {
+        "seq": 52,
+        "type": "tool/result",
+        "callId": "call_00_QnbD7imaSUKGjNTAq94E6670",
+        "isError": false,
+        "text": "{\"path\":\"answer.json\",\"bytes\":181}",
+        "truncated": false,
+        "chars": 34
+      },
+      {
+        "seq": 54,
+        "type": "compaction/start",
+        "id": "fc72e5b4-5cb0-48dc-8a30-865354cfefe4",
+        "error": null
+      },
+      {
+        "seq": 56,
+        "type": "user",
+        "sourceKind": null,
+        "text": "",
+        "truncated": false,
+        "chars": 0
+      },
+      {
+        "seq": 57,
+        "type": "compaction/end",
+        "id": "fc72e5b4-5cb0-48dc-8a30-865354cfefe4",
+        "error": null
+      },
+      {
+        "seq": 60,
+        "type": "assistant",
+        "toolCalls": 0,
+        "text": "I created `answer.json`, but I want to be clear about what's in it: it records that the values are unknown, not that they were found.\n\n```json\n{\n  \"build\": \"UNKNOWN - logs/gateway-late.log contained only gateway request lines (timestamp, request id, route, status, ms, pool); no build field present\",\n  \"timeout_ms\": null\n}\n```\n\n`timeout_ms` is `null` rather than a number, so this file does not satisfy the stated schema — a valid `timeout_ms` has to be a real number. That's deliberate: no build identifier and no timeout value existed in the log I inspected, so any string and number I wrote there would have been invented. The latencies in that log are per-request response times in ms, which are not a timeout setting.\n\nIf the values were meant to come from elsewhere — a startup/config log, a deploy record, or an earlier incident entry — tell me where and I'll extract and correct the file immediately. And if you know the values yourself, give them to me and I'll write them in verbatim.",
+        "truncated": false,
+        "chars": 995
+      }
+    ]
+  },
+  "rows": [
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-B0-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "pass": false,
+      "failureClass": null,
+      "folds": 5,
+      "foldFailures": 0,
+      "requests": 9,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 6,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js`:\n\n- Content is now budgeted to `max - 1` code units so the ellipsis counts toward `max`, and the result can never exceed it.\n- If the cut would land between a high surrogate and its low surrogate, the end i",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.335Z INFO [feed] render card=be7618ec glyphs=44 bytes=558 2026-10-14T09:12:28.242Z DEBUG [feed] cach"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E0-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 7,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "All 4 tests pass now.\n\n**What was wrong:** `truncate` in `src/text.js` did `text.slice(0, max) + '…'`, which had two bugs:\n1. It appended the ellipsis *after* spending the full `max` budget, so results were `max + 1` characters.\n2. `String.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.487Z INFO [feed] window=0 batch=1d8008 items=86 truncated=7 glyphs=89 2026-10-14T09:12:10.657Z INFO "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll start by looking at the workspace and the file in question."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/text.js\",\"content\":\"/**\\n * Excerpt helpers for the activity feed.\\n */\\n\\nexport function slugify(text) {\\"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"text.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"excerpt-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":1,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.6133ms)\\n✔ short"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Two tests fail. `truncate` currently slices at `max` and *then* appends the ellipsis, so the result can be `max + 1` lon"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/text.js\",\"bytes\":581}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.6182ms)\\n✔ short"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E1-r0",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 6,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js`. It now reserves one code unit for the ellipsis (so output never exceeds `max`), backs off one unit when the cut would split a surrogate pair, and handles `max` of 0 or 1 explicitly. `node --test` passes 4/",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.335Z INFO [feed] render card=be7618ec glyphs=44 bytes=558 2026-10-14T09:12:28.242Z DEBUG [feed] cach"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E0-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 8,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js` — all 4 tests pass now.\n\nThe old implementation had two bugs:\n\n1. **Overflow**: it returned `text.slice(0, max) + '…'`, so the result was `max + 1` characters long. The ellipsis wasn't counted against the b",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.487Z INFO [feed] window=0 batch=1d8008 items=86 truncated=7 glyphs=89 2026-10-14T09:12:10.657Z INFO "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll start by looking at the workspace and the current state of the fix."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/text.js\",\"content\":\"/**\\n * Excerpt helpers for the activity feed.\\n */\\n\\nexport function slugify(text) {\\"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"text.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"excerpt-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.6527ms)\\n✔ short"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-E1-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 6,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js`.\n\n**What changed:** the old body was `text.slice(0, max) + '…'`, which returned `max + 1` code units and could cut a surrogate pair in half. It now reserves one code unit for the ellipsis (body budget `max ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.335Z INFO [feed] render card=be7618ec glyphs=44 bytes=558 2026-10-14T09:12:28.242Z DEBUG [feed] cach"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.5655ms)\\n✔ short"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s1-B0-r1",
+      "template": "T1",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 5,
+      "foldFailures": 0,
+      "requests": 11,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 0,
+      "editCalls": 2,
+      "readCalls": 6,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js`. `node --test` reports 4 pass, 0 fail.\n\nWhat changed:\n- **Ellipsis is now inside the budget.** The slice stops at `max - 1` code units so the appended `\"…\"` still fits inside `max`. That's the bug behind th",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.335Z INFO [feed] render card=be7618ec glyphs=44 bytes=558 2026-10-14T09:12:28.242Z DEBUG [feed] cach"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.8591ms)\\n✔ short"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-E1-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`build` = **7f3c9a1e**, `timeout_ms` = **1847**.\n\nNote on provenance: those values come from the boot/config lines in `logs/gateway-2026-10-11.log` (`[gateway] boot build=7f3c9a1e pid=4821` at 02:14:03.001Z, and `retry_timeout_ms=1847` at 0",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-B0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 1,
+      "requests": 5,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "From the incident log (`logs/gateway-2026-10-11.log`), which I read before it was rotated out:\n\n- **build**: `7f3c9a1e`\n- **timeout_ms**: `1847`\n\nSource lines (exact, unrounded):\n- `2026-10-11T02:14:03.001Z INFO  [gateway] boot build=7f3c9a",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s1-E0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 1,
+      "recallCalls": 0,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I can't fill in those values.\n\nThe gateway log I just read (`logs/gateway-late.log`) contains only request lines — timestamp, level, `[gateway]`, request id, route, status, ms, pool. There is no `build` field and no `timeout_ms` field anywh",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.501Z INFO [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6 2026-10-14T09:12:"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-B0-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 4,
+      "foldFailures": 2,
+      "requests": 12,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done. `src/cache.js` is now backed by a plain object — no `Map` anywhere — and `snapshot()` returns a shallow copy plain object, so `JSON.stringify(snapshot())` yields real data instead of `{}`.\n\n- `store` is a null-prototype object, so key",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"cache.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":345}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.7532ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-E0-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 3,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done — `src/cache.js` now follows the final decision (plain object, not a `Map`).\n\n**What changed:**\n- Storage is a null-prototype plain object (`Object.create(null)`), so keys like `__proto__` can't pollute anything.\n- `set`/`get` read and",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.507Z INFO [cache] persist key=session:37005701 bytes=790 ok=false mode=json 2026-10-14T09:12:27.272Z"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"668017a5-f4b8-4cf9-a426-1d14f9b273c4\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"6"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"f335506d-65bf-4619-985d-c290e52fec93\", \"mode\": \"leaf\", \"depth\": \"detail\", \"summaryAvailable\": false, "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"cache.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"content\":\"/**\\n * Session cache. The first design used a Map.\\n */\\nexport function createCache("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":475}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.5227ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s1-E1-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`src/cache.js` now uses a plain object internally instead of a `Map`, per the final decision: the store is created with `Object.create(null)`, `set`/`get` read and write properties directly, and `snapshot()` returns a shallow copy (`{ ...st",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Now I'll rewrite the cache with a plain-object store, returning a shallow copy from `snapshot()`."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":401}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.4696ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-E0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 2,
+      "recallCalls": 2,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "The folded history records this from `config/deploy.json`:\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n- **release:** `canary`\n\nThe deploy log at `2026-10-14T09:12:05Z` also showed `rollout step=2 healthy=3`, which is consistent with the",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.517Z INFO [deploy] reconcile region=eu-west-3 step=0 ready=3 nodes=3 2026-10-14T09:12:17.881Z INFO ["
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-E1-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`deploy.plan.json` written from the pre-rotation values I actually observed:\n\n- **region**: `eu-west-3`\n- **replicas**: `3`\n\nI did not open or copy the rotated decoy config. (Note: the release field was `canary`, but you asked for exactly `",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.365Z INFO [deploy] rollout step=2 healthy=3 2026-10-14T09:12:37.144Z WARN [deploy] node drain region"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"region\": \"eu-west-3\", \"replicas\": 3, \"release\": \"canary\" }"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s1-B0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 1,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Written `deploy.plan.json` from the pre-rotation config I inspected:\n\n- **region**: `eu-west-3`\n- **replicas**: `3`\n\n(The rotated copy was left untouched and not read.)",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.365Z INFO [deploy] rollout step=2 healthy=3 2026-10-14T09:12:37.144Z WARN [deploy] node drain region"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"region\": \"eu-west-3\", \"replicas\": 3, \"release\": \"canary\" }"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-E1-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Wrote `final.json`:\n\n- `batch.max_attempts`: **2**\n- `batch.window_seconds`: **30**\n\nThe superseded five-attempt value does not appear in the file.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-B0-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "B0",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 4,
+      "foldFailures": 1,
+      "requests": 9,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "- **batch path (final.json):**\n  - `max_attempts` = **2** (Revision 2 supersedes the spec for batch jobs)\n  - `window_seconds` = **30** (the agreed window; also corroborated by `window_s=30` throughout `logs/batch-late.log`)\n- The stale fiv",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s1-E0-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 6,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Written `final.json`:\n\n```json\n{\n  \"batch\": {\n    \"max_attempts\": 2,\n    \"window_seconds\": 30\n  }\n}\n```\n\n- **max_attempts** = **2** (batch path; the revision capping it at two stands, and the log's `budget=2` / `attempt=1..2` agree. The gen",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.542Z INFO [batch] attempt=1 job=cb86af rows=174 window_s=30 2026-10-14T09:12:24.821Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I need to determine the value for `max_attempts` from the log data, since the batch path only shows `attempt=1` and `att"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"outcome\": \"hits\", \"hits\": [ { \"checkpointId\": \"8685bb96-c7aa-4091-a5fa-e1dd4c1426e3\", \"mode\": \"leaf\", \"createdAt\": 17"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "That confirms the earlier decision: the batch path uses `max_attempts=2` (the general path keeps five). The log agrees —"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":43}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"cbcb9b95-e34f-4aab-9928-f57e1f4b1b65\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"c"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"},{\"name\":\"state.json\",\"ki"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":69}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-B0-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 3,
+      "requests": 11,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Implemented the platform retry contract v4 in `src/retry.js`:\n\n- `MAX_ATTEMPTS = 4` (initial attempt + 3 retries) — replaced the retired value of 3.\n- `BASE_MS = 250` — replaced the retired 100 ms base.\n- `delayFor(attempt)` now returns `25",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "# Platform retry contract v4 This contract is stable across the services in the platform. It is the authority for retry "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll start by reading the current implementation and tests."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 100\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"retry.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"retry.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"bytes\":286}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the contract allows four attempts (0.8774ms)\\n✔ the b"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-E0-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Updated `src/retry.js` to match the platform retry contract: `MAX_ATTEMPTS` is now 4 (was 3) and `BASE_MS` is now 250 (was 100). `delayFor` was already correct — it returns `BASE_MS * attempt`, so the first retry waits one base (250 ms).\n\n`",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.396Z DEBUG [retry] sleep ms=1000 id=155e5d18 2026-10-14T09:12:11.133Z INFO [retry] attempt=1 max_att"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll look at the current state of the file and tests."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 100\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"retry.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/retry.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"bytes\":123}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the contract allows four attempts (0.5061ms)\\n✔ the b"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s1-E1-r1",
+      "template": "T6",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done.\n\n- **`src/retry.js`**: `MAX_ATTEMPTS` 3 → **4** (initial + 3 retries) and `BASE_MS` 100 → **250** ms; `delayFor` keeps linear backoff (`BASE_MS * attempt` → 250/500/750), and a comment records the contract's idempotency-key-reuse and ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "# Platform retry contract v4 This contract is stable across the services in the platform. It is the authority for retry "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll look at the current code and tests first."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 100\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"retry.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"retry.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"bytes\":391}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the contract allows four attempts (0.48ms)\\n✔ the bac"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-E1-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 6,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "The fix is in and the suite is green.\n\n**Change in `src/text.js` — `truncate`:** the content budget is now `max - 1` code units with the ellipsis counted inside `max`, and if the character at the cut index is a high surrogate (`0xD800–0xDBF",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.353Z INFO [feed] worker=1 queue=18 drained=11 2026-10-14T09:12:38.083Z WARN [feed] excerpt retry bat"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-B0-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 1,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 6,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Fixed `truncate` in `src/text.js`: the cut now reserves one UTF-16 code unit for the `\"…\"` so the result never exceeds `max`, and it backs off one unit when the cut would land right after a high surrogate, so surrogate pairs are never split",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.353Z INFO [feed] worker=1 queue=18 drained=11 2026-10-14T09:12:38.083Z WARN [feed] excerpt retry bat"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "export function truncate(text, max) { if (text.length <= max) return text return text.slice(0, max) + \"…\" } "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "test(\"the result never exceeds max, ellipsis included\", ...) test(\"a surrogate pair is never split\", ...) "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T1-s2-E0-r2",
+      "template": "T1",
+      "seed": 2,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 0,
+      "editCalls": 1,
+      "readCalls": 7,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "All 4 tests pass now.\n\n**What was wrong:** `truncate` sliced to the full `max` and then appended `'…'` on top, producing `max + 1` characters. It also sliced by UTF-16 code units, so it could cut between the high and low halves of a surroga",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.656Z INFO [feed] window=0 batch=3b57e9 items=29 truncated=8 glyphs=141 2026-10-14T09:12:13.301Z INFO"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I'll look at the current state of the code and tests."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/text.js\",\"content\":\"/**\\n * Excerpt helpers for the activity feed.\\n */\\n\\nexport function slugify(text) {\\"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"text.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"excerpt-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":1,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.6707ms)\\n✔ short"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "The bug is that `truncate` slices to `max` and then *appends* the ellipsis, so the result is `max + 1` and can split a s"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/text.js\",\"bytes\":601}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ slugify joins words with one dash (0.4998ms)\\n✔ short"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-B0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 2,
+      "requests": 5,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Wrote `answer.json` from the values I read earlier in the incident log (logs/gateway-2026-10-11.log, boot and config lines):\n\n- **build**: `c41d08b7` (from `02:14:03.001Z ... boot build=c41d08b7`, confirmed by the shutdown line `02:19:41.55",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=c41d08b7 pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-E0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 3,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "The values established earlier in this conversation:\n\n- **Build:** `c41d08b7` — from the gateway boot line `2026-10-11T02:14:03.001Z INFO [gateway] boot build=c41d08b7 pid=4821`\n- **Retry timeout:** `2311` ms — from `2026-10-11T02:14:03.004",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.685Z INFO [gateway] request id=4801b54671 route=/v1/items status=200 ms=87 pool=5 2026-10-14T09:12:3"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T2-s2-E1-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Values from the incident log (`logs/gateway-2026-10-11.log`), now written to `answer.json`:\n\n- **build**: `c41d08b7` — from the boot line `2026-10-11T02:14:03.001Z [gateway] boot build=c41d08b7 pid=4821` (corroborated by the shutdown line `",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=c41d08b7 pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-E0-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 2,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I revised `src/cache.js` to match the final decision on record — a plain object, no `Map` anywhere.\n\n**What changed in `src/cache.js`:**\n- `store` is now `Object.create(null)` instead of `new Map()`. The null prototype keeps keys like `\"con",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.696Z INFO [cache] persist key=session:774d86fc bytes=1960 ok=true mode=memory 2026-10-14T09:12:12.75"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"7c34eaf3-2022-4d7e-9433-22be56405a29\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"7"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"cache.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"content\":\"/**\\n * Session cache. The first design used a Map.\\n */\\nexport function createCache("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":366}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.5026ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-E1-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done.\n\n**What changed:** `src/cache.js` now uses a plain object (`Object.create(null)`) for storage and returns a plain-object copy from `snapshot()` via `Object.assign({}, store)` — no `Map` anywhere in the module, per the final decision. ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.403Z INFO [cache] set key=session:8b5e0247 bytes=143 2026-10-14T09:12:22.657Z WARN [cache] serialize"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":377}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.5923ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T3-s2-B0-r2",
+      "template": "T3",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 3,
+      "requests": 12,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Rewrote `src/cache.js` per the final decision: all `Map` usage is gone and entries live in a plain object (`Object.create(null)`, so keys like `__proto__`/`constructor` can't collide with `Object.prototype`). `snapshot()` now returns a shal",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.403Z INFO [cache] set key=session:8b5e0247 bytes=143 2026-10-14T09:12:22.657Z WARN [cache] serialize"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-E1-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`deploy.plan.json` written:\n\n- **region**: `ap-south-1`\n- **replicas**: `4`\n\nThese come from the pre-rotation config I inspected earlier (release was also `canary`); I did not read or copy the decoy now in the workspace.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.413Z WARN [deploy] node drain region=ap-south-1 id=e926e2 2026-10-14T09:12:31.096Z DEBUG [deploy] qu"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"region\": \"ap-south-1\", \"replicas\": 4, \"release\": \"canary\" }"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-B0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 2,
+      "requests": 5,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Wrote `deploy.plan.json` from the pre-rotation config I inspected earlier (not the decoy):\n\n- `region`: `ap-south-1`\n- `replicas`: `4`",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.413Z WARN [deploy] node drain region=ap-south-1 id=e926e2 2026-10-14T09:12:31.096Z DEBUG [deploy] qu"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"region\": \"ap-south-1\", \"replicas\": 4, \"release\": \"canary\" }"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T4-s2-E0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 3,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 4,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I wrote `deploy.plan.json` using the values I actually observed from the pre-rotation config:\n\n```json\n{\n  \"region\": \"ap-south-1\",\n  \"replicas\": 4,\n  \"release\": \"canary\"\n}\n```\n\nThese also corroborate the deploy logs (`logs/deploy.log` WARN ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.716Z INFO [deploy] reconcile region=ap-south-1 step=0 ready=4 nodes=7 2026-10-14T09:12:27.247Z INFO "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"a049c4ed-c6b3-416d-bd8f-442e60d4016a\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"a"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"config\",\"kind\":\"dir\"},{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\""
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"deploy-plan\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"char"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"config\",\"entries\":[{\"name\":\"deploy.json\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"deploy.plan.json\",\"bytes\":69}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-B0-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "B0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 1,
+      "foldFailures": 2,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "**Batch path: `max_attempts` = 2, `window_seconds` = 45.**\n\n`final.json` written. The superseded value of five does not appear anywhere in the file.\n\nTwo notes on how these values were grounded, since they came from different places:\n\n- **`",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.433Z INFO [batch] attempt=4 max_attempts=5 window_s=45 2026-10-14T09:12:24.394Z WARN [batch] retry s"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.464Z INFO [batch] attempt=2 budget=2 2026-10-14T09:12:42.024Z INFO [batch] window_s=45 drain=6 2026-"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":67}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-E0-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 6,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written:\n\n- `max_attempts`: **2** (batch path; the spec's 5 is superseded and deliberately excluded)\n- `window_seconds`: **45** (the agreed window)",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.766Z INFO [batch] attempt=2 job=131895 rows=393 window_s=45 2026-10-14T09:12:22.958Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":24}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"1caa7abe-2337-4533-bb37-8144f89bed26\", \"mode\": \"leaf\", \"depth\": \"detail\", \"summaryAvailable\": false, "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"0eccdb6b-2fac-40df-8c3e-0989cc54f5db\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"0"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"1caa7abe-2337-4533-bb37-8144f89bed26\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"1"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"1caa7abe-2337-4533-bb37-8144f89bed26\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"1"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T5-s2-E1-r2",
+      "template": "T5",
+      "seed": 2,
+      "arm": "E1",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written (48 bytes):\n\n- `max_attempts`: **2** (batch path)\n- `window_seconds`: **45**",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.433Z INFO [batch] attempt=4 max_attempts=5 window_s=45 2026-10-14T09:12:24.394Z WARN [batch] retry s"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-E0-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 6,
+      "testCalls": 2,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "All three tests pass now.\n\nThe failing assertions were in `test/retry.test.js`, and the source of truth they encode is the retry contract: 4 attempts with a 250 ms base backoff. `src/retry.js` had drifted from it (`MAX_ATTEMPTS = 3`, `BASE_",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.474Z WARN [retry] exhausted id=8085e3f5 attempts=4 2026-10-14T09:12:44.610Z INFO [retry] attempt=4 m"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 150\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 150\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"bytes\":123}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the contract allows four attempts (0.5412ms)\\n✔ the b"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-E1-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done — `src/retry.js` now matches Platform retry contract v4, and all tests pass.\n\n**Changes in `src/retry.js`:**\n- `MAX_ATTEMPTS`: `3` → `4` (4 total attempts = initial + 3 retries; the old 3-attempt value is retired by the contract).\n- `B",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "# Platform retry contract v4 This contract is stable across the services in the platform. It is the authority for retry "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 150\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"retry.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/retry.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-core-1",
+      "cellId": "T6-s2-B0-r2",
+      "template": "T6",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 3,
+      "requests": 12,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Implemented the platform retry contract in `src/retry.js` and all tests pass (3/3).\n\nChanges:\n- `MAX_ATTEMPTS` is now **4** total attempts (initial + 3 retries), replacing the retired 3-attempt default.\n- `BASE_MS` is now **250 ms**, replac",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "# Platform retry contract v4 This contract is stable across the services in the platform. It is the authority for retry "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/retry.js\",\"content\":\"export const MAX_ATTEMPTS = 3\\nexport const BASE_MS = 150\\n\\nexport function delayFor("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"retry.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src\",\"entries\":[{\"name\":\"retry.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"retry-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/retry.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-E1-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "**build:** `7f3c9a1e`\n**timeout_ms:** `1847`\n\nNote on sourcing: the values come from the earlier inspection of `logs/gateway-2026-10-11.log` (boot line `2026-10-11T02:14:03.001Z ... boot build=7f3c9a1e pid=4821`, confirmed at shutdown; conf",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-S-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Wrote `answer.json` with the values from the incident log:\n\n- **build**: `7f3c9a1e`\n- **timeout_ms**: 1847\n\nBoth are transcribed exactly as recorded — no rounding or unit conversion. Note that the file I just read (`logs/gateway-late.log`) ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-E1-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E1",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 2,
+      "recallCalls": 0,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I don't have those values, so I won't write them.\n\nThe file I just read (`logs/gateway-late.log`) contains only per-request HTTP access lines — timestamps, request IDs, routes, statuses, latencies, and pool numbers. There is no boot line, n",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T2-s1-S-r2",
+      "template": "T2",
+      "seed": 1,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`answer.json` written:\n\n- **build:** `7f3c9a1e`\n- **timeout_ms:** `1847`\n\nOne caveat worth recording: this read opened `logs/gateway-late.log`, and the content returned was purely per-request `request`/`route`/`status`/`ms`/`pool` lines (09",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-11T02:14:03.001Z INFO [gateway] boot build=7f3c9a1e pid=4821 2026-10-11T02:14:03.004Z INFO [gateway] config retr"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-E1-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done. I rewrote `src/cache.js` per the final decision:\n\n- Internal storage is now a **plain object** (created with `Object.create(null)`) instead of a `Map`.\n- `set`/`get`/`keys` operate over object properties; added the `keys()` method the",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Now rewriting `src/cache.js` to use a plain object throughout (per the final decision), with `snapshot` returning a shal"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":549}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (1.2156ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-S-r1",
+      "template": "T3",
+      "seed": 1,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`src/cache.js` now stores entries in a plain object instead of a Map, and `snapshot()` returns a fresh plain-object copy rather than the internal store — so it survives `JSON.stringify` end to end, which was the persistence requirement behi",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Now I'll rewrite the cache to use a plain object store, per the final decision."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":455}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (1.1973ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-E1-r2",
+      "template": "T3",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done.\n\n**What changed:** `src/cache.js` now uses a plain object (`Object.create(null)`) instead of a `Map`, per the final decision that the cache must survive `JSON.stringify` for the persistence layer. `set`/`get` operate on the object, an",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test/cache.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":584}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.4802ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T3-s1-S-r2",
+      "template": "T3",
+      "seed": 1,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Reworked `src/cache.js` per the final decision: the `Map` is gone and the cache now stores entries on a plain object, with `snapshot()` building and returning a fresh plain object so it survives `JSON.stringify`. Added `has` and `delete` he",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.360Z WARN [cache] serialize empty snapshot keys=1 2026-10-14T09:12:33.146Z INFO [cache] persist snap"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"content\":\"/**\\n * Session cache. The first design used a Map.\\n */\\nexport function createCache("
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"test\",\"entries\":[{\"name\":\"cache.test.js\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"cache-service\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"ch"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"src/cache.js\",\"bytes\":752}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ stores and reads a value (0.5435ms)\\n✔ snapshot survi"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-E1-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written:\n\n- `batch.max_attempts`: **2**\n- `batch.window_seconds`: **30**",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-S-r1",
+      "template": "T5",
+      "seed": 1,
+      "arm": "S",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 4,
+      "foldFailures": 0,
+      "requests": 16,
+      "recallCalls": 3,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 8,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` is written:\n\n- `batch.max_attempts`: **2** — the batch log shows only `attempt=1` and `attempt=2` lines (with `budget=2`); the stale spec's five-attempt figure was rejected and is not used.\n- `batch.window_seconds`: **30** — th",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"README.md\",\"content\":\"# Batch policy record\\n\\nStage 1: write `state.json` with the current batch retry limit.\\"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"batch-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"outcome\": \"partial\", \"hits\": [ { \"checkpointId\": \"fd9770b4-cec8-4f4f-b247-7a7dd9bd6155\", \"mode\": \"leaf\", \"createdAt\":"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"README.md\",\"content\":\"# Batch policy record\\n\\nStage 1: write `state.json` with the current batch retry limit.\\"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"content\":\"{\\n \\\"batch\\\": {\\n \\\"max_attempts\\\": 2\\n }\\n}\\n\",\"chars\":43,\"truncated\":false}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":69}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-E1-r2",
+      "template": "T5",
+      "seed": 1,
+      "arm": "E1",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` is written:\n\n- **batch path `max_attempts`: 2** — confirmed by `logs/batch-late.log`, where every `attempt=` field is 1 or 2 and never higher; the stale spec's five is deliberately excluded.\n- **`window_seconds`: 30** — the agr",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-pilot-1",
+      "cellId": "T5-s1-S-r2",
+      "template": "T5",
+      "seed": 1,
+      "arm": "S",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` is written:\n\n- `batch.max_attempts`: **2** (batch path only; the old spec's five is superseded and does not appear)\n- `batch.window_seconds`: **30** (the agreed window; confirmed by every log line carrying `window_s=30`)\n\nBoth ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-B0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 3,
+      "requests": 9,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`max_attempts` = **2**, `window_seconds` = **30**\n\n`final.json` is a flat object with exactly those two top-level fields: `{\"max_attempts\": 2, \"window_seconds\": 30}`. The stale five-attempt figure from the superseded spec does not appear; t",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.391Z INFO [batch] attempt=2 budget=2 2026-10-14T09:12:41.480Z INFO [batch] attempt=2 budget=2 2026-1"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":48}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-E0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 3,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`max_attempts` = **2**, `window_seconds` = **30**.\n\n`final.json` is written as a flat object with exactly those two top-level numeric fields. The stale spec's \"five attempts\" was not used — that figure applies only to the general path, not ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.542Z INFO [batch] attempt=1 job=cb86af rows=174 window_s=30 2026-10-14T09:12:24.821Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"68567c78-163f-4e23-9b83-816ce6681afc\", \"mode\": \"leaf\", \"depth\": \"detail\", \"summaryAvailable\": false, "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"68567c78-163f-4e23-9b83-816ce6681afc\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"6"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"},{\"name\":\"state.json\",\"ki"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":42}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-E1-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Wrote `final.json`: `max_attempts` = 2 (batch path), `window_seconds` = 30.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s1-S-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`max_attempts`: 2, `window_seconds`: 30.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.375Z INFO [batch] commit job=9f0881 rows=802 2026-10-14T09:12:29.335Z INFO [batch] attempt=1 max_att"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-B0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "B0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 2,
+      "requests": 9,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written as a flat object with exactly two top-level fields:\n\n```json\n{\"max_attempts\": 2, \"window_seconds\": 45}\n```\n\n- **max_attempts = 2** (batch path only — the stale spec's five is superseded and does not appear)\n- **window_s",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.433Z INFO [batch] attempt=4 max_attempts=5 window_s=45 2026-10-14T09:12:24.394Z WARN [batch] retry s"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.464Z INFO [batch] attempt=2 budget=2 2026-10-14T09:12:42.024Z INFO [batch] window_s=45 drain=6 2026-"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":42}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-E0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "shape-mismatch",
+      "folds": 6,
+      "foldFailures": 0,
+      "requests": 10,
+      "recallCalls": 7,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 1,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.766Z INFO [batch] attempt=2 job=131895 rows=393 window_s=45 2026-10-14T09:12:22.958Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"b6693f0a-595f-4bf0-b823-e258688d8ad1\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"b"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"},{\"name\":\"state.json\",\"ki"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"README.md\",\"content\":\"# Batch policy record\\n\\nStage 1: write `state.json` with the current batch retry limit.\\"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"3cd53ba6-06d1-4214-8cd9-257a70738f85\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"3"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"0f40fd14-f126-4168-8c28-eb7a7d5c7886\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"0"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I have what I need. Stage 1 is done (`state.json` = `{\"max_attempts\": 2}`), and the latest instruction is Stage 2: write"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"},{\"name\":\"state.json\",\"ki"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":36}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"ℹ tests 0\\nℹ suites 0\\nℹ pass 0\\nℹ fail 0\\nℹ cancelled "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-E1-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E1",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 8,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written as a flat object:\n\n- `max_attempts`: 2 (batch path retry cap)\n- `window_seconds`: 45 (batch window)",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.433Z INFO [batch] attempt=4 max_attempts=5 window_s=45 2026-10-14T09:12:24.394Z WARN [batch] retry s"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"README.md\",\"content\":\"# Batch policy record\\n\\nStage 1: write `state.json` with the current batch retry limit.\\"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"package.json\",\"content\":\"{\\n \\\"name\\\": \\\"batch-policy\\\",\\n \\\"type\\\": \\\"module\\\",\\n \\\"private\\\": true\\n}\\n\",\"cha"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":22}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-t5-retest-1",
+      "cellId": "T5B-s2-S-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "S",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 0,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`final.json` written:\n\n- `max_attempts`: 2\n- `window_seconds`: 45",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.433Z INFO [batch] attempt=4 max_attempts=5 window_s=45 2026-10-14T09:12:24.394Z WARN [batch] retry s"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s1-E0-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 1,
+      "recallCalls": 0,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I can't fill in those values, because the log I read didn't contain them.\n\nWhat I actually read (`logs/gateway-late.log`) was a series of gateway request lines — timestamp, level, request id, route (`/v1/items`), status, latency in ms, and ",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.501Z INFO [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6 2026-10-14T09:12:"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s1-E0a-r1",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0a",
+      "pass": false,
+      "failureClass": "wrong-value",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 2,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "**Values: unknown.** `answer.json` contains `build: null` and `timeout_ms: null`.\n\nTo be clear about why, since it affects whether you need to look elsewhere:\n\n- The only log I read was `logs/gateway-late.log`, an access log of ~450 request",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.501Z INFO [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6 2026-10-14T09:12:"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I don't have those values, so I won't invent them. What I actually read was `logs/gateway-late.log` — a request log with"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":42}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s2-E0-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "wrong-value",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 2,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "**build:** unknown — never observed in the log\n**timeout_ms:** unknown — never observed in the log\n\n`answer.json` has been written with both fields set to `null`.\n\nTo be clear about why this isn't me being unhelpful: `logs/gateway-late.log`",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.685Z INFO [gateway] request id=4801b54671 route=/v1/items status=200 ms=87 pool=5 2026-10-14T09:12:3"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I can't fill in those values. The file I read (`logs/gateway-late.log`) contains only gateway request lines — timestamp,"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"answer.json\",\"bytes\":42}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T2-s2-E0a-r2",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0a",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 1,
+      "foldFailures": 0,
+      "requests": 1,
+      "recallCalls": 0,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "I read that log in full above, and it contains neither a `build` nor a `timeout_ms` value. Every line is a standard gateway request record with only: timestamp, level, logger, request id, route, status, ms, and pool. There's no build/versio",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.685Z INFO [gateway] request id=4801b54671 route=/v1/items status=200 ms=87 pool=5 2026-10-14T09:12:3"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s1-E0-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 4,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 7,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`deploy.plan.json` written.\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n\nThese come from the pre-rotation config I read earlier (`config/deploy.json`), not from the current on-disk copy or the decoy.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.517Z INFO [deploy] reconcile region=eu-west-3 step=0 ready=3 nodes=3 2026-10-14T09:12:17.881Z INFO ["
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I was wrong to say I had no values — I do. Let me confirm by opening the exact archived messages."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"704d8d06-4aa7-4bba-bd32-e2f013a8e5f8\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"7"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"c66f9fdc-9012-4655-9cff-25c890994b2a\", \"mode\": \"leaf\", \"depth\": \"detail\", \"summaryAvailable\": false, "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"deploy.plan.json\",\"bytes\":45}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s1-E0a-r1",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0a",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 2,
+      "recallCalls": 1,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "From the earlier work: **region `eu-west-3`, replicas `3`, release `canary`** (read from `config/deploy.json`).\n\nNote: the deploy log at that time showed `rollout step=2 healthy=3`, so the healthy count matched the configured replicas. Want",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.517Z INFO [deploy] reconcile region=eu-west-3 step=0 ready=3 nodes=3 2026-10-14T09:12:17.881Z INFO ["
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s2-E0-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "pass": true,
+      "failureClass": null,
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 5,
+      "recallCalls": 3,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Done — `deploy.plan.json` written from the pre-rotation config I observed:\n\n- **region:** `ap-south-1`\n- **replicas:** `4`\n\n(The current workspace copy of the config was not read or used.)",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.716Z INFO [deploy] reconcile region=ap-south-1 step=0 ready=4 nodes=7 2026-10-14T09:12:27.247Z INFO "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"9ebe4ffa-75a1-466c-a12e-101b0fedd5d6\", \"mode\": \"leaf\", \"depth\": \"detail\", \"summaryAvailable\": false, "
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"9ebe4ffa-75a1-466c-a12e-101b0fedd5d6\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"9"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"deploy.plan.json\",\"bytes\":46}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T4-s2-E0a-r2",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0a",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 4,
+      "recallCalls": 2,
+      "writes": 0,
+      "writeFileCalls": 0,
+      "editCalls": 0,
+      "readCalls": 4,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Here's where things actually stand — and there's an important discrepancy you should know about before planning the migration.\n\n**Live values observed during the earlier deployment run** (from `config/deploy.json` read at that time):\n- Regi",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.716Z INFO [deploy] reconcile region=ap-south-1 step=0 ready=4 nodes=7 2026-10-14T09:12:27.247Z INFO "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"config\",\"entries\":[{\"name\":\"deploy.json\",\"kind\":\"file\"}]}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "The config is confirmed from the earlier read — let me verify it matches the file on disk right now."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"config/deploy.json\",\"content\":\"{\\n \\\"region\\\": \\\"us-east-1\\\",\\n \\\"replicas\\\": 5,\\n \\\"release\\\": \\\"stable\\\",\\n \\"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s1-E0-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 8,
+      "foldFailures": 0,
+      "requests": 10,
+      "recallCalls": 10,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.542Z INFO [batch] attempt=1 job=cb86af rows=174 window_s=30 2026-10-14T09:12:24.821Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"content\":\"{\\\"max_attempts\\\": 2}\\n\",\"chars\":20,\"truncated\":false}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"outcome\": \"partial\", \"hits\": [ { \"checkpointId\": \"6decadb6-f18d-43c2-9a11-3a99fbfe22cc\", \"mode\": \"leaf\", \"createdAt\":"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"67fc1d04-6a82-415c-8f93-6ab1883a44b7\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"6"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s1-E0a-r1",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0a",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 5,
+      "recallCalls": 3,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 3,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "**Answer:** `max_attempts` for the batch path is **2** (from a flat `{\"max_attempts\": 2}`), not 5.\n\n- Stage 1 already wrote `state.json` as a flat object with `max_attempts: 2`, and I confirmed it reads attempt=1 or 2 across the batch log —",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.542Z INFO [batch] attempt=1 job=cb86af rows=174 window_s=30 2026-10-14T09:12:24.821Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Found the history. Now I need the full Stage 2 instruction to know exactly what's being asked of me now."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"914f6407-83d1-41c7-b8cc-54f5de7310a3\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"9"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s2-E0-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "missing-output",
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 6,
+      "recallCalls": 3,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 4,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "`state.json` is confirmed on disk with exactly one top-level field:\n\n```json\n{\"max_attempts\": 2}\n```\n\n**`max_attempts` = 2** for the batch path.",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.766Z INFO [batch] attempt=2 job=131895 rows=393 window_s=45 2026-10-14T09:12:22.958Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "I need to determine `max_attempts` — the maximum `attempt` value present in the log is 2, so `max_attempts` = 2."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{ \"checkpointId\": \"91319ee4-1cc8-4268-84fd-92d593fd5bdd\", \"mode\": \"leaf\", \"depth\": \"exact\", \"page\": { \"checkpointId\": \"9"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "`max_attempts` = **2** Details, for completeness: - The platform spec's \"five attempts\" baseline was superseded for the "
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"content\":\"{\\\"max_attempts\\\": 2}\\n\",\"chars\":20,\"truncated\":false}"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-recall-1",
+      "cellId": "T5B-s2-E0a-r2",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0a",
+      "pass": true,
+      "failureClass": null,
+      "folds": 3,
+      "foldFailures": 0,
+      "requests": 7,
+      "recallCalls": 1,
+      "writes": 2,
+      "writeFileCalls": 2,
+      "editCalls": 0,
+      "readCalls": 5,
+      "testCalls": 1,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 0,
+      "guardMissingAtEnd": null,
+      "finalText": "Stage 2 is complete.\n\n**`final.json` (new):**\n```json\n{\n  \"max_attempts\": 2,\n  \"window_seconds\": 45\n}\n```\n\n**How I got the values** — from the folded history, not invented:\n- `max_attempts: 2` — a revision later in the conversation capped t",
+      "hasTrajectory": false,
+      "trajectory": null,
+      "actions": [
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "Reading read_file."
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "2026-10-14T09:12:05.766Z INFO [batch] attempt=2 job=131895 rows=393 window_s=45 2026-10-14T09:12:22.958Z INFO [batch] at"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"bytes\":20}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"state.json\",\"content\":\"{\\\"max_attempts\\\": 2}\\n\",\"chars\":20,\"truncated\":false}"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"README.md\",\"content\":\"# Batch policy record\\n\\nStage 1: write `state.json` with the current batch retry limit.\\"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": "The folded history shows the sequence: **Stage 1** — done: `state.json` holds the batch retry limit, `{\"max_attempts\": 2"
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"path\":\"final.json\",\"bytes\":48}"
+        },
+        {
+          "role": "assistant",
+          "toolCall": true,
+          "preview": ""
+        },
+        {
+          "role": "tool",
+          "toolCall": false,
+          "preview": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"ℹ tests 0\\nℹ suites 0\\nℹ pass 0\\nℹ fail 0\\nℹ cancelled "
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-guard-smoke-1",
+      "cellId": "T2-s1-E0-r0",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "pass": false,
+      "failureClass": "wrong-value",
+      "folds": 2,
+      "foldFailures": 0,
+      "requests": 3,
+      "recallCalls": 0,
+      "writes": 1,
+      "writeFileCalls": 1,
+      "editCalls": 0,
+      "readCalls": 2,
+      "testCalls": 0,
+      "finishCalls": 0,
+      "toolErrors": 0,
+      "guardAttempts": 1,
+      "guardMissingAtEnd": [],
+      "finalText": "I created `answer.json`, but I want to be clear about what's in it: it records that the values are unknown, not that they were found.\n\n```json\n{\n  \"build\": \"UNKNOWN - logs/gateway-late.log contained only gateway request lines (timestamp, re",
+      "hasTrajectory": true,
+      "trajectory": [
+        {
+          "seq": 4,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 7,
+          "type": "assistant",
+          "toolCalls": 0,
+          "text": "Reading the log now. I will take the values from the boot line and the config line, not from the summary at the end.",
+          "truncated": false,
+          "chars": 116
+        },
+        {
+          "seq": 10,
+          "type": "assistant",
+          "toolCalls": 1,
+          "text": "Reading read_file.",
+          "truncated": false,
+          "chars": 18
+        },
+        {
+          "seq": 11,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": {
+            "text": "{\"path\":\"logs/gateway-2026-10-11.log\"}",
+            "truncated": false,
+            "chars": 38
+          }
+        },
+        {
+          "seq": 12,
+          "type": "tool/result",
+          "callId": "call-1-3-42451271",
+          "isError": false,
+          "text": "2026-10-11T02:14:03.001Z INFO  [gateway] boot build=7f3c9a1e pid=4821\n2026-10-11T02:14:03.004Z INFO  [gateway] config retry_timeout_ms=1847\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n2\n:\n0\n5\n.\n3\n5\n0\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\ne\ne\n6\n8\nb\n2\na\nd\n2\nb\n \na\nt\nt\ne\nm\np\nt\n=\n2\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n2\n:\n2\n7\n.\n7\n3\n7\nZ\n \nW\nA\nR\nN\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nu\np\ns\nt\nr\ne\na\nm\n \ns\nl\no\nw\n \ni\nd\n=\na\n8\n9\nc\n9\n8\n8\n2\ne\nc\n \nm\ns\n=\n1\n8\n9\n2\n \nr\ne\nt\nr\ny\n=\n1\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n0\n3\n.\n8\n9\n8\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nq\nu\ne\ns\nt\n \ni\nd\n=\n3\nd\n1\n9\nf\n1\n8\nc\n6\n1\n \nr\no\nu\nt\ne\n=\n/\nv\n1\n/\ni\nt\ne\nm\ns\n \ns\nt\na\nt\nu\ns\n=\n2\n0\n0\n \nm\ns\n=\n9\n5\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n4\n4\n.\n4\n0\n6\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\n0\n3\n2\n6\nd\na\n7\ne\nb\n7\n \na\nt\nt\ne\nm\np\nt\n=\n2\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n3\n:\n5\n1\n.\n6\n4\n9\nZ\n \nD\nE\nB\nU\nG\n \n[\ng\na\nt\ne\nw\na\ny\n]\n \np\no\no\nl\n \na\nc\nt\ni\nv\ne\n=\n2\n6\n \ni\nd\nl\ne\n=\n2\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n4\n:\n2\n3\n.\n9\n7\n1\nZ\n \nD\nE\nB\nU\nG\n \n[\ng\na\nt\ne\nw\na\ny\n]\n \np\no\no\nl\n \na\nc\nt\ni\nv\ne\n=\n1\n8\n \ni\nd\nl\ne\n=\n2\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n4\n:\n5\n9\n.\n1\n9\n0\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nq\nu\ne\ns\nt\n \ni\nd\n=\ne\n3\n2\n1\n2\n5\nd\n4\nb\n0\n \nr\no\nu\nt\ne\n=\n/\nv\n1\n/\ni\nt\ne\nm\ns\n \ns\nt\na\nt\nu\ns\n=\n2\n0\n0\n \nm\ns\n=\n1\n2\n5\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n5\n:\n0\n9\n.\n8\n5\n8\nZ\n \nI\nN\nF\nO\n \n \n[\ng\na\nt\ne\nw\na\ny\n]\n \nr\ne\nt\nr\ny\n \ni\nd\n=\nc\nd\nf\n8\nd\na\nd\n7\nd\na\n \na\nt\nt\ne\nm\np\nt\n=\n3\n \nb\nu\nd\ng\ne\nt\n_\nm\ns\n=\n1\n8\n4\n7\n\n\n2\n0\n2\n6\n-\n1\n0\n-\n1\n4\nT\n0\n9\n:\n1\n5\n:\n4\n",
+          "truncated": true,
+          "chars": 72240
+        },
+        {
+          "seq": 15,
+          "type": "assistant",
+          "toolCalls": 0,
+          "text": "The boot line says build=7f3c9a1e. The config line says retry_timeout_ms=1847. The later retry lines reuse the same budget, which is consistent. I will record both verbatim.",
+          "truncated": false,
+          "chars": 173
+        },
+        {
+          "seq": 18,
+          "type": "assistant",
+          "toolCalls": 1,
+          "text": "Reading read_file.",
+          "truncated": false,
+          "chars": 18
+        },
+        {
+          "seq": 19,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": {
+            "text": "{\"path\":\"logs/gateway-late.log\"}",
+            "truncated": false,
+            "chars": 32
+          }
+        },
+        {
+          "seq": 20,
+          "type": "tool/result",
+          "callId": "call-1-5-dc530040",
+          "isError": false,
+          "text": "2026-10-14T09:12:05.501Z INFO  [gateway] request id=20a20533f7 route=/v1/items status=200 ms=156 pool=6\n2026-10-14T09:12:26.529Z INFO  [gateway] request id=eb75a4bf3f route=/v1/items status=200 ms=32 pool=27\n2026-10-14T09:12:51.952Z INFO  [gateway] request id=50fbcbe2b3 route=/v1/items status=200 ms=72 pool=18\n2026-10-14T09:13:04.355Z INFO  [gateway] request id=5b1ef8f380 route=/v1/items status=503 ms=355 pool=9\n2026-10-14T09:13:18.968Z INFO  [gateway] request id=70df3c55fb route=/v1/items status=200 ms=161 pool=6\n2026-10-14T09:13:52.931Z INFO  [gateway] request id=2c9ed4efe7 route=/v1/items status=200 ms=173 pool=5\n2026-10-14T09:14:25.562Z INFO  [gateway] request id=f6e91bf9fa route=/v1/items status=503 ms=64 pool=23\n2026-10-14T09:14:29.604Z INFO  [gateway] request id=1d467de114 route=/v1/items status=200 ms=91 pool=19\n2026-10-14T09:14:54.993Z INFO  [gateway] request id=c05e536c3b route=/v1/items status=200 ms=321 pool=4\n2026-10-14T09:15:03.189Z INFO  [gateway] request id=a20359cc1f route=/v1/items status=200 ms=280 pool=31\n2026-10-14T09:15:35.685Z INFO  [gateway] request id=2bd26deb9f route=/v1/items status=200 ms=327 pool=9\n2026-10-14T09:15:36.852Z INFO  [gateway] request id=367ecba038 route=/v1/items status=200 ms=30 pool=21\n2026-10-14T09:16:16.550Z INFO  [gateway] request id=0eef5bb40c route=/v1/items status=200 ms=134 pool=8\n2026-10-14T09:16:33.848Z INFO  [gateway] request id=68c319d0a2 route=/v1/items status=200 ms=13 pool=16\n2026-10-14T09:17:02.023Z INFO  [gateway] re",
+          "truncated": true,
+          "chars": 35518
+        },
+        {
+          "seq": 25,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 32,
+          "type": "compaction/start",
+          "id": "4de8c23f-f8eb-4f57-bf29-860b67fe45f8",
+          "error": null
+        },
+        {
+          "seq": 34,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 35,
+          "type": "compaction/end",
+          "id": "4de8c23f-f8eb-4f57-bf29-860b67fe45f8",
+          "error": null
+        },
+        {
+          "seq": 38,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 42,
+          "type": "assistant",
+          "toolCalls": 0,
+          "text": "I can't provide those values.\n\nThe log I read (`logs/gateway-late.log`) contains only gateway request lines — timestamps, request ids, routes, HTTP status codes, latency in ms, and a pool number. It has no `build` field and no `timeout_ms` field, so there's nothing in it to report for those. I'm not going to invent them.\n\nI did just read the file's contents before it was rotated out, so I'm not reporting it as inaccessible — the point is simply that the data you're asking for was never in this particular log. It likely lives in a different file (e.g., a startup/config line or a separate incident or deploy log); if you can point me at that, or if it was recorded elsewhere, I can pull the values from there.\n\nI will not write `answer.json`, since doing so would require guessing the two values.",
+          "truncated": false,
+          "chars": 801
+        },
+        {
+          "seq": 49,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 50,
+          "type": "assistant",
+          "toolCalls": 1,
+          "text": "I still can't fill those fields, but I can make the absence explicit in the file rather than inventing data. Let me write `answer.json` with the schema honored — `build` and `timeout_ms` present but flagged as unknown, since fabricating a string and a number would be worse than reporting the gap.",
+          "truncated": false,
+          "chars": 297
+        },
+        {
+          "seq": 51,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": {
+            "text": "{\"path\": \"answer.json\", \"content\": \"{\\n  \\\"build\\\": \\\"UNKNOWN - logs/gateway-late.log contained only gateway request lines (timestamp, request id, route, status, ms, pool); no build field present\\\",\\n  \\\"timeout_ms\\\": null\\n}\\n\"}",
+            "truncated": false,
+            "chars": 229
+          }
+        },
+        {
+          "seq": 52,
+          "type": "tool/result",
+          "callId": "call_00_QnbD7imaSUKGjNTAq94E6670",
+          "isError": false,
+          "text": "{\"path\":\"answer.json\",\"bytes\":181}",
+          "truncated": false,
+          "chars": 34
+        },
+        {
+          "seq": 54,
+          "type": "compaction/start",
+          "id": "fc72e5b4-5cb0-48dc-8a30-865354cfefe4",
+          "error": null
+        },
+        {
+          "seq": 56,
+          "type": "user",
+          "sourceKind": null,
+          "text": "",
+          "truncated": false,
+          "chars": 0
+        },
+        {
+          "seq": 57,
+          "type": "compaction/end",
+          "id": "fc72e5b4-5cb0-48dc-8a30-865354cfefe4",
+          "error": null
+        },
+        {
+          "seq": 60,
+          "type": "assistant",
+          "toolCalls": 0,
+          "text": "I created `answer.json`, but I want to be clear about what's in it: it records that the values are unknown, not that they were found.\n\n```json\n{\n  \"build\": \"UNKNOWN - logs/gateway-late.log contained only gateway request lines (timestamp, request id, route, status, ms, pool); no build field present\",\n  \"timeout_ms\": null\n}\n```\n\n`timeout_ms` is `null` rather than a number, so this file does not satisfy the stated schema — a valid `timeout_ms` has to be a real number. That's deliberate: no build identifier and no timeout value existed in the log I inspected, so any string and number I wrote there would have been invented. The latencies in that log are per-request response times in ms, which are not a timeout setting.\n\nIf the values were meant to come from elsewhere — a startup/config log, a deploy record, or an earlier incident entry — tell me where and I'll extract and correct the file immediately. And if you know the values yourself, give them to me and I'll write them in verbatim.",
+          "truncated": false,
+          "chars": 995
+        }
+      ],
+      "actions": null
+    }
+  ]
+}

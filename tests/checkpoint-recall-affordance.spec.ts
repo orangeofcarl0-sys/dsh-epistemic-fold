@@ -17,7 +17,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { renderStructuredCheckpoint } from '../src/checkpoint/renderer.ts'
+import { archivedCallsFromMessages, renderStructuredCheckpoint } from '../src/checkpoint/renderer.ts'
 import { resolveEfConfig } from '../src/config/policy.ts'
 import { emptyCurrentState } from '../src/state/state.ts'
 
@@ -48,5 +48,58 @@ describe('checkpoint recall affordance', () => {
     expect(resolveEfConfig({}).recallAffordance).toBe(false)
     expect(resolveEfConfig({ recallAffordance: true }).recallAffordance).toBe(true)
     expect(() => resolveEfConfig({ recallAffordance: 'true' as never })).toThrow(/recallAffordance/u)
+  })
+})
+
+describe('checkpoint archived-call index', () => {
+  const call = (name: string, args: unknown) => ({
+    type: 'tool-call',
+    name,
+    arguments: JSON.stringify(args),
+  })
+
+  it('lists tool calls by name and addressable detail, deduplicated', () => {
+    const calls = archivedCallsFromMessages([
+      {
+        content: [
+          call('read_file', { path: 'logs/a.log' }),
+          call('read_file', { path: 'logs/a.log' }),
+          call('run_tests', {}),
+        ],
+      },
+      {
+        content: [
+          call('context_search', { query: 'build id' }),
+          call('finish', { summary: 'done' }),
+        ],
+      },
+    ])
+    expect(calls).toEqual([
+      { name: 'read_file', detail: 'logs/a.log' },
+      { name: 'run_tests' },
+      { name: 'context_search', detail: 'build id' },
+    ])
+  })
+
+  it('is bounded, so a long span cannot become a transcript', () => {
+    const many = Array.from({ length: 20 }, (_, index) => call('read_file', { path: 'logs/' + index + '.log' }))
+    expect(archivedCallsFromMessages([{ content: many }])).toHaveLength(8)
+  })
+
+  it('renders only when provided, and the marker stays first', () => {
+    const base = renderStructuredCheckpoint(emptyCurrentState(), ID)
+    const text = renderStructuredCheckpoint(emptyCurrentState(), ID, undefined, 'leaf', {
+      archivedCalls: [{ name: 'read_file', detail: 'logs/a.log' }],
+    })
+    expect(text.split('\n')[0]).toBe(base.split('\n')[0])
+    expect(text).toContain('Archived calls')
+    expect(text).toContain('- read_file logs/a.log')
+    expect(base).not.toContain('Archived calls')
+  })
+
+  it('is a strict boolean', () => {
+    expect(resolveEfConfig({}).foldedSpanIndex).toBe(false)
+    expect(resolveEfConfig({ foldedSpanIndex: true }).foldedSpanIndex).toBe(true)
+    expect(() => resolveEfConfig({ foldedSpanIndex: 'true' as never })).toThrow(/foldedSpanIndex/u)
   })
 })

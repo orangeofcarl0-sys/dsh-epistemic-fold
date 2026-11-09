@@ -164,7 +164,7 @@ async function main() {
   // the same tokens twice.
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1']) {
+  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
     const path = join(OUT, `results-${priorCampaign}.json`)
     if (!existsSync(path)) continue
     const prior = JSON.parse(await readFile(path, 'utf8'))

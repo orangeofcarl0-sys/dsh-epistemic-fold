@@ -74,7 +74,7 @@ split is named, not silent: `bridge-loads`, `checkpoint-residency`,
 Context + LlmRuntime + SessionStore + SessionProjectionRegistry + TokenMeter
 + SystemPrompt + ToolRuntime + AgentRegistry + AgentLoop
 + one compaction backend (B0: @deepseek-ai/dsh-compaction-basic;
-  Bv/E0/E0a/E1/S: dsh-epistemic-fold/plugin)
+  Bv/E0/E0a/E0i/E1/S: dsh-epistemic-fold/plugin)
 + the live OpenAI-compatible adapter behind a recording wrapper
 ```
 
@@ -154,10 +154,19 @@ counterfactual also passes, is not shipped.
 | `e2e-pilot-1` | 12 (T2/T3/T5 × {E1,S} × 2) | `24177766ad92` | `d0e5771acad8` |
 | `e2e-t5-retest-1` | 8 (T5B × {B0,E0,E1,S} × 2) | `ab4f738ccd9b` | `74698849a816` |
 | `e2e-recall-1` | 12 (T2/T4/T5B × {E0,E0a} × 2) | `9685ce6b2317` | `5aa7179d7a11` |
+| `e2e-guard-smoke-1` | 1 (T2-s1 × E0, completion guard on) | `229e3db1ba2a` | `08064ecd1d5a` |
 
-`E0a` is E0 plus the experimental `recallAffordance` section. The only
-difference between the paired arms is that section; the flag defaults to false
-and stays false after the negative result in `E2E_RESULT.md` §5b.
+`E0a` is E0 plus the experimental `recallAffordance` section. `E0i` is E0 plus
+the experimental `foldedSpanIndex`; only the latter has offline certification.
+The guard is not an arm: it is a shared completion check enabled per cell, and
+it writes nothing.
+
+**The continuation-cell envelope is exhausted at 72/72.** Any further live
+campaign needs a new envelope. The guard-smoke manifest's cumulative limit was
+computed before the recall campaign was added to the prior list, so it says 13
+cells remain instead of 1; the run itself was one cell and the total is exactly
+72. The accounting bug is recorded here rather than rewritten in a frozen
+manifest.
 
 Each manifest binds the code tree (excluding the evidence directory and the
 authorization), the lockfile, the installed DSH versions, every task digest,

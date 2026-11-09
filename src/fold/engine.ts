@@ -68,7 +68,8 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from '../policy/pressure.ts'
 import { evaluateRootRebase } from '../policy/root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
-import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import { archivedCallsFromMessages, describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import type { ArchivedCall } from '../checkpoint/renderer.ts'
 import { rationaleOnly, rationaleOutputFor } from '../checkpoint/rationale.ts'
 import {
   conversationTarget,
@@ -2031,6 +2032,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // a structured handoff — machine state first, narrative in Rationale.
         const stateText = this.structuredStateText(
           mountedState, candidate.checkpointId, semanticText, candidate.mode,
+          this.efConfig.foldedSpanIndex ? archivedCallsFromMessages(shadowedMessages) : undefined,
         )
         renderedText = stateText ?? (semanticText === undefined
           ? fallbackText
@@ -3626,10 +3628,12 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     checkpointId: string,
     semanticText: string | undefined,
     mode: FoldMode,
+    archivedCalls?: readonly ArchivedCall[],
   ): string | undefined {
     if (state === undefined) return undefined
     return renderStructuredCheckpoint(state, checkpointId, semanticText, mode, {
       recallAffordance: this.efConfig.recallAffordance,
+      ...(archivedCalls === undefined ? {} : { archivedCalls }),
     })
   }
 

@@ -53,13 +53,14 @@ e2e-core-1           39        39       259     1,214,580         69,166   12.4 
 e2e-pilot-1          12        12        77       280,538         15,955    3.6 min
 e2e-t5-retest-1       8         8        62       288,422         16,010    3.0 min
 e2e-recall-1         12        12        51       310,376          6,418    2.0 min
-total                71        71       449     2,093,916        107,549   20.9 min
+e2e-guard-smoke-1    1         1         3        16,903            590    0.2 min
+total                72        72       452     2,110,819        108,139   21.1 min
 ```
 
-Envelope used: 449 / 2,200 requests, 2.09M / 18M input, 108k / 1M output,
-20.9 min / 8 h. No monetary claim: the route has no verifiable per-token price.
+Envelope used: 452 / 2,200 requests, 2.11M / 18M input, 108k / 1M output,
+21.1 min / 8 h. **Continuation cells: 72 / 72, exhausted.** No monetary claim: the route has no verifiable per-token price.
 
-All 71 cells reached at least one successful fold. No cell is `no-fold`.
+All 72 cells reached at least one successful fold. No cell is `no-fold`.
 
 ## 3. Core campaign (36 core cells + 3 calibration)
 
@@ -156,6 +157,90 @@ The same campaign re-ran the core E0 tasks and seeds. T4 went from 0/2 in the
 core campaign to 2/2 here, with the same task, seed and budget. That is direct
 run-to-run variance at this scale, and it is the main reason the per-arm rates
 in §3 are descriptions, not estimates.
+
+## 5c. Trajectory and variance attribution
+
+`eval/e2e/src/trajectory-analysis.mjs` reads all 72 executed cells. Only the
+last cell has an ordered event trajectory; the earlier 71 are reconstructed
+from request deltas and tool counts, and the output says so.
+
+Across the 47 output-file cells (T2/T4/T5/T5B):
+
+| Behaviour | Pass | Fail |
+|---|---|---|
+| wrote an output (`write_file`/`edit_file`) | 22 | 17 |
+| wrote nothing | **0** | **8** |
+| called recall | 5 | 11 |
+| never called recall | 17 | 14 |
+
+Two gates, in this order:
+
+1. **The write gate.** No write means no pass: 0/8. With a write, 22/39 pass.
+2. **The value gate.** Given a write, the remaining failures are wrong values,
+   a nested shape, or an explicit UNKNOWN. Recall does not predict success:
+   E1/S/B0 often pass without ever calling recall, because their checkpoint
+   carries the values; E0 calls recall and still fails when it trusts the
+   later distractor.
+
+### T2 is a stable failure, not variance
+
+All three E0 T2-s1 runs (core, recall, guard smoke) end the same way: the model
+reads the late distractor log in the live turn, never recalls, and says the
+values are not in the log. The guard then makes it write the refusal:
+
+```text
+seq 42  assistant  I can't provide those values. The log I read
+                   (logs/gateway-late.log) contains only gateway request lines...
+seq 49  user       (completion guard: answer.json does not exist yet)
+seq 50  assistant  I still can't fill those fields, but I can make the absence
+                   explicit in the file...
+seq 51  tool/call  write_file answer.json {"build":"UNKNOWN...","timeout_ms":null}
+```
+
+The correct log (`logs/gateway-2026-10-11.log`, with `build=7f3c9a1e` and
+`timeout_ms=1847`) is in the folded span. The checkpoint is a bare marker, and
+the retained tail is the later log. The model has no cue that the useful log
+was folded, so it does not ask for it. **This is a checkpoint-content gap, not
+a write gap.**
+
+### T4 is variance in tool persistence
+
+Same task, seed and arm:
+
+| Campaign | Outcome | Recalls | Writes | What happened |
+|---|---|---|---|---|
+| core | fail (missing-output) | 2 | 0 | stated `eu-west-3`/`3` in prose and stopped |
+| recall | pass | 7 | 1 | re-queried, corrected itself, wrote the file |
+
+The fold and the archive are identical. The difference is whether the model
+kept acting after its first answer.
+
+### The completion guard (one live cell)
+
+`completionGuard` checks the declared output files after the turn is idle and
+injects a corrective message (`source: completion-guard`, not `user`) at most
+twice. It writes nothing and is identical for every arm.
+
+- Offline certification: a stop-first scripted model is refused once, writes,
+  and passes.
+- Live smoke (the 72nd and last cell): the guard fired once, `answer.json`
+  exists at the end — and contains UNKNOWN. **The guard closes the write gate,
+  not the value gate.**
+
+### The folded-span index
+
+`foldedSpanIndex` (default off) lists the folded span's tool calls in the
+checkpoint, e.g.:
+
+```text
+Archived calls
+- read_file logs/gateway-2026-10-11.log
+```
+
+It costs 56 characters (~14 tokens) on the T2 fixture and names the exact log
+the model needed. It is unit- and self-test-certified, but **not live-tested**:
+the continuation-cell envelope is exhausted (72/72). The live comparison needs
+a new envelope.
 
 ## 6. Semantic authority
 
@@ -267,6 +352,9 @@ coreDefaultRecommended        false   (exploratory scale; no default change)
 semanticActiveRecommended     false   (no signal beyond E1; hold stands)
 deploymentEligible            false   (EF Active: deployment hold)
 researchPRReady               false   (a reviewer's call, not this round's)
+recallAffordance              off     (negative live result)
+completionGuard               experimental, not a default
+foldedSpanIndex               experimental, off, not live-tested
 ```
 
 The candidate build is installable and smoke-tested (1.38 MB, 393 files, no
@@ -274,12 +362,16 @@ raw runs, no credentials, no checkout path). It is a candidate, not a release.
 
 ## 11. What would change the answer
 
+- **A new continuation-cell envelope.** The current one is exhausted (72/72).
+  The next live test needs its own cells: a paired `foldedSpanIndex` campaign
+  (T2/T4 × {E0, E0i} × 2 seeds × 3 repeats = 24 cells) plus a guard × index
+  factorial if budget allows. Without it, the span index stays offline-only.
 - More templates, more seeds, and repeated runs per cell, so a per-template
   rate can be estimated rather than described. The T4 flip between campaigns
   shows that one run per cell is not enough for an arm comparison.
-- A study of the OUTPUT CONTRACT rather than the checkpoint: E0a's failures are
-  predominantly `missing-output` — the model has the value and does not write
-  the file. More recall affordance is not the lever; the instruction and the
-  model's tool habits are.
+- A study of the output contract on top of the retrieval cue: the guard proves
+  the write gate can be closed, but the guard smoke wrote UNKNOWN because the
+  model still did not know that the useful log was folded. The span index is
+  the cue; the guard is the completion check; they address different gates.
 - A second model/route, to separate the mechanism from the model's tool habits.
 - A price-verifiable route, if a monetary comparison is wanted.

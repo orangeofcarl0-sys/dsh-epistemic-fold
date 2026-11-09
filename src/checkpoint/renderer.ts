@@ -193,12 +193,72 @@ export function describeRenderedState(state: FoldCurrentState): {
   }
 }
 
+/** One tool call the folded span contains, as the checkpoint lists it. */
+export interface ArchivedCall {
+  readonly name: string
+  readonly detail?: string
+}
+
+/** Tool-call arguments carry the path/query that makes a call addressable. */
+const DETAIL_KEYS = ['path', 'query', 'pattern', 'url'] as const
+
+/**
+ * The folded span's tool calls, deduplicated and bounded.
+ *
+ * WHY: the measured failure is a model that keeps the recent distractor log,
+ * folds the useful observation, and then answers "the value is not in the log
+ * I can see". A generic "recall exists" line did not help. Listing WHAT was
+ * folded (tool name + path/query) gives the model a retrieval cue that costs a
+ * few tokens and needs no model call.
+ *
+ * `finish` is excluded: it is an action marker, not evidence. The list is
+ * bounded so a long span cannot turn the checkpoint into a transcript.
+ *
+ * @param messages - the messages the fold replaces.
+ * @param limit - maximum entries (default 8).
+ */
+export function archivedCallsFromMessages(
+  messages: readonly { readonly content: readonly { readonly type: string; readonly name?: string; readonly arguments?: string }[] }[],
+  limit = 8,
+): readonly ArchivedCall[] {
+  const seen = new Set<string>()
+  const calls: ArchivedCall[] = []
+  for (const message of messages) {
+    for (const block of message.content) {
+      if (block.type !== 'tool-call' || block.name === undefined || block.name === 'finish') continue
+      let detail: string | undefined
+      if (block.arguments !== undefined && block.arguments.length > 0) {
+        try {
+          const parsed = JSON.parse(block.arguments) as Record<string, unknown>
+          for (const key of DETAIL_KEYS) {
+            if (typeof parsed[key] === 'string' && parsed[key].length > 0) {
+              detail = parsed[key] as string
+              break
+            }
+          }
+        } catch {
+          // A malformed argument string is not addressable; the name still is.
+        }
+      }
+      const key = `${block.name}\0${detail ?? ''}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      calls.push(detail === undefined ? { name: block.name } : { name: block.name, detail })
+      if (calls.length >= limit) return calls
+    }
+  }
+  return calls
+}
+
 export function renderStructuredCheckpoint(
   state: FoldCurrentState,
   checkpointId: string,
   rationale?: string,
   mode: FoldMode = 'leaf',
-  options: { readonly recallAffordance?: boolean } = {},
+  options: {
+    readonly recallAffordance?: boolean
+    readonly archivedCalls?: readonly ArchivedCall[]
+  } = {},
 ): string {
   const presentation = projectForCheckpoint(state)
   const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
@@ -241,6 +301,16 @@ export function renderStructuredCheckpoint(
       'Recall',
       '- Folded history is archived. Use context_search to find it, or context_recall to open it.',
     )
+  }
+
+  // WHAT was folded. The generic affordance above names the tools; this names
+  // the evidence. A model that can see `read_file logs/gateway-2026-10-11.log`
+  // was folded has a reason to open it instead of trusting the later log.
+  if (options.archivedCalls !== undefined && options.archivedCalls.length > 0) {
+    lines.push('', 'Archived calls')
+    for (const call of options.archivedCalls) {
+      lines.push(call.detail === undefined ? `- ${call.name}` : `- ${call.name} ${call.detail}`)
+    }
   }
 
   return lines.join('\n')

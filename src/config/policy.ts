@@ -140,6 +140,12 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly recallAffordance: boolean
   /**
+   * EXPERIMENTAL: list the folded span's tool calls (name + path/query) in the
+   * checkpoint body, so the model knows WHICH evidence is archived, not merely
+   * that an archive exists. Default `false`.
+   */
+  readonly foldedSpanIndex: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -336,6 +342,11 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    */
   recallAffordance?: boolean
   /**
+   * EXPERIMENTAL: list the folded span's tool calls in the checkpoint body.
+   * Default `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  foldedSpanIndex?: boolean
+  /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
@@ -473,6 +484,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof recallAffordance !== 'boolean') {
     throw new Error('epistemic-fold: recallAffordance must be a boolean')
   }
+  const foldedSpanIndex = expanded.foldedSpanIndex ?? false
+  if (typeof foldedSpanIndex !== 'boolean') {
+    throw new Error('epistemic-fold: foldedSpanIndex must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -515,6 +530,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     framingMode,
     referentialArchive,
     recallAffordance,
+    foldedSpanIndex,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,

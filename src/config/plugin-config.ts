@@ -66,6 +66,7 @@ export const EpistemicFoldPluginConfig: z<EpistemicFoldConfig> = z.object({
   // validates and ranges it, and a typed declaration would add a second validation layer.
   rationaleHintTokens: z.any(),
   recallAffordance: z.any(),
+  foldedSpanIndex: z.any(),
   leafAdmission: z.any(),
   minReclaimTokens: z.any(),
   minReclaimRatio: z.any(),
