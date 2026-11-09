@@ -264,6 +264,16 @@ export interface AcceptedDelta {
    */
   readonly sourceAuthority: SourceAuthority
   /**
+   * The newest cited message that could itself take a decision (user or
+   * assistant), as a fold-span seq.
+   *
+   * Present on decision-authority claims only. It lets the planner enforce that
+   * a revision rests on a statement NEWER than the value it replaces; without
+   * it, quoting the user's original instruction would be enough standing to
+   * write its opposite.
+   */
+  readonly latestDecisionSeq?: number
+  /**
    * The tool-result evidence a `verified` grant rests on, when one was
    * required. Absent for every other status.
    */

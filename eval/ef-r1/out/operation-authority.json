@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP1",
+  "generatedAt": "2026-11-09T16:30:51.222Z",
+  "evaluatedCommit": "cb218cc96196615da711e370e7bbadbaf2e248f8",
+  "suite": {
+    "total": 15,
+    "passed": 15,
+    "failed": 0,
+    "required": 15,
+    "missing": [],
+    "failedRequired": [],
+    "extra": []
+  },
+  "probe": {
+    "before": [
+      {
+        "name": "no-supersedes",
+        "declares": 1,
+        "withheld": [],
+        "active": [
+          {
+            "value": "Use the durable outbox.",
+            "source": "assistant"
+          }
+        ]
+      },
+      {
+        "name": "unrelated-supersedes",
+        "declares": 1,
+        "withheld": [],
+        "active": [
+          {
+            "value": "Use the file cache.",
+            "source": "user"
+          },
+          {
+            "value": "Use the durable outbox.",
+            "source": "assistant"
+          }
+        ]
+      },
+      {
+        "name": "mixed-assistant-tool",
+        "declares": 1,
+        "withheld": [],
+        "active": [
+          {
+            "value": "Use the durable outbox.",
+            "source": "tool"
+          }
+        ]
+      },
+      {
+        "name": "old-user-quote",
+        "declares": 1,
+        "withheld": [],
+        "active": [
+          {
+            "value": "Use the durable outbox.",
+            "source": "user"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "name": "no-supersedes",
+        "declares": 0,
+        "withheld": [
+          "unauthorized-replacement"
+        ],
+        "active": [
+          {
+            "value": "Use the in-memory queue.",
+            "source": "user"
+          }
+        ]
+      },
+      {
+        "name": "unrelated-supersedes",
+        "declares": 0,
+        "withheld": [
+          "unauthorized-replacement"
+        ],
+        "active": [
+          {
+            "value": "Use the in-memory queue.",
+            "source": "user"
+          },
+          {
+            "value": "Use the file cache.",
+            "source": "user"
+          }
+        ]
+      },
+      {
+        "name": "mixed-assistant-tool",
+        "declares": 0,
+        "withheld": [
+          "unauthorized-replacement"
+        ],
+        "active": [
+          {
+            "value": "Use the in-memory queue.",
+            "source": "user"
+          }
+        ]
+      },
+      {
+        "name": "old-user-quote",
+        "declares": 0,
+        "withheld": [
+          "unauthorized-replacement"
+        ],
+        "active": [
+          {
+            "value": "Use the in-memory queue.",
+            "source": "user"
+          }
+        ]
+      }
+    ]
+  },
+  "probeVerdicts": [
+    {
+      "name": "no-supersedes",
+      "reproduced": true,
+      "closed": true
+    },
+    {
+      "name": "unrelated-supersedes",
+      "reproduced": true,
+      "closed": true
+    },
+    {
+      "name": "mixed-assistant-tool",
+      "reproduced": true,
+      "closed": true
+    },
+    {
+      "name": "old-user-quote",
+      "reproduced": true,
+      "closed": true
+    }
+  ],
+  "sources": {
+    "src/semantic/plan.ts": "e25e4b82cd9aa4179e329ed3c761f64b715d57fd40da2b30682c8587c52d82ad",
+    "src/semantic/retirement.ts": "acfc694da582eecfbc7926acc5891d5db7beeadc0f8aea984fba4059e9b06438",
+    "src/semantic/types.ts": "184c6dd9c963aedbbc35b2d22b6768988b2e38ae6dd9181b475e8661e7037a15",
+    "src/semantic/validate.ts": "a814305ce44e9105b13d5f17f8440f8218811a748da8494aba3f20faa345ebf8",
+    "src/state/authority.ts": "411a2bd0c0849a986b2cd150f0c184981aabeb7739dc08109b3be2ec130eab6b",
+    "tests/ef-r1-operation-authority.spec.ts": "05950ee7a6956cb71c4af40873a29a1f739ecc9e0de461597b2f15f875572dd4"
+  },
+  "verdict": "authority-closed"
+}

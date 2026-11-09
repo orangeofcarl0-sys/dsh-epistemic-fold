@@ -141,12 +141,42 @@ function headAt(state: FoldCurrentState, key: StateKey): Anchor | undefined {
   return state.stateHeads[stateKeyText(key)]
 }
 
+/** The value a delta would write, before it becomes an anchor. */
+function renderedValue(delta: AcceptedDelta): unknown {
+  return delta.kind === 'rejected-approach'
+    ? rejectedApproachValue(delta.statement, delta.rulesOut)
+    : delta.statement
+}
+
+/** The newest event behind an anchor, or `undefined` when it cites none. */
+function latestSeqOf(anchor: Anchor): number | undefined {
+  let latest: number | undefined
+  for (const ref of anchor.sourceRefs) {
+    const seq = Number(ref.seq)
+    if (latest === undefined || seq > latest) latest = seq
+  }
+  return latest
+}
+
+/** An optional field, spread-safe under `exactOptionalPropertyTypes`. */
+function targetSeqField(latest: number | undefined): { targetLatestSeq?: number } {
+  return latest === undefined ? {} : { targetLatestSeq: latest }
+}
+
 /** One target's resolution, before authorization is decided. */
 type TargetResolution =
   | { readonly kind: 'previous-absent' }
   | { readonly kind: 'already-retired' }
   | { readonly kind: 'resolved'; readonly anchor: Anchor; readonly sameCoordinate: boolean }
-  | { readonly kind: 'sibling'; readonly anchorId: string; readonly authority: Anchor['authority']; readonly sourceAuthority: Anchor['sourceAuthority'] }
+  | {
+    readonly kind: 'sibling'
+    readonly anchorId: string
+    readonly authority: Anchor['authority']
+    readonly sourceAuthority: Anchor['sourceAuthority']
+    readonly latestDecisionSeq?: number
+    /** The value the sibling claim would write. */
+    readonly value: unknown
+  }
   | { readonly kind: 'cross-scope'; readonly anchor: Anchor }
   | { readonly kind: 'ambiguous'; readonly anchorIds: readonly string[] }
   | { readonly kind: 'unknown' }
@@ -188,6 +218,8 @@ function resolveTarget(
       anchorId: anchorIdOf(sibling.deltaId),
       authority: sibling.authority,
       sourceAuthority: sibling.sourceAuthority,
+      ...(sibling.latestDecisionSeq === undefined ? {} : { latestDecisionSeq: sibling.latestDecisionSeq }),
+      value: renderedValue(sibling),
     }
   }
 
@@ -254,6 +286,10 @@ export function planCommit(
 ): CommitPlan {
   const anchorById = new Map(uniqueAnchors(options.state).map(anchor => [anchor.id, anchor]))
   const declared = new Set<string>(options.knownAnchorIds ?? anchorById.keys())
+  // The state each declare will ACTUALLY meet, including declares earlier in
+  // this packet. `options.state` alone cannot answer that: a second delta at the
+  // same coordinate meets the first delta's head, not the pre-fold head.
+  const projectedHeads = new Map<string, Anchor>(Object.entries(options.state.stateHeads))
   const declares: EfAnchorEventData[] = []
   const transitions: EfAnchorEventData[] = []
   const retires: EfAnchorEventData[] = []
@@ -283,6 +319,7 @@ export function planCommit(
     const blocking: string[] = []
     const ambiguous: string[] = []
     const refusedReplacements: string[] = []
+    const value = renderedValue(delta)
 
     for (const target of delta.supersedes) {
       const resolution = resolveTarget(options.state, target, delta, accepted)
@@ -320,6 +357,10 @@ export function planCommit(
             sameScope: true,
             declaringSource: delta.sourceAuthority,
             targetSource: resolution.sourceAuthority ?? 'unknown',
+            ...(delta.latestDecisionSeq === undefined ? {} : { declaringLatestSeq: delta.latestDecisionSeq }),
+            ...(resolution.latestDecisionSeq === undefined ? {} : { targetLatestSeq: resolution.latestDecisionSeq }),
+            declaringValue: value,
+            targetValue: resolution.value,
           })
           if (!authorization.allowed) {
             refusedRetirements.push({
@@ -355,6 +396,10 @@ export function planCommit(
               sameScope: true,
               declaringSource: delta.sourceAuthority,
               targetSource: resolution.anchor.sourceAuthority ?? 'unknown',
+              ...(delta.latestDecisionSeq === undefined ? {} : { declaringLatestSeq: delta.latestDecisionSeq }),
+              ...(targetSeqField(latestSeqOf(resolution.anchor))),
+              declaringValue: value,
+              targetValue: resolution.anchor.value,
             })
             if (!authorization.allowed) {
               refusedRetirements.push({
@@ -381,6 +426,10 @@ export function planCommit(
             sameScope: sameScope(resolution.anchor.scope, delta.scope),
             declaringSource: delta.sourceAuthority,
             targetSource: resolution.anchor.sourceAuthority ?? 'unknown',
+            ...(delta.latestDecisionSeq === undefined ? {} : { declaringLatestSeq: delta.latestDecisionSeq }),
+            ...(targetSeqField(latestSeqOf(resolution.anchor))),
+            declaringValue: value,
+            targetValue: resolution.anchor.value,
           })
           if (!authorization.allowed) {
             refusedRetirements.push({
@@ -419,10 +468,6 @@ export function planCommit(
       continue
     }
 
-    const value = delta.kind === 'rejected-approach'
-      ? rejectedApproachValue(delta.statement, delta.rulesOut)
-      : delta.statement
-
     if (declared.has(anchorId)) {
       // The claim is already state (or already planned in this packet). The
       // DECLARE is skipped; its authorized retirements are still applied below.
@@ -440,8 +485,6 @@ export function planCommit(
       })
       continue
     }
-    declared.add(anchorId)
-
     const anchor: Anchor = {
       id: anchorId,
       kind: delta.anchorKind,
@@ -454,6 +497,63 @@ export function planCommit(
       sourceRefs: delta.evidence.map(entry => ({ seq: SessionSeq(entry.seq) })),
       ...(delta.scope === undefined ? {} : { scope: delta.scope }),
     }
+
+    // OPERATION EFFECT, not declared relation.
+    //
+    // A declare at a coordinate that already has a head REPLACES that head in
+    // the reducer. That is a retirement: the old anchor leaves every hot face
+    // and enters `superseded`. Checking only the names in `supersedes` missed
+    // it entirely, so an assistant decision with `supersedes: []` — or with an
+    // unrelated target — silently overwrote a user decision while the plan
+    // reported no refusal. The effect is resolved here, before the op exists.
+    //
+    // `resolved` may already contain an authorized same-coordinate target from
+    // an explicit `supersedes`; that verdict is the same check, so it is reused
+    // rather than run twice.
+    const displaced = projectedHeads.get(stateKeyText(stateKey))
+    if (displaced !== undefined && displaced.id !== anchorId) {
+      const alreadyAuthorized = resolved.some(entry =>
+        entry.anchorId === displaced.id && entry.refusal === undefined)
+      if (!alreadyAuthorized) {
+        const authorization = mayRetire({
+          declaring: delta.authority,
+          target: displaced.authority,
+          // The coordinate itself IS the scope: two anchors at one state key
+          // cannot be in different task scopes.
+          sameScope: true,
+          declaringSource: delta.sourceAuthority,
+          targetSource: displaced.sourceAuthority ?? 'unknown',
+          ...(delta.latestDecisionSeq === undefined ? {} : { declaringLatestSeq: delta.latestDecisionSeq }),
+          ...(targetSeqField(latestSeqOf(displaced))),
+          declaringValue: value,
+          targetValue: displaced.value,
+        })
+        if (!authorization.allowed) {
+          refusedRetirements.push({
+            deltaId: delta.deltaId,
+            target: displaced.id,
+            anchorId: displaced.id,
+            reason: authorization.reason,
+          })
+          withheld.push({
+            deltaId: delta.deltaId,
+            reason: 'unauthorized-replacement',
+            targets: [displaced.id],
+          })
+          planned.push({
+            deltaId: delta.deltaId,
+            anchorId,
+            kind: delta.kind,
+            supersedes: resolved,
+            withheld: 'unauthorized-replacement',
+          })
+          continue
+        }
+      }
+    }
+
+    declared.add(anchorId)
+    projectedHeads.set(stateKeyText(stateKey), anchor)
     declares.push({ op: 'declare', anchor })
     if (delta.kind === 'failure' && delta.grantedStatus === 'verified' && delta.evidence.length > 0) {
       transitions.push({

@@ -39,6 +39,7 @@
  * @module dsh-epistemic-fold/semantic/retirement
  */
 
+import { canonicalHash } from '../checkpoint/hash.ts'
 import type { AuthorityDomain, SourceAuthority } from '../state/authority.ts'
 
 /**
@@ -61,6 +62,7 @@ export type RetirementRefusalReason =
   | 'target-narrative'
   | 'insufficient-authority'
   | 'insufficient-source-authority'
+  | 'stale-source'
   | 'cross-scope'
 
 /** The verdict for one (declaring claim, target anchor) pair. */
@@ -88,6 +90,29 @@ export function mayRetire(input: {
   readonly declaringSource?: SourceAuthority
   /** Who produced the target anchor; absent means historical/unknown. */
   readonly targetSource?: SourceAuthority
+  /**
+   * The newest decision-capable message the declaring claim cites.
+   *
+   * A revision must rest on evidence NEWER than the decision it replaces.
+   * Without this, an assistant could quote the user's ORIGINAL instruction and
+   * use that quote as standing to write the opposite decision: the quote is
+   * genuinely the user's, so the source check passes, while the user never
+   * said the new thing. Absent on callers that do not track span positions
+   * (audits over already-committed packets); the planner always supplies it.
+   */
+  readonly declaringLatestSeq?: number
+  /** The newest event behind the target anchor. */
+  readonly targetLatestSeq?: number
+  /**
+   * The value the declaring claim would write, and the target's current value.
+   *
+   * Equal values are the one exception to the newer-evidence rule: restating
+   * the SAME decision at another coordinate is a consolidation, not a
+   * revision, and cannot change what the user decided. An opposite claim never
+   * qualifies.
+   */
+  readonly declaringValue?: unknown
+  readonly targetValue?: unknown
 }): RetirementAuthorization {
   if (input.declaring === 'narrative') {
     return {
@@ -138,6 +163,28 @@ export function mayRetire(input: {
       reason: 'insufficient-source-authority',
       detail: `an assistant-origin decision may not retire a decision whose source is ${targetSource}; `
         + 'the user must revise it, or the assistant must propose it as a new claim in another coordinate',
+    }
+  }
+  // NEWER evidence, not merely relevant evidence. A quote from the message that
+  // established the current decision cannot also authorize its replacement: if
+  // it could, quoting the user's original instruction would be enough for the
+  // assistant to write the opposite decision and label it user-sourced.
+  //
+  // Both seqs are supplied by the planner from the fold span and the target
+  // anchor's provenance. Historical replay never reaches this function, and an
+  // audit that lacks the positions passes `undefined` rather than inventing
+  // one.
+  const restatesSameValue = input.declaringValue !== undefined
+    && input.targetValue !== undefined
+    && canonicalHash(input.declaringValue) === canonicalHash(input.targetValue)
+  if (input.declaring === 'decision' && input.target === 'decision'
+    && input.declaringLatestSeq !== undefined && input.targetLatestSeq !== undefined
+    && input.declaringLatestSeq <= input.targetLatestSeq && !restatesSameValue) {
+    return {
+      allowed: false,
+      reason: 'stale-source',
+      detail: `the newest decision evidence (seq ${input.declaringLatestSeq}) is not newer than `
+        + `the decision it would revise (seq ${input.targetLatestSeq}); a revision needs a newer statement`,
     }
   }
   return { allowed: true }

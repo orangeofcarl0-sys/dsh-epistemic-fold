@@ -70,6 +70,32 @@ export function sourceAuthorityOf(kinds: readonly AuthoritativeEventKind[]): Sou
 }
 
 /**
+ * WHO took a DECISION, as distinct from who supplied supporting evidence.
+ *
+ * A decision claim may cite a tool result as well as the message where the
+ * decision was taken. `sourceAuthorityOf` would report `tool` there, because
+ * the tool result outranks assistant prose, and a tool producer has no standing
+ * to revise a user's decision — yet the elevated label let exactly that
+ * through. Only a decision-capable producer (the user or the assistant) can be
+ * the ORIGIN of a decision; tool and system evidence is support, never origin.
+ *
+ * The result is deliberately the strongest decision-capable producer, not the
+ * lowest: a claim that quotes both the user's instruction and the assistant's
+ * restatement is user-sourced.
+ *
+ * @param kinds - raw kinds of the cited evidence.
+ * @returns the decision origin, or `unknown` when no cited message could take a decision.
+ */
+export function decisionSourceOf(kinds: readonly AuthoritativeEventKind[]): SourceAuthority {
+  let best: SourceAuthority = 'unknown'
+  for (const kind of kinds) {
+    if (kind === 'user/message') return 'user'
+    if (kind === 'assistant/message') best = 'assistant'
+  }
+  return best
+}
+
+/**
  * The producer of a derived message, as far as authority is concerned.
  *
  * A `user/message` is not automatically the human user: DSH injects context,

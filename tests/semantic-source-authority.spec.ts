@@ -195,13 +195,18 @@ describe('source authority: the assistant may not retire the user decision', () 
     expect(second.state.decisions['semantic-historical']?.lifecycle).toBe('active')
     expect(second.plan.withheld[0]?.reason).toBe('unauthorized-replacement')
 
-    // A USER revision of the same historical anchor is allowed.
+    // A USER revision of the same historical anchor is allowed. The revision
+    // must be a LATER statement than the anchor's own source (seq 2 > seq 1):
+    // in a real session a later fold's messages always have higher seqs. The
+    // original fixture put the new user message and the anchor's source at the
+    // same seq, which no session can produce and which the stale-source rule
+    // (EF-R1) correctly reads as reusing the old instruction.
     const third = fold([
       decision('Use the durable outbox instead.', 'Use the durable outbox.', {
         subjectKey: 'queue',
         supersedes: ['previous'],
       }),
-    ], [user('Use the durable outbox instead.')], state)
+    ], [model('Reviewing the queue decision.'), user('Use the durable outbox instead.')], state)
     expect(third.plan.withheld).toEqual([])
     expect(Object.values(third.state.superseded).find(anchor => anchor.id === 'semantic-historical')?.lifecycle).toBe('superseded')
   })
@@ -226,7 +231,7 @@ describe('source authority: the assistant may not retire the user decision', () 
         subjectKey: 'queue',
         supersedes: ['previous'],
       }),
-    ], [user('Use the durable outbox instead.')], state)
+    ], [model('Reviewing the queue decision.'), user('Use the durable outbox instead.')], state)
     // Replay is deterministic: the recorded ops, applied to the same input
     // state, produce the same output state. Historical ops are not
     // re-authorized; they are applied as recorded.

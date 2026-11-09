@@ -30,7 +30,7 @@
  * @module dsh-epistemic-fold/semantic/validate
  */
 
-import { canVerify, isAuthorityGrounded, sourceAuthorityOf } from '../state/authority.ts'
+import { canVerify, decisionSourceOf, isAuthorityGrounded, sourceAuthorityOf } from '../state/authority.ts'
 import type { AuthorityDomain, AuthoritativeEventKind } from '../state/authority.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
 import type { AnchorKind, StateKey } from '../state/state.ts'
@@ -549,6 +549,18 @@ function validateOne(
   })
   if ('detail' in verification) return refuse('verification-unscoped', verification.detail)
 
+  // A decision is ORIGINATED by a user or assistant message; a tool result is
+  // support, never origin. Taking the strongest producer over ALL cited kinds
+  // let `assistant + tool` evidence label an assistant decision as tool-sourced
+  // and thereby inherit a standing no tool result has.
+  const decisionSeqs = authority === 'decision'
+    ? resolved.evidence.filter((_, position) => {
+      const cited = resolved.kinds[position]
+      return cited === 'user/message' || cited === 'assistant/message'
+    }).map(entry => entry.seq)
+    : []
+  const latestDecisionSeq = decisionSeqs.length === 0 ? undefined : Math.max(...decisionSeqs)
+
   const scope = normalizeScope(proposal.scope)
   const deltaId = deltaIdentity({
     kind,
@@ -568,7 +580,10 @@ function validateOne(
     grantedStatus: granted.granted,
     evidence: resolved.evidence,
     authority,
-    sourceAuthority: sourceAuthorityOf(resolved.kinds),
+    sourceAuthority: authority === 'decision'
+      ? decisionSourceOf(resolved.kinds)
+      : sourceAuthorityOf(resolved.kinds),
+    ...(latestDecisionSeq === undefined ? {} : { latestDecisionSeq }),
     anchorKind: rule.anchorKind,
     stateKey: rule.anchorKind === undefined ? undefined : semanticStateKey(kind, subjectKey, scope),
     ...(rule.failureState === undefined ? {} : { failureState: rule.failureState }),
