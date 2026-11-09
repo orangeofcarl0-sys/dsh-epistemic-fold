@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-lg-pilot-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-r1\\report.json",
+      "sha256": "86bf582fa3a72739333121b46df188fcd1c3444e51e1efbf1fa2ad08cf374915"
+    },
+    {
+      "cellId": "T2-s1-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-L-r1\\report.json",
+      "sha256": "2aac73f14fe1fb8f12c09105d1aced6696e515b7c5de4359ffbb9220d1a7ba23"
+    },
+    {
+      "cellId": "T2-s1-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-G-r1\\report.json",
+      "sha256": "b28b79596bee191bfad3bed1118b9b6078a66681c26049057f798ba82f67937e"
+    },
+    {
+      "cellId": "T2-s1-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-LG-r1\\report.json",
+      "sha256": "844591f860f0ad041a50d5fa9db76cccf80a39bd5658625e7c5e88fc7d72cf56"
+    },
+    {
+      "cellId": "T2-s2-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-L-r1\\report.json",
+      "sha256": "81dd4ce8e4b9b22e046b8cfead671b482988b9e0ca68bd3b3fa7314073c621e1"
+    },
+    {
+      "cellId": "T2-s2-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-G-r1\\report.json",
+      "sha256": "69f5dd04768996a6db7f9605aa376a2e592a76b27540f694475d608fba87422d"
+    },
+    {
+      "cellId": "T2-s2-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-LG-r1\\report.json",
+      "sha256": "b8048ef2b3657dbd982c4e74dc77986b4284475b18fe63a3f520aee77cc0888a"
+    },
+    {
+      "cellId": "T2-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-r1\\report.json",
+      "sha256": "99b9f6b3a49420cc180a71afeca3762d607fa90b3d8adb01639c61d79c5cfaf0"
+    },
+    {
+      "cellId": "T9-s1-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-G-r1\\report.json",
+      "sha256": "04e208b96857263a0908c3aa435d605c846a587e36f03a6e0db8283ac80f7c6a"
+    },
+    {
+      "cellId": "T9-s1-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-LG-r1\\report.json",
+      "sha256": "593cfecc2990739159cfcf10e8e4f8c99717dde86ec66058b31e884200e4f2b6"
+    },
+    {
+      "cellId": "T9-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-r1\\report.json",
+      "sha256": "3b8f53853e6c5a6018091b028e3c1d92fe71e8b648a348b557328f8e301cc7d4"
+    },
+    {
+      "cellId": "T9-s1-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-L-r1\\report.json",
+      "sha256": "c11ef872b4ccad9a0f7de61a8c59d47b9b8b4f0b4e54349f54a17d842c188863"
+    },
+    {
+      "cellId": "T9-s2-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-LG-r1\\report.json",
+      "sha256": "bb5675c4c725ddb116a4aa189f8b88806230567c852ab129a5ada91d1ee3ee21"
+    },
+    {
+      "cellId": "T9-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-r1\\report.json",
+      "sha256": "a0e87d11e4998299b4addada1f76da6c537622c388bd5a4d8f59dd8c9de919ba"
+    },
+    {
+      "cellId": "T9-s2-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-L-r1\\report.json",
+      "sha256": "cccac57cea3d58ae3077328d454b1e5f84d6ceb3ca2262e5bea801f9a535f92d"
+    },
+    {
+      "cellId": "T9-s2-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-G-r1\\report.json",
+      "sha256": "f672e77c215dd9c1eebfc8686e0ef489f8d4fcb1ff4f435cd4bee57f048d0161"
+    },
+    {
+      "cellId": "T10-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-r1\\report.json",
+      "sha256": "5d6ddfdf19dc99ed99c2bfc624b55f669d6e5b711ef32b2eb6317cdcb0b13468"
+    },
+    {
+      "cellId": "T10-s1-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-L-r1\\report.json",
+      "sha256": "93fd5345a27c5fe5f83b56efe766c77c2b142a8a3fb8ba9aaefdf1d99008a145"
+    },
+    {
+      "cellId": "T10-s1-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-G-r1\\report.json",
+      "sha256": "381c4ee8d594abf6ee86f7a774d44a4b3dc103293bf83eae8b4bfbc27cb41695"
+    },
+    {
+      "cellId": "T10-s1-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-LG-r1\\report.json",
+      "sha256": "e087a57efa0c9962eed35e2a5fd2726feee0ad2d94b0ef809f638e3759ef8184"
+    },
+    {
+      "cellId": "T10-s2-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-L-r1\\report.json",
+      "sha256": "ff4923a5578c266b30189af8694cbc3418a51eaa745064e6262776862713eca2"
+    },
+    {
+      "cellId": "T10-s2-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-G-r1\\report.json",
+      "sha256": "0fc79cb48bb50e33c83a733a6987981fe6c80ff26a8fbd52074d86614b92bdc4"
+    },
+    {
+      "cellId": "T10-s2-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-LG-r1\\report.json",
+      "sha256": "3a7ccfbc6feb87d6399ea2d6dc9b3df7313f57b1185323e0840212c0b6ed7b26"
+    },
+    {
+      "cellId": "T10-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-r1\\report.json",
+      "sha256": "4379cd2643d41b3ffbff25d582b5f7dca7f075e7ca7e6dc2789e011ecc58c54e"
+    }
+  ]
+}

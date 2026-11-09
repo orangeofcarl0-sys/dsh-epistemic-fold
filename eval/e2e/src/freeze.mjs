@@ -85,6 +85,20 @@ const LG_PILOT_ENVELOPE = {
   paidConcurrency: 1,
 }
 
+/**
+ * The confirmatory L×G design: 120 cells + 18 fault reserve. This is the
+ * envelope the pilot gate authorized; it is separate from both earlier grants.
+ */
+const LG_CONFIRM_ENVELOPE = {
+  continuationCells: 138,
+  httpAttempts: 4_200,
+  inputTokens: 30_000_000,
+  outputTokens: 1_200_000,
+  monetaryUsd: 25,
+  wallClockMs: 6 * 60 * 60 * 1000,
+  paidConcurrency: 2,
+}
+
 /** The original envelope's hard caps (work package §2.3). Not a target. */
 const ENVELOPE = {
   continuationCells: 72,
@@ -140,7 +154,30 @@ async function main() {
   const guardSmoke = argv.includes('--guard-smoke')
   const index = argv.includes('--index')
   const lgPilot = argv.includes('--lg-pilot')
-  if (lgPilot) {
+  const lgConfirm = argv.includes('--lg-confirm')
+  if (lgConfirm) {
+    // The frozen design: 6 templates × 2 seeds × 2 replicates × 5 arms = 120
+    // cells. E1 is a reference arm and is never pooled into the 2×2.
+    const arms = ['E0', 'E0-L', 'E0-G', 'E0-LG', 'E1']
+    const order = ['T2', 'T4', 'T7', 'T8', 'T9', 'T10']
+    for (const [templateIndex, template] of order.entries()) {
+      for (const seed of [1, 2]) {
+        for (const replicate of [1, 2]) {
+          const shift = (templateIndex + seed + replicate) % arms.length
+          const ordered = [...arms.slice(shift), ...arms.slice(0, shift)]
+          for (const arm of ordered) {
+            cells.push({
+              block: 'lg-confirm',
+              task: `${template}-s${seed}`,
+              arm,
+              replicate,
+              guard: arm === 'E0-G' || arm === 'E0-LG',
+            })
+          }
+        }
+      }
+    }
+  } else if (lgPilot) {
     // EF-R1 L×G pilot: T2 (the known write failure), T9 (cross-file) and T10
     // (multi-revision), both seeds, four arms, one paired replicate. Arm order
     // rotates by task so provider drift cannot masquerade as an arm effect.
@@ -238,10 +275,10 @@ async function main() {
   // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
   // envelope (`--index`) is separate and starts from zero: the original is
   // closed at 72/72, and its spend must not be charged twice.
-  const envelope = lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
+  const envelope = lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  if (!index && !lgPilot) {
+  if (!index && !lgPilot && !lgConfirm) {
     for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
       const path = join(OUT, `results-${priorCampaign}.json`)
       if (!existsSync(path)) continue
@@ -286,6 +323,7 @@ async function main() {
       core: cells.filter(cell => cell.block === 'core').length,
       index: cells.filter(cell => cell.block === 'index').length,
       lgPilot: cells.filter(cell => cell.block === 'lg-pilot').length,
+      lgConfirm: cells.filter(cell => cell.block === 'lg-confirm').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -305,12 +343,16 @@ async function main() {
       paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: lgPilot
+      reference: lgConfirm
+        ? 'EF-R1 120-cell confirmatory L×G design under a separate 138-cell envelope'
+        : lgPilot
         ? 'Separate EF-R1 32-cell L×G pilot envelope, explicitly authorized by the user'
         : index
           ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
           : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: lgPilot
+      statement: lgConfirm
+        ? 'the pilot gate was positive; the user authorized the staged plan, and the agent froze the 120-cell design inside a 138-cell cap (4,200 requests, 30M input, 1.2M output, 6h, concurrency 2)'
+        : lgPilot
         ? 'both earlier envelopes are closed; the user authorized this 24-cell pilot inside a 32-cell cap (800 requests, 4M input, 150k output, 2h, concurrency 1), and the agent froze the concrete manifest'
         : index
           ? 'the original 72-cell envelope is closed; the user authorized this separate follow-up design, and the agent froze the concrete manifest inside it'

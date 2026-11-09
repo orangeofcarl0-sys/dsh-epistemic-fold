@@ -55,6 +55,13 @@ const ENVELOPES = {
     outputTokens: 150_000,
     wallClockMs: 2 * 60 * 60 * 1000,
   },
+  'lg-confirm': {
+    continuationCells: 138,
+    httpAttempts: 4_200,
+    inputTokens: 30_000_000,
+    outputTokens: 1_200_000,
+    wallClockMs: 6 * 60 * 60 * 1000,
+  },
 }
 const envelopeName = value('envelope') ?? 'original'
 const ENVELOPE = ENVELOPES[envelopeName]

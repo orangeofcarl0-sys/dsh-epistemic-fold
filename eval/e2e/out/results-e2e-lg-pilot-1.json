@@ -1,0 +1,1116 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T19:10:40.173Z",
+  "campaign": "e2e-lg-pilot-1",
+  "manifestSha256": "c71c0b3820c37a0ef6e6d564c9179da3e5488e7f29fdd78e42d3edd8386c2667",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "complete",
+  "stopReason": null,
+  "planned": 24,
+  "executed": 24,
+  "budget": {
+    "used": {
+      "requests": 124,
+      "inputTokens": 1184262,
+      "outputTokens": 17715,
+      "wallClockMs": 298065
+    },
+    "limits": {
+      "httpAttempts": 800,
+      "inputTokens": 4000000,
+      "outputTokens": 150000,
+      "wallClockMs": 7200000,
+      "monetaryUsd": 10,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 32,
+      "paidConcurrency": 1
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 15972,
+        "outputTokens": 390,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 15972,
+          "outputTokens": 390,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 16063,
+        "outputTokens": 184,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 16063,
+          "outputTokens": 184,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17120,
+        "outputTokens": 743,
+        "cacheReadTokens": 19968,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17120,
+          "outputTokens": 743,
+          "cacheReadTokens": 19968,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 17325,
+        "outputTokens": 965,
+        "cacheReadTokens": 22528,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 17325,
+          "outputTokens": 965,
+          "cacheReadTokens": 22528,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 85451,
+        "outputTokens": 503,
+        "cacheReadTokens": 2688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 85451,
+          "outputTokens": 503,
+          "cacheReadTokens": 2688,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 158615,
+        "outputTokens": 839,
+        "cacheReadTokens": 78080,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 1,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 158615,
+          "outputTokens": 839,
+          "cacheReadTokens": 78080,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 7
+        },
+        "note": "1 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 17441,
+        "outputTokens": 946,
+        "cacheReadTokens": 20224,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 17441,
+          "outputTokens": 946,
+          "cacheReadTokens": 20224,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T2-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T2-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 1,
+        "inputTokens": 16044,
+        "outputTokens": 205,
+        "cacheReadTokens": 1280,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 16044,
+          "outputTokens": 205,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 1
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T2-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 20318,
+        "outputTokens": 918,
+        "cacheReadTokens": 20480,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 20318,
+          "outputTokens": 918,
+          "cacheReadTokens": 20480,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18770,
+        "outputTokens": 333,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18770,
+          "outputTokens": 333,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 36883,
+        "outputTokens": 403,
+        "cacheReadTokens": 8704,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 36883,
+          "outputTokens": 403,
+          "cacheReadTokens": 8704,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18867,
+        "outputTokens": 370,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18867,
+          "outputTokens": 370,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 18641,
+        "outputTokens": 356,
+        "cacheReadTokens": 5376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 18641,
+          "outputTokens": 356,
+          "cacheReadTokens": 5376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 18699,
+        "outputTokens": 309,
+        "cacheReadTokens": 2560,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 18699,
+          "outputTokens": 309,
+          "cacheReadTokens": 2560,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 36067,
+        "outputTokens": 487,
+        "cacheReadTokens": 4480,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 36067,
+          "outputTokens": 487,
+          "cacheReadTokens": 4480,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T9-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T9-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 19323,
+        "outputTokens": 680,
+        "cacheReadTokens": 11648,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 19323,
+          "outputTokens": 680,
+          "cacheReadTokens": 11648,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T9-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-r1",
+      "exposure": "fold",
+      "compactions": 8,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 121989,
+        "outputTokens": 969,
+        "cacheReadTokens": 27648,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 121989,
+          "outputTokens": 969,
+          "cacheReadTokens": 27648,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s1",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": true,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 140296,
+        "outputTokens": 1083,
+        "cacheReadTokens": 30720,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 140296,
+          "outputTokens": 1083,
+          "cacheReadTokens": 30720,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s1",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 9,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 14,
+        "inputTokens": 100346,
+        "outputTokens": 1626,
+        "cacheReadTokens": 69376,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 14,
+          "inputTokens": 100346,
+          "outputTokens": 1626,
+          "cacheReadTokens": 69376,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 14
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s1",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s1-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 54618,
+        "outputTokens": 631,
+        "cacheReadTokens": 7424,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 54618,
+          "outputTokens": 631,
+          "cacheReadTokens": 7424,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s1-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s2",
+        "arm": "E0-L",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-L-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 37861,
+        "outputTokens": 612,
+        "cacheReadTokens": 9088,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 37861,
+          "outputTokens": 612,
+          "cacheReadTokens": 9088,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-L-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s2",
+        "arm": "E0-G",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-G-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": true,
+      "termination": "finish",
+      "guard": true,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 80731,
+        "outputTokens": 1543,
+        "cacheReadTokens": 60416,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 12,
+          "inputTokens": 80731,
+          "outputTokens": 1543,
+          "cacheReadTokens": 60416,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 12
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-G-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s2",
+        "arm": "E0-LG",
+        "replicate": 1,
+        "guard": true
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-LG-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": true,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 60523,
+        "outputTokens": 1826,
+        "cacheReadTokens": 53120,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 12,
+          "inputTokens": 60523,
+          "outputTokens": 1826,
+          "cacheReadTokens": 53120,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 12
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-LG-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "lg-pilot",
+        "task": "T10-s2",
+        "arm": "E0",
+        "replicate": 1,
+        "guard": false
+      },
+      "status": "executed",
+      "cellId": "T10-s2-E0-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 56299,
+        "outputTokens": 794,
+        "cacheReadTokens": 13568,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 56299,
+          "outputTokens": 794,
+          "cacheReadTokens": 13568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-lg-pilot-1\\T10-s2-E0-r1\\report.json"
+    }
+  ]
+}
