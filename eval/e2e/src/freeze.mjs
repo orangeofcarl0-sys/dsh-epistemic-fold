@@ -115,6 +115,8 @@ async function main() {
   // measurement, and cannot be frozen. Everything else must be committed.
   const dirty = git('status', '--porcelain')
     .split('\n')
+    // Git on Windows can leave a CR on each line; trim it before comparing.
+    .map(line => line.replace(/\r$/u, ''))
     .filter(line => line.length > 0 && line.slice(3) !== 'ef-phase7-logs/watchdog.heartbeat')
   if (dirty.length > 0) {
     process.stderr.write('e2e freeze: the worktree is dirty; commit or restore before freezing\n')

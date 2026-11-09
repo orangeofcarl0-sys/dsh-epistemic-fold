@@ -83,7 +83,7 @@ async function verifyBinding(manifest) {
   if (digest !== manifest.code.sourceTreeDigest) {
     return { ok: false, reason: 'the source tree differs from the frozen manifest' }
   }
-  const dirty = git('status', '--porcelain').split('\n').filter(line => {
+  const dirty = git('status', '--porcelain').split('\n').map(line => line.replace(/\r$/u, '')).filter(line => {
     const path = line.slice(3)
     // The watchdog heartbeat is appended by a long-running local process, not
     // by this round. It carries no measurement and cannot be frozen.
