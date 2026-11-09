@@ -22,15 +22,45 @@ const ROOT = resolve(HERE, '..', '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e')
 
 const argv = process.argv.slice(2)
-const at = argv.indexOf('--manifest')
-const manifestPath = at === -1 ? join(OUT, 'out', 'manifest-e2e-core-1.json') : resolve(argv[at + 1])
+const value = name => {
+  const at = argv.indexOf(`--${name}`)
+  return at === -1 ? undefined : argv[at + 1]
+}
+const manifestPath = value('manifest') === undefined
+  ? join(OUT, 'out', 'manifest-e2e-core-1.json')
+  : resolve(value('manifest'))
+const authorizationPath = value('out') === undefined
+  ? join(OUT, 'authorization.json')
+  : resolve(value('out'))
 
-const ENVELOPE = {
-  continuationCells: 72,
-  httpAttempts: 2200,
-  inputTokens: 18_000_000,
-  outputTokens: 1_000_000,
-  wallClockMs: 8 * 60 * 60 * 1000,
+/**
+ * The authorized envelopes, by name.
+ *
+ * A later round must not silently inherit the largest grant: the caller names
+ * the envelope, and the check below uses THAT grant. The EF-R1 pilot is a
+ * separate 32-cell cap; the original 72-cell envelope is closed.
+ */
+const ENVELOPES = {
+  original: {
+    continuationCells: 72,
+    httpAttempts: 2200,
+    inputTokens: 18_000_000,
+    outputTokens: 1_000_000,
+    wallClockMs: 8 * 60 * 60 * 1000,
+  },
+  'lg-pilot': {
+    continuationCells: 32,
+    httpAttempts: 800,
+    inputTokens: 4_000_000,
+    outputTokens: 150_000,
+    wallClockMs: 2 * 60 * 60 * 1000,
+  },
+}
+const envelopeName = value('envelope') ?? 'original'
+const ENVELOPE = ENVELOPES[envelopeName]
+if (ENVELOPE === undefined) {
+  process.stderr.write(`authorize: unknown envelope ${JSON.stringify(envelopeName)}; expected ${Object.keys(ENVELOPES).join(', ')}\n`)
+  process.exit(2)
 }
 
 const text = await readFile(manifestPath, 'utf8')
@@ -57,10 +87,12 @@ const authorization = {
   manifestSha256: digest,
   campaign: manifest.campaign,
   cells: manifest.cells.length,
-  statement: 'Delegated authorization under the EF-E2E work package: the envelope is authorized, '
-    + 'this manifest is inside it, and the run may not exceed the manifest limits.',
+  statement: 'Delegated authorization under the EF-E2E work package: the user authorized this '
+    + 'envelope, the manifest is inside it, and the run may not exceed the manifest limits.',
+  envelopeName,
   envelope: ENVELOPE,
 }
-await mkdir(OUT, { recursive: true })
-await writeFile(join(OUT, 'authorization.json'), `${JSON.stringify(authorization, null, 2)}\n`, 'utf8')
-process.stdout.write(`authorized ${manifest.campaign}: ${manifest.cells.length} cell(s), manifest ${digest.slice(0, 12)}…\n`)
+await mkdir(dirname(authorizationPath), { recursive: true })
+await writeFile(authorizationPath, `${JSON.stringify(authorization, null, 2)}\n`, 'utf8')
+process.stdout.write(`authorized ${manifest.campaign} under ${envelopeName}: ${manifest.cells.length} cell(s), `
+  + `manifest ${digest.slice(0, 12)}…\n`)

@@ -208,12 +208,12 @@ async function main() {
   const byTemplateArm = {}
   for (const template of [...new Set(executed.map(row => row.template))].sort()) {
     byTemplateArm[template] = {}
-    for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E1', 'S']) {
+    for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E0-L', 'E0-G', 'E0-LG', 'E1', 'S']) {
       byTemplateArm[template][arm] = aggregate(executed.filter(row => row.template === template && row.arm === arm))
     }
   }
   const byArm = {}
-  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E1', 'S']) byArm[arm] = aggregate(executed.filter(row => row.arm === arm))
+  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E0-L', 'E0-G', 'E0-LG', 'E1', 'S']) byArm[arm] = aggregate(executed.filter(row => row.arm === arm))
   const byBlock = {}
   for (const block of ['calibration', 'core']) byBlock[block] = aggregate(executed.filter(row => row.block === block))
 
@@ -251,7 +251,7 @@ async function main() {
   md.push('')
   md.push('| Arm | Cells | Pass | Rate | Folds | No-fold | Recall cells | Requests | Aux | Input | Output |')
   md.push('|---|---|---|---|---|---|---|---|---|---|---|')
-  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E1', 'S']) {
+  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E0-L', 'E0-G', 'E0-LG', 'E1', 'S']) {
     const row = byArm[arm]
     md.push(`| ${arm} | ${row.cells} | ${row.checkerPasses} | ${row.passRate} | ${row.folds} | ${row.noFold} | ${row.recallCells} | ${row.requests} | ${row.auxiliaryRequests} | ${row.inputTokens} | ${row.outputTokens} |`)
   }
@@ -259,7 +259,7 @@ async function main() {
   md.push('| Template | Arm | Pass | Rate | Mean folds | Mean requests | Aux requests | Mean input | Mean output |')
   md.push('|---|---|---|---|---|---|---|---|---|')
   for (const [template, arms] of Object.entries(byTemplateArm)) {
-    for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E1', 'S']) {
+    for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E0-L', 'E0-G', 'E0-LG', 'E1', 'S']) {
       const row = arms[arm]
       md.push(`| ${template} | ${arm} | ${row.checkerPasses}/${row.cells} | ${row.passRate} | ${row.meanFolds} | ${row.meanRequests} | ${row.auxiliaryRequests} | ${row.meanInputTokens} | ${row.meanOutputTokens} |`)
     }
@@ -282,7 +282,7 @@ async function main() {
   await writeFile(join(OUT, `analysis-${campaign}.md`), `${md.join('\n')}\n`, 'utf8')
 
   process.stdout.write(`analysis ${campaign}: ${executed.length} executed cell(s)\n`)
-  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E1', 'S']) {
+  for (const arm of ['B0', 'E0', 'E0a', 'E0i', 'E0ai', 'E0-L', 'E0-G', 'E0-LG', 'E1', 'S']) {
     const row = byArm[arm]
     process.stdout.write(`  ${arm}: pass ${row.checkerPasses}/${row.cells}, folds ${row.folds}, aux ${row.auxiliaryRequests}, `
       + `in ${row.inputTokens}, out ${row.outputTokens}, recall cells ${row.recallCells}\n`)

@@ -36,7 +36,10 @@ const ROOT = resolve(HERE, '..', '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const RUNS = join(ROOT, 'eval', 'e2e', 'runs')
 const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
-const AUTHORIZATION = join(ROOT, 'eval', 'e2e', 'authorization.json')
+const authorizationAt = process.argv.indexOf('--authorization')
+const AUTHORIZATION = authorizationAt === -1
+  ? join(ROOT, 'eval', 'e2e', 'authorization.json')
+  : resolve(process.argv[authorizationAt + 1])
 
 const argv = process.argv.slice(2)
 const flag = name => argv.includes(`--${name}`)
@@ -82,7 +85,12 @@ async function verifyBinding(manifest) {
   }
   const dirty = git('status', '--porcelain').split('\n').filter(line => {
     const path = line.slice(3)
-    return path.length > 0 && !path.startsWith('eval/e2e/out/') && !path.startsWith('eval/e2e/runs/')
+    // The watchdog heartbeat is appended by a long-running local process, not
+    // by this round. It carries no measurement and cannot be frozen.
+    return path.length > 0
+      && path !== 'ef-phase7-logs/watchdog.heartbeat'
+      && !path.startsWith('eval/e2e/out/')
+      && !path.startsWith('eval/e2e/runs/')
   })
   if (dirty.length > 0) {
     return { ok: false, reason: `the worktree is dirty outside the evidence directories:\n${dirty.join('\n')}` }

@@ -68,6 +68,23 @@ const FOLLOWUP_ENVELOPE = {
   paidConcurrency: 1,
 }
 
+/**
+ * The EF-R1 L×G pilot envelope, explicitly authorized by the user:
+ * 24 cells, 800 requests, 4M input, 150k output, 2h, concurrency 1.
+ *
+ * It is a SEPARATE grant, like the index follow-up: the original 72-cell and
+ * the 24-cell index envelopes are closed and are not charged again.
+ */
+const LG_PILOT_ENVELOPE = {
+  continuationCells: 32,
+  httpAttempts: 800,
+  inputTokens: 4_000_000,
+  outputTokens: 150_000,
+  monetaryUsd: 10,
+  wallClockMs: 2 * 60 * 60 * 1000,
+  paidConcurrency: 1,
+}
+
 /** The original envelope's hard caps (work package §2.3). Not a target. */
 const ENVELOPE = {
   continuationCells: 72,
@@ -94,7 +111,11 @@ function armRotation(templateIndex, replicate) {
 
 async function main() {
   const campaign = value('campaign', 'e2e-core-1')
+  // The watchdog heartbeat is appended by a local process, carries no
+  // measurement, and cannot be frozen. Everything else must be committed.
   const dirty = git('status', '--porcelain')
+    .split('\n')
+    .filter(line => line.length > 0 && line.slice(3) !== 'ef-phase7-logs/watchdog.heartbeat')
   if (dirty.length > 0) {
     process.stderr.write('e2e freeze: the worktree is dirty; commit or restore before freezing\n')
     process.stderr.write(`${dirty}\n`)
@@ -116,7 +137,28 @@ async function main() {
   const recall = argv.includes('--recall')
   const guardSmoke = argv.includes('--guard-smoke')
   const index = argv.includes('--index')
-  if (index) {
+  const lgPilot = argv.includes('--lg-pilot')
+  if (lgPilot) {
+    // EF-R1 L×G pilot: T2 (the known write failure), T9 (cross-file) and T10
+    // (multi-revision), both seeds, four arms, one paired replicate. Arm order
+    // rotates by task so provider drift cannot masquerade as an arm effect.
+    const arms = ['E0', 'E0-L', 'E0-G', 'E0-LG']
+    for (const [taskIndex, task] of ['T2-s1', 'T2-s2', 'T9-s1', 'T9-s2', 'T10-s1', 'T10-s2'].entries()) {
+      const shift = taskIndex % arms.length
+      const ordered = [...arms.slice(shift), ...arms.slice(0, shift)]
+      for (const arm of ordered) {
+        cells.push({
+          block: 'lg-pilot',
+          task,
+          arm,
+          replicate: 1,
+          // The guard is a CELL property: it is a harness/runtime check, not
+          // an EF feature and not part of the arm's config.
+          guard: arm === 'E0-G' || arm === 'E0-LG',
+        })
+      }
+    }
+  } else if (index) {
     // Folded-span-index experiment under the SEPARATE follow-up envelope:
     // E0 (bare), E0i (index), E0ai (index + retrieval instruction), on the two
     // tasks whose failures the trajectory analysis attributed to the missing
@@ -194,10 +236,10 @@ async function main() {
   // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
   // envelope (`--index`) is separate and starts from zero: the original is
   // closed at 72/72, and its spend must not be charged twice.
-  const envelope = index ? FOLLOWUP_ENVELOPE : ENVELOPE
+  const envelope = lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  if (!index) {
+  if (!index && !lgPilot) {
     for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
       const path = join(OUT, `results-${priorCampaign}.json`)
       if (!existsSync(path)) continue
@@ -241,6 +283,7 @@ async function main() {
       calibration: cells.filter(cell => cell.block === 'calibration').length,
       core: cells.filter(cell => cell.block === 'core').length,
       index: cells.filter(cell => cell.block === 'index').length,
+      lgPilot: cells.filter(cell => cell.block === 'lg-pilot').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -260,12 +303,16 @@ async function main() {
       paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: index
-        ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
-        : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: index
-        ? 'the original 72-cell envelope is closed; the user authorized this separate follow-up design, and the agent froze the concrete manifest inside it'
-        : 'the user authorized this execution envelope; the agent freezes the concrete manifest',
+      reference: lgPilot
+        ? 'Separate EF-R1 32-cell L×G pilot envelope, explicitly authorized by the user'
+        : index
+          ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
+          : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
+      statement: lgPilot
+        ? 'both earlier envelopes are closed; the user authorized this 24-cell pilot inside a 32-cell cap (800 requests, 4M input, 150k output, 2h, concurrency 1), and the agent froze the concrete manifest'
+        : index
+          ? 'the original 72-cell envelope is closed; the user authorized this separate follow-up design, and the agent froze the concrete manifest inside it'
+          : 'the user authorized this execution envelope; the agent freezes the concrete manifest',
     },
   }
 
