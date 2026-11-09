@@ -52,6 +52,10 @@ export const ARMS = Object.freeze({
   E0a: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', recallAffordance: true },
   // E0i: EF Minimal + a deterministic index of the folded tool calls.
   E0i: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', foldedSpanIndex: true },
+  // E0ai: the index plus the generic retrieval instruction. The negative
+  // affordance result used the instruction ALONE; the guard smoke showed the
+  // missing cue is WHAT was folded, so the pair is the product-shaped fix.
+  E0ai: { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', foldedSpanIndex: true, recallAffordance: true },
   // S-safe: the same EF core, with semantic continuity ACTIVE after the
   // source-authority fix. The writer is a real model call; every failure is
   // counted in the assigned arm, never filtered to successful commits.

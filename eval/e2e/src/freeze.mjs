@@ -49,7 +49,26 @@ function sourceTreeDigest() {
   return sha256(lines.join('\n'))
 }
 
-/** The envelope's hard caps (work package §2.3). Not a target. */
+/**
+ * The FOLLOW-UP envelope for the index experiment.
+ *
+ * The original 72-cell envelope is exhausted (72/72). This is a separate,
+ * deliberately smaller grant for the campaign the user authorized after the
+ * variance attribution: 24 cells, 720 requests, 6M input, 250k output, 3h.
+ * It is NOT an extension of the original envelope; the two are accounted
+ * separately and the original remains closed.
+ */
+const FOLLOWUP_ENVELOPE = {
+  continuationCells: 24,
+  httpAttempts: 720,
+  inputTokens: 6_000_000,
+  outputTokens: 250_000,
+  monetaryUsd: 25,
+  wallClockMs: 3 * 60 * 60 * 1000,
+  paidConcurrency: 1,
+}
+
+/** The original envelope's hard caps (work package §2.3). Not a target. */
 const ENVELOPE = {
   continuationCells: 72,
   httpAttempts: 2200,
@@ -96,9 +115,22 @@ async function main() {
   const retest = argv.includes('--retest')
   const recall = argv.includes('--recall')
   const guardSmoke = argv.includes('--guard-smoke')
-  if (guardSmoke) {
-    // The ONE remaining continuation cell under the envelope (71/72 used).
-    // A single live demonstration of the completion guard, labelled n=1.
+  const index = argv.includes('--index')
+  if (index) {
+    // Folded-span-index experiment under the SEPARATE follow-up envelope:
+    // E0 (bare), E0i (index), E0ai (index + retrieval instruction), on the two
+    // tasks whose failures the trajectory analysis attributed to the missing
+    // retrieval cue. Two seeds x two replicates = 24 cells.
+    for (const replicate of [1, 2]) {
+      for (const task of ['T2-s1', 'T2-s2', 'T4-s1', 'T4-s2']) {
+        for (const arm of ['E0', 'E0i', 'E0ai']) {
+          cells.push({ block: 'index', task, arm, replicate })
+        }
+      }
+    }
+  } else if (guardSmoke) {
+    // The ONE remaining continuation cell under the ORIGINAL envelope (71/72
+    // used). A single live demonstration of the completion guard, labelled n=1.
     cells.push({ block: 'guard-smoke', task: 'T2-s1', arm: 'E0', replicate: 0, guard: true })
   } else if (recall) {
     // Recall-affordance experiment: E0 vs E0+affordance on the memory-sensitive
@@ -159,20 +191,23 @@ async function main() {
     }
   }
 
-  // The envelope is cumulative across phases. A pilot manifest carries only
-  // what the core campaign left, so a second campaign cannot silently spend
-  // the same tokens twice.
+  // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
+  // envelope (`--index`) is separate and starts from zero: the original is
+  // closed at 72/72, and its spend must not be charged twice.
+  const envelope = index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
-    const path = join(OUT, `results-${priorCampaign}.json`)
-    if (!existsSync(path)) continue
-    const prior = JSON.parse(await readFile(path, 'utf8'))
-    priorUsage.requests += prior.budget.used.requests
-    priorUsage.inputTokens += prior.budget.used.inputTokens
-    priorUsage.outputTokens += prior.budget.used.outputTokens
-    priorUsage.wallClockMs += prior.budget.used.wallClockMs
-    priorCells += prior.executed
+  if (!index) {
+    for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
+      const path = join(OUT, `results-${priorCampaign}.json`)
+      if (!existsSync(path)) continue
+      const prior = JSON.parse(await readFile(path, 'utf8'))
+      priorUsage.requests += prior.budget.used.requests
+      priorUsage.inputTokens += prior.budget.used.inputTokens
+      priorUsage.outputTokens += prior.budget.used.outputTokens
+      priorUsage.wallClockMs += prior.budget.used.wallClockMs
+      priorCells += prior.executed
+    }
   }
 
   const lock = await readFile(join(ROOT, 'package-lock.json'), 'utf8')
@@ -205,6 +240,7 @@ async function main() {
     design: {
       calibration: cells.filter(cell => cell.block === 'calibration').length,
       core: cells.filter(cell => cell.block === 'core').length,
+      index: cells.filter(cell => cell.block === 'index').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -214,18 +250,22 @@ async function main() {
     },
     perCell: PER_CELL,
     limits: {
-      httpAttempts: ENVELOPE.httpAttempts - priorUsage.requests,
-      inputTokens: ENVELOPE.inputTokens - priorUsage.inputTokens,
-      outputTokens: ENVELOPE.outputTokens - priorUsage.outputTokens,
-      wallClockMs: ENVELOPE.wallClockMs - priorUsage.wallClockMs,
-      monetaryUsd: ENVELOPE.monetaryUsd,
+      httpAttempts: envelope.httpAttempts - priorUsage.requests,
+      inputTokens: envelope.inputTokens - priorUsage.inputTokens,
+      outputTokens: envelope.outputTokens - priorUsage.outputTokens,
+      wallClockMs: envelope.wallClockMs - priorUsage.wallClockMs,
+      monetaryUsd: envelope.monetaryUsd,
       monetaryNote: 'no per-token price is verifiable for this local route; token and request caps are the enforced bound',
-      continuationCells: ENVELOPE.continuationCells - priorCells,
-      paidConcurrency: ENVELOPE.paidConcurrency,
+      continuationCells: envelope.continuationCells - priorCells,
+      paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: 'the user authorized this execution envelope; the agent freezes the concrete manifest',
+      reference: index
+        ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
+        : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
+      statement: index
+        ? 'the original 72-cell envelope is closed; the user authorized this separate follow-up design, and the agent froze the concrete manifest inside it'
+        : 'the user authorized this execution envelope; the agent freezes the concrete manifest',
     },
   }
 
