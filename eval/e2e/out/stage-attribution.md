@@ -23,9 +23,10 @@ No cell can be shown to have failed at **observation** with the recorded evidenc
 
 | Path | Memory-task cells |
 |---|---|
-| the final text/deliverable carries the value, seen in a primary tool result | 22 |
-| the value was carried by the CHECKPOINT, not a tool result | 7 |
-| the value was produced with neither visible source | 12 |
+| every value was seen in a primary tool result | 13 |
+| every value was explained by the checkpoint (some also by a tool result) | 13 |
+| every value was explained by the checkpoint or task prompt (some also by a tool) | 10 |
+| at least one value has no visible source in tool, checkpoint or prompt | 5 |
 | the value was not produced | 30 |
 | value production unknown (no gold pair) | 0 |
 

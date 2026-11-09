@@ -81,6 +81,11 @@ function mentionsPair(text, pair) {
   const quoted = `["']?${escapeRe(value)}["']?`
   const keyed = new RegExp(`${escapeRe(pair.key)}["']?\\s*[:=]\\s*${quoted}(?![0-9A-Za-z])`, 'iu')
   if (keyed.test(text)) return true
+  // A checkpoint renders an anchor as `- [kind id key] value (authority)`.
+  // The key is inside the bracket and the value follows it, so the JSON/pair
+  // form above does not match. This is the form that carries T5's state.
+  const bracketed = new RegExp(`${escapeRe(pair.key)}\\]\\s*${quoted}(?![0-9A-Za-z])`, 'iu')
+  if (bracketed.test(text)) return true
   // A distinctive string (hex id, region) is evidence on its own; a bare short
   // number is not: "2" appears in timestamps and step counts.
   const distinctive = String(pair.value).length >= 6 && /[A-Za-z]/u.test(String(pair.value))
@@ -91,6 +96,35 @@ function mentionsAll(text, pairs) {
   const unique = new Map(pairs.map(pair => [`${pair.key}:${String(pair.value)}`, pair]))
   if (unique.size === 0) return null
   const matched = [...unique.values()].filter(pair => mentionsPair(text, pair))
+  return { value: matched.length === unique.size, matched: matched.length, total: unique.size }
+}
+
+/**
+ * A looser match for PROSE sources (checkpoint text, task prompt).
+ *
+ * A checkpoint may render `- [value ... window_seconds] 30`, and a task prompt
+ * may say "the window was agreed at 30 seconds" without the field name. Neither
+ * is a tool observation, so the strict key:value form is too narrow; requiring
+ * every key token within 80 characters of the value is specific enough for a
+ * delivery source and is never used to claim a tool result carried the fact.
+ */
+function mentionsLoose(text, pair) {
+  const value = String(pair.value)
+  const re = new RegExp(`(?<![0-9A-Za-z])${escapeRe(value)}(?![0-9A-Za-z])`, 'gu')
+  const tokens = pair.key.split(/[^A-Za-z0-9]+/u).filter(token => token.length >= 3).map(token => token.toLowerCase())
+  if (tokens.length === 0) return false
+  for (const match of text.matchAll(re)) {
+    const start = Math.max(0, match.index - 80)
+    const slice = text.slice(start, match.index + value.length + 80).toLowerCase()
+    if (tokens.every(token => slice.includes(token))) return true
+  }
+  return false
+}
+
+function mentionsAllLoose(text, pairs) {
+  const unique = new Map(pairs.map(pair => [`${pair.key}:${String(pair.value)}`, pair]))
+  if (unique.size === 0) return null
+  const matched = [...unique.values()].filter(pair => mentionsPair(text, pair) || mentionsLoose(text, pair))
   return { value: matched.length === unique.size, matched: matched.length, total: unique.size }
 }
 
@@ -188,8 +222,42 @@ function deliverableHasValues(task, workspace) {
 }
 
 /** Tool texts the model actually received, with whether each was complete. */
-function toolTexts(report) {
+/** The text of a full Message (text blocks only). */
+function fullMessageText(message) {
+  return (message.content ?? [])
+    .map(block => block?.type === 'text' ? String(block.text ?? '') : '')
+    .filter(text => text.length > 0)
+    .join('\n')
+}
+
+/** Primary full messages, when this cell captured them. */
+function readFullMessages(campaign, cellId) {
+  const path = join(RUNS, campaign, cellId, 'raw', 'messages.json')
+  if (!existsSync(path)) return []
+  try {
+    return JSON.parse(readFileSync(path, 'utf8'))
+  } catch {
+    return []
+  }
+}
+
+function toolTexts(report, fullRequests = []) {
   const texts = []
+  // The full primary messages are the authority when present: they are the
+  // exact bytes the task model received, so absence is decidable rather than
+  // `unknown`. Previews are only used for cells that predate this capture.
+  for (const request of fullRequests) {
+    if (request.purpose !== undefined && request.purpose !== 'primary') continue
+    for (const message of request.messages ?? []) {
+      if (message.role !== 'tool') continue
+      texts.push({
+        source: 'full-message',
+        text: fullMessageText(message),
+        truncated: false,
+        name: null,
+      })
+    }
+  }
   for (const event of report.trajectory ?? []) {
     if (event.type !== 'tool/result') continue
     texts.push({
@@ -199,20 +267,22 @@ function toolTexts(report) {
       name: event.name ?? null,
     })
   }
-  for (const request of report.requests ?? []) {
-    // Auxiliary calls are a different reader: the semantic writer and the
-    // compaction engine both see the span, but the TASK model does not act on
-    // what they were shown. Counting their tool texts as the model's
-    // observation would make every EF cell look informed.
-    if (request.purpose !== 'primary') continue
-    for (const message of request.messages ?? []) {
-      if (message.role !== 'tool') continue
-      texts.push({
-        source: 'request-preview',
-        text: String(message.preview ?? ''),
-        truncated: message.truncated === true,
-        name: null,
-      })
+  if (fullRequests.length === 0) {
+    for (const request of report.requests ?? []) {
+      // Auxiliary calls are a different reader: the semantic writer and the
+      // compaction engine both see the span, but the TASK model does not act
+      // on what they were shown. Counting their tool texts as the model's
+      // observation would make every EF cell look informed.
+      if (request.purpose !== 'primary') continue
+      for (const message of request.messages ?? []) {
+        if (message.role !== 'tool') continue
+        texts.push({
+          source: 'request-preview',
+          text: String(message.preview ?? ''),
+          truncated: message.truncated === true,
+          name: null,
+        })
+      }
     }
   }
   return texts
@@ -226,14 +296,21 @@ function checkpointText(report) {
   return ''
 }
 
-function observedStage(report, pairs) {
-  const texts = toolTexts(report)
-  if (texts.length === 0) return { value: null, basis: 'no tool result recorded', matched: 0 }
+function observedStage(report, pairs, fullRequests = []) {
+  const texts = toolTexts(report, fullRequests)
+  if (texts.length === 0) {
+    return fullRequests.length > 0
+      ? { value: false, basis: 'the full primary requests contain no tool result', matched: 0 }
+      : { value: null, basis: 'no tool result recorded', matched: 0 }
+  }
   const matched = texts.filter(entry => pairs.some(pair => mentionsPair(entry.text, pair)))
   if (matched.length > 0) {
+    const basis = matched.some(entry => entry.source === 'full-message')
+      ? 'full-message'
+      : matched.some(entry => entry.source === 'trajectory') ? 'trajectory' : 'request-preview'
     return {
       value: true,
-      basis: matched.some(entry => entry.source === 'trajectory') ? 'trajectory' : 'request-preview',
+      basis,
       matched: matched.length,
       truncatedMatch: matched.some(entry => entry.truncated),
     }
@@ -352,8 +429,24 @@ for (const campaign of CAMPAIGNS) {
     const finalText = String(report.behaviour?.finalText ?? '')
     const textValues = memoryTask ? mentionsAll(finalText, pairs) : null
     const deliveredValues = memoryTask ? deliverableHasValues(task, workspace) : null
-    const checkpointValues = memoryTask ? mentionsAll(checkpointText(report), pairs) : null
-    const observed = memoryTask ? observedStage(report, pairs) : { value: null, basis: 'not a historical-recovery task', matched: 0 }
+    const checkpointSource = checkpointText(report)
+    const promptSource = [task.task, task.taskB ?? '', JSON.stringify(task.stageB ?? '')].join('\n')
+    const checkpointValues = memoryTask ? mentionsAllLoose(checkpointSource, pairs) : null
+    const promptValues = memoryTask ? mentionsAllLoose(promptSource, pairs) : null
+    const fullRequests = readFullMessages(campaign, cell.cellId)
+    const toolEntries = memoryTask ? toolTexts(report, fullRequests) : []
+    const pairSources = memoryTask
+      ? pairs.map(pair => ({
+        key: pair.key,
+        value: pair.value,
+        tool: toolEntries.some(entry => mentionsPair(entry.text, pair)),
+        checkpoint: mentionsPair(checkpointSource, pair) || mentionsLoose(checkpointSource, pair),
+        prompt: mentionsPair(promptSource, pair) || mentionsLoose(promptSource, pair),
+      }))
+      : []
+    const observed = memoryTask
+      ? observedStage(report, pairs, fullRequests)
+      : { value: null, basis: 'not a historical-recovery task', matched: 0 }
 
     const stages = {
       A: archiveStage(report, arm),
@@ -372,6 +465,9 @@ for (const campaign of CAMPAIGNS) {
         matchedInText: textValues?.matched ?? null,
         total: textValues?.total ?? null,
         deliverable: deliveredValues,
+        taskPromptCarried: promptValues === null ? null : promptValues.value,
+        taskPromptMatched: promptValues?.matched ?? null,
+        pairSources,
         basis: 'final assistant text OR the written deliverable',
       } : { value: null, basis: 'no gold value for this contract' },
       E: writeStage(task, workspace),
@@ -395,6 +491,7 @@ for (const campaign of CAMPAIGNS) {
       recallCalls: stages.B.calls,
       writes: (report.tools?.byName?.write_file ?? 0) + (report.tools?.byName?.edit_file ?? 0),
       hasTrajectory: Array.isArray(report.trajectory) && report.trajectory.length > 0,
+      fullPrimaryMessages: fullRequests.length,
     })
   }
 }
@@ -418,10 +515,29 @@ for (const row of failures.filter(entry => entry.failureStage === 'verify')) {
 }
 const memoryRows = rows.filter(row => MEMORY_TEMPLATES.has(row.template))
 const valueDelivered = memoryRows.filter(row => row.stages.D.value === true)
+
+/**
+ * Classify a cell by the WEAKEST source every one of its values needed.
+ *
+ * A cell can take one value from the checkpoint and another from the task
+ * prompt; treating it as "checkpoint only" or "prompt only" would be false.
+ * The classes are nested unions, from strongest to weakest.
+ */
+function deliveryPath(row) {
+  const sources = row.stages.D.pairSources ?? []
+  if (sources.length === 0) return 'unknown'
+  const every = predicate => sources.every(predicate)
+  if (every(source => source.tool)) return 'tool'
+  if (every(source => source.tool || source.checkpoint)) return 'checkpoint'
+  if (every(source => source.tool || source.checkpoint || source.prompt)) return 'prompt'
+  return 'unattributed'
+}
+
 const deliveryPaths = {
-  fromToolResult: valueDelivered.filter(row => row.stages.C.value === true).length,
-  fromCheckpointOnly: valueDelivered.filter(row => row.stages.C.value !== true && row.stages.C.checkpointCarried === true).length,
-  unattributed: valueDelivered.filter(row => row.stages.C.value !== true && row.stages.C.checkpointCarried !== true).length,
+  fromToolResult: valueDelivered.filter(row => deliveryPath(row) === 'tool').length,
+  fromCheckpointOnly: valueDelivered.filter(row => deliveryPath(row) === 'checkpoint').length,
+  fromTaskPromptOnly: valueDelivered.filter(row => deliveryPath(row) === 'prompt').length,
+  unattributed: valueDelivered.filter(row => deliveryPath(row) === 'unattributed').length,
   valueNotProduced: memoryRows.filter(row => row.stages.D.value === false).length,
   valueUnknown: memoryRows.filter(row => row.stages.D.value === null).length,
 }
@@ -495,9 +611,10 @@ md.push('## How the value reached the answer')
 md.push('')
 md.push('| Path | Memory-task cells |')
 md.push('|---|---|')
-md.push(`| the final text/deliverable carries the value, seen in a primary tool result | ${deliveryPaths.fromToolResult} |`)
-md.push(`| the value was carried by the CHECKPOINT, not a tool result | ${deliveryPaths.fromCheckpointOnly} |`)
-md.push(`| the value was produced with neither visible source | ${deliveryPaths.unattributed} |`)
+md.push(`| every value was seen in a primary tool result | ${deliveryPaths.fromToolResult} |`)
+md.push(`| every value was explained by the checkpoint (some also by a tool result) | ${deliveryPaths.fromCheckpointOnly} |`)
+md.push(`| every value was explained by the checkpoint or task prompt (some also by a tool) | ${deliveryPaths.fromTaskPromptOnly} |`)
+md.push(`| at least one value has no visible source in tool, checkpoint or prompt | ${deliveryPaths.unattributed} |`)
 md.push(`| the value was not produced | ${deliveryPaths.valueNotProduced} |`)
 md.push(`| value production unknown (no gold pair) | ${deliveryPaths.valueUnknown} |`)
 md.push('')

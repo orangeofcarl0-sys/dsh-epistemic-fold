@@ -124,6 +124,20 @@ export class RecordingAdapter extends LlmAdapter {
       finish: null,
       durationMs: null,
     }
+    // Full primary messages, separate from the bounded summaries.
+    //
+    // The first 96 cells kept only a 400-character preview, so the offline
+    // attribution could not tell whether a tool result carried a fact: absence
+    // from a prefix proves nothing. These are the bytes the TASK model saw, not
+    // an auxiliary writer's view. The file is local evidence (eval/e2e/runs is
+    // ignored) and is copied into the research archive.
+    if (entry.purpose === 'primary') {
+      this.log.fullMessages.push({
+        index: entry.index,
+        at: entry.at,
+        messages: effective.messages ?? [],
+      })
+    }
     const started = Date.now()
     this.log.requests.push(entry)
     for await (const chunk of this.inner.stream(effective)) {
@@ -152,7 +166,7 @@ class ScriptedSolverAdapter extends LlmAdapter {
     this.written = new Set()
     this.stage = 0
     this.files = task.reference
-    this.log = { requests: [] }
+    this.log = { requests: [], fullMessages: [] }
   }
 
   providerInfo(provider) {
@@ -376,7 +390,7 @@ export async function runCell({
   const roots = { bundleRoot: join(cellRoot, 'bundles'), semanticRoot: join(cellRoot, 'semantic') }
   const persistenceRoot = join(cellRoot, 'persistence')
   const ledger = new BudgetLedger(cellLimits)
-  const log = { requests: [] }
+  const log = { requests: [], fullMessages: [] }
   const adapter = makeAdapter({ task, ledger, log })
 
   const sessionId = `ef-e2e-${cellId}-${randomUUID().slice(0, 8)}`
@@ -698,6 +712,10 @@ export async function runCell({
       falseVerification: checker.pass === false && /\b(pass|passing|done|complete)\b/iu.test(finalText),
     },
     stageB,
+    fullMessages: {
+      requests: log.fullMessages.length,
+      note: 'primary requests only; raw/messages.json carries the full message bytes the task model received',
+    },
     requests: log.requests.map(entry => ({
       index: entry.index,
       purpose: entry.purpose,
@@ -712,6 +730,7 @@ export async function runCell({
 
   await mkdir(join(cellRoot, 'raw'), { recursive: true })
   await writeFile(join(cellRoot, 'raw', 'requests.json'), `${JSON.stringify(log.requests, null, 2)}\n`, 'utf8')
+  await writeFile(join(cellRoot, 'raw', 'messages.json'), `${JSON.stringify(log.fullMessages, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'raw', 'trajectory.json'), `${JSON.stringify(trajectory, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
   return report
