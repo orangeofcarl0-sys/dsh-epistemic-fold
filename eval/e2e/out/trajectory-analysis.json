@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-09T13:18:06.451Z",
+  "generatedAt": "2026-11-09T13:21:27.364Z",
   "work": "EF-E2E",
   "sources": {
     "orderedTrajectories": [
@@ -31,7 +31,7 @@
       "e2e-index-1/T4-s2-E0ai-r2"
     ],
     "reconstructed": 71,
-    "note": "Pre-trajectory cells expose request deltas and tool counts, not an ordered event log. The 71 original cells predate trajectory capture."
+    "note": "Pre-trajectory cells expose request deltas and tool counts, not an ordered event log. The 71 original cells predate trajectory capture. The 24 index-campaign trajectories were captured before the user/message extractor fix: their user text is empty, assistant/tool events are intact."
   },
   "crossTab": {
     "cells": 71,

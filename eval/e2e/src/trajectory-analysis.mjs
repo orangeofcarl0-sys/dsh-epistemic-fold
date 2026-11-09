@@ -155,7 +155,7 @@ const report = {
   sources: {
     orderedTrajectories: rows.filter(row => row.hasTrajectory).map(row => `${row.campaign}/${row.cellId}`),
     reconstructed: rows.filter(row => !row.hasTrajectory).length,
-    note: 'Pre-trajectory cells expose request deltas and tool counts, not an ordered event log. The 71 original cells predate trajectory capture.',
+    note: 'Pre-trajectory cells expose request deltas and tool counts, not an ordered event log. The 71 original cells predate trajectory capture. The 24 index-campaign trajectories were captured before the user/message extractor fix: their user text is empty, assistant/tool events are intact.',
   },
   crossTab,
   repeats,

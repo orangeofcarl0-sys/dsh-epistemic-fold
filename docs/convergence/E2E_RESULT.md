@@ -166,22 +166,24 @@ in §3 are descriptions, not estimates.
 
 ## 5c. Trajectory and variance attribution
 
-`eval/e2e/src/trajectory-analysis.mjs` reads all 72 executed cells. Only the
-last cell has an ordered event trajectory; the earlier 71 are reconstructed
-from request deltas and tool counts, and the output says so.
+`eval/e2e/src/trajectory-analysis.mjs` reads all 96 executed cells. 25 have an
+ordered event trajectory (the guard smoke and the 24 index cells); the earlier
+71 are reconstructed from request deltas and tool counts. The index campaign's
+trajectories were captured before the user-event extractor fix, so their user
+text is empty while assistant/tool events are intact; the analysis records it.
 
-Across the 47 output-file cells (T2/T4/T5/T5B):
+Across the 71 output-file cells (T2/T4/T5/T5B):
 
 | Behaviour | Pass | Fail |
 |---|---|---|
-| wrote an output (`write_file`/`edit_file`) | 22 | 17 |
-| wrote nothing | **0** | **8** |
-| called recall | 5 | 11 |
-| never called recall | 17 | 14 |
+| wrote an output (`write_file`/`edit_file`) | 25 | 20 |
+| wrote nothing | **0** | **26** |
+| called recall | 8 | 22 |
+| never called recall | 17 | 24 |
 
 Two gates, in this order:
 
-1. **The write gate.** No write means no pass: 0/8. With a write, 22/39 pass.
+1. **The write gate.** No write means no pass: **0/26**. With a write, 25/45 pass.
 2. **The value gate.** Given a write, the remaining failures are wrong values,
    a nested shape, or an explicit UNKNOWN. Recall does not predict success:
    E1/S/B0 often pass without ever calling recall, because their checkpoint
