@@ -1,0 +1,1304 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T04:12:15.137Z",
+  "campaign": "e2e-recall-1",
+  "status": "complete",
+  "budget": {
+    "used": {
+      "requests": 51,
+      "inputTokens": 310376,
+      "outputTokens": 6418,
+      "wallClockMs": 118150
+    },
+    "limits": {
+      "httpAttempts": 1802,
+      "inputTokens": 16216460,
+      "outputTokens": 898869,
+      "wallClockMs": 27663581,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 13,
+      "paidConcurrency": 2
+    }
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "units": {
+    "cell": "one continuation of one task instance under one arm",
+    "template": "a task shape; its two seeds are NOT independent tasks",
+    "note": "pass rates are descriptive; no significance test is claimed"
+  },
+  "byArm": {
+    "B0": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "E0": {
+      "cells": 6,
+      "checkerPasses": 2,
+      "passRate": 0.333,
+      "folds": 19,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 4,
+      "requests": 30,
+      "auxiliaryRequests": 0,
+      "inputTokens": 178848,
+      "outputTokens": 3486,
+      "cacheReadTokens": 102016,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "missing-output": 3,
+        "wrong-value": 1
+      },
+      "meanRequests": 5,
+      "meanInputTokens": 29808,
+      "meanOutputTokens": 581,
+      "meanFolds": 3.167
+    },
+    "E0a": {
+      "cells": 6,
+      "checkerPasses": 1,
+      "passRate": 0.167,
+      "folds": 13,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 4,
+      "requests": 21,
+      "auxiliaryRequests": 0,
+      "inputTokens": 131528,
+      "outputTokens": 2932,
+      "cacheReadTokens": 94592,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {
+        "wrong-value": 1,
+        "missing-output": 4
+      },
+      "meanRequests": 3.5,
+      "meanInputTokens": 21921.333,
+      "meanOutputTokens": 488.667,
+      "meanFolds": 2.167
+    },
+    "E1": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "S": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    }
+  },
+  "byBlock": {
+    "calibration": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    },
+    "core": {
+      "cells": 0,
+      "checkerPasses": 0,
+      "passRate": null,
+      "folds": 0,
+      "foldFailures": 0,
+      "noFold": 0,
+      "recallCells": 0,
+      "requests": 0,
+      "auxiliaryRequests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "falseVerifications": 0,
+      "failureClasses": {},
+      "meanRequests": null,
+      "meanInputTokens": null,
+      "meanOutputTokens": null,
+      "meanFolds": null
+    }
+  },
+  "byTemplateArm": {
+    "T2": {
+      "B0": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 2,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 3,
+        "auxiliaryRequests": 0,
+        "inputTokens": 32252,
+        "outputTokens": 773,
+        "cacheReadTokens": 19840,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 1,
+          "wrong-value": 1
+        },
+        "meanRequests": 1.5,
+        "meanInputTokens": 16126,
+        "meanOutputTokens": 386.5,
+        "meanFolds": 1
+      },
+      "E0a": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 2,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 3,
+        "auxiliaryRequests": 0,
+        "inputTokens": 32278,
+        "outputTokens": 625,
+        "cacheReadTokens": 19840,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "wrong-value": 1,
+          "missing-output": 1
+        },
+        "meanRequests": 1.5,
+        "meanInputTokens": 16139,
+        "meanOutputTokens": 312.5,
+        "meanFolds": 1
+      },
+      "E1": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "S": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      }
+    },
+    "T4": {
+      "B0": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 2,
+        "passRate": 1,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 11,
+        "auxiliaryRequests": 0,
+        "inputTokens": 49670,
+        "outputTokens": 1183,
+        "cacheReadTokens": 23808,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": 5.5,
+        "meanInputTokens": 24835,
+        "meanOutputTokens": 591.5,
+        "meanFolds": 3
+      },
+      "E0a": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 5,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 6,
+        "auxiliaryRequests": 0,
+        "inputTokens": 46959,
+        "outputTokens": 977,
+        "cacheReadTokens": 25984,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 2
+        },
+        "meanRequests": 3,
+        "meanInputTokens": 23479.5,
+        "meanOutputTokens": 488.5,
+        "meanFolds": 2.5
+      },
+      "E1": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "S": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      }
+    },
+    "T5B": {
+      "B0": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "E0": {
+        "cells": 2,
+        "checkerPasses": 0,
+        "passRate": 0,
+        "folds": 11,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 16,
+        "auxiliaryRequests": 0,
+        "inputTokens": 96926,
+        "outputTokens": 1530,
+        "cacheReadTokens": 58368,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 2
+        },
+        "meanRequests": 8,
+        "meanInputTokens": 48463,
+        "meanOutputTokens": 765,
+        "meanFolds": 5.5
+      },
+      "E0a": {
+        "cells": 2,
+        "checkerPasses": 1,
+        "passRate": 0.5,
+        "folds": 6,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 2,
+        "requests": 12,
+        "auxiliaryRequests": 0,
+        "inputTokens": 52291,
+        "outputTokens": 1330,
+        "cacheReadTokens": 48768,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {
+          "missing-output": 1
+        },
+        "meanRequests": 6,
+        "meanInputTokens": 26145.5,
+        "meanOutputTokens": 665,
+        "meanFolds": 3
+      },
+      "E1": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      },
+      "S": {
+        "cells": 0,
+        "checkerPasses": 0,
+        "passRate": null,
+        "folds": 0,
+        "foldFailures": 0,
+        "noFold": 0,
+        "recallCells": 0,
+        "requests": 0,
+        "auxiliaryRequests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "unknownUsage": 0,
+        "testsExecuted": 0,
+        "falseVerifications": 0,
+        "failureClasses": {},
+        "meanRequests": null,
+        "meanInputTokens": null,
+        "meanOutputTokens": null,
+        "meanFolds": null
+      }
+    }
+  },
+  "rows": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "block": "recall",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15970,
+      "outputTokens": 387,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I can't fill in those values, because the log I read didn't contain them.\n\nWhat I actually read (`logs/gateway-late.log`) was a series of gateway request lines — timestamp, level, request id, route (`/v1/items`), status, latency in ms, and pool number. There was no `build` field and no `timeout_ms` anywhere in that content.\n\nSo writing `answer.json` with those two fields would mean inventing numbers. I won't guess. Two honest options:\n\n1. **If a different log held them** — e.g. a startup/banner line like `build=... timeout_ms=...` — that file isn't in the workspace now, so I have no record of ",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T2-s1-E0-r1\\report.json",
+      "reportSha256": "3bbf7043e3ff4f639355d317fb267cac0cfa2f127eabc4e025300c749ba8a345",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9010",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17637
+    },
+    {
+      "cellId": "T2-s1-E0a-r1",
+      "block": "recall",
+      "template": "T2",
+      "seed": 1,
+      "arm": "E0a",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "7f3c9a1e",
+        "1847"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "wrong-value",
+      "failureDetail": "answer.json = {\"build\":null,\"timeout_ms\":null}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json = {\"build\":null,\"timeout_ms\":null}, expected {\"build\":\"7f3c9a1e\",\"timeout_ms\":1847}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16209,
+      "outputTokens": 430,
+      "cacheReadTokens": 18560,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "**Values: unknown.** `answer.json` contains `build: null` and `timeout_ms: null`.\n\nTo be clear about why, since it affects whether you need to look elsewhere:\n\n- The only log I read was `logs/gateway-late.log`, an access log of ~450 request lines (`status`, `ms`, `pool`, request ids). It has no build identifier and no timeout setting.\n- I never saw an incident log containing those two fields. The rotation removed the log after I read it, but rotation isn't the obstacle here — the fields were not in the content I had.\n\nTwo schema notes in case you want the file machine-consumed: I used JSON `nu",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T2-s1-E0a-r1\\report.json",
+      "reportSha256": "17b2aef77c91f93b6f530c77bf30f7f9d1cbaee692b123f962bb00e578fc0679",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17494",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17722
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "block": "recall",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "wrong-value",
+      "failureDetail": "answer.json = {\"build\":null,\"timeout_ms\":null}",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json = {\"build\":null,\"timeout_ms\":null}, expected {\"build\":\"c41d08b7\",\"timeout_ms\":2311}"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16282,
+      "outputTokens": 386,
+      "cacheReadTokens": 18560,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "**build:** unknown — never observed in the log\n**timeout_ms:** unknown — never observed in the log\n\n`answer.json` has been written with both fields set to `null`.\n\nTo be clear about why this isn't me being unhelpful: `logs/gateway-late.log` held only request telemetry (`INFO [gateway] request id=… route=/v1/items status=… ms=… pool=…`). Neither a build string nor a timeout config appeared in any line. The 503s and `ms=` latencies I did see would not let me infer either value without guessing, which is what you asked me not to do.\n\nIf the values exist somewhere else — a release manifest, deploy",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T2-s2-E0-r2\\report.json",
+      "reportSha256": "71325a1eb22ff5f9b9e0acefa72a1a92cfb761458b2a2d8544d0fcce552bbee7",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=2 retain=614 total=17513",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17732
+    },
+    {
+      "cellId": "T2-s2-E0a-r2",
+      "block": "recall",
+      "template": "T2",
+      "seed": 2,
+      "arm": "E0a",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 1,
+      "foldAttempts": 1,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "c41d08b7",
+        "2311"
+      ],
+      "recallCalls": 0,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "answer.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "answer.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 1,
+      "auxiliaryRequests": 0,
+      "inputTokens": 16069,
+      "outputTokens": 195,
+      "cacheReadTokens": 1280,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "I read that log in full above, and it contains neither a `build` nor a `timeout_ms` value. Every line is a standard gateway request record with only: timestamp, level, logger, request id, route, status, ms, and pool. There's no build/version string, and no timeout configuration — the `ms=` fields are per-request latencies (e.g. 87, 293, 402), not a configured timeout, so they're not the value you're asking for.\n\nI won't guess or fabricate these values, so I can't write `answer.json` with real data. If you can restore the log or point me at the build/version and timeout settings elsewhere (a co",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T2-s2-E0a-r2\\report.json",
+      "reportSha256": "c5609ff9dc55df85937c47bb96ed0b0576b2a7058cf90aa6b96179e9b8c13810",
+      "engineDecision": "no-span pricedNodes=5 surfaceNodes=5 firstOpen=2 retain=614 total=9031",
+      "thresholdTokens": 8192,
+      "retainedTokens": 17544
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "block": "recall",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 4,
+      "foldAttempts": 4,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 7,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 33897,
+      "outputTokens": 800,
+      "cacheReadTokens": 13312,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`deploy.plan.json` written.\n\n- **region:** `eu-west-3`\n- **replicas:** `3`\n\nThese come from the pre-rotation config I read earlier (`config/deploy.json`), not from the current on-disk copy or the decoy.",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T4-s1-E0-r1\\report.json",
+      "reportSha256": "aef2c3c8bc1b87477a9f8691e301608d94fb7c4e3bdb201fd9add808d5927318",
+      "engineDecision": "below-threshold 5243<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 5308
+    },
+    {
+      "cellId": "T4-s1-E0a-r1",
+      "block": "recall",
+      "template": "T4",
+      "seed": 1,
+      "arm": "E0a",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "3"
+        ]
+      },
+      "probes": [
+        "eu-west-3",
+        "3"
+      ],
+      "recallCalls": 1,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 2,
+      "auxiliaryRequests": 0,
+      "inputTokens": 14168,
+      "outputTokens": 128,
+      "cacheReadTokens": 2688,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "From the earlier work: **region `eu-west-3`, replicas `3`, release `canary`** (read from `config/deploy.json`).\n\nNote: the deploy log at that time showed `rollout step=2 healthy=3`, so the healthy count matched the configured replicas. Want me to re-read the file to confirm the values are still current before you plan the migration?",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T4-s1-E0a-r1\\report.json",
+      "reportSha256": "d9bc59b5f9a03126ebcdb96479bf81e371d111ceb3caa5c9766a33673b2df7be",
+      "engineDecision": "fold-attempted span=23..43 resultNull=false tokensBefore=15132 tokensAfter=7219",
+      "thresholdTokens": 8192,
+      "retainedTokens": 2310
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "block": "recall",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 2,
+      "foldAttempts": 2,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 3,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "deploy.plan.json matches"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 0,
+      "inputTokens": 15773,
+      "outputTokens": 383,
+      "cacheReadTokens": 10496,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Done — `deploy.plan.json` written from the pre-rotation config I observed:\n\n- **region:** `ap-south-1`\n- **replicas:** `4`\n\n(The current workspace copy of the config was not read or used.)",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T4-s2-E0-r2\\report.json",
+      "reportSha256": "f6a7e270539f93f618a88a55273e3471a43d060345d205398e87b8e1f01c269f",
+      "engineDecision": "below-threshold 3275<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3333
+    },
+    {
+      "cellId": "T4-s2-E0a-r2",
+      "block": "recall",
+      "template": "T4",
+      "seed": 2,
+      "arm": "E0a",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "4"
+        ]
+      },
+      "probes": [
+        "ap-south-1",
+        "4"
+      ],
+      "recallCalls": 2,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "deploy.plan.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "deploy.plan.json is missing"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 4,
+      "auxiliaryRequests": 0,
+      "inputTokens": 32791,
+      "outputTokens": 849,
+      "cacheReadTokens": 23296,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Here's where things actually stand — and there's an important discrepancy you should know about before planning the migration.\n\n**Live values observed during the earlier deployment run** (from `config/deploy.json` read at that time):\n- Region: **ap-south-1**\n- Replicas: **4**\n- Release: canary\n\nThis is corroborated by the deploy log, which shows a steady stream of `reconcile region=ap-south-1 replicas=4 ready=4` entries across the entire window (roughly 09:14–11:56) — four replicas healthy throughout, no region other than ap-south-1 appearing.\n\n**But the file on disk right now reads differentl",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T4-s2-E0a-r2\\report.json",
+      "reportSha256": "20e1eab8c262488f860101d3b77de6847b3d4005262cb1e9cfde9a629e6f7d51",
+      "engineDecision": "no-span pricedNodes=9 surfaceNodes=9 firstOpen=4 retain=614 total=19380",
+      "thresholdTokens": 8192,
+      "retainedTokens": 19816
+    },
+    {
+      "cellId": "T5B-s1-E0-r1",
+      "block": "recall",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 8,
+      "foldAttempts": 8,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": []
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 10,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "final.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json is missing"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "8 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "step-limit",
+      "stepLimit": true,
+      "requests": 10,
+      "auxiliaryRequests": 0,
+      "inputTokens": 69718,
+      "outputTokens": 1021,
+      "cacheReadTokens": 32512,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s1-E0-r1\\report.json",
+      "reportSha256": "9e74ddd46ad60fc6652e7122836dfb7e5a7be4f52981fe9440518cebc213247b",
+      "engineDecision": "fold-attempted span=132..136 resultNull=false tokensBefore=14544 tokensAfter=7921",
+      "thresholdTokens": 8192,
+      "retainedTokens": 7921
+    },
+    {
+      "cellId": "T5B-s1-E0a-r1",
+      "block": "recall",
+      "template": "T5B",
+      "seed": 1,
+      "arm": "E0a",
+      "replicate": 1,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2",
+          "30"
+        ]
+      },
+      "probes": [
+        "2",
+        "30"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "final.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json is missing"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 5,
+      "auxiliaryRequests": 0,
+      "inputTokens": 26513,
+      "outputTokens": 577,
+      "cacheReadTokens": 21760,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "**Answer:** `max_attempts` for the batch path is **2** (from a flat `{\"max_attempts\": 2}`), not 5.\n\n- Stage 1 already wrote `state.json` as a flat object with `max_attempts: 2`, and I confirmed it reads attempt=1 or 2 across the batch log — that part is correct and stands.\n- Stage 2 confirms the reasoning: the agreed window is 30 seconds, and the spec's \"five attempts\" is stale. It was explicitly superseded for batch jobs (\"cap it at two attempts. Five caused the retry storm. This revision supersedes the spec for batch jobs\"), while the general path keeps five. So the five is the baseline for ",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s1-E0a-r1\\report.json",
+      "reportSha256": "05fd3d54b13c06d70b5297c0c202219de1a78d2c66d071448138a77048ffe2e4",
+      "engineDecision": "below-threshold 4275<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4532
+    },
+    {
+      "cellId": "T5B-s2-E0-r2",
+      "block": "recall",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 47,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "2"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 3,
+      "checkerPass": false,
+      "failureClass": "missing-output",
+      "failureDetail": "final.json",
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": false,
+          "detail": "final.json is missing"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 6,
+      "auxiliaryRequests": 0,
+      "inputTokens": 27208,
+      "outputTokens": 509,
+      "cacheReadTokens": 25856,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "`state.json` is confirmed on disk with exactly one top-level field:\n\n```json\n{\"max_attempts\": 2}\n```\n\n**`max_attempts` = 2** for the batch path.",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s2-E0-r2\\report.json",
+      "reportSha256": "c7a209f6413d11b8a5221a6c1dec94a67b907a4379c10335f2b971347e2f65ba",
+      "engineDecision": "below-threshold 4891<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 4946
+    },
+    {
+      "cellId": "T5B-s2-E0a-r2",
+      "block": "recall",
+      "template": "T5B",
+      "seed": 2,
+      "arm": "E0a",
+      "replicate": 2,
+      "status": "executed",
+      "exposure": "fold",
+      "folds": 3,
+      "foldAttempts": 3,
+      "foldFailures": 0,
+      "checkpoint": {
+        "chars": 146,
+        "mode": "leaf",
+        "source": "surface",
+        "probesVisible": [
+          "45"
+        ]
+      },
+      "probes": [
+        "2",
+        "45"
+      ],
+      "recallCalls": 1,
+      "checkerPass": true,
+      "failureClass": null,
+      "failureDetail": null,
+      "checks": [
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "state.json matches"
+        },
+        {
+          "kind": "json_equals",
+          "pass": true,
+          "detail": "final.json matches"
+        },
+        {
+          "kind": "compactions",
+          "pass": true,
+          "detail": "3 compaction transaction(s), required 2"
+        }
+      ],
+      "termination": "finish",
+      "stepLimit": false,
+      "requests": 7,
+      "auxiliaryRequests": 0,
+      "inputTokens": 25778,
+      "outputTokens": 753,
+      "cacheReadTokens": 27008,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "testsExecuted": 0,
+      "lastTestExit": null,
+      "toolErrors": 0,
+      "falseVerification": false,
+      "finalText": "Stage 2 is complete.\n\n**`final.json` (new):**\n```json\n{\n  \"max_attempts\": 2,\n  \"window_seconds\": 45\n}\n```\n\n**How I got the values** — from the folded history, not invented:\n- `max_attempts: 2` — a revision later in the conversation capped the batch path at two attempts (five caused the retry storm), and `state.json` already records `2` from Stage 1. The platform spec's \"five attempts\" is the *general* path baseline only.\n- `window_seconds: 45` — agreed explicitly in the Stage 2 instruction, and consistent with the batch log line `window_s=45`.\n\nI used `window_seconds` as the key name to match ",
+      "reportPath": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s2-E0a-r2\\report.json",
+      "reportSha256": "7442693b4f03be081ebc6901ad07bc99fe81ca26df7cd96e450dbcf4ad3eb42d",
+      "engineDecision": "below-threshold 3419<8192",
+      "thresholdTokens": 8192,
+      "retainedTokens": 3677
+    }
+  ],
+  "evidence": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T2-s1-E0-r1\\report.json",
+      "sha256": "3bbf7043e3ff4f639355d317fb267cac0cfa2f127eabc4e025300c749ba8a345"
+    },
+    {
+      "cellId": "T2-s1-E0a-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T2-s1-E0a-r1\\report.json",
+      "sha256": "17b2aef77c91f93b6f530c77bf30f7f9d1cbaee692b123f962bb00e578fc0679"
+    },
+    {
+      "cellId": "T2-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T2-s2-E0-r2\\report.json",
+      "sha256": "71325a1eb22ff5f9b9e0acefa72a1a92cfb761458b2a2d8544d0fcce552bbee7"
+    },
+    {
+      "cellId": "T2-s2-E0a-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T2-s2-E0a-r2\\report.json",
+      "sha256": "c5609ff9dc55df85937c47bb96ed0b0576b2a7058cf90aa6b96179e9b8c13810"
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T4-s1-E0-r1\\report.json",
+      "sha256": "aef2c3c8bc1b87477a9f8691e301608d94fb7c4e3bdb201fd9add808d5927318"
+    },
+    {
+      "cellId": "T4-s1-E0a-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T4-s1-E0a-r1\\report.json",
+      "sha256": "d9bc59b5f9a03126ebcdb96479bf81e371d111ceb3caa5c9766a33673b2df7be"
+    },
+    {
+      "cellId": "T4-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T4-s2-E0-r2\\report.json",
+      "sha256": "f6a7e270539f93f618a88a55273e3471a43d060345d205398e87b8e1f01c269f"
+    },
+    {
+      "cellId": "T4-s2-E0a-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T4-s2-E0a-r2\\report.json",
+      "sha256": "20e1eab8c262488f860101d3b77de6847b3d4005262cb1e9cfde9a629e6f7d51"
+    },
+    {
+      "cellId": "T5B-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s1-E0-r1\\report.json",
+      "sha256": "9e74ddd46ad60fc6652e7122836dfb7e5a7be4f52981fe9440518cebc213247b"
+    },
+    {
+      "cellId": "T5B-s1-E0a-r1",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s1-E0a-r1\\report.json",
+      "sha256": "05fd3d54b13c06d70b5297c0c202219de1a78d2c66d071448138a77048ffe2e4"
+    },
+    {
+      "cellId": "T5B-s2-E0-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s2-E0-r2\\report.json",
+      "sha256": "c7a209f6413d11b8a5221a6c1dec94a67b907a4379c10335f2b971347e2f65ba"
+    },
+    {
+      "cellId": "T5B-s2-E0a-r2",
+      "path": "eval\\e2e\\runs\\e2e-recall-1\\T5B-s2-E0a-r2\\report.json",
+      "sha256": "7442693b4f03be081ebc6901ad07bc99fe81ca26df7cd96e450dbcf4ad3eb42d"
+    }
+  ]
+}
