@@ -76,6 +76,9 @@ eval/r37d/runs-process/
 eval/e2e/runs/
 eval/e2e/probe-fold.mjs
 eval/e2e/candidate/
+# EF-R1: the tarball and its throwaway install are rebuildable; the SHA-256 and
+# every check are in eval/ef-r1/out/candidate-build.json, which IS tracked.
+eval/ef-r1/candidate/
 
 # Full vitest JSON and raw log (the tracked summary is full-tests-summary.json)
 eval/e2e/out/full-tests.json
