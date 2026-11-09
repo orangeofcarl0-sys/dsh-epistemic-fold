@@ -19,7 +19,10 @@ import {
   hostAdmitsPluginEvents as pluginEventsHostAdmits,
 } from './plugin-events.ts'
 import type { PluginEventApi } from './plugin-events.ts'
-import type { Anchor, EventRef, FailureState } from './state.ts'
+import { mayRetire } from '../semantic/retirement.ts'
+import { emptyCurrentState, stateKeyText } from './state.ts'
+import type { Anchor, EventRef, FailureState, FoldCurrentState } from './state.ts'
+import { reduceSessionEvent } from './projection.ts'
 
 /**
  * Whether this host admits a plugin-owned session event durably.
@@ -94,6 +97,23 @@ function citedKinds(
   return { kinds, refused }
 }
 
+/** The newest cited event, for the revision-newness rule. */
+function latestRef(refs: readonly EventRef[]): number | undefined {
+  let latest: number | undefined
+  for (const ref of refs) {
+    const seq = Number(ref.seq)
+    if (latest === undefined || seq > latest) latest = seq
+  }
+  return latest
+}
+
+/** Fold the committed log into the bounded state this declare will meet. */
+function currentStateOf(session: SessionType): FoldCurrentState {
+  let state = emptyCurrentState()
+  for (const event of session.snapshotEvents()) state = reduceSessionEvent(state, event)
+  return state
+}
+
 /** Create the anchor service; one instance may serve many sessions. */
 export function createAnchorService(options: AnchorServiceOptions = {}): AnchorService {
   const durableWritesAllowed = options.durableWritesAllowed ?? ((): boolean => true)
@@ -144,6 +164,35 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
       ...draft,
       id: draft.id ?? `anchor-${randomUUID()}`,
       lifecycle: 'active',
+    }
+    // The same operation-effect rule as `planCommit`: a declare at an occupied
+    // coordinate replaces the head, which is a retirement. This service is a
+    // public low-level writer (`ctx.epistemicFold`), so leaving the check only
+    // in the semantic planner would leave a second door to the same state.
+    if (anchor.stateKey !== undefined) {
+      const head = currentStateOf(session).stateHeads[stateKeyText(anchor.stateKey)]
+      if (head !== undefined && head.id !== anchor.id) {
+        const declaringLatestSeq = latestRef(anchor.sourceRefs)
+        const targetLatestSeq = latestRef(head.sourceRefs)
+        const authorization = mayRetire({
+          declaring: anchor.authority,
+          target: head.authority,
+          // The coordinate itself is the scope.
+          sameScope: true,
+          ...(anchor.sourceAuthority === undefined ? {} : { declaringSource: anchor.sourceAuthority }),
+          targetSource: head.sourceAuthority ?? 'unknown',
+          ...(declaringLatestSeq === undefined ? {} : { declaringLatestSeq }),
+          ...(targetLatestSeq === undefined ? {} : { targetLatestSeq }),
+          declaringValue: anchor.value,
+          targetValue: head.value,
+        })
+        if (!authorization.allowed) {
+          throw new Error(
+            `epistemic-fold: refusing to replace anchor ${head.id} at ${stateKeyText(anchor.stateKey)}: `
+            + `${authorization.reason} — ${authorization.detail}`,
+          )
+        }
+      }
     }
     appendAnchor(session, { op: 'declare', anchor })
     return anchor
