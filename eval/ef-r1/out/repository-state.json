@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP0",
+  "generatedAt": "2026-11-09T16:38:37.482Z",
+  "head": "7f4a83be685ce0ef962a650d890755a49ee719f0",
+  "branch": "chore/ef-c1-evaluation-foundation",
+  "localAheadOfPushedBranch": 2,
+  "refs": {
+    "localMain": "bd1131cc039c8addf1590973f7e6e406ed126e64",
+    "originMain": "93b6666913dab6e00ca67032de9660f1bc75c052",
+    "originRc38": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec"
+  },
+  "archiveTags": [
+    {
+      "name": "archive/chore-ef-c0-convergence",
+      "type": "tag",
+      "commit": "327598f342dfca4fab2a779442af56a9ab510ece",
+      "subject": "test(convergence): add the EF-C0 gates and publish the handoff",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation"
+      ]
+    },
+    {
+      "name": "archive/rc29-working-set-observer",
+      "type": "tag",
+      "commit": "7a42ec67b22cd1677820ab2d9718a107db79607b",
+      "subject": "feat(semantic): 新增语义连续性层与影子/主动模式",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/rc29-working-set-observer"
+      ]
+    },
+    {
+      "name": "archive/rc30-semantic-continuity",
+      "type": "tag",
+      "commit": "77ab916a791ecd22041d4162566d3bef10a1a0f3",
+      "subject": "feat(semantic): semantic continuity v1 on the restructured main line",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc30-semantic-continuity",
+        "origin/rc31-persistence-lifecycle",
+        "origin/rc32-semantic-integrity",
+        "origin/rc33-semantic-behavior",
+        "origin/rc34-live-causal-pilot",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc31-persistence-lifecycle",
+      "type": "tag",
+      "commit": "6607149c087a99a9392c7171263dc05624488b58",
+      "subject": "docs(semantic): R31 audit, commit proof, persistence, lifecycle, evaluation and handoff",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc31-persistence-lifecycle",
+        "origin/rc32-semantic-integrity",
+        "origin/rc33-semantic-behavior",
+        "origin/rc34-live-causal-pilot",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc32-semantic-integrity",
+      "type": "tag",
+      "commit": "bef473dc77f18a07980031cf110b253fe0288cb1",
+      "subject": "style(test): trim trailing blank lines",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc32-semantic-integrity",
+        "origin/rc33-semantic-behavior",
+        "origin/rc34-live-causal-pilot",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc33-semantic-behavior",
+      "type": "tag",
+      "commit": "ad3020df0e22587f78490c19550fe6986f55af3f",
+      "subject": "docs(eval): record both dependency graphs and the actual full-suite result",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc33-semantic-behavior",
+        "origin/rc34-live-causal-pilot",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc34-live-causal-pilot",
+      "type": "tag",
+      "commit": "8db92f425a35e41bb77158a830de31d5c4874736",
+      "subject": "docs(eval): report R33.1 closure and R34 causal results",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc34-live-causal-pilot",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc35-real-semantic-evaluation",
+      "type": "tag",
+      "commit": "914ed317ae022ac9c5fe39f098d406b7ce03c8da",
+      "subject": "test: give the repository-wide hygiene scan a realistic timeout",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc35-real-semantic-evaluation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc36-semantic-interface",
+      "type": "tag",
+      "commit": "b8274bba8b2a974e9c75af283e415e61a650295e",
+      "subject": "docs(eval): name H-protocol in the frozen causal conditions",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc37-semantic-action",
+      "type": "tag",
+      "commit": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+      "subject": "docs(eval): publish the R37-B confirmatory decision and handoff",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc37-semantic-action",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc37c-measurement-closure",
+      "type": "tag",
+      "commit": "045cccf275132ffda8c76a9fbdc8620338af6164",
+      "subject": "docs(eval): finalize the R37-C handoff",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc37d-operational-completion",
+      "type": "tag",
+      "commit": "7a2c974c479bc1286f172e9f7b203af92e22e629",
+      "subject": "docs(eval): attribute the process-pilot trajectories",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/rc38-mechanism-validation",
+      "type": "tag",
+      "commit": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+      "subject": "chore(eval): refresh the R38 evidence from the full chain",
+      "remoteBacked": true,
+      "remotes": [
+        "origin/chore/ef-c1-evaluation-foundation",
+        "origin/rc38-mechanism-validation"
+      ]
+    },
+    {
+      "name": "archive/snapshot-pre-semantic-audit-v1",
+      "type": "tag",
+      "commit": "a22f4642d7a6d8036aa073a96c9b07a24d983ceb",
+      "subject": "snapshot(pre-audit): full worktree incl untracked semantic v1, 2026-11-01",
+      "remoteBacked": false,
+      "remotes": []
+    }
+  ],
+  "archiveTagsRemoteBacked": 13,
+  "archiveTagsLocalOnly": [
+    "archive/snapshot-pre-semantic-audit-v1"
+  ],
+  "pullRequest": {
+    "number": 5,
+    "state": "OPEN",
+    "draft": false,
+    "mergeable": "MERGEABLE",
+    "head": "chore/ef-c1-evaluation-foundation",
+    "base": "rc38-mechanism-validation",
+    "title": "EF-C1/E2E: evaluation foundation, real-task campaigns and semantic authority fix",
+    "commits": 59
+  },
+  "worktrees": [
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/dsh-epistemic-fold",
+      "head": "7a42ec67b22cd1677820ab2d9718a107db79607b",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-c0-convergence",
+      "head": "327598f342dfca4fab2a779442af56a9ab510ece",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-c1-foundation",
+      "head": "7f4a83be685ce0ef962a650d890755a49ee719f0",
+      "branch": "refs/heads/chore/ef-c1-evaluation-foundation"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-main-integration",
+      "head": "6607149c087a99a9392c7171263dc05624488b58",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r32-integrity",
+      "head": "bef473dc77f18a07980031cf110b253fe0288cb1",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r33-behavior",
+      "head": "ad3020df0e22587f78490c19550fe6986f55af3f",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r34-pilot",
+      "head": "8db92f425a35e41bb77158a830de31d5c4874736",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r35-live",
+      "head": "914ed317ae022ac9c5fe39f098d406b7ce03c8da",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r36-interface",
+      "head": "b8274bba8b2a974e9c75af283e415e61a650295e",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r37-action",
+      "head": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r37c-closure",
+      "head": "045cccf275132ffda8c76a9fbdc8620338af6164",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r37d-operational",
+      "head": "7a2c974c479bc1286f172e9f7b203af92e22e629",
+      "branch": "(detached)"
+    },
+    {
+      "path": "F:/Codex_Work_Space/DSH plugin/ef-r38-mechanism",
+      "head": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+      "branch": "(detached)"
+    }
+  ],
+  "workingTree": {
+    "dirty": [
+      "M ef-phase7-logs/watchdog.heartbeat",
+      "?? eval/e2e/out/research-archive.json",
+      "?? eval/e2e/src/archive-research.mjs",
+      "?? eval/ef-r1/out/repository-state.json",
+      "?? eval/ef-r1/repository-state.mjs"
+    ],
+    "note": "The heartbeat file is appended by a long-running local watchdog; it is not part of this round and is not staged."
+  },
+  "researchArchive": {
+    "path": "F:/Codex_Work_Space/DSH plugin/EF_E2E_RESEARCH_ARCHIVE",
+    "manifestSha256": "149a4a5c92ecb34fb13305a9698ab4987bd33f3dab575ba78d8a1f44394055d3",
+    "sumsSha256": "6308d4ced781b978beb9984d2ea1abd7949f4f089a8a42d1f81ad0d30a42bf92",
+    "bundleSha256": "8582edba38cfe451d863d8d179397587a18eb2ba614c81929e2daaefd0a4dbe5",
+    "counts": {
+      "files": 1224,
+      "bytes": 38046786,
+      "campaigns": 6,
+      "cells": 96
+    },
+    "scan": {
+      "credentialsFound": 0,
+      "absolutePathFiles": 115,
+      "proxyFiles": 27,
+      "safeToShare": true
+    },
+    "pointerSha256": "746feabf94b5b85f9120b8fc1f4095713052d4fa8dc47de5382c4e52734f8dcd"
+  },
+  "note": "No branch, tag, worktree, remote or PR was changed by this script."
+}

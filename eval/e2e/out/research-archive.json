@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP0",
+  "archiveRoot": "F:/Codex_Work_Space/DSH plugin/EF_E2E_RESEARCH_ARCHIVE",
+  "archiveManifestSha256": "149a4a5c92ecb34fb13305a9698ab4987bd33f3dab575ba78d8a1f44394055d3",
+  "archiveSumsSha256": "6308d4ced781b978beb9984d2ea1abd7949f4f089a8a42d1f81ad0d30a42bf92",
+  "archiveBundleSha256": "8582edba38cfe451d863d8d179397587a18eb2ba614c81929e2daaefd0a4dbe5",
+  "commit": "7f4a83be685ce0ef962a650d890755a49ee719f0",
+  "counts": {
+    "files": 1224,
+    "bytes": 38046786,
+    "campaigns": 6,
+    "cells": 96
+  },
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 115,
+    "proxyFiles": 27,
+    "safeToShare": true
+  },
+  "note": "The archive is external to the repository. Verify a copy with `sha256sum -c SHA256SUMS` at its root."
+}
