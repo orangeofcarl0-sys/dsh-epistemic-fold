@@ -10,6 +10,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -21,6 +22,7 @@ const DATA = join(ROOT, 'docs', 'convergence', 'data')
 
 interface EvidenceClaim {
   readonly claimId: string
+  readonly gitSha: string
   readonly rawArtifact: string
   readonly artifactSha256: string
   readonly artifactPresent: boolean
@@ -81,13 +83,37 @@ const manifest = JSON.parse(readFileSync(join(DATA, 'artifact-manifest.json'), '
 
 const sha256 = (path: string): string => createHash('sha256').update(readFileSync(path)).digest('hex')
 
+/**
+ * The artifact's hash AT THE CLAIM'S COMMIT.
+ *
+ * These claims are about a frozen round (`gitSha`), and a SOURCE artifact keeps
+ * changing after it: EF-E2E added one line to `src/fold/engine.ts`, and hashing
+ * the worktree reported the C0 claim as altered when the C0 code was byte-for-
+ * byte intact. The claim is verified against the commit it names; a later
+ * change is a new claim, not a rewritten one.
+ */
+function artifactSha256(claim: { gitSha: string; rawArtifact: string }): string {
+  const frozen = /^[0-9a-f]{7,40}$/u.exec(claim.gitSha) !== null
+  if (frozen) {
+    try {
+      const blob = execFileSync('git', ['show', `${claim.gitSha}:${claim.rawArtifact}`], {
+        cwd: ROOT, encoding: 'buffer', stdio: ['ignore', 'pipe', 'ignore'],
+      })
+      return createHash('sha256').update(blob).digest('hex')
+    } catch {
+      // A shallow checkout may not have the commit; fall through to the file.
+    }
+  }
+  return sha256(join(ROOT, claim.rawArtifact))
+}
+
 describe('EF-C0 evidence: registry integrity', () => {
   it('every claim has a present, unchanged artifact', () => {
     expect(registry.claims.length).toBeGreaterThanOrEqual(18)
     for (const claim of registry.claims) {
       const full = join(ROOT, claim.rawArtifact)
       expect(existsSync(full), `${claim.claimId} artifact missing: ${claim.rawArtifact}`).toBe(true)
-      expect(sha256(full), `${claim.claimId} artifact changed: ${claim.rawArtifact}`).toBe(claim.artifactSha256)
+      expect(artifactSha256(claim), `${claim.claimId} artifact changed: ${claim.rawArtifact}`).toBe(claim.artifactSha256)
       expect(claim.artifactPresent).toBe(true)
     }
     expect(registry.counts.missingArtifacts).toBe(0)
