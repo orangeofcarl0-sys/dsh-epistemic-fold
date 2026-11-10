@@ -1,0 +1,516 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-10T12:11:49.386Z",
+  "campaign": "e2e-r2-confirm-resume-1",
+  "manifestSha256": "a7d55f61032e96ce8363752c28c08cb8b15ffc56301615882ca7c2f1c7c1a5f5",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": "provider-usage-missing",
+  "planned": 34,
+  "executed": 4,
+  "budget": {
+    "used": {
+      "requests": 15,
+      "inputTokens": 168693,
+      "outputTokens": 4628,
+      "wallClockMs": 60734
+    },
+    "limits": {
+      "continuationCells": 34,
+      "httpAttempts": 1200,
+      "inputTokens": 12000000,
+      "outputTokens": 900000,
+      "wallClockMs": 14400000,
+      "paidConcurrency": 2,
+      "monetaryUsd": null,
+      "monetaryNote": "No verifiable per-token price is recorded."
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s1",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T13-s1-B0-r2",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 69964,
+        "outputTokens": 3041,
+        "cacheReadTokens": 1920,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 36310,
+          "outputTokens": 310,
+          "cacheReadTokens": 640,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 33654,
+          "outputTokens": 2731,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 4,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s1-B0-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T13-s2-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 68808,
+        "outputTokens": 1199,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 38887,
+          "outputTokens": 639,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29921,
+          "outputTokens": 560,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "executed",
+      "cellId": "T13-s2-E1-r2",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 29921,
+        "outputTokens": 388,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 1,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29921,
+          "outputTokens": 388,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 1
+        },
+        "note": "1 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-E1-r2\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T13-s2-B0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 2,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 2,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 1
+        },
+        "note": "2 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s2",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s2",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s2",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "E1",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "B0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    },
+    {
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s2",
+        "arm": "E0",
+        "replicate": 2
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-missing"
+    }
+  ]
+}

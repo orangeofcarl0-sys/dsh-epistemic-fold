@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 live",
+  "generatedAt": "2026-11-10T12:12:41.728Z",
+  "campaign": "e2e-r2-confirm-merged",
+  "planned": 54,
+  "validCells": 23,
+  "invalidCells": 2,
+  "unexecutedCells": 29,
+  "attempts": [
+    {
+      "campaign": "e2e-r2-confirm-1",
+      "status": "partial",
+      "stopReason": "provider-usage-missing",
+      "planned": 54,
+      "executed": 21,
+      "used": {
+        "requests": 202,
+        "inputTokens": 2326959,
+        "outputTokens": 63561,
+        "wallClockMs": 1018707
+      },
+      "transportFailures": [
+        {
+          "cellId": "T13-s1-B0-r2",
+          "failures": [
+            {
+              "index": 0,
+              "purpose": "summary",
+              "code": "LIVE_TRANSPORT",
+              "message": "fetch failed (ECONNRESET)"
+            },
+            {
+              "index": 1,
+              "purpose": "primary",
+              "code": "LIVE_TRANSPORT",
+              "message": "fetch failed (UND_ERR_SOCKET)"
+            }
+          ]
+        }
+      ],
+      "valid": 20
+    },
+    {
+      "campaign": "e2e-r2-confirm-resume-1",
+      "status": "partial",
+      "stopReason": "provider-usage-missing",
+      "planned": 34,
+      "executed": 4,
+      "used": {
+        "requests": 15,
+        "inputTokens": 168693,
+        "outputTokens": 4628,
+        "wallClockMs": 60734
+      },
+      "transportFailures": [
+        {
+          "cellId": "T13-s2-B0-r1",
+          "failures": [
+            {
+              "index": 0,
+              "purpose": "summary",
+              "code": "LIVE_TRANSPORT",
+              "message": "fetch failed (ECONNRESET)"
+            },
+            {
+              "index": 1,
+              "purpose": "primary",
+              "code": "LIVE_TRANSPORT",
+              "message": "fetch failed (ECONNRESET)"
+            }
+          ]
+        }
+      ],
+      "valid": 3
+    }
+  ],
+  "excluded": [
+    {
+      "campaign": "e2e-r2-confirm-1",
+      "cellId": "T13-s1-B0-r2",
+      "reason": "provider-transport",
+      "failures": [
+        {
+          "index": 0,
+          "purpose": "summary",
+          "code": "LIVE_TRANSPORT",
+          "message": "fetch failed (ECONNRESET)"
+        },
+        {
+          "index": 1,
+          "purpose": "primary",
+          "code": "LIVE_TRANSPORT",
+          "message": "fetch failed (UND_ERR_SOCKET)"
+        }
+      ]
+    },
+    {
+      "campaign": "e2e-r2-confirm-resume-1",
+      "cellId": "T13-s2-B0-r1",
+      "reason": "provider-transport",
+      "failures": [
+        {
+          "index": 0,
+          "purpose": "summary",
+          "code": "LIVE_TRANSPORT",
+          "message": "fetch failed (ECONNRESET)"
+        },
+        {
+          "index": 1,
+          "purpose": "primary",
+          "code": "LIVE_TRANSPORT",
+          "message": "fetch failed (ECONNRESET)"
+        }
+      ]
+    }
+  ],
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "diagnosis": "The local provider route reset sockets (ECONNRESET / UND_ERR_SOCKET / LIVE_TRANSPORT) on every request in two cells. The runner stopped on provider-usage-missing. The transport-failed cells are not arm outcomes.",
+  "decision": "No further live calls until the route is stable. The confirm is partial and is not pooled with the pilot as a powered estimate.",
+  "envelope": {
+    "pilot": {
+      "cells": 18,
+      "used": {
+        "requests": 173,
+        "inputTokens": 2364910,
+        "outputTokens": 62224
+      }
+    },
+    "confirmAttempt1": {
+      "requests": 202,
+      "inputTokens": 2326959,
+      "outputTokens": 63561,
+      "wallClockMs": 1018707
+    },
+    "confirmResume": {
+      "requests": 15,
+      "inputTokens": 168693,
+      "outputTokens": 4628,
+      "wallClockMs": 60734
+    }
+  }
+}

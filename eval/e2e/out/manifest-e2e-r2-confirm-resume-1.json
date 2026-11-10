@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-r2-confirm-resume-1",
-  "frozenAt": "2026-11-10T12:10:22.999Z",
+  "frozenAt": "2026-11-10T12:10:43.003Z",
   "work": "EF-R2 WP6",
   "status": "resume-frozen",
   "executionAuthorized": false,
   "authorizationState": "requested",
   "code": {
-    "evaluatedCommit": "cfec2852f86497c1a6a874807817de5838fbf1ac",
+    "evaluatedCommit": "7360ce8329e7b3b1ecc634acb8afde5fa3975f6d",
     "branch": "chore/ef-c1-evaluation-foundation",
-    "worktreeClean": false,
-    "sourceTreeDigest": "339fbc6d1b5b9995f5d77e2ceabffabc8a79e9f6d3fe238c438acc24b6a6460f"
+    "worktreeClean": true,
+    "sourceTreeDigest": "20e92504cd9dc96a496db737282d94590ecb8ba8986e4deabc90a7aa21f07a44"
   },
   "model": "deepseek-v4.1-flash",
   "route": {
