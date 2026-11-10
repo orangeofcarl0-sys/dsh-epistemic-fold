@@ -361,7 +361,7 @@ async function main() {
     priorUsage.outputTokens += prior.budget.used.outputTokens
     priorUsage.wallClockMs += prior.budget.used.wallClockMs
     priorCells += prior.executed
-  } else if (!index && !lgPilot && !lgConfirm) {
+  } else if (!index && !lgPilot && !lgConfirm && !promptRepair) {
     for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
       const path = join(OUT, `results-${priorCampaign}.json`)
       if (!existsSync(path)) continue
