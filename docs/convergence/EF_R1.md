@@ -348,8 +348,29 @@ Current request (verbatim from the folded span; not a new instruction)
 > Write `incident-deploy.json` … from the INCIDENT deploy you inspected …
 ```
 
-`n=4` pairs: a direction check, not a powered result. The next step is a
-properly paired E0 / E0-R / E1 pilot, not a product default.
+`n=4` pairs: a direction check, not a powered result.
+
+### 5.7 The 24-cell confirmation: E1 dominates, re-render is template-specific
+
+A separate 24-cell grant ran T2/T4/T9/T10 × 2 seeds × {E0, E0-R, E1}: 112
+requests, 817,764 input, 22,570 output.
+
+| Arm | Pass | Prompt lost | Folds | Input |
+|---|---:|---:|---:|---:|
+| E0 | 2/8 | 6/8 | 28 | 350,935 |
+| E0-R | 4/8 | 0/8 | 26 | 326,813 |
+| E1 | **8/8** | — | 5 | 140,016 |
+
+E0-R vs E0 improved 4, worsened 2, tied 2: it gains both T4 seeds and both T10
+seeds, and loses both T9 seeds. The prompt is preserved 8/8, but preserving the
+instruction does not preserve the task outcome. The 8-cell 4/4 result did not
+confirm as a general effect.
+
+E1 passes every instance with fewer folds and less input. On this workload the
+rationale call is the strongest mechanism, not the locator, the guard, or the
+request copy.
+
+### 5.8 Reading
 
 ### 5.7 Reading
 
@@ -365,9 +386,12 @@ properly paired E0 / E0-R / E1 pilot, not a product default.
 - Protecting the prompt by moving the span start does not fold; it triggers an
   economic refusal. It preserves the request and passes, but the treatment is
   no-fold at ~18–19k retained tokens, not a viable compression policy.
-- Re-rendering the active request after a NORMAL fold is the promising shape:
-  E0-R 4/4 vs E0 1/4, 0/4 prompt lost, 0 no-fold, lower retained tokens. n=4;
-  it needs a powered paired pilot before any default changes.
+- Re-rendering the active request after a NORMAL fold preserves the prompt
+  (0/8 lost) but is template-specific: 4/8 vs 2/8, +4/−2, gaining T4/T10 and
+  losing T9. The 8-cell 4/4 did not confirm.
+- E1 (rationale) passed **8/8** with fewer folds (5 vs 28) and less input
+  (140k vs 351k). On this workload it is the strongest mechanism; a dedicated
+  E1 evaluation is the next experiment, not another locator/re-render variant.
 
 ## 6. Integration and the candidate
 
@@ -406,13 +430,13 @@ archiveLocator             Research candidate, default Off;
                            general benefit NOT confirmed (p=0.070 excluding T10)
 completionGuard            Research-only; hand to DSH Agent Runtime, not EF
 Operation-level authority  Fixed, invariant-tested; not a product release
-E1 rationale               strongest reference (17/20), p=0.057; dedicated
-                           evaluation recommended, no default change
+E1 rationale               strongest mechanism: 8/8 in the 24-cell
+                           confirmation, 5 folds, 140k input; dedicated
+                           evaluation recommended, no default change yet
 protectActiveRequest       Experimental, default Off; span-start protection
                            REJECTED (it triggers economic refusal / no-fold)
-rerenderActiveRequest      Experimental, default Off; PROMISING direction
-                           (4/4 vs 1/4, real fold-vs-fold, n=4);
-                           next: a powered paired pilot, not a default change
+rerenderActiveRequest      Experimental, default Off; template-specific
+                           (4/8 vs 2/8, +4/-2; preserves prompt, not outcome)
 ```
 
 The authority fix is a correctness fix. The locator and guard are not product
@@ -432,8 +456,8 @@ locator at all: it is that the active request can be folded at a 16k budget.
   be attributed to protection. The first attempt was invalid (stale `lib/`,
   zero requests in the E0-P cells) and is kept only as evidence of the harness
   defect that the new preflight now prevents.
-- The re-render pilot is n=4 pairs. It is a direction check with a real
-  fold-vs-fold treatment, but it cannot support a product claim.
+- The re-render pilot is n=4 pairs; its 24-cell follow-up is 8 pairs, with
+  reverse flips (both T9 seeds). Neither supports a product claim.
 - Task-prompt loss is both a finding and a confound. The L/G estimate is
   reported with and without the covariate, and no arm is significant at 0.05
   once T10 is excluded.
@@ -448,11 +472,12 @@ locator at all: it is that the active request can be folded at a 16k budget.
 ```bash
 node eval/ef-r1/operation-authority.mjs      # 16-case matrix + probes
 node eval/ef-r1/state-write-audit.mjs       # every writer + 180-pair invariant
-node eval/e2e/src/stage-attribution.mjs     # stage labels, 266 cells
+node eval/e2e/src/stage-attribution.mjs     # stage labels, 290 cells
 node eval/ef-r1/ablation-analysis.mjs       # 120-cell paired analysis
 EF_R1_EXCLUDE_TEMPLATES=T10 node eval/ef-r1/ablation-analysis.mjs
 node eval/ef-r1/prompt-pilot-analysis.mjs   # no-fold repair pilot
 EF_R1_PROMPT_CAMPAIGN=e2e-prompt-rerender-1 EF_R1_PROMPT_ARMS=E0,E0-R EF_R1_PROMPT_SUFFIX=-rerender node eval/ef-r1/prompt-pilot-analysis.mjs
+EF_R1_PROMPT_CAMPAIGN=e2e-prompt-confirm-1 EF_R1_PROMPT_ARMS=E0,E0-R EF_R1_PROMPT_SUFFIX=-confirm node eval/ef-r1/prompt-pilot-analysis.mjs
 node eval/ef-r1/locator-contract.mjs        # 11 contract cases
 node eval/ef-r1/ablation-design.mjs --check
 node eval/e2e/src/verify-archive.mjs        # external archive vs pointer

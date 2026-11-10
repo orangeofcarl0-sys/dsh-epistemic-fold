@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-prompt-confirm-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T2-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s1-E0-r1\\report.json",
+      "sha256": "9f8861c117449cb93912ce90cde33227aa1d21c756cc6db644d4c796c6e1a74b"
+    },
+    {
+      "cellId": "T2-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s1-E0-R-r1\\report.json",
+      "sha256": "beedae288e6ad01d79120fb192321fa9821d3a60f8673abc737f5c3d673983fe"
+    },
+    {
+      "cellId": "T2-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s1-E1-r1\\report.json",
+      "sha256": "7b53b11d048af94611502921be533e52aca1b89068a6f37e236100fb47780090"
+    },
+    {
+      "cellId": "T2-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s2-E0-R-r1\\report.json",
+      "sha256": "26e5e9f19838fde034c61f3754956083ab6e4516cb755071ead51775d60ddfc4"
+    },
+    {
+      "cellId": "T2-s2-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s2-E1-r1\\report.json",
+      "sha256": "8335513454a559b4e81bc56dcccb11f9c5a6b2f0489bddd4d4a27e3c68666c16"
+    },
+    {
+      "cellId": "T2-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T2-s2-E0-r1\\report.json",
+      "sha256": "47443d7a65b3e243be4e7edfa5c39b80dd9508544873740705de1bdc38ce2dac"
+    },
+    {
+      "cellId": "T4-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s1-E1-r1\\report.json",
+      "sha256": "a64183224689a42656e3f95a3e6b5209243d02f8f68ae81e3725fba234c7a2aa"
+    },
+    {
+      "cellId": "T4-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s1-E0-r1\\report.json",
+      "sha256": "8b0eaaac31b0e4a440cae13573bd4d10183deae9f3c9dc4242b15fa1ff035e9c"
+    },
+    {
+      "cellId": "T4-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s1-E0-R-r1\\report.json",
+      "sha256": "4063f3508941dd714fa657bcd9429a4c943ba330d365f35a16bd2e17256487bb"
+    },
+    {
+      "cellId": "T4-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s2-E0-r1\\report.json",
+      "sha256": "0dacc06f4712837b501fce8f5cd1551d6c2b87506495808ac4af52d3cfc245d2"
+    },
+    {
+      "cellId": "T4-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s2-E0-R-r1\\report.json",
+      "sha256": "5063ea2927dbe73f958987ad70953e8f265f81d5592bf5b19e0eaf50b98d1807"
+    },
+    {
+      "cellId": "T4-s2-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T4-s2-E1-r1\\report.json",
+      "sha256": "c956674c0b13fc2571e4514197f141e0d6c611439aeff9b8c083a6e43d6a3d71"
+    },
+    {
+      "cellId": "T9-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s1-E0-R-r1\\report.json",
+      "sha256": "f618ee8c306d13dc7d9c12040b7d82d283be7aba8f97b19b8b91a35d7cc4e2ed"
+    },
+    {
+      "cellId": "T9-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s1-E1-r1\\report.json",
+      "sha256": "80bc083942be9d0004957258df3a404f931f2498da4a16764a331232f9889902"
+    },
+    {
+      "cellId": "T9-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s1-E0-r1\\report.json",
+      "sha256": "37b42228f6c517cdc67fc872e6c426ece22a198ad70524d14ddf404c7515c7c2"
+    },
+    {
+      "cellId": "T9-s2-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s2-E1-r1\\report.json",
+      "sha256": "4492de99411667e9c3f70aa4547ee19c5c3ca361cbdb6ff0ad554f0488aeebc6"
+    },
+    {
+      "cellId": "T9-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s2-E0-r1\\report.json",
+      "sha256": "a3314bbd5a8db6ea446c6b86a02bf6c7ac063aa82ba043419d32c1f632c1ab29"
+    },
+    {
+      "cellId": "T9-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T9-s2-E0-R-r1\\report.json",
+      "sha256": "08b094c024b6a946cb11435049fc89690fe442dc6a1ad68d68149c07541e43ac"
+    },
+    {
+      "cellId": "T10-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s1-E0-r1\\report.json",
+      "sha256": "fd505e7bdb71904e9f4d0d383ccf1550650121005c243d1b2d83b80c1f2e41b3"
+    },
+    {
+      "cellId": "T10-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s1-E0-R-r1\\report.json",
+      "sha256": "678d6101d5750af291c103cdbe27839d9eb96b6e962df2ebea1f47de5713e91a"
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s1-E1-r1\\report.json",
+      "sha256": "ffccc4b337eea95ffcec39d11310fd4fd775c3c8d61e91c21e803f44a3d0b08e"
+    },
+    {
+      "cellId": "T10-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s2-E0-R-r1\\report.json",
+      "sha256": "d9d7f2eba98db4a04f23ce54fff8cdffee222bbd7c94e1c9af8f2c19d1d0a71a"
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s2-E1-r1\\report.json",
+      "sha256": "5a5c5e279f8de15f27bc81e172cb26ac79563a6b059f7f25e787ababc924501d"
+    },
+    {
+      "cellId": "T10-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-confirm-1\\T10-s2-E0-r1\\report.json",
+      "sha256": "5e34be7eb2dca8703755115b2c4ee36fa0640788ac3a1a98334052a76f4dc2ed"
+    }
+  ]
+}

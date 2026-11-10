@@ -53,7 +53,7 @@ const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const RUNS = join(ROOT, 'eval', 'e2e', 'runs')
 const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
 
-const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1', 'e2e-lg-pilot-1', 'e2e-lg-confirm-1', 'e2e-t10-retest-1', 'e2e-prompt-pilot-2', 'e2e-prompt-rerender-1']
+const CAMPAIGNS = ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1', 'e2e-index-1', 'e2e-lg-pilot-1', 'e2e-lg-confirm-1', 'e2e-t10-retest-1', 'e2e-prompt-pilot-2', 'e2e-prompt-rerender-1', 'e2e-prompt-confirm-1']
 const MEMORY_TEMPLATES = new Set(['T2', 'T4', 'T5', 'T5B', 'T7', 'T8', 'T9', 'T10'])
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
