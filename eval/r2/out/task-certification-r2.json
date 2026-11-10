@@ -1,0 +1,648 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-10T10:50:22.303Z",
+  "work": "EF-E2E",
+  "tasks": [
+    {
+      "id": "T11-s1",
+      "template": "T11",
+      "seed": 1,
+      "category": "historical-test",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27648,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "result.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":5}, expected {\"failed\":3}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T11-s2",
+      "template": "T11",
+      "seed": 2,
+      "category": "historical-test",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27648,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "result.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":7}, expected {\"failed\":5}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T12-s1",
+      "template": "T12",
+      "seed": 1,
+      "category": "revised-constraint",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27597,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json = {\"batch\":5,\"general\":5}, expected {\"batch\":2,\"general\":5}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T12-s2",
+      "template": "T12",
+      "seed": 2,
+      "category": "revised-constraint",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27590,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json = {\"batch\":5,\"general\":5}, expected {\"batch\":3,\"general\":5}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T13-s1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 25317,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json = {\"channel\":\"stable\",\"build\":\"00000000\"}, expected {\"channel\":\"beta\",\"build\":\"7f3c9a1e\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T13-s2",
+      "template": "T13",
+      "seed": 2,
+      "category": "historical-tool-evidence",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 25320,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json = {\"channel\":\"stable\",\"build\":\"00000000\"}, expected {\"channel\":\"canary\",\"build\":\"c41d08b7\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T14-s1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27556,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/limit.js does not contain \"LIMIT = 4\""
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/limit.js contains the required text"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/limit.js does not contain \"LIMIT = 4\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T14-s2",
+      "template": "T14",
+      "seed": 2,
+      "category": "long-multi-step",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27557,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/limit.js does not contain \"LIMIT = 6\""
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/limit.js contains the required text"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/limit.js does not contain \"LIMIT = 6\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T15-s1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27557,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "effective.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json = {\"concurrency\":9}, expected {\"concurrency\":6}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T15-s2",
+      "template": "T15",
+      "seed": 2,
+      "category": "time-version",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27551,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "effective.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json = {\"concurrency\":8}, expected {\"concurrency\":7}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T16-s1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 36871,
+      "seedAboveThreshold": true,
+      "stageBTokens": 48812,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "release.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "release.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "release.json = {\"release\":\"rel-000\",\"checksum\":\"00000000\"}, expected {\"release\":\"rel-4c1\",\"checksum\":\"a4f9c2e1\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T16-s2",
+      "template": "T16",
+      "seed": 2,
+      "category": "multi-compaction",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 36874,
+      "seedAboveThreshold": true,
+      "stageBTokens": 48816,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "release.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "release.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "release.json = {\"release\":\"rel-000\",\"checksum\":\"00000000\"}, expected {\"release\":\"rel-9a2\",\"checksum\":\"d7b3e8f0\"}"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "pass": true
+}

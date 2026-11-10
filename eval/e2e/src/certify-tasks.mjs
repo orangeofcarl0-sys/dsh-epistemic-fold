@@ -33,7 +33,16 @@ import { buildSeed, appendTurn } from './seed.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..', '..')
-const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
+/**
+ * The task directory.
+ *
+ * Defaults to the EF-E2E set so every existing command keeps its meaning. A
+ * later round names its own directory instead of appending instances to the
+ * frozen original set.
+ */
+const TASKS = process.env.EF_E2E_TASKS_DIR === undefined
+  ? join(ROOT, 'eval', 'e2e', 'tasks')
+  : resolve(ROOT, process.env.EF_E2E_TASKS_DIR)
 /**
  * Where the report lands.
  *
