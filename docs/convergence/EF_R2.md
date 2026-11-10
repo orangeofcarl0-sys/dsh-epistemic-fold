@@ -5,9 +5,8 @@ Status: **complete offline, plus an authorized pilot and a partial confirm**,
 on provider-transport failures (21/54, then 4/34), leaving 23 valid cells; it is
 not a confirmatory result. No merge, release or deployment was performed.
 Semantic Active remains on Deployment Hold. The supported-lane CI passed on
-`4af0eea` (run 42804489967); the DSH-master compatibility probe failed as
-expected and is non-blocking. The live/docs head is re-run at the end of the
-round.
+`9699d01` (run 42814270276); the DSH-master compatibility probe failed as
+expected and is non-blocking. The docs head is re-run after this record.
 
 This round did not add a recall prompt, a locator variant or a semantic memory
 component. It asked a smaller and more useful question: **what did the
@@ -457,7 +456,7 @@ grant; unused envelope capacity is not permission to retry.
 | R2-G3 | pass | 44/120 reproduced; 45 exact lost; 2 values unavailable |
 | R2-G4 | pass | cost ledger reconciles; 42 calls; 16,384 reservation |
 | R2-G5 | pass | old allowed → new refused; 12 tests; retire not model-callable |
-| R2-G6 | pass | supported lane on `4af0eea` (run 42804489967); the master probe failed as expected and is non-blocking |
+| R2-G6 | pass | supported lane on `9699d01` (run 42814270276); the master probe failed as expected and is non-blocking |
 | R2-G7 | pass | EF_R2.md, claims complete, design manifest unauthorized; stage grants separate |
 | R2-G8 | pass | pilot 18/18; E1 6/6 commit and delivery; 0 E1 refusals/aborts |
 | R2-G9 | **incomplete** | confirm 23/54 valid after provider-transport failures; not a confirm; no further live calls until the route is stable |
