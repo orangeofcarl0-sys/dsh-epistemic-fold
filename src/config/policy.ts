@@ -168,6 +168,15 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly protectActiveRequest: boolean
   /**
+   * EXPERIMENTAL: when a fold replaces the ACTIVE user request, copy it
+   * verbatim into the checkpoint body. Default `false`.
+   *
+   * The span-start prototype (`protectActiveRequest`) turned out to disable
+   * folding: the post-request span was too small and admission refused it.
+   * This flag keeps the fold normal and preserves the instruction instead.
+   */
+  readonly rerenderActiveRequest: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -375,6 +384,8 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
   archiveLocator?: boolean
   /** EXPERIMENTAL: never fold the active user request. Default `false`. */
   protectActiveRequest?: boolean
+  /** EXPERIMENTAL: copy the active request into the checkpoint body. Default `false`. */
+  rerenderActiveRequest?: boolean
   /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
@@ -527,6 +538,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof protectActiveRequest !== 'boolean') {
     throw new Error('epistemic-fold: protectActiveRequest must be a boolean')
   }
+  const rerenderActiveRequest = expanded.rerenderActiveRequest ?? false
+  if (typeof rerenderActiveRequest !== 'boolean') {
+    throw new Error('epistemic-fold: rerenderActiveRequest must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -572,6 +587,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     foldedSpanIndex,
     archiveLocator,
     protectActiveRequest,
+    rerenderActiveRequest,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,

@@ -71,6 +71,8 @@ export const ARMS = Object.freeze({
   // EF-R1 prompt-protection arm: E0 plus the opt-in leaf rule that starts the
   // span after the active user request. No campaign has run under it yet.
   'E0-P': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', protectActiveRequest: true },
+  // The follow-up: fold normally, but copy the active request into the body.
+  'E0-R': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', rerenderActiveRequest: true },
 })
 
 /**
@@ -130,6 +132,7 @@ export async function mountHost({
       ...(spec.foldedSpanIndex === undefined ? {} : { foldedSpanIndex: spec.foldedSpanIndex }),
       ...(spec.archiveLocator === undefined ? {} : { archiveLocator: spec.archiveLocator }),
       ...(spec.protectActiveRequest === undefined ? {} : { protectActiveRequest: spec.protectActiveRequest }),
+      ...(spec.rerenderActiveRequest === undefined ? {} : { rerenderActiveRequest: spec.rerenderActiveRequest }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,

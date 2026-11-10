@@ -69,6 +69,13 @@ const ENVELOPES = {
     outputTokens: 40_000,
     wallClockMs: 30 * 60 * 1000,
   },
+  'prompt-rerender': {
+    continuationCells: 8,
+    httpAttempts: 200,
+    inputTokens: 1_000_000,
+    outputTokens: 40_000,
+    wallClockMs: 30 * 60 * 1000,
+  },
 }
 const envelopeName = value('envelope') ?? 'original'
 const ENVELOPE = ENVELOPES[envelopeName]

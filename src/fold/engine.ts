@@ -68,7 +68,7 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from '../policy/pressure.ts'
 import { evaluateRootRebase } from '../policy/root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
-import { archivedCallsFromMessages, describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import { activeRequestText, archivedCallsFromMessages, describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
 import type { ArchivedCall } from '../checkpoint/renderer.ts'
 import { selectArchiveLocators } from '../checkpoint/locator.ts'
 import type { ArchiveLocator } from '../checkpoint/locator.ts'
@@ -2059,6 +2059,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
           this.efConfig.archiveLocator
             ? selectArchiveLocators(shadowedMessages, candidate.checkpointId)
             : undefined,
+          this.activeRequestForFold(session, orderedSurfaceSeqs, shadowedMessages),
         )
         renderedText = stateText ?? (semanticText === undefined
           ? fallbackText
@@ -3656,13 +3657,36 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     mode: FoldMode,
     archivedCalls?: readonly ArchivedCall[],
     locators?: readonly ArchiveLocator[],
+    activeRequest?: string,
   ): string | undefined {
     if (state === undefined) return undefined
     return renderStructuredCheckpoint(state, checkpointId, semanticText, mode, {
       recallAffordance: this.efConfig.recallAffordance,
       ...(archivedCalls === undefined ? {} : { archivedCalls }),
       ...(locators === undefined ? {} : { locators }),
+      ...(activeRequest === undefined ? {} : { activeRequest }),
     })
+  }
+
+  /**
+   * The ACTIVE request text, but only when THIS fold is about to replace it.
+   *
+   * If the request is in the retained tail, it survives on the surface and
+   * copying it would only add tokens. `orderedSurfaceSeqs` and the archived
+   * messages are positionally paired, so the request is found by seq and read
+   * from the exact message being folded.
+   */
+  private activeRequestForFold(
+    session: Session,
+    foldedSeqs: readonly number[],
+    messages: readonly Message[],
+  ): string | undefined {
+    if (!this.efConfig.rerenderActiveRequest) return undefined
+    const position = activeRequestPosition(session)
+    if (position === undefined) return undefined
+    const seq = session.surface.nodes[position]
+    if (seq === undefined) return undefined
+    return activeRequestText(messages, foldedSeqs, Number(seq))
   }
 
   /**

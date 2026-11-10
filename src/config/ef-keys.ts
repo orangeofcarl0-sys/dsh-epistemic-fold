@@ -85,6 +85,11 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   // leaf span starts after the last real user message instead. The emergency
   // rebase may still fold it when the provider window cannot be met otherwise.
   { name: 'protectActiveRequest', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: when a fold replaces the ACTIVE user request,
+  // copy it verbatim into the checkpoint body. This is the follow-up to the
+  // span-start prototype, which disabled folding instead of protecting the
+  // request.
+  { name: 'rerenderActiveRequest', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },

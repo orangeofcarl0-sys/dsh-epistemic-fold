@@ -69,6 +69,7 @@ export const EpistemicFoldPluginConfig: z<EpistemicFoldConfig> = z.object({
   foldedSpanIndex: z.any(),
   archiveLocator: z.any(),
   protectActiveRequest: z.any(),
+  rerenderActiveRequest: z.any(),
   leafAdmission: z.any(),
   minReclaimTokens: z.any(),
   minReclaimRatio: z.any(),

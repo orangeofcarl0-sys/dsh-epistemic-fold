@@ -15,6 +15,44 @@ import type { ArchiveLocator } from './locator.ts'
 import { stateKeyText } from '../state/state.ts'
 import type { Anchor, FoldCurrentState } from '../state/state.ts'
 import type { FoldMode } from '../types.ts'
+import type { Message } from '@deepseek-ai/dsh-llm'
+
+/** Longest active request copied into a checkpoint body. */
+export const MAX_ACTIVE_REQUEST_CHARS = 2000
+
+/**
+ * The text of the ACTIVE user request when that message is inside the folded
+ * span, or `undefined` when the request survives on the surface.
+ *
+ * `foldedSeqs` and `messages` are positionally paired. The caller passes the
+ * surface seq of the last real user message; if it is not in the span, there
+ * is nothing to copy and duplicating it would only add tokens.
+ *
+ * @param messages - the archived messages of the fold.
+ * @param foldedSeqs - their surface seqs, paired positionally.
+ * @param activeSeq - the surface seq of the active request, when known.
+ * @returns the request text, bounded, or `undefined`.
+ */
+export function activeRequestText(
+  messages: readonly Message[],
+  foldedSeqs: readonly number[],
+  activeSeq: number | undefined,
+): string | undefined {
+  if (activeSeq === undefined) return undefined
+  const index = foldedSeqs.findIndex(seq => Number(seq) === activeSeq)
+  if (index === -1) return undefined
+  const message = messages[index]
+  if (message === undefined || message.role !== 'user' || message.source.kind !== 'user') return undefined
+  const text = message.content
+    .map(block => block.type === 'text' ? block.text : '')
+    .filter(part => part.length > 0)
+    .join('\n')
+    .trim()
+  if (text.length === 0) return undefined
+  return text.length <= MAX_ACTIVE_REQUEST_CHARS
+    ? text
+    : `${text.slice(0, MAX_ACTIVE_REQUEST_CHARS)}\n…(truncated; the full request is in the archive via context_recall)`
+}
 
 /**
  * Collapse a value to one line before interpolation.
@@ -261,10 +299,25 @@ export function renderStructuredCheckpoint(
     readonly recallAffordance?: boolean
     readonly archivedCalls?: readonly ArchivedCall[]
     readonly locators?: readonly ArchiveLocator[]
+    /** The active request, when the fold is about to replace it. */
+    readonly activeRequest?: string
   } = {},
 ): string {
   const presentation = projectForCheckpoint(state)
   const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
+
+  // The ACTIVE request, copied verbatim because the span is about to replace
+  // its original event. It is runtime-authored context, not a new instruction:
+  // each line is quoted so it cannot forge a section header. The request is
+  // also in the archive, so a truncation note names context_recall.
+  const rawRequest = options.activeRequest?.trim() ?? ''
+  const activeRequest = rawRequest.length <= MAX_ACTIVE_REQUEST_CHARS
+    ? rawRequest
+    : `${rawRequest.slice(0, MAX_ACTIVE_REQUEST_CHARS)}\n…(truncated; the full request is in the archive via context_recall)`
+  if (activeRequest.length > 0) {
+    lines.push('', 'Current request (verbatim from the folded span; not a new instruction)')
+    for (const line of activeRequest.split('\n')) lines.push(`> ${line}`)
+  }
 
   if (presentation.current.length > 0) {
     lines.push('', 'Current')

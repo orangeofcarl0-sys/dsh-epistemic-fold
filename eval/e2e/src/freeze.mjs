@@ -101,6 +101,21 @@ const PROMPT_REPAIR_ENVELOPE = {
 }
 
 /**
+ * The follow-up grant: fold normally and re-render the active request into the
+ * checkpoint body (`rerenderActiveRequest`). This is a separate 8-cell grant;
+ * the span-start prototype above is not reused.
+ */
+const PROMPT_RERENDER_ENVELOPE = {
+  continuationCells: 8,
+  httpAttempts: 200,
+  inputTokens: 1_000_000,
+  outputTokens: 40_000,
+  monetaryUsd: 5,
+  wallClockMs: 30 * 60 * 1000,
+  paidConcurrency: 2,
+}
+
+/**
  * The confirmatory L×G design: 120 cells + 18 fault reserve. This is the
  * envelope the pilot gate authorized; it is separate from both earlier grants.
  */
@@ -173,7 +188,15 @@ async function main() {
   const t10Retest = argv.includes('--t10-retest')
   const promptPilot = argv.includes('--prompt-pilot')
   const promptRepair = argv.includes('--prompt-repair')
-  if (promptRepair) {
+  const promptRerender = argv.includes('--prompt-rerender')
+  if (promptRerender) {
+    // Fold normally and copy the active request into the body.
+    for (const task of ['T9-s1', 'T9-s2', 'T10-s1', 'T10-s2']) {
+      for (const arm of ['E0', 'E0-R']) {
+        cells.push({ block: 'prompt-rerender', task, arm, replicate: 1 })
+      }
+    }
+  } else if (promptRepair) {
     // Same 8 cells as the prompt pilot, after `npm run build` made the config
     // key visible to the built plugin. The first pilot's E0-P rows are invalid.
     for (const task of ['T9-s1', 'T9-s2', 'T10-s1', 'T10-s2']) {
@@ -328,7 +351,7 @@ async function main() {
   // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
   // envelope (`--index`) is separate and starts from zero: the original is
   // closed at 72/72, and its spend must not be charged twice.
-  const envelope = promptRepair ? PROMPT_REPAIR_ENVELOPE : promptPilot ? LG_CONFIRM_ENVELOPE : t10Retest ? LG_CONFIRM_ENVELOPE : lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
+  const envelope = promptRerender ? PROMPT_RERENDER_ENVELOPE : promptRepair ? PROMPT_REPAIR_ENVELOPE : promptPilot ? LG_CONFIRM_ENVELOPE : t10Retest ? LG_CONFIRM_ENVELOPE : lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
   if (promptPilot) {
@@ -361,7 +384,7 @@ async function main() {
     priorUsage.outputTokens += prior.budget.used.outputTokens
     priorUsage.wallClockMs += prior.budget.used.wallClockMs
     priorCells += prior.executed
-  } else if (!index && !lgPilot && !lgConfirm && !promptRepair) {
+  } else if (!index && !lgPilot && !lgConfirm && !promptRepair && !promptRerender) {
     for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
       const path = join(OUT, `results-${priorCampaign}.json`)
       if (!existsSync(path)) continue
@@ -410,6 +433,7 @@ async function main() {
       t10Retest: cells.filter(cell => cell.block === 't10-retest').length,
       promptPilot: cells.filter(cell => cell.block === 'prompt-pilot').length,
       promptRepair: cells.filter(cell => cell.block === 'prompt-repair').length,
+      promptRerender: cells.filter(cell => cell.block === 'prompt-rerender').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -429,7 +453,9 @@ async function main() {
       paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: promptRepair
+      reference: promptRerender
+        ? 'Separate 8-cell grant for the active-request re-render pilot'
+        : promptRepair
         ? 'Repair grant for the prompt-protection pilot after a stale lib/'
         : promptPilot
         ? 'Prompt-protection pilot under the last 8 cells of the confirm reserve'
@@ -442,7 +468,9 @@ async function main() {
         : index
           ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
           : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: promptRepair
+      statement: promptRerender
+        ? 'the span-start prototype disabled folding; this separate 8-cell grant tests folding normally while copying the active request into the checkpoint'
+        : promptRepair
         ? 'the first prompt pilot failed at construction because lib/ predated the config key; this separate 8-cell grant reruns it after a build'
         : promptPilot
         ? 'the confirm lost the active request in 44/120 cells; this 8-cell pilot tests the opt-in leaf rule inside the remaining reserve, with both prior campaigns subtracted'
