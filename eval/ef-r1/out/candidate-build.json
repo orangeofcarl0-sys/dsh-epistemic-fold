@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-09T19:46:09.911Z",
+  "generatedAt": "2026-11-10T07:15:45.663Z",
   "work": "EF-R1",
   "installDir": "eval\\ef-r1\\candidate\\install",
   "packageDir": "eval\\ef-r1\\candidate\\install\\node_modules\\dsh-epistemic-fold",
@@ -58,7 +58,7 @@
     {
       "id": "tarball-sha256",
       "pass": true,
-      "detail": "7c018c497294480a31de69edc6d78e79466e7060710b922dce0f2a6400f52767 (1406313 bytes)"
+      "detail": "aa4f4d72bca4ca3646b6631bf8c4d07a582179452f58eb5b4583ece6eeb39b2f (1406731 bytes)"
     },
     {
       "id": "tarball-no-raw-or-secret",
