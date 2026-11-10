@@ -30,7 +30,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { createMessage, createUserMessage } from '@deepseek-ai/dsh-llm'
-import type { Message } from '@deepseek-ai/dsh-llm'
+import type { AssistantMessage, Message, SystemMessage, UserMessage } from '@deepseek-ai/dsh-llm'
 import { SessionSeq } from '@deepseek-ai/dsh-session'
 import { validateDeltas } from '../src/semantic/validate.ts'
 import { applyOps, planCommit } from '../src/semantic/plan.ts'
@@ -40,20 +40,20 @@ import { emptyCurrentState } from '../src/state/state.ts'
 import type { Anchor, FoldCurrentState } from '../src/state/state.ts'
 import { conversation, toolConversation } from './harness.ts'
 
-const user = (text: string): Message => createUserMessage({
+const user = (text: string): UserMessage => createUserMessage({
   content: [{ type: 'text', text }],
   source: { kind: 'user' },
 })
-const model = (text: string): Message => createMessage({
+const model = (text: string): AssistantMessage => createMessage({
   role: 'assistant',
   content: [{ type: 'text', text }],
   source: { kind: 'model', provider: 'test', model: 'test' },
-})
-const system = (text: string): Message => createMessage({
+}) as AssistantMessage
+const system = (text: string): SystemMessage => createMessage({
   role: 'system',
   content: [{ type: 'text', text }],
   source: { kind: 'system-prompt' },
-})
+}) as SystemMessage
 
 function fold(
   proposed: readonly Record<string, unknown>[],
@@ -269,7 +269,7 @@ describe('EF-R2 WP5: the anchor-service door derives the producer', () => {
       stateKey: { namespace: 'scope', entity: 'queue', property: 'mode' },
       value: 'Use the durable outbox.',
       authority: 'decision',
-      sourceRefs: [{ seq: targetUserSeq }],
+      sourceRefs: [{ seq: SessionSeq(targetUserSeq) }],
     })
 
     expect(() => service.declare(session, {
@@ -277,7 +277,7 @@ describe('EF-R2 WP5: the anchor-service door derives the producer', () => {
       stateKey: { namespace: 'scope', entity: 'queue', property: 'mode' },
       value: 'Use the in-memory queue.',
       authority: 'decision',
-      sourceRefs: [{ seq: oldUserSeq }, { seq: laterSystemSeq }],
+      sourceRefs: [{ seq: oldUserSeq }, { seq: SessionSeq(laterSystemSeq) }],
     })).toThrow(/stale-source/u)
   })
 })
