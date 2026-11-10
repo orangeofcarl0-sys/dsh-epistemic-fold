@@ -143,6 +143,9 @@ jobs:
       - name: R2 baseline-dominant compression (pressure, admission, rebase, diet, dominance)
         run: npm run eval:r2
 
+      - name: EF-R2 compaction witness contract and claim registry
+        run: npm run eval:ef-r2
+
       - name: R1 report is reproducible and up to date
         run: |
           npm run eval:r1-report:check

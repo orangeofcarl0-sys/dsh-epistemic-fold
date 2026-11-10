@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP1",
+  "generatedAt": "2026-11-10T10:55:15.699Z",
+  "checks": 30,
+  "passed": 30,
+  "failed": 0,
+  "pass": true,
+  "note": "Seven scenarios over real bundle files and synthetic event logs."
+}

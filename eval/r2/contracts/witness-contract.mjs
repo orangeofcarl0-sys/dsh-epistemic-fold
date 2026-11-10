@@ -13,9 +13,11 @@
  */
 
 import { createHash, randomUUID } from 'node:crypto'
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { FileBundleStore } from '../../../lib/checkpoint/bundle-store.js'
 import { canonicalHash } from '../../../lib/checkpoint/hash.js'
 import { encodeCheckpointMarker } from '../../../lib/checkpoint/checkpoint-marker.js'
@@ -491,6 +493,19 @@ async function main() {
   })
 
   process.stdout.write(`\n${checks - failures}/${checks} checks passed\n`)
+  // The gate reads this file; the exit code alone is not an artifact.
+  const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'out', 'witness-contract.json')
+  mkdirSync(dirname(out), { recursive: true })
+  writeFileSync(out, `${JSON.stringify({
+    schemaVersion: 1,
+    work: 'EF-R2 WP1',
+    generatedAt: new Date().toISOString(),
+    checks,
+    passed: checks - failures,
+    failed: failures,
+    pass: failures === 0,
+    note: 'Seven scenarios over real bundle files and synthetic event logs.',
+  }, null, 2)}\n`, 'utf8')
   if (failures > 0) process.exit(1)
 }
 

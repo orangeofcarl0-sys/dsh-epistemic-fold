@@ -79,6 +79,8 @@ eval/e2e/candidate/
 # EF-R1: the tarball and its throwaway install are rebuildable; the SHA-256 and
 # every check are in eval/ef-r1/out/candidate-build.json, which IS tracked.
 eval/ef-r1/candidate/
+# EF-R2: same rule; the tracked record is eval/r2/out/candidate-build.json.
+eval/r2/candidate/
 
 # Full vitest JSON and raw log (the tracked summary is full-tests-summary.json)
 eval/e2e/out/full-tests.json
