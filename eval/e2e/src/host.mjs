@@ -89,6 +89,7 @@ export async function mountHost({
   roots,
   persistenceRoot = null,
   thresholdRatio = 0.5,
+  efConfig = {},
 }) {
   const spec = ARMS[arm]
   if (spec === undefined) throw new Error(`unknown arm ${arm}`)
@@ -133,6 +134,12 @@ export async function mountHost({
       ...(spec.archiveLocator === undefined ? {} : { archiveLocator: spec.archiveLocator }),
       ...(spec.protectActiveRequest === undefined ? {} : { protectActiveRequest: spec.protectActiveRequest }),
       ...(spec.rerenderActiveRequest === undefined ? {} : { rerenderActiveRequest: spec.rerenderActiveRequest }),
+      // A campaign may freeze non-semantic policy keys (admission, root policy,
+      // framing). The arm identity stays the same; the manifest records the
+      // difference, and no historical report is re-interpreted.
+      ...(efConfig.leafAdmission === undefined ? {} : { leafAdmission: efConfig.leafAdmission }),
+      ...(efConfig.rootPolicy === undefined ? {} : { rootPolicy: efConfig.rootPolicy }),
+      ...(efConfig.framingMode === undefined ? {} : { framingMode: efConfig.framingMode }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,

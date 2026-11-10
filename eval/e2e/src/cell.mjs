@@ -380,6 +380,7 @@ export async function runCell({
   model,
   cellLimits,
   guard = false,
+  efConfig = {},
 }) {
   const cellId = `${task.id}-${arm}-r${replicate}`
   const cellRoot = join(outRoot, cellId)
@@ -419,6 +420,7 @@ export async function runCell({
       roots,
       persistenceRoot: task.stageB === undefined ? null : persistenceRoot,
       thresholdRatio: task.thresholdRatio,
+      efConfig,
     })
     ;({ handle, toolState } = await createSeededAgent(host, {
       sessionId,
@@ -453,6 +455,7 @@ export async function runCell({
         roots,
         persistenceRoot,
         thresholdRatio: task.thresholdRatio,
+        efConfig,
       })
       const resumed = await resumeAgent(host, { sessionId, workspace, maxSteps: MAX_STEPS })
       handle = resumed.handle
@@ -613,6 +616,7 @@ export async function runCell({
     events,
     bundleRoot: roots.bundleRoot,
     requests: log.requests,
+    fullMessages: log.fullMessages,
     taskPrompt: task.task,
     arm,
   })

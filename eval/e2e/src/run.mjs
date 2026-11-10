@@ -288,6 +288,7 @@ async function main() {
         provider: 'ef-e2e',
         model: manifest.model,
         cellLimits,
+        efConfig: manifest.config,
       })
     } catch (error) {
       stopReason = `runner-error: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`

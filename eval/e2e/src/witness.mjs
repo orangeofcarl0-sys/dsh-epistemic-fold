@@ -559,6 +559,7 @@ export async function buildWitnessesFromEvents({
   events,
   bundleRoot,
   requests,
+  fullMessages,
   taskPrompt,
   arm,
 }) {
@@ -569,6 +570,7 @@ export async function buildWitnessesFromEvents({
       attempts,
       bundles,
       requests,
+      fullMessages,
       taskPrompt,
       arm,
       sessionId,
@@ -576,7 +578,7 @@ export async function buildWitnessesFromEvents({
     }),
     taskDelivery: buildTaskDelivery({
       primary: requests.filter(request => request.purpose === 'primary'),
-      fullMessages: undefined,
+      fullMessages,
       taskPrompt,
     }),
     bundleCount: bundles.length,

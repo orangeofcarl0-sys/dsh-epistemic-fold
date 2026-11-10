@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP6",
+  "generatedAt": "2026-11-10T10:52:26.807Z",
+  "campaign": "e2e-r2-live-1",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r2-live-1.json",
+    "sha256": "77e054216f1ecd01ffb3cd9faca9e01c5de69ea26199467013d18beb9ace5176",
+    "cells": 72
+  },
+  "archetypes": [
+    {
+      "template": "T11",
+      "category": "historical-test",
+      "action": "fix a failing test, report the pre-change failure count"
+    },
+    {
+      "template": "T12",
+      "category": "revised-constraint",
+      "action": "apply the latest user revision, not the baseline"
+    },
+    {
+      "template": "T13",
+      "category": "historical-tool-evidence",
+      "action": "recover a value from a rotated tool observation"
+    },
+    {
+      "template": "T14",
+      "category": "long-multi-step",
+      "action": "apply a corrected plan and run the tests"
+    },
+    {
+      "template": "T15",
+      "category": "time-version",
+      "action": "select the value effective at a named time"
+    },
+    {
+      "template": "T16",
+      "category": "multi-compaction",
+      "action": "finish after a second fold in a two-stage continuation"
+    }
+  ],
+  "arms": {
+    "B0": "native DSH Basic",
+    "E0": "EF minimal, semanticMode none, economic leaf admission, economics root policy",
+    "E1": "EF rationale, semanticMode rationale, economic leaf admission, economics root policy"
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "legacy",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 800,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 16384,
+    "maxSteps": 8,
+    "retainRatio": 0.04,
+    "headroomTokens": 512
+  },
+  "r1Difference": "EF-R1 E1 ran leafAdmission legacy. This design pre-registers economic admission for both E0 and E1; framing and root policy are held constant across the two EF arms. The change is a measured config difference, not an assumed fix.",
+  "preflight": {
+    "path": "eval/r2/out/preflight-r2.json",
+    "sha256": "b95ea7fd988efaeb21b48ccc64bece6480581df65b1e794e6f4f455163a285d9",
+    "cells": 36,
+    "passed": 36,
+    "requests": 0,
+    "byArm": {
+      "B0": {
+        "cells": 12,
+        "pass": 12,
+        "attempts": 48,
+        "committed": 14,
+        "delivered": 14
+      },
+      "E0": {
+        "cells": 12,
+        "pass": 12,
+        "attempts": 14,
+        "committed": 14,
+        "delivered": 14
+      },
+      "E1": {
+        "cells": 12,
+        "pass": 12,
+        "attempts": 14,
+        "committed": 14,
+        "delivered": 14
+      }
+    }
+  },
+  "certification": {
+    "path": "eval/r2/out/task-certification-r2.json",
+    "sha256": "4d307a009eaf19f74a08215328734687bb14aef31d932103a7a6993c93d06a40",
+    "pass": true,
+    "tasks": 12
+  },
+  "proposedEnvelope": {
+    "continuationCells": 72,
+    "httpAttempts": 2000,
+    "inputTokens": 20000000,
+    "outputTokens": 1500000,
+    "wallClockMs": 21600000,
+    "paidConcurrency": 2,
+    "note": "Proposed only. Not granted. A live run requires a separate, explicit authorization bound to the frozen manifest hash."
+  },
+  "note": "No provider call is made by this script or by the design. The preflight is a scripted, zero-request wiring test."
+}

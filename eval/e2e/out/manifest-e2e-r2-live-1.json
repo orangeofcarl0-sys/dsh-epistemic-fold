@@ -1,0 +1,669 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r2-live-1",
+  "frozenAt": "2026-11-10T10:52:26.686Z",
+  "work": "EF-R2 WP6",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "code": {
+    "evaluatedCommit": "6df6dc245ade6e38342f0e80d173367691333eb4",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "worktreeClean": false
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "not-resolved",
+    "note": "Resolved only when a live authorization is granted; this manifest is not runnable yet."
+  },
+  "arms": {
+    "B0": "native DSH Basic",
+    "E0": "EF minimal, semanticMode none, economic leaf admission, economics root policy",
+    "E1": "EF rationale, semanticMode rationale, economic leaf admission, economics root policy"
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "legacy",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 800,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 16384,
+    "maxSteps": 8,
+    "retainRatio": 0.04,
+    "headroomTokens": 512
+  },
+  "r1Difference": "EF-R1 E1 ran leafAdmission legacy. This design pre-registers economic admission for both E0 and E1; framing and root policy are held constant across the two EF arms. The change is a measured config difference, not an assumed fix.",
+  "design": {
+    "archetypes": [
+      {
+        "template": "T11",
+        "category": "historical-test",
+        "action": "fix a failing test, report the pre-change failure count"
+      },
+      {
+        "template": "T12",
+        "category": "revised-constraint",
+        "action": "apply the latest user revision, not the baseline"
+      },
+      {
+        "template": "T13",
+        "category": "historical-tool-evidence",
+        "action": "recover a value from a rotated tool observation"
+      },
+      {
+        "template": "T14",
+        "category": "long-multi-step",
+        "action": "apply a corrected plan and run the tests"
+      },
+      {
+        "template": "T15",
+        "category": "time-version",
+        "action": "select the value effective at a named time"
+      },
+      {
+        "template": "T16",
+        "category": "multi-compaction",
+        "action": "finish after a second fold in a two-stage continuation"
+      }
+    ],
+    "instances": 12,
+    "arms": [
+      "B0",
+      "E0",
+      "E1"
+    ],
+    "replicates": [
+      1,
+      2
+    ],
+    "cells": 72,
+    "preflight": {
+      "path": "eval/r2/out/preflight-r2.json",
+      "sha256": "b95ea7fd988efaeb21b48ccc64bece6480581df65b1e794e6f4f455163a285d9",
+      "cells": 36,
+      "passed": 36,
+      "requests": 0,
+      "byArm": {
+        "B0": {
+          "cells": 12,
+          "pass": 12,
+          "attempts": 48,
+          "committed": 14,
+          "delivered": 14
+        },
+        "E0": {
+          "cells": 12,
+          "pass": 12,
+          "attempts": 14,
+          "committed": 14,
+          "delivered": 14
+        },
+        "E1": {
+          "cells": 12,
+          "pass": 12,
+          "attempts": 14,
+          "committed": 14,
+          "delivered": 14
+        }
+      }
+    },
+    "certification": {
+      "path": "eval/r2/out/task-certification-r2.json",
+      "sha256": "4d307a009eaf19f74a08215328734687bb14aef31d932103a7a6993c93d06a40",
+      "pass": true,
+      "tasks": 12
+    }
+  },
+  "tasks": [
+    {
+      "file": "eval/e2e/tasks-r2/T11-s1.json",
+      "id": "T11-s1",
+      "template": "T11",
+      "seed": 1,
+      "category": "historical-test",
+      "digest": "e39df496c26c484dad4d72f2f5e7a4b83421e2b23f6a5e5b4bc4a606555093b0"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T11-s2.json",
+      "id": "T11-s2",
+      "template": "T11",
+      "seed": 2,
+      "category": "historical-test",
+      "digest": "4048cfbb402a1af7ccd4dcfd17ea3790b41a671ae1f394db2cb51da50dc45c78"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T12-s1.json",
+      "id": "T12-s1",
+      "template": "T12",
+      "seed": 1,
+      "category": "revised-constraint",
+      "digest": "9eb259cafd780f699ba083b176dd673519f973877c50f0a854e575838cf96e21"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T12-s2.json",
+      "id": "T12-s2",
+      "template": "T12",
+      "seed": 2,
+      "category": "revised-constraint",
+      "digest": "afa110746ef7ab97e7c28a91c3c782af085f221e5ffdc40dd81024430e1360a9"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T13-s1.json",
+      "id": "T13-s1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "digest": "040961b331ddd08e70b3d1fe2a3411fddc751e9d01a1212b885bb958f0a429d1"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T13-s2.json",
+      "id": "T13-s2",
+      "template": "T13",
+      "seed": 2,
+      "category": "historical-tool-evidence",
+      "digest": "3e84bb01733dff8ce3e8421c84bc9dde002c2214ee6a5e3bf9acbab4d4106f8c"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T14-s1.json",
+      "id": "T14-s1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "digest": "85d839571aeb1411d9a90a4c9bb5fbe35e3ea339627dee6755ee4469f363b3d1"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T14-s2.json",
+      "id": "T14-s2",
+      "template": "T14",
+      "seed": 2,
+      "category": "long-multi-step",
+      "digest": "6a003fec4d7f138ce46c46c111a63f7a6ebfaf066db6b086ccbcfaa7b4aa880d"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T15-s1.json",
+      "id": "T15-s1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "digest": "666cb4574737816d38ebe4ddbd205d6b2a9a03f82ee585c1b4d40c539c017085"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T15-s2.json",
+      "id": "T15-s2",
+      "template": "T15",
+      "seed": 2,
+      "category": "time-version",
+      "digest": "db8fce641e8be65623766aa8ccde87631c1d9bdcf798f5fe1595d9b05aada772"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T16-s1.json",
+      "id": "T16-s1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "digest": "0003de3abedae692ae7fb79ab4b0f61429a406f90f82ef215308aff5d89fe08f"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T16-s2.json",
+      "id": "T16-s2",
+      "template": "T16",
+      "seed": 2,
+      "category": "multi-compaction",
+      "digest": "cbe93e566a29e38e7cfc5b9cc333dc0fb06029fbe7d4163773470834550b12b8"
+    }
+  ],
+  "cells": [
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T11-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T12-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T13-s2",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T14-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T15-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "E0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s1",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "E1",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "B0",
+      "replicate": 2
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r2-live",
+      "task": "T16-s2",
+      "arm": "E0",
+      "replicate": 2
+    }
+  ],
+  "perCell": {
+    "requests": 24,
+    "inputTokens": 250000,
+    "outputTokens": 20000,
+    "wallClockMs": 300000
+  },
+  "limits": {
+    "continuationCells": 72,
+    "httpAttempts": 2000,
+    "inputTokens": 20000000,
+    "outputTokens": 1500000,
+    "wallClockMs": 21600000,
+    "paidConcurrency": 2,
+    "note": "Proposed only. Not granted. A live run requires a separate, explicit authorization bound to the frozen manifest hash.",
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded; the envelope is in tokens and wall clock."
+  },
+  "authorizationEnvelope": "r2-live (proposed, not granted)",
+  "note": "This manifest freezes the design and nothing else. A live run needs a new grant bound to the manifest SHA-256."
+}
