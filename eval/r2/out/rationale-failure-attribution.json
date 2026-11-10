@@ -1,0 +1,2639 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP2",
+  "generatedAt": "2026-11-10T10:30:25.198Z",
+  "campaign": "e2e-lg-confirm-1",
+  "sources": {
+    "analysis": {
+      "path": "eval/e2e/out/analysis-e2e-lg-confirm-1.json",
+      "sha256": "690986413142ae65aa0cce065ef43bc11814211b52ff5051c1dca673fb963dda"
+    },
+    "results": {
+      "path": "eval/e2e/out/results-e2e-lg-confirm-1.json",
+      "sha256": "8d7ff73ecdbf064ab33327b889cc42cd80fec14f037eef051c27976d7903ce2f"
+    }
+  },
+  "e1": {
+    "attempts": 42,
+    "committed": 11,
+    "failed": 31,
+    "finishKinds": {
+      "stop": 31
+    },
+    "byReason": {
+      "shrink-refusal": 31
+    },
+    "failedInputTokens": 7083,
+    "failedOutputTokens": 7890,
+    "maxTokensObserved": [
+      16384
+    ],
+    "cells": 24,
+    "retriesPerCell": [
+      {
+        "cellId": "T2-s1-E1-r1",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T2-s1-E1-r2",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T2-s2-E1-r1",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T2-s2-E1-r2",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T4-s1-E1-r1",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T4-s1-E1-r2",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T4-s2-E1-r1",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T4-s2-E1-r2",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T7-s1-E1-r1",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 484,
+        "failedOutputTokens": 418,
+        "failedSpans": [
+          62,
+          62
+        ]
+      },
+      {
+        "cellId": "T7-s1-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 356,
+        "failedOutputTokens": 636,
+        "failedSpans": [
+          62,
+          62
+        ]
+      },
+      {
+        "cellId": "T7-s2-E1-r1",
+        "attempts": 4,
+        "committed": 0,
+        "refused": 4,
+        "failedInputTokens": 768,
+        "failedOutputTokens": 837,
+        "failedSpans": [
+          62,
+          62,
+          62,
+          62
+        ]
+      },
+      {
+        "cellId": "T7-s2-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 352,
+        "failedOutputTokens": 411,
+        "failedSpans": [
+          62,
+          62
+        ]
+      },
+      {
+        "cellId": "T8-s1-E1-r1",
+        "attempts": 3,
+        "committed": 0,
+        "refused": 3,
+        "failedInputTokens": 731,
+        "failedOutputTokens": 575,
+        "failedSpans": [
+          58,
+          58,
+          58
+        ]
+      },
+      {
+        "cellId": "T8-s1-E1-r2",
+        "attempts": 3,
+        "committed": 0,
+        "refused": 3,
+        "failedInputTokens": 475,
+        "failedOutputTokens": 641,
+        "failedSpans": [
+          58,
+          58,
+          58
+        ]
+      },
+      {
+        "cellId": "T8-s2-E1-r1",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 338,
+        "failedOutputTokens": 391,
+        "failedSpans": [
+          58,
+          58
+        ]
+      },
+      {
+        "cellId": "T8-s2-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 338,
+        "failedOutputTokens": 445,
+        "failedSpans": [
+          58,
+          58
+        ]
+      },
+      {
+        "cellId": "T9-s1-E1-r1",
+        "attempts": 1,
+        "committed": 0,
+        "refused": 1,
+        "failedInputTokens": 420,
+        "failedOutputTokens": 265,
+        "failedSpans": [
+          207
+        ]
+      },
+      {
+        "cellId": "T9-s1-E1-r2",
+        "attempts": 2,
+        "committed": 1,
+        "refused": 1,
+        "failedInputTokens": 164,
+        "failedOutputTokens": 319,
+        "failedSpans": [
+          207
+        ]
+      },
+      {
+        "cellId": "T9-s2-E1-r1",
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "failedInputTokens": 0,
+        "failedOutputTokens": 0,
+        "failedSpans": []
+      },
+      {
+        "cellId": "T9-s2-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 514,
+        "failedOutputTokens": 563,
+        "failedSpans": [
+          205,
+          205
+        ]
+      },
+      {
+        "cellId": "T10-s1-E1-r1",
+        "attempts": 2,
+        "committed": 1,
+        "refused": 1,
+        "failedInputTokens": 425,
+        "failedOutputTokens": 303,
+        "failedSpans": [
+          200
+        ]
+      },
+      {
+        "cellId": "T10-s1-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 530,
+        "failedOutputTokens": 685,
+        "failedSpans": [
+          200,
+          200
+        ]
+      },
+      {
+        "cellId": "T10-s2-E1-r1",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 786,
+        "failedOutputTokens": 671,
+        "failedSpans": [
+          200,
+          200
+        ]
+      },
+      {
+        "cellId": "T10-s2-E1-r2",
+        "attempts": 2,
+        "committed": 0,
+        "refused": 2,
+        "failedInputTokens": 402,
+        "failedOutputTokens": 730,
+        "failedSpans": [
+          200,
+          200
+        ]
+      }
+    ]
+  },
+  "retryAnalysis": [
+    {
+      "cellId": "T7-s1-E1-r1",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        62,
+        62
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T7-s1-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        62,
+        62
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "attempts": 4,
+      "failed": 4,
+      "committed": 0,
+      "failedSpans": [
+        62,
+        62,
+        62,
+        62
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T7-s2-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        62,
+        62
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T8-s1-E1-r1",
+      "attempts": 3,
+      "failed": 3,
+      "committed": 0,
+      "failedSpans": [
+        58,
+        58,
+        58
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T8-s1-E1-r2",
+      "attempts": 3,
+      "failed": 3,
+      "committed": 0,
+      "failedSpans": [
+        58,
+        58,
+        58
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T8-s2-E1-r1",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        58,
+        58
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T8-s2-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        58,
+        58
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T9-s1-E1-r2",
+      "attempts": 2,
+      "failed": 1,
+      "committed": 1,
+      "failedSpans": [
+        207
+      ],
+      "committedSpans": [
+        9163
+      ],
+      "laterAttemptCommitted": true
+    },
+    {
+      "cellId": "T9-s2-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        205,
+        205
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "attempts": 2,
+      "failed": 1,
+      "committed": 1,
+      "failedSpans": [
+        200
+      ],
+      "committedSpans": [
+        9420
+      ],
+      "laterAttemptCommitted": true
+    },
+    {
+      "cellId": "T10-s1-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        200,
+        200
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        200,
+        200
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    },
+    {
+      "cellId": "T10-s2-E1-r2",
+      "attempts": 2,
+      "failed": 2,
+      "committed": 0,
+      "failedSpans": [
+        200,
+        200
+      ],
+      "committedSpans": [],
+      "laterAttemptCommitted": false
+    }
+  ],
+  "decision": {
+    "productionFix": "none",
+    "preCallShrinkGuardJustified": false,
+    "preCallGuardEvidence": {
+      "attemptsWithStateOnlyAtLeastSpan": 0,
+      "attemptsWithBodyAtLeastSpan": 31,
+      "stateOnlyTokensRange": {
+        "min": 12,
+        "max": 12
+      },
+      "spanTokensRange": {
+        "min": 58,
+        "max": 207
+      },
+      "bodyOverSpanRatios": {
+        "min": 1.23,
+        "median": 4.14,
+        "max": 8
+      }
+    },
+    "reason": "The state-only body is only the marker (12 estimated tokens in every failure); the rationale is the excess. The model call was necessary to know whether the rationale would fit, and a shorter rationale could have committed. A pre-call guard would therefore convert one refusal into another, not prevent a doomed transaction.",
+    "retrySuppressionJustified": false,
+    "retryEvidence": {
+      "cellsWithRetries": 14,
+      "cellsWhereLaterAttemptCommitted": 2,
+      "examples": [
+        {
+          "cellId": "T9-s1-E1-r2",
+          "attempts": 2,
+          "failed": 1,
+          "committed": 1,
+          "failedSpans": [
+            207
+          ],
+          "committedSpans": [
+            9163
+          ],
+          "laterAttemptCommitted": true
+        },
+        {
+          "cellId": "T10-s1-E1-r1",
+          "attempts": 2,
+          "failed": 1,
+          "committed": 1,
+          "failedSpans": [
+            200
+          ],
+          "committedSpans": [
+            9420
+          ],
+          "laterAttemptCommitted": true
+        }
+      ],
+      "reason": "The retries are not uniformly futile. In T9-s1-E1-r2 and T10-s1-E1-r1 the first attempt failed on a 200-token span, and the next attempt committed after folding a ~9.2k-token span. A blanket retry suppression would lose those two commits. A refusal cache keyed on the exact span seqs is a candidate, but the archive does not retain the failed attempts' span seqs, so its effect on these cells is unverified. It belongs to a future round whose witness captures those seqs."
+    },
+    "admissionMismatch": "admitLeafEconomically prices the widest legal span with retainTokens=0, while the executor folds the span left after spec.retainTokens. In these cells the executed span is 58-207 tokens, below the 530-token framing fallback, but that does not prove the decider would have refused it. Whether economic admission prevents these attempts needs a dedicated replay with the real measurement; it is a hypothesis, not a result.",
+    "next": "Pre-register the shipped tier configuration and a zero-request preflight that checks the EXECUTED fold span, not only the widest legal span. Capture the selected span seqs in the witness so a future round can test a same-span refusal cache. Do not lower the rationale budget or tune the prompt."
+  },
+  "rows": [
+    {
+      "cellId": "T2-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "eaa776d4-d375-4bf3-a7f3-70436c0fedd8",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 18175,
+      "bodyTokens": 369,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1475,
+      "stateOnlyChars": 47,
+      "semanticChars": 1392,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 183,
+        "outputTokens": 402,
+        "landed": true,
+        "outputChars": 1392
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "e444c983-20ef-4d6c-9b39-e2cf95a925e7",
+        "bytes": 14465,
+        "fileStatus": "verified",
+        "logicalHash": "542696a1f2c0b85368761284e61211fe9656e49afe7db5cbb3b47cf79e4ef44c",
+        "messageCount": 5,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "e444c983-20ef-4d6c-9b39-e2cf95a925e7"
+    },
+    {
+      "cellId": "T2-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "63850e34-b25e-439f-9a1e-f32643cf813e",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 18175,
+      "bodyTokens": 370,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1479,
+      "stateOnlyChars": 47,
+      "semanticChars": 1390,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 183,
+        "outputTokens": 355,
+        "landed": true,
+        "outputChars": 1390
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "73c3e276-f703-4fdf-94a6-aa552ba2e321",
+        "bytes": 14449,
+        "fileStatus": "verified",
+        "logicalHash": "cff8635c4101d98e4edc9d7d255d625397b0c25b6b779b3d8131087c292e062b",
+        "messageCount": 5,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "73c3e276-f703-4fdf-94a6-aa552ba2e321"
+    },
+    {
+      "cellId": "T2-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "39305290-8eef-4e91-9a4f-66a5e40d659a",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 18080,
+      "bodyTokens": 302,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1207,
+      "stateOnlyChars": 47,
+      "semanticChars": 1128,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 256,
+        "outputTokens": 346,
+        "landed": true,
+        "outputChars": 1128
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "a08a5d3d-8dc2-48ae-9104-cf3d7f89d7cb",
+        "bytes": 14065,
+        "fileStatus": "verified",
+        "logicalHash": "3d8ad92a5a58fe79040cfabf2d6e05521ae59c9d5847bdc188c6cf3fc8ca5bf2",
+        "messageCount": 5,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "a08a5d3d-8dc2-48ae-9104-cf3d7f89d7cb"
+    },
+    {
+      "cellId": "T2-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "f139a4fa-1698-4ff7-acd4-015ccc248d95",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 18080,
+      "bodyTokens": 411,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1642,
+      "stateOnlyChars": 47,
+      "semanticChars": 1553,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 256,
+        "outputTokens": 416,
+        "landed": true,
+        "outputChars": 1553
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "f18a0888-a59e-4f16-a6f2-544d2d586a66",
+        "bytes": 14373,
+        "fileStatus": "verified",
+        "logicalHash": "f571795fb8f1803c5d1378fb0bf1956b29973b70a191d5c1419e03a9f072ad2f",
+        "messageCount": 5,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "f18a0888-a59e-4f16-a6f2-544d2d586a66"
+    },
+    {
+      "cellId": "T4-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "398a3fe2-40b2-4f2c-95a7-bf7629aaf691",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9100,
+      "bodyTokens": 276,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1104,
+      "stateOnlyChars": 47,
+      "semanticChars": 1035,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 249,
+        "outputTokens": 249,
+        "landed": true,
+        "outputChars": 1035
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "f3cf3c88-da26-4c2e-ac92-9b894886ee35",
+        "bytes": 7769,
+        "fileStatus": "verified",
+        "logicalHash": "10a1058e530e577919ca232e1525f60aee2cfc18293f2ae2c7ae2dd2c2817dd2",
+        "messageCount": 7,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "f3cf3c88-da26-4c2e-ac92-9b894886ee35"
+    },
+    {
+      "cellId": "T4-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "a01bfb35-cce0-4585-818f-6af1f8d6f6c5",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9100,
+      "bodyTokens": 371,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1482,
+      "stateOnlyChars": 47,
+      "semanticChars": 1405,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 249,
+        "outputTokens": 318,
+        "landed": true,
+        "outputChars": 1405
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "362dc492-1efd-4787-9d7c-c3e876c873ee",
+        "bytes": 8057,
+        "fileStatus": "verified",
+        "logicalHash": "7fd1950c8b3d3f4b9b1e2953c1a76a7bbd1dcd121c2549d794570c49c23c9a13",
+        "messageCount": 7,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "362dc492-1efd-4787-9d7c-c3e876c873ee"
+    },
+    {
+      "cellId": "T4-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "17a919c1-2a7c-404f-ac16-b99bef958103",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9223,
+      "bodyTokens": 308,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1232,
+      "stateOnlyChars": 47,
+      "semanticChars": 1149,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 286,
+        "landed": true,
+        "outputChars": 1149
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "0a3dac4d-27c8-407c-aa92-859f90f94a7a",
+        "bytes": 7997,
+        "fileStatus": "verified",
+        "logicalHash": "42a707b97095001fd8d43f79b5779c060c4a0551dd2ab89a9f6e36fa7b0fb44d",
+        "messageCount": 7,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "0a3dac4d-27c8-407c-aa92-859f90f94a7a"
+    },
+    {
+      "cellId": "T4-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "759102a7-9165-4548-a8a4-b9447a79938c",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9223,
+      "bodyTokens": 297,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1189,
+      "stateOnlyChars": 47,
+      "semanticChars": 1112,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 290,
+        "landed": true,
+        "outputChars": 1112
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "f05583b5-9e8e-4b06-ad4f-5d39598f58fa",
+        "bytes": 7889,
+        "fileStatus": "verified",
+        "logicalHash": "ff09d6e70f695da720b28c36d4dbb0035a34e39cab108ff6278e42961119f9f3",
+        "messageCount": 7,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "f05583b5-9e8e-4b06-ad4f-5d39598f58fa"
+    },
+    {
+      "cellId": "T7-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "07247e6f-eb2e-4457-a39d-c572a55f0d7f",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (257 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 248,
+      "stateOnlyTokens": 12,
+      "bodyChars": 993,
+      "stateOnlyChars": 47,
+      "semanticChars": 920,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 210,
+        "outputTokens": 183,
+        "landed": true,
+        "outputChars": 920
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "d2713d8b-5072-4820-9104-74ee80426d51",
+        "bytes": 1697,
+        "fileStatus": "verified",
+        "logicalHash": "f8299cb504214e9e899fdf1b94ca9cca4747439846acd0776875b076a77b967d",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "d2713d8b-5072-4820-9104-74ee80426d51"
+    },
+    {
+      "cellId": "T7-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "f20c5a8c-556c-4ab1-98bc-5ee2b5cc9119",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (304 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 296,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1182,
+      "stateOnlyChars": 47,
+      "semanticChars": 1109,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 274,
+        "outputTokens": 235,
+        "landed": true,
+        "outputChars": 1109
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "e3e6c363-fa79-4a15-95e3-e20cd033f8ad",
+        "bytes": 1829,
+        "fileStatus": "verified",
+        "logicalHash": "f8299cb504214e9e899fdf1b94ca9cca4747439846acd0776875b076a77b967d",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "e3e6c363-fa79-4a15-95e3-e20cd033f8ad"
+    },
+    {
+      "cellId": "T7-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "c6342b5f-c2f2-43f3-981d-6da4f20b4ce3",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (333 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 325,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1299,
+      "stateOnlyChars": 47,
+      "semanticChars": 1222,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 210,
+        "outputTokens": 253,
+        "landed": true,
+        "outputChars": 1222
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "071a3cbb-be62-46a0-a635-36d5ab5b381f",
+        "bytes": 1881,
+        "fileStatus": "verified",
+        "logicalHash": "0d6cf88120ca5a05b6e92ea37714139cae3aa006d9ddaf65691b82bac0a55232",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "071a3cbb-be62-46a0-a635-36d5ab5b381f"
+    },
+    {
+      "cellId": "T7-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "fe1f691e-240e-4588-9586-d6a2b68bf8eb",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (504 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 496,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1982,
+      "stateOnlyChars": 47,
+      "semanticChars": 1899,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 146,
+        "outputTokens": 383,
+        "landed": true,
+        "outputChars": 1899
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "21553d5a-58c4-4373-abc4-8a82400f8ef1",
+        "bytes": 2293,
+        "fileStatus": "verified",
+        "logicalHash": "0d6cf88120ca5a05b6e92ea37714139cae3aa006d9ddaf65691b82bac0a55232",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "21553d5a-58c4-4373-abc4-8a82400f8ef1"
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "b0825079-b3ae-435b-b253-43d975a82309",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (189 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 180,
+      "stateOnlyTokens": 12,
+      "bodyChars": 721,
+      "stateOnlyChars": 47,
+      "semanticChars": 660,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 208,
+        "outputTokens": 126,
+        "landed": true,
+        "outputChars": 660
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "1fefde19-a1ce-474a-8de8-b703b91edb0c",
+        "bytes": 1445,
+        "fileStatus": "verified",
+        "logicalHash": "8c016968e70719459e82f79de4a24850497793daf6bcbf12839ecd948cfaea2b",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "1fefde19-a1ce-474a-8de8-b703b91edb0c"
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "27a3e61b-0141-4f55-8b14-0844d1574401",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (269 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 260,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1041,
+      "stateOnlyChars": 47,
+      "semanticChars": 972,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 272,
+        "outputTokens": 192,
+        "landed": true,
+        "outputChars": 972
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "2658ee67-10d4-4c05-811d-fbea717f23e7",
+        "bytes": 1713,
+        "fileStatus": "verified",
+        "logicalHash": "8c016968e70719459e82f79de4a24850497793daf6bcbf12839ecd948cfaea2b",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "2658ee67-10d4-4c05-811d-fbea717f23e7"
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 3,
+      "compactionId": "25f0940e-19c9-420b-b37e-73bd6bdf8d60",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (383 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 375,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1499,
+      "stateOnlyChars": 47,
+      "semanticChars": 1414,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 4,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 144,
+        "outputTokens": 284,
+        "landed": true,
+        "outputChars": 1414
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "e6f30c95-4e28-4c79-9b86-a732b1571113",
+        "bytes": 2001,
+        "fileStatus": "verified",
+        "logicalHash": "8c016968e70719459e82f79de4a24850497793daf6bcbf12839ecd948cfaea2b",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "e6f30c95-4e28-4c79-9b86-a732b1571113"
+    },
+    {
+      "cellId": "T7-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 4,
+      "compactionId": "f86a5c04-0e53-45da-9ed6-dcec681ae505",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (319 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 310,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1241,
+      "stateOnlyChars": 47,
+      "semanticChars": 1162,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 6,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 144,
+        "outputTokens": 235,
+        "landed": true,
+        "outputChars": 1162
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "c8fc8c15-b7fb-4f44-900b-fb2d5dea12c5",
+        "bytes": 1873,
+        "fileStatus": "verified",
+        "logicalHash": "8c016968e70719459e82f79de4a24850497793daf6bcbf12839ecd948cfaea2b",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "c8fc8c15-b7fb-4f44-900b-fb2d5dea12c5"
+    },
+    {
+      "cellId": "T7-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "d8b67c94-4b27-4471-ab75-d5bf844eb0ad",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (281 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 273,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1091,
+      "stateOnlyChars": 47,
+      "semanticChars": 1018,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 208,
+        "outputTokens": 204,
+        "landed": true,
+        "outputChars": 1018
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "e59acb60-b29e-4d3c-930f-6046e8dbcfdc",
+        "bytes": 1705,
+        "fileStatus": "verified",
+        "logicalHash": "047c8c8c6db614cea02b8ec9b2319bd9cfb512ae3be0a6213f4ffdb269d6c375",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "e59acb60-b29e-4d3c-930f-6046e8dbcfdc"
+    },
+    {
+      "cellId": "T7-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "c7641016-d96c-4ef9-99b1-aeea788e8952",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (288 estimated framed tokens >= 62)",
+      "spanTokens": 62,
+      "bodyTokens": 280,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1120,
+      "stateOnlyChars": 47,
+      "semanticChars": 1059,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 144,
+        "outputTokens": 207,
+        "landed": true,
+        "outputChars": 1059
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "aa2b3b7d-361e-4eea-a289-29475110d9fa",
+        "bytes": 1745,
+        "fileStatus": "verified",
+        "logicalHash": "047c8c8c6db614cea02b8ec9b2319bd9cfb512ae3be0a6213f4ffdb269d6c375",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "aa2b3b7d-361e-4eea-a289-29475110d9fa"
+    },
+    {
+      "cellId": "T8-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "afdd5362-a2dd-48a5-9982-f0ef1aa3d866",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (248 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 240,
+      "stateOnlyTokens": 12,
+      "bodyChars": 959,
+      "stateOnlyChars": 47,
+      "semanticChars": 898,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 170,
+        "landed": true,
+        "outputChars": 898
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "e9a71d71-23d5-4ec9-b698-208b7281ddef",
+        "bytes": 1605,
+        "fileStatus": "verified",
+        "logicalHash": "f5a4770e312b665260014d442b1e0afc0810ecbcaaa9351fffcc01ce6aec39f9",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "e9a71d71-23d5-4ec9-b698-208b7281ddef"
+    },
+    {
+      "cellId": "T8-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "ebe9a18a-af46-4b1c-925d-62a37cd7410f",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (381 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 372,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1489,
+      "stateOnlyChars": 47,
+      "semanticChars": 1416,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 393,
+        "outputTokens": 263,
+        "landed": true,
+        "outputChars": 1416
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "4887d820-52c8-4ffa-a85d-35ef843f41ae",
+        "bytes": 1925,
+        "fileStatus": "verified",
+        "logicalHash": "f5a4770e312b665260014d442b1e0afc0810ecbcaaa9351fffcc01ce6aec39f9",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "4887d820-52c8-4ffa-a85d-35ef843f41ae"
+    },
+    {
+      "cellId": "T8-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 3,
+      "compactionId": "9684b67f-88a3-4faf-b312-ca7556a7fbd3",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (225 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 217,
+      "stateOnlyTokens": 12,
+      "bodyChars": 868,
+      "stateOnlyChars": 47,
+      "semanticChars": 807,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 4,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 137,
+        "outputTokens": 142,
+        "landed": true,
+        "outputChars": 807
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "6cb683c5-89b6-4a02-8243-4194923136fe",
+        "bytes": 1537,
+        "fileStatus": "verified",
+        "logicalHash": "f5a4770e312b665260014d442b1e0afc0810ecbcaaa9351fffcc01ce6aec39f9",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "6cb683c5-89b6-4a02-8243-4194923136fe"
+    },
+    {
+      "cellId": "T8-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "bb4187bb-e831-425b-922a-7b5079ed82cf",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (228 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 220,
+      "stateOnlyTokens": 12,
+      "bodyChars": 879,
+      "stateOnlyChars": 47,
+      "semanticChars": 818,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 151,
+        "landed": true,
+        "outputChars": 818
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "a3685145-8471-41da-bc69-6a30684d0f52",
+        "bytes": 1553,
+        "fileStatus": "verified",
+        "logicalHash": "c69febd8abea27a77db450b277b8b52527f9b06f1d81b322851d8e8c773a2fde",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "a3685145-8471-41da-bc69-6a30684d0f52"
+    },
+    {
+      "cellId": "T8-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "c9f4e400-b32f-4476-882b-41267d45fbbf",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (371 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 362,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1449,
+      "stateOnlyChars": 47,
+      "semanticChars": 1380,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 137,
+        "outputTokens": 267,
+        "landed": true,
+        "outputChars": 1380
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "a1d55605-249e-44e2-a092-1325fc845da5",
+        "bytes": 1917,
+        "fileStatus": "verified",
+        "logicalHash": "c69febd8abea27a77db450b277b8b52527f9b06f1d81b322851d8e8c773a2fde",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "a1d55605-249e-44e2-a092-1325fc845da5"
+    },
+    {
+      "cellId": "T8-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 3,
+      "compactionId": "ce601b9a-ec89-4729-af9f-bb12d9d3adda",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (330 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 322,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1288,
+      "stateOnlyChars": 47,
+      "semanticChars": 1219,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 4,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 137,
+        "outputTokens": 223,
+        "landed": true,
+        "outputChars": 1219
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "efbbec03-6461-4afe-82ef-68e314801618",
+        "bytes": 1801,
+        "fileStatus": "verified",
+        "logicalHash": "c69febd8abea27a77db450b277b8b52527f9b06f1d81b322851d8e8c773a2fde",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "efbbec03-6461-4afe-82ef-68e314801618"
+    },
+    {
+      "cellId": "T8-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "fecceb67-47b3-422d-a117-27219855c22d",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (289 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 281,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1124,
+      "stateOnlyChars": 47,
+      "semanticChars": 1043,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 200,
+        "landed": true,
+        "outputChars": 1043
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "941f979e-eae3-4d15-96a8-5f0ef03e2135",
+        "bytes": 1733,
+        "fileStatus": "verified",
+        "logicalHash": "ccabd25efc39bd8c456f88609fd13db81d18dab8bf21d805419832500f86e5e9",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "941f979e-eae3-4d15-96a8-5f0ef03e2135"
+    },
+    {
+      "cellId": "T8-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "85c8148f-e484-45a9-aaa0-b5d391ea0da9",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (280 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 272,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1087,
+      "stateOnlyChars": 47,
+      "semanticChars": 1018,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 137,
+        "outputTokens": 191,
+        "landed": true,
+        "outputChars": 1018
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "6998ef48-0139-477c-835d-c3d75e018c6c",
+        "bytes": 1681,
+        "fileStatus": "verified",
+        "logicalHash": "ccabd25efc39bd8c456f88609fd13db81d18dab8bf21d805419832500f86e5e9",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "6998ef48-0139-477c-835d-c3d75e018c6c"
+    },
+    {
+      "cellId": "T8-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "0b41b049-1d65-4fb8-8923-5348740beaf8",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (311 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 303,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1210,
+      "stateOnlyChars": 47,
+      "semanticChars": 1141,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 201,
+        "outputTokens": 212,
+        "landed": true,
+        "outputChars": 1141
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "00468f17-6e7c-41a6-907c-a2033da3710f",
+        "bytes": 1785,
+        "fileStatus": "verified",
+        "logicalHash": "ac738e3012359c351cde33764311083be7434f0a7f152f4adde8544f41df76bc",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "00468f17-6e7c-41a6-907c-a2033da3710f"
+    },
+    {
+      "cellId": "T8-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "cc337a7f-e055-4042-bcce-b0d703d3bb5c",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (336 estimated framed tokens >= 58)",
+      "spanTokens": 58,
+      "bodyTokens": 328,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1310,
+      "stateOnlyChars": 47,
+      "semanticChars": 1235,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 137,
+        "outputTokens": 233,
+        "landed": true,
+        "outputChars": 1235
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "10f36f3f-98fb-4cc0-a410-ab2966d245ba",
+        "bytes": 1817,
+        "fileStatus": "verified",
+        "logicalHash": "ac738e3012359c351cde33764311083be7434f0a7f152f4adde8544f41df76bc",
+        "messageCount": 2
+      },
+      "delivery": null,
+      "checkpointId": "10f36f3f-98fb-4cc0-a410-ab2966d245ba"
+    },
+    {
+      "cellId": "T9-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "e1f45003-a5b5-4231-8caf-bf6c450071e4",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (269 estimated framed tokens >= 207)",
+      "spanTokens": 207,
+      "bodyTokens": 260,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1041,
+      "stateOnlyChars": 47,
+      "semanticChars": 960,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 420,
+        "outputTokens": 265,
+        "landed": true,
+        "outputChars": 960
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "2d0e9508-45db-47ec-b61c-cf39fe14b279",
+        "bytes": 2209,
+        "fileStatus": "verified",
+        "logicalHash": "4a04a9b950ca93e17bd2643653a623cab3916e61d4111fbdb58b3d5e08cb397c",
+        "messageCount": 7
+      },
+      "delivery": null,
+      "checkpointId": "2d0e9508-45db-47ec-b61c-cf39fe14b279"
+    },
+    {
+      "cellId": "T9-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "4e95234d-75d2-46d4-869b-606dadce13d0",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (316 estimated framed tokens >= 207)",
+      "spanTokens": 207,
+      "bodyTokens": 308,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1231,
+      "stateOnlyChars": 47,
+      "semanticChars": 1142,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 164,
+        "outputTokens": 319,
+        "landed": true,
+        "outputChars": 1142
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "ea181a61-6ca7-4aa0-a94b-407226efc769",
+        "bytes": 2365,
+        "fileStatus": "verified",
+        "logicalHash": "40532f6754e5a3fb792067f3b5ac88bfa6319c54e9604a771afd6bb1e02bbf61",
+        "messageCount": 7
+      },
+      "delivery": null,
+      "checkpointId": "ea181a61-6ca7-4aa0-a94b-407226efc769"
+    },
+    {
+      "cellId": "T9-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "df607bb9-1ba9-4da4-bd8d-29c57a36e539",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9163,
+      "bodyTokens": 458,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1832,
+      "stateOnlyChars": 47,
+      "semanticChars": 1759,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 235,
+        "outputTokens": 474,
+        "landed": true,
+        "outputChars": 1759
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "7a531293-4204-4288-96c0-39324fd6663c",
+        "bytes": 9645,
+        "fileStatus": "verified",
+        "logicalHash": "af63f4daa4079c04f4df4b35d9a1476d0c715c01c0af0016eb7c36c028caffad",
+        "messageCount": 12,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 3,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 3,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "7a531293-4204-4288-96c0-39324fd6663c"
+    },
+    {
+      "cellId": "T9-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "67630bd7-5eba-45cb-868a-1af0c6e562d8",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 118,
+      "bodyTokens": 191,
+      "stateOnlyTokens": 12,
+      "bodyChars": 763,
+      "stateOnlyChars": 47,
+      "semanticChars": 682,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 417,
+        "outputTokens": 190,
+        "landed": true,
+        "outputChars": 682
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "39c1a8aa-80b9-4f89-912c-58c18e1624aa",
+        "bytes": 2017,
+        "fileStatus": "verified",
+        "logicalHash": "93cccf956a7fa19102e230de4c1c8c8fc03eddcb9a10dab4e1372b14317fbeb3",
+        "messageCount": 7,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 1,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 1,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 2,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "39c1a8aa-80b9-4f89-912c-58c18e1624aa"
+    },
+    {
+      "cellId": "T9-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "52659db5-3c45-4d83-ba46-d8ecd92b7d5c",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (298 estimated framed tokens >= 205)",
+      "spanTokens": 205,
+      "bodyTokens": 290,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1158,
+      "stateOnlyChars": 47,
+      "semanticChars": 1079,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 161,
+        "outputTokens": 266,
+        "landed": true,
+        "outputChars": 1079
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "c2e37706-38c5-4a23-9bfe-8e81484cfc93",
+        "bytes": 2329,
+        "fileStatus": "verified",
+        "logicalHash": "05a568579e461606a98accb38e48cdd857ab25e7024c647dc00aff1e822c8f26",
+        "messageCount": 7
+      },
+      "delivery": null,
+      "checkpointId": "c2e37706-38c5-4a23-9bfe-8e81484cfc93"
+    },
+    {
+      "cellId": "T9-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "36a5c2b2-7c54-493c-a6bd-7de582748e9a",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (330 estimated framed tokens >= 205)",
+      "spanTokens": 205,
+      "bodyTokens": 322,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1286,
+      "stateOnlyChars": 47,
+      "semanticChars": 1199,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 353,
+        "outputTokens": 297,
+        "landed": true,
+        "outputChars": 1199
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "27e924d3-b320-4ebf-b671-b4f1142e4cdc",
+        "bytes": 2417,
+        "fileStatus": "verified",
+        "logicalHash": "05a568579e461606a98accb38e48cdd857ab25e7024c647dc00aff1e822c8f26",
+        "messageCount": 7
+      },
+      "delivery": null,
+      "checkpointId": "27e924d3-b320-4ebf-b671-b4f1142e4cdc"
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "16c374ab-9d0a-4bfc-82cd-890eceb91c0d",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (313 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 305,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1218,
+      "stateOnlyChars": 47,
+      "semanticChars": 1135,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 425,
+        "outputTokens": 303,
+        "landed": true,
+        "outputChars": 1135
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "006adf33-bbc4-4f89-9817-338bde8a79a0",
+        "bytes": 2365,
+        "fileStatus": "verified",
+        "logicalHash": "194a5623007305b140665ae7ac799d0380298b472a6f29caf6cb6c70d932ede9",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "006adf33-bbc4-4f89-9817-338bde8a79a0"
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "5d772fc3-9841-4d43-9b0d-be327383a49f",
+      "status": "committed",
+      "evidenceLevel": "verified",
+      "reason": "committed",
+      "phase": null,
+      "errorText": null,
+      "spanTokens": 9420,
+      "bodyTokens": 387,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1546,
+      "stateOnlyChars": 47,
+      "semanticChars": 1463,
+      "bodyExceedsSpan": false,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": false,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 168,
+        "outputTokens": 442,
+        "landed": true,
+        "outputChars": 1463
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "commit-record",
+        "checkpointId": "d0e4debf-ee6c-43d3-a984-d13f2eeb08f2",
+        "bytes": 11401,
+        "fileStatus": "verified",
+        "logicalHash": "8480bf130158c1dd5397bfc504431d4fbedaf423a987e72c6a7b615b7e7727d6",
+        "messageCount": 13,
+        "commitRecord": true
+      },
+      "delivery": {
+        "firstPrimaryRequestAfterCommit": 3,
+        "checkpointDelivered": true,
+        "requests": [
+          {
+            "index": 3,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 4,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 5,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          },
+          {
+            "index": 6,
+            "exact": true,
+            "marker": true,
+            "absent": false
+          }
+        ],
+        "basis": "commit-time/full-messages"
+      },
+      "checkpointId": "d0e4debf-ee6c-43d3-a984-d13f2eeb08f2"
+    },
+    {
+      "cellId": "T10-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "f1e73a4f-6f65-4231-af26-ed93d4ac2ef0",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (325 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 317,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1268,
+      "stateOnlyChars": 47,
+      "semanticChars": 1185,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 169,
+        "outputTokens": 316,
+        "landed": true,
+        "outputChars": 1185
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "5680e410-9db5-4fad-97b3-282eccc6ffec",
+        "bytes": 2321,
+        "fileStatus": "verified",
+        "logicalHash": "ad30575dba7ba7456fe2b4fc0ff13f8cffefa1de111c8c6331e5f91e55861f71",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "5680e410-9db5-4fad-97b3-282eccc6ffec"
+    },
+    {
+      "cellId": "T10-s1-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "c2b8b722-dcb2-40e7-b4b2-40e613fe6ba0",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (385 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 377,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1508,
+      "stateOnlyChars": 47,
+      "semanticChars": 1425,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 361,
+        "outputTokens": 369,
+        "landed": true,
+        "outputChars": 1425
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "49e21630-0089-4fbb-8e0c-88e402a854be",
+        "bytes": 2525,
+        "fileStatus": "verified",
+        "logicalHash": "ad30575dba7ba7456fe2b4fc0ff13f8cffefa1de111c8c6331e5f91e55861f71",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "49e21630-0089-4fbb-8e0c-88e402a854be"
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "0a19a214-7545-4bcb-bf0e-d02ffa60ee51",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (253 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 245,
+      "stateOnlyTokens": 12,
+      "bodyChars": 979,
+      "stateOnlyChars": 47,
+      "semanticChars": 900,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 425,
+        "outputTokens": 272,
+        "landed": true,
+        "outputChars": 900
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "069ff091-bbb9-44d3-8e00-aefadba7cfef",
+        "bytes": 2149,
+        "fileStatus": "verified",
+        "logicalHash": "b1af3972cdae58508a366f82edff0fff858a53432d47aff964a8d4fa341751af",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "069ff091-bbb9-44d3-8e00-aefadba7cfef"
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "c96e868b-b700-4a1a-961c-b78bd84c5c13",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (415 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 407,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1628,
+      "stateOnlyChars": 47,
+      "semanticChars": 1549,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 361,
+        "outputTokens": 399,
+        "landed": true,
+        "outputChars": 1549
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "7a9eff3c-341a-41aa-a52f-bd68a855000b",
+        "bytes": 2565,
+        "fileStatus": "verified",
+        "logicalHash": "b1af3972cdae58508a366f82edff0fff858a53432d47aff964a8d4fa341751af",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "7a9eff3c-341a-41aa-a52f-bd68a855000b"
+    },
+    {
+      "cellId": "T10-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 1,
+      "compactionId": "02eddf93-e98d-49ed-aea5-120e07a06740",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (419 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 411,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1644,
+      "stateOnlyChars": 47,
+      "semanticChars": 1553,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 0,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 169,
+        "outputTokens": 409,
+        "landed": true,
+        "outputChars": 1553
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "d382bd07-ed93-4a91-ae75-5b4aa881b9e4",
+        "bytes": 2577,
+        "fileStatus": "verified",
+        "logicalHash": "0cca1db71aeda9365634f2be03b9c05500516a52f457e7358b42ff847203b198",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "d382bd07-ed93-4a91-ae75-5b4aa881b9e4"
+    },
+    {
+      "cellId": "T10-s2-E1-r2",
+      "arm": "E1",
+      "attempt": 2,
+      "compactionId": "8b9204ad-ae9a-4a92-9eb9-6e48a1e9e7df",
+      "status": "refused",
+      "evidenceLevel": "inferred",
+      "reason": "shrink-refusal",
+      "phase": "summary-before-commit",
+      "errorText": "summary is not smaller than the shadowed content (351 estimated framed tokens >= 200)",
+      "spanTokens": 200,
+      "bodyTokens": 342,
+      "stateOnlyTokens": 12,
+      "bodyChars": 1369,
+      "stateOnlyChars": 47,
+      "semanticChars": 1284,
+      "bodyExceedsSpan": true,
+      "stateOnlyExceedsSpan": false,
+      "spanBelowFramingFallback": true,
+      "rationale": {
+        "attempted": true,
+        "link": "order",
+        "purpose": "rationale",
+        "callIndex": 2,
+        "maxTokens": 16384,
+        "finish": {
+          "kind": "stop"
+        },
+        "inputTokens": 233,
+        "outputTokens": 321,
+        "landed": true,
+        "outputChars": 1284
+      },
+      "archive": {
+        "bundlePresent": true,
+        "link": "inferred-order",
+        "checkpointId": "b66c5d25-e62c-467d-8133-37435b8e3dc5",
+        "bytes": 2433,
+        "fileStatus": "verified",
+        "logicalHash": "0cca1db71aeda9365634f2be03b9c05500516a52f457e7358b42ff847203b198",
+        "messageCount": 8
+      },
+      "delivery": null,
+      "checkpointId": "b66c5d25-e62c-467d-8133-37435b8e3dc5"
+    }
+  ],
+  "note": "Every failed attempt is a shrink refusal, not a provider failure. The bundle was durable and verifies; the surface replacement never happened. The per-attempt bundle link for archived failures is inferred by order, while the bundle bytes themselves verify."
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R2 WP1",
-  "generatedAt": "2026-11-10T10:25:24.557Z",
+  "generatedAt": "2026-11-10T10:29:28.285Z",
   "sources": {
     "stageAttribution": {
       "path": "eval/e2e/out/stage-attribution.json",
@@ -873,12 +873,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 178,
+            "outputTokens": 686,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 178,
+            "outputTokens": 686
+          }
         },
         {
           "schemaVersion": 1,
@@ -899,12 +910,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1157,
+            "outputTokens": 681,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1157,
+            "outputTokens": 681
+          }
         },
         {
           "schemaVersion": 1,
@@ -925,12 +947,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 574,
+            "outputTokens": 682,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 574,
+            "outputTokens": 682
+          }
         },
         {
           "schemaVersion": 1,
@@ -951,12 +984,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1215,
+            "outputTokens": 675,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1215,
+            "outputTokens": 675
+          }
         },
         {
           "schemaVersion": 1,
@@ -977,12 +1021,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 634,
+            "outputTokens": 765,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 634,
+            "outputTokens": 765
+          }
         }
       ],
       "taskDelivery": {
@@ -1330,8 +1385,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 319,
+            "outputTokens": 467,
             "landed": true,
             "outputChars": 1873
           },
@@ -1366,7 +1429,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 319,
+            "outputTokens": 467
+          }
         },
         {
           "schemaVersion": 1,
@@ -1399,8 +1465,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 13224,
+            "outputTokens": 322,
             "landed": true,
             "outputChars": 1253
           },
@@ -1423,7 +1497,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 13224,
+            "outputTokens": 322
+          }
         }
       ],
       "taskDelivery": {
@@ -1771,8 +1848,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 191,
+            "outputTokens": 406,
             "landed": true,
             "outputChars": 1532
           },
@@ -1813,7 +1898,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 191,
+            "outputTokens": 406
+          }
         },
         {
           "schemaVersion": 1,
@@ -1846,8 +1934,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 168,
+            "outputTokens": 433,
             "landed": true,
             "outputChars": 1684
           },
@@ -1876,7 +1972,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 168,
+            "outputTokens": 433
+          }
         }
       ],
       "taskDelivery": {
@@ -1974,12 +2073,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 178,
+            "outputTokens": 976,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 178,
+            "outputTokens": 976
+          }
         },
         {
           "schemaVersion": 1,
@@ -2000,12 +2110,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1447,
+            "outputTokens": 904,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1447,
+            "outputTokens": 904
+          }
         },
         {
           "schemaVersion": 1,
@@ -2026,12 +2147,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 541,
+            "outputTokens": 874,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 541,
+            "outputTokens": 874
+          }
         },
         {
           "schemaVersion": 1,
@@ -2052,12 +2184,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1407,
+            "outputTokens": 873,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1407,
+            "outputTokens": 873
+          }
         },
         {
           "schemaVersion": 1,
@@ -2078,12 +2221,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 576,
+            "outputTokens": 930,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 576,
+            "outputTokens": 930
+          }
         }
       ],
       "taskDelivery": {
@@ -2200,8 +2354,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 61495,
+            "outputTokens": 530,
             "landed": true,
             "outputChars": 1867
           },
@@ -2224,7 +2386,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 61495,
+            "outputTokens": 530
+          }
         }
       ],
       "taskDelivery": {
@@ -2302,12 +2467,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 554,
+            "outputTokens": 527,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 554,
+            "outputTokens": 527
+          }
         },
         {
           "schemaVersion": 1,
@@ -2328,12 +2504,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 999,
+            "outputTokens": 497,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 999,
+            "outputTokens": 497
+          }
         },
         {
           "schemaVersion": 1,
@@ -2359,12 +2546,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 519,
+            "outputTokens": 497,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 519,
+            "outputTokens": 497
+          }
         }
       ],
       "taskDelivery": {
@@ -2541,12 +2739,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 16162,
+            "outputTokens": 726,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 16162,
+            "outputTokens": 726
+          }
         },
         {
           "schemaVersion": 1,
@@ -2567,12 +2776,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1197,
+            "outputTokens": 682,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1197,
+            "outputTokens": 682
+          }
         },
         {
           "schemaVersion": 1,
@@ -2593,12 +2813,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 575,
+            "outputTokens": 689,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 575,
+            "outputTokens": 689
+          }
         },
         {
           "schemaVersion": 1,
@@ -2624,12 +2855,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1094,
+            "outputTokens": 715,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1094,
+            "outputTokens": 715
+          }
         },
         {
           "schemaVersion": 1,
@@ -2655,12 +2897,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 198,
+            "outputTokens": 710,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 198,
+            "outputTokens": 710
+          }
         },
         {
           "schemaVersion": 1,
@@ -2681,12 +2934,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 8,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 522,
+            "outputTokens": 1000,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 522,
+            "outputTokens": 1000
+          }
         }
       ],
       "taskDelivery": {
@@ -3060,8 +3324,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 303,
+            "outputTokens": 374,
             "landed": true,
             "outputChars": 1672
           },
@@ -3108,7 +3380,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 303,
+            "outputTokens": 374
+          }
         },
         {
           "schemaVersion": 1,
@@ -3141,8 +3416,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 13493,
+            "outputTokens": 522,
             "landed": true,
             "outputChars": 1786
           },
@@ -3171,7 +3454,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 13493,
+            "outputTokens": 522
+          }
         }
       ],
       "taskDelivery": {
@@ -3450,8 +3736,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 16249,
+            "outputTokens": 237,
             "landed": true,
             "outputChars": 1005
           },
@@ -3474,7 +3768,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 16249,
+            "outputTokens": 237
+          }
         }
       ],
       "taskDelivery": {
@@ -3552,12 +3849,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 620,
+            "outputTokens": 503,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 620,
+            "outputTokens": 503
+          }
         },
         {
           "schemaVersion": 1,
@@ -3578,12 +3886,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 974,
+            "outputTokens": 469,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 974,
+            "outputTokens": 469
+          }
         },
         {
           "schemaVersion": 1,
@@ -3604,12 +3923,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 618,
+            "outputTokens": 470,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 618,
+            "outputTokens": 470
+          }
         },
         {
           "schemaVersion": 1,
@@ -3635,12 +3965,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1003,
+            "outputTokens": 473,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1003,
+            "outputTokens": 473
+          }
         }
       ],
       "taskDelivery": {
@@ -3729,8 +4070,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 15641,
+            "outputTokens": 501,
             "landed": true,
             "outputChars": 1814
           },
@@ -3765,7 +4114,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 15641,
+            "outputTokens": 501
+          }
         },
         {
           "schemaVersion": 1,
@@ -3798,8 +4150,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 12773,
+            "outputTokens": 327,
             "landed": true,
             "outputChars": 1130
           },
@@ -3822,7 +4182,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 12773,
+            "outputTokens": 327
+          }
         }
       ],
       "taskDelivery": {
@@ -3914,12 +4277,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 524,
+            "outputTokens": 686,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 524,
+            "outputTokens": 686
+          }
         },
         {
           "schemaVersion": 1,
@@ -3945,12 +4319,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 579,
+            "outputTokens": 733,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 579,
+            "outputTokens": 733
+          }
         },
         {
           "schemaVersion": 1,
@@ -3971,12 +4356,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 431,
+            "outputTokens": 960,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 431,
+            "outputTokens": 960
+          }
         },
         {
           "schemaVersion": 1,
@@ -3997,12 +4393,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 597,
+            "outputTokens": 914,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 597,
+            "outputTokens": 914
+          }
         },
         {
           "schemaVersion": 1,
@@ -4023,12 +4430,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 7,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1447,
+            "outputTokens": 866,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1447,
+            "outputTokens": 866
+          }
         }
       ],
       "taskDelivery": {
@@ -4452,12 +4870,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 2005,
+            "outputTokens": 562,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 2005,
+            "outputTokens": 562
+          }
         },
         {
           "schemaVersion": 1,
@@ -4483,12 +4912,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 583,
+            "outputTokens": 579,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 583,
+            "outputTokens": 579
+          }
         },
         {
           "schemaVersion": 1,
@@ -4514,12 +4954,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 199,
+            "outputTokens": 591,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 199,
+            "outputTokens": 591
+          }
         },
         {
           "schemaVersion": 1,
@@ -4540,12 +4991,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 610,
+            "outputTokens": 843,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 610,
+            "outputTokens": 843
+          }
         },
         {
           "schemaVersion": 1,
@@ -4571,12 +5033,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 7,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1376,
+            "outputTokens": 872,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1376,
+            "outputTokens": 872
+          }
         }
       ],
       "taskDelivery": {
@@ -4919,8 +5392,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 354,
+            "outputTokens": 304,
             "landed": true,
             "outputChars": 1225
           },
@@ -4967,7 +5448,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 354,
+            "outputTokens": 304
+          }
         },
         {
           "schemaVersion": 1,
@@ -5000,8 +5484,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 14371,
+            "outputTokens": 448,
             "landed": true,
             "outputChars": 1675
           },
@@ -5030,7 +5522,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 14371,
+            "outputTokens": 448
+          }
         }
       ],
       "taskDelivery": {
@@ -5147,8 +5642,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 15860,
+            "outputTokens": 313,
             "landed": true,
             "outputChars": 1168
           },
@@ -5183,7 +5686,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 15860,
+            "outputTokens": 313
+          }
         },
         {
           "schemaVersion": 1,
@@ -5216,8 +5722,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 13111,
+            "outputTokens": 428,
             "landed": true,
             "outputChars": 1679
           },
@@ -5240,7 +5754,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 13111,
+            "outputTokens": 428
+          }
         }
       ],
       "taskDelivery": {
@@ -5332,12 +5849,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 615,
+            "outputTokens": 749,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 615,
+            "outputTokens": 749
+          }
         },
         {
           "schemaVersion": 1,
@@ -5358,12 +5886,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1221,
+            "outputTokens": 750,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1221,
+            "outputTokens": 750
+          }
         },
         {
           "schemaVersion": 1,
@@ -5389,12 +5928,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 516,
+            "outputTokens": 751,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 516,
+            "outputTokens": 751
+          }
         },
         {
           "schemaVersion": 1,
@@ -5415,12 +5965,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 5,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 469,
+            "outputTokens": 847,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 469,
+            "outputTokens": 847
+          }
         }
       ],
       "taskDelivery": {
@@ -5757,12 +6318,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 61427,
+            "outputTokens": 464,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 61427,
+            "outputTokens": 464
+          }
         },
         {
           "schemaVersion": 1,
@@ -5788,12 +6360,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 935,
+            "outputTokens": 464,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 935,
+            "outputTokens": 464
+          }
         },
         {
           "schemaVersion": 1,
@@ -5819,12 +6402,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 613,
+            "outputTokens": 464,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 613,
+            "outputTokens": 464
+          }
         }
       ],
       "taskDelivery": {
@@ -6144,8 +6738,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 384,
+            "outputTokens": 349,
             "landed": true,
             "outputChars": 1286
           },
@@ -6168,7 +6770,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 384,
+            "outputTokens": 349
+          }
         }
       ],
       "taskDelivery": {
@@ -6495,8 +7100,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 15984,
+            "outputTokens": 409,
             "landed": true,
             "outputChars": 1654
           },
@@ -6543,7 +7156,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 15984,
+            "outputTokens": 409
+          }
         },
         {
           "schemaVersion": 1,
@@ -6576,8 +7192,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 13383,
+            "outputTokens": 586,
             "landed": true,
             "outputChars": 1904
           },
@@ -6606,7 +7230,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 13383,
+            "outputTokens": 586
+          }
         }
       ],
       "taskDelivery": {
@@ -6712,12 +7339,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 611,
+            "outputTokens": 793,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 611,
+            "outputTokens": 793
+          }
         },
         {
           "schemaVersion": 1,
@@ -6738,12 +7376,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1264,
+            "outputTokens": 744,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1264,
+            "outputTokens": 744
+          }
         },
         {
           "schemaVersion": 1,
@@ -6769,12 +7418,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 509,
+            "outputTokens": 744,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 509,
+            "outputTokens": 744
+          }
         },
         {
           "schemaVersion": 1,
@@ -6800,12 +7460,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 5,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 253,
+            "outputTokens": 744,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 253,
+            "outputTokens": 744
+          }
         },
         {
           "schemaVersion": 1,
@@ -6831,12 +7502,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 7,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 253,
+            "outputTokens": 744,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 253,
+            "outputTokens": 744
+          }
         },
         {
           "schemaVersion": 1,
@@ -6857,12 +7539,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 9,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 398,
+            "outputTokens": 900,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 398,
+            "outputTokens": 900
+          }
         }
       ],
       "taskDelivery": {
@@ -6979,8 +7672,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 16713,
+            "outputTokens": 270,
             "landed": true,
             "outputChars": 1200
           },
@@ -7003,7 +7704,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 16713,
+            "outputTokens": 270
+          }
         }
       ],
       "taskDelivery": {
@@ -7081,12 +7785,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 572,
+            "outputTokens": 366,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 572,
+            "outputTokens": 366
+          }
         },
         {
           "schemaVersion": 1,
@@ -7112,12 +7827,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 1,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 837,
+            "outputTokens": 368,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 837,
+            "outputTokens": 368
+          }
         },
         {
           "schemaVersion": 1,
@@ -7143,12 +7869,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 515,
+            "outputTokens": 382,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 515,
+            "outputTokens": 382
+          }
         }
       ],
       "taskDelivery": {
@@ -7532,12 +8269,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 15874,
+            "outputTokens": 715,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 15874,
+            "outputTokens": 715
+          }
         },
         {
           "schemaVersion": 1,
@@ -7560,12 +8308,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 485,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 485,
+            "outputTokens": 1024
+          }
         },
         {
           "schemaVersion": 1,
@@ -7588,12 +8347,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 229,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 229,
+            "outputTokens": 1024
+          }
         }
       ],
       "taskDelivery": {
@@ -8008,8 +8778,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 271,
+            "outputTokens": 327,
             "landed": true,
             "outputChars": 1324
           },
@@ -8044,7 +8822,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 271,
+            "outputTokens": 327
+          }
         },
         {
           "schemaVersion": 1,
@@ -8077,8 +8858,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 12653,
+            "outputTokens": 332,
             "landed": true,
             "outputChars": 1360
           },
@@ -8101,7 +8890,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 12653,
+            "outputTokens": 332
+          }
         }
       ],
       "taskDelivery": {
@@ -8455,8 +9247,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 226,
+            "outputTokens": 337,
             "landed": true,
             "outputChars": 1385
           },
@@ -8497,7 +9297,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 226,
+            "outputTokens": 337
+          }
         },
         {
           "schemaVersion": 1,
@@ -8530,8 +9333,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 5,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 14230,
+            "outputTokens": 443,
             "landed": true,
             "outputChars": 1735
           },
@@ -8548,7 +9359,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 14230,
+            "outputTokens": 443
+          }
         }
       ],
       "taskDelivery": {
@@ -8647,12 +9461,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 213,
+            "outputTokens": 573,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 213,
+            "outputTokens": 573
+          }
         },
         {
           "schemaVersion": 1,
@@ -8678,12 +9503,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 594,
+            "outputTokens": 636,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 594,
+            "outputTokens": 636
+          }
         },
         {
           "schemaVersion": 1,
@@ -8709,12 +9545,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 4,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 210,
+            "outputTokens": 576,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 210,
+            "outputTokens": 576
+          }
         },
         {
           "schemaVersion": 1,
@@ -8740,12 +9587,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 6,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 210,
+            "outputTokens": 573,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 210,
+            "outputTokens": 573
+          }
         },
         {
           "schemaVersion": 1,
@@ -8766,12 +9624,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 8,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 604,
+            "outputTokens": 814,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 604,
+            "outputTokens": 814
+          }
         },
         {
           "schemaVersion": 1,
@@ -8792,12 +9661,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 9,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1348,
+            "outputTokens": 811,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1348,
+            "outputTokens": 811
+          }
         }
       ],
       "taskDelivery": {
@@ -8914,8 +9794,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 183,
+            "outputTokens": 429,
             "landed": true,
             "outputChars": 1449
           },
@@ -8938,7 +9826,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 183,
+            "outputTokens": 429
+          }
         }
       ],
       "taskDelivery": {
@@ -9027,8 +9918,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 143,
+            "outputTokens": 496,
             "landed": true,
             "outputChars": 941
           },
@@ -9051,7 +9950,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 143,
+            "outputTokens": 496
+          }
         }
       ],
       "taskDelivery": {
@@ -9140,8 +10042,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 183,
+            "outputTokens": 323,
             "landed": true,
             "outputChars": 1223
           },
@@ -9158,7 +10068,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 183,
+            "outputTokens": 323
+          }
         }
       ],
       "taskDelivery": {
@@ -9240,8 +10153,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 143,
+            "outputTokens": 569,
             "landed": true,
             "outputChars": 1152
           },
@@ -9264,7 +10185,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 143,
+            "outputTokens": 569
+          }
         }
       ],
       "taskDelivery": {
@@ -9353,8 +10277,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 175,
+            "outputTokens": 412,
             "landed": true,
             "outputChars": 1568
           },
@@ -9401,7 +10333,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 175,
+            "outputTokens": 412
+          }
         },
         {
           "schemaVersion": 1,
@@ -9434,8 +10369,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 298,
+            "outputTokens": 762,
             "landed": true,
             "outputChars": 2075
           },
@@ -9464,7 +10407,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 298,
+            "outputTokens": 762
+          }
         }
       ],
       "taskDelivery": {
@@ -9581,8 +10527,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1415,
+            "outputTokens": 566,
             "landed": true,
             "outputChars": 1088
           },
@@ -9629,7 +10583,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1415,
+            "outputTokens": 566
+          }
         },
         {
           "schemaVersion": 1,
@@ -9662,8 +10619,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1421,
+            "outputTokens": 330,
             "landed": true,
             "outputChars": 841
           },
@@ -9692,7 +10657,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1421,
+            "outputTokens": 330
+          }
         }
       ],
       "taskDelivery": {
@@ -9809,8 +10777,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 175,
+            "outputTokens": 412,
             "landed": true,
             "outputChars": 1383
           },
@@ -9857,7 +10833,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 175,
+            "outputTokens": 412
+          }
         },
         {
           "schemaVersion": 1,
@@ -9890,8 +10869,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 170,
+            "outputTokens": 598,
             "landed": true,
             "outputChars": 1939
           },
@@ -9920,7 +10907,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 170,
+            "outputTokens": 598
+          }
         }
       ],
       "taskDelivery": {
@@ -10037,8 +11027,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 135,
+            "outputTokens": 630,
             "landed": true,
             "outputChars": 1259
           },
@@ -10085,7 +11083,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 135,
+            "outputTokens": 630
+          }
         },
         {
           "schemaVersion": 1,
@@ -10118,8 +11119,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 4,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 141,
+            "outputTokens": 244,
             "landed": true,
             "outputChars": 1039
           },
@@ -10148,7 +11157,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 141,
+            "outputTokens": 244
+          }
         }
       ],
       "taskDelivery": {
@@ -10265,8 +11277,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 153,
+            "outputTokens": 534,
             "landed": true,
             "outputChars": 1713
           },
@@ -10301,7 +11321,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 153,
+            "outputTokens": 534
+          }
         },
         {
           "schemaVersion": 1,
@@ -10334,8 +11357,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 519,
+            "outputTokens": 358,
             "landed": true,
             "outputChars": 1462
           },
@@ -10358,7 +11389,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 519,
+            "outputTokens": 358
+          }
         }
       ],
       "taskDelivery": {
@@ -10461,8 +11495,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1393,
+            "outputTokens": 579,
             "landed": true,
             "outputChars": 982
           },
@@ -10545,7 +11587,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1393,
+            "outputTokens": 579
+          }
         },
         {
           "schemaVersion": 1,
@@ -10578,8 +11623,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 2,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1426,
+            "outputTokens": 392,
             "landed": true,
             "outputChars": 847
           },
@@ -10656,7 +11709,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1426,
+            "outputTokens": 392
+          }
         },
         {
           "schemaVersion": 1,
@@ -10689,8 +11745,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 7,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 5367,
+            "outputTokens": 828,
             "landed": true,
             "outputChars": 1122
           },
@@ -10743,7 +11807,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 5367,
+            "outputTokens": 828
+          }
         },
         {
           "schemaVersion": 1,
@@ -10776,8 +11843,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 11,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 14642,
+            "outputTokens": 589,
             "landed": true,
             "outputChars": 879
           },
@@ -10812,7 +11887,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 14642,
+            "outputTokens": 589
+          }
         }
       ],
       "taskDelivery": {
@@ -10971,8 +12049,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 153,
+            "outputTokens": 495,
             "landed": true,
             "outputChars": 1561
           },
@@ -11007,7 +12093,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 153,
+            "outputTokens": 495
+          }
         },
         {
           "schemaVersion": 1,
@@ -11040,8 +12129,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 468,
+            "outputTokens": 273,
             "landed": true,
             "outputChars": 1011
           },
@@ -11064,7 +12161,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 468,
+            "outputTokens": 273
+          }
         }
       ],
       "taskDelivery": {
@@ -11167,8 +12267,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 241,
+            "outputTokens": 593,
             "landed": true,
             "outputChars": 933
           },
@@ -11203,7 +12311,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 241,
+            "outputTokens": 593
+          }
         },
         {
           "schemaVersion": 1,
@@ -11236,8 +12347,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1592,
+            "outputTokens": 648,
             "landed": true,
             "outputChars": 1271
           },
@@ -11260,7 +12379,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1592,
+            "outputTokens": 648
+          }
         }
       ],
       "taskDelivery": {
@@ -11353,12 +12475,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 140,
+            "outputTokens": 840,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 140,
+            "outputTokens": 840
+          }
         },
         {
           "schemaVersion": 1,
@@ -11379,12 +12512,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 605,
+            "outputTokens": 799,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 605,
+            "outputTokens": 799
+          }
         },
         {
           "schemaVersion": 1,
@@ -11410,12 +12554,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1332,
+            "outputTokens": 799,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1332,
+            "outputTokens": 799
+          }
         },
         {
           "schemaVersion": 1,
@@ -11438,12 +12593,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 5,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 467,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 467,
+            "outputTokens": 1024
+          }
         },
         {
           "schemaVersion": 1,
@@ -11466,12 +12632,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 7,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 211,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 211,
+            "outputTokens": 1024
+          }
         }
       ],
       "taskDelivery": {
@@ -11918,8 +13095,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 153,
+            "outputTokens": 465,
             "landed": true,
             "outputChars": 1413
           },
@@ -11954,7 +13139,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 153,
+            "outputTokens": 465
+          }
         },
         {
           "schemaVersion": 1,
@@ -11987,8 +13175,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 488,
+            "outputTokens": 314,
             "landed": true,
             "outputChars": 1188
           },
@@ -12011,7 +13207,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 488,
+            "outputTokens": 314
+          }
         }
       ],
       "taskDelivery": {
@@ -12114,8 +13313,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 241,
+            "outputTokens": 405,
             "landed": true,
             "outputChars": 799
           },
@@ -12150,7 +13357,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 241,
+            "outputTokens": 405
+          }
         },
         {
           "schemaVersion": 1,
@@ -12183,8 +13393,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1593,
+            "outputTokens": 358,
             "landed": true,
             "outputChars": 818
           },
@@ -12207,7 +13425,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1593,
+            "outputTokens": 358
+          }
         }
       ],
       "taskDelivery": {
@@ -12299,12 +13520,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 0,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 134,
+            "outputTokens": 811,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 134,
+            "outputTokens": 811
+          }
         },
         {
           "schemaVersion": 1,
@@ -12325,12 +13557,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 2,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 576,
+            "outputTokens": 813,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 576,
+            "outputTokens": 813
+          }
         },
         {
           "schemaVersion": 1,
@@ -12351,12 +13594,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 3,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1218,
+            "outputTokens": 791,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 1218,
+            "outputTokens": 791
+          }
         },
         {
           "schemaVersion": 1,
@@ -12379,12 +13633,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 5,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 496,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 496,
+            "outputTokens": 1024
+          }
         },
         {
           "schemaVersion": 1,
@@ -12407,12 +13672,23 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "summary",
+            "callIndex": 7,
+            "maxTokens": 1024,
+            "finish": {
+              "kind": "max-tokens"
+            },
+            "inputTokens": 240,
+            "outputTokens": 1024,
             "landed": false
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 240,
+            "outputTokens": 1024
+          }
         }
       ],
       "taskDelivery": {
@@ -13131,8 +14407,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 143,
+            "outputTokens": 519,
             "landed": true,
             "outputChars": 1697
           },
@@ -13179,7 +14463,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 143,
+            "outputTokens": 519
+          }
         },
         {
           "schemaVersion": 1,
@@ -13212,8 +14499,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 5,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 972,
+            "outputTokens": 322,
             "landed": true,
             "outputChars": 1234
           },
@@ -13236,7 +14531,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 972,
+            "outputTokens": 322
+          }
         }
       ],
       "taskDelivery": {
@@ -13353,8 +14651,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1383,
+            "outputTokens": 777,
             "landed": true,
             "outputChars": 1136
           },
@@ -13389,7 +14695,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1383,
+            "outputTokens": 777
+          }
         },
         {
           "schemaVersion": 1,
@@ -13422,8 +14731,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "writer",
+            "callIndex": 3,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 1627,
+            "outputTokens": 514,
             "landed": true,
             "outputChars": 1086
           },
@@ -13446,7 +14763,10 @@
             ],
             "basis": "commit-time/digests"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 1627,
+            "outputTokens": 514
+          }
         }
       ],
       "taskDelivery": {
@@ -29961,8 +31281,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 183,
+            "outputTokens": 402,
             "landed": true,
             "outputChars": 1392
           },
@@ -29985,7 +31313,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 183,
+            "outputTokens": 402
+          }
         }
       ],
       "taskDelivery": {
@@ -30821,8 +32152,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 183,
+            "outputTokens": 355,
             "landed": true,
             "outputChars": 1390
           },
@@ -30845,7 +32184,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 183,
+            "outputTokens": 355
+          }
         }
       ],
       "taskDelivery": {
@@ -31895,8 +33237,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 256,
+            "outputTokens": 346,
             "landed": true,
             "outputChars": 1128
           },
@@ -31919,7 +33269,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 256,
+            "outputTokens": 346
+          }
         }
       ],
       "taskDelivery": {
@@ -32450,8 +33803,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 256,
+            "outputTokens": 416,
             "landed": true,
             "outputChars": 1553
           },
@@ -32474,7 +33835,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 256,
+            "outputTokens": 416
+          }
         }
       ],
       "taskDelivery": {
@@ -33607,8 +34971,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 249,
+            "outputTokens": 249,
             "landed": true,
             "outputChars": 1035
           },
@@ -33631,7 +35003,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 249,
+            "outputTokens": 249
+          }
         }
       ],
       "taskDelivery": {
@@ -34307,8 +35682,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 249,
+            "outputTokens": 318,
             "landed": true,
             "outputChars": 1405
           },
@@ -34331,7 +35714,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 249,
+            "outputTokens": 318
+          }
         }
       ],
       "taskDelivery": {
@@ -35070,8 +36456,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 201,
+            "outputTokens": 286,
             "landed": true,
             "outputChars": 1149
           },
@@ -35094,7 +36488,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 201,
+            "outputTokens": 286
+          }
         }
       ],
       "taskDelivery": {
@@ -36502,8 +37899,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 201,
+            "outputTokens": 290,
             "landed": true,
             "outputChars": 1112
           },
@@ -36526,7 +37931,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 201,
+            "outputTokens": 290
+          }
         }
       ],
       "taskDelivery": {
@@ -43612,13 +45020,24 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 164,
+            "outputTokens": 319,
             "landed": true,
             "outputChars": 1142
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 164,
+            "outputTokens": 319
+          }
         },
         {
           "schemaVersion": 1,
@@ -43651,8 +45070,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 2,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 235,
+            "outputTokens": 474,
             "landed": true,
             "outputChars": 1759
           },
@@ -43669,7 +45096,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 235,
+            "outputTokens": 474
+          }
         }
       ],
       "taskDelivery": {
@@ -44684,8 +46114,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 417,
+            "outputTokens": 190,
             "landed": true,
             "outputChars": 682
           },
@@ -44708,7 +46146,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 417,
+            "outputTokens": 190
+          }
         }
       ],
       "taskDelivery": {
@@ -47802,13 +49243,24 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 425,
+            "outputTokens": 303,
             "landed": true,
             "outputChars": 1135
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 425,
+            "outputTokens": 303
+          }
         },
         {
           "schemaVersion": 1,
@@ -47841,8 +49293,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 2,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 168,
+            "outputTokens": 442,
             "landed": true,
             "outputChars": 1463
           },
@@ -47877,7 +49337,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 168,
+            "outputTokens": 442
+          }
         }
       ],
       "taskDelivery": {
@@ -64124,8 +65587,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 183,
+            "outputTokens": 366,
             "landed": true,
             "outputChars": 1298
           },
@@ -64148,7 +65619,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 183,
+            "outputTokens": 366
+          }
         }
       ],
       "taskDelivery": {
@@ -64349,8 +65823,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 256,
+            "outputTokens": 434,
             "landed": true,
             "outputChars": 1490
           },
@@ -64373,7 +65855,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 256,
+            "outputTokens": 434
+          }
         }
       ],
       "taskDelivery": {
@@ -64574,8 +66059,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 249,
+            "outputTokens": 194,
             "landed": true,
             "outputChars": 754
           },
@@ -64598,7 +66091,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 249,
+            "outputTokens": 194
+          }
         }
       ],
       "taskDelivery": {
@@ -65505,8 +67001,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 201,
+            "outputTokens": 342,
             "landed": true,
             "outputChars": 1366
           },
@@ -65529,7 +67033,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 201,
+            "outputTokens": 342
+          }
         }
       ],
       "taskDelivery": {
@@ -66189,13 +67696,24 @@
           },
           "surfaceReplacementVerified": false,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 0,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 164,
+            "outputTokens": 209,
             "landed": true,
             "outputChars": 871
           },
           "delivery": null,
-          "cost": null
+          "cost": {
+            "inputTokens": 164,
+            "outputTokens": 209
+          }
         },
         {
           "schemaVersion": 1,
@@ -66228,8 +67746,16 @@
           },
           "surfaceReplacementVerified": true,
           "rationale": {
-            "attempted": false,
-            "link": "none",
+            "attempted": true,
+            "link": "order",
+            "purpose": "rationale",
+            "callIndex": 2,
+            "maxTokens": 16384,
+            "finish": {
+              "kind": "stop"
+            },
+            "inputTokens": 235,
+            "outputTokens": 324,
             "landed": true,
             "outputChars": 1274
           },
@@ -66252,7 +67778,10 @@
             ],
             "basis": "commit-time/full-messages"
           },
-          "cost": null
+          "cost": {
+            "inputTokens": 235,
+            "outputTokens": 324
+          }
         }
       ],
       "taskDelivery": {

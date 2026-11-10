@@ -374,7 +374,11 @@ export function assembleWitnesses({
   const auxiliary = requests
     .filter(request => request.purpose !== 'primary')
     .sort((left, right) => Number(left.index) - Number(right.index))
-  const attemptsWithAux = attempts.filter(attempt => attempt.error !== null || attempt.summarySeq !== undefined).length
+  // An archived committed attempt has neither an error nor a summary event in
+  // the report, but it did make the auxiliary call. `endSeq` is the report's
+  // evidence that the transaction closed; count it for the order link.
+  const attemptsWithAux = attempts.filter(attempt =>
+    attempt.error !== null || attempt.summarySeq !== undefined || attempt.endSeq !== undefined).length
 
   // Commit records identify the attempt they belong to; that link is exact.
   const commitByCompaction = new Map()
