@@ -136,6 +136,8 @@ export async function createHarness(
      * actual type keeps the harness in step with the product.
      */
     efConfig?: EpistemicFoldConfig
+    /** Opt-in R3 exact-span observation (off by default, observational only). */
+    leafSpanProbe?: boolean
     /** Inject a (possibly failing) store; defaults to a fresh temp FileBundleStore. */
     bundleStore?: FoldBundleStore
     /**
@@ -277,6 +279,8 @@ export async function createHarness(
       auto: false,
       bundleRoot: root,
       ...(options.efConfig ?? {}),
+    }, {
+      leafSpanProbe: options.leafSpanProbe === true,
     })
     return { ctx, engine: plugin.engine, store: plugin.engine.bundleStore, root, control, plugin }
   }
@@ -296,6 +300,7 @@ export async function createHarness(
     : new EpistemicFoldEngine(ctx, options.efConfig ?? {}, {
         bundleStore: store,
         ...(options.semanticJournal === undefined ? {} : { semanticJournal: options.semanticJournal }),
+        leafSpanProbe: options.leafSpanProbe === true,
       })) as EpistemicFoldEngine
   return { ctx, engine, store, root, control }
 }

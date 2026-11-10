@@ -79,11 +79,12 @@ function messageSummary(message) {
  * that could alter the response would be measuring itself.
  */
 export class RecordingAdapter extends LlmAdapter {
-  constructor(inner, log, { defaultMaxTokens = 1024 } = {}) {
+  constructor(inner, log, { defaultMaxTokens = 1024, diagnostics = null } = {}) {
     super()
     this.inner = inner
     this.log = log
     this.defaultMaxTokens = defaultMaxTokens
+    this.diagnostics = diagnostics
   }
 
   providerInfo(provider) {
@@ -124,7 +125,20 @@ export class RecordingAdapter extends LlmAdapter {
       usage: null,
       finish: null,
       durationMs: null,
+      // EF-R3 transport diagnostics: one entry per real HTTP attempt. The
+      // values are sizes and timings only; no body and no credential.
+      diagnostics: {
+        attempts: [],
+        route: this.diagnostics?.route ?? null,
+        connection: {
+          available: false,
+          note: 'global fetch does not expose socket identity or keep-alive reuse',
+        },
+      },
+      bodyBytes: null,
+      httpAttempts: null,
     }
+    if (this.diagnostics !== null) this.diagnostics.entry = entry
     // Full primary messages, separate from the bounded summaries.
     //
     // The first 96 cells kept only a 400-character preview, so the offline
@@ -147,6 +161,10 @@ export class RecordingAdapter extends LlmAdapter {
       yield chunk
     }
     entry.durationMs = Date.now() - started
+    entry.httpAttempts = entry.diagnostics.attempts
+      .filter(attempt => attempt.phase === 'start').length
+    entry.bodyBytes = entry.diagnostics.attempts
+      .find(attempt => typeof attempt.bodyBytes === 'number')?.bodyBytes ?? null
   }
 }
 
@@ -381,6 +399,8 @@ export async function runCell({
   cellLimits,
   guard = false,
   efConfig = {},
+  attemptId = null,
+  manifestSha = null,
 }) {
   const cellId = `${task.id}-${arm}-r${replicate}`
   const cellRoot = join(outRoot, cellId)
@@ -604,6 +624,7 @@ export async function runCell({
   const retainedTokens = session === null ? null : (host?.ctx.tokenMeter.measure(session).totalTokens ?? null)
   const engineDecision = host?.plugin?.engine?.lastLeafDecision ?? null
   const thresholdTokens = host?.plugin?.engine?.telemetry?.thresholdTokens ?? null
+  const leafSpanProbe = host?.plugin?.engine?.lastLeafSpanProbe ?? null
 
   if (handle !== null) await handle.dispose()
   if (host !== null) await disposeHost(host)
@@ -656,6 +677,8 @@ export async function runCell({
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     campaign,
+    attemptId: attemptId ?? `${campaign}:${cellId}`,
+    manifestSha,
     cellId,
     sessionId,
     task: {
@@ -698,6 +721,7 @@ export async function runCell({
     retainedTokens,
     engineDecision,
     thresholdTokens,
+    leafSpanProbe,
     termination: {
       idle: idleOutcome,
       stepLimit,
@@ -757,6 +781,9 @@ export async function runCell({
       usage: entry.usage,
       finish: entry.finish,
       durationMs: entry.durationMs,
+      bodyBytes: entry.bodyBytes ?? null,
+      httpAttempts: entry.httpAttempts ?? null,
+      diagnostics: entry.diagnostics ?? null,
     })),
   }
 

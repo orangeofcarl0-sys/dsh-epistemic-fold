@@ -60,6 +60,8 @@ import {
   rootRebaseAdvice,
 } from '../policy/fold-economics.ts'
 import type { FoldReachability, LeafAdmissionVerdict } from '../policy/fold-economics.ts'
+import { finalizeLeafSpanProbe, probeLeafSpans } from '../policy/leaf-span-probe.ts'
+import type { LeafSpanProbe } from '../policy/leaf-span-probe.ts'
 import { classifyRegime, resolveProfile, rhoOf } from '../policy/economics-profile.ts'
 import type { ContextPolicyDecision } from '../policy/policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
@@ -185,6 +187,13 @@ export interface EpistemicFoldOptions {
    * continuity is configured, and to the null journal otherwise.
    */
   readonly semanticJournal?: SemanticJournal
+  /**
+   * Opt-in, observational exact-span probe. It records the widest legal span
+   * admission priced and the span execution selected, plus the checkpoint
+   * estimate and (after a fold) the actual cost. It never changes a verdict,
+   * a span or an exception path. Off by default; benchmarks enable it.
+   */
+  readonly leafSpanProbe?: boolean
 }
 
 /**
@@ -312,6 +321,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * this field existed.
    */
   private readonly taskRoots = new ActiveTaskRootRegistry()
+  /** Opt-in exact-span probe; observational only. */
+  private readonly leafSpanProbeEnabled: boolean
   private readonly bundles: FoldBundleStore
   /**
    * Outstanding rebase requests, keyed per agent (R3-0b). R2-C only
@@ -395,6 +406,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     super(ctx, stripEfConfigKeys(config))
     this.resolvedConfig = resolveEfConfig(config)
     this.currentModeValue = config.mode ?? 'legacy'
+    this.leafSpanProbeEnabled = options.leafSpanProbe === true
     // R4 §4: the framing seam is an EXTERNAL dependency, so its presence is
     // verified once, here, against the requested mode — never sniffed per fold
     // and never silently downgraded. `legacy` needs no seam, so the default
@@ -589,6 +601,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
   get lastLeafAdmission(): LeafAdmissionVerdict | undefined {
     return this.telemetry.leafAdmission
+  }
+
+  /** Most recent exact-span probe; `undefined` unless the observer is enabled. */
+  get lastLeafSpanProbe(): LeafSpanProbe | undefined {
+    return this.telemetry.leafSpanProbe
   }
 
   /** Most recent provider-aware rebase decision (R2-C); `undefined` under `legacy`. */
@@ -1493,7 +1510,26 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         this.lastLeafDecision = 'span-threw: ' + (error instanceof Error ? error.message : String(error)).slice(0, 200)
         throw error
       }
+      // R3 exact-span probe: observational only. Admission priced the widest
+      // legal span; execution is about to fold the span left after retention.
+      // Recording both on the SAME measurement is the only way to see the gap.
+      let spanProbe: LeafSpanProbe | null = null
+      if (this.leafSpanProbeEnabled) {
+        spanProbe = probeLeafSpans({
+          session: agent.session,
+          measurement,
+          retainTokens: spec.retainTokens,
+          thresholdTokens: spec.thresholdTokens,
+          minReclaimTokens: this.efConfig.minReclaimTokens,
+          minReclaimRatio: this.efConfig.minReclaimRatio,
+          protectedPositions: this.protectedPositions(agent.session),
+        })
+        this.telemetry.leafSpanProbe = spanProbe
+      }
       if (span === null) {
+        if (spanProbe !== null) {
+          this.telemetry.leafSpanProbe = { ...spanProbe, committed: false }
+        }
         this.lastLeafDecision = 'no-span pricedNodes=' + measurement.nodes.length
           + ' surfaceNodes=' + agent.session.surface.nodes.length
           + ' firstOpen=' + locateFoldFrontier(agent.session).firstOpenPosition
@@ -1521,8 +1557,38 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         if (result === null) return null
         break
       }
-      result = await this.compactRegion(span.start, span.end, agent, signal)
+      const beforeSurfaceTokens = measurement.totalTokens
+      try {
+        result = await this.compactRegion(span.start, span.end, agent, signal)
+      } catch (error: unknown) {
+        if (spanProbe !== null) {
+          let afterMeasurement = measurement
+          try {
+            afterMeasurement = meter.measure(agent.session)
+          } catch {
+            // Keep the pre-fold measurement; the probe is not allowed to
+            // replace the fold error with its own.
+          }
+          this.telemetry.leafSpanProbe = finalizeLeafSpanProbe(spanProbe, {
+            session: agent.session,
+            measurement: afterMeasurement,
+            beforeSurfaceTokens,
+            committed: false,
+            foldError: error instanceof Error ? error.message : String(error),
+          })
+        }
+        throw error
+      }
       const _after = meter.measure(agent.session)
+      if (spanProbe !== null) {
+        this.telemetry.leafSpanProbe = finalizeLeafSpanProbe(spanProbe, {
+          session: agent.session,
+          measurement: _after,
+          beforeSurfaceTokens,
+          committed: result !== null,
+          shadowedTokenCount: result?.shadowedTokenCount ?? null,
+        })
+      }
       this.lastLeafDecision = 'fold-attempted span=' + span.start + '..' + span.end
         + ' resultNull=' + (result === null)
         + ' tokensBefore=' + measurement.totalTokens + ' tokensAfter=' + _after.totalTokens

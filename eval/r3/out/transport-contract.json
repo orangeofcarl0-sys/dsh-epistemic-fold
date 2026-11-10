@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP3",
+  "generatedAt": "2026-11-10T16:38:10.097Z",
+  "checks": [
+    {
+      "name": "success.finish",
+      "pass": true,
+      "detail": "{\"kind\":\"stop\"}"
+    },
+    {
+      "name": "success.text",
+      "pass": true,
+      "detail": "text=ok"
+    },
+    {
+      "name": "success.usage",
+      "pass": true,
+      "detail": "{\"inputTokens\":10,\"outputTokens\":2,\"totalTokens\":12}"
+    },
+    {
+      "name": "success.diagnostics",
+      "pass": true,
+      "detail": "[\"start\",\"response\"]"
+    },
+    {
+      "name": "reset.finish",
+      "pass": true,
+      "detail": "{\"kind\":\"error\",\"failure\":{\"message\":\"fetch failed (UND_ERR_SOCKET)\",\"code\":\"LIVE_TRANSPORT\"}}"
+    },
+    {
+      "name": "reset.no-usage",
+      "pass": true,
+      "detail": "null"
+    },
+    {
+      "name": "reset.diagnostics",
+      "pass": true,
+      "detail": "[\"start\",\"error\"]"
+    },
+    {
+      "name": "partial.not-silent-success",
+      "pass": true,
+      "detail": "{\"error\":\"terminated\",\"finish\":null,\"text\":\"\"}"
+    },
+    {
+      "name": "partial.diagnostics",
+      "pass": true,
+      "detail": "[\"start\",\"response\"]"
+    },
+    {
+      "name": "partial-usage.task",
+      "pass": true,
+      "detail": "\"valid\""
+    },
+    {
+      "name": "partial-usage.cost",
+      "pass": true,
+      "detail": "costValid=false"
+    },
+    {
+      "name": "all-null.transport",
+      "pass": true,
+      "detail": "status=transport-failed"
+    },
+    {
+      "name": "all-null.no-task-outcome",
+      "pass": true,
+      "detail": "taskOutcomeValid=false"
+    }
+  ],
+  "passed": 13,
+  "failed": 0,
+  "verdict": "contract-pass",
+  "note": "Local mock server only; no provider request and no credential."
+}

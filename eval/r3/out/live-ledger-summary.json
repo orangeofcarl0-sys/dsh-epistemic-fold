@@ -1,0 +1,553 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP1",
+  "generatedAt": "2026-11-10T16:38:09.521Z",
+  "confirm": {
+    "campaign": "e2e-r2-confirm-merged",
+    "planned": 54,
+    "valid": 23,
+    "unresolved": 1,
+    "neverStarted": 30,
+    "noValidOutcome": 31,
+    "uniqueCellsStarted": 24,
+    "attempts": 25,
+    "unplannedAttempts": [],
+    "validAttempts": 23,
+    "transportFailedAttempts": 2,
+    "runnerErrorAttempts": 0,
+    "costInvalidCells": [
+      {
+        "cellId": "T12-s2-B0-r1",
+        "usage": {
+          "requests": 14,
+          "unknownUsage": 2,
+          "inputTokens": 162689,
+          "outputTokens": 6876,
+          "cacheReadTokens": 75904,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 8
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T13-s1-E1-r2",
+        "usage": {
+          "requests": 9,
+          "unknownUsage": 3,
+          "inputTokens": 114293,
+          "outputTokens": 1911,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 4
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T13-s2-E1-r2",
+        "usage": {
+          "requests": 2,
+          "unknownUsage": 1,
+          "inputTokens": 29921,
+          "outputTokens": 388,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 1
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      }
+    ],
+    "configMismatchCells": [
+      {
+        "cellId": "T11-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T11-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T11-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T12-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T12-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T12-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T13-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T13-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T13-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T14-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T14-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T14-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T15-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T15-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T15-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T16-s1-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T16-s2-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T16-s2-E1-r2",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      }
+    ],
+    "configMismatchByKey": {
+      "rationaleHintTokens": 18
+    },
+    "byArm": {
+      "B0": {
+        "planned": 18,
+        "valid": 7,
+        "passed": 4,
+        "unresolved": 1,
+        "neverStarted": 10,
+        "costValid": 6,
+        "costInvalid": 1,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "configMismatchCells": 0
+      },
+      "E0": {
+        "planned": 18,
+        "valid": 7,
+        "passed": 1,
+        "unresolved": 0,
+        "neverStarted": 11,
+        "costValid": 7,
+        "costInvalid": 0,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "configMismatchCells": 0
+      },
+      "E1": {
+        "planned": 18,
+        "valid": 9,
+        "passed": 5,
+        "unresolved": 0,
+        "neverStarted": 9,
+        "costValid": 7,
+        "costInvalid": 2,
+        "cellsWithCommit": 9,
+        "cellsWithDelivery": 9,
+        "configMismatchCells": 18
+      }
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 4,
+      "T14": 9,
+      "T15": 9,
+      "T16": 9
+    },
+    "cells": {
+      "valid": 23,
+      "unresolved": 1,
+      "never-started": 30
+    },
+    "missingCellIds": [
+      "T13-s2-B0-r1",
+      "T13-s2-B0-r2",
+      "T13-s2-E0-r1",
+      "T13-s2-E0-r2",
+      "T14-s1-B0-r2",
+      "T14-s1-E0-r2",
+      "T14-s1-E1-r2",
+      "T14-s2-E0-r1",
+      "T14-s2-E0-r2",
+      "T14-s2-E1-r1",
+      "T14-s2-E1-r2",
+      "T14-s2-B0-r1",
+      "T14-s2-B0-r2",
+      "T15-s1-E1-r2",
+      "T15-s1-B0-r2",
+      "T15-s1-E0-r2",
+      "T15-s2-B0-r1",
+      "T15-s2-B0-r2",
+      "T15-s2-E0-r1",
+      "T15-s2-E0-r2",
+      "T15-s2-E1-r1",
+      "T15-s2-E1-r2",
+      "T16-s1-E0-r2",
+      "T16-s1-E1-r2",
+      "T16-s1-B0-r2",
+      "T16-s2-E1-r1",
+      "T16-s2-E1-r2",
+      "T16-s2-B0-r1",
+      "T16-s2-B0-r2",
+      "T16-s2-E0-r1",
+      "T16-s2-E0-r2"
+    ],
+    "note": "A transport-failed attempt is not an arm outcome. A cell is valid only when at least one attempt produced a readable checker result; cost validity is a separate axis."
+  },
+  "pilot": {
+    "campaign": "e2e-r2-pilot-1",
+    "planned": 18,
+    "valid": 18,
+    "unresolved": 0,
+    "neverStarted": 0,
+    "noValidOutcome": 0,
+    "uniqueCellsStarted": 18,
+    "attempts": 18,
+    "unplannedAttempts": [],
+    "validAttempts": 18,
+    "transportFailedAttempts": 0,
+    "runnerErrorAttempts": 0,
+    "costInvalidCells": [
+      {
+        "cellId": "T15-s1-B0-r1",
+        "usage": {
+          "requests": 14,
+          "unknownUsage": 2,
+          "inputTokens": 178205,
+          "outputTokens": 7996,
+          "cacheReadTokens": 60800,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 8
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T16-s1-E0-r1",
+        "usage": {
+          "requests": 11,
+          "unknownUsage": 1,
+          "inputTokens": 238246,
+          "outputTokens": 2385,
+          "cacheReadTokens": 4352,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 0
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T16-s1-B0-r1",
+        "usage": {
+          "requests": 15,
+          "unknownUsage": 2,
+          "inputTokens": 246291,
+          "outputTokens": 10379,
+          "cacheReadTokens": 384,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 9
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      }
+    ],
+    "configMismatchCells": [
+      {
+        "cellId": "T11-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T12-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T13-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T14-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T15-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T16-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      }
+    ],
+    "configMismatchByKey": {
+      "rationaleHintTokens": 6
+    },
+    "byArm": {
+      "B0": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 5,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 4,
+        "costInvalid": 2,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 0
+      },
+      "E0": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 2,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 5,
+        "costInvalid": 1,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 0
+      },
+      "E1": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 6,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 6,
+        "costInvalid": 0,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 6
+      }
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 0,
+      "T14": 0,
+      "T15": 0,
+      "T16": 0
+    },
+    "cells": {
+      "valid": 18,
+      "unresolved": 0,
+      "never-started": 0
+    },
+    "missingCellIds": [],
+    "note": "A transport-failed attempt is not an arm outcome. A cell is valid only when at least one attempt produced a readable checker result; cost validity is a separate axis."
+  },
+  "keyFindings": {
+    "confirm": {
+      "planned": 54,
+      "valid": 23,
+      "unresolved": 1,
+      "neverStarted": 30,
+      "noValidOutcome": 31,
+      "missingByTemplate": {
+        "T11": 0,
+        "T12": 0,
+        "T13": 4,
+        "T14": 9,
+        "T15": 9,
+        "T16": 9
+      },
+      "transportFailedAttempts": 2,
+      "uniqueCellsStarted": 24,
+      "costInvalidCells": 3,
+      "configMismatchCells": 18
+    },
+    "pilot": {
+      "planned": 18,
+      "valid": 18,
+      "unresolved": 0,
+      "neverStarted": 0,
+      "transportFailedAttempts": 0,
+      "costInvalidCells": 3,
+      "configMismatchCells": 6
+    },
+    "configMismatch": {
+      "key": "rationaleHintTokens",
+      "declared": 800,
+      "effective": 400,
+      "cells": 18,
+      "note": "eval/e2e/src/host.mjs did not forward rationaleHintTokens; E1 resolved the economy preset value 400. The manifest declared 800."
+    }
+  },
+  "note": "Pilot and confirm use different instance sets and are not pooled. Counts are derived from immutable manifests/results/reports."
+}

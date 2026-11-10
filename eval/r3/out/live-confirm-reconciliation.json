@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP1",
+  "generatedAt": "2026-11-10T16:38:09.497Z",
+  "campaign": "e2e-r2-confirm-merged",
+  "status": "partial",
+  "immutableInputs": [
+    {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+      "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d"
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-1.json",
+      "sha256": "596103a0ff342b173e60f4abdfda965bf1f784ad8a6ec452e8f80b27bef55a1a"
+    },
+    {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-resume-1.json",
+      "sha256": "a7d55f61032e96ce8363752c28c08cb8b15ffc56301615882ca7c2f1c7c1a5f5"
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-resume-1.json",
+      "sha256": "7e3a94873ee814ff1ff066a98bcb8543fc14929ad6f9cb0608fe54cfeae3ca42"
+    },
+    {
+      "path": "eval/r2/out/live-route-incident.json",
+      "sha256": "50cf319edbd215e54c48dc6bb38700801c83571832292f387c9902481509dd0d"
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-merged.json",
+      "sha256": "52b5275cd00e0c53db6c5ad00ca9f3d1202cafb065f71b1c7b3060c0955c3a98"
+    }
+  ],
+  "observed": {
+    "oldIncident": {
+      "validCells": 23,
+      "invalidCells": 2,
+      "unexecutedCells": 29,
+      "attempts": [
+        {
+          "campaign": "e2e-r2-confirm-1",
+          "status": "partial",
+          "stopReason": "provider-usage-missing",
+          "planned": 54,
+          "executed": 21,
+          "used": {
+            "requests": 202,
+            "inputTokens": 2326959,
+            "outputTokens": 63561,
+            "wallClockMs": 1018707
+          },
+          "transportFailures": [
+            {
+              "cellId": "T13-s1-B0-r2",
+              "failures": [
+                {
+                  "index": 0,
+                  "purpose": "summary",
+                  "code": "LIVE_TRANSPORT",
+                  "message": "fetch failed (ECONNRESET)"
+                },
+                {
+                  "index": 1,
+                  "purpose": "primary",
+                  "code": "LIVE_TRANSPORT",
+                  "message": "fetch failed (UND_ERR_SOCKET)"
+                }
+              ]
+            }
+          ],
+          "valid": 20
+        },
+        {
+          "campaign": "e2e-r2-confirm-resume-1",
+          "status": "partial",
+          "stopReason": "provider-usage-missing",
+          "planned": 34,
+          "executed": 4,
+          "used": {
+            "requests": 15,
+            "inputTokens": 168693,
+            "outputTokens": 4628,
+            "wallClockMs": 60734
+          },
+          "transportFailures": [
+            {
+              "cellId": "T13-s2-B0-r1",
+              "failures": [
+                {
+                  "index": 0,
+                  "purpose": "summary",
+                  "code": "LIVE_TRANSPORT",
+                  "message": "fetch failed (ECONNRESET)"
+                },
+                {
+                  "index": 1,
+                  "purpose": "primary",
+                  "code": "LIVE_TRANSPORT",
+                  "message": "fetch failed (ECONNRESET)"
+                }
+              ]
+            }
+          ],
+          "valid": 3
+        }
+      ]
+    },
+    "oldMerged": {
+      "executed": 23,
+      "planned": 54,
+      "uniqueCellIds": 23,
+      "status": "partial",
+      "stopReason": "provider-transport-instability"
+    }
+  },
+  "corrected": {
+    "planned": 54,
+    "valid": 23,
+    "unresolved": 1,
+    "neverStarted": 30,
+    "noValidOutcome": 31,
+    "uniqueCellsStarted": 24,
+    "attempts": 25,
+    "validAttempts": 23,
+    "transportFailedAttempts": 2,
+    "byArm": {
+      "B0": {
+        "planned": 18,
+        "valid": 7,
+        "passed": 4,
+        "unresolved": 1,
+        "neverStarted": 10,
+        "costValid": 6,
+        "costInvalid": 1,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "configMismatchCells": 0
+      },
+      "E0": {
+        "planned": 18,
+        "valid": 7,
+        "passed": 1,
+        "unresolved": 0,
+        "neverStarted": 11,
+        "costValid": 7,
+        "costInvalid": 0,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "configMismatchCells": 0
+      },
+      "E1": {
+        "planned": 18,
+        "valid": 9,
+        "passed": 5,
+        "unresolved": 0,
+        "neverStarted": 9,
+        "costValid": 7,
+        "costInvalid": 2,
+        "cellsWithCommit": 9,
+        "cellsWithDelivery": 9,
+        "configMismatchCells": 18
+      }
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 4,
+      "T14": 9,
+      "T15": 9,
+      "T16": 9
+    },
+    "costInvalidCells": [
+      {
+        "cellId": "T12-s2-B0-r1",
+        "usage": {
+          "requests": 14,
+          "unknownUsage": 2,
+          "inputTokens": 162689,
+          "outputTokens": 6876,
+          "cacheReadTokens": 75904,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 8
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T13-s1-E1-r2",
+        "usage": {
+          "requests": 9,
+          "unknownUsage": 3,
+          "inputTokens": 114293,
+          "outputTokens": 1911,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 4
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T13-s2-E1-r2",
+        "usage": {
+          "requests": 2,
+          "unknownUsage": 1,
+          "inputTokens": 29921,
+          "outputTokens": 388,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 1
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      }
+    ],
+    "configMismatch": {
+      "key": "rationaleHintTokens",
+      "declared": 800,
+      "effective": 400,
+      "cells": 18,
+      "note": "eval/e2e/src/host.mjs did not forward rationaleHintTokens; E1 resolved the economy preset value 400. The manifest declared 800."
+    }
+  },
+  "corrects": [
+    {
+      "artifact": "eval/r2/out/live-route-incident.json",
+      "field": "invalidCells",
+      "old": 2,
+      "new": 1,
+      "reason": "T13-s1-B0-r2 was transport-failed and then successfully retried on the resume. The failed attempt is not a distinct unresolved cell; only T13-s2-B0-r1 is unresolved."
+    },
+    {
+      "artifact": "eval/r2/out/live-route-incident.json",
+      "field": "unexecutedCells",
+      "old": 29,
+      "new": 30,
+      "reason": "Subtracting both excluded attempts double-counted T13-s1-B0-r2, which is valid in the merged results. The correct never-started count is 30."
+    },
+    {
+      "artifact": "eval/e2e/out/results-e2e-r2-confirm-merged.json",
+      "field": "executed",
+      "old": 23,
+      "new": 23,
+      "reason": "The old field counted valid cells, not started cells. 24 unique cells were started and 25 attempts were executed; 23 cells are valid."
+    }
+  ],
+  "specificCells": {
+    "T13-s1-B0-r2": {
+      "status": "valid",
+      "attempts": [
+        "e2e-r2-confirm-1:T13-s1-B0-r2",
+        "e2e-r2-confirm-resume-1:T13-s1-B0-r2"
+      ],
+      "validAttempts": [
+        "e2e-r2-confirm-resume-1:T13-s1-B0-r2"
+      ],
+      "transportFailedAttempts": [
+        "e2e-r2-confirm-1:T13-s1-B0-r2"
+      ]
+    },
+    "T13-s2-B0-r1": {
+      "status": "unresolved",
+      "attempts": [
+        "e2e-r2-confirm-resume-1:T13-s2-B0-r1"
+      ],
+      "validAttempts": [],
+      "transportFailedAttempts": [
+        "e2e-r2-confirm-resume-1:T13-s2-B0-r1"
+      ]
+    }
+  },
+  "note": "The old artifacts are immutable. This file is the R3 correction and must be cited instead of re-deriving counts from the old incident."
+}

@@ -8,6 +8,17 @@
  * incident. The result is explicitly PARTIAL: it is not a 54-cell confirm and
  * must not be reported as one.
  *
+ * ## Superseded count (EF-R3)
+ *
+ * The original `unexecutedCells` formula subtracted `excluded.length`, but an
+ * excluded ATTEMPT and an unresolved CELL are different objects. `T13-s1-B0-r2`
+ * failed once and then succeeded on the resume, so it is in both `byCell` and
+ * `excluded`; subtracting both counted it twice. The corrected arithmetic is
+ * `54 - valid - unresolvedCells`, where `unresolvedCells` contains only excluded
+ * cells that never produced a valid result. The historical artifact is
+ * immutable; the authoritative correction is
+ * `eval/r3/out/live-confirm-reconciliation.json`.
+ *
  *   node eval/r2/merge-confirm.mjs
  *
  * @module eval/r2/merge-confirm
@@ -121,6 +132,13 @@ const merged = {
 const mergedPath = join(E2E_OUT, 'results-e2e-r2-confirm-merged.json')
 writeFileSync(mergedPath, `${JSON.stringify(merged, null, 2)}\n`, 'utf8')
 
+// An excluded attempt is not an unresolved cell. Only an excluded cell that
+// never produced a valid result belongs in the unresolved count.
+const unresolvedCellIds = new Set(
+  excluded.filter(entry => !byCell.has(entry.cellId)).map(entry => entry.cellId),
+)
+const unexecutedCells = 54 - byCell.size - unresolvedCellIds.size
+
 const incidentDoc = {
   schemaVersion: 1,
   work: 'EF-R2 live',
@@ -128,8 +146,10 @@ const incidentDoc = {
   campaign: 'e2e-r2-confirm-merged',
   planned: 54,
   validCells: byCell.size,
-  invalidCells: excluded.length,
-  unexecutedCells: 54 - byCell.size - excluded.length,
+  invalidCells: unresolvedCellIds.size,
+  unresolvedCells: [...unresolvedCellIds],
+  unexecutedCells,
+  noValidOutcomeCells: 54 - byCell.size,
   attempts: incident,
   excluded,
   route: merged.route,

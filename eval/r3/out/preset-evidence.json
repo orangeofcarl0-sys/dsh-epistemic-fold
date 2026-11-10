@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP6",
+  "generatedAt": "2026-11-10T16:38:15.045Z",
+  "tiers": [
+    {
+      "name": "economy",
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 400,
+        "framingMode": "system-dedup"
+      },
+      "summary": "Lowest cost; the current rationale-bearing tier is not yet measured",
+      "evidence": "hypothesis",
+      "evidenceProfile": "rc1.3-zero-llm-economy (semanticMode: none)",
+      "evidenceDetail": "No live measurement of this effective configuration. RC1.3 measured the explicit zero-LLM profile (semanticMode: none) at parity with Basic; the current tier adds a rationale call and system-dedup framing, so that result does not transfer. The mechanism is supported; the end-to-end quality and cost of this tier are not measured.",
+      "current": {
+        "semanticMode": "rationale",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 400,
+        "retainRatio": 0.16,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics"
+      },
+      "claimAppliesToCurrent": false,
+      "finding": "no measurement of the current effective config"
+    },
+    {
+      "name": "balanced",
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 800,
+        "framingMode": "system-dedup",
+        "retainRatio": 0.24
+      },
+      "summary": "A small premium for a larger verbatim tail",
+      "evidence": "hypothesis",
+      "evidenceProfile": null,
+      "evidenceDetail": "No live measurement. The mechanism is supported by the engine (retention is a tested policy key) but the END-TO-END steadiness benefit is unmeasured. RC2.1 ran the one critical A/B for it — economy vs balanced, retention isolated — and reports the result.",
+      "current": {
+        "semanticMode": "rationale",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 800,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics"
+      },
+      "claimAppliesToCurrent": false,
+      "finding": "no measurement of the current effective config"
+    },
+    {
+      "name": "quality",
+      "values": {
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "semanticMode": "rationale",
+        "rationaleHintTokens": 1600,
+        "framingMode": "system-dedup",
+        "retainRatio": 0.24
+      },
+      "summary": "A larger premium for a larger tail AND narrative checkpoints",
+      "evidence": "hypothesis",
+      "evidenceProfile": null,
+      "evidenceDetail": "No live measurement. Composed of two supported capabilities; neither the combined nor the individual steadiness benefit has been measured, and the rationale half carries an auxiliary call per fold plus the retention cost on every request.",
+      "current": {
+        "semanticMode": "rationale",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 1600,
+        "retainRatio": 0.24,
+        "leafAdmission": "economic",
+        "rootPolicy": "economics"
+      },
+      "claimAppliesToCurrent": false,
+      "finding": "no measurement of the current effective config"
+    }
+  ],
+  "counts": {
+    "measured": 0,
+    "hypothesis": 3,
+    "measuredButNotApplicable": 0
+  },
+  "note": "RC1.3 measured semanticMode: none. The current economy tier is rationale-bearing, so it is a hypothesis. No tier value changed."
+}

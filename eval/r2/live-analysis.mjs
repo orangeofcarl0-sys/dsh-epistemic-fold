@@ -35,9 +35,37 @@ const value = (name, fallback) => {
 }
 const campaign = value('campaign', 'e2e-r2-pilot-1')
 const outName = value('out', campaign === 'e2e-r2-pilot-1' ? 'live-pilot-analysis' : 'live-confirm-analysis')
+const ledgerPath = value('ledger', null)
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex')
+
+// EF-R3: an optional corrected-denominator view. This reads the Attempt/Unique
+// Cell ledger instead of re-deriving counts from the historical merged results.
+// The default path below is unchanged, so the R2 artifacts stay reproducible.
+if (ledgerPath !== null) {
+  const ledger = readJson(ledgerPath)
+  const section = campaign.startsWith('e2e-r2-pilot') ? ledger.pilot : ledger.confirm
+  if (section === undefined) {
+    process.stderr.write(`live-analysis: ${campaign} is not in ${ledgerPath}\n`)
+    process.exit(2)
+  }
+  const output = {
+    schemaVersion: 1,
+    work: 'EF-R3',
+    generatedAt: new Date().toISOString(),
+    campaign,
+    source: 'ledger',
+    ledger: { path: ledgerPath, sha256: sha256(ledgerPath) },
+    summary: section.summary,
+    cells: section.cells,
+    note: 'Corrected denominator view. Transport-failed attempts are not arm outcomes; cost validity is separate from task outcome.',
+  }
+  mkdirSync(OUT, { recursive: true })
+  writeFileSync(join(OUT, `${outName}-ledger.json`), `${JSON.stringify(output, null, 2)}\n`, 'utf8')
+  process.stdout.write(`${campaign} (ledger): ${section.summary.valid}/${section.summary.planned} valid, ${section.summary.unresolved} unresolved, ${section.summary.neverStarted} never-started, ${section.summary.noValidOutcome} no-valid-outcome\n`)
+  process.exit(0)
+}
 
 const resultsPath = join(E2E_OUT, `results-${campaign}.json`)
 const analysisPath = join(E2E_OUT, `analysis-${campaign}.json`)

@@ -92,7 +92,7 @@ if (bundlePath === undefined || !existsSync(bundlePath)) {
 
 const report = {
   schemaVersion: 1,
-  work: 'EF-R1 WP0',
+  work: pointer.work ?? 'research-archive',
   generatedAt: new Date().toISOString(),
   archive: ARCHIVE.replace(/\\/gu, '/'),
   pointer: POINTER.replace(/\\/gu, '/'),

@@ -1,0 +1,5951 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP5",
+  "generatedAt": "2026-11-10T16:38:14.774Z",
+  "source": {
+    "cellLedger": {
+      "path": "eval/r3/out/cell-ledger.json",
+      "sha256": null
+    },
+    "spanEconomics": {
+      "path": "eval/r3/out/span-economics.json"
+    },
+    "note": "Pilot and confirm are separate instance sets and are not pooled. A checker pass is not a complete cost ledger."
+  },
+  "pilot": {
+    "name": "e2e-r2-pilot-1",
+    "status": null,
+    "planned": 18,
+    "valid": 18,
+    "unresolved": 0,
+    "neverStarted": 0,
+    "noValidOutcome": 0,
+    "attempts": 18,
+    "transportFailedAttempts": 0,
+    "byArm": {
+      "B0": {
+        "cells": 6,
+        "passed": 5,
+        "rate": 0.833,
+        "taskOutcomeValid": 6,
+        "treatmentValid": 6,
+        "costValid": 4,
+        "costInvalid": 2,
+        "attempts": 43,
+        "committed": 20,
+        "refused": 15,
+        "aborted": 8,
+        "unverifiable": 0,
+        "delivered": 16,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "cellsWithoutCommit": 0,
+        "requests": 77,
+        "inputTokens": 916786,
+        "cacheReadTokens": 66816,
+        "cacheWriteTokens": 0,
+        "outputTokens": 39463,
+        "auxiliaryRequests": 43,
+        "unknownUsage": 4,
+        "failedCallInput": 117536,
+        "failedCallOutput": 16237,
+        "durationMs": {
+          "median": 78780,
+          "max": 110581
+        },
+        "terminationKinds": {
+          "finish": 6
+        },
+        "checksPassed": 8,
+        "checksTotal": 9,
+        "claimedSuccess": 1,
+        "falseVerification": 0,
+        "cellsWithFinalFiles": 6,
+        "cellsWithStageB": 1,
+        "inputPerPass": 183357,
+        "costValidAggregate": {
+          "cells": 4,
+          "passed": 4,
+          "requests": 48,
+          "inputTokens": 492290,
+          "cacheReadTokens": 5632,
+          "cacheWriteTokens": 0,
+          "outputTokens": 21088,
+          "auxiliaryRequests": 26,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": [
+          {
+            "cellId": "T15-s1-B0-r1",
+            "requests": 14,
+            "unknownUsage": 2,
+            "reasons": [
+              "partial-usage"
+            ]
+          },
+          {
+            "cellId": "T16-s1-B0-r1",
+            "requests": 15,
+            "unknownUsage": 2,
+            "reasons": [
+              "partial-usage"
+            ]
+          }
+        ]
+      },
+      "E0": {
+        "cells": 6,
+        "passed": 2,
+        "rate": 0.333,
+        "taskOutcomeValid": 6,
+        "treatmentValid": 6,
+        "costValid": 5,
+        "costInvalid": 1,
+        "attempts": 25,
+        "committed": 24,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 23,
+        "noFollowingRequest": 1,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "cellsWithoutCommit": 0,
+        "requests": 49,
+        "inputTokens": 736288,
+        "cacheReadTokens": 54912,
+        "cacheWriteTokens": 0,
+        "outputTokens": 8875,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 1,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "durationMs": {
+          "median": 36024,
+          "max": 73262
+        },
+        "terminationKinds": {
+          "finish": 2,
+          "step-limit": 4
+        },
+        "checksPassed": 5,
+        "checksTotal": 9,
+        "claimedSuccess": 1,
+        "falseVerification": 1,
+        "cellsWithFinalFiles": 6,
+        "cellsWithStageB": 1,
+        "inputPerPass": 368144,
+        "costValidAggregate": {
+          "cells": 5,
+          "passed": 2,
+          "requests": 38,
+          "inputTokens": 498042,
+          "cacheReadTokens": 50560,
+          "cacheWriteTokens": 0,
+          "outputTokens": 6490,
+          "auxiliaryRequests": 0,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": [
+          {
+            "cellId": "T16-s1-E0-r1",
+            "requests": 11,
+            "unknownUsage": 1,
+            "reasons": [
+              "partial-usage"
+            ]
+          }
+        ]
+      },
+      "E1": {
+        "cells": 6,
+        "passed": 6,
+        "rate": 1,
+        "taskOutcomeValid": 6,
+        "treatmentValid": 6,
+        "costValid": 6,
+        "costInvalid": 0,
+        "attempts": 9,
+        "committed": 9,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 9,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "cellsWithoutCommit": 0,
+        "requests": 47,
+        "inputTokens": 711836,
+        "cacheReadTokens": 110720,
+        "cacheWriteTokens": 0,
+        "outputTokens": 13886,
+        "auxiliaryRequests": 9,
+        "unknownUsage": 0,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "durationMs": {
+          "median": 39903,
+          "max": 62044
+        },
+        "terminationKinds": {
+          "step-limit": 1,
+          "finish": 5
+        },
+        "checksPassed": 9,
+        "checksTotal": 9,
+        "claimedSuccess": 2,
+        "falseVerification": 0,
+        "cellsWithFinalFiles": 6,
+        "cellsWithStageB": 1,
+        "inputPerPass": 118639,
+        "costValidAggregate": {
+          "cells": 6,
+          "passed": 6,
+          "requests": 47,
+          "inputTokens": 711836,
+          "cacheReadTokens": 110720,
+          "cacheWriteTokens": 0,
+          "outputTokens": 13886,
+          "auxiliaryRequests": 9,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": []
+      }
+    },
+    "comparisons": [
+      {
+        "left": "E1",
+        "right": "B0",
+        "pairs": 6,
+        "both": 5,
+        "neither": 0,
+        "leftOnly": 1,
+        "rightOnly": 0,
+        "mcnemarP": 1,
+        "recorded": {
+          "pairs": 6,
+          "pass": 1,
+          "requests": -30,
+          "inputTokens": -204950,
+          "cacheReadTokens": 43904,
+          "cacheWriteTokens": 0,
+          "outputTokens": -25577
+        },
+        "costValid": {
+          "pairs": 4,
+          "pass": 0,
+          "requests": -17,
+          "inputTokens": -85646,
+          "cacheReadTokens": 60544,
+          "cacheWriteTokens": 0,
+          "outputTokens": -12935
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r1",
+            "left": "T11-s1-E1-r1",
+            "right": "T11-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -2,
+              "inputTokens": 16346,
+              "cacheReadTokens": 16512,
+              "cacheWriteTokens": 0,
+              "outputTokens": -701
+            }
+          },
+          {
+            "key": "T12-s1-r1",
+            "left": "T12-s1-E1-r1",
+            "right": "T12-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -6,
+              "inputTokens": -2611,
+              "cacheReadTokens": -1536,
+              "cacheWriteTokens": 0,
+              "outputTokens": -2767
+            }
+          },
+          {
+            "key": "T13-s1-r1",
+            "left": "T13-s1-E1-r1",
+            "right": "T13-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -5,
+              "inputTokens": -20418,
+              "cacheReadTokens": 25344,
+              "cacheWriteTokens": 0,
+              "outputTokens": -4507
+            }
+          },
+          {
+            "key": "T14-s1-r1",
+            "left": "T14-s1-E1-r1",
+            "right": "T14-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -4,
+              "inputTokens": -78963,
+              "cacheReadTokens": 20224,
+              "cacheWriteTokens": 0,
+              "outputTokens": -4960
+            }
+          },
+          {
+            "key": "T15-s1-r1",
+            "left": "T15-s1-E1-r1",
+            "right": "T15-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": 1,
+              "requests": -6,
+              "inputTokens": -49815,
+              "cacheReadTokens": -40064,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5270
+            }
+          },
+          {
+            "key": "T16-s1-r1",
+            "left": "T16-s1-E1-r1",
+            "right": "T16-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": 0,
+              "requests": -7,
+              "inputTokens": -69489,
+              "cacheReadTokens": 23424,
+              "cacheWriteTokens": 0,
+              "outputTokens": -7372
+            }
+          }
+        ]
+      },
+      {
+        "left": "E1",
+        "right": "E0",
+        "pairs": 6,
+        "both": 2,
+        "neither": 0,
+        "leftOnly": 4,
+        "rightOnly": 0,
+        "mcnemarP": 0.125,
+        "recorded": {
+          "pairs": 6,
+          "pass": 4,
+          "requests": -2,
+          "inputTokens": -24452,
+          "cacheReadTokens": 55808,
+          "cacheWriteTokens": 0,
+          "outputTokens": 5011
+        },
+        "costValid": {
+          "pairs": 5,
+          "pass": 3,
+          "requests": 1,
+          "inputTokens": 36992,
+          "cacheReadTokens": 36352,
+          "cacheWriteTokens": 0,
+          "outputTokens": 4389
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r1",
+            "left": "T11-s1-E1-r1",
+            "right": "T11-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": 3,
+              "inputTokens": 77097,
+              "cacheReadTokens": 16512,
+              "cacheWriteTokens": 0,
+              "outputTokens": 2692
+            }
+          },
+          {
+            "key": "T12-s1-r1",
+            "left": "T12-s1-E1-r1",
+            "right": "T12-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": -2,
+              "inputTokens": 3059,
+              "cacheReadTokens": -2816,
+              "cacheWriteTokens": 0,
+              "outputTokens": -209
+            }
+          },
+          {
+            "key": "T13-s1-r1",
+            "left": "T13-s1-E1-r1",
+            "right": "T13-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -2,
+              "inputTokens": -129721,
+              "cacheReadTokens": 23040,
+              "cacheWriteTokens": 0,
+              "outputTokens": -112
+            }
+          },
+          {
+            "key": "T14-s1-r1",
+            "left": "T14-s1-E1-r1",
+            "right": "T14-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": 2,
+              "inputTokens": 79299,
+              "cacheReadTokens": 12288,
+              "cacheWriteTokens": 0,
+              "outputTokens": 1503
+            }
+          },
+          {
+            "key": "T15-s1-r1",
+            "left": "T15-s1-E1-r1",
+            "right": "T15-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": 0,
+              "inputTokens": 7258,
+              "cacheReadTokens": -12672,
+              "cacheWriteTokens": 0,
+              "outputTokens": 515
+            }
+          },
+          {
+            "key": "T16-s1-r1",
+            "left": "T16-s1-E1-r1",
+            "right": "T16-s1-E0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": 1,
+              "requests": -3,
+              "inputTokens": -61444,
+              "cacheReadTokens": 19456,
+              "cacheWriteTokens": 0,
+              "outputTokens": 622
+            }
+          }
+        ]
+      },
+      {
+        "left": "E0",
+        "right": "B0",
+        "pairs": 6,
+        "both": 2,
+        "neither": 1,
+        "leftOnly": 0,
+        "rightOnly": 3,
+        "mcnemarP": 0.25,
+        "recorded": {
+          "pairs": 6,
+          "pass": -3,
+          "requests": -28,
+          "inputTokens": -180498,
+          "cacheReadTokens": -11904,
+          "cacheWriteTokens": 0,
+          "outputTokens": -30588
+        },
+        "costValid": {
+          "pairs": 4,
+          "pass": -2,
+          "requests": -18,
+          "inputTokens": -115380,
+          "cacheReadTokens": 11520,
+          "cacheWriteTokens": 0,
+          "outputTokens": -16809
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r1",
+            "left": "T11-s1-E0-r1",
+            "right": "T11-s1-B0-r1",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": -1,
+              "requests": -5,
+              "inputTokens": -60751,
+              "cacheReadTokens": 0,
+              "cacheWriteTokens": 0,
+              "outputTokens": -3393
+            }
+          },
+          {
+            "key": "T12-s1-r1",
+            "left": "T12-s1-E0-r1",
+            "right": "T12-s1-B0-r1",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": -1,
+              "requests": -4,
+              "inputTokens": -5670,
+              "cacheReadTokens": 1280,
+              "cacheWriteTokens": 0,
+              "outputTokens": -2558
+            }
+          },
+          {
+            "key": "T13-s1-r1",
+            "left": "T13-s1-E0-r1",
+            "right": "T13-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -3,
+              "inputTokens": 109303,
+              "cacheReadTokens": 2304,
+              "cacheWriteTokens": 0,
+              "outputTokens": -4395
+            }
+          },
+          {
+            "key": "T14-s1-r1",
+            "left": "T14-s1-E0-r1",
+            "right": "T14-s1-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -6,
+              "inputTokens": -158262,
+              "cacheReadTokens": 7936,
+              "cacheWriteTokens": 0,
+              "outputTokens": -6463
+            }
+          },
+          {
+            "key": "T15-s1-r1",
+            "left": "T15-s1-E0-r1",
+            "right": "T15-s1-B0-r1",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": 0,
+              "requests": -6,
+              "inputTokens": -57073,
+              "cacheReadTokens": -27392,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5785
+            }
+          },
+          {
+            "key": "T16-s1-r1",
+            "left": "T16-s1-E0-r1",
+            "right": "T16-s1-B0-r1",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": false,
+            "rightCostValid": false,
+            "delta": {
+              "pass": -1,
+              "requests": -4,
+              "inputTokens": -8045,
+              "cacheReadTokens": 3968,
+              "cacheWriteTokens": 0,
+              "outputTokens": -7994
+            }
+          }
+        ]
+      }
+    ],
+    "byTemplate": {
+      "T11": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        }
+      },
+      "T12": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 4,
+          "delivered": 4,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 1,
+          "delivered": 1,
+          "costValid": 1
+        }
+      },
+      "T13": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 4,
+          "delivered": 4,
+          "costValid": 1
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 4,
+          "delivered": 4,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 1,
+          "delivered": 1,
+          "costValid": 1
+        }
+      },
+      "T14": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 4,
+          "delivered": 3,
+          "costValid": 1
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        }
+      },
+      "T15": {
+        "B0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 3,
+          "delivered": 2,
+          "costValid": 0
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 6,
+          "delivered": 5,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 1,
+          "delivered": 1,
+          "costValid": 1
+        }
+      },
+      "T16": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 5,
+          "delivered": 3,
+          "costValid": 0
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 6,
+          "delivered": 6,
+          "costValid": 0
+        },
+        "E1": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        }
+      }
+    },
+    "eligibility": {
+      "valid": 18,
+      "costInvalid": 3,
+      "costInvalidCells": [
+        {
+          "cellId": "T15-s1-B0-r1",
+          "usage": {
+            "requests": 14,
+            "unknownUsage": 2,
+            "inputTokens": 178205,
+            "outputTokens": 7996,
+            "cacheReadTokens": 60800,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 8
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        },
+        {
+          "cellId": "T16-s1-E0-r1",
+          "usage": {
+            "requests": 11,
+            "unknownUsage": 1,
+            "inputTokens": 238246,
+            "outputTokens": 2385,
+            "cacheReadTokens": 4352,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 0
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        },
+        {
+          "cellId": "T16-s1-B0-r1",
+          "usage": {
+            "requests": 15,
+            "unknownUsage": 2,
+            "inputTokens": 246291,
+            "outputTokens": 10379,
+            "cacheReadTokens": 384,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 9
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        }
+      ],
+      "configMismatchByKey": {
+        "rationaleHintTokens": 6
+      },
+      "configMismatchCells": 6
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 0,
+      "T14": 0,
+      "T15": 0,
+      "T16": 0
+    },
+    "cells": [
+      {
+        "cellId": "T11-s1-B0-r1",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T11-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 12,
+        "inputTokens": 106710,
+        "outputTokens": 3921,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 5,
+        "unknownUsage": 0,
+        "attempts": 5,
+        "committed": 2,
+        "refused": 3,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 3689,
+        "failedCallOutput": 1660,
+        "termination": "finish",
+        "durationMs": 60178,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "result.json matches"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": false,
+        "toolCalls": 12,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T11-s1-E0-r1",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T11-s1-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 7,
+        "inputTokens": 45959,
+        "outputTokens": 528,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 22636,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":1}, expected {\"failed\":3}"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": true,
+        "toolCalls": 11,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T11-s1-E1-r1",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T11-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 10,
+        "inputTokens": 123056,
+        "outputTokens": 3220,
+        "cacheReadTokens": 16512,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 62044,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "result.json matches"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 12,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s1-E1-r1",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T12-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 6,
+        "inputTokens": 113797,
+        "outputTokens": 1447,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 22535,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 7,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s1-B0-r1",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T12-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 12,
+        "inputTokens": 116408,
+        "outputTokens": 4214,
+        "cacheReadTokens": 1536,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7,
+        "unknownUsage": 0,
+        "attempts": 7,
+        "committed": 2,
+        "refused": 5,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 5863,
+        "failedCallOutput": 2445,
+        "termination": "finish",
+        "durationMs": 60471,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 7,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s1-E0-r1",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T12-s1-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 110738,
+        "outputTokens": 1656,
+        "cacheReadTokens": 2816,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 5,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 4,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 73262,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 12,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T13-s1-E0-r1",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T13-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 197765,
+        "outputTokens": 1340,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 4,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 4,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 33190,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 13,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T13-s1-E1-r1",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T13-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 6,
+        "inputTokens": 68044,
+        "outputTokens": 1228,
+        "cacheReadTokens": 27264,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 27488,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 6,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T13-s1-B0-r1",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T13-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 11,
+        "inputTokens": 88462,
+        "outputTokens": 5735,
+        "cacheReadTokens": 1920,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7,
+        "unknownUsage": 0,
+        "attempts": 7,
+        "committed": 4,
+        "refused": 3,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 4,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 5063,
+        "failedCallOutput": 2367,
+        "termination": "finish",
+        "durationMs": 69128,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 5,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T14-s1-B0-r1",
+        "task": "T14-s1",
+        "template": "T14",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T14-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 13,
+        "inputTokens": 180710,
+        "outputTokens": 7218,
+        "cacheReadTokens": 2176,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7,
+        "unknownUsage": 0,
+        "attempts": 7,
+        "committed": 4,
+        "refused": 1,
+        "aborted": 2,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 33549,
+        "failedCallOutput": 2846,
+        "termination": "finish",
+        "durationMs": 88431,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/limit.js contains the required text"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "file_contains",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 11,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/limit.js",
+          "test/limit.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T14-s1-E0-r1",
+        "task": "T14-s1",
+        "template": "T14",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T14-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 7,
+        "inputTokens": 22448,
+        "outputTokens": 755,
+        "cacheReadTokens": 10112,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 17446,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/limit.js contains the required text"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "file_contains",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 13,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/limit.js",
+          "test/limit.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T14-s1-E1-r1",
+        "task": "T14-s1",
+        "template": "T14",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T14-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 9,
+        "inputTokens": 101747,
+        "outputTokens": 2258,
+        "cacheReadTokens": 22400,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 36216,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/limit.js contains the required text"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "file_contains",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": false,
+        "toolCalls": 12,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/limit.js",
+          "test/limit.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T15-s1-E1-r1",
+        "task": "T15-s1",
+        "template": "T15",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T15-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 128390,
+        "outputTokens": 2726,
+        "cacheReadTokens": 20736,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 43590,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "effective.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": false,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T15-s1-B0-r1",
+        "task": "T15-s1",
+        "template": "T15",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T15-s1-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 14,
+        "inputTokens": 178205,
+        "outputTokens": 7996,
+        "cacheReadTokens": 60800,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 8,
+        "unknownUsage": 2,
+        "attempts": 8,
+        "committed": 3,
+        "refused": 2,
+        "aborted": 3,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 35280,
+        "failedCallOutput": 3955,
+        "termination": "finish",
+        "durationMs": 98763,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json = {\"as_of\":\"2026-10-15T00:00:00Z\",\"concurrency\":6}, expected {\"concurrency\":6}"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T15-s1-E0-r1",
+        "task": "T15-s1",
+        "template": "T15",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T15-s1-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 121132,
+        "outputTokens": 2211,
+        "cacheReadTokens": 33408,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 5,
+        "noFollowingRequest": 1,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 38857,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "effective.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 17,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T16-s1-E0-r1",
+        "task": "T16-s1",
+        "template": "T16",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T16-s1-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 11,
+        "inputTokens": 238246,
+        "outputTokens": 2385,
+        "cacheReadTokens": 4352,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 1,
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 6,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 51788,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "release.json is missing"
+            },
+            {
+              "kind": "compactions",
+              "pass": true,
+              "detail": "6 committed compaction transaction(s), required 2"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "compactions",
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 22,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": {
+          "firstCompactions": 5,
+          "firstCheckpointChars": 390,
+          "firstCheckpointMode": "leaf",
+          "idle": "idle"
+        },
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T16-s1-E1-r1",
+        "task": "T16-s1",
+        "template": "T16",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T16-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 176802,
+        "outputTokens": 3007,
+        "cacheReadTokens": 23808,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 60120,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "release.json matches"
+            },
+            {
+              "kind": "compactions",
+              "pass": true,
+              "detail": "2 committed compaction transaction(s), required 2"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "compactions",
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": {
+          "firstCompactions": 1,
+          "firstCheckpointChars": 1903,
+          "firstCheckpointMode": "leaf",
+          "idle": "idle"
+        },
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T16-s1-B0-r1",
+        "task": "T16-s1",
+        "template": "T16",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T16-s1-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 15,
+        "inputTokens": 246291,
+        "outputTokens": 10379,
+        "cacheReadTokens": 384,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 9,
+        "unknownUsage": 2,
+        "attempts": 9,
+        "committed": 5,
+        "refused": 1,
+        "aborted": 3,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 34092,
+        "failedCallOutput": 2964,
+        "termination": "finish",
+        "durationMs": 110581,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "release.json matches"
+            },
+            {
+              "kind": "compactions",
+              "pass": true,
+              "detail": "5 committed compaction transaction(s), required 2"
+            }
+          ]
+        },
+        "checksPassed": 2,
+        "checksTotal": 2,
+        "checkKinds": [
+          "compactions",
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": {
+          "firstCompactions": 1,
+          "firstCheckpointChars": 0,
+          "firstCheckpointMode": null,
+          "idle": "idle"
+        },
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-B0-r1\\report.json"
+      }
+    ]
+  },
+  "confirm": {
+    "name": "e2e-r2-confirm-merged",
+    "status": null,
+    "planned": 54,
+    "valid": 23,
+    "unresolved": 1,
+    "neverStarted": 30,
+    "noValidOutcome": 31,
+    "attempts": 25,
+    "transportFailedAttempts": 2,
+    "byArm": {
+      "B0": {
+        "cells": 7,
+        "passed": 4,
+        "rate": 0.571,
+        "taskOutcomeValid": 7,
+        "treatmentValid": 7,
+        "costValid": 6,
+        "costInvalid": 1,
+        "attempts": 44,
+        "committed": 18,
+        "refused": 22,
+        "aborted": 4,
+        "unverifiable": 0,
+        "delivered": 15,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "cellsWithoutCommit": 0,
+        "requests": 90,
+        "inputTokens": 708122,
+        "cacheReadTokens": 229248,
+        "cacheWriteTokens": 0,
+        "outputTokens": 37741,
+        "auxiliaryRequests": 44,
+        "unknownUsage": 2,
+        "failedCallInput": 89626,
+        "failedCallOutput": 16517,
+        "durationMs": {
+          "median": 70324,
+          "max": 115646
+        },
+        "terminationKinds": {
+          "finish": 7
+        },
+        "checksPassed": 7,
+        "checksTotal": 10,
+        "claimedSuccess": 4,
+        "falseVerification": 3,
+        "cellsWithFinalFiles": 7,
+        "cellsWithStageB": 0,
+        "inputPerPass": 177031,
+        "costValidAggregate": {
+          "cells": 6,
+          "passed": 3,
+          "requests": 76,
+          "inputTokens": 545433,
+          "cacheReadTokens": 153344,
+          "cacheWriteTokens": 0,
+          "outputTokens": 30865,
+          "auxiliaryRequests": 36,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": [
+          {
+            "cellId": "T12-s2-B0-r1",
+            "requests": 14,
+            "unknownUsage": 2,
+            "reasons": [
+              "partial-usage"
+            ]
+          }
+        ]
+      },
+      "E0": {
+        "cells": 7,
+        "passed": 1,
+        "rate": 0.143,
+        "taskOutcomeValid": 7,
+        "treatmentValid": 7,
+        "costValid": 7,
+        "costInvalid": 0,
+        "attempts": 36,
+        "committed": 33,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 3,
+        "delivered": 30,
+        "noFollowingRequest": 3,
+        "cellsWithCommit": 7,
+        "cellsWithDelivery": 7,
+        "cellsWithoutCommit": 0,
+        "requests": 55,
+        "inputTokens": 811541,
+        "cacheReadTokens": 46848,
+        "cacheWriteTokens": 0,
+        "outputTokens": 10074,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "durationMs": {
+          "median": 34530,
+          "max": 39314
+        },
+        "terminationKinds": {
+          "finish": 1,
+          "step-limit": 6
+        },
+        "checksPassed": 2,
+        "checksTotal": 10,
+        "claimedSuccess": 1,
+        "falseVerification": 1,
+        "cellsWithFinalFiles": 7,
+        "cellsWithStageB": 0,
+        "inputPerPass": 811541,
+        "costValidAggregate": {
+          "cells": 7,
+          "passed": 1,
+          "requests": 55,
+          "inputTokens": 811541,
+          "cacheReadTokens": 46848,
+          "cacheWriteTokens": 0,
+          "outputTokens": 10074,
+          "auxiliaryRequests": 0,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": []
+      },
+      "E1": {
+        "cells": 9,
+        "passed": 5,
+        "rate": 0.556,
+        "taskOutcomeValid": 9,
+        "treatmentValid": 9,
+        "costValid": 7,
+        "costInvalid": 2,
+        "attempts": 18,
+        "committed": 17,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 17,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": 9,
+        "cellsWithDelivery": 9,
+        "cellsWithoutCommit": 0,
+        "requests": 68,
+        "inputTokens": 975989,
+        "cacheReadTokens": 42752,
+        "cacheWriteTokens": 0,
+        "outputTokens": 20374,
+        "auxiliaryRequests": 18,
+        "unknownUsage": 4,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "durationMs": {
+          "median": 39066,
+          "max": 67070
+        },
+        "terminationKinds": {
+          "step-limit": 2,
+          "finish": 7
+        },
+        "checksPassed": 7,
+        "checksTotal": 12,
+        "claimedSuccess": 0,
+        "falseVerification": 1,
+        "cellsWithFinalFiles": 9,
+        "cellsWithStageB": 0,
+        "inputPerPass": 195198,
+        "costValidAggregate": {
+          "cells": 7,
+          "passed": 4,
+          "requests": 57,
+          "inputTokens": 831775,
+          "cacheReadTokens": 41344,
+          "cacheWriteTokens": 0,
+          "outputTokens": 18075,
+          "auxiliaryRequests": 13,
+          "unknownUsage": 0
+        },
+        "costInvalidCells": [
+          {
+            "cellId": "T13-s1-E1-r2",
+            "requests": 9,
+            "unknownUsage": 3,
+            "reasons": [
+              "partial-usage"
+            ]
+          },
+          {
+            "cellId": "T13-s2-E1-r2",
+            "requests": 2,
+            "unknownUsage": 1,
+            "reasons": [
+              "partial-usage"
+            ]
+          }
+        ]
+      }
+    },
+    "comparisons": [
+      {
+        "left": "E1",
+        "right": "B0",
+        "pairs": 7,
+        "both": 4,
+        "neither": 3,
+        "leftOnly": 0,
+        "rightOnly": 0,
+        "mcnemarP": 1,
+        "recorded": {
+          "pairs": 7,
+          "pass": 0,
+          "requests": -28,
+          "inputTokens": 169138,
+          "cacheReadTokens": -186496,
+          "cacheWriteTokens": 0,
+          "outputTokens": -18954
+        },
+        "costValid": {
+          "pairs": 5,
+          "pass": 0,
+          "requests": -24,
+          "inputTokens": 141527,
+          "cacheReadTokens": -112768,
+          "cacheWriteTokens": 0,
+          "outputTokens": -12552
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r2",
+            "left": "T11-s1-E1-r2",
+            "right": "T11-s1-B0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -1,
+              "inputTokens": 67163,
+              "cacheReadTokens": -1920,
+              "cacheWriteTokens": 0,
+              "outputTokens": -1730
+            }
+          },
+          {
+            "key": "T11-s2-r1",
+            "left": "T11-s2-E1-r1",
+            "right": "T11-s2-B0-r1",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -3,
+              "inputTokens": 4415,
+              "cacheReadTokens": -1664,
+              "cacheWriteTokens": 0,
+              "outputTokens": -2156
+            }
+          },
+          {
+            "key": "T11-s2-r2",
+            "left": "T11-s2-E1-r2",
+            "right": "T11-s2-B0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -4,
+              "inputTokens": 52351,
+              "cacheReadTokens": -33408,
+              "cacheWriteTokens": 0,
+              "outputTokens": -3357
+            }
+          },
+          {
+            "key": "T12-s1-r2",
+            "left": "T12-s1-E1-r2",
+            "right": "T12-s1-B0-r2",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -9,
+              "inputTokens": 38375,
+              "cacheReadTokens": -76672,
+              "cacheWriteTokens": 0,
+              "outputTokens": -3047
+            }
+          },
+          {
+            "key": "T12-s2-r1",
+            "left": "T12-s2-E1-r1",
+            "right": "T12-s2-B0-r1",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": 0,
+              "requests": -6,
+              "inputTokens": -16718,
+              "cacheReadTokens": -73216,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5272
+            }
+          },
+          {
+            "key": "T12-s2-r2",
+            "left": "T12-s2-E1-r2",
+            "right": "T12-s2-B0-r2",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -7,
+              "inputTokens": -20777,
+              "cacheReadTokens": 896,
+              "cacheWriteTokens": 0,
+              "outputTokens": -2262
+            }
+          },
+          {
+            "key": "T13-s1-r2",
+            "left": "T13-s1-E1-r2",
+            "right": "T13-s1-B0-r2",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": false,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": 2,
+              "inputTokens": 44329,
+              "cacheReadTokens": -512,
+              "cacheWriteTokens": 0,
+              "outputTokens": -1130
+            }
+          }
+        ]
+      },
+      {
+        "left": "E1",
+        "right": "E0",
+        "pairs": 7,
+        "both": 1,
+        "neither": 3,
+        "leftOnly": 3,
+        "rightOnly": 0,
+        "mcnemarP": 0.25,
+        "recorded": {
+          "pairs": 7,
+          "pass": 3,
+          "requests": 7,
+          "inputTokens": 65719,
+          "cacheReadTokens": -4096,
+          "cacheWriteTokens": 0,
+          "outputTokens": 8713
+        },
+        "costValid": {
+          "pairs": 6,
+          "pass": 2,
+          "requests": 6,
+          "inputTokens": 101658,
+          "cacheReadTokens": -1408,
+          "cacheWriteTokens": 0,
+          "outputTokens": 8853
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r2",
+            "left": "T11-s1-E1-r2",
+            "right": "T11-s1-E0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": 4,
+              "inputTokens": 90714,
+              "cacheReadTokens": 128,
+              "cacheWriteTokens": 0,
+              "outputTokens": 3839
+            }
+          },
+          {
+            "key": "T11-s2-r1",
+            "left": "T11-s2-E1-r1",
+            "right": "T11-s2-E0-r1",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": 1,
+              "inputTokens": 3872,
+              "cacheReadTokens": 0,
+              "cacheWriteTokens": 0,
+              "outputTokens": 2190
+            }
+          },
+          {
+            "key": "T11-s2-r2",
+            "left": "T11-s2-E1-r2",
+            "right": "T11-s2-E0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": 3,
+              "inputTokens": -51592,
+              "cacheReadTokens": 1408,
+              "cacheWriteTokens": 0,
+              "outputTokens": 2444
+            }
+          },
+          {
+            "key": "T12-s1-r2",
+            "left": "T12-s1-E1-r2",
+            "right": "T12-s1-E0-r2",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": 0,
+              "inputTokens": 19255,
+              "cacheReadTokens": -13440,
+              "cacheWriteTokens": 0,
+              "outputTokens": 438
+            }
+          },
+          {
+            "key": "T12-s2-r1",
+            "left": "T12-s2-E1-r1",
+            "right": "T12-s2-E0-r1",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": 0,
+              "inputTokens": 36882,
+              "cacheReadTokens": -1536,
+              "cacheWriteTokens": 0,
+              "outputTokens": 27
+            }
+          },
+          {
+            "key": "T12-s2-r2",
+            "left": "T12-s2-E1-r2",
+            "right": "T12-s2-E0-r2",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -2,
+              "inputTokens": 2527,
+              "cacheReadTokens": 12032,
+              "cacheWriteTokens": 0,
+              "outputTokens": -85
+            }
+          },
+          {
+            "key": "T13-s1-r2",
+            "left": "T13-s1-E1-r2",
+            "right": "T13-s1-E0-r2",
+            "leftPass": true,
+            "rightPass": false,
+            "leftCostValid": false,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 1,
+              "requests": 1,
+              "inputTokens": -35939,
+              "cacheReadTokens": -2688,
+              "cacheWriteTokens": 0,
+              "outputTokens": -140
+            }
+          }
+        ]
+      },
+      {
+        "left": "E0",
+        "right": "B0",
+        "pairs": 7,
+        "both": 1,
+        "neither": 3,
+        "leftOnly": 0,
+        "rightOnly": 3,
+        "mcnemarP": 0.25,
+        "recorded": {
+          "pairs": 7,
+          "pass": -3,
+          "requests": -35,
+          "inputTokens": 103419,
+          "cacheReadTokens": -182400,
+          "cacheWriteTokens": 0,
+          "outputTokens": -27667
+        },
+        "costValid": {
+          "pairs": 6,
+          "pass": -2,
+          "requests": -29,
+          "inputTokens": 157019,
+          "cacheReadTokens": -110720,
+          "cacheWriteTokens": 0,
+          "outputTokens": -22368
+        },
+        "rows": [
+          {
+            "key": "T11-s1-r2",
+            "left": "T11-s1-E0-r2",
+            "right": "T11-s1-B0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -5,
+              "inputTokens": -23551,
+              "cacheReadTokens": -2048,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5569
+            }
+          },
+          {
+            "key": "T11-s2-r1",
+            "left": "T11-s2-E0-r1",
+            "right": "T11-s2-B0-r1",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -4,
+              "inputTokens": 543,
+              "cacheReadTokens": -1664,
+              "cacheWriteTokens": 0,
+              "outputTokens": -4346
+            }
+          },
+          {
+            "key": "T11-s2-r2",
+            "left": "T11-s2-E0-r2",
+            "right": "T11-s2-B0-r2",
+            "leftPass": false,
+            "rightPass": false,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -7,
+              "inputTokens": 103943,
+              "cacheReadTokens": -34816,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5801
+            }
+          },
+          {
+            "key": "T12-s1-r2",
+            "left": "T12-s1-E0-r2",
+            "right": "T12-s1-B0-r2",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": -1,
+              "requests": -9,
+              "inputTokens": 19120,
+              "cacheReadTokens": -63232,
+              "cacheWriteTokens": 0,
+              "outputTokens": -3485
+            }
+          },
+          {
+            "key": "T12-s2-r1",
+            "left": "T12-s2-E0-r1",
+            "right": "T12-s2-B0-r1",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": false,
+            "delta": {
+              "pass": -1,
+              "requests": -6,
+              "inputTokens": -53600,
+              "cacheReadTokens": -71680,
+              "cacheWriteTokens": 0,
+              "outputTokens": -5299
+            }
+          },
+          {
+            "key": "T12-s2-r2",
+            "left": "T12-s2-E0-r2",
+            "right": "T12-s2-B0-r2",
+            "leftPass": true,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": 0,
+              "requests": -5,
+              "inputTokens": -23304,
+              "cacheReadTokens": -11136,
+              "cacheWriteTokens": 0,
+              "outputTokens": -2177
+            }
+          },
+          {
+            "key": "T13-s1-r2",
+            "left": "T13-s1-E0-r2",
+            "right": "T13-s1-B0-r2",
+            "leftPass": false,
+            "rightPass": true,
+            "leftCostValid": true,
+            "rightCostValid": true,
+            "delta": {
+              "pass": -1,
+              "requests": 1,
+              "inputTokens": 80268,
+              "cacheReadTokens": 2176,
+              "cacheWriteTokens": 0,
+              "outputTokens": -990
+            }
+          }
+        ]
+      }
+    ],
+    "byTemplate": {
+      "T11": {
+        "B0": {
+          "cells": 3,
+          "passed": 0,
+          "committed": 10,
+          "delivered": 8,
+          "costValid": 3
+        },
+        "E0": {
+          "cells": 3,
+          "passed": 0,
+          "committed": 9,
+          "delivered": 9,
+          "costValid": 3
+        },
+        "E1": {
+          "cells": 3,
+          "passed": 0,
+          "committed": 8,
+          "delivered": 8,
+          "costValid": 3
+        }
+      },
+      "T12": {
+        "B0": {
+          "cells": 3,
+          "passed": 3,
+          "committed": 6,
+          "delivered": 5,
+          "costValid": 2
+        },
+        "E0": {
+          "cells": 3,
+          "passed": 1,
+          "committed": 16,
+          "delivered": 14,
+          "costValid": 3
+        },
+        "E1": {
+          "cells": 3,
+          "passed": 3,
+          "committed": 4,
+          "delivered": 4,
+          "costValid": 3
+        }
+      },
+      "T13": {
+        "B0": {
+          "cells": 1,
+          "passed": 1,
+          "committed": 2,
+          "delivered": 2,
+          "costValid": 1
+        },
+        "E0": {
+          "cells": 1,
+          "passed": 0,
+          "committed": 8,
+          "delivered": 7,
+          "costValid": 1
+        },
+        "E1": {
+          "cells": 3,
+          "passed": 2,
+          "committed": 5,
+          "delivered": 5,
+          "costValid": 1
+        }
+      }
+    },
+    "eligibility": {
+      "valid": 23,
+      "costInvalid": 3,
+      "costInvalidCells": [
+        {
+          "cellId": "T12-s2-B0-r1",
+          "usage": {
+            "requests": 14,
+            "unknownUsage": 2,
+            "inputTokens": 162689,
+            "outputTokens": 6876,
+            "cacheReadTokens": 75904,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 8
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        },
+        {
+          "cellId": "T13-s1-E1-r2",
+          "usage": {
+            "requests": 9,
+            "unknownUsage": 3,
+            "inputTokens": 114293,
+            "outputTokens": 1911,
+            "cacheReadTokens": 1408,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 4
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        },
+        {
+          "cellId": "T13-s2-E1-r2",
+          "usage": {
+            "requests": 2,
+            "unknownUsage": 1,
+            "inputTokens": 29921,
+            "outputTokens": 388,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 0,
+            "auxiliaryRequests": 1
+          },
+          "reasons": [
+            "partial-usage"
+          ]
+        }
+      ],
+      "configMismatchByKey": {
+        "rationaleHintTokens": 18
+      },
+      "configMismatchCells": 18
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 4,
+      "T14": 9,
+      "T15": 9,
+      "T16": 9
+    },
+    "cells": [
+      {
+        "cellId": "T11-s1-B0-r2",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 2,
+        "key": "T11-s1-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 12,
+        "inputTokens": 92894,
+        "outputTokens": 6161,
+        "cacheReadTokens": 6144,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 4,
+        "unknownUsage": 0,
+        "attempts": 4,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 1,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 1745,
+        "failedCallOutput": 1024,
+        "termination": "finish",
+        "durationMs": 70324,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":1}, expected {\"failed\":3}"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": true,
+        "toolCalls": 12,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s1-B0-r2\\report.json"
+      },
+      {
+        "cellId": "T11-s1-E0-r2",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 2,
+        "key": "T11-s1-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 7,
+        "inputTokens": 69343,
+        "outputTokens": 592,
+        "cacheReadTokens": 4096,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 24233,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": true,
+        "toolCalls": 10,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s1-E0-r2\\report.json"
+      },
+      {
+        "cellId": "T11-s1-E1-r2",
+        "task": "T11-s1",
+        "template": "T11",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T11-s1-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 11,
+        "inputTokens": 160057,
+        "outputTokens": 4431,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 3,
+        "unknownUsage": 0,
+        "attempts": 3,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 67070,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 15,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s1-E1-r2\\report.json"
+      },
+      {
+        "cellId": "T11-s2-E0-r1",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T11-s2-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 89911,
+        "outputTokens": 1050,
+        "cacheReadTokens": 2816,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 4,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 4,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 28855,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 16,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T11-s2-E0-r2",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "E0",
+        "replicate": 2,
+        "key": "T11-s2-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 193285,
+        "outputTokens": 1110,
+        "cacheReadTokens": 5504,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 3,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 38383,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 20,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-E0-r2\\report.json"
+      },
+      {
+        "cellId": "T11-s2-E1-r1",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T11-s2-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 9,
+        "inputTokens": 93783,
+        "outputTokens": 3240,
+        "cacheReadTokens": 2816,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 42315,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":1}, expected {\"failed\":5}"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": true,
+        "toolCalls": 13,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T11-s2-E1-r2",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T11-s2-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 11,
+        "inputTokens": 141693,
+        "outputTokens": 3554,
+        "cacheReadTokens": 6912,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 3,
+        "unknownUsage": 0,
+        "attempts": 3,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 51327,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 16,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-E1-r2\\report.json"
+      },
+      {
+        "cellId": "T11-s2-B0-r1",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T11-s2-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 12,
+        "inputTokens": 89368,
+        "outputTokens": 5396,
+        "cacheReadTokens": 4480,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 5,
+        "unknownUsage": 0,
+        "attempts": 5,
+        "committed": 4,
+        "refused": 1,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 1463,
+        "failedCallOutput": 568,
+        "termination": "finish",
+        "durationMs": 68625,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":1}, expected {\"failed\":5}"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": true,
+        "toolCalls": 10,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T11-s2-B0-r2",
+        "task": "T11-s2",
+        "template": "T11",
+        "seed": 2,
+        "arm": "B0",
+        "replicate": 2,
+        "key": "T11-s2-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 15,
+        "inputTokens": 89342,
+        "outputTokens": 6911,
+        "cacheReadTokens": 40320,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7,
+        "unknownUsage": 0,
+        "attempts": 7,
+        "committed": 3,
+        "refused": 4,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 5479,
+        "failedCallOutput": 3195,
+        "termination": "finish",
+        "durationMs": 88560,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "result.json = {\"failed\":1}, expected {\"failed\":5}"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 2,
+        "checkKinds": [
+          "json_equals",
+          "tests"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": true,
+        "toolCalls": 11,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md",
+          "package.json",
+          "src/retry.js",
+          "test/retry.test.js"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T11-s2-B0-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s1-E1-r2",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T12-s1-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 126154,
+        "outputTokens": 2486,
+        "cacheReadTokens": 5504,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2,
+        "unknownUsage": 0,
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 46084,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 7,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s1-E1-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s1-B0-r2",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 2,
+        "key": "T12-s1-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 17,
+        "inputTokens": 87779,
+        "outputTokens": 5533,
+        "cacheReadTokens": 82176,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 9,
+        "unknownUsage": 0,
+        "attempts": 9,
+        "committed": 3,
+        "refused": 6,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 6666,
+        "failedCallOutput": 2942,
+        "termination": "finish",
+        "durationMs": 115646,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": true,
+        "falseVerification": false,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s1-B0-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s1-E0-r2",
+        "task": "T12-s1",
+        "template": "T12",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 2,
+        "key": "T12-s1-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 106899,
+        "outputTokens": 2048,
+        "cacheReadTokens": 18944,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 8,
+        "committed": 7,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 6,
+        "noFollowingRequest": 1,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 39314,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 17,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s1-E0-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s2-B0-r1",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "B0",
+        "replicate": 1,
+        "key": "T12-s2-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 14,
+        "inputTokens": 162689,
+        "outputTokens": 6876,
+        "cacheReadTokens": 75904,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 8,
+        "unknownUsage": 2,
+        "attempts": 8,
+        "committed": 2,
+        "refused": 3,
+        "aborted": 3,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 66219,
+        "failedCallOutput": 4640,
+        "termination": "finish",
+        "durationMs": 91847,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 9,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-B0-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s2-B0-r2",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "B0",
+        "replicate": 2,
+        "key": "T12-s2-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 13,
+        "inputTokens": 116086,
+        "outputTokens": 3823,
+        "cacheReadTokens": 18304,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7,
+        "unknownUsage": 0,
+        "attempts": 7,
+        "committed": 1,
+        "refused": 6,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 6188,
+        "failedCallOutput": 2704,
+        "termination": "finish",
+        "durationMs": 50149,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 7,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-B0-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s2-E0-r1",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "E0",
+        "replicate": 1,
+        "key": "T12-s2-r1",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 109089,
+        "outputTokens": 1577,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 6,
+        "committed": 5,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 4,
+        "noFollowingRequest": 1,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 36889,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "config.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 15,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-E0-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s2-E0-r2",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "E0",
+        "replicate": 2,
+        "key": "T12-s2-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 92782,
+        "outputTokens": 1646,
+        "cacheReadTokens": 7168,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 4,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 4,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 34530,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 14,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-E0-r2\\report.json"
+      },
+      {
+        "cellId": "T12-s2-E1-r1",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T12-s2-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 145971,
+        "outputTokens": 1604,
+        "cacheReadTokens": 2688,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 34285,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T12-s2-E1-r2",
+        "task": "T12-s2",
+        "template": "T12",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T12-s2-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 6,
+        "inputTokens": 95309,
+        "outputTokens": 1561,
+        "cacheReadTokens": 19200,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 23793,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "config.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 8,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T12-s2-E1-r2\\report.json"
+      },
+      {
+        "cellId": "T13-s1-E0-r2",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "E0",
+        "replicate": 2,
+        "key": "T13-s1-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "E0:35f392a9bd64",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "none",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 8,
+        "inputTokens": 150232,
+        "outputTokens": 2051,
+        "cacheReadTokens": 4096,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0,
+        "unknownUsage": 0,
+        "attempts": 9,
+        "committed": 8,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 7,
+        "noFollowingRequest": 1,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "step-limit",
+        "durationMs": 26781,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 17,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T13-s1-E0-r2\\report.json"
+      },
+      {
+        "cellId": "T13-s1-E1-r2",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T13-s1-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 9,
+        "inputTokens": 114293,
+        "outputTokens": 1911,
+        "cacheReadTokens": 1408,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 4,
+        "unknownUsage": 3,
+        "attempts": 4,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "delivered": 3,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 39066,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 10,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T13-s1-E1-r2\\report.json"
+      },
+      {
+        "cellId": "T13-s1-B0-r2",
+        "task": "T13-s1",
+        "template": "T13",
+        "seed": 1,
+        "arm": "B0",
+        "replicate": 2,
+        "key": "T13-s1-r2",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [],
+        "treatmentId": "B0:0f8b492062f5",
+        "effectiveConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "declaredConfigSummary": {
+          "backend": "dsh-basic",
+          "mode": null,
+          "semanticMode": null,
+          "semanticContinuity": null,
+          "leafAdmission": null,
+          "rootPolicy": null,
+          "framingMode": null,
+          "rationaleHintTokens": null,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": 1024,
+          "minReclaimTokens": null,
+          "minReclaimRatio": null
+        },
+        "requests": 7,
+        "inputTokens": 69964,
+        "outputTokens": 3041,
+        "cacheReadTokens": 1920,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 4,
+        "unknownUsage": 0,
+        "attempts": 4,
+        "committed": 2,
+        "refused": 2,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 2,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 1866,
+        "failedCallOutput": 1444,
+        "termination": "finish",
+        "durationMs": 36103,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 4,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s1-B0-r2\\report.json"
+      },
+      {
+        "cellId": "T13-s2-E1-r1",
+        "task": "T13-s2",
+        "template": "T13",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 1,
+        "key": "T13-s2-r1",
+        "status": "valid",
+        "pass": true,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": true,
+        "reasons": [],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 4,
+        "inputTokens": 68808,
+        "outputTokens": 1199,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 0,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 18491,
+        "checker": {
+          "pass": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "build.json matches"
+            }
+          ]
+        },
+        "checksPassed": 1,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 4,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-E1-r1\\report.json"
+      },
+      {
+        "cellId": "T13-s2-E1-r2",
+        "task": "T13-s2",
+        "template": "T13",
+        "seed": 2,
+        "arm": "E1",
+        "replicate": 2,
+        "key": "T13-s2-r2",
+        "status": "valid",
+        "pass": false,
+        "taskOutcomeValid": true,
+        "treatmentValid": true,
+        "costValid": false,
+        "reasons": [
+          "partial-usage"
+        ],
+        "configMismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ],
+        "treatmentId": "E1:9cb1c9c33b71",
+        "effectiveConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 400,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "declaredConfigSummary": {
+          "mode": null,
+          "semanticMode": "rationale",
+          "semanticContinuity": "off",
+          "leafAdmission": "economic",
+          "rootPolicy": "economics",
+          "framingMode": "legacy",
+          "rationaleHintTokens": 800,
+          "thresholdRatio": 0.5,
+          "retainRatio": 0.04,
+          "headroomTokens": 512,
+          "maxTokens": null,
+          "minReclaimTokens": 600,
+          "minReclaimRatio": 0.25
+        },
+        "requests": 2,
+        "inputTokens": 29921,
+        "outputTokens": 388,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1,
+        "unknownUsage": 1,
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "delivered": 1,
+        "noFollowingRequest": 0,
+        "cellsWithCommit": true,
+        "cellsWithDelivery": true,
+        "failedCallInput": 0,
+        "failedCallOutput": 0,
+        "termination": "finish",
+        "durationMs": 6010,
+        "checker": {
+          "pass": false,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "build.json is missing"
+            }
+          ]
+        },
+        "checksPassed": 0,
+        "checksTotal": 1,
+        "checkKinds": [
+          "json_equals"
+        ],
+        "claimedSuccess": false,
+        "falseVerification": false,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "finalFiles": [
+          "README.md"
+        ],
+        "stageB": null,
+        "leafSpanProbe": null,
+        "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-E1-r2\\report.json"
+      }
+    ]
+  },
+  "spanEconomics": {
+    "summary": {
+      "cases": 60,
+      "admissions": 2,
+      "framings": 2,
+      "retainRatios": [
+        0.04,
+        0.16,
+        0.24
+      ],
+      "checkpointTokens": [
+        180,
+        300,
+        500,
+        1000,
+        2000
+      ],
+      "widestObserved": {
+        "count": 60,
+        "min": 12384,
+        "median": 12384,
+        "max": 12384
+      },
+      "executedObserved": {
+        "count": 60,
+        "min": 9288,
+        "median": 10320,
+        "max": 11868
+      },
+      "gaps": {
+        "count": 60,
+        "min": 516,
+        "median": 2064,
+        "max": 3096
+      },
+      "falseAdmissions": 0,
+      "floorSensitivityFalseAdmissions": 3,
+      "admissionRefusals": 0,
+      "executionNulls": 0,
+      "engineCommitted": 60,
+      "engineRefused": 0,
+      "engineReturned": 60,
+      "engineProbeMissing": 0,
+      "byAdmission": {
+        "economic": {
+          "cases": 30,
+          "falseAdmissions": 0,
+          "executionNulls": 0,
+          "committed": 30,
+          "refused": 0
+        },
+        "legacy": {
+          "cases": 30,
+          "falseAdmissions": 0,
+          "executionNulls": 0,
+          "committed": 30,
+          "refused": 0
+        }
+      },
+      "byRetainRatio": {
+        "0.04": {
+          "cases": 20,
+          "falseAdmissions": 0,
+          "executionNulls": 0,
+          "medianGap": 516
+        },
+        "0.16": {
+          "cases": 20,
+          "falseAdmissions": 0,
+          "executionNulls": 0,
+          "medianGap": 2064
+        },
+        "0.24": {
+          "cases": 20,
+          "falseAdmissions": 0,
+          "executionNulls": 0,
+          "medianGap": 3096
+        }
+      }
+    },
+    "findings": {
+      "gapIsSystematic": true,
+      "falseAdmissionObservedAtDefaultFloors": false,
+      "falseAdmissionObservedWithFloorSensitivity": true,
+      "executionNullObserved": false,
+      "note": "A false admission is admission=true on the widest span and execution=false on the span the engine would fold. It is a deterministic span mismatch, not a model failure. The default-floor matrix measures the gap; the floor-sensitivity cases pin the verdict flip."
+    },
+    "floorSensitivity": {
+      "cases": [
+        {
+          "retainRatio": 0.04,
+          "retainTokens": 535,
+          "widestReclaim": 11854,
+          "executedReclaim": 11338,
+          "floor": 11339,
+          "widestTokens": 12384,
+          "executedTokens": 11868,
+          "gapTokens": 516,
+          "admissionWouldAdmit": true,
+          "executionWouldAdmit": false,
+          "falseAdmission": true
+        },
+        {
+          "retainRatio": 0.16,
+          "retainTokens": 2141,
+          "widestReclaim": 11854,
+          "executedReclaim": 9790,
+          "floor": 9791,
+          "widestTokens": 12384,
+          "executedTokens": 10320,
+          "gapTokens": 2064,
+          "admissionWouldAdmit": true,
+          "executionWouldAdmit": false,
+          "falseAdmission": true
+        },
+        {
+          "retainRatio": 0.24,
+          "retainTokens": 3212,
+          "widestReclaim": 11854,
+          "executedReclaim": 8758,
+          "floor": 8759,
+          "widestTokens": 12384,
+          "executedTokens": 9288,
+          "gapTokens": 3096,
+          "admissionWouldAdmit": true,
+          "executionWouldAdmit": false,
+          "falseAdmission": true
+        }
+      ],
+      "falseAdmissions": 3,
+      "note": "Each floor is set one token above the executed-span reclaim, so the widest span is still admitted while the span execution would fold is not. At the DEFAULT floors the large-span matrix clears both sides; this sensitivity shows the same gap flips the verdict when the span is near the floor."
+    },
+    "note": "Deterministic keyless matrix. R2 live reports predate the probe, so exact-span data for those cells is unavailable, not zero."
+  },
+  "probeAvailability": {
+    "r2LiveCellsWithProbe": 0,
+    "r2LiveValidCells": 41,
+    "note": "The R2 live reports were produced before the R3 telemetry. The probe is available for future runs and for the deterministic matrix."
+  },
+  "userNumberVerification": {
+    "pilot": {
+      "available": true,
+      "expected": {
+        "pass": 1,
+        "requests": -30,
+        "inputTokens": -204950,
+        "cacheReadTokens": 43904,
+        "outputTokens": -25577
+      },
+      "observed": {
+        "pairs": 6,
+        "pass": 1,
+        "requests": -30,
+        "inputTokens": -204950,
+        "cacheReadTokens": 43904,
+        "cacheWriteTokens": 0,
+        "outputTokens": -25577
+      },
+      "matches": {
+        "pass": true,
+        "requests": true,
+        "inputTokens": true,
+        "cacheReadTokens": true,
+        "outputTokens": true
+      }
+    },
+    "confirm": {
+      "available": true,
+      "expected": {
+        "pass": 0,
+        "requests": -28,
+        "inputTokens": 169138,
+        "cacheReadTokens": -186496,
+        "outputTokens": -18954
+      },
+      "observed": {
+        "pairs": 7,
+        "pass": 0,
+        "requests": -28,
+        "inputTokens": 169138,
+        "cacheReadTokens": -186496,
+        "cacheWriteTokens": 0,
+        "outputTokens": -18954
+      },
+      "matches": {
+        "pass": true,
+        "requests": true,
+        "inputTokens": true,
+        "cacheReadTokens": true,
+        "outputTokens": true
+      }
+    }
+  },
+  "stressVsProduct": {
+    "stress": {
+      "lane": "16k stress",
+      "contextWindow": 16384,
+      "thresholdRatio": 0.5,
+      "retainRatio": 0.04,
+      "headroomTokens": 512,
+      "framingMode": "legacy",
+      "semanticContinuity": "off",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "rationaleHintTokensDeclared": 800,
+      "rationaleHintTokensEffective": 400,
+      "dataStatus": "observed (pilot + partial confirm)",
+      "note": "Not the shipped product preset: 16k window, retain 0.04, framing legacy, hint 400 effective despite 800 declared."
+    },
+    "productPresets": {
+      "economy": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.8,
+        "retainRatio": 0.16,
+        "headroomTokens": 65536,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "balanced": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.8,
+        "retainRatio": 0.24,
+        "headroomTokens": 65536,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "quality": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 1600,
+        "thresholdRatio": 0.8,
+        "retainRatio": 0.24,
+        "headroomTokens": 65536,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "dataStatus": "not-executed",
+      "note": "The shipped presets use system-dedup framing, the tier retention and the tier hint budget. No R3 live cell ran them."
+    },
+    "basic": {
+      "backend": "dsh-basic",
+      "stressConfig": {
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024
+      },
+      "dataStatus": "observed in the stress lane only",
+      "note": "Native Basic is the B0 arm; its product defaults are not frozen by this report."
+    },
+    "comparability": "Stress-lane results must not be presented as product-preset evidence."
+  },
+  "limits": [
+    "The confirm is partial: 23 valid, 1 unresolved, 30 never-started. It is not a confirmatory result.",
+    "T14, T15 and T16 have no valid confirm cells; the valid subset is not a random sample of the 54-cell design.",
+    "Only 5 of 7 confirm B0/E1 pairs and 4 of 6 pilot pairs have complete usage on both sides.",
+    "The stress lane uses a 16k window, retain 0.04 and legacy framing; it is not the shipped economy/balanced/quality preset.",
+    "One model, one local route, one machine. No USD price is recorded or claimed.",
+    "R2 live reports predate the R3 leaf-span probe; exact-span economics for those cells is unavailable, not zero."
+  ],
+  "note": "Descriptive paired deltas, not a powered economic estimate. The product lane has design only, no data."
+}

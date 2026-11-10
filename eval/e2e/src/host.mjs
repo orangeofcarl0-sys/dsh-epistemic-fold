@@ -116,7 +116,13 @@ export async function mountHost({
     // never fire. 512 is the same value both arms get; it is not an EF-specific
     // advantage. `maxTokens` stays at the per-request cap so the summary call
     // itself is not truncated to the headroom.
-    new BasicCompaction(ctx, { auto: true, thresholdRatio, retainRatio: 0.04, headroomTokens: 512, maxTokens: 1024 })
+    new BasicCompaction(ctx, {
+      auto: true,
+      thresholdRatio,
+      retainRatio: efConfig.retainRatio ?? 0.04,
+      headroomTokens: efConfig.headroomTokens ?? 512,
+      maxTokens: efConfig.maxTokens ?? 1024,
+    })
   } else {
     const { default: EpistemicFoldPlugin } = await import('../../../lib/plugin.js')
     await mkdir(roots.bundleRoot, { recursive: true })
@@ -124,9 +130,9 @@ export async function mountHost({
     plugin = new EpistemicFoldPlugin(ctx, {
       auto: true,
       thresholdRatio,
-      retainRatio: 0.04,
-      headroomTokens: 512,
-      maxTokens: 1024,
+      retainRatio: efConfig.retainRatio ?? 0.04,
+      headroomTokens: efConfig.headroomTokens ?? 512,
+      maxTokens: efConfig.maxTokens ?? 1024,
       mode: spec.mode,
       semanticMode: spec.semanticMode,
       ...(spec.recallAffordance === undefined ? {} : { recallAffordance: spec.recallAffordance }),
@@ -140,9 +146,21 @@ export async function mountHost({
       ...(efConfig.leafAdmission === undefined ? {} : { leafAdmission: efConfig.leafAdmission }),
       ...(efConfig.rootPolicy === undefined ? {} : { rootPolicy: efConfig.rootPolicy }),
       ...(efConfig.framingMode === undefined ? {} : { framingMode: efConfig.framingMode }),
+      // R3: a declared key must reach the resolver. The R2 host forwarded only
+      // the three policy keys above, so E1 silently ran the economy preset's
+      // 400 hint instead of the manifest's 800. Do not add a key to a manifest
+      // without adding it here and to config-preflight.
+      ...(efConfig.rationaleHintTokens === undefined ? {} : { rationaleHintTokens: efConfig.rationaleHintTokens }),
+      ...(efConfig.minReclaimTokens === undefined ? {} : { minReclaimTokens: efConfig.minReclaimTokens }),
+      ...(efConfig.minReclaimRatio === undefined ? {} : { minReclaimRatio: efConfig.minReclaimRatio }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,
+    }, {
+      // Benchmark-only observation. It records the widest and executed leaf
+      // spans and never changes a fold decision. Product deployments leave it
+      // off; the E2E harness needs it to price the stress lane.
+      leafSpanProbe: true,
     })
   }
 

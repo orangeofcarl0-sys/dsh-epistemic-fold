@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP2",
+  "archiveRoot": "F:/Codex_Work_Space/DSH plugin/EF_R2_LIVE_RESEARCH_ARCHIVE",
+  "archiveManifestSha256": "2159551a6c10c492337cbde4d4b5a757574d57ca4ae7f29137118bbd0c7a0525",
+  "archiveSumsSha256": "3cfec1daf8578643e1893596cb048e3476150174b50cdcedf279be76cfd162bb",
+  "archiveBundleSha256": "900b417768cea74532050fc82937aee1a515baa33ed7847fed516a2858f347ba",
+  "commit": "4affdee8a1c272bcbaa43fba4f842bf4ab8f87aa",
+  "counts": {
+    "files": 548,
+    "bytes": 46853151,
+    "pilotValidCells": 18,
+    "confirmValidCells": 23,
+    "confirmUnresolvedCells": 1,
+    "confirmNeverStartedCells": 30,
+    "confirmNoValidOutcomeCells": 31,
+    "confirmAttempts": 25,
+    "confirmTransportFailedAttempts": 2,
+    "rawAttempts": 43
+  },
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 80,
+    "proxyFiles": 8,
+    "safeToShare": true
+  },
+  "ledger": {
+    "cellLedger": "eval/r3/out/cell-ledger.json",
+    "cellLedgerSha256": "071f54616d3d26604e20ea4ca707794b63197d671a899b4f4f4abbc50e62cf1e",
+    "attemptLedger": "eval/r3/out/attempt-ledger.json",
+    "attemptLedgerSha256": "94852410e21b6250bfa73e8a000b780b766bdd1b3d11ca97a728b123f575ab4a"
+  },
+  "secondCopy": {
+    "path": "E:/EF_R2_LIVE_RESEARCH_ARCHIVE",
+    "verification": "archive-verified",
+    "verificationArtifact": "eval/r3/out/archive-verification-r2-live-copy.json",
+    "listed": 548,
+    "matched": 548
+  },
+  "note": "Incremental live-only package: 18 pilot cells and 25 confirm attempts (23 valid cells, 2 transport-failed attempts, 30 never-started cells). The R2 package remains the authority for the pre-live evidence."
+}

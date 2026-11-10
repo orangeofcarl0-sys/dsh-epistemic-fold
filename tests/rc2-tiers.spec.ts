@@ -285,10 +285,15 @@ describe('RC2: every rung actually RESOLVES against a real window', () => {
 })
 
 describe('RC2: a tier declares how well backed its claim is', () => {
-  it('economy is measured, and names the measurement', () => {
+  it('economy is a hypothesis for the current rationale-bearing tier', () => {
     const tier = TIERS.economy
-    expect(tier.evidence).toBe('measured')
+    // RC1.3 measured the explicit zero-LLM profile, not this tier. The tier
+    // adds a rationale call and system-dedup framing, so the historical parity
+    // result cannot be presented as a measurement of what ships.
+    expect(tier.evidence).toBe('hypothesis')
     expect(tier.evidenceDetail).toContain('RC1.3')
+    expect(tier.evidenceDetail).toContain('semanticMode: none')
+    expect(tier.evidenceDetail).toMatch(/does not transfer/u)
     // It makes no steadiness claim, which is what "parity" means: it is not
     // trying to be steadier than Basic, only cheaper.
     expect(tier.steadinessMechanism).toContain('no steadiness claim')
@@ -313,7 +318,9 @@ describe('RC2: a tier declares how well backed its claim is', () => {
       expect(text).toContain('No live measurement')
     }
     const economy = effectiveConfigToText(describeEffectiveConfig({ mode: 'economy' }))
-    expect(economy).toContain('MEASURED')
+    expect(economy).toContain('HYPOTHESIS')
+    expect(economy).toContain('measured profile: rc1.3-zero-llm-economy')
+    expect(economy).toContain('does not transfer')
   })
 
   it('legacy reports no tier at all', () => {

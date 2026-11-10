@@ -214,6 +214,29 @@ const RATE_LIMIT_BASE_DELAY_MS = 1_000
  */
 const MAX_RETRY_AFTER_MS = 30_000
 
+/**
+ * One real HTTP attempt, observed without the request body or credential.
+ *
+ * EF-R3 adds this because the R2 transport failures could not be told apart:
+ * the archive recorded one logical model call and no socket identity. The hook
+ * is inert unless a caller installs it; it never changes retry, budget or
+ * routing behaviour.
+ */
+export interface LiveAttemptDiagnostic {
+  readonly phase: 'start' | 'response' | 'rate-limit' | 'error'
+  readonly attempt: number
+  readonly at: string
+  readonly durationMs?: number
+  readonly bodyBytes: number
+  readonly streamed: boolean
+  readonly status?: number
+  readonly error?: {
+    readonly name?: string
+    readonly message: string
+    readonly code?: string
+  }
+}
+
 export interface LiveAdapterOptions {
   readonly baseUrl: string
   readonly apiKey: string
@@ -237,6 +260,12 @@ export interface LiveAdapterOptions {
    * anywhere else is bypassable by construction.
    */
   readonly budget?: RequestBudget
+  /**
+   * Optional per-HTTP-attempt diagnostic. It is called on start, response and
+   * transport error, and must never be able to change the request. The adapter
+   * catches its exceptions.
+   */
+  readonly onAttempt?: (info: LiveAttemptDiagnostic) => void
 }
 
 /**
@@ -255,6 +284,7 @@ export class OpenAiCompatibleAdapter
   private readonly headers: Readonly<Record<string, string>>
   private readonly fetchImpl: typeof fetch
   private readonly budget: RequestBudget | undefined
+  private readonly onAttempt: ((info: LiveAttemptDiagnostic) => void) | undefined
   /** Rate-limit retries performed, and rate limits given up on. See the getter. */
   private rateLimitRetries = 0
   private rateLimitExhausted = 0
@@ -268,6 +298,16 @@ export class OpenAiCompatibleAdapter
     this.headers = options.headers ?? {}
     this.fetchImpl = options.fetchImpl ?? globalThis.fetch
     this.budget = options.budget
+    this.onAttempt = options.onAttempt
+  }
+
+  /** Diagnostics are observational: a throwing observer must not fail a call. */
+  private emitAttempt(info: LiveAttemptDiagnostic): void {
+    try {
+      this.onAttempt?.(info)
+    } catch {
+      // A diagnostic must never change the request or its error path.
+    }
   }
 
   override resolveModel(provider: string, model: string): Promise<LlmResolvedModelInfo> {
@@ -318,8 +358,16 @@ export class OpenAiCompatibleAdapter
   ): Promise<{ response: Response; reservation: Reservation | undefined }> {
     let reservation: Reservation | undefined
     let attempt = 0
+    // Serialize once. The loop only changes the reservation/attempt, not the
+    // body, and a diagnostic must measure the bytes actually sent.
+    const serialized = JSON.stringify(body)
+    const bodyBytes = Buffer.byteLength(serialized, 'utf8')
+    const streamed = body.stream === true
     for (;;) {
       signal?.throwIfAborted()
+      const startedAt = Date.now()
+      const at = new Date().toISOString()
+      this.emitAttempt({ phase: 'start', attempt, at, bodyBytes, streamed })
       // Combined with the caller signal so a cancelled turn still stops at once, and bounded so a
       // request that never returns cannot hold a cell open until the task budget expires.
       const requestDeadline = AbortSignal.timeout(REQUEST_TIMEOUT_MS)
@@ -356,16 +404,42 @@ export class OpenAiCompatibleAdapter
           'content-type': 'application/json',
           authorization: `Bearer ${this.apiKey}`,
         },
-        body: JSON.stringify(body),
+        body: serialized,
         signal: requestSignal,
         })
       } catch (error: unknown) {
+        this.emitAttempt({
+          phase: 'error',
+          attempt,
+          at,
+          durationMs: Date.now() - startedAt,
+          bodyBytes,
+          streamed,
+          error: error instanceof Error
+            ? {
+                name: error.name,
+                message: describeTransportError(error),
+                ...((error as { code?: unknown }).code === undefined
+                  ? {}
+                  : { code: String((error as { code?: unknown }).code) }),
+              }
+            : { message: String(error) },
+        })
         // Ride the credential out on the error so the caller can settle it.
         if (error !== null && typeof error === 'object') {
           ;(error as { reservation?: Reservation | undefined }).reservation = reservation
         }
         throw error
       }
+      this.emitAttempt({
+        phase: response.status === 429 ? 'rate-limit' : 'response',
+        attempt,
+        at,
+        durationMs: Date.now() - startedAt,
+        bodyBytes,
+        streamed,
+        status: response.status,
+      })
       if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
         if (response.status === 429) {
           this.rateLimitExhausted += 1

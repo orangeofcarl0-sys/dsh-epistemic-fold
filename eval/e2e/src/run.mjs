@@ -145,6 +145,12 @@ async function verifyAuthorization(manifest, digest) {
 
 function makeLiveAdapter({ route, model }) {
   return ({ task, ledger, log }) => {
+    // Shared with the recorder: the adapter emits one diagnostic per real HTTP
+    // attempt, and the recorder attaches it to the logical request it is serving.
+    const diagnostics = {
+      entry: null,
+      route: { baseUrl: route.baseUrl, model },
+    }
     const inner = new OpenAiCompatibleAdapter({
       baseUrl: route.baseUrl,
       apiKey: route.apiKey,
@@ -152,8 +158,11 @@ function makeLiveAdapter({ route, model }) {
       contextWindow: task.operationalBudgetTokens,
       ...(route.headers === undefined ? {} : { headers: route.headers }),
       budget: ledger,
+      onAttempt: info => {
+        if (diagnostics.entry !== null) diagnostics.entry.diagnostics.attempts.push(info)
+      },
     })
-    return new RecordingAdapter(inner, log)
+    return new RecordingAdapter(inner, log, { diagnostics })
   }
 }
 
@@ -303,6 +312,8 @@ async function main() {
         model: manifest.model,
         cellLimits,
         efConfig: manifest.config,
+        attemptId: `${campaign}:${cell.task}-${cell.arm}-r${cell.replicate}`,
+        manifestSha: digest,
       })
     } catch (error) {
       stopReason = `runner-error: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`

@@ -1,0 +1,889 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP3",
+  "generatedAt": "2026-11-10T16:38:09.650Z",
+  "inputs": {
+    "attemptLedger": {
+      "path": "eval/r3/out/attempt-ledger.json",
+      "sha256": "621ebcbdabbad50c74b65dcc144a27d18f0eda77f70f053f39fd390f78f15bf8"
+    }
+  },
+  "failureCount": 2,
+  "failures": [
+    {
+      "attemptId": "e2e-r2-confirm-1:T13-s1-B0-r2",
+      "campaign": "e2e-r2-confirm-1",
+      "cellId": "T13-s1-B0-r2",
+      "task": "T13-s1",
+      "arm": "B0",
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-1\\T13-s1-B0-r2\\report.json",
+      "requests": [
+        {
+          "index": 0,
+          "at": "2026-11-10T12:09:22.104Z",
+          "purpose": "summary",
+          "maxTokens": 1024,
+          "systemChars": 0,
+          "messageChars": 75603,
+          "maxMessageChars": 73468,
+          "toolChars": 73468,
+          "messageCount": 7,
+          "durationMs": 6,
+          "finishKind": "error",
+          "errorCode": "LIVE_TRANSPORT",
+          "errorMessage": "fetch failed (ECONNRESET)",
+          "httpAttempts": null,
+          "bodyBytes": null,
+          "classification": "immediate-reset"
+        },
+        {
+          "index": 1,
+          "at": "2026-11-10T12:09:22.113Z",
+          "purpose": "primary",
+          "maxTokens": 1024,
+          "systemChars": 0,
+          "messageChars": 100963,
+          "maxMessageChars": 73468,
+          "toolChars": 100534,
+          "messageCount": 9,
+          "durationMs": 6,
+          "finishKind": "error",
+          "errorCode": "LIVE_TRANSPORT",
+          "errorMessage": "fetch failed (UND_ERR_SOCKET)",
+          "httpAttempts": null,
+          "bodyBytes": null,
+          "classification": "immediate-reset"
+        }
+      ],
+      "traceAvailable": true,
+      "retry": {
+        "attemptId": "e2e-r2-confirm-resume-1:T13-s1-B0-r2",
+        "campaign": "e2e-r2-confirm-resume-1",
+        "checker": true,
+        "requests": [
+          {
+            "index": 0,
+            "at": "2026-11-10T12:10:48.799Z",
+            "purpose": "summary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 75603,
+            "maxMessageChars": 73468,
+            "toolChars": 73468,
+            "messageCount": 7,
+            "durationMs": 5858,
+            "finishKind": "stop",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 1,
+            "at": "2026-11-10T12:10:54.671Z",
+            "purpose": "primary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 29565,
+            "maxMessageChars": 27066,
+            "toolChars": 27066,
+            "messageCount": 5,
+            "durationMs": 3109,
+            "finishKind": "tool-calls",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 2,
+            "at": "2026-11-10T12:10:57.800Z",
+            "purpose": "summary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 4190,
+            "maxMessageChars": 2340,
+            "toolChars": 0,
+            "messageCount": 3,
+            "durationMs": 7625,
+            "finishKind": "stop",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 3,
+            "at": "2026-11-10T12:11:05.428Z",
+            "purpose": "summary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 4007,
+            "maxMessageChars": 2157,
+            "toolChars": 0,
+            "messageCount": 3,
+            "durationMs": 7023,
+            "finishKind": "stop",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 4,
+            "at": "2026-11-10T12:11:12.454Z",
+            "purpose": "primary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 29414,
+            "maxMessageChars": 27066,
+            "toolChars": 27098,
+            "messageCount": 7,
+            "durationMs": 1746,
+            "finishKind": "tool-calls",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 5,
+            "at": "2026-11-10T12:11:14.207Z",
+            "purpose": "summary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 4007,
+            "maxMessageChars": 2157,
+            "toolChars": 0,
+            "messageCount": 3,
+            "durationMs": 6766,
+            "finishKind": "stop",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          },
+          {
+            "index": 6,
+            "at": "2026-11-10T12:11:20.976Z",
+            "purpose": "primary",
+            "maxTokens": 1024,
+            "systemChars": 0,
+            "messageChars": 29536,
+            "maxMessageChars": 27066,
+            "toolChars": 27220,
+            "messageCount": 9,
+            "durationMs": 3774,
+            "finishKind": "stop",
+            "errorCode": null,
+            "errorMessage": null,
+            "httpAttempts": null,
+            "bodyBytes": null,
+            "classification": "success"
+          }
+        ]
+      }
+    },
+    {
+      "attemptId": "e2e-r2-confirm-resume-1:T13-s2-B0-r1",
+      "campaign": "e2e-r2-confirm-resume-1",
+      "cellId": "T13-s2-B0-r1",
+      "task": "T13-s2",
+      "arm": "B0",
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-confirm-resume-1\\T13-s2-B0-r1\\report.json",
+      "requests": [
+        {
+          "index": 0,
+          "at": "2026-11-10T12:11:49.349Z",
+          "purpose": "summary",
+          "maxTokens": 1024,
+          "systemChars": 0,
+          "messageChars": 75608,
+          "maxMessageChars": 73473,
+          "toolChars": 73473,
+          "messageCount": 7,
+          "durationMs": 10,
+          "finishKind": "error",
+          "errorCode": "LIVE_TRANSPORT",
+          "errorMessage": "fetch failed (ECONNRESET)",
+          "httpAttempts": null,
+          "bodyBytes": null,
+          "classification": "immediate-reset"
+        },
+        {
+          "index": 1,
+          "at": "2026-11-10T12:11:49.364Z",
+          "purpose": "primary",
+          "maxTokens": 1024,
+          "systemChars": 0,
+          "messageChars": 100972,
+          "maxMessageChars": 73473,
+          "toolChars": 100543,
+          "messageCount": 9,
+          "durationMs": 6,
+          "finishKind": "error",
+          "errorCode": "LIVE_TRANSPORT",
+          "errorMessage": "fetch failed (ECONNRESET)",
+          "httpAttempts": null,
+          "bodyBytes": null,
+          "classification": "immediate-reset"
+        }
+      ],
+      "traceAvailable": true,
+      "retry": null
+    }
+  ],
+  "b0Baseline": {
+    "validCells": 13,
+    "summaryRequests": 87,
+    "primaryRequests": 80,
+    "summaryMessageChars": {
+      "count": 87,
+      "min": 3566,
+      "median": 4813,
+      "max": 149073
+    },
+    "summaryDurationMs": {
+      "count": 87,
+      "min": 0,
+      "median": 7023,
+      "max": 56474
+    },
+    "successfulSummaryDurations": [
+      {
+        "index": 0,
+        "messageChars": 75725,
+        "durationMs": 12262
+      },
+      {
+        "index": 1,
+        "messageChars": 5030,
+        "durationMs": 8110
+      },
+      {
+        "index": 2,
+        "messageChars": 4904,
+        "durationMs": 8638
+      },
+      {
+        "index": 3,
+        "messageChars": 41193,
+        "durationMs": 6559
+      },
+      {
+        "index": 4,
+        "messageChars": 75725,
+        "durationMs": 6755
+      },
+      {
+        "index": 5,
+        "messageChars": 4029,
+        "durationMs": 5349
+      },
+      {
+        "index": 6,
+        "messageChars": 3951,
+        "durationMs": 4743
+      },
+      {
+        "index": 7,
+        "messageChars": 3886,
+        "durationMs": 5297
+      },
+      {
+        "index": 8,
+        "messageChars": 40176,
+        "durationMs": 5578
+      },
+      {
+        "index": 9,
+        "messageChars": 75725,
+        "durationMs": 14104
+      },
+      {
+        "index": 10,
+        "messageChars": 4677,
+        "durationMs": 5976
+      },
+      {
+        "index": 11,
+        "messageChars": 4662,
+        "durationMs": 6756
+      },
+      {
+        "index": 12,
+        "messageChars": 4507,
+        "durationMs": 7692
+      },
+      {
+        "index": 13,
+        "messageChars": 4507,
+        "durationMs": 5124
+      },
+      {
+        "index": 14,
+        "messageChars": 4507,
+        "durationMs": 7312
+      },
+      {
+        "index": 15,
+        "messageChars": 40924,
+        "durationMs": 6614
+      },
+      {
+        "index": 16,
+        "messageChars": 75433,
+        "durationMs": 56474
+      },
+      {
+        "index": 17,
+        "messageChars": 3677,
+        "durationMs": 3989
+      },
+      {
+        "index": 18,
+        "messageChars": 3566,
+        "durationMs": 5624
+      },
+      {
+        "index": 19,
+        "messageChars": 3566,
+        "durationMs": 3907
+      },
+      {
+        "index": 20,
+        "messageChars": 3566,
+        "durationMs": 4533
+      },
+      {
+        "index": 21,
+        "messageChars": 3566,
+        "durationMs": 4494
+      },
+      {
+        "index": 22,
+        "messageChars": 3566,
+        "durationMs": 4135
+      },
+      {
+        "index": 23,
+        "messageChars": 3566,
+        "durationMs": 2843
+      },
+      {
+        "index": 24,
+        "messageChars": 40009,
+        "durationMs": 6987
+      },
+      {
+        "index": 25,
+        "messageChars": 75399,
+        "durationMs": 12451
+      },
+      {
+        "index": 26,
+        "messageChars": 75384,
+        "durationMs": 8189
+      },
+      {
+        "index": 27,
+        "messageChars": 75384,
+        "durationMs": 15430
+      },
+      {
+        "index": 28,
+        "messageChars": 4939,
+        "durationMs": 11374
+      },
+      {
+        "index": 29,
+        "messageChars": 4939,
+        "durationMs": 6250
+      },
+      {
+        "index": 30,
+        "messageChars": 4813,
+        "durationMs": 9891
+      },
+      {
+        "index": 31,
+        "messageChars": 4813,
+        "durationMs": 7430
+      },
+      {
+        "index": 32,
+        "messageChars": 41111,
+        "durationMs": 1
+      },
+      {
+        "index": 33,
+        "messageChars": 75399,
+        "durationMs": 7474
+      },
+      {
+        "index": 34,
+        "messageChars": 3771,
+        "durationMs": 4834
+      },
+      {
+        "index": 35,
+        "messageChars": 3756,
+        "durationMs": 3707
+      },
+      {
+        "index": 36,
+        "messageChars": 3756,
+        "durationMs": 3192
+      },
+      {
+        "index": 37,
+        "messageChars": 3756,
+        "durationMs": 5145
+      },
+      {
+        "index": 38,
+        "messageChars": 3756,
+        "durationMs": 3292
+      },
+      {
+        "index": 39,
+        "messageChars": 3756,
+        "durationMs": 3059
+      },
+      {
+        "index": 40,
+        "messageChars": 75603,
+        "durationMs": 5858
+      },
+      {
+        "index": 41,
+        "messageChars": 4190,
+        "durationMs": 7625
+      },
+      {
+        "index": 42,
+        "messageChars": 4007,
+        "durationMs": 7023
+      },
+      {
+        "index": 43,
+        "messageChars": 4007,
+        "durationMs": 6766
+      },
+      {
+        "index": 44,
+        "messageChars": 75725,
+        "durationMs": 10308
+      },
+      {
+        "index": 45,
+        "messageChars": 3621,
+        "durationMs": 4861
+      },
+      {
+        "index": 46,
+        "messageChars": 3606,
+        "durationMs": 9484
+      },
+      {
+        "index": 47,
+        "messageChars": 3606,
+        "durationMs": 4854
+      },
+      {
+        "index": 48,
+        "messageChars": 39789,
+        "durationMs": 8226
+      },
+      {
+        "index": 49,
+        "messageChars": 75433,
+        "durationMs": 14852
+      },
+      {
+        "index": 50,
+        "messageChars": 3599,
+        "durationMs": 5167
+      },
+      {
+        "index": 51,
+        "messageChars": 3584,
+        "durationMs": 3061
+      },
+      {
+        "index": 52,
+        "messageChars": 3584,
+        "durationMs": 6362
+      },
+      {
+        "index": 53,
+        "messageChars": 3584,
+        "durationMs": 4455
+      },
+      {
+        "index": 54,
+        "messageChars": 3584,
+        "durationMs": 4489
+      },
+      {
+        "index": 55,
+        "messageChars": 3583,
+        "durationMs": 4035
+      },
+      {
+        "index": 56,
+        "messageChars": 75603,
+        "durationMs": 10533
+      },
+      {
+        "index": 57,
+        "messageChars": 4719,
+        "durationMs": 8819
+      },
+      {
+        "index": 58,
+        "messageChars": 4599,
+        "durationMs": 7479
+      },
+      {
+        "index": 59,
+        "messageChars": 4599,
+        "durationMs": 4687
+      },
+      {
+        "index": 60,
+        "messageChars": 4591,
+        "durationMs": 7440
+      },
+      {
+        "index": 61,
+        "messageChars": 4591,
+        "durationMs": 4759
+      },
+      {
+        "index": 62,
+        "messageChars": 4576,
+        "durationMs": 7542
+      },
+      {
+        "index": 63,
+        "messageChars": 75460,
+        "durationMs": 13580
+      },
+      {
+        "index": 64,
+        "messageChars": 75445,
+        "durationMs": 11841
+      },
+      {
+        "index": 65,
+        "messageChars": 4751,
+        "durationMs": 5464
+      },
+      {
+        "index": 66,
+        "messageChars": 4751,
+        "durationMs": 8198
+      },
+      {
+        "index": 67,
+        "messageChars": 4570,
+        "durationMs": 7304
+      },
+      {
+        "index": 68,
+        "messageChars": 4399,
+        "durationMs": 10192
+      },
+      {
+        "index": 69,
+        "messageChars": 40495,
+        "durationMs": 5633
+      },
+      {
+        "index": 70,
+        "messageChars": 75501,
+        "durationMs": 12562
+      },
+      {
+        "index": 71,
+        "messageChars": 75486,
+        "durationMs": 8615
+      },
+      {
+        "index": 72,
+        "messageChars": 75486,
+        "durationMs": 8086
+      },
+      {
+        "index": 73,
+        "messageChars": 5250,
+        "durationMs": 8063
+      },
+      {
+        "index": 74,
+        "messageChars": 5231,
+        "durationMs": 8093
+      },
+      {
+        "index": 75,
+        "messageChars": 5051,
+        "durationMs": 7864
+      },
+      {
+        "index": 76,
+        "messageChars": 5051,
+        "durationMs": 8194
+      },
+      {
+        "index": 77,
+        "messageChars": 5051,
+        "durationMs": 3
+      },
+      {
+        "index": 78,
+        "messageChars": 75518,
+        "durationMs": 7815
+      },
+      {
+        "index": 79,
+        "messageChars": 149073,
+        "durationMs": 8419
+      },
+      {
+        "index": 80,
+        "messageChars": 5500,
+        "durationMs": 8499
+      },
+      {
+        "index": 81,
+        "messageChars": 5468,
+        "durationMs": 8426
+      },
+      {
+        "index": 82,
+        "messageChars": 5429,
+        "durationMs": 19081
+      },
+      {
+        "index": 83,
+        "messageChars": 5429,
+        "durationMs": 9160
+      },
+      {
+        "index": 84,
+        "messageChars": 5369,
+        "durationMs": 9586
+      },
+      {
+        "index": 85,
+        "messageChars": 5367,
+        "durationMs": 5103
+      },
+      {
+        "index": 86,
+        "messageChars": 5367,
+        "durationMs": 0
+      }
+    ]
+  },
+  "comparisons": [
+    {
+      "cellId": "T13-s1-B0-r2",
+      "failedSummary": {
+        "messageChars": 75603,
+        "maxMessageChars": 73468,
+        "durationMs": 6,
+        "classification": "immediate-reset"
+      },
+      "retrySummary": {
+        "messageChars": 75603,
+        "maxMessageChars": 73468,
+        "durationMs": 5858,
+        "classification": "success"
+      },
+      "failedPrimary": {
+        "messageChars": 100963,
+        "durationMs": 6,
+        "classification": "immediate-reset"
+      },
+      "retryPrimary": {
+        "messageChars": 29565,
+        "durationMs": 3109,
+        "classification": "success"
+      }
+    },
+    {
+      "cellId": "T13-s2-B0-r1",
+      "failedSummary": {
+        "messageChars": 75608,
+        "maxMessageChars": 73473,
+        "durationMs": 10,
+        "classification": "immediate-reset"
+      },
+      "retrySummary": null,
+      "failedPrimary": {
+        "messageChars": 100972,
+        "durationMs": 6,
+        "classification": "immediate-reset"
+      },
+      "retryPrimary": null
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "payload-size",
+      "statement": "The failed requests carried a payload larger than successful B0 requests, so the route rejected the size.",
+      "status": "weakened",
+      "confidence": "low",
+      "evidence": {
+        "failedSummaryChars": [
+          75603,
+          75608
+        ],
+        "b0SummaryChars": {
+          "count": 87,
+          "min": 3566,
+          "median": 4813,
+          "max": 149073
+        },
+        "everyFailedSummaryAtOrBelowSuccessfulMax": true
+      }
+    },
+    {
+      "id": "immediate-connect-reset",
+      "statement": "The transport failed before a response was produced, within the first ~100 ms, rather than timing out mid-stream.",
+      "status": "supported",
+      "confidence": "medium",
+      "evidence": {
+        "failures": [
+          {
+            "cellId": "T13-s1-B0-r2",
+            "requests": [
+              {
+                "purpose": "summary",
+                "durationMs": 6,
+                "classification": "immediate-reset"
+              },
+              {
+                "purpose": "primary",
+                "durationMs": 6,
+                "classification": "immediate-reset"
+              }
+            ]
+          },
+          {
+            "cellId": "T13-s2-B0-r1",
+            "requests": [
+              {
+                "purpose": "summary",
+                "durationMs": 10,
+                "classification": "immediate-reset"
+              },
+              {
+                "purpose": "primary",
+                "durationMs": 6,
+                "classification": "immediate-reset"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "route-transient",
+      "statement": "The same cell succeeded on a later attempt with a comparable payload, which points to a transient local route condition rather than a deterministic task/input defect.",
+      "status": "supported",
+      "confidence": "medium",
+      "evidence": {
+        "retriedSuccessfully": 1,
+        "unresolved": 1,
+        "comparisons": [
+          {
+            "cellId": "T13-s1-B0-r2",
+            "failedSummary": {
+              "messageChars": 75603,
+              "maxMessageChars": 73468,
+              "durationMs": 6,
+              "classification": "immediate-reset"
+            },
+            "retrySummary": {
+              "messageChars": 75603,
+              "maxMessageChars": 73468,
+              "durationMs": 5858,
+              "classification": "success"
+            },
+            "failedPrimary": {
+              "messageChars": 100963,
+              "durationMs": 6,
+              "classification": "immediate-reset"
+            },
+            "retryPrimary": {
+              "messageChars": 29565,
+              "durationMs": 3109,
+              "classification": "success"
+            }
+          },
+          {
+            "cellId": "T13-s2-B0-r1",
+            "failedSummary": {
+              "messageChars": 75608,
+              "maxMessageChars": 73473,
+              "durationMs": 10,
+              "classification": "immediate-reset"
+            },
+            "retrySummary": null,
+            "failedPrimary": {
+              "messageChars": 100972,
+              "durationMs": 6,
+              "classification": "immediate-reset"
+            },
+            "retryPrimary": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "provider-http",
+      "statement": "The provider returned an HTTP error status that explains the failure.",
+      "status": "unsupported",
+      "confidence": "high",
+      "evidence": {
+        "observedCodes": [
+          "LIVE_TRANSPORT"
+        ]
+      }
+    },
+    {
+      "id": "concurrency-or-socket-reuse",
+      "statement": "Concurrency pressure or reuse of a closed socket caused the reset.",
+      "status": "unresolved",
+      "confidence": "unknown",
+      "evidence": {
+        "note": "The archived request log has one logical call per fetch and no connection identity. The R3 adapter instrumentation adds bodyBytes and per-attempt diagnostics for future runs, but it cannot reconstruct this history.",
+        "globalFetch": true,
+        "transportRetriesForTransportErrors": false
+      }
+    }
+  ],
+  "classification": {
+    "immediate": true,
+    "retriedSuccessfully": 1,
+    "unresolved": 1,
+    "payloadWithinSuccessfulRange": true,
+    "payloadLargerThanSuccessful": false
+  },
+  "decision": "Treat both failures as provider-route transport attempts, not arm outcomes. The failed cells are excluded from task outcomes and remain in the attempt ledger. No completion run until a representative B0 summary/primary health probe passes under a new authorization.",
+  "limits": [
+    "Only two failures; this is a description, not a provider-level causal estimate.",
+    "The archived log has no socket identity, no keep-alive state and no real HTTP attempt count for transport errors.",
+    "The one successful retry is same-cell evidence, but it does not prove the route is stable now.",
+    "No request body or response body is included; only sizes and error metadata."
+  ]
+}

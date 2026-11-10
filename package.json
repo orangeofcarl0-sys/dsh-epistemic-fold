@@ -64,6 +64,7 @@
     "eval:r2": "vitest run tests/r2a-pressure.spec.ts tests/r2b-admission.spec.ts tests/r2c-root.spec.ts tests/r2d-diet.spec.ts tests/r2e-dominance.spec.ts",
     "eval:r2-live": "vitest run tests/r2-live-behavior.spec.ts",
     "eval:ef-r2": "npm run build && node eval/r2/contracts/witness-contract.mjs && node eval/r2/evidence-claims.mjs",
+    "eval:ef-r3": "npm run build && node eval/r3/contracts/ledger-contract.mjs && node eval/r3/reconcile-confirm.mjs && node eval/r3/transport-diagnose.mjs && node eval/r3/contracts/transport-contract.mjs && node eval/r3/freeze-health-probe.mjs && node eval/r3/config-preflight.mjs --manifest eval/e2e/out/manifest-e2e-r2-confirm-1.json --historical && node eval/r3/config-preflight.mjs --manifest eval/e2e/out/manifest-e2e-r2-confirm-1.json --forwarded && node eval/r3/span-economics.mjs && node eval/r3/product-frontier.mjs && node eval/r3/preset-evidence.mjs && node eval/r3/freeze-completion.mjs && node eval/r3/freeze-product-lane.mjs && node eval/r3/zero-live-audit.mjs && node eval/r3/evidence-claims.mjs && node eval/r3/gates.mjs",
     "eval:r3": "vitest run tests/r3a-pricing.spec.ts tests/r3b-idle-rebase.spec.ts tests/r3c-framing-seam.spec.ts tests/r3d-economy-gate.spec.ts",
     "eval:r3-live": "vitest run tests/r3f-live-chain.spec.ts",
     "eval:r4": "vitest run tests/r4a-baseline-closure.spec.ts tests/r4a-real-recall.spec.ts tests/r4d-live-billing.spec.ts tests/r4e-noninferiority.spec.ts tests/r4f-preset.spec.ts",
