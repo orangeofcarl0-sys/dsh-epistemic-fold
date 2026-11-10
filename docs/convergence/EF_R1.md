@@ -96,7 +96,9 @@ It was verified against the pointer, copied to `E:/EF_R1_RESEARCH_ARCHIVE`, and
 the copy was verified again with the same pointer and `SHA256SUMS`. That is a
 second volume on this machine, **not** an off-machine backup; the distinction is
 in §8. Neither archive overwrites the other, and the E2E pointer still names the
-96-cell package.
+96-cell package. The 10-cell T10 retest post-dates the 240-cell package; its
+aggregate results are tracked in `eval/e2e/out/`, but its raw runs are local and
+not in that snapshot.
 
 No worktree, branch, tag or remote was changed by the archive work.
 
@@ -257,7 +259,27 @@ confirm as a general effect. It is template-specific: E0-L is 4/4 on T4 and E0-G
 is 4/4 on T7, while E0-LG is 4/4 on T4 and T9 but 0/4 on T2. The combination
 does not beat either mechanism alone (both p=1.0).
 
-### 5.3 The task prompt itself is foldable
+### 5.3 T10 fault retest with the fixed fixture
+
+The fixed T10 was run over both seeds and all five arms (10 cells) inside the
+confirm envelope's remaining reserve, with the prior usage subtracted: 61
+requests, 397,783 input, 8,300 output, 2.7 minutes.
+
+| Arm | Pass |
+|---|---:|
+| E0 | 0/2 |
+| E0-L | 0/2 |
+| E0-G | 2/2 |
+| E0-LG | 1/2 |
+| E1 | 2/2 |
+
+E0 exhausts the step limit; E0-L's failure is explicit task loss ("there's no
+question on the surface"); E0-LG once writes a different shape
+(`{"time","flag","value"}`), a schema failure. The guard and E1 solve the fixed
+task; the locator alone does not. This is n=2 per arm and is a fault retest, not
+a powered estimate.
+
+### 5.4 The task prompt itself is foldable
 
 At the 16k operational budget the active request is sometimes archived during
 the continuation, not only the evidence. In the confirm, **44/120 cells lost
@@ -278,7 +300,7 @@ must be protected from folding**, not merely better addressed in the archive.
 The pilot's T9-s1 E0 cell failed with "I don't see a question in your latest
 message — just the folded context markers" after three folds.
 
-### 5.4 Reading
+### 5.5 Reading
 
 - The locator is a correct address with a template-specific benefit, not a
   general retrieval win. It is strongest on T4 (expired configuration) and in
@@ -287,8 +309,8 @@ message — just the folded context markers" after three folds.
   the model deliver, not retrieve. 145 requests and 920k input for 15/24.
 - E1 (rationale) is the strongest and cheapest arm (17/20 excluding T10) but
   p=0.057; it deserves a dedicated evaluation, not an automatic default.
-- T10 must be re-run with the fixed fixture before any claim about
-  multi-revision recovery.
+- On the fixed T10, the guard and E1 both pass 2/2, the locator 0/2 and E0 0/2.
+  The multi-revision task is solvable, but not by the address alone; n=2.
 
 ## 6. Integration and the candidate
 

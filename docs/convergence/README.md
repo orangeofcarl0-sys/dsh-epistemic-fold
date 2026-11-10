@@ -53,7 +53,8 @@ archive address, and certified four new recovery tasks. A 24-cell pilot and a
 18/24; excluding the defective T10 fixture, no L/G arm is significant at 0.05.
 The locator is a template-specific address, the guard belongs to the DSH runtime,
 and the active task prompt was folded in 44/120 cells — the most important
-finding of the round.
+finding of the round. With the fixed T10 fixture, a 10-cell retest gave the
+guard and E1 2/2 each, the locator 0/2.
 
 Supporting documents:
 

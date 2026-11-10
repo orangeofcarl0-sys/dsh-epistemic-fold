@@ -2,16 +2,16 @@
 
 Reconstructed offline from the 96 executed cells. No model call was made.
 
-Cells: **240**, passed **129**, failed **111**. Ordered trajectories: **169**; the rest use request previews with a `truncated` flag.
+Cells: **250**, passed **134**, failed **116**. Ordered trajectories: **179**; the rest use request previews with a `truncated` flag.
 
 ## Where the failures stop
 
 | Stage | Meaning | Failed cells |
 |---|---|---|
 | observe | the fact was not in any tool result the model received | 0 |
-| produce | nothing was written and the value was not stated | 39 |
+| produce | nothing was written and the value was not stated | 43 |
 | write | the value was stated, but the deliverable was not written | 27 |
-| schema | the deliverable exists but its keys/types are wrong | 18 |
+| schema | the deliverable exists but its keys/types are wrong | 19 |
 | verify | the deliverable parses, but its values or tests fail | 27 |
 | unknown | no recorded stage explains the result | 0 |
 
@@ -23,18 +23,18 @@ No cell can be shown to have failed at **observation** with the recorded evidenc
 
 | Path | Memory-task cells |
 |---|---|
-| every value was seen in a primary tool result | 107 |
+| every value was seen in a primary tool result | 113 |
 | every value was explained by the checkpoint (some also by a tool result) | 13 |
 | every value was explained by the checkpoint or task prompt (some also by a tool) | 10 |
 | at least one value has no visible source in tool, checkpoint or prompt | 25 |
-| the value was not produced | 60 |
+| the value was not produced | 64 |
 | value production unknown (no gold pair) | 0 |
 
 The checkpoint path is why an E1 cell can pass T2 without calling recall: the semantic state carried the exact value inline. It is also why a B0 cell can pass: Basic's summary contained the build and timeout verbatim. Neither is a retrieval success, and neither is evidence that the archive was used.
 
 ## Did the task prompt itself survive?
 
-The active task prompt was folded during the continuation in **113** cells (74 of them failures). That is a different failure from losing a historical fact: the model no longer has the instruction. At the 16k operational budget a long continuation can fold the request itself, and the locator is then recovering the TASK, not only the evidence. Read every L×G result with this covariate in view.
+The active task prompt was folded during the continuation in **120** cells (79 of them failures). That is a different failure from losing a historical fact: the model no longer has the instruction. At the 16k operational budget a long continuation can fold the request itself, and the locator is then recovering the TASK, not only the evidence. Read every L×G result with this covariate in view.
 
 Verification failures split by the failing checker:
 
@@ -48,14 +48,14 @@ Verification failures split by the failing checker:
 | Arm | Cells | Passed | Failure stages |
 |---|---|---|---|
 | B0 | 8 | 6 | schema 1, write 1 |
-| E0 | 53 | 15 | produce 19, schema 4, write 9, verify 6 |
-| E0-G | 30 | 17 | schema 4, verify 9 |
-| E0-L | 30 | 17 | produce 6, write 6, verify 1 |
-| E0-LG | 30 | 19 | verify 6, produce 3, schema 2 |
+| E0 | 55 | 15 | produce 21, schema 4, write 9, verify 6 |
+| E0-G | 32 | 19 | schema 4, verify 9 |
+| E0-L | 32 | 17 | produce 8, write 6, verify 1 |
+| E0-LG | 32 | 20 | verify 6, produce 3, schema 3 |
 | E0a | 6 | 1 | schema 1, produce 3, write 1 |
 | E0ai | 8 | 1 | produce 4, write 3 |
 | E0i | 8 | 0 | verify 1, produce 3, write 4 |
-| E1 | 36 | 25 | schema 4, write 3, verify 3, produce 1 |
+| E1 | 38 | 27 | schema 4, write 3, verify 3, produce 1 |
 | S | 6 | 4 | schema 2 |
 
 ## What this changes
@@ -67,7 +67,7 @@ The 47 failures are not one mechanism. Seventeen never put the value anywhere, t
 | Template | Cells | Passed | Failure stages |
 |---|---|---|---|
 | T1 | 9 | 8 | verify 1 |
-| T10 | 28 | 8 | produce 10, verify 9, schema 1 |
+| T10 | 38 | 13 | produce 14, verify 9, schema 2 |
 | T2 | 55 | 15 | produce 21, write 8, schema 7, verify 4 |
 | T3 | 10 | 10 | — |
 | T4 | 42 | 23 | produce 5, verify 5, write 9 |
@@ -192,3 +192,8 @@ The 47 failures are not one mechanism. Seventeen never put the value anywhere, t
 | e2e-lg-confirm-1 | T10-s2-E1-r2 | no | true | true | true | verify |
 | e2e-lg-confirm-1 | T10-s2-E0-r2 | no | false | true | false | produce |
 | e2e-lg-confirm-1 | T10-s2-E0-L-r2 | no | true | true | true | verify |
+| e2e-t10-retest-1 | T10-s1-E0-L-r1 | no | false | true | false | produce |
+| e2e-t10-retest-1 | T10-s1-E0-LG-r1 | no | true | true | true | schema |
+| e2e-t10-retest-1 | T10-s1-E0-r1 | no | false | true | false | produce |
+| e2e-t10-retest-1 | T10-s2-E0-r1 | no | false | true | false | produce |
+| e2e-t10-retest-1 | T10-s2-E0-L-r1 | no | false | true | false | produce |
