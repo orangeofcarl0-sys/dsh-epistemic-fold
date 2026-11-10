@@ -43,7 +43,7 @@ const design = JSON.parse(readFileSync(designPath, 'utf8'))
 const designSha = createHash('sha256').update(readFileSync(designPath)).digest('hex')
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex')
 const sha256Text = text => createHash('sha256').update(text, 'utf8').digest('hex')
-const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' })
+const git = (...args) => execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trimEnd()
 
 /** The same tree digest `run.mjs` verifies, over HEAD minus the evidence dirs. */
 function sourceTreeDigest() {
