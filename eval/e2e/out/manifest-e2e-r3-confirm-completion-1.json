@@ -1,0 +1,610 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r3-confirm-completion-1",
+  "frozenAt": "2026-11-10T16:43:20.551Z",
+  "work": "EF-R3 WP7",
+  "status": "completion-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "code": {
+    "evaluatedCommit": "e3c51bb3378239b0a1c35d1498e1df856ff512aa",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "worktreeClean": true,
+    "sourceTreeDigest": "ba2a4871e4a5f54bc5d1e3d04d27456013abcb1c265b5cc436ae293acf32f5d1"
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "resolved-at-run",
+    "note": "Route qualification is a prerequisite: the representative transport health probe must pass before this manifest can run."
+  },
+  "arms": {
+    "B0": "native DSH Basic",
+    "E0": "EF minimal, semanticMode none, economic leaf admission, economics root policy",
+    "E1": "EF rationale, semanticMode rationale, economic leaf admission, economics root policy"
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "legacy",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 16384,
+    "maxSteps": 8,
+    "retainRatio": 0.04,
+    "headroomTokens": 512,
+    "maxTokens": 1024
+  },
+  "configProvenance": {
+    "source": "R2 effective host config, not the R2 declared config",
+    "declaredRationaleHintTokens": 800,
+    "effectiveRationaleHintTokens": 400,
+    "reason": "eval/e2e/src/host.mjs did not forward rationaleHintTokens; every R2 E1 cell ran the economy preset value 400. The completion must match the 23 valid cells or it is a new treatment."
+  },
+  "r2Difference": "The original confirm ran with leafAdmission economic for E0/E1 and legacy framing. This completion keeps those effective values and pins the hint to 400. It is a protocol amendment of ORDER and CONFIG DECLARATION only; the effective treatment matches the valid R2 cells.",
+  "design": {
+    "missingCells": 31,
+    "unresolvedCells": [
+      "T13-s2-B0-r1"
+    ],
+    "neverStartedCells": 30,
+    "templates": [
+      "T13",
+      "T14",
+      "T15",
+      "T16"
+    ],
+    "originalOrder": [
+      "T13-s2-B0-r1",
+      "T13-s2-B0-r2",
+      "T13-s2-E0-r1",
+      "T13-s2-E0-r2",
+      "T14-s1-B0-r2",
+      "T14-s1-E0-r2",
+      "T14-s1-E1-r2",
+      "T14-s2-E0-r1",
+      "T14-s2-E0-r2",
+      "T14-s2-E1-r1",
+      "T14-s2-E1-r2",
+      "T14-s2-B0-r1",
+      "T14-s2-B0-r2",
+      "T15-s1-E1-r2",
+      "T15-s1-B0-r2",
+      "T15-s1-E0-r2",
+      "T15-s2-B0-r1",
+      "T15-s2-B0-r2",
+      "T15-s2-E0-r1",
+      "T15-s2-E0-r2",
+      "T15-s2-E1-r1",
+      "T15-s2-E1-r2",
+      "T16-s1-E0-r2",
+      "T16-s1-E1-r2",
+      "T16-s1-B0-r2",
+      "T16-s2-E1-r1",
+      "T16-s2-E1-r2",
+      "T16-s2-B0-r1",
+      "T16-s2-B0-r2",
+      "T16-s2-E0-r1",
+      "T16-s2-E0-r2"
+    ],
+    "executionOrder": [
+      "T13-s2-B0-r1",
+      "T14-s1-B0-r2",
+      "T15-s1-E1-r2",
+      "T16-s1-E0-r2",
+      "T13-s2-B0-r2",
+      "T14-s1-E0-r2",
+      "T15-s1-B0-r2",
+      "T16-s1-E1-r2",
+      "T13-s2-E0-r1",
+      "T14-s1-E1-r2",
+      "T15-s1-E0-r2",
+      "T16-s1-B0-r2",
+      "T13-s2-E0-r2",
+      "T14-s2-E0-r1",
+      "T15-s2-B0-r1",
+      "T16-s2-E1-r1",
+      "T14-s2-E0-r2",
+      "T15-s2-B0-r2",
+      "T16-s2-E1-r2",
+      "T14-s2-E1-r1",
+      "T15-s2-E0-r1",
+      "T16-s2-B0-r1",
+      "T14-s2-E1-r2",
+      "T15-s2-E0-r2",
+      "T16-s2-B0-r2",
+      "T14-s2-B0-r1",
+      "T15-s2-E1-r1",
+      "T16-s2-E0-r1",
+      "T14-s2-B0-r2",
+      "T15-s2-E1-r2",
+      "T16-s2-E0-r2"
+    ],
+    "protocolAmendment": {
+      "changed": "execution order",
+      "reason": "The original order put T14-T16 behind T13; a third transport stop would leave whole templates without data. The interleaved order rotates one cell from each missing template.",
+      "effectiveConfigChanged": false
+    }
+  },
+  "tasks": [
+    {
+      "file": "eval/e2e/tasks-r2/T13-s1.json",
+      "id": "T13-s1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "digest": "040961b331ddd08e70b3d1fe2a3411fddc751e9d01a1212b885bb958f0a429d1"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T13-s2.json",
+      "id": "T13-s2",
+      "template": "T13",
+      "seed": 2,
+      "category": "historical-tool-evidence",
+      "digest": "3e84bb01733dff8ce3e8421c84bc9dde002c2214ee6a5e3bf9acbab4d4106f8c"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T14-s1.json",
+      "id": "T14-s1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "digest": "85d839571aeb1411d9a90a4c9bb5fbe35e3ea339627dee6755ee4469f363b3d1"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T14-s2.json",
+      "id": "T14-s2",
+      "template": "T14",
+      "seed": 2,
+      "category": "long-multi-step",
+      "digest": "6a003fec4d7f138ce46c46c111a63f7a6ebfaf066db6b086ccbcfaa7b4aa880d"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T15-s1.json",
+      "id": "T15-s1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "digest": "666cb4574737816d38ebe4ddbd205d6b2a9a03f82ee585c1b4d40c539c017085"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T15-s2.json",
+      "id": "T15-s2",
+      "template": "T15",
+      "seed": 2,
+      "category": "time-version",
+      "digest": "db8fce641e8be65623766aa8ccde87631c1d9bdcf798f5fe1595d9b05aada772"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T16-s1.json",
+      "id": "T16-s1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "digest": "0003de3abedae692ae7fb79ab4b0f61429a406f90f82ef215308aff5d89fe08f"
+    },
+    {
+      "file": "eval/e2e/tasks-r2/T16-s2.json",
+      "id": "T16-s2",
+      "template": "T16",
+      "seed": 2,
+      "category": "multi-compaction",
+      "digest": "cbe93e566a29e38e7cfc5b9cc333dc0fb06029fbe7d4163773470834550b12b8"
+    }
+  ],
+  "cells": [
+    {
+      "block": "r3-completion",
+      "task": "T13-s2",
+      "arm": "B0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T13-s2-B0-r1"
+      },
+      "executionIndex": 0,
+      "originalIndex": 0
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s1",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s1-B0-r2"
+      },
+      "executionIndex": 1,
+      "originalIndex": 4
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s1",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s1-E1-r2"
+      },
+      "executionIndex": 2,
+      "originalIndex": 13
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s1",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s1-E0-r2"
+      },
+      "executionIndex": 3,
+      "originalIndex": 22
+    },
+    {
+      "block": "r3-completion",
+      "task": "T13-s2",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T13-s2-B0-r2"
+      },
+      "executionIndex": 4,
+      "originalIndex": 1
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s1",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s1-E0-r2"
+      },
+      "executionIndex": 5,
+      "originalIndex": 5
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s1",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s1-B0-r2"
+      },
+      "executionIndex": 6,
+      "originalIndex": 14
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s1",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s1-E1-r2"
+      },
+      "executionIndex": 7,
+      "originalIndex": 23
+    },
+    {
+      "block": "r3-completion",
+      "task": "T13-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T13-s2-E0-r1"
+      },
+      "executionIndex": 8,
+      "originalIndex": 2
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s1",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s1-E1-r2"
+      },
+      "executionIndex": 9,
+      "originalIndex": 6
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s1",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s1-E0-r2"
+      },
+      "executionIndex": 10,
+      "originalIndex": 15
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s1",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s1-B0-r2"
+      },
+      "executionIndex": 11,
+      "originalIndex": 24
+    },
+    {
+      "block": "r3-completion",
+      "task": "T13-s2",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T13-s2-E0-r2"
+      },
+      "executionIndex": 12,
+      "originalIndex": 3
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-E0-r1"
+      },
+      "executionIndex": 13,
+      "originalIndex": 7
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "B0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-B0-r1"
+      },
+      "executionIndex": 14,
+      "originalIndex": 16
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "E1",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-E1-r1"
+      },
+      "executionIndex": 15,
+      "originalIndex": 25
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-E0-r2"
+      },
+      "executionIndex": 16,
+      "originalIndex": 8
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-B0-r2"
+      },
+      "executionIndex": 17,
+      "originalIndex": 17
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-E1-r2"
+      },
+      "executionIndex": 18,
+      "originalIndex": 26
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "E1",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-E1-r1"
+      },
+      "executionIndex": 19,
+      "originalIndex": 9
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-E0-r1"
+      },
+      "executionIndex": 20,
+      "originalIndex": 18
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "B0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-B0-r1"
+      },
+      "executionIndex": 21,
+      "originalIndex": 27
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-E1-r2"
+      },
+      "executionIndex": 22,
+      "originalIndex": 10
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-E0-r2"
+      },
+      "executionIndex": 23,
+      "originalIndex": 19
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-B0-r2"
+      },
+      "executionIndex": 24,
+      "originalIndex": 28
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "B0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-B0-r1"
+      },
+      "executionIndex": 25,
+      "originalIndex": 11
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "E1",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-E1-r1"
+      },
+      "executionIndex": 26,
+      "originalIndex": 20
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-E0-r1"
+      },
+      "executionIndex": 27,
+      "originalIndex": 29
+    },
+    {
+      "block": "r3-completion",
+      "task": "T14-s2",
+      "arm": "B0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T14-s2-B0-r2"
+      },
+      "executionIndex": 28,
+      "originalIndex": 12
+    },
+    {
+      "block": "r3-completion",
+      "task": "T15-s2",
+      "arm": "E1",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T15-s2-E1-r2"
+      },
+      "executionIndex": 29,
+      "originalIndex": 21
+    },
+    {
+      "block": "r3-completion",
+      "task": "T16-s2",
+      "arm": "E0",
+      "replicate": 2,
+      "origin": {
+        "campaign": "e2e-r2-confirm-merged",
+        "cellId": "T16-s2-E0-r2"
+      },
+      "executionIndex": 30,
+      "originalIndex": 30
+    }
+  ],
+  "perCell": {
+    "requests": 24,
+    "inputTokens": 250000,
+    "outputTokens": 20000,
+    "wallClockMs": 300000
+  },
+  "limits": {
+    "continuationCells": 31,
+    "httpAttempts": 900,
+    "inputTokens": 10000000,
+    "outputTokens": 800000,
+    "wallClockMs": 14400000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "authorizationEnvelope": "r3-confirm-completion (proposed, not granted)",
+  "prerequisites": {
+    "transportHealthProbe": {
+      "path": "eval/r3/out/transport-health-probe.json",
+      "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934",
+      "executionAuthorized": false,
+      "status": "design-frozen"
+    },
+    "configPreflight": "node eval/r3/config-preflight.mjs --manifest eval/e2e/out/manifest-e2e-r3-confirm-completion-1.json --forwarded"
+  },
+  "derivedFrom": {
+    "confirmManifest": {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+      "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d"
+    },
+    "cellLedger": {
+      "path": "eval/r3/out/cell-ledger.json",
+      "sha256": "8a6a82bd1e9ebde2e8ad70f2411d4fa1039d13c3da7f8f105b07f4fd386a0df6"
+    },
+    "transportHealthProbe": {
+      "path": "eval/r3/out/transport-health-probe.json",
+      "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934"
+    }
+  },
+  "note": "This manifest freezes the completion design and nothing else. It is not runnable without a new grant bound to its SHA-256 and a passing health probe."
+}

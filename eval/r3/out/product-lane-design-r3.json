@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP7",
+  "generatedAt": "2026-11-10T16:43:20.988Z",
+  "lane": "product-representative",
+  "status": "design-only",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "question": "Under the shipped preset and a product-sized context window, does E1 beat native Basic on quality, cost and reliability?",
+  "arms": {
+    "B0": {
+      "backend": "dsh-basic",
+      "treatment": "native DSH Basic",
+      "config": {
+        "source": "native Basic defaults",
+        "overrides": {
+          "thresholdRatio": 0.5,
+          "maxTokens": 1024
+        }
+      },
+      "note": "No EF config. Do not apply the EF stress retainRatio to the product Basic arm without declaring it."
+    },
+    "E0": {
+      "backend": "ef",
+      "treatment": "EF minimal, no rationale",
+      "config": {
+        "mode": null,
+        "semanticMode": "none",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.8,
+        "retainRatio": 0.16,
+        "headroomTokens": 65536,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "note": "Not a shipped tier. It isolates the EF transaction/framing from the rationale face."
+    },
+    "E1": {
+      "backend": "ef",
+      "treatment": "shipped economy preset",
+      "config": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "system-dedup",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.8,
+        "retainRatio": 0.16,
+        "headroomTokens": 65536,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "note": "This is the product-relevant rung. It is NOT the R2 E1 stress treatment."
+    }
+  },
+  "availableTiers": {
+    "economy": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 400,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.16,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    },
+    "balanced": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 800,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.24,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    },
+    "quality": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 1600,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.24,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    }
+  },
+  "proposedContextWindow": 32768,
+  "targetContextWindow": 131072,
+  "windowNote": "The adapter default is 131,072. A 32k first product pilot is proposed so the existing long-log tasks can still trigger folds; 128k is the eventual target and needs longer task instances. Neither is authorized.",
+  "taskSet": {
+    "reuseR2Templates": true,
+    "newInstances": false,
+    "status": "requires-offline-exposure-audit",
+    "note": "The R2 tasks were designed for a 16k stress window. Before a product-lane run, measure their seed tokens against the proposed window and either audit them in or generate new instances. This round does not generate tasks."
+  },
+  "designShape": {
+    "templates": 6,
+    "instancesPerTemplate": 2,
+    "arms": 3,
+    "replicates": 2,
+    "cells": 72,
+    "note": "A design count only. No task instance is frozen and no cell is runnable."
+  },
+  "configDiff": {
+    "stress": {
+      "contextWindow": 16384,
+      "retainRatio": 0.04,
+      "framingMode": "legacy",
+      "rationaleHintTokensDeclared": 800,
+      "rationaleHintTokensEffective": 400,
+      "semanticContinuity": "off"
+    },
+    "economy": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 400,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.16,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    },
+    "balanced": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 800,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.24,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    },
+    "quality": {
+      "mode": null,
+      "semanticMode": "rationale",
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "rationaleHintTokens": 1600,
+      "thresholdRatio": 0.8,
+      "retainRatio": 0.24,
+      "headroomTokens": 65536,
+      "minReclaimTokens": 600,
+      "minReclaimRatio": 0.25
+    },
+    "note": "The stress lane is not a product preset. The economy rung differs in framing, retention and the effective hint budget."
+  },
+  "envelope": {
+    "cells": 72,
+    "httpAttempts": 2000,
+    "inputTokens": 20000000,
+    "outputTokens": 1500000,
+    "wallClockMs": 21600000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "prerequisites": [
+    "A new explicit authorization bound to a frozen product-lane manifest.",
+    "A representative transport health probe pass.",
+    "A config preflight that compares every declared key with the effective config.",
+    "An offline task-exposure audit at the proposed window, or new task instances.",
+    "A route/model freeze; a different provider or model is a new campaign."
+  ],
+  "derivedFrom": {
+    "stressManifest": {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+      "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d"
+    },
+    "configPreflight": {
+      "path": "eval/r3/out/config-preflight.json",
+      "sha256": "588d89b046d437251bdce88a332975e73100b5c60c81a969547ccc3fe2b58480"
+    }
+  },
+  "note": "Design only. The R3 product decision is no candidate; this lane is the evidence that would be needed before a candidate claim."
+}
