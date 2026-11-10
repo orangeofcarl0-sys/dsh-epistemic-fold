@@ -155,7 +155,27 @@ async function main() {
   const index = argv.includes('--index')
   const lgPilot = argv.includes('--lg-pilot')
   const lgConfirm = argv.includes('--lg-confirm')
-  if (lgConfirm) {
+  const t10Retest = argv.includes('--t10-retest')
+  if (t10Retest) {
+    // The T10 fault retest, under the CONFIRM envelope's remaining 18-cell
+    // reserve. The fixture was ambiguous in the confirm; this uses the fixed
+    // time-based version. One replicate per arm: 10 cells, a fault retest,
+    // not a powered estimate.
+    const arms = ['E0', 'E0-L', 'E0-G', 'E0-LG', 'E1']
+    for (const seed of [1, 2]) {
+      const shift = seed % arms.length
+      const ordered = [...arms.slice(shift), ...arms.slice(0, shift)]
+      for (const arm of ordered) {
+        cells.push({
+          block: 't10-retest',
+          task: `T10-s${seed}`,
+          arm,
+          replicate: 1,
+          guard: arm === 'E0-G' || arm === 'E0-LG',
+        })
+      }
+    }
+  } else if (lgConfirm) {
     // The frozen design: 6 templates × 2 seeds × 2 replicates × 5 arms = 120
     // cells. E1 is a reference arm and is never pooled into the 2×2.
     const arms = ['E0', 'E0-L', 'E0-G', 'E0-LG', 'E1']
@@ -275,10 +295,24 @@ async function main() {
   // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
   // envelope (`--index`) is separate and starts from zero: the original is
   // closed at 72/72, and its spend must not be charged twice.
-  const envelope = lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
+  const envelope = t10Retest ? LG_CONFIRM_ENVELOPE : lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
-  if (!index && !lgPilot && !lgConfirm) {
+  if (t10Retest) {
+    // The retest draws on the CONFIRM grant's reserve, so its manifest limits
+    // are what remains after the 120 confirm cells - not a fresh 30M tokens.
+    const priorPath = join(OUT, 'results-e2e-lg-confirm-1.json')
+    if (!existsSync(priorPath)) {
+      process.stderr.write('e2e freeze: the T10 retest needs results-e2e-lg-confirm-1.json for the reserve accounting\n')
+      process.exit(2)
+    }
+    const prior = JSON.parse(await readFile(priorPath, 'utf8'))
+    priorUsage.requests += prior.budget.used.requests
+    priorUsage.inputTokens += prior.budget.used.inputTokens
+    priorUsage.outputTokens += prior.budget.used.outputTokens
+    priorUsage.wallClockMs += prior.budget.used.wallClockMs
+    priorCells += prior.executed
+  } else if (!index && !lgPilot && !lgConfirm) {
     for (const priorCampaign of ['e2e-core-1', 'e2e-pilot-1', 'e2e-t5-retest-1', 'e2e-recall-1', 'e2e-guard-smoke-1']) {
       const path = join(OUT, `results-${priorCampaign}.json`)
       if (!existsSync(path)) continue
@@ -324,6 +358,7 @@ async function main() {
       index: cells.filter(cell => cell.block === 'index').length,
       lgPilot: cells.filter(cell => cell.block === 'lg-pilot').length,
       lgConfirm: cells.filter(cell => cell.block === 'lg-confirm').length,
+      t10Retest: cells.filter(cell => cell.block === 't10-retest').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -343,14 +378,18 @@ async function main() {
       paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: lgConfirm
+      reference: t10Retest
+        ? 'T10 fault retest under the remaining 18-cell reserve of the lg-confirm envelope'
+        : lgConfirm
         ? 'EF-R1 120-cell confirmatory L×G design under a separate 138-cell envelope'
         : lgPilot
         ? 'Separate EF-R1 32-cell L×G pilot envelope, explicitly authorized by the user'
         : index
           ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
           : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: lgConfirm
+      statement: t10Retest
+        ? 'the confirm exposed an ambiguous T10 fixture; this 10-cell retest uses the fixed task inside the remaining reserve of the confirm envelope, with the prior usage subtracted'
+        : lgConfirm
         ? 'the pilot gate was positive; the user authorized the staged plan, and the agent froze the 120-cell design inside a 138-cell cap (4,200 requests, 30M input, 1.2M output, 6h, concurrency 2)'
         : lgPilot
         ? 'both earlier envelopes are closed; the user authorized this 24-cell pilot inside a 32-cell cap (800 requests, 4M input, 150k output, 2h, concurrency 1), and the agent froze the concrete manifest'
