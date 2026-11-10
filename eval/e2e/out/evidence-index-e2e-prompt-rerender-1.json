@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-prompt-rerender-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T9-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T9-s1-E0-r1\\report.json",
+      "sha256": "4b5801a55dbd3fa752e721a244737652b267a2742d87ade1e763e016c270bfa9"
+    },
+    {
+      "cellId": "T9-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T9-s1-E0-R-r1\\report.json",
+      "sha256": "5f93c01848b9a31a0edd140cb61c30e932e397e65c9b72334146798daa5a57a0"
+    },
+    {
+      "cellId": "T9-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T9-s2-E0-r1\\report.json",
+      "sha256": "559096994bbc5505a592f6b73bcc746d712e4d35976f9298c9bbd532094638e0"
+    },
+    {
+      "cellId": "T9-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T9-s2-E0-R-r1\\report.json",
+      "sha256": "6a81382765b054a14f93932f8696d3e60754f313b511d95ce727b62a27c39f11"
+    },
+    {
+      "cellId": "T10-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T10-s1-E0-r1\\report.json",
+      "sha256": "9273f7f3e088b81e7bdabb3967b251c860414d5af50cf1200e18f14cc88d3016"
+    },
+    {
+      "cellId": "T10-s1-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T10-s1-E0-R-r1\\report.json",
+      "sha256": "450980658ade14ecec3984988f076b5e6ee97dfdb6c26bdd5d648346af5b715d"
+    },
+    {
+      "cellId": "T10-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T10-s2-E0-r1\\report.json",
+      "sha256": "111a789d4769c1f4e27f9f88bdf1e161ac030dcdb387cb56a2c423514bbb9066"
+    },
+    {
+      "cellId": "T10-s2-E0-R-r1",
+      "path": "eval\\e2e\\runs\\e2e-prompt-rerender-1\\T10-s2-E0-R-r1\\report.json",
+      "sha256": "c1ee731e85b9dcde6b2f280237ca3eed7f0483f5809d6cca17f28d5ebf0cea7a"
+    }
+  ]
+}

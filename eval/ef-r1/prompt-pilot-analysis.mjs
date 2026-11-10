@@ -21,7 +21,8 @@ const ROOT = resolve(HERE, '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const MY_OUT = join(HERE, 'out')
 const CAMPAIGN = process.env.EF_R1_PROMPT_CAMPAIGN ?? 'e2e-prompt-pilot-2'
-const ARMS = ['E0', 'E0-P']
+const ARMS = (process.env.EF_R1_PROMPT_ARMS ?? 'E0,E0-P').split(',').filter(Boolean)
+const SUFFIX = process.env.EF_R1_PROMPT_SUFFIX ?? ''
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex')
@@ -86,19 +87,21 @@ function perArm(arm) {
 const byKey = new Map(cells.map(row => [`${row.task}:${row.arm}`, row]))
 const pairs = []
 for (const task of [...new Set(cells.map(row => row.task))].sort()) {
-  const e0 = byKey.get(`${task}:E0`)
-  const p = byKey.get(`${task}:E0-P`)
-  if (e0 === undefined || p === undefined) continue
+  const left = byKey.get(`${task}:${ARMS[0]}`)
+  const right = byKey.get(`${task}:${ARMS[1]}`)
+  if (left === undefined || right === undefined) continue
   pairs.push({
     task,
-    e0Pass: e0.pass,
-    pPass: p.pass,
-    e0PromptLost: e0.promptLost,
-    pPromptLost: p.promptLost,
+    leftPass: left.pass,
+    rightPass: right.pass,
+    leftPromptLost: left.promptLost,
+    rightPromptLost: right.promptLost,
+    leftNoFold: left.noFold,
+    rightNoFold: right.noFold,
   })
 }
 
-const byArm = { E0: perArm('E0'), 'E0-P': perArm('E0-P') }
+const byArm = Object.fromEntries(ARMS.map(arm => [arm, perArm(arm)]))
 const output = {
   schemaVersion: 1,
   work: 'EF-R1 prompt protection',
@@ -109,11 +112,13 @@ const output = {
   byArm,
   pairs,
   paired: {
-    improved: pairs.filter(pair => pair.pPass && !pair.e0Pass).length,
-    worsened: pairs.filter(pair => !pair.pPass && pair.e0Pass).length,
-    tied: pairs.filter(pair => pair.pPass === pair.e0Pass).length,
-    promptLostBefore: pairs.filter(pair => pair.e0PromptLost === true).length,
-    promptLostAfter: pairs.filter(pair => pair.pPromptLost === true).length,
+    improved: pairs.filter(pair => pair.rightPass && !pair.leftPass).length,
+    worsened: pairs.filter(pair => !pair.rightPass && pair.leftPass).length,
+    tied: pairs.filter(pair => pair.rightPass === pair.leftPass).length,
+    promptLostBefore: pairs.filter(pair => pair.leftPromptLost === true).length,
+    promptLostAfter: pairs.filter(pair => pair.rightPromptLost === true).length,
+    noFoldBefore: pairs.filter(pair => pair.leftNoFold === true).length,
+    noFoldAfter: pairs.filter(pair => pair.rightNoFold === true).length,
   },
   sources: {
     results: `eval/e2e/out/results-${CAMPAIGN}.json`,
@@ -122,7 +127,7 @@ const output = {
   },
   note: 'n=4 pairs; a direction check, not a powered estimate.',
 }
-writeFileSync(join(MY_OUT, 'prompt-pilot-analysis.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8')
+writeFileSync(join(MY_OUT, `prompt-pilot-analysis${SUFFIX}.json`), `${JSON.stringify(output, null, 2)}\n`, 'utf8')
 
 const md = []
 md.push('# EF-R1 — prompt-protection pilot')
@@ -139,19 +144,25 @@ for (const arm of ARMS) {
 md.push('')
 md.push('## Paired by task')
 md.push('')
-md.push('| Task | E0 pass | E0-P pass | E0 prompt lost | E0-P prompt lost |')
+md.push(`| Task | ${ARMS[0]} pass | ${ARMS[1]} pass | ${ARMS[0]} prompt lost | ${ARMS[1]} prompt lost |`)
 md.push('|---|---|---|---|---|')
 for (const pair of pairs) {
-  md.push(`| ${pair.task} | ${pair.e0Pass ? 'yes' : 'no'} | ${pair.pPass ? 'yes' : 'no'} | ${pair.e0PromptLost ? 'yes' : 'no'} | ${pair.pPromptLost ? 'yes' : 'no'} |`)
+  md.push(`| ${pair.task} | ${pair.leftPass ? 'yes' : 'no'} | ${pair.rightPass ? 'yes' : 'no'} | ${pair.leftPromptLost ? 'yes' : 'no'} | ${pair.rightPromptLost ? 'yes' : 'no'} |`)
 }
 md.push('')
 md.push(`Improved **${output.paired.improved}**, worsened **${output.paired.worsened}**, tied **${output.paired.tied}**. `
-  + `Prompt lost E0 **${output.paired.promptLostBefore}**, E0-P **${output.paired.promptLostAfter}**. n=4 pairs; a direction check.`)
+  + `Prompt lost ${ARMS[0]} **${output.paired.promptLostBefore}**, ${ARMS[1]} **${output.paired.promptLostAfter}**. n=4 pairs; a direction check.`)
 md.push('')
-md.push('## The caveat that decides the reading')
-md.push('')
-md.push('**Every E0-P cell was an economic refusal, not a fold around the prompt.** The span after the active request was ~133 tokens and the checkpoint ~530, so the admission refused it; the cell retained the full ~18–19k surface. The pass rate is therefore a comparison of **no-fold vs fold**, not of "prompt protected during a fold" vs fold. Starting the leaf after the request is not a viable protection: it disables compression on this workload. The next design must fold normally and re-render the active request verbatim in the checkpoint (or re-pin it after the fold), not block the span.')
-writeFileSync(join(MY_OUT, 'prompt-pilot-analysis.md'), `${md.join('\n')}\n`, 'utf8')
+if (byArm[ARMS[1]].noFold > 0) {
+  md.push('## The caveat that decides the reading')
+  md.push('')
+  md.push(`**${byArm[ARMS[1]].noFold}/${byArm[ARMS[1]].cells} ${ARMS[1]} cells were economic refusals, not folds around the prompt.** The span after the active request was too small for admission, so the cells retained the full surface. The pass rate compares no-fold with fold, not protected-fold with fold. Starting the leaf after the request is not a viable protection.`)
+} else {
+  md.push('## The treatment folded normally')
+  md.push('')
+  md.push(`Every ${ARMS[1]} cell folded (no economic refusal) and retained fewer tokens on average, so the comparison is a real fold-vs-fold difference. The request is preserved by a runtime-authored copy in the checkpoint body, not by blocking compression.`)
+}
+writeFileSync(join(MY_OUT, `prompt-pilot-analysis${SUFFIX}.md`), `${md.join('\n')}\n`, 'utf8')
 
 process.stdout.write(`prompt pilot: ${cells.length} cells\n`)
 for (const arm of ARMS) {

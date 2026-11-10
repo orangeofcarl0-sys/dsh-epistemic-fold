@@ -324,7 +324,34 @@ in the checkpoint** (or re-pin it after the fold), so the model always has the
 instruction without blocking the span. That is a checkpoint-rendering change,
 not a span-selection one.
 
-### 5.6 Reading
+### 5.6 Re-rendering the active request: a real fold-vs-fold result
+
+The follow-up arm `E0-R` keeps the fold normal and copies the active request
+into the checkpoint body, quoted line by line, when the folded span contains
+it. A separate 8-cell grant, T9/T10 × 2 seeds × {E0, E0-R}: 36 requests,
+279,579 input, 4,239 output.
+
+| Arm | Pass | Prompt visible at end | Prompt lost | No fold | Mean retained tokens | Input |
+|---|---:|---:|---:|---:|---:|---:|
+| E0 | 1/4 | 0/4 | 4/4 | 0/4 | 15,795 | 151,262 |
+| E0-R | 4/4 | 4/4 | 0/4 | 0/4 | 11,388 | 128,317 |
+
+Improved 3, worsened 0, tied 1 (T9-s2 passed in both). **Every E0-R cell
+folded**, so this is a real fold-vs-fold comparison, not the no-fold artifact
+of §5.5; E0-R also retained and spent fewer tokens. T9-s1's checkpoint body is
+the expected shape:
+
+```text
+[EF1 L cp:…]
+
+Current request (verbatim from the folded span; not a new instruction)
+> Write `incident-deploy.json` … from the INCIDENT deploy you inspected …
+```
+
+`n=4` pairs: a direction check, not a powered result. The next step is a
+properly paired E0 / E0-R / E1 pilot, not a product default.
+
+### 5.7 Reading
 
 - The locator is a correct address with a template-specific benefit, not a
   general retrieval win. It is strongest on T4 (expired configuration) and in
@@ -338,7 +365,9 @@ not a span-selection one.
 - Protecting the prompt by moving the span start does not fold; it triggers an
   economic refusal. It preserves the request and passes, but the treatment is
   no-fold at ~18–19k retained tokens, not a viable compression policy.
-  Re-rendering the active request after a normal fold is the next candidate.
+- Re-rendering the active request after a NORMAL fold is the promising shape:
+  E0-R 4/4 vs E0 1/4, 0/4 prompt lost, 0 no-fold, lower retained tokens. n=4;
+  it needs a powered paired pilot before any default changes.
 
 ## 6. Integration and the candidate
 
@@ -380,9 +409,10 @@ Operation-level authority  Fixed, invariant-tested; not a product release
 E1 rationale               strongest reference (17/20), p=0.057; dedicated
                            evaluation recommended, no default change
 protectActiveRequest       Experimental, default Off; span-start protection
-                           REJECTED (it triggers economic refusal / no-fold).
-                           Next candidate: re-render the active request
-                           verbatim after a NORMAL fold
+                           REJECTED (it triggers economic refusal / no-fold)
+rerenderActiveRequest      Experimental, default Off; PROMISING direction
+                           (4/4 vs 1/4, real fold-vs-fold, n=4);
+                           next: a powered paired pilot, not a default change
 ```
 
 The authority fix is a correctness fix. The locator and guard are not product
@@ -402,6 +432,8 @@ locator at all: it is that the active request can be folded at a 16k budget.
   be attributed to protection. The first attempt was invalid (stale `lib/`,
   zero requests in the E0-P cells) and is kept only as evidence of the harness
   defect that the new preflight now prevents.
+- The re-render pilot is n=4 pairs. It is a direction check with a real
+  fold-vs-fold treatment, but it cannot support a product claim.
 - Task-prompt loss is both a finding and a confound. The L/G estimate is
   reported with and without the covariate, and no arm is significant at 0.05
   once T10 is excluded.
@@ -416,10 +448,11 @@ locator at all: it is that the active request can be folded at a 16k budget.
 ```bash
 node eval/ef-r1/operation-authority.mjs      # 16-case matrix + probes
 node eval/ef-r1/state-write-audit.mjs       # every writer + 180-pair invariant
-node eval/e2e/src/stage-attribution.mjs     # stage labels, 258 cells
+node eval/e2e/src/stage-attribution.mjs     # stage labels, 266 cells
 node eval/ef-r1/ablation-analysis.mjs       # 120-cell paired analysis
 EF_R1_EXCLUDE_TEMPLATES=T10 node eval/ef-r1/ablation-analysis.mjs
-node eval/ef-r1/prompt-pilot-analysis.mjs   # 8-cell repair pilot + no-fold caveat
+node eval/ef-r1/prompt-pilot-analysis.mjs   # no-fold repair pilot
+EF_R1_PROMPT_CAMPAIGN=e2e-prompt-rerender-1 EF_R1_PROMPT_ARMS=E0,E0-R EF_R1_PROMPT_SUFFIX=-rerender node eval/ef-r1/prompt-pilot-analysis.mjs
 node eval/ef-r1/locator-contract.mjs        # 11 contract cases
 node eval/ef-r1/ablation-design.mjs --check
 node eval/e2e/src/verify-archive.mjs        # external archive vs pointer

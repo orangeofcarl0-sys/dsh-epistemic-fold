@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 prompt protection",
+  "generatedAt": "2026-11-10T08:20:07.398Z",
+  "campaign": "e2e-prompt-rerender-1",
+  "cells": 8,
+  "usage": {
+    "requests": 36,
+    "inputTokens": 279579,
+    "outputTokens": 4239,
+    "wallClockMs": 89223
+  },
+  "byArm": {
+    "E0": {
+      "cells": 4,
+      "passed": 1,
+      "promptLost": 4,
+      "promptVisibleAtEnd": 0,
+      "noFold": 0,
+      "meanRetainedTokens": 15795,
+      "requests": 18,
+      "inputTokens": 151262,
+      "outputTokens": 2400
+    },
+    "E0-R": {
+      "cells": 4,
+      "passed": 4,
+      "promptLost": 0,
+      "promptVisibleAtEnd": 4,
+      "noFold": 0,
+      "meanRetainedTokens": 11388,
+      "requests": 18,
+      "inputTokens": 128317,
+      "outputTokens": 1839
+    }
+  },
+  "pairs": [
+    {
+      "task": "T10-s1",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T10-s2",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T9-s1",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T9-s2",
+      "leftPass": true,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    }
+  ],
+  "paired": {
+    "improved": 3,
+    "worsened": 0,
+    "tied": 1,
+    "promptLostBefore": 4,
+    "promptLostAfter": 0,
+    "noFoldBefore": 0,
+    "noFoldAfter": 0
+  },
+  "sources": {
+    "results": "eval/e2e/out/results-e2e-prompt-rerender-1.json",
+    "resultsSha256": "bb871d525697cf0e8aa06e42825657d74271eeea7470868569c5008ed516a9d2",
+    "stageAttributionSha256": "e07face30d3599c35bdf22fe93725427b16c0279050042854acff13ee578b747"
+  },
+  "note": "n=4 pairs; a direction check, not a powered estimate."
+}
