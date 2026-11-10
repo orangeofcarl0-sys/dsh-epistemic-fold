@@ -69,6 +69,13 @@ const ENVELOPES = {
     outputTokens: 40_000,
     wallClockMs: 30 * 60 * 1000,
   },
+  'prompt-confirm': {
+    continuationCells: 24,
+    httpAttempts: 720,
+    inputTokens: 6_000_000,
+    outputTokens: 250_000,
+    wallClockMs: 3 * 60 * 60 * 1000,
+  },
   'prompt-rerender': {
     continuationCells: 8,
     httpAttempts: 200,
