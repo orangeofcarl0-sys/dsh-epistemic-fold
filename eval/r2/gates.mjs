@@ -34,6 +34,9 @@ const causal = load('causal-reanalysis.json')
 const cost = load('cost-ledger.json')
 const authority = load('authority-closure.json')
 const design = load('live-design-r2.json')
+const livePilot = load('live-pilot-analysis.json')
+const liveConfirm = load('live-confirm-analysis.json')
+const routeIncident = load('live-route-incident.json')
 const claims = load('evidence-claims.json')
 const archive = has('eval/r2/out/research-archive-r2.json') ? readJson(join(ROOT, 'eval', 'r2', 'out', 'research-archive-r2.json')) : null
 const archiveVerify = has('eval/r2/out/archive-verification-r2.json') ? readJson(join(ROOT, 'eval', 'r2', 'out', 'archive-verification-r2.json')) : null
@@ -101,6 +104,22 @@ gate('R2-G7',
     ? 'pass' : 'fail',
 `EF_R2.md ${has('docs/convergence/EF_R2.md') ? 'present' : 'missing'}; claims missing ${claims?.missing?.length ?? '?'}; live authorized ${design?.executionAuthorized ?? '?'}`)
 
+gate('R2-G8',
+  livePilot?.executed === 18
+    && livePilot?.feasibility?.e1CellsWithCommit === 6
+    && livePilot?.feasibility?.e1CellsWithDelivery === 6
+    && livePilot?.feasibility?.e1Refused === 0
+    && livePilot?.feasibility?.e1Aborted === 0
+    ? 'pass' : 'fail',
+`pilot ${livePilot?.executed ?? '?'}/18; E1 commit ${livePilot?.feasibility?.e1CellsWithCommit ?? '?'}/6, delivered ${livePilot?.feasibility?.e1CellsWithDelivery ?? '?'}/6, refused ${livePilot?.feasibility?.e1Refused ?? '?'}, aborted ${livePilot?.feasibility?.e1Aborted ?? '?'}`)
+
+gate('R2-G9',
+  liveConfirm?.executed === routeIncident?.validCells
+    && routeIncident?.validCells !== undefined
+    && routeIncident.validCells < 54
+    ? 'incomplete' : 'fail',
+`confirm ${routeIncident?.validCells ?? '?'}/54 valid; ${routeIncident?.invalidCells ?? '?'} transport-failed, ${routeIncident?.unexecutedCells ?? '?'} unexecuted; no further live calls until the route is stable`)
+
 const output = {
   schemaVersion: 1,
   work: 'EF-R2',
@@ -109,6 +128,7 @@ const output = {
   counts: {
     pass: gates.filter(entry => entry.status === 'pass').length,
     pending: gates.filter(entry => entry.status === 'pending').length,
+    incomplete: gates.filter(entry => entry.status === 'incomplete').length,
     fail: gates.filter(entry => entry.status === 'fail').length,
   },
   sources: {
@@ -133,5 +153,5 @@ const output = {
 mkdirSync(OUT, { recursive: true })
 writeFileSync(join(OUT, 'gate-status.json'), `${JSON.stringify(output, null, 2)}\n`, 'utf8')
 for (const entry of gates) process.stdout.write(`${entry.id} ${entry.status.toUpperCase()} — ${entry.detail}\n`)
-process.stdout.write(`${output.counts.pass} pass, ${output.counts.pending} pending, ${output.counts.fail} fail\n`)
+process.stdout.write(`${output.counts.pass} pass, ${output.counts.pending} pending, ${output.counts.incomplete} incomplete, ${output.counts.fail} fail\n`)
 if (output.counts.fail > 0) process.exit(1)

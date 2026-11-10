@@ -1,10 +1,13 @@
 # EF-R2 — Effective Compaction & Rationale Causality
 
-Status: **complete, offline**, 2026-11-10. No live model call was made in this
-round. No merge, release or deployment was performed. Semantic Active remains
-on Deployment Hold. The supported-lane CI passed on `4af0eea` (run
-42804489967); the DSH-master compatibility probe failed as expected and is
-non-blocking.
+Status: **complete offline, plus an authorized pilot and a partial confirm**,
+2026-11-10. The 18-cell pilot executed 18/18. The 54-cell confirm stopped twice
+on provider-transport failures (21/54, then 4/34), leaving 23 valid cells; it is
+not a confirmatory result. No merge, release or deployment was performed.
+Semantic Active remains on Deployment Hold. The supported-lane CI passed on
+`4af0eea` (run 42804489967); the DSH-master compatibility probe failed as
+expected and is non-blocking. The live/docs head is re-run at the end of the
+round.
 
 This round did not add a recall prompt, a locator variant or a semantic memory
 component. It asked a smaller and more useful question: **what did the
@@ -33,9 +36,11 @@ The answer changed three EF-R1 readings. The ITT numbers did not change.
    inputs let an assistant quote an old user decision next to its own newer
    statement and pass both the source and stale-source gates. The new origin
    rule refuses it.
-5. **A 72-cell B0/E0/E1 design is frozen and not authorized.** It uses 12 new,
-   offline-certified instances, the corrected `economic` admission, and a
-   36/36 zero-request preflight. No provider call is granted by this round.
+5. **The 72-cell design is frozen; the pilot ran; the confirm is incomplete.**
+   The 18-cell pilot executed 18/18, with E1 committing and delivering in 6/6
+   cells. The 54-cell confirm stopped twice on provider-transport failures and
+   left 23/54 valid cells. The valid subset is B0 4/7, E0 1/7, E1 5/9; it is
+   descriptive, not a confirmatory result.
 
 ---
 
@@ -328,7 +333,7 @@ Refusal is safe; the false-negative direction is recorded, not hidden.
 
 ---
 
-## 9. WP6 — the frozen 72-cell design (not authorized)
+## 9. WP6 — the 72-cell design and the stage grants
 
 `eval/r2/out/live-design-r2.json` and
 `eval/e2e/out/manifest-e2e-r2-live-1.json` freeze:
@@ -337,9 +342,22 @@ Refusal is safe; the false-negative direction is recorded, not hidden.
 - 12 new instances under `eval/e2e/tasks-r2/`, none of them a T7–T10 rerun;
 - config for E0/E1: `leafAdmission: economic`, `rootPolicy: economics`,
   `framingMode: legacy`, `semanticContinuity: off`;
-- a proposed envelope (72 cells, 2,000 HTTP attempts, 20M input, 1.5M output,
-  6 h), **not granted**;
+- a proposed 72-cell envelope (2,000 HTTP attempts, 20M input, 1.5M output,
+  6 h);
 - `executionAuthorized: false`, `authorizationState: 'not-requested'`.
+
+The design manifest was never authorized as one run. The live stage used two
+separate stage manifests and hashes:
+
+- `manifest-e2e-r2-pilot-1.json` — 18 cells, envelope `r2-live-pilot`
+  (600 requests / 5M input / 400k output / 2 h);
+- `manifest-e2e-r2-confirm-1.json` — the remaining 54 cells, envelope
+  `r2-live` (72 cells / 2,000 requests / 20M / 1.5M / 6 h);
+- `manifest-e2e-r2-confirm-resume-1.json` — the 34 cells not valid after the
+  first confirm attempt, a new hash inside `r2-live`.
+
+The pilot grant is closed. The `r2-live` envelope was partially used and is not
+permission to retry without a stable route.
 
 Offline certification: 12/12 instances fail initially, pass with the reference,
 fail with the counterfactual, and seed above the 8,192-token threshold
@@ -359,7 +377,76 @@ caught before a live run instead of after one.
 
 ---
 
-## 10. Gates
+## 10. Live stage (authorized)
+
+### 10.1 Pilot — 18/18 executed, feasibility healthy
+
+The pilot used the six **seed-1** instances × {B0, E0, E1} × one replicate.
+
+| Arm | Pass | Attempts | Committed | Refused | Aborted | Delivered | Requests | Input | Output |
+|---|---|---|---|---|---|---|---|---|---|
+| B0 | 5/6 | 43 | 20 | 15 | 8 | 16 | 77 | 916,786 | 39,463 |
+| E0 | 2/6 | 25 | 24 | 0 | 0 | 23 | 49 | 736,288 | 8,875 |
+| E1 | 6/6 | 9 | 9 | 0 | 0 | 9 | 47 | 711,836 | 13,886 |
+
+- Every E1 cell committed and delivered; there were no E1 refusals or aborts.
+- T16 reached two committed folds in both EF arms (E0 6, E1 2).
+- Paired descriptive McNemar: E1 vs E0 4/0, p=0.125; E1 vs B0 1/0, p=1;
+  E0 vs B0 0/3, p=0.25. Pilot n=6 per arm: direction, not effect.
+- Envelope: 173 requests, 2,364,910 input, 62,224 output, 977 s — within
+  `r2-live-pilot`.
+
+The pilot's purpose was feasibility: legal spans, commits, delivery, no
+provider/transaction errors. It passed that purpose. It does **not** establish
+that E1 improves task success.
+
+### 10.2 Confirm — 23/54 valid, not a confirm
+
+The confirm used the remaining instances (seed-1 replicate 2 and seed-2
+replicates 1–2).
+
+| Attempt | Executed | Valid | Stop |
+|---|---|---|---|
+| `e2e-r2-confirm-1` | 21/54 | 20 | `provider-usage-missing` after `ECONNRESET` |
+| `e2e-r2-confirm-resume-1` | 4/34 | 3 | `provider-usage-missing` after `UND_ERR_SOCKET` |
+| merged | — | **23** | 2 transport-failed, 29 unexecuted |
+
+Valid subset:
+
+| Arm | Pass | Attempts | Committed | Refused | Aborted | Delivered |
+|---|---|---|---|---|---|---|
+| B0 | 4/7 | 44 | 18 | 22 | 4 | 15 |
+| E0 | 1/7 | 36 | 33 | 0 | 0 | 30 |
+| E1 | 5/9 | 18 | 17 | 0 | 0 | 17 |
+
+- E1 again committed and delivered in every valid cell (17/17).
+- The valid subset does **not** reproduce the pilot's E1 direction: E1 5/9 vs
+  B0 4/7 and E0 1/7. Paired McNemar is unbalanced and descriptive: E1 vs E0
+  3/0, p=0.25; E1 vs B0 0/0, p=1.
+- T11 is uniformly hard: 0/9 valid confirm cells pass across all three arms.
+  T12/T13 are mixed. T11 contributes little to the effect estimate and is
+  reported separately by template.
+- Transport-failed cells are **not** arm outcomes and are excluded; the merged
+  result is explicitly `partial`.
+
+### 10.3 Route incident and decision
+
+The local route `http://127.0.0.1:7866/v1` reset sockets on every request in
+two cells (`LIVE_TRANSPORT`, `ECONNRESET`, `UND_ERR_SOCKET`). The runner stopped
+on `provider-usage-missing`; no further live calls were made. The incident is
+recorded in `eval/r2/out/live-route-incident.json`.
+
+Envelope usage: pilot 2.365M input / 62.2k output; confirm attempt 1 2.327M /
+63.6k; resume 168.7k / 4.6k. No cap was exceeded.
+
+**Decision:** the pilot is complete; the confirm is incomplete. The 23 valid
+cells are not a confirm and are not pooled with the pilot as a powered
+estimate. A route-stable resume requires a new stage manifest and an explicit
+grant; unused envelope capacity is not permission to retry.
+
+---
+
+## 11. Gates
 
 | Gate | Status | Evidence |
 |---|---|---|
@@ -371,14 +458,17 @@ caught before a live run instead of after one.
 | R2-G4 | pass | cost ledger reconciles; 42 calls; 16,384 reservation |
 | R2-G5 | pass | old allowed → new refused; 12 tests; retire not model-callable |
 | R2-G6 | pass | supported lane on `4af0eea` (run 42804489967); the master probe failed as expected and is non-blocking |
-| R2-G7 | pass | EF_R2.md, claims complete, live unauthorized |
+| R2-G7 | pass | EF_R2.md, claims complete, design manifest unauthorized; stage grants separate |
+| R2-G8 | pass | pilot 18/18; E1 6/6 commit and delivery; 0 E1 refusals/aborts |
+| R2-G9 | **incomplete** | confirm 23/54 valid after provider-transport failures; not a confirm; no further live calls until the route is stable |
 
 `eval/r2/out/gate-status.json` is generated by `eval/r2/gates.mjs`. G6 is set
-from `EF_R2_CI_STATUS` after the supported-lane run.
+from `EF_R2_CI_STATUS` after the supported-lane run; G9 is `incomplete` by
+design, not a silently promoted pass.
 
 ---
 
-## 11. What changed in the EF-R1 reading
+## 12. What changed in the EF-R1 reading
 
 | EF-R1 statement | EF-R2 refinement |
 |---|---|
@@ -388,13 +478,14 @@ from `EF_R2_CI_STATUS` after the supported-lane run.
 | Task-prompt loss is a confound | The E1 lost cells still had the values; the covariate is reproduced but is not an information-loss explanation |
 | T2/T4 E1 8/8 | Committed 8/8, delivered 8/8, probes 2/2; a post-fold result, not a product claim |
 | E1's 18/24 ITT | Unchanged; it includes 13 no-fold cells (9 pass) and 11 committed cells (9 pass) |
+| The 72-cell design was not run | Pilot 18/18 (E1 6/6); confirm incomplete at 23/54 after provider-transport failures; the design manifest remains unauthorized as one run |
 
 Unchanged: the 120-cell ITT numbers, the T10 exclusion, the finding that no L/G
 arm is significant at 0.05 after excluding T10, and the Deployment Hold.
 
 ---
 
-## 12. Limits
+## 13. Limits
 
 - One model, one route, one machine. No product-level claim.
 - The 120-cell E1 arm is not the shipped tier; the WP6 design corrects the
@@ -408,8 +499,14 @@ arm is significant at 0.05 after excluding T10, and the Deployment Hold.
 - Values-only delivery proves facts, not instruction wording.
 - No verifiable per-token price; the ledger is tokens, requests, bytes and wall
   clock.
-- The 72-cell design is frozen and uncertified by a live run. The preflight is a
-  scripted wiring test.
+- The pilot ran 18/18 and is a feasibility result. The 54-cell confirm is
+  **incomplete**: 23 valid cells, 2 transport-failed, 29 unexecuted. It is not
+  a confirmatory estimate and is not pooled with the pilot.
+- The local provider route reset sockets (`ECONNRESET` / `UND_ERR_SOCKET` /
+  `LIVE_TRANSPORT`) in two cells. No further live calls were made. A
+  route-stable resume needs a new stage manifest and an explicit grant.
+- T11 is uniformly hard in the valid confirm subset (0/9 across all arms); it
+  contributes little to the effect estimate.
 - The local supported lane has one `rc7-inplace-drift` failure because the
   vendored DSH reference tree is not present locally; CI checks out the pinned
   DSH and is the gate. The other local failures are in the workflow's
@@ -420,7 +517,7 @@ arm is significant at 0.05 after excluding T10, and the Deployment Hold.
 
 ---
 
-## 13. Decisions
+## 14. Decisions
 
 - Semantic Active: **Deployment Hold (unchanged)**.
 - Rationale: no prompt change, no budget change, no default change.
@@ -428,12 +525,19 @@ arm is significant at 0.05 after excluding T10, and the Deployment Hold.
   arms.
 - Mixed-origin authority: closed in the supported source; conservative
   false-refusal direction recorded.
-- Live confirmation: a new grant is required, bound to
-  `manifest-e2e-r2-live-1.json`; the R1 envelopes remain closed.
+- Live pilot: complete and healthy for feasibility; E1 committed and delivered
+  in 6/6 cells.
+- Live confirm: **incomplete**. The 23 valid cells are descriptive, not a
+  confirm; the pilot's E1 direction is not reproduced (E1 5/9, B0 4/7, E0 1/7).
+  A route-stable resume requires a new stage manifest and an explicit grant.
+- Product: no E1 decision from this round. E1 remains a research branch; E0/EF
+  minimal remains the safer candidate; no default change.
+- The R1 envelopes remain closed; the `r2-live` envelope was partially used and
+  is not permission to retry.
 
 ---
 
-## 14. Reproduction
+## 15. Reproduction
 
 ```bash
 node eval/r2/baseline.mjs
@@ -458,9 +562,32 @@ EF_R2_CI_STATUS=success node eval/r2/gates.mjs
 The archive commands need the external `EF_R2_RESEARCH_ARCHIVE` directory; the
 repository carries only the pointer and hashes.
 
+The live stage (route and stage grant required; not re-runnable without a new
+authorization hash):
+
+```bash
+node eval/r2/freeze-stage.mjs --stage pilot
+node eval/e2e/src/authorize.mjs \
+  --manifest eval/e2e/out/manifest-e2e-r2-pilot-1.json \
+  --envelope r2-live-pilot \
+  --out eval/e2e/out/authorization-e2e-r2-pilot-1.json
+node eval/e2e/src/run.mjs --check --manifest ... --authorization ...
+node eval/e2e/src/run.mjs --run   --manifest ... --authorization ...
+EF_E2E_TASKS_DIR=eval/e2e/tasks-r2 node eval/e2e/src/analyze.mjs --campaign e2e-r2-pilot-1
+node eval/r2/live-analysis.mjs --campaign e2e-r2-pilot-1 --out live-pilot-analysis
+
+# confirm and its route-stable resume
+node eval/r2/freeze-stage.mjs --stage confirm
+# ... authorize under r2-live and run ...
+node eval/r2/freeze-resume.mjs
+# ... authorize the new resume hash and run ...
+node eval/r2/merge-confirm.mjs
+node eval/r2/live-analysis.mjs --campaign e2e-r2-confirm-merged --out live-confirm-analysis
+```
+
 ---
 
-## 15. Evidence
+## 16. Evidence
 
 `eval/r2/out/evidence-claims.json` is the round's claim registry. It names one
 artifact and one limitation per claim and never upgrades an unverifiable cell.

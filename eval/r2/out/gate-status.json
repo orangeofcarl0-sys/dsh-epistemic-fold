@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R2",
-  "generatedAt": "2026-11-10T11:07:42.603Z",
+  "generatedAt": "2026-11-10T12:15:43.717Z",
   "gates": [
     {
       "id": "R2-G0",
@@ -40,18 +40,29 @@
     },
     {
       "id": "R2-G6",
-      "status": "pass",
-      "detail": "supported CI success; the master probe remains non-blocking by design"
+      "status": "pending",
+      "detail": "supported CI pending; the master probe remains non-blocking by design"
     },
     {
       "id": "R2-G7",
       "status": "pass",
       "detail": "EF_R2.md present; claims missing 0; live authorized false"
+    },
+    {
+      "id": "R2-G8",
+      "status": "pass",
+      "detail": "pilot 18/18; E1 commit 6/6, delivered 6/6, refused 0, aborted 0"
+    },
+    {
+      "id": "R2-G9",
+      "status": "incomplete",
+      "detail": "confirm 23/54 valid; 2 transport-failed, 29 unexecuted; no further live calls until the route is stable"
     }
   ],
   "counts": {
     "pass": 9,
-    "pending": 0,
+    "pending": 1,
+    "incomplete": 1,
     "fail": 0
   },
   "sources": {
@@ -67,7 +78,7 @@
     "claims": "eval/r2/out/evidence-claims.json"
   },
   "ci": {
-    "status": "success",
+    "status": "pending",
     "note": "Set EF_R2_CI_STATUS after the supported-lane run. The master probe is non-blocking and is not a gate."
   },
   "note": "A gate is evaluated from the artifact it names. No unknown is promoted to a pass."
