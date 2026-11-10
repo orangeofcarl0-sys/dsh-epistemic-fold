@@ -83,6 +83,23 @@ const ENVELOPES = {
     outputTokens: 40_000,
     wallClockMs: 30 * 60 * 1000,
   },
+  // EF-R2 pilot: 18 cells (six seed-1 instances x B0/E0/E1). Separate from the
+  // 72-cell design grant so a pilot cannot silently consume the confirm budget.
+  'r2-live-pilot': {
+    continuationCells: 18,
+    httpAttempts: 600,
+    inputTokens: 5_000_000,
+    outputTokens: 400_000,
+    wallClockMs: 2 * 60 * 60 * 1000,
+  },
+  // EF-R2 confirm: the remaining 54 cells inside the 72-cell design envelope.
+  'r2-live': {
+    continuationCells: 72,
+    httpAttempts: 2_000,
+    inputTokens: 20_000_000,
+    outputTokens: 1_500_000,
+    wallClockMs: 6 * 60 * 60 * 1000,
+  },
 }
 const envelopeName = value('envelope') ?? 'original'
 const ENVELOPE = ENVELOPES[envelopeName]
