@@ -56,6 +56,20 @@ async function loadTask(id) {
   return JSON.parse(await readFile(join(TASKS, `${id}.json`), 'utf8'))
 }
 
+/**
+ * Load a live cell's task from the manifest's own file list.
+ *
+ * The original runner assumed every task lived in `eval/e2e/tasks`, which is
+ * fine for T1-T10 and wrong for a later round's separately certified set. The
+ * manifest names the file and its digest; use that, so the live run cannot
+ * silently load a different instance with the same id.
+ */
+async function loadManifestTask(manifest, id) {
+  const entry = (manifest.tasks ?? []).find(task => task.id === id)
+  if (entry === undefined) throw new Error(`task ${id} is not in the frozen manifest`)
+  return JSON.parse(await readFile(join(ROOT, entry.file), 'utf8'))
+}
+
 async function loadManifest(path) {
   const text = await readFile(path, 'utf8')
   return { manifest: JSON.parse(text), digest: sha256(text) }
@@ -267,7 +281,7 @@ async function main() {
       results.push({ cell, status: 'not-executed', reason: stopReason })
       continue
     }
-    const task = await loadTask(cell.task)
+    const task = await loadManifestTask(manifest, cell.task)
     const cellLimits = {
       requests: Math.max(1, Math.min(manifest.perCell.requests, remaining.requests)),
       inputTokens: Math.max(1, Math.min(manifest.perCell.inputTokens, remaining.inputTokens)),
