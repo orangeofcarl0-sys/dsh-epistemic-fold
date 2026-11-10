@@ -1,0 +1,16 @@
+{
+  "granted": true,
+  "grantedAt": "2026-11-10T07:34:17.368Z",
+  "manifestSha256": "18d4192ba87353c709efc9c77bd18811c238dbe40584328244d4b3690a551e96",
+  "campaign": "e2e-prompt-pilot-1",
+  "cells": 8,
+  "statement": "Delegated authorization under the EF-E2E work package: the user authorized this envelope, the manifest is inside it, and the run may not exceed the manifest limits.",
+  "envelopeName": "lg-confirm",
+  "envelope": {
+    "continuationCells": 138,
+    "httpAttempts": 4200,
+    "inputTokens": 30000000,
+    "outputTokens": 1200000,
+    "wallClockMs": 21600000
+  }
+}
