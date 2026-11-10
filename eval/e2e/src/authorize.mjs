@@ -62,6 +62,13 @@ const ENVELOPES = {
     outputTokens: 1_200_000,
     wallClockMs: 6 * 60 * 60 * 1000,
   },
+  'prompt-repair': {
+    continuationCells: 8,
+    httpAttempts: 200,
+    inputTokens: 1_000_000,
+    outputTokens: 40_000,
+    wallClockMs: 30 * 60 * 1000,
+  },
 }
 const envelopeName = value('envelope') ?? 'original'
 const ENVELOPE = ENVELOPES[envelopeName]

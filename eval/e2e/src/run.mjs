@@ -95,6 +95,17 @@ async function verifyBinding(manifest) {
   if (dirty.length > 0) {
     return { ok: false, reason: `the worktree is dirty outside the evidence directories:\n${dirty.join('\n')}` }
   }
+  // `lib/` is gitignored, so the source digest cannot see a stale build. The
+  // prompt pilot ran E0-P against a lib that predated the config key and every
+  // cell failed at construction with 0 requests. Refuse that class up front.
+  try {
+    execFileSync(process.execPath, [join(ROOT, 'scripts', 'preflight-lib.mjs')], {
+      cwd: ROOT,
+      stdio: 'pipe',
+    })
+  } catch {
+    return { ok: false, reason: 'lib/ is stale or missing; run `npm run build` before the campaign' }
+  }
   for (const task of manifest.tasks) {
     const text = await readFile(join(ROOT, task.file), 'utf8')
     if (sha256(text) !== task.digest) {

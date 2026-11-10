@@ -86,6 +86,21 @@ const LG_PILOT_ENVELOPE = {
 }
 
 /**
+ * Repair grant for the prompt pilot after a stale lib/ made every E0-P cell
+ * fail at construction with zero requests. This is a separate, small grant; the
+ * first pilot's E0-P rows are invalid and are not used.
+ */
+const PROMPT_REPAIR_ENVELOPE = {
+  continuationCells: 8,
+  httpAttempts: 200,
+  inputTokens: 1_000_000,
+  outputTokens: 40_000,
+  monetaryUsd: 5,
+  wallClockMs: 30 * 60 * 1000,
+  paidConcurrency: 2,
+}
+
+/**
  * The confirmatory L×G design: 120 cells + 18 fault reserve. This is the
  * envelope the pilot gate authorized; it is separate from both earlier grants.
  */
@@ -157,7 +172,16 @@ async function main() {
   const lgConfirm = argv.includes('--lg-confirm')
   const t10Retest = argv.includes('--t10-retest')
   const promptPilot = argv.includes('--prompt-pilot')
-  if (promptPilot) {
+  const promptRepair = argv.includes('--prompt-repair')
+  if (promptRepair) {
+    // Same 8 cells as the prompt pilot, after `npm run build` made the config
+    // key visible to the built plugin. The first pilot's E0-P rows are invalid.
+    for (const task of ['T9-s1', 'T9-s2', 'T10-s1', 'T10-s2']) {
+      for (const arm of ['E0', 'E0-P']) {
+        cells.push({ block: 'prompt-repair', task, arm, replicate: 1 })
+      }
+    }
+  } else if (promptPilot) {
     // Prompt-protection pilot under the LAST 8 cells of the confirm reserve:
     // T9/T10 (where the confirm lost the request), both seeds, E0 vs E0-P.
     for (const task of ['T9-s1', 'T9-s2', 'T10-s1', 'T10-s2']) {
@@ -304,7 +328,7 @@ async function main() {
   // The ORIGINAL envelope is cumulative across its phases. The FOLLOW-UP
   // envelope (`--index`) is separate and starts from zero: the original is
   // closed at 72/72, and its spend must not be charged twice.
-  const envelope = promptPilot ? LG_CONFIRM_ENVELOPE : t10Retest ? LG_CONFIRM_ENVELOPE : lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
+  const envelope = promptRepair ? PROMPT_REPAIR_ENVELOPE : promptPilot ? LG_CONFIRM_ENVELOPE : t10Retest ? LG_CONFIRM_ENVELOPE : lgConfirm ? LG_CONFIRM_ENVELOPE : lgPilot ? LG_PILOT_ENVELOPE : index ? FOLLOWUP_ENVELOPE : ENVELOPE
   let priorUsage = { requests: 0, inputTokens: 0, outputTokens: 0, wallClockMs: 0 }
   let priorCells = 0
   if (promptPilot) {
@@ -385,6 +409,7 @@ async function main() {
       lgConfirm: cells.filter(cell => cell.block === 'lg-confirm').length,
       t10Retest: cells.filter(cell => cell.block === 't10-retest').length,
       promptPilot: cells.filter(cell => cell.block === 'prompt-pilot').length,
+      promptRepair: cells.filter(cell => cell.block === 'prompt-repair').length,
       replicates: 'r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block',
       scorerVersion: 1,
       operationalBudgetTokens: 'per task (16384); an operational budget, not the model window',
@@ -404,7 +429,9 @@ async function main() {
       paidConcurrency: envelope.paidConcurrency,
     },
     authorizationEnvelope: {
-      reference: promptPilot
+      reference: promptRepair
+        ? 'Repair grant for the prompt-protection pilot after a stale lib/'
+        : promptPilot
         ? 'Prompt-protection pilot under the last 8 cells of the confirm reserve'
         : t10Retest
         ? 'T10 fault retest under the remaining 18-cell reserve of the lg-confirm envelope'
@@ -415,7 +442,9 @@ async function main() {
         : index
           ? 'Separate 24-cell follow-up envelope for the folded-span-index campaign'
           : 'EF-E2E work package §2.3-2.4 (delegated manifest freeze)',
-      statement: promptPilot
+      statement: promptRepair
+        ? 'the first prompt pilot failed at construction because lib/ predated the config key; this separate 8-cell grant reruns it after a build'
+        : promptPilot
         ? 'the confirm lost the active request in 44/120 cells; this 8-cell pilot tests the opt-in leaf rule inside the remaining reserve, with both prior campaigns subtracted'
         : t10Retest
         ? 'the confirm exposed an ambiguous T10 fixture; this 10-cell retest uses the fixed task inside the remaining reserve of the confirm envelope, with the prior usage subtracted'
