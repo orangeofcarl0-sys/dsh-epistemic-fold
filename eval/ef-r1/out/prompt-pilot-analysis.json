@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 prompt protection",
+  "generatedAt": "2026-11-10T07:43:36.287Z",
+  "campaign": "e2e-prompt-pilot-2",
+  "cells": 8,
+  "usage": {
+    "requests": 24,
+    "inputTokens": 117205,
+    "outputTokens": 3341,
+    "wallClockMs": 64078
+  },
+  "byArm": {
+    "E0": {
+      "cells": 4,
+      "passed": 0,
+      "promptLost": 4,
+      "promptVisibleAtEnd": 0,
+      "noFold": 0,
+      "meanRetainedTokens": 5593,
+      "requests": 16,
+      "inputTokens": 115618,
+      "outputTokens": 2375
+    },
+    "E0-P": {
+      "cells": 4,
+      "passed": 3,
+      "promptLost": 0,
+      "promptVisibleAtEnd": 4,
+      "noFold": 4,
+      "meanRetainedTokens": 18768,
+      "requests": 8,
+      "inputTokens": 1587,
+      "outputTokens": 966
+    }
+  },
+  "pairs": [
+    {
+      "task": "T10-s1",
+      "e0Pass": false,
+      "pPass": true,
+      "e0PromptLost": true,
+      "pPromptLost": false
+    },
+    {
+      "task": "T10-s2",
+      "e0Pass": false,
+      "pPass": true,
+      "e0PromptLost": true,
+      "pPromptLost": false
+    },
+    {
+      "task": "T9-s1",
+      "e0Pass": false,
+      "pPass": false,
+      "e0PromptLost": true,
+      "pPromptLost": false
+    },
+    {
+      "task": "T9-s2",
+      "e0Pass": false,
+      "pPass": true,
+      "e0PromptLost": true,
+      "pPromptLost": false
+    }
+  ],
+  "paired": {
+    "improved": 3,
+    "worsened": 0,
+    "tied": 1,
+    "promptLostBefore": 4,
+    "promptLostAfter": 0
+  },
+  "sources": {
+    "results": "eval/e2e/out/results-e2e-prompt-pilot-2.json",
+    "resultsSha256": "b2dee206e72e59fe42efc8f6f70ea058f15401b326de90615238de9bedc36e2e",
+    "stageAttributionSha256": "b29a9dde4a3642a2aeee4dd388ec8e8342e323d4aa132abf4b10880297b7a36f"
+  },
+  "note": "n=4 pairs; a direction check, not a powered estimate."
+}

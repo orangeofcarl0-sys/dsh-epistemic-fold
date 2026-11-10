@@ -300,7 +300,31 @@ must be protected from folding**, not merely better addressed in the archive.
 The pilot's T9-s1 E0 cell failed with "I don't see a question in your latest
 message — just the folded context markers" after three folds.
 
-### 5.5 Reading
+### 5.5 Prompt-protection pilot: the treatment was no-fold
+
+An opt-in prototype (`protectActiveRequest`) starts the leaf span after the last
+real user message. The repaired 8-cell pilot (the first attempt is invalid: a
+stale `lib/` made every E0-P cell fail at construction with zero requests) ran
+T9/T10 × 2 seeds × {E0, E0-P}: 24 requests, 117,205 input, 3,341 output.
+
+| Arm | Pass | Prompt visible at end | Prompt lost | No fold | Mean retained tokens |
+|---|---:|---:|---:|---:|---:|
+| E0 | 0/4 | 0/4 | 4/4 | 0/4 | 5,593 |
+| E0-P | 3/4 | 4/4 | 0/4 | **4/4** | 18,768 |
+
+The prompt is preserved and the pass rate moves 0/4 → 3/4, **but every E0-P
+cell is an economic refusal, not a fold around the prompt**: the post-request
+span was ~133 tokens and the checkpoint ~530, so admission refused it and the
+cell kept the full ~18–19k surface. The comparison is **no-fold vs fold**, not
+"protected during a fold" vs fold. Starting the leaf after the request disables
+compression on this workload and is not a viable protection.
+
+The next design must fold normally and **re-render the active request verbatim
+in the checkpoint** (or re-pin it after the fold), so the model always has the
+instruction without blocking the span. That is a checkpoint-rendering change,
+not a span-selection one.
+
+### 5.6 Reading
 
 - The locator is a correct address with a template-specific benefit, not a
   general retrieval win. It is strongest on T4 (expired configuration) and in
@@ -311,6 +335,10 @@ message — just the folded context markers" after three folds.
   p=0.057; it deserves a dedicated evaluation, not an automatic default.
 - On the fixed T10, the guard and E1 both pass 2/2, the locator 0/2 and E0 0/2.
   The multi-revision task is solvable, but not by the address alone; n=2.
+- Protecting the prompt by moving the span start does not fold; it triggers an
+  economic refusal. It preserves the request and passes, but the treatment is
+  no-fold at ~18–19k retained tokens, not a viable compression policy.
+  Re-rendering the active request after a normal fold is the next candidate.
 
 ## 6. Integration and the candidate
 
@@ -351,8 +379,10 @@ completionGuard            Research-only; hand to DSH Agent Runtime, not EF
 Operation-level authority  Fixed, invariant-tested; not a product release
 E1 rationale               strongest reference (17/20), p=0.057; dedicated
                            evaluation recommended, no default change
-Task-prompt protection     new product candidate; the active request must
-                           not be foldable
+protectActiveRequest       Experimental, default Off; span-start protection
+                           REJECTED (it triggers economic refusal / no-fold).
+                           Next candidate: re-render the active request
+                           verbatim after a NORMAL fold
 ```
 
 The authority fix is a correctness fix. The locator and guard are not product
@@ -365,7 +395,13 @@ locator at all: it is that the active request can be folded at a 16k budget.
   one route, one machine. The primary unit is the task instance; 12 instances
   (10 without T10) cannot support a product-level claim.
 - T10's confirm cells are invalidated by the fixture defect described in §5;
-  the fixed T10 has not been run.
+  the fixed T10 was run separately (10 cells, n=2 per arm), not re-integrated
+  into the 120-cell estimate.
+- The prompt-protection pilot is n=4 pairs and every E0-P cell was a no-fold
+  (economic refusal), not a fold with a protected request. Its pass rate cannot
+  be attributed to protection. The first attempt was invalid (stale `lib/`,
+  zero requests in the E0-P cells) and is kept only as evidence of the harness
+  defect that the new preflight now prevents.
 - Task-prompt loss is both a finding and a confound. The L/G estimate is
   reported with and without the covariate, and no arm is significant at 0.05
   once T10 is excluded.
@@ -380,9 +416,10 @@ locator at all: it is that the active request can be folded at a 16k budget.
 ```bash
 node eval/ef-r1/operation-authority.mjs      # 16-case matrix + probes
 node eval/ef-r1/state-write-audit.mjs       # every writer + 180-pair invariant
-node eval/e2e/src/stage-attribution.mjs     # stage labels, 240 cells
+node eval/e2e/src/stage-attribution.mjs     # stage labels, 258 cells
 node eval/ef-r1/ablation-analysis.mjs       # 120-cell paired analysis
 EF_R1_EXCLUDE_TEMPLATES=T10 node eval/ef-r1/ablation-analysis.mjs
+node eval/ef-r1/prompt-pilot-analysis.mjs   # 8-cell repair pilot + no-fold caveat
 node eval/ef-r1/locator-contract.mjs        # 11 contract cases
 node eval/ef-r1/ablation-design.mjs --check
 node eval/e2e/src/verify-archive.mjs        # external archive vs pointer

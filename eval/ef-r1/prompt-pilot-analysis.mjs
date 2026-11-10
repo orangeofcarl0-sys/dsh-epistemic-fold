@@ -20,7 +20,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e', 'out')
 const MY_OUT = join(HERE, 'out')
-const CAMPAIGN = 'e2e-prompt-pilot-1'
+const CAMPAIGN = process.env.EF_R1_PROMPT_CAMPAIGN ?? 'e2e-prompt-pilot-2'
 const ARMS = ['E0', 'E0-P']
 
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
@@ -38,6 +38,7 @@ const stageByCell = new Map(stages.rows
 
 const cells = results.results.map(row => {
   const stage = stageByCell.get(row.cellId)
+  const report = existsSync(row.reportPath) ? readJson(row.reportPath) : null
   return {
     cellId: row.cellId,
     task: row.cell.task,
@@ -49,6 +50,14 @@ const cells = results.results.map(row => {
     inputTokens: row.usage.inputTokens,
     outputTokens: row.usage.outputTokens,
     compactions: row.compactions ?? null,
+    // A `checkpoint: null` with an economic refusal means the cell did NOT
+    // fold. That is a different treatment from "folded with the prompt
+    // protected", and it is the central caveat of this pilot.
+    noFold: report === null
+      ? null
+      : report.checkpoint === null || String(report.engineDecision ?? '').startsWith('economic-refusal'),
+    retainedTokens: report?.retainedTokens ?? null,
+    engineDecision: String(report?.engineDecision ?? '').slice(0, 160),
     promptVisibleAtStart: stage?.taskPromptVisibleAtStart ?? null,
     promptVisibleAtEnd: stage?.taskPromptVisibleAtEnd ?? null,
     promptLost: stage?.taskPromptLost ?? null,
@@ -64,6 +73,10 @@ function perArm(arm) {
     passed: rows.filter(row => row.pass).length,
     promptLost: rows.filter(row => row.promptLost === true).length,
     promptVisibleAtEnd: rows.filter(row => row.promptVisibleAtEnd === true).length,
+    noFold: rows.filter(row => row.noFold === true).length,
+    meanRetainedTokens: rows.length === 0
+      ? null
+      : Math.round(rows.reduce((sum, row) => sum + (row.retainedTokens ?? 0), 0) / rows.length),
     requests: rows.reduce((sum, row) => sum + row.requests, 0),
     inputTokens: rows.reduce((sum, row) => sum + row.inputTokens, 0),
     outputTokens: rows.reduce((sum, row) => sum + row.outputTokens, 0),
@@ -117,11 +130,11 @@ md.push('')
 md.push(`Campaign \`${CAMPAIGN}\`, ${cells.length} cells, ${results.budget.used.requests} requests, `
   + `${results.budget.used.inputTokens} input, ${results.budget.used.outputTokens} output.`)
 md.push('')
-md.push('| Arm | Pass | Prompt visible at end | Prompt lost | Requests | Input |')
-md.push('|---|---|---|---|---|---|')
+md.push('| Arm | Pass | Prompt visible at end | Prompt lost | No fold | Mean retained | Requests | Input |')
+md.push('|---|---|---|---|---|---|---|---|')
 for (const arm of ARMS) {
   const row = byArm[arm]
-  md.push(`| ${arm} | ${row.passed}/${row.cells} | ${row.promptVisibleAtEnd}/${row.cells} | ${row.promptLost}/${row.cells} | ${row.requests} | ${row.inputTokens} |`)
+  md.push(`| ${arm} | ${row.passed}/${row.cells} | ${row.promptVisibleAtEnd}/${row.cells} | ${row.promptLost}/${row.cells} | ${row.noFold}/${row.cells} | ${row.meanRetainedTokens ?? '—'} | ${row.requests} | ${row.inputTokens} |`)
 }
 md.push('')
 md.push('## Paired by task')
@@ -134,6 +147,10 @@ for (const pair of pairs) {
 md.push('')
 md.push(`Improved **${output.paired.improved}**, worsened **${output.paired.worsened}**, tied **${output.paired.tied}**. `
   + `Prompt lost E0 **${output.paired.promptLostBefore}**, E0-P **${output.paired.promptLostAfter}**. n=4 pairs; a direction check.`)
+md.push('')
+md.push('## The caveat that decides the reading')
+md.push('')
+md.push('**Every E0-P cell was an economic refusal, not a fold around the prompt.** The span after the active request was ~133 tokens and the checkpoint ~530, so the admission refused it; the cell retained the full ~18–19k surface. The pass rate is therefore a comparison of **no-fold vs fold**, not of "prompt protected during a fold" vs fold. Starting the leaf after the request is not a viable protection: it disables compression on this workload. The next design must fold normally and re-render the active request verbatim in the checkpoint (or re-pin it after the fold), not block the span.')
 writeFileSync(join(MY_OUT, 'prompt-pilot-analysis.md'), `${md.join('\n')}\n`, 'utf8')
 
 process.stdout.write(`prompt pilot: ${cells.length} cells\n`)

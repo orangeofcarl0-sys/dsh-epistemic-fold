@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R1 WP2",
-  "generatedAt": "2026-11-10T07:13:28.377Z",
+  "generatedAt": "2026-11-10T07:43:36.079Z",
   "sources": {
     "campaigns": [
       "e2e-core-1",
@@ -12,39 +12,40 @@
       "e2e-index-1",
       "e2e-lg-pilot-1",
       "e2e-lg-confirm-1",
-      "e2e-t10-retest-1"
+      "e2e-t10-retest-1",
+      "e2e-prompt-pilot-2"
     ],
-    "cells": 250,
-    "orderedTrajectories": 179,
+    "cells": 258,
+    "orderedTrajectories": 187,
     "requestPreviewCells": 71,
     "note": "Pre-trajectory cells expose truncated previews. C is unknown where a visible prefix lacks the fact; it is never inferred from the checker."
   },
   "totals": {
-    "cells": 250,
-    "passed": 134,
-    "failed": 116,
+    "cells": 258,
+    "passed": 137,
+    "failed": 121,
     "failureStages": {
       "verify": 27,
-      "produce": 43,
+      "produce": 45,
       "schema": 19,
-      "write": 27
+      "write": 30
     },
     "verifySubstages": {
       "external-check": 1,
       "wrong-value": 26
     },
     "deliveryPaths": {
-      "fromToolResult": 113,
+      "fromToolResult": 119,
       "fromCheckpointOnly": 13,
       "fromTaskPromptOnly": 10,
       "unattributed": 25,
-      "valueNotProduced": 64,
+      "valueNotProduced": 66,
       "valueUnknown": 0
     },
     "cUnknownMemoryCells": 45,
     "cUnknownFailedMemoryCells": 22,
-    "taskPromptLostCells": 120,
-    "taskPromptLostFailures": 79
+    "taskPromptLostCells": 124,
+    "taskPromptLostFailures": 83
   },
   "byTemplate": {
     "T1": {
@@ -56,11 +57,11 @@
       }
     },
     "T10": {
-      "cells": 38,
-      "passed": 13,
+      "cells": 42,
+      "passed": 15,
       "stages": {
-        "produce": 14,
-        "none": 13,
+        "produce": 16,
+        "none": 15,
         "verify": 9,
         "schema": 2
       }
@@ -136,12 +137,12 @@
       }
     },
     "T9": {
-      "cells": 28,
-      "passed": 16,
+      "cells": 32,
+      "passed": 17,
       "stages": {
         "verify": 3,
-        "none": 16,
-        "write": 8,
+        "none": 17,
+        "write": 11,
         "schema": 1
       }
     }
@@ -156,12 +157,12 @@
       }
     },
     "E0": {
-      "cells": 55,
+      "cells": 59,
       "passed": 15,
       "stages": {
-        "produce": 21,
+        "produce": 23,
         "schema": 4,
-        "write": 9,
+        "write": 11,
         "verify": 6
       }
     },
@@ -189,6 +190,13 @@
         "verify": 6,
         "produce": 3,
         "schema": 3
+      }
+    },
+    "E0-P": {
+      "cells": 4,
+      "passed": 3,
+      "stages": {
+        "write": 1
       }
     },
     "E0a": {
@@ -22858,6 +22866,752 @@
       "taskPromptVisibleAtStart": true,
       "taskPromptVisibleAtEnd": false,
       "taskPromptLost": true,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T9-s1-E0-r1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0",
+      "block": "prompt-repair",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 1,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 6,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 3
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 3,
+          "total": 3,
+          "deliverable": null,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "service",
+              "value": "checkout",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "release",
+              "value": "rel-9f2c",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "tag",
+              "value": "v2.7.1",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "incident-deploy.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "incident-deploy.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 1,
+      "writes": 0,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": false,
+      "taskPromptLost": true,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T9-s1-E0-P-r1",
+      "template": "T9",
+      "seed": 1,
+      "arm": "E0-P",
+      "block": "prompt-repair",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 9,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 3
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 3,
+          "total": 3,
+          "deliverable": null,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "service",
+              "value": "checkout",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "release",
+              "value": "rel-9f2c",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "tag",
+              "value": "v2.7.1",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "incident-deploy.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "incident-deploy.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": true,
+      "taskPromptLost": false,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T9-s2-E0-r1",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0",
+      "block": "prompt-repair",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 2,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 8,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 3
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 3,
+          "total": 3,
+          "deliverable": null,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "service",
+              "value": "billing",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "release",
+              "value": "rel-4d71",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "tag",
+              "value": "v1.9.4",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "incident-deploy.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "incident-deploy.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "write",
+      "failureDetail": "the fact was stated, but the required deliverable was not written",
+      "recallCalls": 2,
+      "writes": 0,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": false,
+      "taskPromptLost": true,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T9-s2-E0-P-r1",
+      "template": "T9",
+      "seed": 2,
+      "arm": "E0-P",
+      "block": "prompt-repair",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 9,
+          "truncatedMatch": true,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 3
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 3,
+          "total": 3,
+          "deliverable": true,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "service",
+              "value": "billing",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "release",
+              "value": "rel-4d71",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            },
+            {
+              "key": "tag",
+              "value": "v1.9.4",
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "incident-deploy.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "incident-deploy.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": true,
+      "taskPromptLost": false,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T10-s1-E0-r1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0",
+      "block": "prompt-repair",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 6,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 12,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 5,
+          "truncatedMatch": false,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 1
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 1,
+          "deliverable": null,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "concurrency",
+              "value": 8,
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "flag-at-10.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "flag-at-10.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 12,
+      "writes": 0,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 8,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": false,
+      "taskPromptLost": true,
+      "primaryRequests": 8
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T10-s1-E0-P-r1",
+      "template": "T10",
+      "seed": 1,
+      "arm": "E0-P",
+      "block": "prompt-repair",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 5,
+          "truncatedMatch": false,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 1
+        },
+        "D": {
+          "value": true,
+          "text": true,
+          "matchedInText": 1,
+          "total": 1,
+          "deliverable": true,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "concurrency",
+              "value": 8,
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "flag-at-10.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "flag-at-10.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": true,
+      "taskPromptLost": false,
+      "primaryRequests": 2
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T10-s2-E0-r1",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0",
+      "block": "prompt-repair",
+      "checkerPassed": false,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 2,
+          "checkpoint": false
+        },
+        "B": {
+          "value": true,
+          "calls": 3,
+          "basis": "called context_search/context_recall"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 3,
+          "truncatedMatch": false,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 1
+        },
+        "D": {
+          "value": false,
+          "text": false,
+          "matchedInText": 0,
+          "total": 1,
+          "deliverable": null,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "concurrency",
+              "value": 6,
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": false,
+          "outputs": [
+            {
+              "path": "flag-at-10.json",
+              "exists": false
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": null,
+          "contract": null,
+          "reason": "a required file is missing (write stage)",
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "flag-at-10.json",
+              "shape": false,
+              "contract": false,
+              "missing": true
+            }
+          ]
+        },
+        "G": false
+      },
+      "failureStage": "produce",
+      "failureDetail": "the fact was observed, but neither the answer nor the deliverable carries it",
+      "recallCalls": 3,
+      "writes": 0,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 4,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": false,
+      "taskPromptLost": true,
+      "primaryRequests": 4
+    },
+    {
+      "campaign": "e2e-prompt-pilot-2",
+      "cellId": "T10-s2-E0-P-r1",
+      "template": "T10",
+      "seed": 2,
+      "arm": "E0-P",
+      "block": "prompt-repair",
+      "checkerPassed": true,
+      "stages": {
+        "A": {
+          "value": true,
+          "exact": true,
+          "modelReadable": true,
+          "basis": "EF fold; the folded span is archived and context_recall can read it",
+          "compactions": 1,
+          "checkpoint": false
+        },
+        "B": {
+          "value": false,
+          "calls": 0,
+          "basis": "no archive retrieval call"
+        },
+        "C": {
+          "value": true,
+          "basis": "full-message",
+          "matched": 5,
+          "truncatedMatch": false,
+          "checkpointCarried": false,
+          "checkpointMatched": 0,
+          "checkpointTotal": 1
+        },
+        "D": {
+          "value": true,
+          "text": false,
+          "matchedInText": 0,
+          "total": 1,
+          "deliverable": true,
+          "taskPromptCarried": false,
+          "taskPromptMatched": 0,
+          "pairSources": [
+            {
+              "key": "concurrency",
+              "value": 6,
+              "tool": true,
+              "checkpoint": false,
+              "prompt": false
+            }
+          ],
+          "basis": "final assistant text OR the written deliverable"
+        },
+        "E": {
+          "value": true,
+          "outputs": [
+            {
+              "path": "flag-at-10.json",
+              "exists": true
+            }
+          ],
+          "basis": "final workspace file existence"
+        },
+        "F": {
+          "value": true,
+          "contract": true,
+          "rows": [
+            {
+              "kind": "json_equals",
+              "path": "flag-at-10.json",
+              "shape": true,
+              "contract": true
+            }
+          ]
+        },
+        "G": true
+      },
+      "failureStage": "none",
+      "failureDetail": "checker passed",
+      "recallCalls": 0,
+      "writes": 1,
+      "hasTrajectory": true,
+      "fullPrimaryMessages": 2,
+      "taskPromptVisibleAtStart": true,
+      "taskPromptVisibleAtEnd": true,
+      "taskPromptLost": false,
       "primaryRequests": 2
     }
   ]
