@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP0",
+  "archiveRoot": "F:/Codex_Work_Space/DSH plugin/EF_R2_RESEARCH_ARCHIVE",
+  "archiveManifestSha256": "9c806e7b1ecc1c318864314bcdb6d0dd6034e1e784642cf8d6a931976d04402c",
+  "archiveSumsSha256": "7d0a52c22dcb9a2950b484f66ab63ff656f34a1e9e8faf4b2cd7592623c1567c",
+  "archiveBundleSha256": "7db448628a33b7631495463a37876df076eda6debbcf9c402e0b42d610349766",
+  "commit": "34af2950de0e186c997f22d6bdd8f6581cbf3392",
+  "counts": {
+    "files": 787,
+    "bytes": 38740942,
+    "campaigns": 4,
+    "cells": 50,
+    "invalidCampaigns": 1,
+    "invalidCells": 8
+  },
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 55,
+    "proxyFiles": 15,
+    "safeToShare": true
+  },
+  "parent": {
+    "pointer": "eval/ef-r1/out/research-archive-r1.json",
+    "campaigns": 8,
+    "cells": 240
+  },
+  "note": "Incremental package: 50 valid new cells plus 8 invalid negative-evidence cells. The R1 package remains the authority for the earlier 240 cells."
+}

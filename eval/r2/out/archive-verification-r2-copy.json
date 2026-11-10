@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP0",
+  "generatedAt": "2026-11-10T10:18:19.925Z",
+  "archive": "E:/EF_R2_RESEARCH_ARCHIVE",
+  "pointer": "F:/Codex_Work_Space/DSH plugin/ef-c1-foundation/eval/r2/out/research-archive-r2.json",
+  "listed": 787,
+  "matched": 787,
+  "manifestSha256": "9c806e7b1ecc1c318864314bcdb6d0dd6034e1e784642cf8d6a931976d04402c",
+  "bundleSha256": "7db448628a33b7631495463a37876df076eda6debbcf9c402e0b42d610349766",
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 55,
+    "proxyFiles": 15,
+    "safeToShare": true
+  },
+  "problems": [],
+  "verdict": "archive-verified"
+}
