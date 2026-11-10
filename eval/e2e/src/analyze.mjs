@@ -125,8 +125,16 @@ async function main() {
     const task = taskCache.get(taskId)
     const probes = probesFor(task)
     const checkpointText = report.checkpoint?.text ?? ''
-    const successfulFolds = (report.compactions ?? []).filter(row => row.error === null).length
-    const failedFolds = (report.compactions ?? []).filter(row => row.error !== null).length
+    // `error === null` is not a commit: an open attempt has no error either.
+    // New reports carry the per-attempt witness; older reports keep the legacy
+    // count and are labelled as such rather than silently re-interpreted.
+    const legacySuccessfulFolds = (report.compactions ?? []).filter(row => row.error === null).length
+    const legacyFailedFolds = (report.compactions ?? []).filter(row => row.error !== null).length
+    const witness = report.witnessSummary ?? null
+    const successfulFolds = witness === null ? legacySuccessfulFolds : witness.committed
+    const failedFolds = witness === null
+      ? legacyFailedFolds
+      : (witness.refused ?? 0) + (witness.aborted ?? 0)
     const row = {
       cellId: report.cellId,
       block: result.cell.block,
@@ -136,9 +144,14 @@ async function main() {
       replicate: result.cell.replicate,
       status: 'executed',
       exposure: report.treatmentExposure,
+      committedExposure: report.committedExposure ?? null,
       folds: successfulFolds,
-      foldAttempts: (report.compactions ?? []).length,
+      legacyFolds: legacySuccessfulFolds,
+      witness: witness !== null,
+      foldAttempts: witness === null ? (report.compactions ?? []).length : witness.attempts,
       foldFailures: failedFolds,
+      refusedAttempts: witness === null ? null : (witness.refused ?? 0),
+      unverifiableAttempts: witness === null ? null : (witness.unverifiable ?? 0),
       checkpoint: report.checkpoint === null ? null : {
         chars: report.checkpoint.chars,
         mode: report.checkpoint.mode,
@@ -183,6 +196,8 @@ async function main() {
     checkerPasses: subset.filter(row => row.checkerPass).length,
     passRate: subset.length === 0 ? null : Number((subset.filter(row => row.checkerPass).length / subset.length).toFixed(3)),
     folds: subset.reduce((sum, row) => sum + row.folds, 0),
+    legacyFolds: subset.reduce((sum, row) => sum + (row.legacyFolds ?? 0), 0),
+    foldedWithWitness: subset.filter(row => row.witness === true).length,
     foldFailures: subset.reduce((sum, row) => sum + row.foldFailures, 0),
     noFold: subset.filter(row => row.folds === 0).length,
     recallCells: subset.filter(row => row.recallCalls > 0).length,

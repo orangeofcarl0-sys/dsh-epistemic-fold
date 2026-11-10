@@ -347,16 +347,25 @@ function observedStage(report, pairs, fullRequests = []) {
 }
 
 function archiveStage(report, arm) {
-  const compactions = Array.isArray(report.compactions) ? report.compactions.length : 0
-  const checkpoint = typeof report.checkpoint === 'string' && report.checkpoint.length > 0
+  const legacyAttempts = Array.isArray(report.compactions) ? report.compactions.length : 0
+  const legacyCommitted = (report.compactions ?? []).filter(row => row.error === null).length
+  // New reports carry a per-attempt witness. The attempt count alone says a
+  // transaction opened, not that the span was archived and replaced.
+  const witness = report.witnessSummary ?? null
+  const attempts = witness === null ? legacyAttempts : witness.attempts
+  const committed = witness === null ? legacyCommitted : witness.committed
+  const checkpoint = report.checkpoint !== null && report.checkpoint !== undefined
   return {
-    value: compactions > 0,
+    value: witness === null ? legacyAttempts > 0 : committed > 0,
     exact: arm !== 'B0',
     modelReadable: arm !== 'B0',
-    basis: arm === 'B0'
-      ? 'Basic compaction; the session log retains the messages but exposes no exact-read interface'
-      : 'EF fold; the folded span is archived and context_recall can read it',
-    compactions,
+    basis: witness === null
+      ? (arm === 'B0'
+        ? 'Basic compaction; the legacy report does not separate attempt from commit'
+        : 'EF fold; the legacy report counts attempts, not committed replacements')
+      : `${committed} committed of ${attempts} attempt(s); committed replacements only`,
+    compactions: attempts,
+    committed,
     checkpoint,
   }
 }

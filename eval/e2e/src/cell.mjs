@@ -27,6 +27,7 @@ import {
   resumeAgent,
 } from './host.mjs'
 import { appendEntriesToSession, buildSeed } from './seed.mjs'
+import { buildTaskDelivery, buildWitnessesFromEvents, summarizeWitnesses } from './witness.mjs'
 
 const MAX_STEPS = 8
 const OUTPUT_TOKENS = 1024
@@ -604,16 +605,37 @@ export async function runCell({
   if (handle !== null) await handle.dispose()
   if (host !== null) await disposeHost(host)
 
+  // The witness is built from the log captured BEFORE disposal, plus the
+  // bundle files on disk. It is independent of the report's legacy
+  // `compactions`/`checkpoint` fields, which are kept for comparison.
+  const witness = await buildWitnessesFromEvents({
+    sessionId,
+    events,
+    bundleRoot: roots.bundleRoot,
+    requests: log.requests,
+    taskPrompt: task.task,
+    arm,
+  })
+  const witnessSummary = summarizeWitnesses(witness.witnesses)
+  const primaryRequests = log.requests.filter(entry => entry.purpose === 'primary')
+  const activeDelivery = [
+    { label: 'task', ...buildTaskDelivery({ primary: primaryRequests, taskPrompt: task.task }) },
+    ...(task.taskB === undefined
+      ? []
+      : [{ label: 'taskB', ...buildTaskDelivery({ primary: primaryRequests, taskPrompt: task.taskB }) }]),
+  ]
+
   const checker = await runChecks(task.checks, { workspace, repoRoot: ROOT })
   // A mechanism requirement is a cell-level claim, not a workspace claim: T5
   // only measures multi-fold continuity if the cell actually folded twice.
+  // Committed, not attempted: two refusals are not two folds.
   if (task.requires?.minCompactions !== undefined) {
-    const count = summary.compactions.length
+    const count = witnessSummary.committed
     const pass = count >= task.requires.minCompactions
     checker.checks.push({
       kind: 'compactions',
       pass,
-      detail: `${count} compaction transaction(s), required ${task.requires.minCompactions}`,
+      detail: `${count} committed compaction transaction(s), required ${task.requires.minCompactions}`,
     })
     checker.pass = checker.pass && pass
   }
@@ -625,11 +647,13 @@ export async function runCell({
 
   const compactions = summary.compactions.length
   const exposure = compactions > 0 ? 'fold' : 'no-fold'
+  const committedExposure = witnessSummary.committed > 0 ? 'fold' : 'no-fold'
   const report = {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),
     campaign,
     cellId,
+    sessionId,
     task: {
       id: task.id,
       template: task.template,
@@ -649,6 +673,10 @@ export async function runCell({
       finalFiles: Object.keys(task.workspace).sort(),
     },
     treatmentExposure: exposure,
+    committedExposure,
+    witnesses: witness.witnesses,
+    witnessSummary,
+    activeDelivery,
     compactions: summary.compactions,
     checkpoint: checkpoint === null ? null : {
       seq: checkpoint.seq,
@@ -732,6 +760,17 @@ export async function runCell({
   await writeFile(join(cellRoot, 'raw', 'requests.json'), `${JSON.stringify(log.requests, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'raw', 'messages.json'), `${JSON.stringify(log.fullMessages, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'raw', 'trajectory.json'), `${JSON.stringify(trajectory, null, 2)}\n`, 'utf8')
+  await writeFile(join(cellRoot, 'raw', 'witness.json'), `${JSON.stringify({
+    schemaVersion: 1,
+    sessionId,
+    cellId,
+    arm,
+    witnesses: witness.witnesses,
+    summary: witnessSummary,
+    activeDelivery,
+    bundles: witness.bundleCount,
+    commitRecords: witness.commitCount,
+  }, null, 2)}\n`, 'utf8')
   await writeFile(join(cellRoot, 'report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
   return report
 }
