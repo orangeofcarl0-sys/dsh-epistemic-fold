@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3",
-  "generatedAt": "2026-11-10T16:43:21.503Z",
+  "generatedAt": "2026-11-10T16:52:27.368Z",
   "gates": [
     {
       "id": "R3-G0",
@@ -40,8 +40,8 @@
     },
     {
       "id": "R3-G7",
-      "status": "pending",
-      "detail": "CI pending; zero-live pass; claims missing 0; EF_R3.md present"
+      "status": "pass",
+      "detail": "CI success; zero-live pass; claims missing 0; EF_R3.md present"
     },
     {
       "id": "R3-G8",
@@ -50,8 +50,8 @@
     }
   ],
   "counts": {
-    "pass": 6,
-    "pending": 1,
+    "pass": 7,
+    "pending": 0,
     "incomplete": 2,
     "fail": 0
   },
@@ -75,7 +75,7 @@
     "claims": "eval/r3/out/evidence-claims.json"
   },
   "ci": {
-    "status": "pending",
+    "status": "success",
     "note": "Set EF_R3_CI_STATUS after the supported-lane run. The master probe remains non-blocking."
   },
   "note": "A gate is evaluated from the artifact it names. incomplete is not fail, and no unknown is promoted to pass."
