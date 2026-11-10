@@ -11,8 +11,14 @@
 
 import { randomUUID } from 'node:crypto'
 import type { Session as SessionType } from '@deepseek-ai/dsh-session'
-import { authoritativeKindOf, canVerify, isAuthorityGrounded, provenanceOf } from './authority.ts'
-import type { AuthoritativeEventKind } from './authority.ts'
+import {
+  authoritativeKindOf,
+  canVerify,
+  decisionOriginOf,
+  isAuthorityGrounded,
+  provenanceOf,
+} from './authority.ts'
+import type { AuthoritativeEventKind, SourceAuthority } from './authority.ts'
 import {
   DEFAULT_PLUGIN_EVENT_API,
   appendEfEvent,
@@ -72,12 +78,15 @@ export interface AnchorService {
   retire(session: SessionType, anchorId: string): void
 }
 
-/** Resolve the raw event kinds behind one anchor's source refs. */
-function citedKinds(
+/** Resolve the raw event kinds and positions behind one anchor's source refs. */
+function citedEvents(
   session: SessionType,
   refs: readonly EventRef[],
-): { readonly kinds: AuthoritativeEventKind[]; readonly refused: string[] } {
-  const kinds: AuthoritativeEventKind[] = []
+): {
+  readonly entries: { readonly kind: AuthoritativeEventKind; readonly seq: number }[]
+  readonly refused: string[]
+} {
+  const entries: { kind: AuthoritativeEventKind; seq: number }[] = []
   const refused: string[] = []
   for (const ref of refs) {
     const event = session.eventAt(ref.seq)
@@ -92,9 +101,9 @@ function citedKinds(
       refused.push(`${String(ref.seq)}:${provenanceOf(event.type, sourceKind)}`)
       continue
     }
-    kinds.push(kind)
+    entries.push({ kind, seq: Number(ref.seq) })
   }
-  return { kinds, refused }
+  return { entries, refused }
 }
 
 /** The newest cited event, for the revision-newness rule. */
@@ -103,6 +112,26 @@ function latestRef(refs: readonly EventRef[]): number | undefined {
   for (const ref of refs) {
     const seq = Number(ref.seq)
     if (latest === undefined || seq > latest) latest = seq
+  }
+  return latest
+}
+
+/**
+ * The newest DECISION-CAPABLE citation.
+ *
+ * A later tool result must not refresh an old user quote: `latestRef` over
+ * every ref would make seq 20 (tool) look newer than a target decision at seq
+ * 10, while the only decision-capable evidence is the user's seq 1. The
+ * revision-newness rule is about statements that can take a decision, not
+ * about every event in the citation set.
+ */
+function latestDecisionRef(
+  entries: readonly { readonly kind: AuthoritativeEventKind; readonly seq: number }[],
+): number | undefined {
+  let latest: number | undefined
+  for (const entry of entries) {
+    if (entry.kind !== 'user/message' && entry.kind !== 'assistant/message') continue
+    if (latest === undefined || entry.seq > latest) latest = entry.seq
   }
   return latest
 }
@@ -146,7 +175,8 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
 
   function declare(session: SessionType, draft: AnchorDraft): Anchor {
     assertDurableWriteAllowed()
-    const { kinds, refused } = citedKinds(session, draft.sourceRefs)
+    const { entries, refused } = citedEvents(session, draft.sourceRefs)
+    const kinds = entries.map(entry => entry.kind)
     if (kinds.length === 0) {
       throw new Error(
         `epistemic-fold: ungrounded anchor — cite at least one raw authoritative event (kind=${draft.kind}); `
@@ -160,8 +190,29 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
         + `[${kinds.join(', ')}] (kind=${draft.kind})`,
       )
     }
+    // The producer of a decision is DERIVED from the raw events it cites.
+    //
+    // `sourceAuthority` used to be whatever the caller supplied, and an absent
+    // value became `unknown`, which the assistant-source gate does not refuse.
+    // That made this public writer a second door around the planner: an
+    // assistant decision draft that omitted the label could replace a user
+    // decision. A supplied label that disagrees with the raw kinds is refused
+    // before the append, not silently overridden.
+    const derivedSource: SourceAuthority | undefined = draft.authority === 'decision'
+      ? decisionOriginOf(entries)
+      : undefined
+    if (draft.authority === 'decision'
+      && draft.sourceAuthority !== undefined
+      && draft.sourceAuthority !== derivedSource) {
+      throw new Error(
+        `epistemic-fold: anchor sourceAuthority "${draft.sourceAuthority}" disagrees with the raw evidence `
+        + `[${kinds.join(', ')}], whose newest decision-capable producer is "${derivedSource}"; `
+        + 'the producer is derived from the cited events, not supplied by the caller',
+      )
+    }
     const anchor: Anchor = {
       ...draft,
+      ...(derivedSource === undefined ? {} : { sourceAuthority: derivedSource }),
       id: draft.id ?? `anchor-${randomUUID()}`,
       lifecycle: 'active',
     }
@@ -172,8 +223,16 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
     if (anchor.stateKey !== undefined) {
       const head = currentStateOf(session).stateHeads[stateKeyText(anchor.stateKey)]
       if (head !== undefined && head.id !== anchor.id) {
-        const declaringLatestSeq = latestRef(anchor.sourceRefs)
-        const targetLatestSeq = latestRef(head.sourceRefs)
+        // Only decision-capable citations can refresh a decision's position.
+        // A later tool result is support, not a newer statement of the
+        // decision, and must not defeat the stale-source rule.
+        const targetEntries = citedEvents(session, head.sourceRefs).entries
+        const declaringLatestSeq = anchor.authority === 'decision'
+          ? latestDecisionRef(entries)
+          : latestRef(anchor.sourceRefs)
+        const targetLatestSeq = head.authority === 'decision'
+          ? latestDecisionRef(targetEntries)
+          : latestRef(head.sourceRefs)
         const authorization = mayRetire({
           declaring: anchor.authority,
           target: head.authority,
@@ -203,7 +262,8 @@ export function createAnchorService(options: AnchorServiceOptions = {}): AnchorS
     if (evidenceRefs.length === 0) {
       throw new Error('epistemic-fold: VERIFIED requires at least one evidence ref')
     }
-    const { kinds, refused } = citedKinds(session, evidenceRefs)
+    const { entries, refused } = citedEvents(session, evidenceRefs)
+    const kinds = entries.map(entry => entry.kind)
     if (!canVerify(kinds)) {
       throw new Error(
         `epistemic-fold: VERIFIED refused — evidence kinds [${kinds.join(', ') || 'none'}] `

@@ -30,7 +30,7 @@
  * @module dsh-epistemic-fold/semantic/validate
  */
 
-import { canVerify, decisionSourceOf, isAuthorityGrounded, sourceAuthorityOf } from '../state/authority.ts'
+import { canVerify, decisionOriginOf, isAuthorityGrounded, sourceAuthorityOf } from '../state/authority.ts'
 import type { AuthorityDomain, AuthoritativeEventKind } from '../state/authority.ts'
 import { canonicalHash } from '../checkpoint/hash.ts'
 import type { AnchorKind, StateKey } from '../state/state.ts'
@@ -553,13 +553,23 @@ function validateOne(
   // support, never origin. Taking the strongest producer over ALL cited kinds
   // let `assistant + tool` evidence label an assistant decision as tool-sourced
   // and thereby inherit a standing no tool result has.
-  const decisionSeqs = authority === 'decision'
-    ? resolved.evidence.filter((_, position) => {
+  //
+  // The origin is the producer of the NEWEST decision-capable citation, not
+  // the strongest label anywhere in the set. Otherwise an assistant could pair
+  // the user's old quote with its own new statement: `decisionSourceOf` said
+  // `user`, `latestDecisionSeq` said the assistant's seq, and the revision
+  // passed both gates.
+  const decisionEntries = authority === 'decision'
+    ? resolved.evidence.flatMap((entry, position) => {
       const cited = resolved.kinds[position]
       return cited === 'user/message' || cited === 'assistant/message'
-    }).map(entry => entry.seq)
+        ? [{ kind: cited, seq: Number(entry.seq) }]
+        : []
+    })
     : []
-  const latestDecisionSeq = decisionSeqs.length === 0 ? undefined : Math.max(...decisionSeqs)
+  const latestDecisionSeq = decisionEntries.length === 0
+    ? undefined
+    : Math.max(...decisionEntries.map(entry => entry.seq))
 
   const scope = normalizeScope(proposal.scope)
   const deltaId = deltaIdentity({
@@ -581,7 +591,7 @@ function validateOne(
     evidence: resolved.evidence,
     authority,
     sourceAuthority: authority === 'decision'
-      ? decisionSourceOf(resolved.kinds)
+      ? decisionOriginOf(decisionEntries)
       : sourceAuthorityOf(resolved.kinds),
     ...(latestDecisionSeq === undefined ? {} : { latestDecisionSeq }),
     anchorKind: rule.anchorKind,

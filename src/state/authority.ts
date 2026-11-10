@@ -79,12 +79,47 @@ export function sourceAuthorityOf(kinds: readonly AuthoritativeEventKind[]): Sou
  * through. Only a decision-capable producer (the user or the assistant) can be
  * the ORIGIN of a decision; tool and system evidence is support, never origin.
  *
- * The result is deliberately the strongest decision-capable producer, not the
- * lowest: a claim that quotes both the user's instruction and the assistant's
- * restatement is user-sourced.
+ * ## The latest citation wins
  *
- * @param kinds - raw kinds of the cited evidence.
+ * `decisionSourceOf` below answered "is ANY cited producer the user?", which
+ * is not the same question. An assistant that quoted the user's OLD decision
+ * next to its own NEW statement was labelled user-sourced, while the newer
+ * sequence number came from the assistant. That pair passed both the source
+ * gate and the stale-source gate. The origin is the producer of the NEWEST
+ * decision-capable event cited, not the strongest label in the citation set:
+ * a later assistant statement does not inherit the user's standing by
+ * appearing beside an older user quote.
+ *
+ * Ties cannot occur in a committed log (one event per seq). If a caller
+ * supplies two entries at the same seq, the assistant is chosen, because the
+ * conservative answer refuses more.
+ *
+ * @param entries - raw kind and sequence of each cited event.
  * @returns the decision origin, or `unknown` when no cited message could take a decision.
+ */
+export function decisionOriginOf(
+  entries: readonly { readonly kind: AuthoritativeEventKind; readonly seq: number }[],
+): SourceAuthority {
+  let latest: { readonly kind: 'user/message' | 'assistant/message'; readonly seq: number } | undefined
+  for (const entry of entries) {
+    if (entry.kind !== 'user/message' && entry.kind !== 'assistant/message') continue
+    if (latest === undefined
+      || entry.seq > latest.seq
+      || (entry.seq === latest.seq && entry.kind === 'assistant/message')) {
+      latest = { kind: entry.kind, seq: entry.seq }
+    }
+  }
+  if (latest === undefined) return 'unknown'
+  return latest.kind === 'user/message' ? 'user' : 'assistant'
+}
+
+/**
+ * @deprecated Seq-blind, and therefore unsafe for revision authorization. It
+ * answers "did the citation set include a user message?", not "who took the
+ * cited decision last". Use {@link decisionOriginOf} on resolved evidence.
+ *
+ * Kept only so an external caller that wants a coarse label does not break;
+ * the validation path no longer uses it.
  */
 export function decisionSourceOf(kinds: readonly AuthoritativeEventKind[]): SourceAuthority {
   let best: SourceAuthority = 'unknown'
