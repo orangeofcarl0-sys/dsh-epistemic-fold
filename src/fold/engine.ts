@@ -43,7 +43,7 @@ import {
 import { FileBundleStore } from '../checkpoint/bundle-store.ts'
 import { compactSurfaceRegion, selectCompactableRange } from '../basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
-import { selectLeafSpan } from './leaf-policy.ts'
+import { activeRequestPosition, selectLeafSpan } from './leaf-policy.ts'
 import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
 import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
 import { assertDshCompatibility } from '../compat.ts'
@@ -938,6 +938,27 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * this method throwing.
    */
   private protectedPositions(session: Session): readonly number[] {
+    const positions = [...this.taskRootPositions(session)]
+    // EXPERIMENTAL, off by default: keep the ACTIVE user request on the
+    // surface. The confirm measured the request itself being folded in
+    // 44/120 cells; a leaf now starts after it instead of swallowing it.
+    if (this.efConfig.protectActiveRequest) {
+      const active = activeRequestPosition(session)
+      if (active !== undefined && !positions.includes(active)) positions.push(active)
+    }
+    return positions
+  }
+
+  /**
+   * The resident task root only.
+   *
+   * Emergency rebase uses this list, not {@link protectedPositions}: an
+   * overflow that cannot meet the provider window may have to fold the active
+   * request, and pretending otherwise would turn a recoverable overflow into
+   * a non-convergence. The task root remains protected because it is the
+   * session's identity, not a message.
+   */
+  private taskRootPositions(session: Session): readonly number[] {
     const position = protectedTaskRootPosition(session, this.taskRoots.get(session.id))
     return position === undefined ? [] : [position]
   }
@@ -958,7 +979,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     range: { start: SessionSeq; end: SessionSeq } | null,
   ): { start: SessionSeq; end: SessionSeq } | null {
     if (range === null) return null
-    const protectedPositions = this.protectedPositions(session)
+    const protectedPositions = this.taskRootPositions(session)
     if (protectedPositions.length === 0) return range
     const nodes = session.surface.nodes
     const startIdx = nodes.indexOf(range.start)

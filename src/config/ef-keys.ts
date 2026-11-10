@@ -80,6 +80,11 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   // `read_file` against a path the fold archived; this names the archive
   // message and the `context_recall` call that opens it.
   { name: 'archiveLocator', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: never fold the ACTIVE user request. The
+  // confirm measured the request itself being archived in 44/120 cells; the
+  // leaf span starts after the last real user message instead. The emergency
+  // rebase may still fold it when the provider window cannot be met otherwise.
+  { name: 'protectActiveRequest', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },

@@ -68,6 +68,9 @@ export const ARMS = Object.freeze({
   'E0-L': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', archiveLocator: true },
   'E0-G': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy' },
   'E0-LG': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', archiveLocator: true },
+  // EF-R1 prompt-protection arm: E0 plus the opt-in leaf rule that starts the
+  // span after the active user request. No campaign has run under it yet.
+  'E0-P': { backend: 'ef', ef: true, semanticMode: 'none', semanticContinuity: 'off', mode: 'economy', protectActiveRequest: true },
 })
 
 /**
@@ -126,6 +129,7 @@ export async function mountHost({
       ...(spec.recallAffordance === undefined ? {} : { recallAffordance: spec.recallAffordance }),
       ...(spec.foldedSpanIndex === undefined ? {} : { foldedSpanIndex: spec.foldedSpanIndex }),
       ...(spec.archiveLocator === undefined ? {} : { archiveLocator: spec.archiveLocator }),
+      ...(spec.protectActiveRequest === undefined ? {} : { protectActiveRequest: spec.protectActiveRequest }),
       semanticContinuity: spec.semanticContinuity,
       bundleRoot: roots.bundleRoot,
       semanticRoot: roots.semanticRoot,

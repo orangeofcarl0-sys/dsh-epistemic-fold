@@ -21,6 +21,27 @@ export interface LeafSpan {
 }
 
 /**
+ * The surface position of the ACTIVE user request: the last user-role message
+ * whose producer is the real user.
+ *
+ * A checkpoint is also delivered in the user role (`compact-checkpoint`), so
+ * checking the role alone would pin the checkpoint instead of the request.
+ * Returns `undefined` when the surface carries no real user message.
+ *
+ * @param session - the session whose surface is inspected.
+ * @returns the position, or `undefined`.
+ */
+export function activeRequestPosition(session: Session): number | undefined {
+  const nodes = session.surface.nodes
+  for (let index = nodes.length - 1; index >= 0; index -= 1) {
+    const event = session.eventAt(nodes[index]!)
+    const message = event === undefined ? undefined : session.deriveEventMessage(event)
+    if (message?.role === 'user' && message.source.kind === 'user') return index
+  }
+  return undefined
+}
+
+/**
  * Select `[frontier + 1, bestSafeEnd]` on the current surface. The recent
  * tail retains at least `retainTokens` verbatim (0 during overflow), the end
  * boundary walks left until tool pairing stays balanced, and the span is
@@ -30,9 +51,10 @@ export interface LeafSpan {
  * @param retainTokens - minimum recent-tail budget kept verbatim.
  * @param frontierIdx - frontier position from {@link locateFoldFrontier};
  * callers may pass `-1` to fall back to re-location (tests, direct calls).
- * @param protectedPositions - surface positions a fold must never include. The engine
- * passes the resident active task root here; the default is empty, so every pre-existing
- * caller gets the behaviour it had before task roots existed.
+ * @param protectedPositions - surface positions a fold must never include. The
+ * span starts AFTER the last protected position at or past the frontier, so the
+ * active task root and the active request stay on the surface verbatim. The
+ * default is empty, so every pre-existing caller gets its old behaviour.
  * @returns the span to fold, or `null` when nothing beyond the frontier is safely foldable.
  */
 export function selectLeafSpan(
@@ -54,10 +76,13 @@ export function selectLeafSpan(
   const systemHeadAtZero = nodes.length > 0
     && session.deriveEventMessage(session.eventAt(nodes[0]!)!)?.role === 'system'
   let firstIdx = Math.max(frontier + 1, systemHeadAtZero ? 1 : 0)
-  // The active task root is never inside a leaf span, exactly as the system head never is.
-  // SKIPPING it is what keeps it resident: the original user event is left where it is and
-  // nothing is copied, restated, or synthesised to replace it.
-  while (protectedPositions.includes(firstIdx)) firstIdx += 1
+  // A protected position is never inside a leaf span. Moving the START past it
+  // keeps the original event resident: nothing is copied, restated or
+  // synthesised. The cost is that open messages before the protected position
+  // also stay raw; that is why pinning the active request is opt-in.
+  for (const position of [...protectedPositions].sort((left, right) => left - right)) {
+    if (position >= firstIdx) firstIdx = position + 1
+  }
   if (firstIdx >= pricedNodes.length) return null
 
   // Retain the verbatim tail, then walk the boundary left to the nearest

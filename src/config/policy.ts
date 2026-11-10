@@ -159,6 +159,15 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly archiveLocator: boolean
   /**
+   * EXPERIMENTAL: never fold the ACTIVE user request.
+   *
+   * Default `false`. The 120-cell confirm measured the request itself being
+   * archived in 44/120 cells. When enabled, a leaf span starts AFTER the last
+   * real user message, so the request stays on the surface verbatim. The
+   * emergency rebase may still fold it when the provider window cannot be met.
+   */
+  readonly protectActiveRequest: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -364,6 +373,8 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    * results. Default `false`; see `ResolvedEpistemicFoldConfig`.
    */
   archiveLocator?: boolean
+  /** EXPERIMENTAL: never fold the active user request. Default `false`. */
+  protectActiveRequest?: boolean
   /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
@@ -512,6 +523,10 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof archiveLocator !== 'boolean') {
     throw new Error('epistemic-fold: archiveLocator must be a boolean')
   }
+  const protectActiveRequest = expanded.protectActiveRequest ?? false
+  if (typeof protectActiveRequest !== 'boolean') {
+    throw new Error('epistemic-fold: protectActiveRequest must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -556,6 +571,7 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     recallAffordance,
     foldedSpanIndex,
     archiveLocator,
+    protectActiveRequest,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,
