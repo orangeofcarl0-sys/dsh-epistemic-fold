@@ -19,7 +19,11 @@ import { fileURLToPath } from 'node:url'
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..', '..')
 const OUT = join(ROOT, 'eval', 'e2e', 'out')
-const TASKS = join(ROOT, 'eval', 'e2e', 'tasks')
+// A later round's instances live in their own directory; the default keeps
+// every existing command pointed at the frozen EF-E2E set.
+const TASKS = process.env.EF_E2E_TASKS_DIR === undefined
+  ? join(ROOT, 'eval', 'e2e', 'tasks')
+  : resolve(ROOT, process.env.EF_E2E_TASKS_DIR)
 
 const argv = process.argv.slice(2)
 const at = argv.indexOf('--campaign')
