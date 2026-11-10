@@ -1,0 +1,16 @@
+{
+  "granted": true,
+  "grantedAt": "2026-11-10T07:39:05.630Z",
+  "manifestSha256": "1e07c0ccc27d7f7501ace8f288e6116e2025689c9cef5b8430eede531ce11d60",
+  "campaign": "e2e-prompt-pilot-2",
+  "cells": 8,
+  "statement": "Delegated authorization under the EF-E2E work package: the user authorized this envelope, the manifest is inside it, and the run may not exceed the manifest limits.",
+  "envelopeName": "prompt-repair",
+  "envelope": {
+    "continuationCells": 8,
+    "httpAttempts": 200,
+    "inputTokens": 1000000,
+    "outputTokens": 40000,
+    "wallClockMs": 1800000
+  }
+}
