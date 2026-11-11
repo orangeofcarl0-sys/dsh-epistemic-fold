@@ -1,0 +1,3477 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP3 task continuity",
+  "generatedAt": "2026-11-11T15:44:21.837Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "method": {
+    "source": "the event seq of the first user message carrying the exact task prompt",
+    "delivery": "report.activeDelivery exact/prefix/marker/absent per primary request",
+    "shadow": "a fold is a source loss only when its shadowedSeqs contains the source seq",
+    "residency": "absent-by-shadow-range is exact; resident-at-end requires the source seq in surfaceTail; everything else is unknown",
+    "artifact": "each path declared by a task check is searched verbatim in the user/checkpoint bytes; a tool listing does not count"
+  },
+  "byArm": {
+    "B0": {
+      "cells": 6,
+      "taskSourceLost": 0,
+      "taskSourceShadowed": 0,
+      "lostBeforeWrite": 0,
+      "lostWithNoWrite": 0,
+      "contractLost": 1,
+      "correct": 5
+    },
+    "E0": {
+      "cells": 6,
+      "taskSourceLost": 5,
+      "taskSourceShadowed": 5,
+      "lostBeforeWrite": 0,
+      "lostWithNoWrite": 5,
+      "contractLost": 6,
+      "correct": 1
+    },
+    "E1": {
+      "cells": 6,
+      "taskSourceLost": 2,
+      "taskSourceShadowed": 2,
+      "lostBeforeWrite": 0,
+      "lostWithNoWrite": 2,
+      "contractLost": 3,
+      "correct": 3
+    }
+  },
+  "stageB": {
+    "cells": 3,
+    "taskBPresent": 3,
+    "taskAAbsentAfterB": 2,
+    "details": [
+      {
+        "cellId": "T16-p1-B0-r1",
+        "arm": "B0",
+        "taskBFirstExactRequest": 9,
+        "taskBFirstLostRequest": null,
+        "bothVisibleRequests": [
+          9,
+          11,
+          13,
+          15
+        ],
+        "taskStillVisibleAtEnd": true
+      },
+      {
+        "cellId": "T16-p1-E0-r1",
+        "arm": "E0",
+        "taskBFirstExactRequest": 8,
+        "taskBFirstLostRequest": 12,
+        "bothVisibleRequests": [],
+        "taskStillVisibleAtEnd": false
+      },
+      {
+        "cellId": "T16-p1-E1-r1",
+        "arm": "E1",
+        "taskBFirstExactRequest": 12,
+        "taskBFirstLostRequest": 20,
+        "bothVisibleRequests": [],
+        "taskStillVisibleAtEnd": false
+      }
+    ]
+  },
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 127,
+          "promptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 7,
+              "status": "exact"
+            },
+            {
+              "index": 9,
+              "status": "exact"
+            },
+            {
+              "index": 11,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 7,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 9,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 11,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 7,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "7f3f4b52-6767-4cb9-9ef1-f2bef8485f0e",
+          "checkpointId": null,
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "487cdcb4-a165-45f3-a403-03199882dd5d",
+          "checkpointId": null,
+          "startSeq": 60,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "1a4c8e3d-9c01-48d5-a789-9bacd834a69e",
+          "checkpointId": null,
+          "startSeq": 67,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "eb1a512d-5c4f-44f4-b20d-d41dabc298da",
+          "checkpointId": null,
+          "startSeq": 74,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "0f508c76-4172-44f9-979e-a20aa17bbf25",
+          "checkpointId": null,
+          "startSeq": 81,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 127,
+          "promptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "sourceSeq": 38,
+          "firstExactRequest": 0,
+          "firstLostRequest": 4,
+          "lostRequests": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "shadowedBy": [
+            "dcb7165f-31b5-4755-852a-3c0b3f16ba3a"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 1,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "result.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "result.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "result.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "result.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 0,
+      "firstContractLostRequest": 4,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "c6c2a994-e870-4015-ae3d-e603339c22f5",
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "dcb7165f-31b5-4755-852a-3c0b3f16ba3a",
+          "checkpointId": "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "startSeq": 71,
+          "phase": "live",
+          "shadowedSeqs": [
+            15,
+            17,
+            22,
+            25,
+            38,
+            40,
+            42,
+            44,
+            47,
+            49,
+            51,
+            53,
+            55,
+            58,
+            60,
+            62,
+            64
+          ],
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+          "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+          "startSeq": 86,
+          "phase": "live",
+          "shadowedSeqs": [
+            67,
+            69,
+            77,
+            79
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "e2cb9ca0-4a8e-430f-badc-c24981d3b54e",
+          "checkpointId": "0563e1ed-11c8-49fd-96df-d787cfde55d6",
+          "startSeq": 98,
+          "phase": "live",
+          "shadowedSeqs": [
+            82,
+            84
+          ],
+          "deliveredAtRequest": 7
+        }
+      ]
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "taskOutcome": "incorrect",
+      "termination": "step-limit",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 127,
+          "promptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "exact"
+            },
+            {
+              "index": 7,
+              "status": "exact"
+            },
+            {
+              "index": 8,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 6,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 7,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 8,
+          "present": [
+            "result.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 6,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "589dbba0-32e1-4964-8969-54b7a276eb55",
+          "checkpointId": "0de751f9-f054-46f2-bbff-1b9e5ec043b7",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 87,
+          "promptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 4,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "f6fb1140-dfcf-4a2d-8a93-57e0b499f8c8",
+          "checkpointId": null,
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 87,
+          "promptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "sourceSeq": 38,
+          "firstExactRequest": 0,
+          "firstLostRequest": 2,
+          "lostRequests": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "shadowedBy": [
+            "1e4f9922-23a0-4bda-bdb2-15ac55aef12f"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "absent"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 1,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "config.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 0,
+      "firstContractLostRequest": 2,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "f7ee1df0-3ab5-4b14-9e84-3c8cdc0df26a",
+          "checkpointId": "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "1e4f9922-23a0-4bda-bdb2-15ac55aef12f",
+          "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "startSeq": 55,
+          "phase": "live",
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            22,
+            25,
+            38,
+            40,
+            42,
+            44,
+            46
+          ],
+          "deliveredAtRequest": 2
+        },
+        {
+          "compactionId": "090a85ed-2bdf-4f72-a816-399112679591",
+          "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+          "startSeq": 65,
+          "phase": "live",
+          "shadowedSeqs": [
+            49,
+            51,
+            53
+          ],
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "9b94bed4-df13-4c5e-89da-d84a87ee0371",
+          "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "startSeq": 77,
+          "phase": "live",
+          "shadowedSeqs": [
+            61,
+            63
+          ],
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "startSeq": 96,
+          "phase": "live",
+          "shadowedSeqs": [
+            71,
+            73,
+            75,
+            83,
+            85,
+            87
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "startSeq": 117,
+          "phase": "live",
+          "shadowedSeqs": [
+            90,
+            92,
+            94,
+            102,
+            104,
+            106,
+            108
+          ],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 87,
+          "promptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "config.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 4,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "6c736bc7-1062-469d-a453-dc4180285d33",
+          "checkpointId": "5d257eff-4203-40a5-bee5-7f7165cfca3d",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 35,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 93,
+          "promptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "sourceSeq": 35,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "resident-at-end",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 2,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "ecfadcaa-382a-47b8-a5d2-318cde373d8c",
+          "checkpointId": null,
+          "startSeq": 29,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 35,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 93,
+          "promptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "sourceSeq": 35,
+          "firstExactRequest": 0,
+          "firstLostRequest": 2,
+          "lostRequests": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "shadowedBy": [
+            "7e3f92ae-3271-4689-9255-77c4b539d2b6"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "absent"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 1,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "build.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 0,
+      "firstContractLostRequest": 2,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "fe2b6d4c-25f8-4298-af4a-852a769073bd",
+          "checkpointId": "72140c72-89a4-49b6-a261-e9f12aad908f",
+          "startSeq": 29,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "startSeq": 50,
+          "phase": "live",
+          "shadowedSeqs": [
+            20,
+            22,
+            35,
+            37,
+            39,
+            41,
+            43
+          ],
+          "deliveredAtRequest": 2
+        },
+        {
+          "compactionId": "daa8b602-fd35-4caa-9b88-a1fa6b355ccd",
+          "checkpointId": "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+          "startSeq": 60,
+          "phase": "live",
+          "shadowedSeqs": [
+            46,
+            48
+          ],
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "29d1b9a8-1cf8-42b7-a9bd-ef1bf44e3642",
+          "checkpointId": "6517784b-fe66-4596-92a0-c077fbb08f1c",
+          "startSeq": 72,
+          "phase": "live",
+          "shadowedSeqs": [
+            56,
+            58
+          ],
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "startSeq": 98,
+          "phase": "live",
+          "shadowedSeqs": [
+            66,
+            68,
+            70,
+            78,
+            80,
+            82,
+            85,
+            87,
+            89
+          ],
+          "deliveredAtRequest": 7
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 35,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 93,
+          "promptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "sourceSeq": 35,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "build.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 4,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "9133cba1-8384-43c4-909c-2badef67de66",
+          "checkpointId": "45432c14-fdf8-4c79-9606-adf1c2db7cc7",
+          "startSeq": 29,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 53,
+          "promptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "exact"
+            },
+            {
+              "index": 9,
+              "status": "exact"
+            },
+            {
+              "index": 11,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 9,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 11,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": 1,
+      "firstWriteRequest": 9,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "30f7cc56-04b2-4c9f-b5c7-79a4af6749e1",
+          "checkpointId": null,
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "0169434b-582e-4f9e-ad6f-521e1a6bb95f",
+          "checkpointId": null,
+          "startSeq": 64,
+          "phase": "live",
+          "shadowedSeqs": [
+            34
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "e066263c-a773-4813-801b-94a989ffdb02",
+          "checkpointId": null,
+          "startSeq": 68,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "1e0710bb-7bec-4ff3-91c5-504fe5c4ff3c",
+          "checkpointId": null,
+          "startSeq": 76,
+          "phase": "live",
+          "shadowedSeqs": [
+            66
+          ],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "848f5031-f649-42a8-b5d7-eccdb54fde59",
+          "checkpointId": null,
+          "startSeq": 80,
+          "phase": "live",
+          "shadowedSeqs": [
+            78
+          ],
+          "deliveredAtRequest": 9
+        },
+        {
+          "compactionId": "353a5bc5-9fac-4643-b493-785788291bc9",
+          "checkpointId": null,
+          "startSeq": 90,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 53,
+          "promptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "sourceSeq": 38,
+          "firstExactRequest": 0,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        }
+      ],
+      "contractStartRequest": 0,
+      "firstContractLostRequest": 0,
+      "firstWriteRequest": 4,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "e3ff8cec-3dfd-4ec7-9925-4997b729bce6",
+          "checkpointId": "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 0
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 38,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 53,
+          "promptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "sourceSeq": 38,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "exact"
+            },
+            {
+              "index": 7,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "src/limit.js"
+          ]
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": 1,
+      "firstWriteRequest": 5,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "0c8ddeae-dbd1-4eb1-ad44-c183e3137da5",
+          "checkpointId": "b59974aa-96d4-42ba-98d0-8682a0e2d0d2",
+          "startSeq": 32,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "deliveredAtRequest": 1
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "termination": "finish",
+      "liveStartSeq": 28,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 81,
+          "promptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "sourceSeq": 28,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "exact"
+            },
+            {
+              "index": 8,
+              "status": "exact"
+            },
+            {
+              "index": 10,
+              "status": "exact"
+            },
+            {
+              "index": 12,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 6,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 8,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 10,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 12,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 12,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "7a79ef48-4c18-4e96-88a2-d3e7daeee5a8",
+          "checkpointId": null,
+          "startSeq": 24,
+          "phase": "seed",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "ba177c57-2793-495a-8d7e-7bcf895150e5",
+          "checkpointId": null,
+          "startSeq": 38,
+          "phase": "live",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "20148dad-5e5e-49b7-8dd5-d8e95e71f1d6",
+          "checkpointId": null,
+          "startSeq": 42,
+          "phase": "live",
+          "shadowedSeqs": [
+            40
+          ],
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "3fa9a7b7-0463-4fc7-8880-8b104528afa2",
+          "checkpointId": null,
+          "startSeq": 54,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "bbc552e9-947f-4517-8e45-d41bcec28538",
+          "checkpointId": null,
+          "startSeq": 61,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "80ecbe26-e909-4ccf-827c-11187be3549a",
+          "checkpointId": null,
+          "startSeq": 68,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "5217e8d9-1df9-480e-ab0b-198afc1f726e",
+          "checkpointId": null,
+          "startSeq": 75,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 30,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 81,
+          "promptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "sourceSeq": 30,
+          "firstExactRequest": 0,
+          "firstLostRequest": 3,
+          "lostRequests": [
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "shadowedBy": [
+            "89e69b2c-90af-4774-ab82-b141705e5da3"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 1,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 0,
+      "firstContractLostRequest": 3,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "fce417bb-3656-4353-aa7f-431f170fb948",
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "startSeq": 24,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+          "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "startSeq": 52,
+          "phase": "live",
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            30,
+            32,
+            34,
+            36,
+            38,
+            41,
+            43,
+            45
+          ],
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+          "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "startSeq": 67,
+          "phase": "live",
+          "shadowedSeqs": [
+            48,
+            50,
+            58,
+            60
+          ],
+          "deliveredAtRequest": 5
+        },
+        {
+          "compactionId": "b6521eda-e3f5-4d3c-9e14-cd94c9f51814",
+          "checkpointId": "d8b09492-afe0-436f-9812-d5ac9eef19dd",
+          "startSeq": 79,
+          "phase": "live",
+          "shadowedSeqs": [
+            63,
+            65
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+          "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+          "startSeq": 98,
+          "phase": "live",
+          "shadowedSeqs": [
+            73,
+            75,
+            77,
+            85,
+            87,
+            89
+          ],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 30,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 81,
+          "promptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "sourceSeq": 30,
+          "firstExactRequest": 1,
+          "firstLostRequest": 7,
+          "lostRequests": [
+            7,
+            8,
+            10
+          ],
+          "shadowedBy": [
+            "e75f420b-5c1c-4e49-94cb-97e6eabf587b"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 8,
+              "status": "absent"
+            },
+            {
+              "index": 10,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 2,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 3,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 4,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 5,
+          "present": [
+            "effective.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 8,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        },
+        {
+          "index": 10,
+          "present": [],
+          "missing": [
+            "effective.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 1,
+      "firstContractLostRequest": 7,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": null,
+      "folds": [
+        {
+          "compactionId": "2696b22a-b022-48bf-9f51-c004579811d9",
+          "checkpointId": "2089546a-1b0f-4714-8c83-8c00d1929510",
+          "startSeq": 24,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "startSeq": 64,
+          "phase": "live",
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            30,
+            32,
+            34,
+            36,
+            38,
+            41,
+            43,
+            45,
+            48,
+            50,
+            52,
+            55,
+            57
+          ],
+          "deliveredAtRequest": 7
+        },
+        {
+          "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+          "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+          "startSeq": 79,
+          "phase": "live",
+          "shadowedSeqs": [
+            60,
+            62,
+            70,
+            72
+          ],
+          "deliveredAtRequest": 10
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "taskOutcome": "incomplete",
+      "termination": "finish",
+      "liveStartSeq": 55,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 96,
+          "promptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "sourceSeq": 55,
+          "firstExactRequest": 1,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "exact"
+            },
+            {
+              "index": 7,
+              "status": "exact"
+            },
+            {
+              "index": 9,
+              "status": "exact"
+            },
+            {
+              "index": 11,
+              "status": "exact"
+            },
+            {
+              "index": 13,
+              "status": "exact"
+            },
+            {
+              "index": 15,
+              "status": "exact"
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "promptChars": 100,
+          "promptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "sourceSeq": 122,
+          "firstExactRequest": 9,
+          "firstLostRequest": null,
+          "lostRequests": [],
+          "shadowedBy": [],
+          "residency": "unknown",
+          "requests": [
+            {
+              "index": 1,
+              "status": "absent"
+            },
+            {
+              "index": 2,
+              "status": "absent"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 9,
+              "status": "exact"
+            },
+            {
+              "index": 11,
+              "status": "exact"
+            },
+            {
+              "index": 13,
+              "status": "exact"
+            },
+            {
+              "index": 15,
+              "status": "exact"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 9,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 11,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 13,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 15,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        }
+      ],
+      "contractStartRequest": 9,
+      "firstContractLostRequest": null,
+      "firstWriteRequest": 6,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": false,
+      "stageB": {
+        "taskBSeq": 122,
+        "taskBFirstExactRequest": 9,
+        "taskBFirstLostRequest": null,
+        "taskStillVisibleAtEnd": true,
+        "bothVisibleRequests": [
+          9,
+          11,
+          13,
+          15
+        ],
+        "report": {
+          "firstCompactions": 1,
+          "firstCheckpointChars": 2341,
+          "firstCheckpointMode": "unmarked",
+          "idle": "idle"
+        }
+      },
+      "folds": [
+        {
+          "compactionId": "a590fb24-9eee-4c33-8bba-ed624c5bdf04",
+          "checkpointId": null,
+          "startSeq": 49,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "c10d3968-df89-4d7f-b24b-641b1f86203a",
+          "checkpointId": null,
+          "startSeq": 119,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "ab1ded5c-0f61-43a4-8990-a3ffc34687bc",
+          "checkpointId": null,
+          "startSeq": 128,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "364a3aa7-f989-429b-b049-749965605bc7",
+          "checkpointId": null,
+          "startSeq": 135,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "4041e06a-0fad-46bb-8b58-5c4b02f0687c",
+          "checkpointId": null,
+          "startSeq": 146,
+          "phase": "live",
+          "shadowedSeqs": [],
+          "deliveredAtRequest": null
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 55,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 96,
+          "promptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "sourceSeq": 55,
+          "firstExactRequest": 0,
+          "firstLostRequest": 6,
+          "lostRequests": [
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "shadowedBy": [
+            "50bfdfd3-839a-47a4-bac0-24d15cb0ba25"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "exact"
+            },
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 5,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 8,
+              "status": "absent"
+            },
+            {
+              "index": 9,
+              "status": "absent"
+            },
+            {
+              "index": 10,
+              "status": "absent"
+            },
+            {
+              "index": 11,
+              "status": "absent"
+            },
+            {
+              "index": 12,
+              "status": "absent"
+            },
+            {
+              "index": 13,
+              "status": "absent"
+            },
+            {
+              "index": 14,
+              "status": "absent"
+            },
+            {
+              "index": 15,
+              "status": "absent"
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "promptChars": 100,
+          "promptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "sourceSeq": 155,
+          "firstExactRequest": 8,
+          "firstLostRequest": 12,
+          "lostRequests": [
+            12,
+            13,
+            14,
+            15
+          ],
+          "shadowedBy": [
+            "6ee8208a-bc78-4c42-b276-3b550aa47605"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 0,
+              "status": "absent"
+            },
+            {
+              "index": 1,
+              "status": "absent"
+            },
+            {
+              "index": 2,
+              "status": "absent"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 5,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 8,
+              "status": "exact"
+            },
+            {
+              "index": 9,
+              "status": "exact"
+            },
+            {
+              "index": 10,
+              "status": "exact"
+            },
+            {
+              "index": 11,
+              "status": "exact"
+            },
+            {
+              "index": 12,
+              "status": "absent"
+            },
+            {
+              "index": 13,
+              "status": "absent"
+            },
+            {
+              "index": 14,
+              "status": "absent"
+            },
+            {
+              "index": 15,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 0,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 5,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 8,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 9,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 10,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 11,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 12,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 13,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 14,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 15,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 8,
+      "firstContractLostRequest": 12,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": {
+        "taskBSeq": 155,
+        "taskBFirstExactRequest": 8,
+        "taskBFirstLostRequest": 12,
+        "taskStillVisibleAtEnd": false,
+        "bothVisibleRequests": [],
+        "report": {
+          "firstCompactions": 3,
+          "firstCheckpointChars": 255,
+          "firstCheckpointMode": "leaf",
+          "idle": "idle"
+        }
+      },
+      "folds": [
+        {
+          "compactionId": "12064cf6-3ce8-4ed0-a363-3c1f6a50a371",
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "startSeq": 49,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "29a0277f-495f-40cc-99e1-fba4d0129586",
+          "checkpointId": "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "startSeq": 86,
+          "phase": "live",
+          "shadowedSeqs": [
+            30,
+            32,
+            35,
+            37
+          ],
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "startSeq": 103,
+          "phase": "live",
+          "shadowedSeqs": [
+            42,
+            55,
+            57,
+            59,
+            61,
+            63,
+            66,
+            68,
+            70,
+            73,
+            75,
+            77,
+            80,
+            82,
+            84,
+            92,
+            94
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "startSeq": 150,
+          "phase": "live",
+          "shadowedSeqs": [
+            97,
+            99,
+            101,
+            109,
+            111,
+            113,
+            116,
+            118,
+            120,
+            126,
+            129,
+            131
+          ],
+          "deliveredAtRequest": 8
+        },
+        {
+          "compactionId": "6ee8208a-bc78-4c42-b276-3b550aa47605",
+          "checkpointId": "7e4c580d-2f11-464b-87e9-97afc329004f",
+          "startSeq": 182,
+          "phase": "live",
+          "shadowedSeqs": [
+            134,
+            136,
+            139,
+            141,
+            144,
+            155,
+            157,
+            159
+          ],
+          "deliveredAtRequest": 12
+        },
+        {
+          "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+          "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+          "startSeq": 194,
+          "phase": "live",
+          "shadowedSeqs": [
+            162,
+            164,
+            166,
+            169,
+            171,
+            173,
+            176,
+            178,
+            180
+          ],
+          "deliveredAtRequest": 13
+        },
+        {
+          "compactionId": "910e47d1-1a73-4b9e-8d5d-a7f70ce5f942",
+          "checkpointId": "34f32f52-84e4-40be-ab72-c89cfc163e57",
+          "startSeq": 213,
+          "phase": "live",
+          "shadowedSeqs": [
+            188,
+            190,
+            192
+          ],
+          "deliveredAtRequest": 15
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "taskOutcome": "incomplete",
+      "termination": "step-limit",
+      "liveStartSeq": 55,
+      "labels": [
+        {
+          "label": "task",
+          "promptChars": 96,
+          "promptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "sourceSeq": 55,
+          "firstExactRequest": 1,
+          "firstLostRequest": 6,
+          "lostRequests": [
+            6,
+            7,
+            9,
+            10,
+            12,
+            13,
+            14,
+            15,
+            17,
+            18,
+            20
+          ],
+          "shadowedBy": [
+            "cf97873f-0e3c-4df1-ae4f-df29a60539de"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 1,
+              "status": "exact"
+            },
+            {
+              "index": 2,
+              "status": "exact"
+            },
+            {
+              "index": 3,
+              "status": "exact"
+            },
+            {
+              "index": 4,
+              "status": "exact"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 9,
+              "status": "absent"
+            },
+            {
+              "index": 10,
+              "status": "absent"
+            },
+            {
+              "index": 12,
+              "status": "absent"
+            },
+            {
+              "index": 13,
+              "status": "absent"
+            },
+            {
+              "index": 14,
+              "status": "absent"
+            },
+            {
+              "index": 15,
+              "status": "absent"
+            },
+            {
+              "index": 17,
+              "status": "absent"
+            },
+            {
+              "index": 18,
+              "status": "absent"
+            },
+            {
+              "index": 20,
+              "status": "absent"
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "promptChars": 100,
+          "promptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "sourceSeq": 149,
+          "firstExactRequest": 12,
+          "firstLostRequest": 20,
+          "lostRequests": [
+            20
+          ],
+          "shadowedBy": [
+            "4371aa98-cd24-4a58-aa2b-db38cfc9be8b"
+          ],
+          "residency": "absent-by-shadow-range",
+          "requests": [
+            {
+              "index": 1,
+              "status": "absent"
+            },
+            {
+              "index": 2,
+              "status": "absent"
+            },
+            {
+              "index": 3,
+              "status": "absent"
+            },
+            {
+              "index": 4,
+              "status": "absent"
+            },
+            {
+              "index": 6,
+              "status": "absent"
+            },
+            {
+              "index": 7,
+              "status": "absent"
+            },
+            {
+              "index": 9,
+              "status": "absent"
+            },
+            {
+              "index": 10,
+              "status": "absent"
+            },
+            {
+              "index": 12,
+              "status": "exact"
+            },
+            {
+              "index": 13,
+              "status": "exact"
+            },
+            {
+              "index": 14,
+              "status": "exact"
+            },
+            {
+              "index": 15,
+              "status": "exact"
+            },
+            {
+              "index": 17,
+              "status": "exact"
+            },
+            {
+              "index": 18,
+              "status": "exact"
+            },
+            {
+              "index": 20,
+              "status": "absent"
+            }
+          ]
+        }
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "artifactTimeline": [
+        {
+          "index": 1,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 2,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 3,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 4,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 6,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 7,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 9,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 10,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        },
+        {
+          "index": 12,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 13,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 14,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 15,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 17,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 18,
+          "present": [
+            "release.json"
+          ],
+          "missing": []
+        },
+        {
+          "index": 20,
+          "present": [],
+          "missing": [
+            "release.json"
+          ]
+        }
+      ],
+      "contractStartRequest": 12,
+      "firstContractLostRequest": 20,
+      "firstWriteRequest": null,
+      "taskSourceLostBeforeWrite": false,
+      "taskSourceLostWithNoWrite": true,
+      "stageB": {
+        "taskBSeq": 149,
+        "taskBFirstExactRequest": 12,
+        "taskBFirstLostRequest": 20,
+        "taskStillVisibleAtEnd": false,
+        "bothVisibleRequests": [],
+        "report": {
+          "firstCompactions": 3,
+          "firstCheckpointChars": 2055,
+          "firstCheckpointMode": "leaf",
+          "idle": "idle"
+        }
+      },
+      "folds": [
+        {
+          "compactionId": "a4089f4f-eab5-4607-b914-6c46203f8989",
+          "checkpointId": "a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "startSeq": 49,
+          "phase": "seed",
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "cf97873f-0e3c-4df1-ae4f-df29a60539de",
+          "checkpointId": "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+          "startSeq": 78,
+          "phase": "live",
+          "shadowedSeqs": [
+            30,
+            32,
+            35,
+            37,
+            42,
+            55,
+            57,
+            59,
+            61,
+            64,
+            66,
+            69,
+            71
+          ],
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "5e340a72-1f81-4705-897c-fa3f291d8274",
+          "checkpointId": "6a888815-46ab-4f0a-a572-437ff562ec47",
+          "startSeq": 97,
+          "phase": "live",
+          "shadowedSeqs": [
+            74,
+            76,
+            84,
+            86,
+            88
+          ],
+          "deliveredAtRequest": 9
+        },
+        {
+          "compactionId": "563ccd54-5d63-4cd0-a9ad-913b455b2d46",
+          "checkpointId": "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+          "startSeq": 144,
+          "phase": "live",
+          "shadowedSeqs": [
+            91,
+            93,
+            95,
+            103,
+            105,
+            107,
+            110,
+            112,
+            114,
+            120,
+            123,
+            125
+          ],
+          "deliveredAtRequest": 12
+        },
+        {
+          "compactionId": "962deee6-07ae-4784-bc29-23a8885908d3",
+          "checkpointId": "04f99441-5d96-4801-96a6-f00ab9b08312",
+          "startSeq": 176,
+          "phase": "live",
+          "shadowedSeqs": [
+            128,
+            130
+          ],
+          "deliveredAtRequest": 17
+        },
+        {
+          "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+          "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+          "startSeq": 193,
+          "phase": "live",
+          "shadowedSeqs": [
+            133,
+            135,
+            138,
+            149,
+            151,
+            153,
+            155,
+            158,
+            160,
+            162,
+            165,
+            167,
+            170,
+            172,
+            174,
+            182,
+            184,
+            186
+          ],
+          "deliveredAtRequest": 20
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Only stage-B cells persist a session log; for other cells the exact surface at each fold is not replayed.",
+    "Exact prompt absence does not prove that no paraphrase was present; the artifact path and the checkpoint text are reported separately.",
+    "No task root was registered and no surface was pinned: this is a read-only audit of the recorded delivery."
+  ]
+}
