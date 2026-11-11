@@ -180,10 +180,10 @@ A separate `workspace-readable` task family is recorded as design-only. It is no
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
 | R4-G6 | incomplete | 36-cell campaign frozen; `executionAuthorized:false`; live-not-authorized |
-| R4-G7 | incomplete until CI | zero-live verified; claims 10; CI pending at generation |
+| R4-G7 | pass | zero-live verified; claims 10; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
 | R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion |
 
-`incomplete` is not `fail`. R4-G6 can only become pass under a new explicit live authorization. R4-G7 becomes pass when the supported-lane CI on the final HEAD succeeds.
+`incomplete` is not `fail`. R4-G6 can only become pass under a new explicit live authorization. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
 
 ## 9. What R4 does not prove
 
