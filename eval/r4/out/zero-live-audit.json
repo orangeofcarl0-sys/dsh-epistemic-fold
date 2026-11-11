@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 zero-live audit",
+  "generatedAt": "2026-11-11T15:44:22.288Z",
+  "scripts": [
+    "eval/r4/baseline.mjs",
+    "eval/r4/score.mjs",
+    "eval/r4/evidence-graph.mjs",
+    "eval/r4/task-continuity.mjs",
+    "eval/r4/working-set.mjs",
+    "eval/r4/candidate-decision.mjs",
+    "eval/r4/freeze-budget-sensitivity.mjs",
+    "eval/r4/product-decision.mjs",
+    "eval/r4/contracts/scoring-contract.mjs",
+    "eval/r4/contracts/evidence-graph-contract.mjs",
+    "eval/r4/candidate/active-task-delivery.mjs",
+    "eval/r4/shared/audit.mjs"
+  ],
+  "forbidden": [
+    "/resolveLiveRoute\\s*\\(/u",
+    "/makeLiveAdapter\\s*\\(/u",
+    "/new\\s+LlmAdapter\\b/u",
+    "/registerAdapter\\s*\\(/u",
+    "/\\bfetch\\s*\\(/u",
+    "/\\bLIVE_[A-Z_]+/u",
+    "/from\\s+['\"][^'\"]*eval\\/live[^'\"]*['\"]/u",
+    "/from\\s+['\"][^'\"]*openai[^'\"]*['\"]/u"
+  ],
+  "violations": [],
+  "providerCalls": 0,
+  "r4Campaigns": [],
+  "budgetExecutionAuthorized": false,
+  "immutableMissing": [],
+  "verdict": "zero-live-verified"
+}

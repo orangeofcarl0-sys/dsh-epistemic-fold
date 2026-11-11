@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 evidence claims",
+  "generatedAt": "2026-11-11T15:44:22.382Z",
+  "head": "460a5ed231bd81867b36a92eb8856c1cce69c574",
+  "claims": [
+    {
+      "id": "R4-BASELINE",
+      "statement": "R4 started from 07540d01 with 70/70 immutable R3 artifacts present and 0 missing.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/baseline-r4.json",
+          "sha256": "03c4bec6ea45d2114d422c9f51c2d510e910cc7ec0155437a7888140d84c5915"
+        }
+      ],
+      "limitation": "A commit is a hand-off point, not proof that every future run used this tree."
+    },
+    {
+      "id": "R4-SCORING-SPLIT",
+      "statement": "Historical R3 passes are B0 5/6, E0 1/6, E1 3/6. The rescored task outcome is B0 5/6, E0 1/6, E1 3/6; E1 vs B0 has both 3, neither 1, E1-only 0, B0-only 2. Mechanism exposure is reported separately.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/rescored-r3.json",
+          "sha256": "fca87b09a5dc00e2d6dcdea77245b6583e5e7777455af032a63e766d39686130"
+        }
+      ],
+      "limitation": "The rescore is a re-reading of the same 18 cells, not a new benchmark. It does not change the historical score."
+    },
+    {
+      "id": "R4-EVIDENCE-LIFECYCLE",
+      "statement": "Across 18 pilot cells there are 67 recall/search calls; 53 results are shadowed by a later fold; 51 do not carry the payload verbatim into the next request (24 marker-only, 20 invisible-after-fold, 12 no-following-request); 9 are visible and 2 are inferred equivalent.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/evidence-lifecycle.json",
+          "sha256": "19c51039660b609f6d1c022251a8142372823e2f30769e88731c95ff390bd96b"
+        }
+      ],
+      "limitation": "Visibility is the exact toolCallId/content at the next primary request. A checkpoint paraphrase without an exact substring is not counted as equivalent."
+    },
+    {
+      "id": "R4-TASK-CONTINUITY",
+      "statement": "Of the 8 failed EF cells, 7 lose the exact task source; 7 of them make no write. None of the 4 passing EF cells lose it (0 with loss).",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/task-continuity.json",
+          "sha256": "c9d2790685ce4c09bd1a54336d34ad7cea0324d8b572cd47cf8c8ea1dbd0f9a7"
+        }
+      ],
+      "limitation": "Exact prompt absence is not proof that no paraphrase existed; the artifact path and checkpoint text are reported separately."
+    },
+    {
+      "id": "R4-FAILURE-PROJECTION",
+      "statement": "T16 E0 carries 5 open failures (2 duplicate signatures, 91.2% of checkpoint chars); T16 E1 carries 9 (4 duplicate, 32.1%).",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/working-set.json",
+          "sha256": "6996b3127e359ab9b18fe39222dd1a7182114cdbad79966334ee461bc6805629"
+        }
+      ],
+      "limitation": "The final checkpoint is the only checkpoint stored verbatim; the join from anchor to tool/path is inferred and can be unknown."
+    },
+    {
+      "id": "R4-WORKING-SET",
+      "statement": "Character-level context balance is B0 -89947, E0 826954, E1 35166; repeated recall 16; recall payloads re-folded 51; exact-task requests lost 45.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/working-set.json",
+          "sha256": "6996b3127e359ab9b18fe39222dd1a7182114cdbad79966334ee461bc6805629"
+        }
+      ],
+      "limitation": "These are characters, not provider tokens. R3 has no per-step TokenMeter snapshot; the E0 positive balance is a research signal, not a billing result."
+    },
+    {
+      "id": "R4-CANDIDATE",
+      "statement": "The pre-registered rules select active-task-delivery (contract only, not wired). The offline simulation adds 1238 exact prompt chars across 7 failed cells, bounded to two deliveries per cell.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/candidate-decision.json",
+          "sha256": "a6eec2215aa7b906648258205e7195a0b80c579578ab1b87fd20cb5a28d6b732"
+        }
+      ],
+      "limitation": "A correlation in 18 cells is not a causal effect. The simulation does not prove the model would act on the replayed source."
+    },
+    {
+      "id": "R4-BUDGET-DESIGN",
+      "statement": "The budget-sensitivity design has 36 cells (6 tasks x 3 arms x 2 budgets), validated as 36 unique combinations with balanced blocks; executionAuthorized is false.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/budget-sensitivity-design.json",
+          "sha256": "bc4912bc2aa138a2cc42106ca20ab81243aa65bcb01369f0f65402a13a489ab2"
+        }
+      ],
+      "limitation": "A design is not an authorization. The proposed envelope is an estimate from R3, not a spend approval."
+    },
+    {
+      "id": "R4-PRODUCT-DECISION",
+      "statement": "No product candidate is proposed; Deployment Hold is true; expandTo72 is false; the research candidate remains unwired.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/product-decision-r4.json",
+          "sha256": "af6dea84648b9a55c4b7890f7e231fe929ef41f8d9ee9d7f8476e0263c567a0b"
+        }
+      ],
+      "limitation": "The decision is bounded by one model, one route, one machine and a step-limit-censored 8-step lane."
+    },
+    {
+      "id": "R4-ZERO-LIVE",
+      "statement": "The zero-live audit scanned 12 R4 scripts, found 0 provider/live entry points and 0 R4 campaign artifacts; providerCalls is 0.",
+      "commit": "460a5ed2",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/zero-live-audit.json",
+          "sha256": "8fa0299c678b51bc38d02c9a0d73d4bad831413e107e00e441cecf181dd76531"
+        }
+      ],
+      "limitation": "The audit checks the R4 scripts and output directories; it is not a network monitor for the whole machine."
+    }
+  ],
+  "counts": {
+    "claims": 10,
+    "artifacts": 9
+  },
+  "method": "Each claim names its artifact, SHA-256, commit and limitation. A missing artifact stops generation."
+}
