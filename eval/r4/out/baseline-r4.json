@@ -1,0 +1,544 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP0",
+  "generatedAt": "2026-11-11T15:41:50.318Z",
+  "git": {
+    "worktree": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation",
+    "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+    "headShort": "07540d01",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "headSubject": "docs(ef-r3): explain the pilot through per-cell trajectories and model behaviour",
+    "tree": "c8d128a4eeee01436fb27df5c3735b524483f6a1",
+    "sourceTreeDigest": "c8d128a4eeee01436fb27df5c3735b524483f6a1",
+    "dirtyPaths": [
+      " M eval/e2e/src/cell.mjs",
+      " M eval/e2e/src/run.mjs",
+      " M eval/e2e/src/witness.mjs",
+      " M package.json",
+      "?? docs/convergence/EF_R4.md",
+      "?? tests/r4-candidate.spec.ts",
+      "?? tests/r4-scoring.spec.ts",
+      "?? tests/r4-task-continuity.spec.ts",
+      "?? tests/r4-working-set.spec.ts"
+    ],
+    "worktreeClean": false,
+    "note": "dirtyPaths excludes ignored run output and the in-progress eval/r4 directory."
+  },
+  "pullRequest": {
+    "baseRefName": "rc38-mechanism-validation",
+    "headRefName": "chore/ef-c1-evaluation-foundation",
+    "headRefOid": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+    "mergeable": "MERGEABLE",
+    "number": 5,
+    "state": "OPEN",
+    "url": "https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/pull/5"
+  },
+  "ci": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-11T11:03:16Z",
+      "databaseId": 43008726470,
+      "headSha": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-11T11:03:08Z",
+      "databaseId": 43008706252,
+      "headSha": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-11T10:33:51Z",
+      "databaseId": 43004664408,
+      "headSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-11T10:33:44Z",
+      "databaseId": 43004646707,
+      "headSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-11T10:28:47Z",
+      "databaseId": 43003947493,
+      "headSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "status": "completed",
+      "workflowName": "CI"
+    }
+  ],
+  "scorerVersions": {
+    "historical": "r3-benchmark-v1",
+    "rescored": "r4-scoring-v1",
+    "note": "The historical score is the value recorded by R3. The rescored value separates task checks from mechanism exposure; neither replaces the other."
+  },
+  "r3": {
+    "campaign": "e2e-r3-product-pilot-1",
+    "manifestSha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab",
+    "cells": [
+      "T11-p1-B0-r1",
+      "T11-p1-E0-r1",
+      "T11-p1-E1-r1",
+      "T12-p1-B0-r1",
+      "T12-p1-E0-r1",
+      "T12-p1-E1-r1",
+      "T13-p1-B0-r1",
+      "T13-p1-E0-r1",
+      "T13-p1-E1-r1",
+      "T14-p1-B0-r1",
+      "T14-p1-E0-r1",
+      "T14-p1-E1-r1",
+      "T15-p1-B0-r1",
+      "T15-p1-E0-r1",
+      "T15-p1-E1-r1",
+      "T16-p1-B0-r1",
+      "T16-p1-E0-r1",
+      "T16-p1-E1-r1"
+    ],
+    "cellCount": 18,
+    "gates": {
+      "pass": 8,
+      "pending": 0,
+      "incomplete": 1,
+      "fail": 0
+    },
+    "pilotGates": {
+      "pass": 4,
+      "incomplete": 2,
+      "fail": 0
+    }
+  },
+  "immutable": [
+    {
+      "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+      "present": true,
+      "sha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r3-product-pilot-1.json",
+      "present": true,
+      "sha256": "fde717df6cb64717e43f76f17bff35ca662988558cdc5923ba9241b078d6a2b7",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/authorization-e2e-r3-product-pilot-1.json",
+      "present": true,
+      "sha256": "ad617992c9fabe12940f707daeefd3049dc8632f98b35b2b2d568dd8f5a3b644",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/gate-status.json",
+      "present": true,
+      "sha256": "ea7f3f6cb55ac97fb73ae0bc5f0b1db782e9e06077802ca09501eca4e7977524",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/product-pilot-gate-status.json",
+      "present": true,
+      "sha256": "c57b4a6a6ed2ad3c3caa1727084dd4dd3d38e72cb3e930d601f09eb141188161",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/product-pilot-analysis.json",
+      "present": true,
+      "sha256": "3e37e0433acf16af99d0f843515e34e12c38c296af79f5fd5feac50ca74608ae",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/product-pilot-trajectory-analysis.json",
+      "present": true,
+      "sha256": "04667c591661674d58245e8af51ad8c7ff76cfb0c3411303fff627dd69c7082c",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/product-pilot-design.json",
+      "present": true,
+      "sha256": "b1e3efa45ff268865559138095cf9d735e9e7f86a3f437bde9271495fec23425",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/product-pilot-prerequisites.json",
+      "present": true,
+      "sha256": "e36d2fb332a12116c37b4023d42d204e49fb796401e92c26a9a60078b8b61a66",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/health-probe-results.json",
+      "present": true,
+      "sha256": "87bcd50cbfa89e674ac0cf67e7ccb6decd72499d693ee4a914a6e3ee513230e7",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/cost-preflight.json",
+      "present": true,
+      "sha256": "947471b07b70a657bb7e68288cc7e2c7fc983e95ca316695dea81ff517489660",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/cell-ledger.json",
+      "present": true,
+      "sha256": "8a6a82bd1e9ebde2e8ad70f2411d4fa1039d13c3da7f8f105b07f4fd386a0df6",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/attempt-ledger.json",
+      "present": true,
+      "sha256": "621ebcbdabbad50c74b65dcc144a27d18f0eda77f70f053f39fd390f78f15bf8",
+      "immutable": true
+    },
+    {
+      "path": "eval/r3/out/live-confirm-reconciliation.json",
+      "present": true,
+      "sha256": "63071bbd928db2807166cab4b7da5a8900b31ef45d3972dd74a416bc203c588a",
+      "immutable": true
+    },
+    {
+      "path": "docs/convergence/EF_R3.md",
+      "present": true,
+      "sha256": "3c49306df95865bc6162ad8a67b88bf8abe7cda2a2e32594a5a294ebd70ef112",
+      "immutable": true
+    },
+    {
+      "path": "docs/convergence/EF_R3_PILOT_TRAJECTORY.md",
+      "present": true,
+      "sha256": "679132b0a4fcbc7d0c91d7edcb79c7bd64cd97def798bedfa2ced9349977dbb2",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "fcef57c0b05a96245cd2d6eca65b4839bf12effacb2be84923c7001b895ae592",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "3a92435e267d7252935927182e1b18caa1859cbe93e19485167829a12bacca76",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "ccc9419b7bc7374045161209de9793bbd71f2ba0b502a3611a5e33b5c2b05043",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "31b33112dce7b6fe09bcc0cf306d713d545eb596be758da5962674ecede897e3",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "db1e4ae0f4b35d48e577ba9b598f2d9af91882523bb6acc4ce4183b7efcf9ef1",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "6faf61e2d7f014d4096899cba53725a00546bb21ba44a9103f2b3ed0e12a1f41",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "0a8c439f989b31bec0a709e662131581e834d20d2396465711627c6784a9a35f",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "75303e43f5e19c608100408da21c7abaf8a7010cb5135deaf454fffa59b89ac0",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "8e5fd10b5f57f5614419552dbbf850c5980067c447406467348abe0ca5ab4aae",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "3eac383e788ce766cfd534357a0730d4132534dd2a8fa114301ba9240ea4b340",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "33f96c2eb6e8a74af535ab41e5d8b25539af068fe596995fe97ae9331fba30b9",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "33afce323bdb41b806e1d44c1fc5621b1adc89c55b8b3c8393e45521105e0c81",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "0ab120fa996f2e80e55935903bb6fe5f5ce7e23c51aea605aa5f819cbd77544c",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "6efc657cf680ddcd88b270a6c447c65de5a65a4025aeb8dec2248166f2c77840",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "51c09f01630cb9614cc1b8b2f3578e196d9002c3b4406408f47e6aabb911eeb4",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-B0-r1/report.json",
+      "present": true,
+      "sha256": "d8d007b9109b5fa71d1f83440459109c6a104e43bd3d754edd12de9bf84c7600",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E0-r1/report.json",
+      "present": true,
+      "sha256": "bab7df33cf85bf75d46b555918fad2ee3cdfc3b8eba1e1ae8d908837e4f0d438",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E1-r1/report.json",
+      "present": true,
+      "sha256": "32824a310263b3a5afeacc314600a9e3b5c523de1d93f80164ea4f8793d40378",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "c8c77e1f9bac62c53098f7582c87304d0fa34a74d6297fb7dd61e423ae340da0",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "2838497567ae64656f52fe8995e922dfa76a3ff6a72be2d112e1aa0ae06fae36",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "5620f5cd8d2d1b1aa129354a42625667e849ea8fd0a109ca24006ddc47c0d8ef",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "e9dc02f7b66720f698a0107e470ca0bd408143e4c904fb885aa86d4c74c72436",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "1709e926f1329f916b1fda3d50b2efc60adac270172fdd30d5ad12099a6d8d5a",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "b8c9df370a98a78f3030ca699c2f75b824d0250f6e10782a483887a17901dbcf",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "cdc7b6239e65c479744b40b71b7f7e8bd84afbafa24f02ca5579bf20104668f9",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "72d612b42736b1e11ee8efab94c7c7c9dbd17931a0410eb0de177684cd028345",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "a0289a7053c39cf015c9d9d052abe9c37e4d9787c48a3d1e325aef4c49069f90",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "cbad0cc3c8818a8a4405e7294852c12195ca389a80b262ec643e46a62987c097",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "18a72028336c6dcf35fc64207d47caadbc3b3a6c7347875e3a8cf2a636edb1df",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "f802cc8d9cd9bcb42cbd53104b13067a9fbe9d157b888b661134b11dc0a12bc2",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "19835973e595b4e3c469439a7311cfe87b33be032d67f31909f27b9234a1addd",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "bec6721117916dd11ae45f7b90d702adb2e0cbb12d06872317807b289edbbae6",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "7aa9518a0646cd6f7248a8933be4131de8a343fe6947d2c7d2ee3f2cd2a5a890",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-B0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "faf75379fa1ff6907eef951a1411c982adc3d49fe1d227823e1157ce8b497113",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E0-r1/raw/witness.json",
+      "present": true,
+      "sha256": "8e752c71f42219be045775baa9ece04810b8a044be5647c650cf8cb01d5c9cc9",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E1-r1/raw/witness.json",
+      "present": true,
+      "sha256": "ce3e59dbd1f23634a69135080b608041433b0d70543b4d2279d8cd90839e8f97",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "f1f33768bc747ff2cd959acd7b58fd8c29cb55ee5e99acb47b3fc3ac2e135ffd",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "cc1bde6fbb324d6dd7c51f6585f29f015ae471da59bc0c545f2b4ec2a6c584b0",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "45db787898a07c7bd0b053e83809c04eb7025eb121f719e7823f0237ea9c9ec3",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "e5e6d976483c3f0fc48121da3f2b42f4f9294b9d67b98678570ebff724b88e28",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "786f1fbfc2d7049de14bc3265e64dd372f7e330b54a699e9d655e4c43346aa68",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "78456eee5a99e8e1884958135f28af15e88078a40b7c57c37b5c710c5862231b",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "180ce4d0b661036c4e82bb13840f6309edd5f001fa39a7dcad577befbab57a20",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "9fd4728fe7e3a4f3143f10eb8eb617d234a3e24c963ef2e5f7ed9c596cfa0638",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "ad58a5b241c198c1df25b7d372564e73e9141f2629ecb5e681e0ebe3ea5f2457",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "d46098c78e13e073d68f603b84ef4b9395234f64ab445c1d3b31b27a25ccd872",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "d7fbbaa4219f5a36facbd0dde6a15d5947f57d369b663ba21b1adca4725a8f7d",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "7423a9fe4e911950b6a2ea8b080a1abdb05a19c0543ca433d772be60f6338f91",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "fc2ca4015094f9a16dbd710f2932c83810d25f26100d6f45cdfedf60b0056ce5",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "e28a19d6193303d59eafa1787dfb2807f8e8fdbfdaf671b3f1b8060527fc3f31",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "fe88f75c4ebe8e249bb0578857f1362ce6834e941051ddc46fff81ef5c662e48",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-B0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "6263d14f0b94c13efd8c835e7ee0fec635ea62add8afe714d320fa8ec31cf9f0",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E0-r1/raw/messages.json",
+      "present": true,
+      "sha256": "295e370d552dbccea696a0a2d8a0590ad424a707475fc5fcc57422cace32b5c2",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E1-r1/raw/messages.json",
+      "present": true,
+      "sha256": "2680075e6975a39ce4bd777eea360c716d681ab71b1b2694148ba6e9ac3f99bd",
+      "immutable": true
+    }
+  ],
+  "immutableMissing": [],
+  "rwPolicy": "read-only",
+  "note": "Every path below is an R3 input. R4 writes only under eval/r4/out. A missing file is reported, never inferred."
+}
