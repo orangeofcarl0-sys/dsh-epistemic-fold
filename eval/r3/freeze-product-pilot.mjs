@@ -109,7 +109,9 @@ const dirty = git('status', '--porcelain')
 function sourceTreeDigest() {
   const lines = git('ls-tree', '-r', 'HEAD').split('\n').filter(line => {
     const path = line.slice(line.indexOf('\t') + 1)
-    return path !== 'eval/e2e/authorization.json' && !path.startsWith('eval/e2e/out/')
+    return path !== 'eval/e2e/authorization.json'
+      && !path.startsWith('eval/e2e/out/')
+      && !path.startsWith('eval/r3/out/')
   })
   return sha256Text(lines.join('\n'))
 }
