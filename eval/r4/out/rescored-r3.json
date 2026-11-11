@@ -1,0 +1,1016 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP1 rescore",
+  "generatedAt": "2026-11-11T15:41:50.460Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "scorerVersion": "r4-scoring-v1",
+  "inputs": {
+    "manifest": {
+      "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+      "sha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab"
+    },
+    "results": {
+      "path": "eval/e2e/out/results-e2e-r3-product-pilot-1.json",
+      "sha256": "fde717df6cb64717e43f76f17bff35ca662988558cdc5923ba9241b078d6a2b7"
+    }
+  },
+  "method": {
+    "historical": "the value recorded by R3: result.checker, including the injected mechanism row",
+    "rescored": "task checks only; mechanism reported separately",
+    "taskOutcome": "correct = all task checks pass; incorrect = finish called and checks fail; incomplete = censored before a definitive answer",
+    "cost": "usageCompleteR4 requires numeric input/output on every request; no imputation",
+    "pairing": "task x replicate; exact McNemar on taskOutcome=correct"
+  },
+  "historical": {
+    "B0": {
+      "cells": 6,
+      "taskCorrect": 5,
+      "taskIncorrect": 1,
+      "taskIncomplete": 0,
+      "historicalPass": 5,
+      "mechanismPass": 0,
+      "costValidR3": 6,
+      "costValidR4": 6,
+      "stepLimited": 0,
+      "terminations": {
+        "finish": 6
+      }
+    },
+    "E0": {
+      "cells": 6,
+      "taskCorrect": 1,
+      "taskIncorrect": 5,
+      "taskIncomplete": 0,
+      "historicalPass": 1,
+      "mechanismPass": 1,
+      "costValidR3": 6,
+      "costValidR4": 6,
+      "stepLimited": 5,
+      "terminations": {
+        "step-limit": 5,
+        "finish": 1
+      }
+    },
+    "E1": {
+      "cells": 6,
+      "taskCorrect": 3,
+      "taskIncorrect": 3,
+      "taskIncomplete": 0,
+      "historicalPass": 3,
+      "mechanismPass": 1,
+      "costValidR3": 5,
+      "costValidR4": 5,
+      "stepLimited": 3,
+      "terminations": {
+        "step-limit": 3,
+        "finish": 3
+      }
+    }
+  },
+  "rescored": {
+    "B0": {
+      "cells": 6,
+      "taskCorrect": 5,
+      "taskIncorrect": 0,
+      "taskIncomplete": 1,
+      "historicalPass": 5,
+      "mechanismPass": 0,
+      "costValidR3": 6,
+      "costValidR4": 6,
+      "stepLimited": 0,
+      "terminations": {
+        "finish": 6
+      }
+    },
+    "E0": {
+      "cells": 6,
+      "taskCorrect": 1,
+      "taskIncorrect": 0,
+      "taskIncomplete": 5,
+      "historicalPass": 1,
+      "mechanismPass": 1,
+      "costValidR3": 6,
+      "costValidR4": 6,
+      "stepLimited": 5,
+      "terminations": {
+        "step-limit": 5,
+        "finish": 1
+      }
+    },
+    "E1": {
+      "cells": 6,
+      "taskCorrect": 3,
+      "taskIncorrect": 1,
+      "taskIncomplete": 2,
+      "historicalPass": 3,
+      "mechanismPass": 1,
+      "costValidR3": 5,
+      "costValidR4": 5,
+      "stepLimited": 3,
+      "terminations": {
+        "step-limit": 3,
+        "finish": 3
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "left": "E1",
+      "right": "B0",
+      "pairs": 6,
+      "both": 3,
+      "neither": 1,
+      "leftOnly": 0,
+      "rightOnly": 2,
+      "costValidPairs": 5,
+      "mcnemarP": 0.5
+    },
+    {
+      "left": "E1",
+      "right": "E0",
+      "pairs": 6,
+      "both": 1,
+      "neither": 3,
+      "leftOnly": 2,
+      "rightOnly": 0,
+      "costValidPairs": 5,
+      "mcnemarP": 0.5
+    },
+    {
+      "left": "E0",
+      "right": "B0",
+      "pairs": 6,
+      "both": 1,
+      "neither": 1,
+      "leftOnly": 0,
+      "rightOnly": 4,
+      "costValidPairs": 6,
+      "mcnemarP": 0.125
+    }
+  ],
+  "assertions": [
+    {
+      "name": "historical-pilot-counts",
+      "expected": {
+        "B0": 5,
+        "E0": 1,
+        "E1": 3
+      },
+      "actual": {
+        "B0": 5,
+        "E0": 1,
+        "E1": 3
+      },
+      "pass": true
+    },
+    {
+      "name": "rescored-task-counts",
+      "expected": {
+        "B0": 5,
+        "E0": 1,
+        "E1": 3
+      },
+      "actual": {
+        "B0": 5,
+        "E0": 1,
+        "E1": 3
+      },
+      "pass": true
+    },
+    {
+      "name": "rescored-e1-b0-pair",
+      "expected": {
+        "both": 3,
+        "neither": 1,
+        "leftOnly": 0,
+        "rightOnly": 2
+      },
+      "actual": {
+        "both": 3,
+        "neither": 1,
+        "leftOnly": 0,
+        "rightOnly": 2
+      },
+      "pass": true
+    }
+  ],
+  "byTemplate": {
+    "T11": {
+      "B0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "incomplete",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      },
+      "E1": {
+        "taskOutcome": "incorrect",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      }
+    },
+    "T12": {
+      "B0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "incomplete",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      },
+      "E1": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      }
+    },
+    "T13": {
+      "B0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "incomplete",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      },
+      "E1": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      }
+    },
+    "T14": {
+      "B0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E1": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      }
+    },
+    "T15": {
+      "B0": {
+        "taskOutcome": "correct",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "incomplete",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      },
+      "E1": {
+        "taskOutcome": "incomplete",
+        "mechanism": null,
+        "costValid": true,
+        "termination": "step-limit"
+      }
+    },
+    "T16": {
+      "B0": {
+        "taskOutcome": "incomplete",
+        "mechanism": false,
+        "costValid": true,
+        "termination": "finish"
+      },
+      "E0": {
+        "taskOutcome": "incomplete",
+        "mechanism": true,
+        "costValid": true,
+        "termination": "step-limit"
+      },
+      "E1": {
+        "taskOutcome": "incomplete",
+        "mechanism": true,
+        "costValid": false,
+        "termination": "step-limit"
+      }
+    }
+  },
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-B0-r1/report.json",
+      "reportSha256": "fcef57c0b05a96245cd2d6eca65b4839bf12effacb2be84923c7001b895ae592",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "result.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 12,
+        "inputTokens": 136766,
+        "outputTokens": 5534
+      }
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E0-r1/report.json",
+      "reportSha256": "3a92435e267d7252935927182e1b18caa1859cbe93e19485167829a12bacca76",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": false,
+            "detail": "node --test exit 1"
+          },
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "result.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 8,
+        "inputTokens": 181931,
+        "outputTokens": 1842
+      }
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T11-p1-E1-r1/report.json",
+      "reportSha256": "ccc9419b7bc7374045161209de9793bbd71f2ba0b502a3611a5e33b5c2b05043",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "result.json = {\"failed\":1}, expected {\"failed\":3}"
+          }
+        ]
+      },
+      "taskOutcome": "incorrect",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": true,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 9,
+        "inputTokens": 134493,
+        "outputTokens": 2823
+      }
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-B0-r1/report.json",
+      "reportSha256": "31b33112dce7b6fe09bcc0cf306d713d545eb596be758da5962674ecede897e3",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "config.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 6,
+        "inputTokens": 94553,
+        "outputTokens": 1322
+      }
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E0-r1/report.json",
+      "reportSha256": "db1e4ae0f4b35d48e577ba9b598f2d9af91882523bb6acc4ce4183b7efcf9ef1",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "config.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 8,
+        "inputTokens": 188558,
+        "outputTokens": 1879
+      }
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T12-p1-E1-r1/report.json",
+      "reportSha256": "6faf61e2d7f014d4096899cba53725a00546bb21ba44a9103f2b3ed0e12a1f41",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "config.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 6,
+        "inputTokens": 80020,
+        "outputTokens": 1422
+      }
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-B0-r1/report.json",
+      "reportSha256": "0a8c439f989b31bec0a709e662131581e834d20d2396465711627c6784a9a35f",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "build.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 3,
+        "inputTokens": 55029,
+        "outputTokens": 1204
+      }
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E0-r1/report.json",
+      "reportSha256": "75303e43f5e19c608100408da21c7abaf8a7010cb5135deaf454fffa59b89ac0",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "build.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 8,
+        "inputTokens": 276060,
+        "outputTokens": 2046
+      }
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T13-p1-E1-r1/report.json",
+      "reportSha256": "8e5fd10b5f57f5614419552dbbf850c5980067c447406467348abe0ca5ab4aae",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "build.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 6,
+        "inputTokens": 94756,
+        "outputTokens": 1261
+      }
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-B0-r1/report.json",
+      "reportSha256": "3eac383e788ce766cfd534357a0730d4132534dd2a8fa114301ba9240ea4b340",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 12,
+        "inputTokens": 117325,
+        "outputTokens": 4846
+      }
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E0-r1/report.json",
+      "reportSha256": "33f96c2eb6e8a74af535ab41e5d8b25539af068fe596995fe97ae9331fba30b9",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 6,
+        "inputTokens": 98492,
+        "outputTokens": 529
+      }
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T14-p1-E1-r1/report.json",
+      "reportSha256": "33afce323bdb41b806e1d44c1fc5621b1adc89c55b8b3c8393e45521105e0c81",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": true,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 8,
+        "inputTokens": 129744,
+        "outputTokens": 1329
+      }
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-B0-r1/report.json",
+      "reportSha256": "0ab120fa996f2e80e55935903bb6fe5f5ce7e23c51aea605aa5f819cbd77544c",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "effective.json matches"
+          }
+        ]
+      },
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 13,
+        "inputTokens": 179813,
+        "outputTokens": 8690
+      }
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E0-r1/report.json",
+      "reportSha256": "6efc657cf680ddcd88b270a6c447c65de5a65a4025aeb8dec2248166f2c77840",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "effective.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 8,
+        "inputTokens": 194035,
+        "outputTokens": 1449
+      }
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T15-p1-E1-r1/report.json",
+      "reportSha256": "51c09f01630cb9614cc1b8b2f3578e196d9002c3b4406408f47e6aabb911eeb4",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "effective.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 11,
+        "inputTokens": 232354,
+        "outputTokens": 5016
+      }
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-B0-r1/report.json",
+      "reportSha256": "d8d007b9109b5fa71d1f83440459109c6a104e43bd3d754edd12de9bf84c7600",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json = {\"id\":\"rel-p1\",\"checksum\":\"9f2a7c14\"}, expected {\"release\":\"rel-p1\",\"checksum\":\"9f2a7c14\"}"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 1,
+        "requiredFoldCountMet": false
+      },
+      "termination": {
+        "kind": "finish",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 16,
+        "inputTokens": 185577,
+        "outputTokens": 9498
+      }
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E0-r1/report.json",
+      "reportSha256": "bab7df33cf85bf75d46b555918fad2ee3cdfc3b8eba1e1ae8d908837e4f0d438",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 7,
+        "requiredFoldCountMet": true
+      },
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": true,
+        "usageCompleteR4": true,
+        "unknownUsage": 0,
+        "requests": 16,
+        "inputTokens": 169533,
+        "outputTokens": 4556
+      }
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "reportPath": "eval/e2e/runs/e2e-r3-product-pilot-1/T16-p1-E1-r1/report.json",
+      "reportSha256": "32824a310263b3a5afeacc314600a9e3b5c523de1d93f80164ea4f8793d40378",
+      "reportSchemaVersion": 1,
+      "taskChecks": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json is missing"
+          }
+        ]
+      },
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 6,
+        "requiredFoldCountMet": true
+      },
+      "termination": {
+        "kind": "step-limit",
+        "finishCalled": false,
+        "stepLimitStage": null,
+        "stepsUsed": null
+      },
+      "cost": {
+        "usageCompleteR3": false,
+        "usageCompleteR4": false,
+        "unknownUsage": 1,
+        "requests": 21,
+        "inputTokens": 257043,
+        "outputTokens": 7736
+      }
+    }
+  ],
+  "limits": [
+    "The R3 pilot is one model, one route and one machine.",
+    "The rescored value does not replace the historical benchmark; both are reported.",
+    "A mechanism miss is not a wrong answer and is not counted in taskOutcome."
+  ]
+}

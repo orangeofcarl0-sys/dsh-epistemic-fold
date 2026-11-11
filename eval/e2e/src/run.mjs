@@ -319,6 +319,10 @@ async function main() {
         efConfig: manifest.config,
         attemptId: `${campaign}:${cell.task}-${cell.arm}-r${cell.replicate}`,
         manifestSha: digest,
+        maxSteps: cell.maxSteps ?? manifest.config?.maxSteps ?? 8,
+        maxStepsSource: cell.maxSteps !== undefined
+          ? 'cell'
+          : manifest.config?.maxSteps !== undefined ? 'manifest' : 'default',
       })
     } catch (error) {
       stopReason = `runner-error: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`
@@ -336,7 +340,10 @@ async function main() {
       exposure: report.treatmentExposure,
       compactions: report.compactions.length,
       checker: report.checker.pass,
+      taskOutcome: report.scoring?.taskOutcome ?? null,
+      mechanism: report.mechanism ?? null,
       termination: report.termination.kind,
+      stepLimitStage: report.termination.stepLimitStage ?? null,
       guard: cell.guard === true,
       usage: report.usage,
       reportPath: join(outRoot, report.cellId, 'report.json'),
@@ -379,6 +386,7 @@ async function main() {
     planned: manifest.cells.length,
     executed: executed.length,
     budget: { used, limits: manifest.limits },
+    config: manifest.config ?? null,
     results,
   }
   await writeFile(join(OUT, `results-${campaign}.json`), `${JSON.stringify(summary, null, 2)}\n`, 'utf8')

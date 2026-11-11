@@ -481,6 +481,7 @@ export function assembleWitnesses({
       startSeq: attempt.startSeq,
       ...(attempt.summarySeq === undefined ? {} : { summarySeq: attempt.summarySeq }),
       ...(attempt.replacementSeq === undefined ? {} : { replacementSeq: attempt.replacementSeq }),
+      ...(attempt.replacementSources === undefined ? {} : { replacementSources: attempt.replacementSources }),
       ...(attempt.endSeq === undefined ? {} : { endSeq: attempt.endSeq }),
       status,
       evidenceLevel,

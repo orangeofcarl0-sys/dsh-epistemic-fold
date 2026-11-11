@@ -13,7 +13,7 @@
 
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { LlmAdapter, ToolCallId, createUserMessage } from '@deepseek-ai/dsh-llm'
@@ -29,12 +29,44 @@ import {
 import { appendEntriesToSession, buildSeed } from './seed.mjs'
 import { buildTaskDelivery, buildWitnessesFromEvents, summarizeWitnesses } from './witness.mjs'
 
-const MAX_STEPS = 8
+const DEFAULT_MAX_STEPS = 8
 const OUTPUT_TOKENS = 1024
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..')
 
 function sha256(text) {
   return createHash('sha256').update(text, 'utf8').digest('hex')
+}
+
+/**
+ * Every file in the workspace, as a POSIX-style path relative to it. The
+ * previous report copied the initial `Object.keys(task.workspace)` into
+ * `finalFiles`, so a cell that created or deleted a file still looked
+ * unchanged. The checker already reads the disk; this makes the report agree.
+ */
+function listFiles(root, prefix = '') {
+  if (!existsSync(root)) return []
+  const rows = []
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    const path = prefix === '' ? entry.name : `${prefix}/${entry.name}`
+    if (entry.isDirectory()) rows.push(...listFiles(join(root, entry.name), path))
+    else rows.push(path)
+  }
+  return rows
+}
+
+/**
+ * Cost completeness is stricter than "the provider returned a usage object".
+ * A usage object with null token fields is not a measured cost; imputing zero
+ * would make an unmeasured cell look cheap. R3 measured only the whole-object
+ * presence (`unknownUsage`); R4 reports both so the historical number stays
+ * readable and the new one stays honest.
+ */
+function usageComplete(requests) {
+  return requests.every(entry =>
+    entry.usage !== null
+    && entry.usage !== undefined
+    && Number.isFinite(entry.usage.inputTokens)
+    && Number.isFinite(entry.usage.outputTokens))
 }
 
 export async function materialize(files, workspace) {
@@ -85,6 +117,9 @@ export class RecordingAdapter extends LlmAdapter {
     this.log = log
     this.defaultMaxTokens = defaultMaxTokens
     this.diagnostics = diagnostics
+    // Optional, harness-only observation. It is called before the request is
+    // handed to the inner adapter and never rewrites the stream.
+    this.onRequest = null
   }
 
   providerInfo(provider) {
@@ -155,6 +190,13 @@ export class RecordingAdapter extends LlmAdapter {
     }
     const started = Date.now()
     this.log.requests.push(entry)
+    if (typeof this.onRequest === 'function') {
+      try {
+        this.onRequest({ index: entry.index, purpose: entry.purpose })
+      } catch {
+        // A diagnostic callback must never change the measured request.
+      }
+    }
     for await (const chunk of this.inner.stream(effective)) {
       if (chunk.type === 'usage') entry.usage = chunk.usage
       if (chunk.type === 'finish') entry.finish = chunk.reason
@@ -401,6 +443,8 @@ export async function runCell({
   efConfig = {},
   attemptId = null,
   manifestSha = null,
+  maxSteps = DEFAULT_MAX_STEPS,
+  maxStepsSource = 'default',
 }) {
   const cellId = `${task.id}-${arm}-r${replicate}`
   const cellRoot = join(outRoot, cellId)
@@ -430,6 +474,45 @@ export async function runCell({
   let error = null
   let stageB = null
   const completionGuard = { enabled: guard, attempts: 0, missing: [], missingAtEnd: null }
+  const maxStepsPerStage = Number.isInteger(maxSteps) && maxSteps > 0 ? maxSteps : DEFAULT_MAX_STEPS
+  const stepState = {
+    A: { lastStep: 0, limitHit: false },
+    B: { lastStep: 0, limitHit: false },
+  }
+  let activeStage = 'A'
+  const agentErrors = []
+  const contextTrace = []
+
+  // The trace reads the same TokenMeter the engine and the host use. It is
+  // recorded before each primary request, so a future run can compute the
+  // context balance without mixing character counts with provider tokens.
+  const contextSnapshot = () => {
+    try {
+      const session = handle?.agent?.session
+      if (session === undefined || session === null) return null
+      const measured = host?.ctx?.tokenMeter?.measure(session)
+      const checkpoint = checkpointOf(session)
+      return {
+        stage: activeStage,
+        surfaceTokens: measured?.totalTokens ?? null,
+        surfaceNodes: session.surface.nodes.length,
+        checkpointChars: checkpoint?.text?.length ?? 0,
+        at: new Date().toISOString(),
+      }
+    } catch (thrown) {
+      return {
+        stage: activeStage,
+        error: thrown instanceof Error ? thrown.message : String(thrown),
+      }
+    }
+  }
+  if (adapter !== null && adapter !== undefined) {
+    adapter.onRequest = ({ index, purpose }) => {
+      if (purpose !== 'primary') return
+      const snapshot = contextSnapshot()
+      if (snapshot !== null) contextTrace.push({ requestIndex: index, ...snapshot })
+    }
+  }
 
   try {
     host = await mountHost({
@@ -446,10 +529,12 @@ export async function runCell({
       sessionId,
       seed,
       workspace,
-      maxSteps: MAX_STEPS,
+      maxSteps: maxStepsPerStage,
     }))
     host.ctx.on('agent/pre-step', async ({ agent, step }, next) => {
-      if (step > MAX_STEPS) {
+      stepState.A.lastStep = Math.max(stepState.A.lastStep, step)
+      if (step > maxStepsPerStage) {
+        stepState.A.limitHit = true
         stepLimit = true
         agent.cancel({ kind: 'user' })
       }
@@ -460,6 +545,7 @@ export async function runCell({
       source: { kind: 'user' },
     }))
     idleOutcome = await waitIdle(handle.agent, cellLimits.wallClockMs)
+    agentErrors.push(...(host.errors ?? []))
 
     if (task.stageB !== undefined && idleOutcome === 'idle') {
       const first = summarizeEvents(handle.agent.session.snapshotEvents())
@@ -477,11 +563,14 @@ export async function runCell({
         thresholdRatio: task.thresholdRatio,
         efConfig,
       })
-      const resumed = await resumeAgent(host, { sessionId, workspace, maxSteps: MAX_STEPS })
+      activeStage = 'B'
+      const resumed = await resumeAgent(host, { sessionId, workspace, maxSteps: maxStepsPerStage })
       handle = resumed.handle
       toolState = { ...resumed.toolState, writes: toolState.writes, testRuns: toolState.testRuns }
       host.ctx.on('agent/pre-step', async ({ agent, step }, next) => {
-        if (step > MAX_STEPS) {
+        stepState.B.lastStep = Math.max(stepState.B.lastStep, step)
+        if (step > maxStepsPerStage) {
+          stepState.B.limitHit = true
           stepLimit = true
           agent.cancel({ kind: 'user' })
         }
@@ -493,11 +582,14 @@ export async function runCell({
         source: { kind: 'user' },
       }))
       const secondIdle = await waitIdle(handle.agent, cellLimits.wallClockMs)
+      agentErrors.push(...(host.errors ?? []))
       stageB = {
         firstCompactions: first.compactions.length,
         firstCheckpointChars: firstCheckpoint?.text.length ?? 0,
         firstCheckpointMode: foldMode(firstCheckpoint),
         idle: secondIdle,
+        stepsUsed: { A: stepState.A.lastStep, B: stepState.B.lastStep },
+        stepLimit: { A: stepState.A.limitHit, B: stepState.B.limitHit },
       }
       if (secondIdle === 'timeout') idleOutcome = 'timeout'
     }
@@ -651,19 +743,25 @@ export async function runCell({
   ]
 
   const checker = await runChecks(task.checks, { workspace, repoRoot: ROOT })
-  // A mechanism requirement is a cell-level claim, not a workspace claim: T5
-  // only measures multi-fold continuity if the cell actually folded twice.
-  // Committed, not attempted: two refusals are not two folds.
-  if (task.requires?.minCompactions !== undefined) {
-    const count = witnessSummary.committed
-    const pass = count >= task.requires.minCompactions
-    checker.checks.push({
-      kind: 'compactions',
-      pass,
-      detail: `${count} committed compaction transaction(s), required ${task.requires.minCompactions}`,
-    })
-    checker.pass = checker.pass && pass
-  }
+  // A mechanism requirement is a separate measurement axis. T5/T16 only
+  // measure multi-fold continuity if the cell actually folded twice, but a
+  // mechanism miss is not a wrong workspace answer. Keeping the two apart
+  // stops the cross-arm task rate from silently including treatment exposure.
+  const requiredCompactions = task.requires?.minCompactions
+  const mechanism = requiredCompactions === undefined
+    ? null
+    : {
+        requiredCompactions,
+        committedCompactions: witnessSummary.committed,
+        deliveredCompactions: witnessSummary.committedAndDelivered,
+        pass: witnessSummary.committed >= requiredCompactions,
+        requiredFoldCountMet: witnessSummary.committed >= requiredCompactions,
+        checks: [{
+          kind: 'compactions',
+          pass: witnessSummary.committed >= requiredCompactions,
+          detail: `${witnessSummary.committed} committed compaction transaction(s), required ${requiredCompactions}`,
+        }],
+      }
   const usage = sumUsage(log.requests)
   const primaryUsage = sumUsage(log.requests.filter(entry => entry.purpose === 'primary'))
   const auxiliaryUsage = sumUsage(log.requests.filter(entry => entry.purpose !== 'primary'))
@@ -673,8 +771,73 @@ export async function runCell({
   const compactions = summary.compactions.length
   const exposure = compactions > 0 ? 'fold' : 'no-fold'
   const committedExposure = witnessSummary.committed > 0 ? 'fold' : 'no-fold'
-  const report = {
+  const finishCalled = toolState?.finished === true
+  const stepLimitStages = ['A', 'B'].filter(stage => stepState[stage].limitHit)
+  const stepsUsed = {
+    A: stepState.A.lastStep,
+    B: stepState.B.lastStep,
+    total: stepState.A.lastStep + stepState.B.lastStep,
+  }
+  const termination = {
+    idle: idleOutcome,
+    stepLimit,
+    stepLimitReached: stepLimit,
+    stepLimitStage: stepLimitStages.length === 0 ? null : stepLimitStages.join('+'),
+    finishCalled,
+    finished: finishCalled,
+    finishSummary: toolState?.finishSummary ?? null,
+    error,
+    durationMs,
+    stepsUsed,
+    maxStepsPerStage,
+    maxStepsSource,
+    // A stop after a final assistant text with no tool calls is the native
+    // loop's normal end; a step limit is a censored cell.
+    kind: error !== null ? 'error' : stepLimit ? 'step-limit' : idleOutcome === 'timeout' ? 'timeout' : 'finish',
+  }
+  // The task outcome is deliberately independent of the treatment. `correct`
+  // means the workspace checks passed. `incorrect` means the cell stopped on
+  // purpose and the answer was wrong. `incomplete` means it was censored before
+  // a definitive answer. A mechanism miss never changes this value.
+  const taskOutcome = checker.pass ? 'correct' : finishCalled ? 'incorrect' : 'incomplete'
+  const scoring = {
     schemaVersion: 1,
+    scorerVersion: 'r4-scoring-v1',
+    taskOutcome,
+    taskChecks: {
+      pass: checker.pass,
+      checks: checker.checks.map(row => ({ kind: row.kind, pass: row.pass, detail: row.detail })),
+    },
+    mechanismExposure: mechanism === null
+      ? null
+      : {
+          manifested: committedExposure === 'fold',
+          committedCompactions: mechanism.committedCompactions,
+          deliveredCompactions: mechanism.deliveredCompactions,
+          requiredCompactions: mechanism.requiredCompactions,
+          requiredFoldCountMet: mechanism.requiredFoldCountMet,
+        },
+    termination,
+    cost: {
+      usageCompleteR3: usage.unknownUsage === 0,
+      usageCompleteR4: usageComplete(log.requests),
+      unknownUsage: usage.unknownUsage,
+      observed: {
+        requests: usage.requests,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        cacheReadTokens: usage.cacheReadTokens,
+        cacheWriteTokens: usage.cacheWriteTokens,
+      },
+      auxiliary: {
+        requests: auxiliaryUsage.requests,
+        inputTokens: auxiliaryUsage.inputTokens,
+        outputTokens: auxiliaryUsage.outputTokens,
+      },
+    },
+  }
+  const report = {
+    schemaVersion: 2,
     generatedAt: new Date().toISOString(),
     campaign,
     attemptId: attemptId ?? `${campaign}:${cellId}`,
@@ -695,9 +858,15 @@ export async function runCell({
     model,
     provider,
     route: mode === 'live' ? { origin: 'resolved-at-run' } : { origin: 'scripted' },
+    config: {
+      maxStepsPerStage,
+      maxStepsSource,
+      thresholdRatio: task.thresholdRatio,
+      efConfig,
+    },
     workspace: {
       files: Object.keys(task.workspace).sort(),
-      finalFiles: Object.keys(task.workspace).sort(),
+      finalFiles: listFiles(workspace).sort(),
     },
     treatmentExposure: exposure,
     committedExposure,
@@ -722,17 +891,11 @@ export async function runCell({
     engineDecision,
     thresholdTokens,
     leafSpanProbe,
-    termination: {
-      idle: idleOutcome,
-      stepLimit,
-      finished: toolState?.finished === true,
-      finishSummary: toolState?.finishSummary ?? null,
-      error,
-      durationMs,
-      // A stop after a final assistant text with no tool calls is the native
-      // loop's normal end; a step limit is a censored cell.
-      kind: error !== null ? 'error' : stepLimit ? 'step-limit' : idleOutcome === 'timeout' ? 'timeout' : 'finish',
-    },
+    termination,
+    mechanism,
+    scoring,
+    agentErrors,
+    contextTrace,
     tools: {
       calls: summary.toolCalls.length,
       byName: summary.toolCalls.reduce((counts, call) => {
@@ -765,7 +928,7 @@ export async function runCell({
       finalText,
       assistantMessages: summary.assistant.length,
       claimedSuccess: /\b(done|complete|passing|passed|all tests pass)\b/iu.test(finalText),
-      falseVerification: checker.pass === false && /\b(pass|passing|done|complete)\b/iu.test(finalText),
+      falseVerification: taskOutcome === 'incorrect' && /\b(pass|passing|done|complete)\b/iu.test(finalText),
     },
     stageB,
     fullMessages: {
