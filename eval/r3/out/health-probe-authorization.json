@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 health probe",
+  "design": {
+    "path": "eval/r3/out/transport-health-probe.json",
+    "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934"
+  },
+  "granted": true,
+  "grantedAt": "2026-11-11T09:39:15.125Z",
+  "grantedBy": "user instruction: \"按推荐执行，均授权\" (2026-11-11)",
+  "limits": {
+    "requests": 16,
+    "inputTokens": 2000000,
+    "outputTokens": 100000,
+    "wallClockMs": 1800000,
+    "paidConcurrency": 1,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "executionAuthorized": true,
+  "note": "Separate from the product-pilot authorization; a failed probe cancels the pilot."
+}

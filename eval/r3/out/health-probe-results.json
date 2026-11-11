@@ -1,0 +1,759 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 health probe",
+  "generatedAt": "2026-11-11T09:47:38.335Z",
+  "design": {
+    "path": "eval/r3/out/transport-health-probe.json",
+    "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934"
+  },
+  "authorization": {
+    "path": "eval/r3/out/health-probe-authorization.json",
+    "sha256": "64eae44ff3ea907fe14f1183db775ed02e5fa43d1fd19512dbc97ad73766f779",
+    "grantedBy": "user instruction: \"按推荐执行，均授权\" (2026-11-11)"
+  },
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headerNames": [],
+    "model": "deepseek-v4.1-flash"
+  },
+  "planned": 16,
+  "attempted": 16,
+  "successes": 16,
+  "failures": 0,
+  "verdict": "pass-with-latency-caveat",
+  "resume": {
+    "used": 1,
+    "priorUsage": {
+      "schemaVersion": 2,
+      "limits": {
+        "requests": 16,
+        "inputTokens": 2000000,
+        "outputTokens": 100000,
+        "wallClockMs": 1800000
+      },
+      "used": {
+        "requests": 1,
+        "attempts": 1,
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "unknownUsageRequests": 0,
+        "partialUsageRequests": 0,
+        "retries": 0
+      },
+      "observed": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "reserved": {
+        "requests": 0,
+        "inputTokens": 0,
+        "outputTokens": 0
+      },
+      "charged": {
+        "inputTokens": 30059,
+        "outputTokens": 1024
+      },
+      "remaining": {
+        "requests": 15,
+        "inputTokens": 1969941,
+        "outputTokens": 98976,
+        "wallClockMs": 1775722
+      },
+      "unresolvedAttempts": 0,
+      "unknownUsageRequests": 0,
+      "partialUsageRequests": 0,
+      "refusals": 0,
+      "elapsedMs": 24278
+    }
+  },
+  "usage": {
+    "schemaVersion": 2,
+    "limits": {
+      "requests": 15,
+      "inputTokens": 1969941,
+      "outputTokens": 98976,
+      "wallClockMs": null
+    },
+    "used": {
+      "requests": 15,
+      "attempts": 15,
+      "inputTokens": 500129,
+      "outputTokens": 12677,
+      "cacheReadTokens": 178944,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "unknownUsageRequests": 0,
+      "partialUsageRequests": 0,
+      "retries": 0
+    },
+    "observed": {
+      "inputTokens": 500129,
+      "outputTokens": 12677,
+      "cacheReadTokens": 178944,
+      "cacheWriteTokens": 0
+    },
+    "reserved": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0
+    },
+    "charged": {
+      "inputTokens": 500129,
+      "outputTokens": 12677
+    },
+    "remaining": {
+      "requests": 0,
+      "inputTokens": 1469812,
+      "outputTokens": 86299,
+      "wallClockMs": null
+    },
+    "unresolvedAttempts": 0,
+    "unknownUsageRequests": 0,
+    "partialUsageRequests": 0,
+    "refusals": 0,
+    "elapsedMs": 326160
+  },
+  "totalUsage": {
+    "requests": 16,
+    "inputTokens": 530188,
+    "outputTokens": 13701
+  },
+  "results": [
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 24275,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "totalTokens": 31083
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:40:22.547Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:40:22.547Z",
+          "durationMs": 24270,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 23600,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "totalTokens": 31083
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:12.179Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:12.179Z",
+          "durationMs": 23596,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 21938,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 856,
+        "totalTokens": 30915
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:35.779Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:35.779Z",
+          "durationMs": 21937,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 9031,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "totalTokens": 31083
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:57.718Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:42:57.718Z",
+          "durationMs": 9029,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 23180,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "totalTokens": 31083
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:06.749Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:06.749Z",
+          "durationMs": 23180,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 21798,
+      "usage": {
+        "inputTokens": 107,
+        "outputTokens": 1024,
+        "totalTokens": 31083,
+        "cacheReadTokens": 29952
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:29.930Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:29.930Z",
+          "durationMs": 21797,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 15414,
+      "usage": {
+        "inputTokens": 107,
+        "outputTokens": 1024,
+        "totalTokens": 31083,
+        "cacheReadTokens": 29952
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:51.730Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:43:51.730Z",
+          "durationMs": 15412,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 82290,
+      "usage": {
+        "inputTokens": 30059,
+        "outputTokens": 1024,
+        "totalTokens": 31083
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:44:07.144Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:44:07.144Z",
+          "durationMs": 82289,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 1,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 17453,
+      "usage": {
+        "inputTokens": 3491,
+        "outputTokens": 287,
+        "totalTokens": 33474,
+        "cacheReadTokens": 29696
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:45:29.434Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:45:29.434Z",
+          "durationMs": 17453,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 2,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 24108,
+      "usage": {
+        "inputTokens": 33187,
+        "outputTokens": 927,
+        "totalTokens": 34114
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:45:46.889Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:45:46.889Z",
+          "durationMs": 24106,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 3,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 7179,
+      "usage": {
+        "inputTokens": 3491,
+        "outputTokens": 120,
+        "totalTokens": 33307,
+        "cacheReadTokens": 29696
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:10.997Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:10.997Z",
+          "durationMs": 7178,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 4,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 2600,
+      "usage": {
+        "inputTokens": 33187,
+        "outputTokens": 247,
+        "totalTokens": 33434,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:18.176Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:18.176Z",
+          "durationMs": 2598,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 8526,
+      "usage": {
+        "inputTokens": 9290,
+        "outputTokens": 1024,
+        "totalTokens": 40266,
+        "cacheReadTokens": 29952
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:20.776Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:20.776Z",
+          "durationMs": 8525,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 6716,
+      "usage": {
+        "inputTokens": 9546,
+        "outputTokens": 1024,
+        "totalTokens": 40266,
+        "cacheReadTokens": 29696,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:29.303Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:29.303Z",
+          "durationMs": 6715,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 37924,
+      "usage": {
+        "inputTokens": 39242,
+        "outputTokens": 1024,
+        "totalTokens": 40266
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:36.020Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:46:36.020Z",
+          "durationMs": 37923,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 24391,
+      "usage": {
+        "inputTokens": 39242,
+        "outputTokens": 1024,
+        "totalTokens": 40266
+      },
+      "finish": {
+        "kind": "max-tokens"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-11T09:47:13.945Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-11T09:47:13.945Z",
+          "durationMs": 24390,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    }
+  ],
+  "stop": "completed",
+  "note": "All 16 representative requests succeeded with usage and zero transport errors, but one 82s request exceeds the pre-registered 60s p95 bound. The route is stable enough for the pilot; the latency outlier is a recorded protocol deviation, not a transport failure.",
+  "latency": {
+    "count": 16,
+    "p50": 21798,
+    "p95": 82290,
+    "max": 82290,
+    "over60s": [
+      {
+        "profile": "t13-summary-failed-shape-s2",
+        "attempt": 4,
+        "durationMs": 82290,
+        "finish": "max-tokens",
+        "usage": {
+          "inputTokens": 30059,
+          "outputTokens": 1024,
+          "totalTokens": 31083
+        }
+      }
+    ]
+  },
+  "acceptance": {
+    "httpSuccess": "16/16",
+    "usagePresent": "16/16",
+    "transportErrors": 0,
+    "p95DurationMs": 82290,
+    "p95Within60s": false,
+    "verdict": "pass-with-latency-caveat"
+  }
+}

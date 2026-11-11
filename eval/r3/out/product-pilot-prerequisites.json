@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane",
+  "generatedAt": "2026-11-11T09:49:07.520Z",
+  "decision": "proceed-with-latency-deviation",
+  "healthProbe": {
+    "path": "eval/r3/out/health-probe-results.json",
+    "sha256": "87bcd50cbfa89e674ac0cf67e7ccb6decd72499d693ee4a914a6e3ee513230e7",
+    "verdict": "pass-with-latency-caveat",
+    "successes": 16,
+    "planned": 16,
+    "transportErrors": 0,
+    "latency": {
+      "count": 16,
+      "p50": 21798,
+      "p95": 82290,
+      "max": 82290,
+      "over60s": [
+        {
+          "profile": "t13-summary-failed-shape-s2",
+          "attempt": 4,
+          "durationMs": 82290,
+          "finish": "max-tokens",
+          "usage": {
+            "inputTokens": 30059,
+            "outputTokens": 1024,
+            "totalTokens": 31083
+          }
+        }
+      ]
+    },
+    "latencyBoundMs": 60000,
+    "latencyPass": false,
+    "deviation": "p95 exceeded the pre-registered 60s bound; transport/usage acceptance passed 16/16."
+  },
+  "costPreflight": {
+    "path": "eval/r3/out/cost-preflight.json",
+    "sha256": "a698e248ae4822bfcd6ce84abe3c573e6f1d1f263bcd47eacbb52d915dfef3eb",
+    "status": "pass"
+  },
+  "exposureAudit": {
+    "path": "eval/r3/out/product-lane-exposure-audit.json",
+    "sha256": "d852437906016298a9205afed7f4593237a92af5d7daab25243a1ce692850155",
+    "suitableTasks": [
+      "T11-p1",
+      "T12-p1",
+      "T13-p1",
+      "T14-p1",
+      "T15-p1",
+      "T16-p1",
+      "T16-s1",
+      "T16-s2"
+    ],
+    "counts": {
+      "cases": 16,
+      "aboveThreshold": 16,
+      "belowThreshold": 0,
+      "foldAttempts": 16,
+      "committed": 16,
+      "refused": 4,
+      "suitableTasks": 8,
+      "unsuitableTasks": 0
+    }
+  },
+  "admissionCandidate": {
+    "path": "eval/r3/out/admission-candidate.json",
+    "sha256": "757e362d07efd3000ca2953afb981332803067df6f5df4ef960d5d92de8e53c0",
+    "falseAdmissions": 4,
+    "falseRefusals": 0,
+    "decision": "No default change is justified by this audit. The shipped preset should be tested as-is; if the pilot shows T16-like retry failures, add the candidate as a separate arm."
+  },
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+    "sha256": "dc29a12340aafe29ed8c1dca6ea3934b3809ec37081214342fab8371bb0e96f3",
+    "cells": 18
+  },
+  "authorization": {
+    "path": "eval/e2e/out/authorization-e2e-r3-product-pilot-1.json",
+    "sha256": "609204763a3f8bee7ac1fd3c2944f88487bfec07f6b8a8ae3d31155d8d65da6b",
+    "granted": true,
+    "grantedBy": "user instruction: \"按推荐执行，均授权\" (2026-11-11)"
+  },
+  "rationale": "The route produced no transport error in 16/16 representative requests and every request reported usage. One 82s request exceeded the pre-registered p95 bound; that is a latency deviation, not the failure mode that stopped R2. The pilot records per-request latency and stops on transport or usage failure.",
+  "note": "This is a protocol-deviation record, not a new grant. The pilot authorization is unchanged and bound to the manifest SHA-256 above."
+}

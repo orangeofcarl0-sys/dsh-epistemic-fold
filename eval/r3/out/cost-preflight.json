@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3 product-lane",
-  "generatedAt": "2026-11-11T09:35:07.174Z",
+  "generatedAt": "2026-11-11T09:37:17.052Z",
   "historical": {
     "confirm": {
       "valid": 23,
@@ -106,14 +106,27 @@
       ]
     }
   },
-  "productManifest": null,
-  "manifestChecks": null,
+  "productManifest": {
+    "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+    "sha256": "dc29a12340aafe29ed8c1dca6ea3934b3809ec37081214342fab8371bb0e96f3"
+  },
+  "manifestChecks": {
+    "strictUsage": true,
+    "framingMode": true,
+    "retainRatio": true,
+    "operationalBudgetTokens": true,
+    "rationaleHintTokens": true,
+    "cells": true,
+    "tasks": true,
+    "arms": true,
+    "basicNativeRetention": true
+  },
   "runnerEnforcesStrictUsage": true,
   "rule": {
     "strictUsage": true,
     "stopReason": "provider-usage-incomplete",
     "note": "A cell with any unknown usage is recorded as executed but cost-invalid; the runner stops the campaign instead of continuing."
   },
-  "status": "manifest-missing",
-  "note": "Historical cost completeness is recorded; the product pilot manifest is not frozen yet."
+  "status": "pass",
+  "note": "The product pilot requires strict usage on every request. No usage is imputed."
 }
