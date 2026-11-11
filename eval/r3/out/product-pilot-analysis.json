@@ -1,0 +1,880 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane pilot",
+  "generatedAt": "2026-11-11T10:25:23.634Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+    "sha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab",
+    "cells": 18,
+    "config": {
+      "leafAdmission": "economic",
+      "rootPolicy": "economics",
+      "framingMode": "system-dedup",
+      "semanticContinuity": "off",
+      "rationaleHintTokens": 400,
+      "thresholdRatio": 0.5,
+      "operationalBudgetTokens": 32768,
+      "maxSteps": 8,
+      "retainRatio": 0.16,
+      "headroomTokens": 512,
+      "maxTokens": 1024,
+      "strictUsage": true,
+      "basic": {
+        "retainRatio": null,
+        "headroomTokens": 512,
+        "maxTokens": 1024
+      }
+    }
+  },
+  "coverage": {
+    "planned": 18,
+    "executed": 18,
+    "valid": 18,
+    "unresolved": 0,
+    "neverStarted": 0,
+    "status": "partial",
+    "stopReason": "provider-usage-incomplete",
+    "coverageComplete": true,
+    "costComplete": false,
+    "costInvalidCells": [
+      {
+        "cellId": "T16-p1-E1-r1",
+        "usage": {
+          "requests": 21,
+          "unknownUsage": 1,
+          "inputTokens": 257043,
+          "outputTokens": 7736,
+          "cacheReadTokens": 11776,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 6
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      }
+    ]
+  },
+  "byArm": {
+    "B0": {
+      "cells": 6,
+      "passed": 5,
+      "rate": 0.833,
+      "costValid": 6,
+      "costInvalid": 0,
+      "attempts": 25,
+      "committed": 10,
+      "refused": 8,
+      "aborted": 7,
+      "delivered": 8,
+      "cellsWithCommit": 6,
+      "cellsWithDelivery": 6,
+      "requests": 62,
+      "inputTokens": 769063,
+      "outputTokens": 31094,
+      "cacheReadTokens": 170368,
+      "cacheWriteTokens": 0,
+      "auxiliaryRequests": 25,
+      "unknownUsage": 0,
+      "stepLimited": 0,
+      "errors": 0,
+      "durationMs": {
+        "median": 125094,
+        "max": 192426
+      },
+      "terminationKinds": {
+        "finish": 6
+      },
+      "checksPassed": 7,
+      "checksTotal": 9,
+      "probe": {
+        "cells": 0,
+        "widestTokensMedian": null,
+        "executedTokensMedian": null,
+        "gapTokensMedian": null,
+        "actualCheckpointTokensMedian": null,
+        "actualReclaimTokensMedian": null,
+        "reconciled": 0,
+        "falseAdmissions": 0
+      }
+    },
+    "E0": {
+      "cells": 6,
+      "passed": 1,
+      "rate": 0.167,
+      "costValid": 6,
+      "costInvalid": 0,
+      "attempts": 28,
+      "committed": 28,
+      "refused": 0,
+      "aborted": 0,
+      "delivered": 26,
+      "cellsWithCommit": 6,
+      "cellsWithDelivery": 6,
+      "requests": 54,
+      "inputTokens": 1108609,
+      "outputTokens": 12301,
+      "cacheReadTokens": 49408,
+      "cacheWriteTokens": 0,
+      "auxiliaryRequests": 0,
+      "unknownUsage": 0,
+      "stepLimited": 5,
+      "errors": 0,
+      "durationMs": {
+        "median": 76009,
+        "max": 173363
+      },
+      "terminationKinds": {
+        "step-limit": 5,
+        "finish": 1
+      },
+      "checksPassed": 3,
+      "checksTotal": 9,
+      "probe": {
+        "cells": 6,
+        "widestTokensMedian": 15649,
+        "executedTokensMedian": 15757,
+        "gapTokensMedian": 0,
+        "actualCheckpointTokensMedian": 20,
+        "actualReclaimTokensMedian": 15737,
+        "reconciled": 4,
+        "falseAdmissions": 2
+      }
+    },
+    "E1": {
+      "cells": 6,
+      "passed": 3,
+      "rate": 0.5,
+      "costValid": 5,
+      "costInvalid": 1,
+      "attempts": 13,
+      "committed": 13,
+      "refused": 0,
+      "aborted": 0,
+      "delivered": 13,
+      "cellsWithCommit": 6,
+      "cellsWithDelivery": 6,
+      "requests": 61,
+      "inputTokens": 928410,
+      "outputTokens": 19587,
+      "cacheReadTokens": 126464,
+      "cacheWriteTokens": 0,
+      "auxiliaryRequests": 13,
+      "unknownUsage": 1,
+      "stepLimited": 3,
+      "errors": 0,
+      "durationMs": {
+        "median": 94950,
+        "max": 205273
+      },
+      "terminationKinds": {
+        "step-limit": 3,
+        "finish": 3
+      },
+      "checksPassed": 6,
+      "checksTotal": 9,
+      "probe": {
+        "cells": 6,
+        "widestTokensMedian": 10055,
+        "executedTokensMedian": 12802,
+        "gapTokensMedian": 0,
+        "actualCheckpointTokensMedian": 576,
+        "actualReclaimTokensMedian": 12226,
+        "reconciled": 2,
+        "falseAdmissions": 4
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "left": "E1",
+      "right": "B0",
+      "pairs": 6,
+      "both": 3,
+      "neither": 1,
+      "leftOnly": 0,
+      "rightOnly": 2,
+      "mcnemarP": 0.5,
+      "recorded": {
+        "pass": -2,
+        "requests": -1,
+        "inputTokens": 159347,
+        "cacheReadTokens": -43904,
+        "outputTokens": -11507
+      },
+      "costValid": {
+        "pairs": 5,
+        "pass": -2,
+        "requests": -6,
+        "inputTokens": 87881,
+        "cacheReadTokens": 44928,
+        "outputTokens": -9745
+      },
+      "rows": [
+        {
+          "key": "T11-p1-r1",
+          "left": "T11-p1-E1-r1",
+          "right": "T11-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": -3,
+            "inputTokens": -2273,
+            "cacheReadTokens": 18304,
+            "outputTokens": -2711
+          }
+        },
+        {
+          "key": "T12-p1-r1",
+          "left": "T12-p1-E1-r1",
+          "right": "T12-p1-B0-r1",
+          "leftPass": true,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": 0,
+            "inputTokens": -14533,
+            "cacheReadTokens": 18944,
+            "outputTokens": 100
+          }
+        },
+        {
+          "key": "T13-p1-r1",
+          "left": "T13-p1-E1-r1",
+          "right": "T13-p1-B0-r1",
+          "leftPass": true,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": 3,
+            "inputTokens": 39727,
+            "cacheReadTokens": 1408,
+            "outputTokens": 57
+          }
+        },
+        {
+          "key": "T14-p1-r1",
+          "left": "T14-p1-E1-r1",
+          "right": "T14-p1-B0-r1",
+          "leftPass": true,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": -4,
+            "inputTokens": 12419,
+            "cacheReadTokens": 2560,
+            "outputTokens": -3517
+          }
+        },
+        {
+          "key": "T15-p1-r1",
+          "left": "T15-p1-E1-r1",
+          "right": "T15-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": -2,
+            "inputTokens": 52541,
+            "cacheReadTokens": 3712,
+            "outputTokens": -3674
+          }
+        },
+        {
+          "key": "T16-p1-r1",
+          "left": "T16-p1-E1-r1",
+          "right": "T16-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": false,
+          "leftCostValid": false,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": 5,
+            "inputTokens": 71466,
+            "cacheReadTokens": -88832,
+            "outputTokens": -1762
+          }
+        }
+      ]
+    },
+    {
+      "left": "E1",
+      "right": "E0",
+      "pairs": 6,
+      "both": 1,
+      "neither": 3,
+      "leftOnly": 2,
+      "rightOnly": 0,
+      "mcnemarP": 0.5,
+      "recorded": {
+        "pass": 2,
+        "requests": 7,
+        "inputTokens": -180199,
+        "cacheReadTokens": 77056,
+        "outputTokens": 7286
+      },
+      "costValid": {
+        "pairs": 5,
+        "pass": 2,
+        "requests": 2,
+        "inputTokens": -267709,
+        "cacheReadTokens": 101888,
+        "outputTokens": 4106
+      },
+      "rows": [
+        {
+          "key": "T11-p1-r1",
+          "left": "T11-p1-E1-r1",
+          "right": "T11-p1-E0-r1",
+          "leftPass": false,
+          "rightPass": false,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "step-limit",
+          "delta": {
+            "pass": 0,
+            "requests": 1,
+            "inputTokens": -47438,
+            "cacheReadTokens": 32896,
+            "outputTokens": 981
+          }
+        },
+        {
+          "key": "T12-p1-r1",
+          "left": "T12-p1-E1-r1",
+          "right": "T12-p1-E0-r1",
+          "leftPass": true,
+          "rightPass": false,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "step-limit",
+          "delta": {
+            "pass": 1,
+            "requests": -2,
+            "inputTokens": -108538,
+            "cacheReadTokens": 33408,
+            "outputTokens": -457
+          }
+        },
+        {
+          "key": "T13-p1-r1",
+          "left": "T13-p1-E1-r1",
+          "right": "T13-p1-E0-r1",
+          "leftPass": true,
+          "rightPass": false,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "step-limit",
+          "delta": {
+            "pass": 1,
+            "requests": -2,
+            "inputTokens": -181304,
+            "cacheReadTokens": 0,
+            "outputTokens": -785
+          }
+        },
+        {
+          "key": "T14-p1-r1",
+          "left": "T14-p1-E1-r1",
+          "right": "T14-p1-E0-r1",
+          "leftPass": true,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": 2,
+            "inputTokens": 31252,
+            "cacheReadTokens": 17408,
+            "outputTokens": 800
+          }
+        },
+        {
+          "key": "T15-p1-r1",
+          "left": "T15-p1-E1-r1",
+          "right": "T15-p1-E0-r1",
+          "leftPass": false,
+          "rightPass": false,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "step-limit",
+          "delta": {
+            "pass": 0,
+            "requests": 3,
+            "inputTokens": 38319,
+            "cacheReadTokens": 18176,
+            "outputTokens": 3567
+          }
+        },
+        {
+          "key": "T16-p1-r1",
+          "left": "T16-p1-E1-r1",
+          "right": "T16-p1-E0-r1",
+          "leftPass": false,
+          "rightPass": false,
+          "leftCostValid": false,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "step-limit",
+          "delta": {
+            "pass": 0,
+            "requests": 5,
+            "inputTokens": 87510,
+            "cacheReadTokens": -24832,
+            "outputTokens": 3180
+          }
+        }
+      ]
+    },
+    {
+      "left": "E0",
+      "right": "B0",
+      "pairs": 6,
+      "both": 1,
+      "neither": 1,
+      "leftOnly": 0,
+      "rightOnly": 4,
+      "mcnemarP": 0.125,
+      "recorded": {
+        "pass": -4,
+        "requests": -8,
+        "inputTokens": 339546,
+        "cacheReadTokens": -120960,
+        "outputTokens": -18793
+      },
+      "costValid": {
+        "pairs": 6,
+        "pass": -4,
+        "requests": -8,
+        "inputTokens": 339546,
+        "cacheReadTokens": -120960,
+        "outputTokens": -18793
+      },
+      "rows": [
+        {
+          "key": "T11-p1-r1",
+          "left": "T11-p1-E0-r1",
+          "right": "T11-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": -4,
+            "inputTokens": 45165,
+            "cacheReadTokens": -14592,
+            "outputTokens": -3692
+          }
+        },
+        {
+          "key": "T12-p1-r1",
+          "left": "T12-p1-E0-r1",
+          "right": "T12-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": 2,
+            "inputTokens": 94005,
+            "cacheReadTokens": -14464,
+            "outputTokens": 557
+          }
+        },
+        {
+          "key": "T13-p1-r1",
+          "left": "T13-p1-E0-r1",
+          "right": "T13-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": 5,
+            "inputTokens": 221031,
+            "cacheReadTokens": 1408,
+            "outputTokens": 842
+          }
+        },
+        {
+          "key": "T14-p1-r1",
+          "left": "T14-p1-E0-r1",
+          "right": "T14-p1-B0-r1",
+          "leftPass": true,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "finish",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": -6,
+            "inputTokens": -18833,
+            "cacheReadTokens": -14848,
+            "outputTokens": -4317
+          }
+        },
+        {
+          "key": "T15-p1-r1",
+          "left": "T15-p1-E0-r1",
+          "right": "T15-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": true,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": -1,
+            "requests": -5,
+            "inputTokens": 14222,
+            "cacheReadTokens": -14464,
+            "outputTokens": -7241
+          }
+        },
+        {
+          "key": "T16-p1-r1",
+          "left": "T16-p1-E0-r1",
+          "right": "T16-p1-B0-r1",
+          "leftPass": false,
+          "rightPass": false,
+          "leftCostValid": true,
+          "rightCostValid": true,
+          "leftTermination": "step-limit",
+          "rightTermination": "finish",
+          "delta": {
+            "pass": 0,
+            "requests": 0,
+            "inputTokens": -16044,
+            "cacheReadTokens": -64000,
+            "outputTokens": -4942
+          }
+        }
+      ]
+    }
+  ],
+  "byTemplate": {
+    "T11": {
+      "B0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 4,
+        "delivered": 4,
+        "stepLimited": 1,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 1,
+        "costValid": 1
+      }
+    },
+    "T12": {
+      "B0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 6,
+        "delivered": 5,
+        "stepLimited": 1,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      }
+    },
+    "T13": {
+      "B0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 5,
+        "delivered": 5,
+        "stepLimited": 1,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      }
+    },
+    "T14": {
+      "B0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 4,
+        "delivered": 3,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      }
+    },
+    "T15": {
+      "B0": {
+        "cells": 1,
+        "passed": 1,
+        "committed": 2,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 5,
+        "delivered": 4,
+        "stepLimited": 1,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 3,
+        "delivered": 3,
+        "stepLimited": 1,
+        "costValid": 1
+      }
+    },
+    "T16": {
+      "B0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 1,
+        "delivered": 1,
+        "stepLimited": 0,
+        "costValid": 1
+      },
+      "E0": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 7,
+        "delivered": 7,
+        "stepLimited": 1,
+        "costValid": 1
+      },
+      "E1": {
+        "cells": 1,
+        "passed": 0,
+        "committed": 6,
+        "delivered": 6,
+        "stepLimited": 1,
+        "costValid": 0
+      }
+    }
+  },
+  "healthProbe": {
+    "verdict": "pass-with-latency-caveat",
+    "successes": 16,
+    "planned": 16,
+    "p95DurationMs": 82290,
+    "over60s": [
+      {
+        "profile": "t13-summary-failed-shape-s2",
+        "attempt": 4,
+        "durationMs": 82290,
+        "finish": "max-tokens",
+        "usage": {
+          "inputTokens": 30059,
+          "outputTokens": 1024,
+          "totalTokens": 31083
+        }
+      }
+    ]
+  },
+  "prerequisites": {
+    "schemaVersion": 1,
+    "work": "EF-R3 product-lane",
+    "generatedAt": "2026-11-11T09:49:07.520Z",
+    "decision": "proceed-with-latency-deviation",
+    "healthProbe": {
+      "path": "eval/r3/out/health-probe-results.json",
+      "sha256": "87bcd50cbfa89e674ac0cf67e7ccb6decd72499d693ee4a914a6e3ee513230e7",
+      "verdict": "pass-with-latency-caveat",
+      "successes": 16,
+      "planned": 16,
+      "transportErrors": 0,
+      "latency": {
+        "count": 16,
+        "p50": 21798,
+        "p95": 82290,
+        "max": 82290,
+        "over60s": [
+          {
+            "profile": "t13-summary-failed-shape-s2",
+            "attempt": 4,
+            "durationMs": 82290,
+            "finish": "max-tokens",
+            "usage": {
+              "inputTokens": 30059,
+              "outputTokens": 1024,
+              "totalTokens": 31083
+            }
+          }
+        ]
+      },
+      "latencyBoundMs": 60000,
+      "latencyPass": false,
+      "deviation": "p95 exceeded the pre-registered 60s bound; transport/usage acceptance passed 16/16."
+    },
+    "costPreflight": {
+      "path": "eval/r3/out/cost-preflight.json",
+      "sha256": "a698e248ae4822bfcd6ce84abe3c573e6f1d1f263bcd47eacbb52d915dfef3eb",
+      "status": "pass"
+    },
+    "exposureAudit": {
+      "path": "eval/r3/out/product-lane-exposure-audit.json",
+      "sha256": "d852437906016298a9205afed7f4593237a92af5d7daab25243a1ce692850155",
+      "suitableTasks": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1",
+        "T16-s1",
+        "T16-s2"
+      ],
+      "counts": {
+        "cases": 16,
+        "aboveThreshold": 16,
+        "belowThreshold": 0,
+        "foldAttempts": 16,
+        "committed": 16,
+        "refused": 4,
+        "suitableTasks": 8,
+        "unsuitableTasks": 0
+      }
+    },
+    "admissionCandidate": {
+      "path": "eval/r3/out/admission-candidate.json",
+      "sha256": "757e362d07efd3000ca2953afb981332803067df6f5df4ef960d5d92de8e53c0",
+      "falseAdmissions": 4,
+      "falseRefusals": 0,
+      "decision": "No default change is justified by this audit. The shipped preset should be tested as-is; if the pilot shows T16-like retry failures, add the candidate as a separate arm."
+    },
+    "manifest": {
+      "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+      "sha256": "dc29a12340aafe29ed8c1dca6ea3934b3809ec37081214342fab8371bb0e96f3",
+      "cells": 18
+    },
+    "authorization": {
+      "path": "eval/e2e/out/authorization-e2e-r3-product-pilot-1.json",
+      "sha256": "609204763a3f8bee7ac1fd3c2944f88487bfec07f6b8a8ae3d31155d8d65da6b",
+      "granted": true,
+      "grantedBy": "user instruction: \"按推荐执行，均授权\" (2026-11-11)"
+    },
+    "rationale": "The route produced no transport error in 16/16 representative requests and every request reported usage. One 82s request exceeded the pre-registered p95 bound; that is a latency deviation, not the failure mode that stopped R2. The pilot records per-request latency and stops on transport or usage failure.",
+    "note": "This is a protocol-deviation record, not a new grant. The pilot authorization is unchanged and bound to the manifest SHA-256 above."
+  },
+  "decision": {
+    "decision": "no-product-candidate",
+    "deploymentHold": true,
+    "expandTo72": false,
+    "pilotOnly": true,
+    "reasons": [
+      "B0 passed 5/6, E1 passed 3/6, E0 passed 1/6; E1 has 0 E1-only pass(es) against B0, B0 has 2 B0-only pass(es).",
+      "The EF arms hit step-limit in 5/6 E0 cells and 3/6 E1 cells; B0 hit step-limit in 0/6. The pilot therefore does not give a clean quality comparison.",
+      "E1 uses more uncached input than B0 in the recorded pairs (159347 tokens), and the cost-valid subset is smaller (5/6 pairs).",
+      "One E1 cell (T16-p1-E1-r1) reported one unknown usage; strictUsage stopped the campaign after all 18 cells. Cost-valid cells: 17/18.",
+      "The representative health probe passed transport/usage 16/16 but one 82s request exceeded the pre-registered 60s p95 bound. Latency is a recorded caveat.",
+      "The pilot is n=6 per arm and is not confirmatory; it is not pooled with the R2 pilot or confirm."
+    ],
+    "nextStep": "Do not expand to the 72-cell lane. Diagnose the EF step-limit/quality gap under the shipped preset: a step-limit sensitivity campaign (same tasks, maxSteps 12/16, all arms) or an offline step-budget analysis. A new live authorization is required."
+  },
+  "limits": [
+    "6 tasks x 3 arms x 1 replicate; exploratory only.",
+    "Four EF cells hit the 8-step harness limit; the quality comparison is censored, not a clean loss.",
+    "One E1 cell has partial usage; the strictUsage rule stopped the campaign after all cells executed.",
+    "One health-probe request exceeded the 60s p95 bound; route stability passed 16/16.",
+    "One model, one local route, one machine. No USD price; no product claim."
+  ],
+  "note": "Pilot result. The product candidate decision remains no candidate. The primary finding is the EF step-limit/quality gap, not a confirmed E1 advantage."
+}

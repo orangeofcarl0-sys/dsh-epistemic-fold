@@ -178,6 +178,26 @@ This is a decision not to promote on current evidence, not a claim that E1 is in
 - This is a feasibility/quality/cost **pilot**, not a confirmatory campaign. It is not pooled with the R2 pilot or confirm.
 - The user instruction `按推荐执行，均授权` is recorded in the authorization file bound to the manifest SHA-256. The representative 16-request health probe must pass before the pilot.
 
+### 6.6 Pilot result: 18/18 executed, no E1 advantage
+
+`eval/e2e/out/results-e2e-r3-product-pilot-1.json`, `eval/r3/out/product-pilot-analysis.json` / `.md`.
+
+The pilot executed **18/18** cells and all 18 produced a readable checker result. One E1 cell (`T16-p1-E1-r1`) reported one unknown usage; `strictUsage` stopped the campaign after the last cell, so coverage is complete but the cost axis is 17/18.
+
+| Arm | Pass | Committed | Delivered | Step-limited | Requests | Uncached input | Output | Cost-valid |
+|---|---|---|---|---|---|---|---|---|
+| B0 | 5/6 | 10 | 8 | 0 | 62 | 769,063 | 31,094 | 6/6 |
+| E0 | 1/6 | 28 | 26 | 5 | 54 | 1,108,609 | 12,301 | 6/6 |
+| E1 | 3/6 | 13 | 13 | 3 | 61 | 928,410 | 19,587 | 5/6 |
+
+E1 vs B0: 6 pairs, both pass 3, neither 1, E1 only **0**, B0 only **2**; exact McNemar p=0.5. Recorded E1−B0: pass **−2**, requests −1, uncached input **+159,347**, cache read −43,904, output −11,507. The cost-valid subset is 5 pairs.
+
+The pilot does **not** support an E1 product advantage at 32k. B0 passes five of six tasks; E1 passes three and has no task that B0 fails. The dominant confound is the **8-step harness limit**: B0 hits it 0/6, E0 5/6, E1 3/6. The EF quality comparison is therefore step-limit censored, not a clean loss. The exact-span probe is available in the live cells (E1 4/6 false admissions, E0 2/6), but those cells still commit and deliver; the step limit is the larger effect.
+
+The health probe passed transport/usage 16/16 with zero transport errors, but one request took 82.3s, so the pre-registered 60s p95 bound was not met. The pilot proceeded under the recorded latency deviation.
+
+**Decision: no product candidate; Deployment Hold remains; do not expand to the 72-cell lane.** The next experiment is a step-limit sensitivity campaign (same tasks, `maxSteps` 12/16, all arms) or an offline step-budget analysis, under a new live authorization. The pilot is n=6 per arm and is not pooled with the R2 pilot or confirm.
+
 ## 7. Archive
 
 `EF_R2_LIVE_RESEARCH_ARCHIVE`: 548 files, 46,853,151 bytes, 43 raw attempts (18 pilot + 25 confirm attempts), 23 valid confirm cells, 2 transport-failed attempts, 30 never-started cells. Credential scan: 0. Git bundle verified. SHA256SUMS verified on the primary archive and on the `E:` copy (548/548). The second copy is another local volume, not an off-machine backup.
@@ -200,7 +220,22 @@ The pre-live R2 archive remains the authority for the earlier 50 valid cells and
 | R3-G7 | pass after CI | zero-live audit pass; claims 0 missing; supported CI lane |
 | R3-G8 | pass | product decision no candidate / hold, with 8 reasons |
 
-`incomplete` is not fail. R3-G2 and R3-G5 can only become pass under a new explicit live authorization; neither is promoted by assumption.
+`incomplete` is not fail. R3-G2 remains incomplete because the transport probe did not certify latency (it did pass transport 16/16); R3-G5 is closed by explicit termination.
+
+### Product pilot gates
+
+`eval/r3/out/product-pilot-gate-status.json`:
+
+| Gate | Status | Evidence |
+|---|---|---|
+| P-G0 | pass | manifest SHA 885bb53e; authorization granted; cost preflight pass; prerequisite decision proceed-with-latency-deviation |
+| P-G1 | pass | 18/18 executed, 18 valid |
+| P-G2 | incomplete | 17/18 cost-valid; T16-p1-E1-r1 has one unknown usage |
+| P-G3 | pass | transport/usage 16/16, zero transport errors |
+| P-G4 | incomplete | p95 82,290 ms vs the 60,000 ms pre-registered bound; one outlier |
+| P-G5 | pass | decision no product candidate, Deployment Hold, expandTo72=false |
+
+The pilot does not promote E1. The dominant finding is the EF step-limit gap: B0 0/6 step-limited, E0 5/6, E1 3/6. The next live step, if authorized, is a step-limit sensitivity campaign (same tasks, maxSteps 12/16, all arms), not the 72-cell lane.
 
 ## 9. Limits and non-claims
 

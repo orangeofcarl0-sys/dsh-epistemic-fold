@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3 product-lane",
-  "generatedAt": "2026-11-11T09:37:17.052Z",
+  "generatedAt": "2026-11-11T09:50:47.867Z",
   "historical": {
     "confirm": {
       "valid": 23,
@@ -108,7 +108,7 @@
   },
   "productManifest": {
     "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
-    "sha256": "dc29a12340aafe29ed8c1dca6ea3934b3809ec37081214342fab8371bb0e96f3"
+    "sha256": "ea43cf273587e58388a086770687d14e0a9f2ca2a6d2e1c25472675706765b75"
   },
   "manifestChecks": {
     "strictUsage": true,

@@ -32,6 +32,8 @@ const ledgerContract = load('ledger-contract.json')
 const transport = load('transport-diagnosis.json')
 const transportContract = load('transport-contract.json')
 const healthProbe = load('transport-health-probe.json')
+const healthProbeResults = load('health-probe-results.json')
+const pilotPrereqs = load('product-pilot-prerequisites.json')
 const span = load('span-economics.json')
 const frontier = load('product-frontier.json')
 const decision = load('product-decision.json')
@@ -90,9 +92,12 @@ gate('R3-G2',
     && transport?.classification?.unresolved === 1
     && transport?.classification?.immediate === true
     && transportContract?.passed === 13
-    && healthProbe?.executionAuthorized === false
-    ? 'incomplete' : 'fail',
-`${transport?.failureCount ?? '?'} transport failures, ${transport?.classification?.retriedSuccessfully ?? '?'} retried, ${transport?.classification?.unresolved ?? '?'} unresolved; contract ${transportContract?.passed ?? '?'}/${transportContract?.checks?.length ?? '?'}; health probe authorized ${healthProbe?.executionAuthorized ?? '?'}; live stability not verified`)
+    && healthProbeResults?.successes === 16
+    && healthProbeResults?.failures === 0
+    ? (healthProbeResults?.latency?.p95 !== null && healthProbeResults?.latency?.p95 <= 60_000
+      ? 'pass' : 'incomplete')
+    : 'fail',
+`${transport?.failureCount ?? '?'} transport failures, ${transport?.classification?.retriedSuccessfully ?? '?'} retried, ${transport?.classification?.unresolved ?? '?'} unresolved; contract ${transportContract?.passed ?? '?'}/${transportContract?.checks?.length ?? '?'}; representative probe ${healthProbeResults?.successes ?? '?'}/${healthProbeResults?.planned ?? '?'} transport/usage, p95 ${healthProbeResults?.latency?.p95 ?? '?'} ms; prerequisite ${pilotPrereqs?.decision ?? '?'}`)
 
 gate('R3-G3',
   span?.summary?.cases === 60
