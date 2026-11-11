@@ -434,6 +434,8 @@ mkdirSync(OUT, { recursive: true })
 const jsonPath = join(OUT, 'product-frontier.json')
 writeFileSync(jsonPath, `${JSON.stringify(frontier, null, 2)}\n`, 'utf8')
 
+const terminationPath = join(OUT, 'confirm-termination.json')
+const termination = existsSync(terminationPath) ? readJson(terminationPath) : null
 const decision = {
   schemaVersion: 1,
   work: 'EF-R3 WP5',
@@ -441,7 +443,12 @@ const decision = {
   decision: 'no-product-candidate',
   deploymentHold: true,
   candidate: null,
+  confirmStatus: termination?.decision ?? 'partial',
+  furtherConfirmCalls: termination?.furtherLiveCalls ?? null,
   reasons: [
+    termination === null
+      ? 'The confirm is partial (23/54 valid; 1 unresolved; 30 never-started) and is not a confirmatory result.'
+      : `The old confirm is explicitly terminated as a stress-lane result (${termination.counts.valid} valid, ${termination.counts.unresolved} unresolved, ${termination.counts.neverStarted} never-started); it is not a product-representative treatment.`,
     'The confirm is partial (23/54 valid; 1 unresolved; 30 never-started) and is not a confirmatory result.',
     'The valid confirm cells cover T11-T13 only; T14-T16 have no valid cells, so the subset is task-type biased.',
     'E1 vs B0 paired checker difference is 0 in the confirm and +1 in the pilot; neither is a powered quality estimate.',

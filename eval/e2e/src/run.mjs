@@ -347,6 +347,13 @@ async function main() {
     if (report.usage.unknownUsage === report.usage.requests && report.usage.requests > 0) {
       stopReason = 'provider-usage-missing'
     }
+    // EF-R3 product lane: a partial usage record is a measurement failure for
+    // the cost axis, even when the checker result is readable. R2 allowed a
+    // cell with null usage to continue, which is why only 5/7 confirm pairs and
+    // 4/6 pilot pairs were cost-valid. The product lane stops instead.
+    if (manifest.config?.strictUsage === true && report.usage.unknownUsage > 0) {
+      stopReason = 'provider-usage-incomplete'
+    }
     if (report.termination.error !== null && /provider|http|adapter/iu.test(String(report.termination.error))) {
       stopReason = 'provider-failure'
     }

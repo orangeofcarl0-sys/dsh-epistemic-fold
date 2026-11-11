@@ -135,23 +135,48 @@ This is a decision not to promote on current evidence, not a claim that E1 is in
 
 `eval/r3/out/preset-evidence.json` records the claim, the profile and the current config. `tests/r3-preset-evidence.spec.ts` pins it.
 
-## 6. Freeze: completion and product lane
+## 6. Freeze: termination, completion and product lane
 
-### 6.1 Confirm completion
+### 6.1 The old confirm is terminated-partial
+
+`eval/r3/out/confirm-termination.json`: **terminated-partial**, `furtherLiveCalls: false`.
+
+- 23 valid, 1 unresolved, 30 never-started, 31 no valid outcome; T13 4, T14 9, T15 9, T16 9.
+- The treatment is the 16k stress lane (retain 0.04, legacy framing, effective hint 400), not the shipped preset. Completing the 31 missing cells would improve balance but would not make the treatment product-representative.
+- The 23 valid cells, the corrected ledger and the partial record are preserved. No historical file is rewritten.
+- This closes R3-G5 by explicit termination, not by silently promoting the partial result.
+
+### 6.2 Confirm completion design (preserved, not authorized)
 
 `eval/e2e/out/manifest-e2e-r3-confirm-completion-1.json`, `eval/r3/out/completion-design-r3.json`.
 
 - 31 missing cells: 1 unresolved + 30 never-started.
-- Pinned to the **effective R2 config** (hint 400, legacy framing, retain 0.04, 16k), so the new cells are comparable with the 23 valid ones.
+- Pinned to the **effective R2 config** (hint 400, legacy framing, retain 0.04, 16k), so the new cells would be comparable with the 23 valid ones.
 - Execution order interleaved across T13–T16; the original order is retained in the manifest.
-- New manifest SHA-256; `executionAuthorized: false`; `authorizationState: 'not-requested'`.
-- Prerequisite: a passing representative transport health probe under a new grant.
+- New manifest SHA-256; `executionAuthorized: false`.
+- This is a contingency document only. The current decision is termination; reopening it requires a new explicit research goal, a new grant and a passing health probe.
 
-An 800-hint or shipped-preset run is a new campaign, not a merge.
-
-### 6.2 Product-representative lane
+### 6.3 Product-representative lane
 
 `eval/r3/out/product-lane-design-r3.json`: 72-cell design (6 templates × 2 instances × B0/E0/E1 × 2 replicates), shipped economy/balanced/quality configs, proposed 32k first window, target 128k. No task set is frozen, no data exists, `executionAuthorized: false`. The R2 tasks need an offline exposure audit at the proposed window, or new instances.
+
+### 6.4 Product-lane preflight (offline)
+
+`eval/r3/out/product-lane-exposure-audit.json`, `admission-candidate.json`, `cost-preflight.json`.
+
+- At 32k with the shipped economy values (system-dedup, retain 0.16, hint 400), all 16 audited seed surfaces cross the threshold and reach the fold path; 16 commit at least one fold. The six pilot instances `T11-p1 … T16-p1` each commit two folds with no refusal.
+- The R2 stress instances `T16-s1/s2` show 4 false admissions: economic admission prices a 18,390-token widest span while the executed span is null after retention. The candidate rule (admission on the executed span) would refuse those 4 retries and has **0 false refusals** in the audit. No default change is justified: the pilot uses the shipped preset as-is, and the candidate remains a separate option if the pilot shows T16-like retry failures.
+- Cost preflight: the historical confirm and pilot each have 3 cost-invalid cells. The product pilot sets `strictUsage: true`; the runner stops with `provider-usage-incomplete` on any `unknownUsage`.
+
+### 6.5 18-cell product-lane pilot
+
+`eval/e2e/out/manifest-e2e-r3-product-pilot-1.json`, `eval/r3/out/product-pilot-design.json`.
+
+- 6 tasks × 3 arms × 1 replicate = 18 cells: **B0 native Basic**, **E0 EF minimal**, **E1 shipped economy** at 32k.
+- `B0` leaves DSH Basic's native retention in place; `E0/E1` use system-dedup and retain 0.16; `E1` uses rationale hint 400.
+- `strictUsage: true`; transport and usage failures stop the campaign.
+- This is a feasibility/quality/cost **pilot**, not a confirmatory campaign. It is not pooled with the R2 pilot or confirm.
+- The user instruction `按推荐执行，均授权` is recorded in the authorization file bound to the manifest SHA-256. The representative 16-request health probe must pass before the pilot.
 
 ## 7. Archive
 
@@ -170,7 +195,7 @@ The pre-live R2 archive remains the authority for the earlier 50 valid cells and
 | R3-G2 | incomplete | transport classified and contract 13/13; live stability not verified; health probe design only |
 | R3-G3 | pass | 60-case matrix; median gaps 516/2,064/3,096; 3/3 floor-sensitivity flips; probe non-behavioral |
 | R3-G4 | pass | user deltas reproduced; 3+3 cost-invalid cells; 5/7 and 4/6 cost-valid pairs |
-| R3-G5 | incomplete | completion design 31 cells; confirm 23/54; no live authorization |
+| R3-G5 | pass | old confirm explicitly terminated-partial (23 valid, 1 unresolved, 30 never-started); further live calls false; completion design preserved but not authorized |
 | R3-G6 | pass | historical 800/400 drift detected; forwarded preflight passes; stress/product separated; preset 3/3 hypothesis |
 | R3-G7 | pass after CI | zero-live audit pass; claims 0 missing; supported CI lane |
 | R3-G8 | pass | product decision no candidate / hold, with 8 reasons |

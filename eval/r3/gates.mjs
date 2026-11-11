@@ -39,6 +39,7 @@ const configHistorical = load('config-preflight.json')
 const configForwarded = load('config-preflight-forwarded.json')
 const presetEvidence = load('preset-evidence.json')
 const completion = load('completion-design-r3.json')
+const termination = load('confirm-termination.json')
 const productLane = load('product-lane-design-r3.json')
 const archivePointer = load('research-archive-r2-live.json')
 const archiveVerify = load('archive-verification-r2-live.json')
@@ -117,14 +118,16 @@ gate('R3-G4',
 `user numbers pilot ${JSON.stringify(pilotMatches)} confirm ${JSON.stringify(confirmMatches)}; cost-invalid cells confirm ${frontier?.confirm?.eligibility?.costInvalid ?? '?'}, pilot ${frontier?.pilot?.eligibility?.costInvalid ?? '?'}; cost-valid pairs confirm ${confirmComparison?.costValid?.pairs ?? '?'}, pilot ${pilotComparison?.costValid?.pairs ?? '?'}`)
 
 gate('R3-G5',
-  completion?.executionAuthorized === false
+  termination?.decision === 'terminated-partial'
+    && termination?.furtherLiveCalls === false
+    && termination?.counts?.valid === 23
+    && termination?.counts?.unresolved === 1
+    && termination?.counts?.neverStarted === 30
+    && termination?.counts?.noValidOutcome === 31
+    && completion?.executionAuthorized === false
     && completion?.counts?.completionCells === 31
-    && completion?.counts?.valid === 23
-    && completion?.counts?.unresolved === 1
-    && completion?.counts?.neverStarted === 30
-    && frontier?.confirm?.noValidOutcome === 31
-    ? 'incomplete' : 'fail',
-`completion design ${completion?.counts?.completionCells ?? '?'} cells, authorized ${completion?.executionAuthorized ?? '?'}; confirm ${frontier?.confirm?.valid ?? '?'}/54 valid, ${frontier?.confirm?.noValidOutcome ?? '?'} no valid outcome; no live authorization`)
+    ? 'pass' : 'fail',
+`confirm ${termination?.decision ?? '?'}: ${termination?.counts?.valid ?? '?'} valid, ${termination?.counts?.unresolved ?? '?'} unresolved, ${termination?.counts?.neverStarted ?? '?'} never-started; further live calls ${termination?.furtherLiveCalls ?? '?'}; completion design ${completion?.counts?.completionCells ?? '?'} cells, authorized ${completion?.executionAuthorized ?? '?'}`)
 
 gate('R3-G6',
   configHistorical?.status === 'drift-detected'

@@ -1,0 +1,1097 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane",
+  "generatedAt": "2026-11-11T09:33:03.556Z",
+  "contextWindow": 32768,
+  "thresholdTokens": 16384,
+  "retainRatio": 0.16,
+  "framingMode": "system-dedup",
+  "arms": [
+    "E0",
+    "E1"
+  ],
+  "tasks": [
+    "T11-p1",
+    "T12-p1",
+    "T13-p1",
+    "T14-p1",
+    "T15-p1",
+    "T16-p1",
+    "T16-s1",
+    "T16-s2"
+  ],
+  "counts": {
+    "cases": 16,
+    "aboveThreshold": 16,
+    "belowThreshold": 0,
+    "foldAttempts": 16,
+    "committed": 16,
+    "refused": 4,
+    "suitableTasks": 8,
+    "unsuitableTasks": 0
+  },
+  "byTask": {
+    "T11-p1": {
+      "cases": 2,
+      "seedTokens": [
+        27688,
+        27688
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T12-p1": {
+      "cases": 2,
+      "seedTokens": [
+        27627,
+        27627
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T13-p1": {
+      "cases": 2,
+      "seedTokens": [
+        25349,
+        25349
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T14-p1": {
+      "cases": 2,
+      "seedTokens": [
+        27578,
+        27578
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T15-p1": {
+      "cases": 2,
+      "seedTokens": [
+        27586,
+        27586
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T16-p1": {
+      "cases": 2,
+      "seedTokens": [
+        18844,
+        18844
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 0,
+      "belowThreshold": 0
+    },
+    "T16-s1": {
+      "cases": 2,
+      "seedTokens": [
+        36901,
+        36901
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 2,
+      "belowThreshold": 0
+    },
+    "T16-s2": {
+      "cases": 2,
+      "seedTokens": [
+        36904,
+        36904
+      ],
+      "foldAttempts": 2,
+      "committed": 2,
+      "refused": 2,
+      "belowThreshold": 0
+    }
+  },
+  "suitableTaskIds": [
+    "T11-p1",
+    "T12-p1",
+    "T13-p1",
+    "T14-p1",
+    "T15-p1",
+    "T16-p1",
+    "T16-s1",
+    "T16-s2"
+  ],
+  "unsuitableTaskIds": [],
+  "cases": [
+    {
+      "taskId": "T11-p1",
+      "template": "T11",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27688,
+      "afterTokens": 9201,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..12 resultNull=false tokensBefore=27688 tokensAfter=9201",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27098 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27628,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27098,
+          "reclaimRatio": 0.9808165629071955
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27628
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 4,
+          "start": 4,
+          "end": 12,
+          "tokens": 18507
+        },
+        "gapTokens": 9121,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27098,
+        "expectedReclaimRatio": 0.9808165629071955,
+        "executedExpectedReclaimTokens": 17977,
+        "executedExpectedReclaimRatio": 0.9713621872804885,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 18487,
+          "surfaceDeltaTokens": 18487,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18507
+        }
+      }
+    },
+    {
+      "taskId": "T11-p1",
+      "template": "T11",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27688,
+      "afterTokens": 9626,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..12 resultNull=false tokensBefore=27688 tokensAfter=9626",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27098 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27628,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27098,
+          "reclaimRatio": 0.9808165629071955
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27628
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 4,
+          "start": 4,
+          "end": 12,
+          "tokens": 18507
+        },
+        "gapTokens": 9121,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27098,
+        "expectedReclaimRatio": 0.9808165629071955,
+        "executedExpectedReclaimTokens": 17977,
+        "executedExpectedReclaimRatio": 0.9713621872804885,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 18062,
+          "surfaceDeltaTokens": 18062,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18507
+        }
+      }
+    },
+    {
+      "taskId": "T12-p1",
+      "template": "T12",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27627,
+      "afterTokens": 9216,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..9 resultNull=false tokensBefore=27627 tokensAfter=9216",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27047 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27577,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27047,
+          "reclaimRatio": 0.9807810856873481
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27577
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 3,
+          "start": 4,
+          "end": 9,
+          "tokens": 18431
+        },
+        "gapTokens": 9146,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27047,
+        "expectedReclaimRatio": 0.9807810856873481,
+        "executedExpectedReclaimTokens": 17901,
+        "executedExpectedReclaimRatio": 0.9712440996147794,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 18411,
+          "surfaceDeltaTokens": 18411,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18431
+        }
+      }
+    },
+    {
+      "taskId": "T12-p1",
+      "template": "T12",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27627,
+      "afterTokens": 9641,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..9 resultNull=false tokensBefore=27627 tokensAfter=9641",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27047 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27577,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27047,
+          "reclaimRatio": 0.9807810856873481
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27577
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 3,
+          "start": 4,
+          "end": 9,
+          "tokens": 18431
+        },
+        "gapTokens": 9146,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27047,
+        "expectedReclaimRatio": 0.9807810856873481,
+        "executedExpectedReclaimTokens": 17901,
+        "executedExpectedReclaimRatio": 0.9712440996147794,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 17986,
+          "surfaceDeltaTokens": 17986,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18431
+        }
+      }
+    },
+    {
+      "taskId": "T13-p1",
+      "template": "T13",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 25349,
+      "afterTokens": 6877,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..17 resultNull=false tokensBefore=25349 tokensAfter=6877",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 24767 tokens, MRR 97.9%",
+        "reclaim": {
+          "spanTokens": 25297,
+          "checkpointTokens": 530,
+          "reclaimTokens": 24767,
+          "reclaimRatio": 0.9790488990789422
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 7,
+          "start": 4,
+          "end": 22,
+          "tokens": 25297
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18492
+        },
+        "gapTokens": 6805,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 24767,
+        "expectedReclaimRatio": 0.9790488990789422,
+        "executedExpectedReclaimTokens": 17962,
+        "executedExpectedReclaimRatio": 0.9713389573869782,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 18472,
+          "surfaceDeltaTokens": 18472,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18492
+        }
+      }
+    },
+    {
+      "taskId": "T13-p1",
+      "template": "T13",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 25349,
+      "afterTokens": 7302,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..17 resultNull=false tokensBefore=25349 tokensAfter=7302",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 24767 tokens, MRR 97.9%",
+        "reclaim": {
+          "spanTokens": 25297,
+          "checkpointTokens": 530,
+          "reclaimTokens": 24767,
+          "reclaimRatio": 0.9790488990789422
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 7,
+          "start": 4,
+          "end": 22,
+          "tokens": 25297
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18492
+        },
+        "gapTokens": 6805,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 24767,
+        "expectedReclaimRatio": 0.9790488990789422,
+        "executedExpectedReclaimTokens": 17962,
+        "executedExpectedReclaimRatio": 0.9713389573869782,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 18047,
+          "surfaceDeltaTokens": 18047,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18492
+        }
+      }
+    },
+    {
+      "taskId": "T14-p1",
+      "template": "T14",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27578,
+      "afterTokens": 9143,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..17 resultNull=false tokensBefore=27578 tokensAfter=9143",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27006 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27536,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27006,
+          "reclaimRatio": 0.9807524694944799
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27536
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18455
+        },
+        "gapTokens": 9081,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27006,
+        "expectedReclaimRatio": 0.9807524694944799,
+        "executedExpectedReclaimTokens": 17925,
+        "executedExpectedReclaimRatio": 0.9712814955296668,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 18435,
+          "surfaceDeltaTokens": 18435,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18455
+        }
+      }
+    },
+    {
+      "taskId": "T14-p1",
+      "template": "T14",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27578,
+      "afterTokens": 9568,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..17 resultNull=false tokensBefore=27578 tokensAfter=9568",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27006 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27536,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27006,
+          "reclaimRatio": 0.9807524694944799
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 8,
+          "start": 4,
+          "end": 25,
+          "tokens": 27536
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18455
+        },
+        "gapTokens": 9081,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27006,
+        "expectedReclaimRatio": 0.9807524694944799,
+        "executedExpectedReclaimTokens": 17925,
+        "executedExpectedReclaimRatio": 0.9712814955296668,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 18010,
+          "surfaceDeltaTokens": 18010,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18455
+        }
+      }
+    },
+    {
+      "taskId": "T15-p1",
+      "template": "T15",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27586,
+      "afterTokens": 9156,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..9 resultNull=false tokensBefore=27586 tokensAfter=9156",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27007 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27537,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27007,
+          "reclaimRatio": 0.9807531684642481
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 6,
+          "start": 4,
+          "end": 17,
+          "tokens": 27537
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 3,
+          "start": 4,
+          "end": 9,
+          "tokens": 18450
+        },
+        "gapTokens": 9087,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27007,
+        "expectedReclaimRatio": 0.9807531684642481,
+        "executedExpectedReclaimTokens": 17920,
+        "executedExpectedReclaimRatio": 0.9712737127371274,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 18430,
+          "surfaceDeltaTokens": 18430,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18450
+        }
+      }
+    },
+    {
+      "taskId": "T15-p1",
+      "template": "T15",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 27586,
+      "afterTokens": 9581,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..9 resultNull=false tokensBefore=27586 tokensAfter=9581",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 27007 tokens, MRR 98.1%",
+        "reclaim": {
+          "spanTokens": 27537,
+          "checkpointTokens": 530,
+          "reclaimTokens": 27007,
+          "reclaimRatio": 0.9807531684642481
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 6,
+          "start": 4,
+          "end": 17,
+          "tokens": 27537
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 3,
+          "start": 4,
+          "end": 9,
+          "tokens": 18450
+        },
+        "gapTokens": 9087,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 27007,
+        "expectedReclaimRatio": 0.9807531684642481,
+        "executedExpectedReclaimTokens": 17920,
+        "executedExpectedReclaimRatio": 0.9712737127371274,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 18005,
+          "surfaceDeltaTokens": 18005,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18450
+        }
+      }
+    },
+    {
+      "taskId": "T16-p1",
+      "template": "T16",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 18844,
+      "afterTokens": 6317,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..27 resultNull=false tokensBefore=18844 tokensAfter=6317",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 18262 tokens, MRR 97.2%",
+        "reclaim": {
+          "spanTokens": 18792,
+          "checkpointTokens": 530,
+          "reclaimTokens": 18262,
+          "reclaimRatio": 0.971796509152831
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 15,
+          "start": 4,
+          "end": 42,
+          "tokens": 18792
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 10,
+          "start": 4,
+          "end": 27,
+          "tokens": 12547
+        },
+        "gapTokens": 6245,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 18262,
+        "expectedReclaimRatio": 0.971796509152831,
+        "executedExpectedReclaimTokens": 12017,
+        "executedExpectedReclaimRatio": 0.95775882681119,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 12527,
+          "surfaceDeltaTokens": 12527,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 12547
+        }
+      }
+    },
+    {
+      "taskId": "T16-p1",
+      "template": "T16",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 18844,
+      "afterTokens": 6742,
+      "aboveThreshold": true,
+      "outcome": "returned-result",
+      "error": null,
+      "leafFolds": 1,
+      "lastLeafDecision": "fold-attempted span=4..27 resultNull=false tokensBefore=18844 tokensAfter=6742",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 18262 tokens, MRR 97.2%",
+        "reclaim": {
+          "spanTokens": 18792,
+          "checkpointTokens": 530,
+          "reclaimTokens": 18262,
+          "reclaimRatio": 0.971796509152831
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 15,
+          "start": 4,
+          "end": 42,
+          "tokens": 18792
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 10,
+          "start": 4,
+          "end": 27,
+          "tokens": 12547
+        },
+        "gapTokens": 6245,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 18262,
+        "expectedReclaimRatio": 0.971796509152831,
+        "executedExpectedReclaimTokens": 12017,
+        "executedExpectedReclaimRatio": 0.95775882681119,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 445,
+          "reclaimTokens": 12102,
+          "surfaceDeltaTokens": 12102,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 12547
+        }
+      }
+    },
+    {
+      "taskId": "T16-s1",
+      "template": "T16",
+      "seedInstance": 1,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 36901,
+      "afterTokens": 18460,
+      "aboveThreshold": true,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18460 estimated tokens >= threshold 16384; widest legal span 18390 tokens (retain 5079), checkpoint 20, retained after folding it 90; frozen prefix 20 across 1 checkpoint(s)))",
+      "leafFolds": 1,
+      "lastLeafDecision": "no-span pricedNodes=6 surfaceNodes=6 firstOpen=2 retain=5079 total=18460",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 36321 tokens, MRR 98.6%",
+        "reclaim": {
+          "spanTokens": 36851,
+          "checkpointTokens": 530,
+          "reclaimTokens": 36321,
+          "reclaimRatio": 0.9856177579984261
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 4,
+          "start": 15,
+          "end": 20,
+          "tokens": 18390
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 18370,
+        "expectedReclaimRatio": 0.9989124524197933,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      }
+    },
+    {
+      "taskId": "T16-s1",
+      "template": "T16",
+      "seedInstance": 1,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 36901,
+      "afterTokens": 18885,
+      "aboveThreshold": true,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18885 estimated tokens >= threshold 16384; widest legal span 18390 tokens (retain 5079), checkpoint 445, retained after folding it 940; frozen prefix 445 across 1 checkpoint(s)))",
+      "leafFolds": 1,
+      "lastLeafDecision": "no-span pricedNodes=6 surfaceNodes=6 firstOpen=2 retain=5079 total=18885",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 36321 tokens, MRR 98.6%",
+        "reclaim": {
+          "spanTokens": 36851,
+          "checkpointTokens": 530,
+          "reclaimTokens": 36321,
+          "reclaimRatio": 0.9856177579984261
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 4,
+          "start": 15,
+          "end": 20,
+          "tokens": 18390
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 445,
+        "expectedReclaimTokens": 17945,
+        "expectedReclaimRatio": 0.9758020663404023,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      }
+    },
+    {
+      "taskId": "T16-s2",
+      "template": "T16",
+      "seedInstance": 2,
+      "arm": "E0",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 36904,
+      "afterTokens": 18461,
+      "aboveThreshold": true,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18461 estimated tokens >= threshold 16384; widest legal span 18391 tokens (retain 5079), checkpoint 20, retained after folding it 90; frozen prefix 20 across 1 checkpoint(s)))",
+      "leafFolds": 1,
+      "lastLeafDecision": "no-span pricedNodes=6 surfaceNodes=6 firstOpen=2 retain=5079 total=18461",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 36324 tokens, MRR 98.6%",
+        "reclaim": {
+          "spanTokens": 36854,
+          "checkpointTokens": 530,
+          "reclaimTokens": 36324,
+          "reclaimRatio": 0.9856189287458621
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 4,
+          "start": 15,
+          "end": 20,
+          "tokens": 18391
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 18371,
+        "expectedReclaimRatio": 0.9989125115545647,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      }
+    },
+    {
+      "taskId": "T16-s2",
+      "template": "T16",
+      "seedInstance": 2,
+      "arm": "E1",
+      "contextWindow": 32768,
+      "thresholdTokens": 16384,
+      "seedTokens": 36904,
+      "afterTokens": 18886,
+      "aboveThreshold": true,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18886 estimated tokens >= threshold 16384; widest legal span 18391 tokens (retain 5079), checkpoint 445, retained after folding it 940; frozen prefix 445 across 1 checkpoint(s)))",
+      "leafFolds": 1,
+      "lastLeafDecision": "no-span pricedNodes=6 surfaceNodes=6 firstOpen=2 retain=5079 total=18886",
+      "admission": {
+        "admitted": true,
+        "reason": "admitted",
+        "detail": "reclaim 36324 tokens, MRR 98.6%",
+        "reclaim": {
+          "spanTokens": 36854,
+          "checkpointTokens": 530,
+          "reclaimTokens": 36324,
+          "reclaimRatio": 0.9856189287458621
+        }
+      },
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 4,
+          "start": 15,
+          "end": 20,
+          "tokens": 18391
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 445,
+        "expectedReclaimTokens": 17946,
+        "expectedReclaimRatio": 0.9758033820890653,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      }
+    }
+  ],
+  "conclusion": {
+    "tasksSuitableForPilot": true,
+    "note": "At least six audited tasks cross the 32k threshold and commit a fold. The pilot can use them."
+  },
+  "note": "Keyless audit. The summarizer returns a fixed checkpoint text; this measures exposure and the fold path, not task quality or model behaviour."
+}

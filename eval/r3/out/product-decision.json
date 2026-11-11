@@ -1,11 +1,14 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3 WP5",
-  "generatedAt": "2026-11-10T16:38:14.782Z",
+  "generatedAt": "2026-11-11T09:24:27.960Z",
   "decision": "no-product-candidate",
   "deploymentHold": true,
   "candidate": null,
+  "confirmStatus": "terminated-partial",
+  "furtherConfirmCalls": false,
   "reasons": [
+    "The old confirm is explicitly terminated as a stress-lane result (23 valid, 1 unresolved, 30 never-started); it is not a product-representative treatment.",
     "The confirm is partial (23/54 valid; 1 unresolved; 30 never-started) and is not a confirmatory result.",
     "The valid confirm cells cover T11-T13 only; T14-T16 have no valid cells, so the subset is task-type biased.",
     "E1 vs B0 paired checker difference is 0 in the confirm and +1 in the pilot; neither is a powered quality estimate.",

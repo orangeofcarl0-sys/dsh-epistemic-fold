@@ -56,6 +56,7 @@ R2 live cells with an engine probe: **0/41**. The R2 reports predate the probe, 
 
 **No product candidate. Deployment Hold remains.**
 
+- The old confirm is explicitly terminated as a stress-lane result (23 valid, 1 unresolved, 30 never-started); it is not a product-representative treatment.
 - The confirm is partial (23/54 valid; 1 unresolved; 30 never-started) and is not a confirmatory result.
 - The valid confirm cells cover T11-T13 only; T14-T16 have no valid cells, so the subset is task-type biased.
 - E1 vs B0 paired checker difference is 0 in the confirm and +1 in the pilot; neither is a powered quality estimate.

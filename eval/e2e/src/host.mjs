@@ -116,13 +116,24 @@ export async function mountHost({
     // never fire. 512 is the same value both arms get; it is not an EF-specific
     // advantage. `maxTokens` stays at the per-request cap so the summary call
     // itself is not truncated to the headroom.
-    new BasicCompaction(ctx, {
+    // B0 is native DSH Basic. The R2 stress lane explicitly passed 0.04; a
+    // product-lane manifest may instead declare `basic: { retainRatio: null }`
+    // to leave Basic's own retention in place. `basic` absent preserves the R2
+    // behaviour, so historical re-runs are unchanged.
+    const basic = efConfig.basic
+    const basicRetainRatio = basic === undefined
+      ? (efConfig.retainRatio ?? 0.04)
+      : basic.retainRatio
+    const basicOptions = {
       auto: true,
       thresholdRatio,
-      retainRatio: efConfig.retainRatio ?? 0.04,
-      headroomTokens: efConfig.headroomTokens ?? 512,
-      maxTokens: efConfig.maxTokens ?? 1024,
-    })
+      headroomTokens: basic?.headroomTokens ?? 512,
+      maxTokens: basic?.maxTokens ?? 1024,
+    }
+    if (basicRetainRatio !== null && basicRetainRatio !== undefined) {
+      basicOptions.retainRatio = basicRetainRatio
+    }
+    new BasicCompaction(ctx, basicOptions)
   } else {
     const { default: EpistemicFoldPlugin } = await import('../../../lib/plugin.js')
     await mkdir(roots.bundleRoot, { recursive: true })
