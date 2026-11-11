@@ -198,6 +198,8 @@ The health probe passed transport/usage 16/16 with zero transport errors, but on
 
 **Decision: no product candidate; Deployment Hold remains; do not expand to the 72-cell lane.** The next experiment is a step-limit sensitivity campaign (same tasks, `maxSteps` 12/16, all arms) or an offline step-budget analysis, under a new live authorization. The pilot is n=6 per arm and is not pooled with the R2 pilot or confirm.
 
+The per-cell trajectory and model-behaviour reading is `docs/convergence/EF_R3_PILOT_TRAJECTORY.md` (data: `eval/r3/out/product-pilot-trajectory-analysis.json`). Its main findings: E1 T11 had a correct checkpoint but the model re-ran the current test suite and wrote the wrong count; E1 T15/T16 rationale checkpoints described the method but omitted the concrete value; E0 marker-only checkpoints produced empty recall loops; B0 T16 suffered Basic summary truncation and a schema ambiguity; and recall/search is repeatedly followed by another compaction, so retrieved evidence is folded away before the model can write.
+
 ## 7. Archive
 
 `EF_R2_LIVE_RESEARCH_ARCHIVE`: 548 files, 46,853,151 bytes, 43 raw attempts (18 pilot + 25 confirm attempts), 23 valid confirm cells, 2 transport-failed attempts, 30 never-started cells. Credential scan: 0. Git bundle verified. SHA256SUMS verified on the primary archive and on the `E:` copy (548/548). The second copy is another local volume, not an off-machine backup.

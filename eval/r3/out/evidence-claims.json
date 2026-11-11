@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3",
-  "generatedAt": "2026-11-11T10:33:05.958Z",
-  "evaluatedCommit": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+  "generatedAt": "2026-11-11T11:02:35.218Z",
+  "evaluatedCommit": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
   "claims": [
     {
       "claimId": "R3-LEDGER",
@@ -11,7 +11,7 @@
       "artifact": "eval/r3/out/live-confirm-reconciliation.json",
       "harness": "immutable manifests, results and reports; Attempt and Unique Cell ledgers",
       "limitation": "A correction of the historical merge arithmetic; no new live call and no historical file rewritten.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "63071bbd928db2807166cab4b7da5a8900b31ef45d3972dd74a416bc203c588a",
       "status": "current"
@@ -23,7 +23,7 @@
       "artifact": "eval/r3/out/ledger-contract.json",
       "harness": "19 assertions over throwaway results/reports",
       "limitation": "Synthetic reports; it proves the identity rule, not model behaviour.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "7d97f4f342fd4fd5b0d91b1eedacf5c339927551d7573e83be773a029560f63f",
       "status": "current"
@@ -35,7 +35,7 @@
       "artifact": "eval/r3/out/transport-diagnosis.json",
       "harness": "raw request logs and the attempt ledger",
       "limitation": "n=2, one local route, no socket identity or keep-alive trace; this is a description, not a provider-level causal estimate.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "2c8e842a22a1d2a86188fd2bfa0dc77b5796f293b75b1b6be65f2cb26d3304dc",
       "status": "current"
@@ -47,7 +47,7 @@
       "artifact": "eval/r3/out/transport-contract.json",
       "harness": "13 assertions against a localhost mock; no provider request",
       "limitation": "The real proxy is not in the repository; the contract proves classification, not route stability.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "7b6791f761300d8fd10e2f9da0846f6904a0da87d016e272d01768e2e827173b",
       "status": "current"
@@ -59,7 +59,7 @@
       "artifact": "eval/r3/out/config-preflight.json",
       "harness": "declared vs effective resolveEfConfig, plus the historical host contract",
       "limitation": "The historical cells are not re-run. A 400-pinned completion is comparable to the 23 valid cells; an 800 or shipped-preset run is a different treatment.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "588d89b046d437251bdce88a332975e73100b5c60c81a969547ccc3fe2b58480",
       "status": "current"
@@ -71,7 +71,7 @@
       "artifact": "eval/r3/out/span-economics.json",
       "harness": "keyless controlled adapter over the real engine and token meter; 60 default-floor cases plus 3 floor-sensitivity cases",
       "limitation": "A keyless matrix, not live model behaviour. The R2 live reports predate the probe, so their exact-span economics is unavailable, not zero.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "5fddc0be072edde9499bff6aa6f2a95bb1477e3866a478467fc5ba81c2ad8f36",
       "status": "current"
@@ -83,7 +83,7 @@
       "artifact": "eval/r3/out/span-economics.json",
       "harness": "unit tests plus a scripted E2E self-test",
       "limitation": "The probe is off in product deployments and enabled only by the benchmark harness; it measures, it does not fix the admission/execution mismatch.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "5fddc0be072edde9499bff6aa6f2a95bb1477e3866a478467fc5ba81c2ad8f36",
       "status": "current"
@@ -95,7 +95,7 @@
       "artifact": "eval/r3/out/preset-evidence.json",
       "harness": "TIERS metadata plus resolveEfConfig; 3 tier tests",
       "limitation": "Metadata-only correction; no tier value or product default changed. The underlying RC1.3 result remains valid for the profile it measured.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "05324ec7679ddc5b23ca232aea8e64c784279456ea95964b20caabe73363fd10",
       "status": "current"
@@ -107,7 +107,7 @@
       "artifact": "eval/r3/out/product-frontier.json",
       "harness": "per-cell usage, witness summaries and paired task/replicate joins",
       "limitation": "No imputation of missing usage; recorded and cost-valid tables are both reported. The valid confirm subset is task-type biased.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "52f349c7ecc4b80415fa10f6705e2e6a84d116c6c25e278aed2bed326de5b5ff",
       "status": "current"
@@ -119,7 +119,7 @@
       "artifact": "eval/r3/out/product-frontier.json",
       "harness": "six pilot pairs and seven confirm pairs from the immutable reports",
       "limitation": "The numbers are recorded, not cost-complete; the cost-valid pair deltas differ in magnitude and are reported separately.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "52f349c7ecc4b80415fa10f6705e2e6a84d116c6c25e278aed2bed326de5b5ff",
       "status": "current"
@@ -131,7 +131,7 @@
       "artifact": "eval/r3/out/confirm-termination.json",
       "harness": "the corrected unique-cell ledger and the product decision",
       "limitation": "A decision not to complete a non-product treatment; it is not a claim about what the missing cells would have shown.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "60ff3e3c6399e2b2f620d2e1c62e48ad8ba5377a726f5179c8468be903b203e7",
       "status": "current"
@@ -143,7 +143,7 @@
       "artifact": "eval/r3/out/product-decision.json",
       "harness": "the product-frontier report and the eligibility ledger",
       "limitation": "A decision not to promote on current evidence; it is not a claim that E1 is ineffective.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "3666fd104424e996d9cf7eb15969af887fcd162e5b05385a780d1d2afa610382",
       "status": "current"
@@ -155,7 +155,7 @@
       "artifact": "eval/r3/out/research-archive-r2-live.json",
       "harness": "verbatim copy + SHA256SUMS + git bundle verify + credential scan",
       "limitation": "The second copy is another local volume (E:), not an off-machine backup.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "aa1a6a2c57b74076f49377ba186bef5e6952799d96e206def5806fc389a8ee75",
       "status": "current"
@@ -167,7 +167,7 @@
       "artifact": "eval/r3/out/archive-verification-r2-live-copy.json",
       "harness": "eval/e2e/src/verify-archive.mjs against the repository pointer",
       "limitation": "A local copy on a second volume, not an off-machine backup.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "757d33405a1c91b98fc9296a90a55dacefb6c05b70faf20ac746db0ef0f01f09",
       "status": "current"
@@ -179,7 +179,7 @@
       "artifact": "eval/r3/out/completion-design-r3.json",
       "harness": "unique-cell ledger + R2 manifest + protocol amendment",
       "limitation": "Design only. It requires a new explicit authorization and a passing representative transport health probe; unused R2 envelope capacity is not permission.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "4e0e35cb985f83eecc751dc61a494a601612e924f89b1030a455b1a98a967b63",
       "status": "current"
@@ -191,7 +191,7 @@
       "artifact": "eval/r3/out/product-lane-design-r3.json",
       "harness": "resolveEfConfig for the shipped presets + stress/product config diff",
       "limitation": "Design only. The R2 tasks need an offline exposure audit at the proposed window, or new instances.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "1b594734319b05053ed6165d3cfb9ae2c8432a2627f1cc572fa77ea90d4ae951",
       "status": "current"
@@ -203,7 +203,7 @@
       "artifact": "eval/r3/out/product-lane-exposure-audit.json",
       "harness": "keyless E2E host, seeded task histories, scripted summarizer, exact-span probe",
       "limitation": "Exposure and the fold path only; the scripted summary is not a live model and task quality is not measured.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "d852437906016298a9205afed7f4593237a92af5d7daab25243a1ce692850155",
       "status": "current"
@@ -215,7 +215,7 @@
       "artifact": "eval/r3/out/admission-candidate.json",
       "harness": "the exposure audit probes; candidate = admission on the executed span",
       "limitation": "A single compactIfNeeded call per surface with compactionRetries=1; a candidate refusal would take the rebase handoff, whose final pressure is not simulated.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "757e362d07efd3000ca2953afb981332803067df6f5df4ef960d5d92de8e53c0",
       "status": "current"
@@ -227,7 +227,7 @@
       "artifact": "eval/r3/out/cost-preflight.json",
       "harness": "the unique-cell ledger, the product manifest, and the runner source",
       "limitation": "The strict-usage rule is enforced for the product pilot; historical runs are not retroactively changed.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "947471b07b70a657bb7e68288cc7e2c7fc983e95ca316695dea81ff517489660",
       "status": "current"
@@ -239,7 +239,7 @@
       "artifact": "eval/r3/out/product-pilot-analysis.json",
       "harness": "native E2E host, six audited 32k tasks, three arms, one replicate; strict usage",
       "limitation": "n=6 per arm; the EF quality comparison is censored by the 8-step harness limit, not a clean loss. One E1 cell has partial usage; one health-probe request exceeded the 60s p95 bound.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "3e37e0433acf16af99d0f843515e34e12c38c296af79f5fd5feac50ca74608ae",
       "status": "current"
@@ -251,7 +251,7 @@
       "artifact": "eval/r3/out/product-pilot-analysis.json",
       "harness": "per-cell usage and the strictUsage runner rule",
       "limitation": "One cell; no imputation. The cost-valid paired subset is 5/6.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "3e37e0433acf16af99d0f843515e34e12c38c296af79f5fd5feac50ca74608ae",
       "status": "current"
@@ -263,9 +263,21 @@
       "artifact": "eval/r3/out/health-probe-results.json",
       "harness": "four long-payload profiles, four attempts each, local provider route",
       "limitation": "A single local route and one outlier; latency is not certified and the probe is not a model-quality measurement.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "87bcd50cbfa89e674ac0cf67e7ccb6decd72499d693ee4a914a6e3ee513230e7",
+      "status": "current"
+    },
+    {
+      "claimId": "R3-PILOT-TRAJECTORY",
+      "claim": "The 18-cell pilot traces separate four failure mechanisms: E0 marker-only checkpoints produce empty recall loops and no write; E1 T11 has a correct checkpoint but the model re-ran the current test suite and wrote 1 instead of 3; E1 T15/T16 rationale describes method but omits the concrete value; B0 T16 has Basic summary truncation, a key-schema error and one compaction against a two-fold mechanism check. Recall/search is repeatedly followed by another compaction.",
+      "evidenceLevel": "Behavioral Observation",
+      "artifact": "eval/r3/out/product-pilot-trajectory-analysis.json",
+      "harness": "per-cell live tool sequences, checkpoint text, workspace files and checker results",
+      "limitation": "Descriptive, n=6 per arm; the recall→fold ordering is evidence of a loop, not an isolated causal measurement. The 8-step limit and the task-log placement are confounds.",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
+      "artifactPresent": true,
+      "artifactSha256": "04667c591661674d58245e8af51ad8c7ff76cfb0c3411303fff627dd69c7082c",
       "status": "current"
     },
     {
@@ -275,7 +287,7 @@
       "artifact": "eval/r3/out/research-archive-r3-product-pilot.json",
       "harness": "verbatim raw runs + evidence + git bundle + SHA256SUMS + credential scan",
       "limitation": "The second copy is another local volume, not an off-machine backup.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "def50a86a7fca72c9a58abe75da82826adbd838c5be5e2e552fa84cffae1b7fe",
       "status": "current"
@@ -287,7 +299,7 @@
       "artifact": "eval/r3/out/zero-live-audit.json",
       "harness": "baseline timestamp + new run/results directory audit at the offline closure",
       "limitation": "A worktree audit of the offline phase, not a network capture. It does not cover the later authorized probe and pilot.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "a877ca735910fb1881a1fc76e035bd98ac90ac24183e74b0b3ec7b80f6f831df",
       "status": "current"
@@ -299,7 +311,7 @@
       "artifact": "eval/r3/out/baseline-r3.json",
       "harness": "git/gh metadata + SHA-256 inventory",
       "limitation": "The PR and CI state are a snapshot at the start of R3.",
-      "gitSha": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+      "gitSha": "fe07b6dc13a6c2be228477032dff1eb8349754d4",
       "artifactPresent": true,
       "artifactSha256": "0f3295e470c541bf646eb6798b07846d3ccc90d2200cc054f879dde2330221a0",
       "status": "current"

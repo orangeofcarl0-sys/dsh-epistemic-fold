@@ -200,6 +200,14 @@ const CLAIMS = [
     limitation: 'A single local route and one outlier; latency is not certified and the probe is not a model-quality measurement.',
   },
   {
+    claimId: 'R3-PILOT-TRAJECTORY',
+    claim: 'The 18-cell pilot traces separate four failure mechanisms: E0 marker-only checkpoints produce empty recall loops and no write; E1 T11 has a correct checkpoint but the model re-ran the current test suite and wrote 1 instead of 3; E1 T15/T16 rationale describes method but omits the concrete value; B0 T16 has Basic summary truncation, a key-schema error and one compaction against a two-fold mechanism check. Recall/search is repeatedly followed by another compaction.',
+    evidenceLevel: 'Behavioral Observation',
+    artifact: 'eval/r3/out/product-pilot-trajectory-analysis.json',
+    harness: 'per-cell live tool sequences, checkpoint text, workspace files and checker results',
+    limitation: 'Descriptive, n=6 per arm; the recall→fold ordering is evidence of a loop, not an isolated causal measurement. The 8-step limit and the task-log placement are confounds.',
+  },
+  {
     claimId: 'R3-PILOT-ARCHIVE',
     claim: 'The 18-cell product-lane pilot raw evidence is archived incrementally: 245 files, 37,802,090 bytes, 18 cells, 9 passes, 17 cost-valid cells, 8 step-limited cells; zero credentials, git bundle verified, primary and E: copies verified.',
     evidenceLevel: 'Deterministic Contract',
