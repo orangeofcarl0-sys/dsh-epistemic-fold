@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP5 candidate decision",
+  "generatedAt": "2026-11-11T15:44:22.028Z",
+  "baseline": {
+    "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+    "headShort": "07540d01",
+    "campaign": "e2e-r3-product-pilot-1",
+    "manifestSha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab"
+  },
+  "rules": [
+    {
+      "id": "H1a-task-source-loss",
+      "description": ">=2 failed EF cells lose the exact task source before any write; no passing EF cell does",
+      "threshold": {
+        "failedWithLoss": 2,
+        "passedWithLoss": 0
+      },
+      "actual": {
+        "failedWithLoss": 7,
+        "passedWithLoss": 0,
+        "cells": [
+          "T11-p1-E0-r1",
+          "T12-p1-E0-r1",
+          "T13-p1-E0-r1",
+          "T15-p1-E0-r1",
+          "T15-p1-E1-r1",
+          "T16-p1-E0-r1",
+          "T16-p1-E1-r1"
+        ]
+      },
+      "met": true
+    },
+    {
+      "id": "H1b-recall-refolding",
+      "description": "at least half of the shadowed recall payloads are not visible at the next request",
+      "threshold": {
+        "ratio": 0.5
+      },
+      "actual": {
+        "folded": 53,
+        "refolded": 51,
+        "ratio": 0.9622641509433962
+      },
+      "met": true
+    },
+    {
+      "id": "H2-evidence-scope",
+      "description": "a failed EF cell with no task-source loss and no recall still writes a wrong value",
+      "threshold": {
+        "cases": 1
+      },
+      "actual": {
+        "cases": [
+          "T11-p1-E1-r1"
+        ]
+      },
+      "met": true
+    },
+    {
+      "id": "failure-projection-inflation",
+      "description": "a failed EF cell has >=2 duplicate failure signatures and Open >=25% of checkpoint chars",
+      "threshold": {
+        "duplicateSignatures": 2,
+        "share": 0.25
+      },
+      "actual": {
+        "cells": [
+          {
+            "cellId": "T16-p1-E0-r1",
+            "duplicateSignatures": 2,
+            "share": 0.9121863799283154
+          },
+          {
+            "cellId": "T16-p1-E1-r1",
+            "duplicateSignatures": 4,
+            "share": 0.3213669313082499
+          }
+        ]
+      },
+      "met": true
+    }
+  ],
+  "selected": "active-task-delivery",
+  "contractOnly": true,
+  "notWired": true,
+  "evidence": {
+    "failedEfCells": [
+      "T11-p1-E0-r1",
+      "T11-p1-E1-r1",
+      "T12-p1-E0-r1",
+      "T13-p1-E0-r1",
+      "T15-p1-E0-r1",
+      "T15-p1-E1-r1",
+      "T16-p1-E0-r1",
+      "T16-p1-E1-r1"
+    ],
+    "passedEfCells": [
+      "T12-p1-E1-r1",
+      "T13-p1-E1-r1",
+      "T14-p1-E0-r1",
+      "T14-p1-E1-r1"
+    ],
+    "failedWithLoss": [
+      "T11-p1-E0-r1",
+      "T12-p1-E0-r1",
+      "T13-p1-E0-r1",
+      "T15-p1-E0-r1",
+      "T15-p1-E1-r1",
+      "T16-p1-E0-r1",
+      "T16-p1-E1-r1"
+    ],
+    "passedWithLoss": [],
+    "h2Cases": [
+      "T11-p1-E1-r1"
+    ],
+    "inflationCells": [
+      "T16-p1-E0-r1",
+      "T16-p1-E1-r1"
+    ]
+  },
+  "simulation": {
+    "candidate": "active-task-delivery",
+    "cells": [
+      {
+        "cellId": "T11-p1-E0-r1",
+        "arm": "E0",
+        "label": "task",
+        "promptChars": 127,
+        "deliveries": [
+          {
+            "request": 4,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 38,
+            "sourceDigest": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+            "chars": 127
+          },
+          {
+            "request": 5,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 38,
+            "sourceDigest": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+            "chars": 127
+          }
+        ],
+        "addedChars": 254,
+        "checkpointChars": 47,
+        "addedShareOfCheckpoint": 5.404255319148936
+      },
+      {
+        "cellId": "T12-p1-E0-r1",
+        "arm": "E0",
+        "label": "task",
+        "promptChars": 87,
+        "deliveries": [
+          {
+            "request": 2,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 38,
+            "sourceDigest": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+            "chars": 87
+          },
+          {
+            "request": 3,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 38,
+            "sourceDigest": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+            "chars": 87
+          }
+        ],
+        "addedChars": 174,
+        "checkpointChars": 47,
+        "addedShareOfCheckpoint": 3.702127659574468
+      },
+      {
+        "cellId": "T13-p1-E0-r1",
+        "arm": "E0",
+        "label": "task",
+        "promptChars": 93,
+        "deliveries": [
+          {
+            "request": 2,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 35,
+            "sourceDigest": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+            "chars": 93
+          },
+          {
+            "request": 3,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 35,
+            "sourceDigest": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+            "chars": 93
+          }
+        ],
+        "addedChars": 186,
+        "checkpointChars": 47,
+        "addedShareOfCheckpoint": 3.9574468085106385
+      },
+      {
+        "cellId": "T15-p1-E0-r1",
+        "arm": "E0",
+        "label": "task",
+        "promptChars": 81,
+        "deliveries": [
+          {
+            "request": 3,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 30,
+            "sourceDigest": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+            "chars": 81
+          },
+          {
+            "request": 4,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 30,
+            "sourceDigest": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+            "chars": 81
+          }
+        ],
+        "addedChars": 162,
+        "checkpointChars": 47,
+        "addedShareOfCheckpoint": 3.4468085106382977
+      },
+      {
+        "cellId": "T15-p1-E1-r1",
+        "arm": "E1",
+        "label": "task",
+        "promptChars": 81,
+        "deliveries": [
+          {
+            "request": 7,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 30,
+            "sourceDigest": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+            "chars": 81
+          },
+          {
+            "request": 8,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 30,
+            "sourceDigest": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+            "chars": 81
+          }
+        ],
+        "addedChars": 162,
+        "checkpointChars": 2023,
+        "addedShareOfCheckpoint": 0.0800790904597133
+      },
+      {
+        "cellId": "T16-p1-E0-r1",
+        "arm": "E0",
+        "label": "taskB",
+        "promptChars": 100,
+        "deliveries": [
+          {
+            "request": 12,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 155,
+            "sourceDigest": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+            "chars": 100
+          },
+          {
+            "request": 13,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 155,
+            "sourceDigest": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+            "chars": 100
+          }
+        ],
+        "addedChars": 200,
+        "checkpointChars": 558,
+        "addedShareOfCheckpoint": 0.35842293906810035
+      },
+      {
+        "cellId": "T16-p1-E1-r1",
+        "arm": "E1",
+        "label": "taskB",
+        "promptChars": 100,
+        "deliveries": [
+          {
+            "request": 20,
+            "status": "absent",
+            "kind": "replay-original-user-event",
+            "sourceSeq": 149,
+            "sourceDigest": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+            "chars": 100
+          }
+        ],
+        "addedChars": 100,
+        "checkpointChars": 2897,
+        "addedShareOfCheckpoint": 0.03451846738004832
+      }
+    ],
+    "addedChars": 1238,
+    "promptChars": 669,
+    "digestBasis": "sha256 of the prompt text used for the simulation; the wired contract would use the original event content digest",
+    "note": "chars only; no token claim. The projection is bounded by maxRedeliveries=2."
+  },
+  "secondary": [
+    "H1b-recall-refolding",
+    "H2-evidence-scope",
+    "failure-projection-inflation"
+  ],
+  "whyNot": [
+    "One mechanism only: the task contract is the first precondition for using any retrieved evidence.",
+    "Re-folding and failure projection remain measured secondary findings, not additional candidates."
+  ],
+  "counterevidence": [
+    "T11-p1-E1 has no task-source loss and no recall, yet writes the wrong historical value; that is H2, not task delivery.",
+    "T16-p1-B0 has no task-source loss and still fails on the output schema and the fold count; task delivery alone is not sufficient.",
+    "Passing EF cells have no task-source loss, so the correlation is strong but not a counterfactual proof."
+  ],
+  "limits": [
+    "The candidate is a research contract, not a product change.",
+    "The simulation adds exact prompt chars to a request; it does not prove the model would act on them.",
+    "No live run was made; quality, cost and latency effects are unmeasured.",
+    "Deployment Hold remains; this is not a product candidate."
+  ]
+}

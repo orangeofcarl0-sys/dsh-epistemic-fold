@@ -1,0 +1,1070 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP4 working-set dynamics",
+  "generatedAt": "2026-11-11T15:44:21.951Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "method": {
+    "recall": "from evidence-lifecycle.json; repeated keys and shadowed payloads",
+    "task": "from task-continuity.json; exact-source loss and delivery-contract loss",
+    "failure": "Open section of the final checkpoint, joined to tool call and result text by callId",
+    "context": "character counts; provider tokens are reported only where the probe recorded them",
+    "progress": "tool calls between a recall result and the next compaction/start"
+  },
+  "totals": {
+    "cells": 18,
+    "repeatedRecallCount": 16,
+    "recallResultReFoldCount": 51,
+    "taskInstructionLostRequests": 45,
+    "deliveryContractLostRequests": 48,
+    "openFailureCount": 15,
+    "duplicateFailureSignatures": 6,
+    "cellsWithDuplicateFailures": 2,
+    "cellsWithOpenFailures": 3
+  },
+  "byArm": {
+    "B0": {
+      "cells": 6,
+      "correct": 5,
+      "repeatedRecallCount": 0,
+      "recallResultReFoldCount": 0,
+      "taskInstructionLostRequests": 0,
+      "deliveryContractLostRequests": 6,
+      "openFailureCount": 0,
+      "duplicateFailureSignatures": 0,
+      "projectionChars": 0,
+      "netChars": -89947
+    },
+    "E0": {
+      "cells": 6,
+      "correct": 1,
+      "repeatedRecallCount": 14,
+      "recallResultReFoldCount": 42,
+      "taskInstructionLostRequests": 31,
+      "deliveryContractLostRequests": 31,
+      "openFailureCount": 5,
+      "duplicateFailureSignatures": 2,
+      "projectionChars": 509,
+      "netChars": 826954
+    },
+    "E1": {
+      "cells": 6,
+      "correct": 3,
+      "repeatedRecallCount": 2,
+      "recallResultReFoldCount": 9,
+      "taskInstructionLostRequests": 14,
+      "deliveryContractLostRequests": 11,
+      "openFailureCount": 10,
+      "duplicateFailureSignatures": 4,
+      "projectionChars": 1036,
+      "netChars": 35166
+    }
+  },
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 3024,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 37179,
+        "checkpointCharsAdded": 3024,
+        "reclaimedChars": 73860,
+        "netChars": -33657,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 21599,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 8,
+        "evidenceInstances": 8,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 8,
+        "recallResultReFoldCount": 4,
+        "markerOnly": 4,
+        "visible": 2,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 4,
+        "firstLostRequest": 4,
+        "deliveryContractLostRequests": 4,
+        "firstContractLostRequest": 4,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 47,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 205976,
+        "toolResultChars": 240716,
+        "checkpointCharsAdded": 188,
+        "reclaimedChars": 237259,
+        "netChars": 209621,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 59863,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {
+        "none": 8
+      }
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "taskOutcome": "incorrect",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 1486,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 38538,
+        "checkpointCharsAdded": 1486,
+        "reclaimedChars": 73860,
+        "netChars": -33836,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18507,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 2090,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 36782,
+        "checkpointCharsAdded": 2090,
+        "reclaimedChars": 73568,
+        "netChars": -34696,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18431,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 11,
+        "evidenceInstances": 11,
+        "repeatedRecallCount": 2,
+        "uniqueEvidenceRecovered": 10,
+        "recallResultReFoldCount": 10,
+        "markerOnly": 6,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 6,
+        "firstLostRequest": 2,
+        "deliveryContractLostRequests": 6,
+        "firstContractLostRequest": 2,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 47,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 251079,
+        "toolResultChars": 286295,
+        "checkpointCharsAdded": 282,
+        "reclaimedChars": 360218,
+        "netChars": 177438,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 90749,
+        "probeReclaimTokens": 11792,
+        "probeCheckpointTokens": 20
+      },
+      "progressBeforeNextFold": {
+        "none": 11
+      }
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 1630,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 36782,
+        "checkpointCharsAdded": 1630,
+        "reclaimedChars": 73568,
+        "netChars": -35156,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18431,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 2944,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 27098,
+        "checkpointCharsAdded": 2944,
+        "reclaimedChars": 73738,
+        "netChars": -43696,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18492,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 11,
+        "evidenceInstances": 11,
+        "repeatedRecallCount": 2,
+        "uniqueEvidenceRecovered": 10,
+        "recallResultReFoldCount": 9,
+        "markerOnly": 9,
+        "visible": 1,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 6,
+        "firstLostRequest": 2,
+        "deliveryContractLostRequests": 6,
+        "firstContractLostRequest": 2,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 47,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 295994,
+        "toolResultChars": 321827,
+        "checkpointCharsAdded": 235,
+        "reclaimedChars": 366980,
+        "netChars": 251076,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 92335,
+        "probeReclaimTokens": 39824,
+        "probeCheckpointTokens": 20
+      },
+      "progressBeforeNextFold": {
+        "none": 11
+      }
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 1641,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 27670,
+        "checkpointCharsAdded": 1641,
+        "reclaimedChars": 73738,
+        "netChars": -44427,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18492,
+        "probeReclaimTokens": 18073,
+        "probeCheckpointTokens": 419
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 6,
+        "firstContractLostRequest": 1,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 2278,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 37331,
+        "checkpointCharsAdded": 9401,
+        "reclaimedChars": 80718,
+        "netChars": -33986,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 21472,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 1,
+        "evidenceInstances": 1,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 1,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 1,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 6,
+        "firstContractLostRequest": 0,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 47,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 1756,
+        "toolResultChars": 38753,
+        "checkpointCharsAdded": 47,
+        "reclaimedChars": 73595,
+        "netChars": -33039,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18455,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {
+        "write": 1
+      }
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 7,
+        "firstContractLostRequest": 1,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 1335,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 37974,
+        "checkpointCharsAdded": 1335,
+        "reclaimedChars": 73595,
+        "netChars": -34286,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 18455,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "taskOutcome": "correct",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 3304,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 110629,
+        "checkpointCharsAdded": 6852,
+        "reclaimedChars": 77184,
+        "netChars": 40297,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 21040,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 9,
+        "evidenceInstances": 9,
+        "repeatedRecallCount": 4,
+        "uniqueEvidenceRecovered": 7,
+        "recallResultReFoldCount": 8,
+        "markerOnly": 5,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 5,
+        "firstLostRequest": 3,
+        "deliveryContractLostRequests": 5,
+        "firstContractLostRequest": 3,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 47,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 203235,
+        "toolResultChars": 238157,
+        "checkpointCharsAdded": 235,
+        "reclaimedChars": 311962,
+        "netChars": 129665,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 78586,
+        "probeReclaimTokens": 19682,
+        "probeCheckpointTokens": 20
+      },
+      "progressBeforeNextFold": {
+        "none": 9
+      }
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 6,
+        "evidenceInstances": 6,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 6,
+        "recallResultReFoldCount": 5,
+        "markerOnly": 0,
+        "visible": 1,
+        "invisibleAfterFold": 5
+      },
+      "continuity": {
+        "instructionLostRequests": 3,
+        "firstLostRequest": 7,
+        "deliveryContractLostRequests": 3,
+        "firstContractLostRequest": 7,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 1,
+        "uniqueSignatures": 1,
+        "duplicateSignatures": 0,
+        "projectionChars": 105,
+        "checkpointChars": 2023,
+        "share": 0.05190311418685121,
+        "failures": [
+          {
+            "id": "failure:call_da6431f762fb49dfa9553d8d",
+            "callId": "call_da6431f762fb49dfa9553d8d",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          }
+        ]
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 128492,
+        "toolResultChars": 165202,
+        "checkpointCharsAdded": 6224,
+        "reclaimedChars": 190034,
+        "netChars": 109884,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 47989,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {
+        "none": 6
+      }
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 0,
+        "evidenceInstances": 0,
+        "repeatedRecallCount": 0,
+        "uniqueEvidenceRecovered": 0,
+        "recallResultReFoldCount": 0,
+        "markerOnly": 0,
+        "visible": 0,
+        "invisibleAfterFold": 0
+      },
+      "continuity": {
+        "instructionLostRequests": 0,
+        "firstLostRequest": null,
+        "deliveryContractLostRequests": 0,
+        "firstContractLostRequest": null,
+        "lostWithNoWrite": false
+      },
+      "failureProjection": {
+        "openFailureCount": 0,
+        "uniqueSignatures": 0,
+        "duplicateSignatures": 0,
+        "projectionChars": 0,
+        "checkpointChars": 2341,
+        "share": 0,
+        "failures": []
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 0,
+        "toolResultChars": 63078,
+        "checkpointCharsAdded": 2341,
+        "reclaimedChars": 49628,
+        "netChars": 15791,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 12547,
+        "probeReclaimTokens": null,
+        "probeCheckpointTokens": null
+      },
+      "progressBeforeNextFold": {}
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 16,
+        "evidenceInstances": 16,
+        "repeatedRecallCount": 6,
+        "uniqueEvidenceRecovered": 13,
+        "recallResultReFoldCount": 11,
+        "markerOnly": 0,
+        "visible": 3,
+        "invisibleAfterFold": 11
+      },
+      "continuity": {
+        "instructionLostRequests": 10,
+        "firstLostRequest": 6,
+        "deliveryContractLostRequests": 4,
+        "firstContractLostRequest": 12,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 5,
+        "uniqueSignatures": 3,
+        "duplicateSignatures": 2,
+        "projectionChars": 509,
+        "checkpointChars": 558,
+        "share": 0.9121863799283154,
+        "failures": [
+          {
+            "id": "failure:call_7e0fb81eb0c141f7ae27342b",
+            "callId": "call_7e0fb81eb0c141f7ae27342b",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_cadb9f8141344f3caead7037",
+            "callId": "call_cadb9f8141344f3caead7037",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-1.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-1.log:ENOENT"
+          },
+          {
+            "id": "failure:call_3eebc83515e141f784b973af",
+            "callId": "call_3eebc83515e141f784b973af",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_5fde39933ede4ab2a3faa69d",
+            "callId": "call_5fde39933ede4ab2a3faa69d",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-1.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-1.log:ENOENT"
+          },
+          {
+            "id": "failure:call_993d6a68537847a2a4291f25",
+            "callId": "call_993d6a68537847a2a4291f25",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-stage-2.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-stage-2.log:ENOENT"
+          }
+        ]
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 126010,
+        "toolResultChars": 175923,
+        "checkpointCharsAdded": 2486,
+        "reclaimedChars": 212226,
+        "netChars": 92193,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 54246,
+        "probeReclaimTokens": 6643,
+        "probeCheckpointTokens": 148
+      },
+      "progressBeforeNextFold": {
+        "none": 16
+      }
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "taskOutcome": "incomplete",
+      "recall": {
+        "calls": 5,
+        "evidenceInstances": 5,
+        "repeatedRecallCount": 2,
+        "uniqueEvidenceRecovered": 4,
+        "recallResultReFoldCount": 4,
+        "markerOnly": 0,
+        "visible": 1,
+        "invisibleAfterFold": 4
+      },
+      "continuity": {
+        "instructionLostRequests": 11,
+        "firstLostRequest": 6,
+        "deliveryContractLostRequests": 1,
+        "firstContractLostRequest": 20,
+        "lostWithNoWrite": true
+      },
+      "failureProjection": {
+        "openFailureCount": 9,
+        "uniqueSignatures": 5,
+        "duplicateSignatures": 4,
+        "projectionChars": 931,
+        "checkpointChars": 2897,
+        "share": 0.3213669313082499,
+        "failures": [
+          {
+            "id": "failure:call_15fee139ea004d94ae051dae",
+            "callId": "call_15fee139ea004d94ae051dae",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_f9d9b36196c847dc82608c76",
+            "callId": "call_f9d9b36196c847dc82608c76",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_f604309623854e8db350efdb",
+            "callId": "call_f604309623854e8db350efdb",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_291435d5acad4865a6659fa4",
+            "callId": "call_291435d5acad4865a6659fa4",
+            "state": "open",
+            "tool": null,
+            "path": null,
+            "errorClass": "unknown",
+            "signature": "unknown:unknown:unknown"
+          },
+          {
+            "id": "failure:call_1955b1f4b9594718bbb7d615",
+            "callId": "call_1955b1f4b9594718bbb7d615",
+            "state": "open",
+            "tool": null,
+            "path": null,
+            "errorClass": "unknown",
+            "signature": "unknown:unknown:unknown"
+          },
+          {
+            "id": "failure:call_4ac3afdb6c774659bc7fa332",
+            "callId": "call_4ac3afdb6c774659bc7fa332",
+            "state": "open",
+            "tool": "list_dir",
+            "path": "logs",
+            "errorClass": "ENOENT",
+            "signature": "list_dir:logs:ENOENT"
+          },
+          {
+            "id": "failure:call_00_ly0bpxl7ta2duao7enfso6iz",
+            "callId": "call_00_ly0bpxl7ta2duao7enfso6iz",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-1.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-1.log:ENOENT"
+          },
+          {
+            "id": "failure:call_00_m137cdnqobnhqg9ky8ahmxdr",
+            "callId": "call_00_m137cdnqobnhqg9ky8ahmxdr",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-stage-1.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-stage-1.log:ENOENT"
+          },
+          {
+            "id": "failure:call_01_po60kn1ewaf4cpi8p4tmym3u",
+            "callId": "call_01_po60kn1ewaf4cpi8p4tmym3u",
+            "state": "open",
+            "tool": "read_file",
+            "path": "logs/deploy-stage-2.log",
+            "errorClass": "ENOENT",
+            "signature": "read_file:logs/deploy-stage-2.log:ENOENT"
+          }
+        ]
+      },
+      "context": {
+        "unit": "chars",
+        "recallResultChars": 96377,
+        "toolResultChars": 147928,
+        "checkpointCharsAdded": 11546,
+        "reclaimedChars": 182864,
+        "netChars": 72987,
+        "note": "character-level approximation for R3; use report.contextTrace token snapshots for a future live run"
+      },
+      "compress": {
+        "grossShadowedTokens": 46710,
+        "probeReclaimTokens": 6378,
+        "probeCheckpointTokens": 733
+      },
+      "progressBeforeNextFold": {
+        "none": 5
+      }
+    }
+  ],
+  "limits": [
+    "The final checkpoint is the only checkpoint text stored verbatim in the report; earlier folds are represented by their digests.",
+    "A failure signature is inferred from the tool name, the argument path and the error class; an unjoinable anchor is unknown.",
+    "Chars are not provider tokens; the R3 traces have no per-step TokenMeter snapshot.",
+    "No failure was retired and no projection was changed: this is measurement only."
+  ]
+}
