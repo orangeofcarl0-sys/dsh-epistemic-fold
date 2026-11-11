@@ -1,0 +1,2999 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP2 task delivery timeline",
+  "generatedAt": "2026-11-11T15:44:21.713Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T09:51:53.864Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T09:52:00.173Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T09:52:11.780Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T09:52:32.305Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T09:53:11.642Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 9,
+          "at": "2026-11-11T09:53:26.786Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 11,
+          "at": "2026-11-11T09:53:48.633Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T09:53:56.155Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T09:54:05.245Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T09:54:16.633Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T09:54:30.021Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T09:54:39.941Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+            "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T09:54:42.781Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+            "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T09:55:30.624Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+            "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+            "8c461032-3032-4c10-be26-d83eae9737cc"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T09:55:46.967Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+            "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+            "8c461032-3032-4c10-be26-d83eae9737cc",
+            "0563e1ed-11c8-49fd-96df-d787cfde55d6"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "result.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T09:56:21.064Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T09:56:25.265Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T09:56:27.743Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T09:56:36.836Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T09:56:48.840Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T09:57:41.961Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T09:57:43.191Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        },
+        {
+          "request": 8,
+          "at": "2026-11-11T09:57:51.733Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "result.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "0de751f9-f054-46f2-bbff-1b9e5ec043b7"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T09:58:17.051Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T09:58:31.118Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T09:58:37.913Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T09:58:42.446Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T09:58:51.359Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T09:59:07.449Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T09:59:16.513Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T09:59:32.185Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T09:59:37.238Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "71033377-6a82-4ac1-a2de-bd837af390ad"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T09:59:39.495Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "71033377-6a82-4ac1-a2de-bd837af390ad",
+            "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:00:07.739Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "71033377-6a82-4ac1-a2de-bd837af390ad",
+            "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:00:10.989Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "71033377-6a82-4ac1-a2de-bd837af390ad",
+            "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+            "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:00:19.663Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+            "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "71033377-6a82-4ac1-a2de-bd837af390ad",
+            "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+            "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "config.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:00:46.794Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "5d257eff-4203-40a5-bee5-7f7165cfca3d"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:00:49.945Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "5d257eff-4203-40a5-bee5-7f7165cfca3d"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:00:54.545Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "5d257eff-4203-40a5-bee5-7f7165cfca3d"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:00:57.077Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "5d257eff-4203-40a5-bee5-7f7165cfca3d"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:01:07.285Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "config.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "5d257eff-4203-40a5-bee5-7f7165cfca3d"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:01:19.329Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:01:20.779Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T10:01:23.085Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T10:01:26.742Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:01:44.144Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:01:47.510Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:01:50.073Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+            "6517784b-fe66-4596-92a0-c077fbb08f1c"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:01:55.263Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+            "6517784b-fe66-4596-92a0-c077fbb08f1c"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:02:06.399Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+            "6517784b-fe66-4596-92a0-c077fbb08f1c"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:02:24.778Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "72140c72-89a4-49b6-a261-e9f12aad908f",
+            "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+            "6517784b-fe66-4596-92a0-c077fbb08f1c",
+            "c5fb7e13-99ed-4ff4-870e-69134fed2ba0"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "build.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:02:41.983Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "45432c14-fdf8-4c79-9606-adf1c2db7cc7"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:02:49.872Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "45432c14-fdf8-4c79-9606-adf1c2db7cc7"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:02:56.851Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "45432c14-fdf8-4c79-9606-adf1c2db7cc7"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:03:04.269Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "45432c14-fdf8-4c79-9606-adf1c2db7cc7"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:03:11.739Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "build.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "45432c14-fdf8-4c79-9606-adf1c2db7cc7"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:03:45.941Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:03:51.573Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:04:02.202Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:04:49.381Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null,
+            null
+          ]
+        },
+        {
+          "request": 9,
+          "at": "2026-11-11T10:05:12.772Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "request": 11,
+          "at": "2026-11-11T10:05:29.299Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T10:05:39.376Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T10:05:46.958Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:05:58.921Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:06:01.597Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:06:08.511Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:06:22.786Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "src/limit.js"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:06:49.580Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:07:01.307Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:07:12.982Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:07:22.305Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:07:24.944Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:07:27.194Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:07:35.784Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "src/limit.js",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "b59974aa-96d4-42ba-98d0-8682a0e2d0d2"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:08:14.135Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": []
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:09:22.218Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:09:45.445Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 8,
+          "at": "2026-11-11T10:10:09.960Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 10,
+          "at": "2026-11-11T10:10:31.829Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 12,
+          "at": "2026-11-11T10:10:56.632Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T10:11:03.291Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T10:11:08.738Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:11:11.213Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:11:17.920Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+            "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:11:27.887Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+            "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:11:30.212Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+            "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+            "aa9c0232-a780-4c7a-922b-8cce96d07e46"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:11:33.244Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+            "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+            "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+            "d8b09492-afe0-436f-9812-d5ac9eef19dd"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:11:35.417Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+            "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+            "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+            "d8b09492-afe0-436f-9812-d5ac9eef19dd"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "labels": [
+        "task"
+      ],
+      "requiredArtifacts": [
+        "effective.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:11:48.160Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:12:02.563Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:12:24.970Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:12:36.499Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:12:48.188Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:13:13.098Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510",
+            "b61f2724-e077-4af0-81dc-6205f039f0bd"
+          ]
+        },
+        {
+          "request": 8,
+          "at": "2026-11-11T10:13:22.730Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510",
+            "b61f2724-e077-4af0-81dc-6205f039f0bd"
+          ]
+        },
+        {
+          "request": 10,
+          "at": "2026-11-11T10:13:34.595Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "effective.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "2089546a-1b0f-4714-8c83-8c00d1929510",
+            "b61f2724-e077-4af0-81dc-6205f039f0bd",
+            "4a3ce02f-b8e4-4f37-994a-39076ec01cac"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "labels": [
+        "task",
+        "taskB"
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:13:49.166Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:14:00.717Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:14:11.829Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:14:14.052Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:14:23.271Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:14:31.718Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:14:40.220Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 9,
+          "at": "2026-11-11T10:15:04.483Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 11,
+          "at": "2026-11-11T10:15:30.706Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 13,
+          "at": "2026-11-11T10:15:51.971Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        },
+        {
+          "request": 15,
+          "at": "2026-11-11T10:16:20.747Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "labels": [
+        "task",
+        "taskB"
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "timeline": [
+        {
+          "request": 0,
+          "at": "2026-11-11T10:16:47.883Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54"
+          ]
+        },
+        {
+          "request": 1,
+          "at": "2026-11-11T10:16:56.762Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:17:08.143Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:17:16.370Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:17:26.237Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8"
+          ]
+        },
+        {
+          "request": 5,
+          "at": "2026-11-11T10:17:35.871Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:17:43.973Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:17:51.346Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772"
+          ]
+        },
+        {
+          "request": 8,
+          "at": "2026-11-11T10:17:58.928Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0"
+          ]
+        },
+        {
+          "request": 9,
+          "at": "2026-11-11T10:18:05.494Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0"
+          ]
+        },
+        {
+          "request": 10,
+          "at": "2026-11-11T10:18:15.634Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0"
+          ]
+        },
+        {
+          "request": 11,
+          "at": "2026-11-11T10:18:28.869Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0"
+          ]
+        },
+        {
+          "request": 12,
+          "at": "2026-11-11T10:18:35.910Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "7e4c580d-2f11-464b-87e9-97afc329004f"
+          ]
+        },
+        {
+          "request": 13,
+          "at": "2026-11-11T10:18:42.437Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "7e4c580d-2f11-464b-87e9-97afc329004f",
+            "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7"
+          ]
+        },
+        {
+          "request": 14,
+          "at": "2026-11-11T10:19:30.059Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "7e4c580d-2f11-464b-87e9-97afc329004f",
+            "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7"
+          ]
+        },
+        {
+          "request": 15,
+          "at": "2026-11-11T10:19:32.710Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "71e39776-8dec-4af3-99bd-873fc641ef54",
+            "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+            "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "7e4c580d-2f11-464b-87e9-97afc329004f",
+            "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+            "34f32f52-84e4-40be-ab72-c89cfc163e57"
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "labels": [
+        "task",
+        "taskB"
+      ],
+      "requiredArtifacts": [
+        "release.json"
+      ],
+      "timeline": [
+        {
+          "request": 1,
+          "at": "2026-11-11T10:19:59.200Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d"
+          ]
+        },
+        {
+          "request": 2,
+          "at": "2026-11-11T10:20:06.632Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d"
+          ]
+        },
+        {
+          "request": 3,
+          "at": "2026-11-11T10:20:08.418Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d"
+          ]
+        },
+        {
+          "request": 4,
+          "at": "2026-11-11T10:20:10.804Z",
+          "labels": {
+            "task": {
+              "status": "exact"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d"
+          ]
+        },
+        {
+          "request": 6,
+          "at": "2026-11-11T10:20:42.083Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0"
+          ]
+        },
+        {
+          "request": 7,
+          "at": "2026-11-11T10:20:53.196Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0"
+          ]
+        },
+        {
+          "request": 9,
+          "at": "2026-11-11T10:21:26.208Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47"
+          ]
+        },
+        {
+          "request": 10,
+          "at": "2026-11-11T10:21:32.225Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47"
+          ]
+        },
+        {
+          "request": 12,
+          "at": "2026-11-11T10:21:54.767Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9"
+          ]
+        },
+        {
+          "request": 13,
+          "at": "2026-11-11T10:22:02.335Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9"
+          ]
+        },
+        {
+          "request": 14,
+          "at": "2026-11-11T10:22:13.731Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9"
+          ]
+        },
+        {
+          "request": 15,
+          "at": "2026-11-11T10:22:21.638Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9"
+          ]
+        },
+        {
+          "request": 17,
+          "at": "2026-11-11T10:22:38.239Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+            "04f99441-5d96-4801-96a6-f00ab9b08312"
+          ]
+        },
+        {
+          "request": 18,
+          "at": "2026-11-11T10:22:41.772Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "exact"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": true
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+            "04f99441-5d96-4801-96a6-f00ab9b08312"
+          ]
+        },
+        {
+          "request": 20,
+          "at": "2026-11-11T10:23:06.429Z",
+          "labels": {
+            "task": {
+              "status": "absent"
+            },
+            "taskB": {
+              "status": "absent"
+            }
+          },
+          "requiredArtifacts": [
+            {
+              "path": "release.json",
+              "present": false
+            }
+          ],
+          "foldDelivered": [
+            "a19ebf0d-4418-47b6-b10c-0b283684207d",
+            "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+            "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+            "04f99441-5d96-4801-96a6-f00ab9b08312",
+            "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec"
+          ]
+        }
+      ]
+    }
+  ]
+}

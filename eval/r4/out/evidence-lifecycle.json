@@ -1,0 +1,5111 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP2 evidence lifecycle",
+  "generatedAt": "2026-11-11T15:44:21.713Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "method": {
+    "liveBoundary": "first user message carrying the task prompt; seed folds are marked phase=seed",
+    "identity": "resultSeq is the tool/result event seq; fold identity is the compaction/summary shadowedSeqs",
+    "visibility": "the first primary request carrying the fold checkpoint; exact toolCallId match means visible",
+    "equivalence": "a >=24-char exact substring of the payload in the checkpoint is inferred, never verified",
+    "unknown": "missing request, missing payload or missing fold is unknown, not a negative result"
+  },
+  "totals": {
+    "recallCalls": 67,
+    "evidenceInstances": 67,
+    "folded": 53,
+    "visible": 9,
+    "markerOnly": 24,
+    "equivalentInferred": 2,
+    "invisibleAfterFold": 20,
+    "noFollowingRequest": 12,
+    "unknown": 4,
+    "refolded": 51,
+    "repeated": 16,
+    "mislocalized": 5,
+    "nonUtilization": 8
+  },
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "liveStartSeq": 38,
+      "requests": 7,
+      "folds": [
+        {
+          "compactionId": "7f3f4b52-6767-4cb9-9ef1-f2bef8485f0e",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "checkpointChars": 3024,
+          "checkpointSha256": "1eef89073f5abde8cf08f48380b2970673584ff7649d4831c5644b53be9e4d3d",
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "487cdcb4-a165-45f3-a403-03199882dd5d",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 60,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 61,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "1a4c8e3d-9c01-48d5-a789-9bacd834a69e",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 67,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 68,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "eb1a512d-5c4f-44f4-b20d-d41dabc298da",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 74,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 75,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "0f508c76-4172-44f9-979e-a20aa17bbf25",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 81,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 82,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "liveStartSeq": 38,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "c6c2a994-e870-4015-ae3d-e603339c22f5",
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "893c4b4d4de8da0f2f2ea5469c860b269dbd98ddcaa411b31385398d0bd38438",
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "dcb7165f-31b5-4755-852a-3c0b3f16ba3a",
+          "checkpointId": "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 71,
+          "summarySeq": 72,
+          "replacementSeq": 73,
+          "endSeq": 74,
+          "shadowedSeqs": [
+            15,
+            17,
+            22,
+            25,
+            38,
+            40,
+            42,
+            44,
+            47,
+            49,
+            51,
+            53,
+            55,
+            58,
+            60,
+            62,
+            64
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "3c8dabe766fddd97894073ad7121d1dc16acd50b22f8b16eb81ef6b86c2c6186",
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+          "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 86,
+          "summarySeq": 87,
+          "replacementSeq": 88,
+          "endSeq": 89,
+          "shadowedSeqs": [
+            67,
+            69,
+            77,
+            79
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "6d24674db37ff95f6ec8d1191d6ea521f436c608c2181970c4ad43113976d9b5",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "e2cb9ca0-4a8e-430f-badc-c24981d3b54e",
+          "checkpointId": "0563e1ed-11c8-49fd-96df-d787cfde55d6",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 98,
+          "summarySeq": 99,
+          "replacementSeq": 100,
+          "endSeq": 101,
+          "shadowedSeqs": [
+            82,
+            84
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "69ab2dab720b54dc9318e40ee1e64b4f290441eb368bd5ef52f9f1700a3ea6a9",
+          "deliveredAtRequest": 7
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T11-p1-E0-r1:r64",
+          "key": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95#detail:0",
+          "tool": "context_recall",
+          "callSeq": 63,
+          "resultSeq": 64,
+          "callId": "call_e6abf45cbbc045e49dde123d",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "dcb7165f-31b5-4755-852a-3c0b3f16ba3a",
+            "checkpointId": "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+            "phase": "live",
+            "startSeq": 71
+          },
+          "deliveredAtRequest": 4,
+          "visibilityRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r69",
+          "key": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95#exact:2#6275ed34-2887-491b-840b-118749720f78:2",
+          "tool": "context_recall",
+          "callSeq": 68,
+          "resultSeq": 69,
+          "callId": "call_c72d59b0780d41fcb84dcc64",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "messageIds": [
+            "6275ed34-2887-491b-840b-118749720f78",
+            "4a0fcbe3-cc8b-4ac6-904e-6c0edf01a7f5"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+            "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+            "phase": "live",
+            "startSeq": 86
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r79",
+          "key": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95#exact:0#cdca0923-72ef-4c3f-a34b-9e3c95a34a77:2",
+          "tool": "context_recall",
+          "callSeq": 78,
+          "resultSeq": 79,
+          "callId": "call_00_q6qsxwusdnje8qoiga1afvzj",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "messageIds": [
+            "cdca0923-72ef-4c3f-a34b-9e3c95a34a77",
+            "00e1e954-fdb4-4470-a57b-409cc3336da8"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+            "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+            "phase": "live",
+            "startSeq": 86
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r84",
+          "key": "cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9#exact:0#9a9026fc-f911-4f2d-866c-d43ca5ee0c6a:17",
+          "tool": "context_recall",
+          "callSeq": 83,
+          "resultSeq": 84,
+          "callId": "call_a28dc6d0522643239dfdfd00",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "messageIds": [
+            "9a9026fc-f911-4f2d-866c-d43ca5ee0c6a",
+            "9b1128c2-19f5-4f44-afd7-aa2014d532e4",
+            "1fa9e615-1eb6-45eb-8abe-23303dd0b2b8",
+            "f2d8aad1-b6db-447e-9d9b-5f8527ebb9aa",
+            "8cc142a2-b189-49d6-a29d-15d5b7a3ba35",
+            "4a75fb29-b6b6-4ef2-b4c9-20f616411fae",
+            "53f40716-d611-4d32-ad1b-ec98c93e5606",
+            "65ef26e6-cb3f-4524-829f-b4bf0cf818bf",
+            "2febaba6-a768-4ffd-8e4c-ef598c31143b",
+            "77a63f71-6bd5-4b8a-92ec-c4b4345e8d37",
+            "c65d2618-7f06-4c98-a171-8b1c5bd5eb6b",
+            "47519e84-06c9-4067-999e-1815010f5ee8",
+            "23e6e109-d159-4eaf-9c8c-c3cee906ec67",
+            "f4e3c084-91fc-4551-b185-e78bc824fb36",
+            "c039cb46-ab33-4a16-90b6-e0cc70e935c2",
+            "86c2413c-37b1-48d7-a552-e0fdc0e0b371",
+            "e665dd24-3c1e-41f2-8b56-011a073190b8"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "e2cb9ca0-4a8e-430f-badc-c24981d3b54e",
+            "checkpointId": "0563e1ed-11c8-49fd-96df-d787cfde55d6",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r94",
+          "key": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95#exact:0#cdca0923-72ef-4c3f-a34b-9e3c95a34a77:4",
+          "tool": "context_recall",
+          "callSeq": 93,
+          "resultSeq": 94,
+          "callId": "call_cf933a0668014f0088716c3d",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95",
+          "messageIds": [
+            "cdca0923-72ef-4c3f-a34b-9e3c95a34a77",
+            "00e1e954-fdb4-4470-a57b-409cc3336da8",
+            "6275ed34-2887-491b-840b-118749720f78",
+            "4a0fcbe3-cc8b-4ac6-904e-6c0edf01a7f5"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 7,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r96",
+          "key": "cp:8c461032-3032-4c10-be26-d83eae9737cc#detail:0",
+          "tool": "context_recall",
+          "callSeq": 95,
+          "resultSeq": 96,
+          "callId": "call_7e25f6ebb8f445d38c20d3c6",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:8c461032-3032-4c10-be26-d83eae9737cc",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 7,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r106",
+          "key": "cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9#detail:0",
+          "tool": "context_recall",
+          "callSeq": 105,
+          "resultSeq": 106,
+          "callId": "call_b2151405bd3041a099da97a4",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": "detail",
+          "offset": null,
+          "query": null,
+          "ref": "cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": "Expected ':' after property name in JSON at position 1500 (line 58 column 16)",
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-mislocalization"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T11-p1-E0-r1:r108",
+          "key": "cp:0563e1ed-11c8-49fd-96df-d787cfde55d6#detail:0",
+          "tool": "context_recall",
+          "callSeq": 107,
+          "resultSeq": 108,
+          "callId": "call_a65fae6ad1954737bdae5ae3",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": "0563e1ed-11c8-49fd-96df-d787cfde55d6",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:0563e1ed-11c8-49fd-96df-d787cfde55d6",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "unknown"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T11-p1-E0-r1",
+          "arm": "E0",
+          "task": "T11-p1",
+          "evidenceId": "T11-p1-E0-r1:r64",
+          "resultSeq": 64,
+          "compactionId": "dcb7165f-31b5-4755-852a-3c0b3f16ba3a",
+          "checkpointId": "f152d0de-28ce-46ee-b3f7-8ee6887b9cd9",
+          "phase": "live",
+          "nextRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T11-p1-E0-r1",
+          "arm": "E0",
+          "task": "T11-p1",
+          "evidenceId": "T11-p1-E0-r1:r69",
+          "resultSeq": 69,
+          "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+          "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T11-p1-E0-r1",
+          "arm": "E0",
+          "task": "T11-p1",
+          "evidenceId": "T11-p1-E0-r1:r79",
+          "resultSeq": 79,
+          "compactionId": "40342863-abd6-4188-a13e-1cd2bbd3083b",
+          "checkpointId": "8c461032-3032-4c10-be26-d83eae9737cc",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T11-p1-E0-r1",
+          "arm": "E0",
+          "task": "T11-p1",
+          "evidenceId": "T11-p1-E0-r1:r84",
+          "resultSeq": 84,
+          "compactionId": "e2cb9ca0-4a8e-430f-badc-c24981d3b54e",
+          "checkpointId": "0563e1ed-11c8-49fd-96df-d787cfde55d6",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 8,
+        "evidenceInstances": 8,
+        "folded": 4,
+        "visible": 2,
+        "markerOnly": 4,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 2,
+        "unknown": 1,
+        "refolded": 4,
+        "repeated": 0,
+        "mislocalized": 1,
+        "nonUtilization": 2
+      }
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "liveStartSeq": 38,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "589dbba0-32e1-4964-8969-54b7a276eb55",
+          "checkpointId": "0de751f9-f054-46f2-bbff-1b9e5ec043b7",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            10,
+            12
+          ],
+          "checkpointChars": 1486,
+          "checkpointSha256": "1795c23bb04c344ae123abe95a883d71411ce69ca6172003a4d4a10f768fb659",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "liveStartSeq": 38,
+      "requests": 5,
+      "folds": [
+        {
+          "compactionId": "f6fb1140-dfcf-4a2d-8a93-57e0b499f8c8",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 2090,
+          "checkpointSha256": "416174a03373ccf4ce01c11a2d7a923dabe35f3c24bfcd9feb307441b5d56c84",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "liveStartSeq": 38,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "f7ee1df0-3ab5-4b14-9e84-3c8cdc0df26a",
+          "checkpointId": "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "102e06ec32dca37dc73b5256067897d19b34c9658a531557c104d710b3e7f7d5",
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "1e4f9922-23a0-4bda-bdb2-15ac55aef12f",
+          "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 55,
+          "summarySeq": 56,
+          "replacementSeq": 57,
+          "endSeq": 58,
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            22,
+            25,
+            38,
+            40,
+            42,
+            44,
+            46
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "6987a87c1aed61e957a9b5bd843cd3b66a96dca1080baf5050bc5bf1b96e4690",
+          "deliveredAtRequest": 2
+        },
+        {
+          "compactionId": "090a85ed-2bdf-4f72-a816-399112679591",
+          "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 65,
+          "summarySeq": 66,
+          "replacementSeq": 67,
+          "endSeq": 68,
+          "shadowedSeqs": [
+            49,
+            51,
+            53
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "56340edd1ea1cc4d2acccc65e80baa968c89971d29ba821f6ea3274d310ec05b",
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "9b94bed4-df13-4c5e-89da-d84a87ee0371",
+          "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 77,
+          "summarySeq": 78,
+          "replacementSeq": 79,
+          "endSeq": 80,
+          "shadowedSeqs": [
+            61,
+            63
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "dc44acf88e5129a5254836ad97f2584e65567f1912c3f8b309c68b2d25b8e18c",
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 96,
+          "summarySeq": 97,
+          "replacementSeq": 98,
+          "endSeq": 99,
+          "shadowedSeqs": [
+            71,
+            73,
+            75,
+            83,
+            85,
+            87
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "4b0d41834de8e5baf8dc24ba67d427803db16b5b7b196c4f67166771bace41f1",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 117,
+          "summarySeq": 118,
+          "replacementSeq": 119,
+          "endSeq": 120,
+          "shadowedSeqs": [
+            90,
+            92,
+            94,
+            102,
+            104,
+            106,
+            108
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "b2d85796033e6158396dd1a638a2188ed475cecf378a58023e3c506bda3192ea",
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T12-p1-E0-r1:r46",
+          "key": "search:max_attempts batch general config#no-hit",
+          "tool": "context_search",
+          "callSeq": 45,
+          "resultSeq": 46,
+          "callId": "call_fe252e4488504246b5e69017",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "max_attempts batch general config",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "1e4f9922-23a0-4bda-bdb2-15ac55aef12f",
+            "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+            "phase": "live",
+            "startSeq": 55
+          },
+          "deliveredAtRequest": 2,
+          "visibilityRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r53",
+          "key": "cp:7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a#exact:0#b000565e-1340-4c40-8700-789e69fd9da4:3",
+          "tool": "context_recall",
+          "callSeq": 52,
+          "resultSeq": 53,
+          "callId": "call_52d08f3efda64e19b7eb516a",
+          "requestIndex": 2,
+          "argsTruncated": false,
+          "checkpointId": "7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a",
+          "messageIds": [
+            "b000565e-1340-4c40-8700-789e69fd9da4",
+            "a3ec0de5-adab-4d35-9f8b-7d0afcacdc65",
+            "06d7d05b-0137-4ea3-9d20-acac4a99b9af"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "090a85ed-2bdf-4f72-a816-399112679591",
+            "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+            "phase": "live",
+            "startSeq": 65
+          },
+          "deliveredAtRequest": 3,
+          "visibilityRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r63",
+          "key": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58#exact:0#ac29ab46-c165-4945-b4fb-65c8a0f4fc52:10",
+          "tool": "context_recall",
+          "callSeq": 62,
+          "resultSeq": 63,
+          "callId": "chatcmpl-tool-9103698c8cdb0a12",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "messageIds": [
+            "ac29ab46-c165-4945-b4fb-65c8a0f4fc52",
+            "49363230-6e23-4f9d-8ab8-c0bb319e95be",
+            "e5def08f-39eb-4a47-b053-57df0e057e7f",
+            "e30e5e6a-7a65-4b68-934f-f5fc2ea71882",
+            "df564039-5679-47fb-b545-7bbf7f6ed6c6",
+            "5bef54e8-60e9-4254-80de-19836900d0b0",
+            "29a5f350-e2a7-4904-8fee-f0771eaa2602",
+            "e1cc3c73-8555-4439-ae67-262ac2e0a963",
+            "b4e01b40-6a51-451b-9e99-58d603970e03",
+            "ad921108-df99-4e1e-99c7-ba52ef8d38d5"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "9b94bed4-df13-4c5e-89da-d84a87ee0371",
+            "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+            "phase": "live",
+            "startSeq": 77
+          },
+          "deliveredAtRequest": 4,
+          "visibilityRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r75",
+          "key": "cp:71033377-6a82-4ac1-a2de-bd837af390ad#exact:0#40dc4c0e-96e4-493a-a290-7bdb846d06dc:3",
+          "tool": "context_recall",
+          "callSeq": 74,
+          "resultSeq": 75,
+          "callId": "call_01_44sqiopzlifgk5y4rdxy3qw6",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71033377-6a82-4ac1-a2de-bd837af390ad",
+          "messageIds": [
+            "40dc4c0e-96e4-493a-a290-7bdb846d06dc",
+            "32069971-48a5-4648-8d70-cc350424c3f3",
+            "c5031cc6-62bc-41f2-99b1-870874ff5f27"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+            "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+            "phase": "live",
+            "startSeq": 96
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r85",
+          "key": "search:batch retry attempts revision#0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426:1,71033377-6a82-4ac1-a2de-bd837af390ad:1,3e2ef829-a2fb-4731-b45e-723404c66d58:2,7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a:0",
+          "tool": "context_search",
+          "callSeq": 84,
+          "resultSeq": 85,
+          "callId": "call_0d4bfe4cca0941d08cea68f3",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "batch retry attempts revision",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+            "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+            "phase": "live",
+            "startSeq": 96
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r87",
+          "key": "cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426#summary:0",
+          "tool": "context_recall",
+          "callSeq": 86,
+          "resultSeq": 87,
+          "callId": "call_d2c4b660a44d40b38e709831",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "depth": "summary",
+          "offset": null,
+          "query": null,
+          "ref": "cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+            "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+            "phase": "live",
+            "startSeq": 96
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r92",
+          "key": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58#exact:0#ac29ab46-c165-4945-b4fb-65c8a0f4fc52:10",
+          "tool": "context_recall",
+          "callSeq": 91,
+          "resultSeq": 92,
+          "callId": "call_00_ju9k3HpZFrvZG2hOLICz3107",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "messageIds": [
+            "ac29ab46-c165-4945-b4fb-65c8a0f4fc52",
+            "49363230-6e23-4f9d-8ab8-c0bb319e95be",
+            "e5def08f-39eb-4a47-b053-57df0e057e7f",
+            "e30e5e6a-7a65-4b68-934f-f5fc2ea71882",
+            "df564039-5679-47fb-b545-7bbf7f6ed6c6",
+            "5bef54e8-60e9-4254-80de-19836900d0b0",
+            "29a5f350-e2a7-4904-8fee-f0771eaa2602",
+            "e1cc3c73-8555-4439-ae67-262ac2e0a963",
+            "b4e01b40-6a51-451b-9e99-58d603970e03",
+            "ad921108-df99-4e1e-99c7-ba52ef8d38d5"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+            "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+            "phase": "live",
+            "startSeq": 117
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r104",
+          "key": "cp:71033377-6a82-4ac1-a2de-bd837af390ad#detail:0",
+          "tool": "context_recall",
+          "callSeq": 103,
+          "resultSeq": 104,
+          "callId": "call_00_yq6kpbe6iaycrl1o9yma5iis",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71033377-6a82-4ac1-a2de-bd837af390ad",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+            "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+            "phase": "live",
+            "startSeq": 117
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r106",
+          "key": "cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426#detail:0",
+          "tool": "context_recall",
+          "callSeq": 105,
+          "resultSeq": 106,
+          "callId": "call_01_wzrh04ej5meuqor4l2m5oxa9",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+            "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+            "phase": "live",
+            "startSeq": 117
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r108",
+          "key": "cp:9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a#detail:0",
+          "tool": "context_recall",
+          "callSeq": 107,
+          "resultSeq": 108,
+          "callId": "call_02_wfo8t908l76rerd2euc656cy",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+            "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+            "phase": "live",
+            "startSeq": 117
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T12-p1-E0-r1:r115",
+          "key": "cp:71033377-6a82-4ac1-a2de-bd837af390ad#exact:1#none:0",
+          "tool": "context_recall",
+          "callSeq": 114,
+          "resultSeq": 115,
+          "callId": "call_b8426f5248fd47fcb30fc763",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": "exact",
+          "offset": 1,
+          "query": null,
+          "ref": "cp:71033377-6a82-4ac1-a2de-bd837af390ad",
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": "Unterminated string in JSON at position 1500 (line 29 column 562)",
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-mislocalization"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r46",
+          "resultSeq": 46,
+          "compactionId": "1e4f9922-23a0-4bda-bdb2-15ac55aef12f",
+          "checkpointId": "3e2ef829-a2fb-4731-b45e-723404c66d58",
+          "phase": "live",
+          "nextRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r53",
+          "resultSeq": 53,
+          "compactionId": "090a85ed-2bdf-4f72-a816-399112679591",
+          "checkpointId": "71033377-6a82-4ac1-a2de-bd837af390ad",
+          "phase": "live",
+          "nextRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r63",
+          "resultSeq": 63,
+          "compactionId": "9b94bed4-df13-4c5e-89da-d84a87ee0371",
+          "checkpointId": "0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426",
+          "phase": "live",
+          "nextRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r75",
+          "resultSeq": 75,
+          "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r85",
+          "resultSeq": 85,
+          "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r87",
+          "resultSeq": 87,
+          "compactionId": "d0b2bc72-c55f-43e5-b7e2-007cd5dfd190",
+          "checkpointId": "9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r92",
+          "resultSeq": 92,
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r104",
+          "resultSeq": 104,
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r106",
+          "resultSeq": 106,
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T12-p1-E0-r1",
+          "arm": "E0",
+          "task": "T12-p1",
+          "evidenceId": "T12-p1-E0-r1:r108",
+          "resultSeq": 108,
+          "compactionId": "806cba3b-e5d8-4dad-8141-9a0fae5203e5",
+          "checkpointId": "c3545693-e00b-4b30-8d10-45c36d0abee9",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 11,
+        "evidenceInstances": 11,
+        "folded": 10,
+        "visible": 0,
+        "markerOnly": 6,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 5,
+        "unknown": 0,
+        "refolded": 10,
+        "repeated": 2,
+        "mislocalized": 1,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "liveStartSeq": 38,
+      "requests": 5,
+      "folds": [
+        {
+          "compactionId": "6c736bc7-1062-469d-a453-dc4180285d33",
+          "checkpointId": "5d257eff-4203-40a5-bee5-7f7165cfca3d",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 1630,
+          "checkpointSha256": "04007c36172255a8c912a54e7a9da6e3061bdca3907f7c5982c44e9838d6cafd",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "liveStartSeq": 35,
+      "requests": 2,
+      "folds": [
+        {
+          "compactionId": "ecfadcaa-382a-47b8-a5d2-318cde373d8c",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 29,
+          "summarySeq": 30,
+          "replacementSeq": 31,
+          "endSeq": 32,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 2944,
+          "checkpointSha256": "9b4df6d8564f89d422fc19d10bf117ae0a7756a66c0fa08241f97fb71220c59f",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "liveStartSeq": 35,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "fe2b6d4c-25f8-4298-af4a-852a769073bd",
+          "checkpointId": "72140c72-89a4-49b6-a261-e9f12aad908f",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 29,
+          "summarySeq": 30,
+          "replacementSeq": 31,
+          "endSeq": 32,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "af524a8e615c0fa83f55daab34e7de035ad3e3a1bfb8b29f8a53c5928520d17b",
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 50,
+          "summarySeq": 51,
+          "replacementSeq": 52,
+          "endSeq": 53,
+          "shadowedSeqs": [
+            20,
+            22,
+            35,
+            37,
+            39,
+            41,
+            43
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "273017a2bd16150e9e957d1fb2eb5083c55b5b067ace122a89caec908a26d667",
+          "deliveredAtRequest": 2
+        },
+        {
+          "compactionId": "daa8b602-fd35-4caa-9b88-a1fa6b355ccd",
+          "checkpointId": "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 60,
+          "summarySeq": 61,
+          "replacementSeq": 62,
+          "endSeq": 63,
+          "shadowedSeqs": [
+            46,
+            48
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "1662f2538f01ee0c3af1dd7acccf04cde0ef6ef3e5528e65270c48ed8c7ca4fe",
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "29d1b9a8-1cf8-42b7-a9bd-ef1bf44e3642",
+          "checkpointId": "6517784b-fe66-4596-92a0-c077fbb08f1c",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 72,
+          "summarySeq": 73,
+          "replacementSeq": 74,
+          "endSeq": 75,
+          "shadowedSeqs": [
+            56,
+            58
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "ced1836c53d24d6dcf970ff4cf1f29e1be9ffb313d2fd6f1f60b4ec92a196a05",
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 98,
+          "summarySeq": 99,
+          "replacementSeq": 100,
+          "endSeq": 101,
+          "shadowedSeqs": [
+            66,
+            68,
+            70,
+            78,
+            80,
+            82,
+            85,
+            87,
+            89
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "1ebb8197ba1d298b62af3179a816ac444e05d2b32e37278cf878cb8763896d6a",
+          "deliveredAtRequest": 7
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T13-p1-E0-r1:r41",
+          "key": "search:manifest channel build#72140c72-89a4-49b6-a261-e9f12aad908f:0",
+          "tool": "context_search",
+          "callSeq": 40,
+          "resultSeq": 41,
+          "callId": "call_00_x2v08p8klcp9nqhzb21cxvn9",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "manifest channel build",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+            "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "phase": "live",
+            "startSeq": 50
+          },
+          "deliveredAtRequest": 2,
+          "visibilityRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r43",
+          "key": "search:build-manifest#72140c72-89a4-49b6-a261-e9f12aad908f:0",
+          "tool": "context_search",
+          "callSeq": 42,
+          "resultSeq": 43,
+          "callId": "call_01_5aw4f5j28yow4o6w5pwnkvdo",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "build-manifest",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+            "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+            "phase": "live",
+            "startSeq": 50
+          },
+          "deliveredAtRequest": 2,
+          "visibilityRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r48",
+          "key": "cp:72140c72-89a4-49b6-a261-e9f12aad908f#exact:0#14a126bb-8f4d-477e-8d38-da8a065ea592:3",
+          "tool": "context_recall",
+          "callSeq": 47,
+          "resultSeq": 48,
+          "callId": "call_ce868117a94b4c37ae2d3446",
+          "requestIndex": 2,
+          "argsTruncated": false,
+          "checkpointId": "72140c72-89a4-49b6-a261-e9f12aad908f",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:72140c72-89a4-49b6-a261-e9f12aad908f",
+          "messageIds": [
+            "14a126bb-8f4d-477e-8d38-da8a065ea592",
+            "87e68644-88f3-4de8-9382-602f5a6fdce1",
+            "53f73a2f-bcaf-4134-ae24-8ed38944e29b"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "daa8b602-fd35-4caa-9b88-a1fa6b355ccd",
+            "checkpointId": "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+            "phase": "live",
+            "startSeq": 60
+          },
+          "deliveredAtRequest": 3,
+          "visibilityRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r58",
+          "key": "cp:69ccde7b-3714-4a65-8771-f956e390fa61#exact:0#62c85b4a-03b8-4366-9cec-4cc0d544748f:3",
+          "tool": "context_recall",
+          "callSeq": 57,
+          "resultSeq": 58,
+          "callId": "call_00_o9owagcb6lllntbt95cjrtdq",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:69ccde7b-3714-4a65-8771-f956e390fa61",
+          "messageIds": [
+            "62c85b4a-03b8-4366-9cec-4cc0d544748f",
+            "19ae5a8b-05e4-4703-a654-44387b75e566",
+            "fc695552-c299-4532-b087-68e6ba9a54ee"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "29d1b9a8-1cf8-42b7-a9bd-ef1bf44e3642",
+            "checkpointId": "6517784b-fe66-4596-92a0-c077fbb08f1c",
+            "phase": "live",
+            "startSeq": 72
+          },
+          "deliveredAtRequest": 4,
+          "visibilityRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r68",
+          "key": "cp:1e8f46b1-52f1-449b-9c46-077b3c4f5b7c#exact:0#ebb8ca90-460a-4f6a-9075-f38e4a5058cc:2",
+          "tool": "context_recall",
+          "callSeq": 67,
+          "resultSeq": 68,
+          "callId": "call_00_svwdkyqur5b14akj46mfcovj",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+          "messageIds": [
+            "ebb8ca90-460a-4f6a-9075-f38e4a5058cc",
+            "08953fca-c1e5-4ca6-b856-cd35a7f15f0c"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+            "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r70",
+          "key": "cp:72140c72-89a4-49b6-a261-e9f12aad908f#exact:0#14a126bb-8f4d-477e-8d38-da8a065ea592:3",
+          "tool": "context_recall",
+          "callSeq": 69,
+          "resultSeq": 70,
+          "callId": "call_01_v5q2bjhsjaknf9k1d6xbitdb",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "72140c72-89a4-49b6-a261-e9f12aad908f",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:72140c72-89a4-49b6-a261-e9f12aad908f",
+          "messageIds": [
+            "14a126bb-8f4d-477e-8d38-da8a065ea592",
+            "87e68644-88f3-4de8-9382-602f5a6fdce1",
+            "53f73a2f-bcaf-4134-ae24-8ed38944e29b"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+            "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r80",
+          "key": "cp:69ccde7b-3714-4a65-8771-f956e390fa61#detail:0",
+          "tool": "context_recall",
+          "callSeq": 79,
+          "resultSeq": 80,
+          "callId": "call_00_q1pw0adff053hgzbs3hv4fhw",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:69ccde7b-3714-4a65-8771-f956e390fa61",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+            "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r82",
+          "key": "cp:6517784b-fe66-4596-92a0-c077fbb08f1c#detail:0",
+          "tool": "context_recall",
+          "callSeq": 81,
+          "resultSeq": 82,
+          "callId": "call_01_6tdzv1vmqkyddrtnavyan17z",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "6517784b-fe66-4596-92a0-c077fbb08f1c",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:6517784b-fe66-4596-92a0-c077fbb08f1c",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+            "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r87",
+          "key": "cp:69ccde7b-3714-4a65-8771-f956e390fa61#exact:2#fc695552-c299-4532-b087-68e6ba9a54ee:3",
+          "tool": "context_recall",
+          "callSeq": 86,
+          "resultSeq": 87,
+          "callId": "call_e9d1b9f7cb954dd7a9078058",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:69ccde7b-3714-4a65-8771-f956e390fa61",
+          "messageIds": [
+            "fc695552-c299-4532-b087-68e6ba9a54ee",
+            "549bb22a-9144-4687-84d2-570d179107e4",
+            "a3dc6a91-bcad-4505-91c4-b9563395d3ce"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+            "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r96",
+          "key": "cp:69ccde7b-3714-4a65-8771-f956e390fa61#exact:0#62c85b4a-03b8-4366-9cec-4cc0d544748f:2",
+          "tool": "context_recall",
+          "callSeq": 95,
+          "resultSeq": 96,
+          "callId": "call_b2f8fb60ada243c5bfac86d7",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:69ccde7b-3714-4a65-8771-f956e390fa61",
+          "messageIds": [
+            "62c85b4a-03b8-4366-9cec-4cc0d544748f",
+            "19ae5a8b-05e4-4703-a654-44387b75e566"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 7,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T13-p1-E0-r1:r106",
+          "key": "search:channel build published manifest#no-hit",
+          "tool": "context_search",
+          "callSeq": 105,
+          "resultSeq": 106,
+          "callId": "call_ccd77d5c4b5b4124a68f8855",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "channel build published manifest",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": "Unterminated string in JSON at position 1500 (line 31 column 188)",
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-mislocalization"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r41",
+          "resultSeq": 41,
+          "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "phase": "live",
+          "nextRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r43",
+          "resultSeq": 43,
+          "compactionId": "7e3f92ae-3271-4689-9255-77c4b539d2b6",
+          "checkpointId": "69ccde7b-3714-4a65-8771-f956e390fa61",
+          "phase": "live",
+          "nextRequest": 2,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r48",
+          "resultSeq": 48,
+          "compactionId": "daa8b602-fd35-4caa-9b88-a1fa6b355ccd",
+          "checkpointId": "1e8f46b1-52f1-449b-9c46-077b3c4f5b7c",
+          "phase": "live",
+          "nextRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r58",
+          "resultSeq": 58,
+          "compactionId": "29d1b9a8-1cf8-42b7-a9bd-ef1bf44e3642",
+          "checkpointId": "6517784b-fe66-4596-92a0-c077fbb08f1c",
+          "phase": "live",
+          "nextRequest": 4,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r68",
+          "resultSeq": 68,
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r70",
+          "resultSeq": 70,
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r80",
+          "resultSeq": 80,
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r82",
+          "resultSeq": 82,
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T13-p1-E0-r1",
+          "arm": "E0",
+          "task": "T13-p1",
+          "evidenceId": "T13-p1-E0-r1:r87",
+          "resultSeq": 87,
+          "compactionId": "5e0d04ed-3186-4ca1-9a39-69fb97d114f5",
+          "checkpointId": "c5fb7e13-99ed-4ff4-870e-69134fed2ba0",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 11,
+        "evidenceInstances": 11,
+        "folded": 9,
+        "visible": 1,
+        "markerOnly": 9,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 1,
+        "unknown": 0,
+        "refolded": 9,
+        "repeated": 2,
+        "mislocalized": 1,
+        "nonUtilization": 1
+      }
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "liveStartSeq": 35,
+      "requests": 5,
+      "folds": [
+        {
+          "compactionId": "9133cba1-8384-43c4-909c-2badef67de66",
+          "checkpointId": "45432c14-fdf8-4c79-9606-adf1c2db7cc7",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 29,
+          "summarySeq": 30,
+          "replacementSeq": 31,
+          "endSeq": 32,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 1641,
+          "checkpointSha256": "4d7497d89836b5c88d004da95e72e708fec56b0ed3c10859efd4f878617716da",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "liveStartSeq": 38,
+      "requests": 6,
+      "folds": [
+        {
+          "compactionId": "30f7cc56-04b2-4c9f-b5c7-79a4af6749e1",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 2498,
+          "checkpointSha256": "353e86d15606c6fc266360c643714c91dfe08aad06fbce8bac245cefa15765a8",
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "0169434b-582e-4f9e-ad6f-521e1a6bb95f",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 64,
+          "summarySeq": 65,
+          "replacementSeq": 66,
+          "endSeq": 67,
+          "shadowedSeqs": [
+            34
+          ],
+          "checkpointChars": 2333,
+          "checkpointSha256": "3d10474bd52b0ca832f5f504b2d305fcd9d02c8efc229e65813f8e0e5b28714e",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "e066263c-a773-4813-801b-94a989ffdb02",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 68,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 69,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "1e0710bb-7bec-4ff3-91c5-504fe5c4ff3c",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 76,
+          "summarySeq": 77,
+          "replacementSeq": 78,
+          "endSeq": 79,
+          "shadowedSeqs": [
+            66
+          ],
+          "checkpointChars": 2292,
+          "checkpointSha256": "6078c89eb95f303cab39f766c3cc6e08e9533091ad7b0f494fca3380b7af026a",
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "848f5031-f649-42a8-b5d7-eccdb54fde59",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 80,
+          "summarySeq": 81,
+          "replacementSeq": 82,
+          "endSeq": 83,
+          "shadowedSeqs": [
+            78
+          ],
+          "checkpointChars": 2278,
+          "checkpointSha256": "33bcdf8e3af0fe26441546093df2009e0c0aec8166fc263a449347ee69093113",
+          "deliveredAtRequest": 9
+        },
+        {
+          "compactionId": "353a5bc5-9fac-4643-b493-785788291bc9",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 90,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 91,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "liveStartSeq": 38,
+      "requests": 6,
+      "folds": [
+        {
+          "compactionId": "e3ff8cec-3dfd-4ec7-9925-4997b729bce6",
+          "checkpointId": "b3bc7806-9c17-4b75-8c8e-78c2e4c6617f",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "5fb0c06c699727efca0c199c3d519fef2914908ca2e49fdc82c7fe2869c7da14",
+          "deliveredAtRequest": 0
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T14-p1-E0-r1:r46",
+          "key": "search:capacity limit 4 8#b3bc7806-9c17-4b75-8c8e-78c2e4c6617f:0",
+          "tool": "context_search",
+          "callSeq": 45,
+          "resultSeq": 46,
+          "callId": "call_c7ca19a34ad64c079b883551",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "capacity limit 4 8",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 1,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "write",
+          "classes": [
+            "unknown"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [],
+      "summary": {
+        "recallCalls": 1,
+        "evidenceInstances": 1,
+        "folded": 0,
+        "visible": 1,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 1,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "liveStartSeq": 38,
+      "requests": 7,
+      "folds": [
+        {
+          "compactionId": "0c8ddeae-dbd1-4eb1-ad44-c183e3137da5",
+          "checkpointId": "b59974aa-96d4-42ba-98d0-8682a0e2d0d2",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 32,
+          "summarySeq": 33,
+          "replacementSeq": 34,
+          "endSeq": 35,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            17
+          ],
+          "checkpointChars": 1335,
+          "checkpointSha256": "45e8d7af4e0d9b993168c7434c5d80c560a9aece295ddcb77e9d542a8cc6b99e",
+          "deliveredAtRequest": 1
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "liveStartSeq": 28,
+      "requests": 6,
+      "folds": [
+        {
+          "compactionId": "7a79ef48-4c18-4e96-88a2-d3e7daeee5a8",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "seed",
+          "startSeq": 24,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 25,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "ba177c57-2793-495a-8d7e-7bcf895150e5",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 38,
+          "summarySeq": 39,
+          "replacementSeq": 40,
+          "endSeq": 41,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 3548,
+          "checkpointSha256": "df615c369d09961c363a1f8eac2fed1d2112c4c5a6d674ea21c9840c719d4f3c",
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "20148dad-5e5e-49b7-8dd5-d8e95e71f1d6",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 42,
+          "summarySeq": 43,
+          "replacementSeq": 44,
+          "endSeq": 45,
+          "shadowedSeqs": [
+            40
+          ],
+          "checkpointChars": 3304,
+          "checkpointSha256": "05fbabf6a45b0c3020a255a725a12f491b39f10e19381c762c7c549d94a2cc8f",
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "3fa9a7b7-0463-4fc7-8880-8b104528afa2",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 54,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 55,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "bbc552e9-947f-4517-8e45-d41bcec28538",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 61,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 62,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "80ecbe26-e909-4ccf-827c-11187be3549a",
+          "checkpointId": null,
+          "status": "refused",
+          "phase": "live",
+          "startSeq": 68,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 69,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "5217e8d9-1df9-480e-ab0b-198afc1f726e",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 75,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 76,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "liveStartSeq": 30,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "fce417bb-3656-4353-aa7f-431f170fb948",
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 24,
+          "summarySeq": 25,
+          "replacementSeq": 26,
+          "endSeq": 27,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "2825d4a36e81483ed131a4024938679b522ecf88079d61610141b9846fb2c9b2",
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+          "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 52,
+          "summarySeq": 53,
+          "replacementSeq": 54,
+          "endSeq": 55,
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            30,
+            32,
+            34,
+            36,
+            38,
+            41,
+            43,
+            45
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "28c208385f9584969cbaacc6d5df4cd72110b7e0fc440befb9d73dcf65bd9a89",
+          "deliveredAtRequest": 3
+        },
+        {
+          "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+          "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 67,
+          "summarySeq": 68,
+          "replacementSeq": 69,
+          "endSeq": 70,
+          "shadowedSeqs": [
+            48,
+            50,
+            58,
+            60
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "24c5b94e2c70ecf676bb083fd1df4fab8c82a4a0bebeaad5b0a5f12ca43ca9be",
+          "deliveredAtRequest": 5
+        },
+        {
+          "compactionId": "b6521eda-e3f5-4d3c-9e14-cd94c9f51814",
+          "checkpointId": "d8b09492-afe0-436f-9812-d5ac9eef19dd",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 79,
+          "summarySeq": 80,
+          "replacementSeq": 81,
+          "endSeq": 82,
+          "shadowedSeqs": [
+            63,
+            65
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "9e8fe1b8f88353d4271eb6269d92614bbbfe03fce2463a6f3898d872149c1689",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+          "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 98,
+          "summarySeq": 99,
+          "replacementSeq": 100,
+          "endSeq": 101,
+          "shadowedSeqs": [
+            73,
+            75,
+            77,
+            85,
+            87,
+            89
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "8350a559425befc1475f8730989d8c9f414c49db170945fad2a07e124a3fd4b0",
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T15-p1-E0-r1:r36",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#detail:0",
+          "tool": "context_recall",
+          "callSeq": 35,
+          "resultSeq": 36,
+          "callId": "call_e50f06f8588641d296cef98a",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+            "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+            "phase": "live",
+            "startSeq": 52
+          },
+          "deliveredAtRequest": 3,
+          "visibilityRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r43",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:0#b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a:2",
+          "tool": "context_recall",
+          "callSeq": 42,
+          "resultSeq": 43,
+          "callId": "call_00_sw2c6ych8hm16yedc047r5u8",
+          "requestIndex": 2,
+          "argsTruncated": false,
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [
+            "b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a",
+            "bf0a4cc1-0453-4f5e-abf8-2b08e37fd7c0"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+            "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+            "phase": "live",
+            "startSeq": 52
+          },
+          "deliveredAtRequest": 3,
+          "visibilityRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r50",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:2#ba8dd8c7-092a-4a95-b12a-9dfb106075ed:1",
+          "tool": "context_recall",
+          "callSeq": 49,
+          "resultSeq": 50,
+          "callId": "call_5e00fe39c82647f3883af844",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [
+            "ba8dd8c7-092a-4a95-b12a-9dfb106075ed"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+            "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+            "phase": "live",
+            "startSeq": 67
+          },
+          "deliveredAtRequest": 5,
+          "visibilityRequest": 5,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r60",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:0#b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a:2",
+          "tool": "context_recall",
+          "callSeq": 59,
+          "resultSeq": 60,
+          "callId": "call_1138833c52034e9ab2228171",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [
+            "b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a",
+            "bf0a4cc1-0453-4f5e-abf8-2b08e37fd7c0"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+            "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+            "phase": "live",
+            "startSeq": 67
+          },
+          "deliveredAtRequest": 5,
+          "visibilityRequest": 5,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r65",
+          "key": "cp:0b8d91ae-a4e5-43f1-99ff-795ddcd0a642#exact:0#4051bf81-bdc6-47ed-bc82-0c1caaf9818f:11",
+          "tool": "context_recall",
+          "callSeq": 64,
+          "resultSeq": 65,
+          "callId": "call_00_5k1mgm0h3vgzrl75ncr8dw83",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "messageIds": [
+            "4051bf81-bdc6-47ed-bc82-0c1caaf9818f",
+            "aa371d93-3303-43f3-8bff-edf366bf6108",
+            "79f78fdc-2750-44ae-9c05-c80d057c0bd3",
+            "57c0e690-e8ab-4522-ac8a-c941a5cb0bbf",
+            "11d231db-f9b5-4105-8634-dd514b443080",
+            "b2878f6d-ecc6-455f-a34f-55b4e502a928",
+            "fa347f99-7d73-4039-8515-5b984cda8ae4",
+            "1ef7dd6c-18c8-4fa3-8b63-aecd31ab99e2",
+            "09265f9f-caca-4b26-9c1d-303c7aeb38ce",
+            "e7d5fdd6-b78e-4baa-93e8-b74c11ffe2e4",
+            "fda68a13-1d8c-4a60-865c-ae2c8fa8ed33"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "b6521eda-e3f5-4d3c-9e14-cd94c9f51814",
+            "checkpointId": "d8b09492-afe0-436f-9812-d5ac9eef19dd",
+            "phase": "live",
+            "startSeq": 79
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r75",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:2#ba8dd8c7-092a-4a95-b12a-9dfb106075ed:1",
+          "tool": "context_recall",
+          "callSeq": 74,
+          "resultSeq": 75,
+          "callId": "call_00_euspnzowhdrzpi03kup2a6bq",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [
+            "ba8dd8c7-092a-4a95-b12a-9dfb106075ed"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+            "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r77",
+          "key": "cp:aa9c0232-a780-4c7a-922b-8cce96d07e46#detail:0",
+          "tool": "context_recall",
+          "callSeq": 76,
+          "resultSeq": 77,
+          "callId": "call_01_06bx0qikunhpx6c4gg7ieeh8",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+            "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r89",
+          "key": "search:task#no-hit",
+          "tool": "context_search",
+          "callSeq": 88,
+          "resultSeq": 89,
+          "callId": "call_01_sCBANMjhuzHDRpzaf2Pi0701",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "task",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+            "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+            "phase": "live",
+            "startSeq": 98
+          },
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E0-r1:r94",
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:0#none:0",
+          "tool": "context_recall",
+          "callSeq": 93,
+          "resultSeq": 94,
+          "callId": "call_de6686b0dcb34d96b06945bb",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850",
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": "Unterminated string in JSON at position 1500 (line 47 column 331)",
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-mislocalization"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r36",
+          "resultSeq": 36,
+          "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+          "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "phase": "live",
+          "nextRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r43",
+          "resultSeq": 43,
+          "compactionId": "89e69b2c-90af-4774-ab82-b141705e5da3",
+          "checkpointId": "0b8d91ae-a4e5-43f1-99ff-795ddcd0a642",
+          "phase": "live",
+          "nextRequest": 3,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r50",
+          "resultSeq": 50,
+          "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+          "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "phase": "live",
+          "nextRequest": 5,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r60",
+          "resultSeq": 60,
+          "compactionId": "aeb4f66d-601c-4c7b-b89f-f2c04569cc6c",
+          "checkpointId": "aa9c0232-a780-4c7a-922b-8cce96d07e46",
+          "phase": "live",
+          "nextRequest": 5,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r65",
+          "resultSeq": 65,
+          "compactionId": "b6521eda-e3f5-4d3c-9e14-cd94c9f51814",
+          "checkpointId": "d8b09492-afe0-436f-9812-d5ac9eef19dd",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "marker-only",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r75",
+          "resultSeq": 75,
+          "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+          "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r77",
+          "resultSeq": 77,
+          "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+          "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E0-r1",
+          "arm": "E0",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E0-r1:r89",
+          "resultSeq": 89,
+          "compactionId": "a75f6f16-52db-4af0-88bd-b9c2efbaf0e3",
+          "checkpointId": "5a211cb9-409e-482e-a028-858a3f9f1c97",
+          "phase": "live",
+          "nextRequest": null,
+          "visibility": "no-following-request",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 9,
+        "evidenceInstances": 9,
+        "folded": 8,
+        "visible": 0,
+        "markerOnly": 5,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 4,
+        "unknown": 0,
+        "refolded": 8,
+        "repeated": 4,
+        "mislocalized": 1,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "liveStartSeq": 30,
+      "requests": 8,
+      "folds": [
+        {
+          "compactionId": "2696b22a-b022-48bf-9f51-c004579811d9",
+          "checkpointId": "2089546a-1b0f-4714-8c83-8c00d1929510",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 24,
+          "summarySeq": 25,
+          "replacementSeq": 26,
+          "endSeq": 27,
+          "shadowedSeqs": [
+            4,
+            7,
+            9
+          ],
+          "checkpointChars": 1471,
+          "checkpointSha256": "4522988ee9116f59049b17c868cf6a9f2fd46ff8b9f9dc35ee92f86eae4dd258",
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 64,
+          "summarySeq": 65,
+          "replacementSeq": 66,
+          "endSeq": 67,
+          "shadowedSeqs": [
+            12,
+            14,
+            17,
+            30,
+            32,
+            34,
+            36,
+            38,
+            41,
+            43,
+            45,
+            48,
+            50,
+            52,
+            55,
+            57
+          ],
+          "checkpointChars": 2730,
+          "checkpointSha256": "50f2642e9eb6b7fc0a1aa4d208baab170786c6b50e6df381c7026cb5f7bcf332",
+          "deliveredAtRequest": 7
+        },
+        {
+          "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+          "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 79,
+          "summarySeq": 80,
+          "replacementSeq": 81,
+          "endSeq": 82,
+          "shadowedSeqs": [
+            60,
+            62,
+            70,
+            72
+          ],
+          "checkpointChars": 2023,
+          "checkpointSha256": "59e59955ad72655791b4634c97b5fcbd690ce6611aa7ea1f48d381a12712c2dc",
+          "deliveredAtRequest": 10
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T15-p1-E1-r1:r50",
+          "key": "search:effective.json concurrency#no-hit",
+          "tool": "context_search",
+          "callSeq": 49,
+          "resultSeq": 50,
+          "callId": "call_ae299c25a82248058cbe0954",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "effective.json concurrency",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+            "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+            "phase": "live",
+            "startSeq": 64
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E1-r1:r52",
+          "key": "search:logs/#2089546a-1b0f-4714-8c83-8c00d1929510:?",
+          "tool": "context_search",
+          "callSeq": 51,
+          "resultSeq": 52,
+          "callId": "call_ac6b12f6517a4df4a4b5d44e",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "logs/",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+            "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+            "phase": "live",
+            "startSeq": 64
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E1-r1:r57",
+          "key": "cp:2089546a-1b0f-4714-8c83-8c00d1929510#exact:3#none:0",
+          "tool": "context_recall",
+          "callSeq": 56,
+          "resultSeq": 57,
+          "callId": "call_d6a2252a9bb64985a6a57b4a",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "2089546a-1b0f-4714-8c83-8c00d1929510",
+          "depth": "exact",
+          "offset": 3,
+          "query": null,
+          "ref": "cp:2089546a-1b0f-4714-8c83-8c00d1929510",
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+            "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+            "phase": "live",
+            "startSeq": 64
+          },
+          "deliveredAtRequest": 7,
+          "visibilityRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-mislocalization",
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E1-r1:r62",
+          "key": "cp:2089546a-1b0f-4714-8c83-8c00d1929510#exact:2#2de919c9-d8a8-43bd-86d7-165d1cf0e769:1",
+          "tool": "context_recall",
+          "callSeq": 61,
+          "resultSeq": 62,
+          "callId": "call_d6346a3b466b4161a5c4656e",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "2089546a-1b0f-4714-8c83-8c00d1929510",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:2089546a-1b0f-4714-8c83-8c00d1929510",
+          "messageIds": [
+            "2de919c9-d8a8-43bd-86d7-165d1cf0e769"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+            "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+            "phase": "live",
+            "startSeq": 79
+          },
+          "deliveredAtRequest": 10,
+          "visibilityRequest": 10,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E1-r1:r72",
+          "key": "cp:2089546a-1b0f-4714-8c83-8c00d1929510#exact:0#debc393d-e7cb-4b92-b2ac-16d493fcd31f:2",
+          "tool": "context_recall",
+          "callSeq": 71,
+          "resultSeq": 72,
+          "callId": "call_0ba8a0096c6f4681a96fcc1c",
+          "requestIndex": 8,
+          "argsTruncated": false,
+          "checkpointId": "2089546a-1b0f-4714-8c83-8c00d1929510",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:2089546a-1b0f-4714-8c83-8c00d1929510",
+          "messageIds": [
+            "debc393d-e7cb-4b92-b2ac-16d493fcd31f",
+            "ca51cf7c-efa3-43af-a9bf-2b1aa908e9c4"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+            "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+            "phase": "live",
+            "startSeq": 79
+          },
+          "deliveredAtRequest": 10,
+          "visibilityRequest": 10,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T15-p1-E1-r1:r77",
+          "key": "cp:b61f2724-e077-4af0-81dc-6205f039f0bd#exact:0#ad761b8b-8538-4282-bd76-f74fc97a2353:16",
+          "tool": "context_recall",
+          "callSeq": 76,
+          "resultSeq": 77,
+          "callId": "call_00_sonbp1mr7mqxblaqdbbsth29",
+          "requestIndex": 10,
+          "argsTruncated": false,
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "messageIds": [
+            "ad761b8b-8538-4282-bd76-f74fc97a2353",
+            "d9c6816d-37a5-4df2-9acb-ecae3e5ae994",
+            "1e8a53bf-ff0d-4ccb-9651-e3e7e6940631",
+            "6743a6fc-cc16-4583-82ef-a0a6078b8136",
+            "a8ac9090-49b0-47ef-859a-e6b79b5c1764",
+            "29b8055d-dc6e-4d06-9597-2b9509bf17b8",
+            "ccfe2d76-ea3b-4703-84b7-d151dee558b6",
+            "6293a93b-2c56-4822-a034-029dbfcd55c6",
+            "f6103a88-170e-4a60-a9bb-d701299694ca",
+            "67e5c60a-655b-4e34-aa7e-54ea6573587a",
+            "4ad4c96a-2fc7-49f4-ad1b-993afc36264e",
+            "f8023599-dbfe-4cf9-86b9-b08e945ed4dc",
+            "b728e6a8-60a7-4f01-bd51-e40201903bb5",
+            "7a8dce24-7f95-4de5-90ff-0e684f79209d",
+            "77a8b339-5ea1-4f22-a559-1c643de22da4",
+            "35c5dcb4-a472-4e4a-bb15-ba9f6036078c"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 10,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T15-p1-E1-r1",
+          "arm": "E1",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E1-r1:r50",
+          "resultSeq": 50,
+          "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E1-r1",
+          "arm": "E1",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E1-r1:r52",
+          "resultSeq": 52,
+          "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E1-r1",
+          "arm": "E1",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E1-r1:r57",
+          "resultSeq": 57,
+          "compactionId": "e75f420b-5c1c-4e49-94cb-97e6eabf587b",
+          "checkpointId": "b61f2724-e077-4af0-81dc-6205f039f0bd",
+          "phase": "live",
+          "nextRequest": 7,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E1-r1",
+          "arm": "E1",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E1-r1:r62",
+          "resultSeq": 62,
+          "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+          "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+          "phase": "live",
+          "nextRequest": 10,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T15-p1-E1-r1",
+          "arm": "E1",
+          "task": "T15-p1",
+          "evidenceId": "T15-p1-E1-r1:r72",
+          "resultSeq": 72,
+          "compactionId": "c324d076-4c30-45b2-a5de-e78405edd396",
+          "checkpointId": "4a3ce02f-b8e4-4f37-994a-39076ec01cac",
+          "phase": "live",
+          "nextRequest": 10,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 6,
+        "evidenceInstances": 6,
+        "folded": 5,
+        "visible": 1,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 5,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 5,
+        "repeated": 0,
+        "mislocalized": 1,
+        "nonUtilization": 1
+      }
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "liveStartSeq": 55,
+      "requests": 11,
+      "folds": [
+        {
+          "compactionId": "a590fb24-9eee-4c33-8bba-ed624c5bdf04",
+          "checkpointId": null,
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 49,
+          "summarySeq": 50,
+          "replacementSeq": 51,
+          "endSeq": 52,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "checkpointChars": 2341,
+          "checkpointSha256": "65fb2808a5d57563856983750e648226ae5899bba741f756e5619365ae03a922",
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "c10d3968-df89-4d7f-b24b-641b1f86203a",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 119,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 120,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "ab1ded5c-0f61-43a4-8990-a3ffc34687bc",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 128,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 129,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "364a3aa7-f989-429b-b049-749965605bc7",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 135,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 136,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        },
+        {
+          "compactionId": "4041e06a-0fad-46bb-8b58-5c4b02f0687c",
+          "checkpointId": null,
+          "status": "aborted",
+          "phase": "live",
+          "startSeq": 146,
+          "summarySeq": null,
+          "replacementSeq": null,
+          "endSeq": 147,
+          "shadowedSeqs": [],
+          "checkpointChars": null,
+          "checkpointSha256": null,
+          "deliveredAtRequest": null
+        }
+      ],
+      "evidence": [],
+      "relations": [],
+      "summary": {
+        "recallCalls": 0,
+        "evidenceInstances": 0,
+        "folded": 0,
+        "visible": 0,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 0,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 0,
+        "repeated": 0,
+        "mislocalized": 0,
+        "nonUtilization": 0
+      }
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "liveStartSeq": 55,
+      "requests": 16,
+      "folds": [
+        {
+          "compactionId": "12064cf6-3ce8-4ed0-a363-3c1f6a50a371",
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 49,
+          "summarySeq": 50,
+          "replacementSeq": 51,
+          "endSeq": 52,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "checkpointChars": 47,
+          "checkpointSha256": "87be78df193db90a2139a602be2bc4820be21e234be86753efefb9b52917e066",
+          "deliveredAtRequest": 0
+        },
+        {
+          "compactionId": "29a0277f-495f-40cc-99e1-fba4d0129586",
+          "checkpointId": "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 86,
+          "summarySeq": 87,
+          "replacementSeq": 88,
+          "endSeq": 89,
+          "shadowedSeqs": [
+            30,
+            32,
+            35,
+            37
+          ],
+          "checkpointChars": 255,
+          "checkpointSha256": "455294f33a6d02e73292e663fc377f4ac58fa145cf60787d20ed00acdfd8454c",
+          "deliveredAtRequest": 4
+        },
+        {
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 103,
+          "summarySeq": 104,
+          "replacementSeq": 105,
+          "endSeq": 106,
+          "shadowedSeqs": [
+            42,
+            55,
+            57,
+            59,
+            61,
+            63,
+            66,
+            68,
+            70,
+            73,
+            75,
+            77,
+            80,
+            82,
+            84,
+            92,
+            94
+          ],
+          "checkpointChars": 255,
+          "checkpointSha256": "2678b7d19574134c9ce73aa74951ea85b1d82c8321e5570874ee1f19e8bfe65b",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 150,
+          "summarySeq": 151,
+          "replacementSeq": 152,
+          "endSeq": 153,
+          "shadowedSeqs": [
+            97,
+            99,
+            101,
+            109,
+            111,
+            113,
+            116,
+            118,
+            120,
+            126,
+            129,
+            131
+          ],
+          "checkpointChars": 255,
+          "checkpointSha256": "da6b840ba74ab86c9870ba154136fbef9cba3fe6fdeec877532b8fc6ad873d36",
+          "deliveredAtRequest": 8
+        },
+        {
+          "compactionId": "6ee8208a-bc78-4c42-b276-3b550aa47605",
+          "checkpointId": "7e4c580d-2f11-464b-87e9-97afc329004f",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 182,
+          "summarySeq": 183,
+          "replacementSeq": 184,
+          "endSeq": 185,
+          "shadowedSeqs": [
+            134,
+            136,
+            139,
+            141,
+            144,
+            155,
+            157,
+            159
+          ],
+          "checkpointChars": 558,
+          "checkpointSha256": "91c5c3ebaa2208d1afefecc50c7301676b6b897c4dee48800bd28fff7ead00c5",
+          "deliveredAtRequest": 12
+        },
+        {
+          "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+          "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 194,
+          "summarySeq": 195,
+          "replacementSeq": 196,
+          "endSeq": 197,
+          "shadowedSeqs": [
+            162,
+            164,
+            166,
+            169,
+            171,
+            173,
+            176,
+            178,
+            180
+          ],
+          "checkpointChars": 558,
+          "checkpointSha256": "5ed714592f21dc08b299a70a8952b977009b5acdad91bf41ee4797ab45c07f63",
+          "deliveredAtRequest": 13
+        },
+        {
+          "compactionId": "910e47d1-1a73-4b9e-8d5d-a7f70ce5f942",
+          "checkpointId": "34f32f52-84e4-40be-ab72-c89cfc163e57",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 213,
+          "summarySeq": 214,
+          "replacementSeq": 215,
+          "endSeq": 216,
+          "shadowedSeqs": [
+            188,
+            190,
+            192
+          ],
+          "checkpointChars": 558,
+          "checkpointSha256": "7b3357962b58227d60403dabc32296cf2c5c191137d957091f761bf2a25559bd",
+          "deliveredAtRequest": 15
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T16-p1-E0-r1:r63",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#summary:0",
+          "tool": "context_recall",
+          "callSeq": 62,
+          "resultSeq": 63,
+          "callId": "call_3f46cf572bc44e4f9bfe47aa",
+          "requestIndex": 1,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "summary",
+          "offset": null,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+            "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "phase": "live",
+            "startSeq": 103
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r75",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#detail:0",
+          "tool": "context_recall",
+          "callSeq": 74,
+          "resultSeq": 75,
+          "callId": "call_05c1ef0f00974f5292f1d300",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+            "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "phase": "live",
+            "startSeq": 103
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r77",
+          "key": "search:deploy-1.log release id checksum#71e39776-8dec-4af3-99bd-873fc641ef54:0",
+          "tool": "context_search",
+          "callSeq": 76,
+          "resultSeq": 77,
+          "callId": "call_5fdfdd88e5f04ebc842e6fb8",
+          "requestIndex": 3,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "deploy-1.log release id checksum",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+            "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "phase": "live",
+            "startSeq": 103
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r82",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:2#c7b8348a-c1bf-46eb-a1b3-558624229a15:1",
+          "tool": "context_recall",
+          "callSeq": 81,
+          "resultSeq": 82,
+          "callId": "call_9c26533571674b2b8925abcf",
+          "requestIndex": 4,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 2,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "c7b8348a-c1bf-46eb-a1b3-558624229a15"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+            "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "phase": "live",
+            "startSeq": 103
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r94",
+          "key": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8#detail:0",
+          "tool": "context_recall",
+          "callSeq": 93,
+          "resultSeq": 94,
+          "callId": "call_3f635804d52844ebb92e3ba3",
+          "requestIndex": 5,
+          "argsTruncated": false,
+          "checkpointId": "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "messageIds": [],
+          "summaryAvailable": true,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+            "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+            "phase": "live",
+            "startSeq": 103
+          },
+          "deliveredAtRequest": 6,
+          "visibilityRequest": 6,
+          "visibility": "equivalent-inferred",
+          "evidenceLevel": "inferred",
+          "progressAfter": "none",
+          "classes": [
+            "unknown",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r99",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:5#c6a2a160-9e4f-4067-8294-6caa8fe64ab7:1",
+          "tool": "context_recall",
+          "callSeq": 98,
+          "resultSeq": 99,
+          "callId": "call_905fcae6ac7148c48f4ba948",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 5,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "c6a2a160-9e4f-4067-8294-6caa8fe64ab7"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+            "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "phase": "live",
+            "startSeq": 150
+          },
+          "deliveredAtRequest": 8,
+          "visibilityRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r101",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:7#30cceaef-648d-4ad5-a181-b17cdec3e731:1",
+          "tool": "context_recall",
+          "callSeq": 100,
+          "resultSeq": 101,
+          "callId": "call_032aca4c2ee14eda95d21c36",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 7,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "30cceaef-648d-4ad5-a181-b17cdec3e731"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+            "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "phase": "live",
+            "startSeq": 150
+          },
+          "deliveredAtRequest": 8,
+          "visibilityRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r111",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#detail:0",
+          "tool": "context_recall",
+          "callSeq": 110,
+          "resultSeq": 111,
+          "callId": "call_416e9002428c4dcf9e7effc9",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [],
+          "summaryAvailable": false,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+            "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "phase": "live",
+            "startSeq": 150
+          },
+          "deliveredAtRequest": 8,
+          "visibilityRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r113",
+          "key": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8#detail:0",
+          "tool": "context_recall",
+          "callSeq": 112,
+          "resultSeq": 113,
+          "callId": "call_7dfd09e842cc41a99b06138e",
+          "requestIndex": 7,
+          "argsTruncated": false,
+          "checkpointId": "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "depth": "detail",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "messageIds": [],
+          "summaryAvailable": true,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+            "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "phase": "live",
+            "startSeq": 150
+          },
+          "deliveredAtRequest": 8,
+          "visibilityRequest": 8,
+          "visibility": "equivalent-inferred",
+          "evidenceLevel": "inferred",
+          "progressAfter": "none",
+          "classes": [
+            "unknown",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r118",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:0#fbf9a251-e080-480d-8081-8824e1ad3269:2",
+          "tool": "context_recall",
+          "callSeq": 117,
+          "resultSeq": 118,
+          "callId": "call_62ca93a0101f4914b73be706",
+          "requestIndex": null,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "fbf9a251-e080-480d-8081-8824e1ad3269",
+            "8be81e51-0dc3-46c5-aca1-11588ac7d44d"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+            "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+            "phase": "live",
+            "startSeq": 150
+          },
+          "deliveredAtRequest": 8,
+          "visibilityRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r166",
+          "key": "search:checksum release#74874d5b-a587-4dd6-8d98-00287d3630a0:1,00b67b88-0cba-4b61-94a1-1b1e42a27772:1,71e39776-8dec-4af3-99bd-873fc641ef54:0",
+          "tool": "context_search",
+          "callSeq": 165,
+          "resultSeq": 166,
+          "callId": "call_a4b23ba761f04e77901af616",
+          "requestIndex": 10,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "checksum release",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+            "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+            "phase": "live",
+            "startSeq": 194
+          },
+          "deliveredAtRequest": 13,
+          "visibilityRequest": 13,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r180",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:0#fbf9a251-e080-480d-8081-8824e1ad3269:4",
+          "tool": "context_recall",
+          "callSeq": 179,
+          "resultSeq": 180,
+          "callId": "call_1517bb6da42c42f6bd3e45ba",
+          "requestIndex": 12,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "fbf9a251-e080-480d-8081-8824e1ad3269",
+            "8be81e51-0dc3-46c5-aca1-11588ac7d44d",
+            "c7b8348a-c1bf-46eb-a1b3-558624229a15",
+            "24d9a166-e78d-4031-ae9e-8d504b96b74a"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+            "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+            "phase": "live",
+            "startSeq": 194
+          },
+          "deliveredAtRequest": 13,
+          "visibilityRequest": 13,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r192",
+          "key": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8#exact:0#80fcb949-171c-49e9-81d0-07b619dc2ce4:4",
+          "tool": "context_recall",
+          "callSeq": 191,
+          "resultSeq": 192,
+          "callId": "call_09208877e3164a07923101ae",
+          "requestIndex": 13,
+          "argsTruncated": false,
+          "checkpointId": "3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8",
+          "messageIds": [
+            "80fcb949-171c-49e9-81d0-07b619dc2ce4",
+            "454b30f4-0bf5-4f94-b6e7-20ac416fd245",
+            "3fb01126-e798-4cff-b89d-2dc5b316f614",
+            "7c2d4c0d-8b79-4f92-917d-75d5d565549b"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "910e47d1-1a73-4b9e-8d5d-a7f70ce5f942",
+            "checkpointId": "34f32f52-84e4-40be-ab72-c89cfc163e57",
+            "phase": "live",
+            "startSeq": 213
+          },
+          "deliveredAtRequest": 15,
+          "visibilityRequest": 15,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r204",
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:0#fbf9a251-e080-480d-8081-8824e1ad3269:4",
+          "tool": "context_recall",
+          "callSeq": 203,
+          "resultSeq": 204,
+          "callId": "call_ed34b560b64f4fee8c71091e",
+          "requestIndex": 14,
+          "argsTruncated": false,
+          "checkpointId": "71e39776-8dec-4af3-99bd-873fc641ef54",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:71e39776-8dec-4af3-99bd-873fc641ef54",
+          "messageIds": [
+            "fbf9a251-e080-480d-8081-8824e1ad3269",
+            "8be81e51-0dc3-46c5-aca1-11588ac7d44d",
+            "c7b8348a-c1bf-46eb-a1b3-558624229a15",
+            "24d9a166-e78d-4031-ae9e-8d504b96b74a"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 14,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r209",
+          "key": "search:[release] id= checksum=published#afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7:2,74874d5b-a587-4dd6-8d98-00287d3630a0:1,00b67b88-0cba-4b61-94a1-1b1e42a27772:0,71e39776-8dec-4af3-99bd-873fc641ef54:0,7e4c580d-2f11-464b-87e9-97afc329004f:4",
+          "tool": "context_search",
+          "callSeq": 208,
+          "resultSeq": 209,
+          "callId": "call_00_cz8ooApscgUNlb1dMJAO3553",
+          "requestIndex": 15,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "[release] id= checksum=published",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 15,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E0-r1:r211",
+          "key": "search:release.json#afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7:4,7e4c580d-2f11-464b-87e9-97afc329004f:4,00b67b88-0cba-4b61-94a1-1b1e42a27772:7",
+          "tool": "context_search",
+          "callSeq": 210,
+          "resultSeq": 211,
+          "callId": "call_01_JUPUXt2aTC8x759WqplD5274",
+          "requestIndex": 15,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "release.json",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 15,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization"
+          ],
+          "repeated": false
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r63",
+          "resultSeq": 63,
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r75",
+          "resultSeq": 75,
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r77",
+          "resultSeq": 77,
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r82",
+          "resultSeq": 82,
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r94",
+          "resultSeq": 94,
+          "compactionId": "50bfdfd3-839a-47a4-bac0-24d15cb0ba25",
+          "checkpointId": "00b67b88-0cba-4b61-94a1-1b1e42a27772",
+          "phase": "live",
+          "nextRequest": 6,
+          "visibility": "equivalent-inferred",
+          "evidenceLevel": "inferred"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r99",
+          "resultSeq": 99,
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "phase": "live",
+          "nextRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r101",
+          "resultSeq": 101,
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "phase": "live",
+          "nextRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r111",
+          "resultSeq": 111,
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "phase": "live",
+          "nextRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r113",
+          "resultSeq": 113,
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "phase": "live",
+          "nextRequest": 8,
+          "visibility": "equivalent-inferred",
+          "evidenceLevel": "inferred"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r118",
+          "resultSeq": 118,
+          "compactionId": "ea7a37cd-23eb-4170-83d6-e50539e58136",
+          "checkpointId": "74874d5b-a587-4dd6-8d98-00287d3630a0",
+          "phase": "live",
+          "nextRequest": 8,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r166",
+          "resultSeq": 166,
+          "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+          "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+          "phase": "live",
+          "nextRequest": 13,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r180",
+          "resultSeq": 180,
+          "compactionId": "ea0048bd-cce7-42f3-80e4-deaadbd126b5",
+          "checkpointId": "afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7",
+          "phase": "live",
+          "nextRequest": 13,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E0-r1",
+          "arm": "E0",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E0-r1:r192",
+          "resultSeq": 192,
+          "compactionId": "910e47d1-1a73-4b9e-8d5d-a7f70ce5f942",
+          "checkpointId": "34f32f52-84e4-40be-ab72-c89cfc163e57",
+          "phase": "live",
+          "nextRequest": 15,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 16,
+        "evidenceInstances": 16,
+        "folded": 13,
+        "visible": 3,
+        "markerOnly": 0,
+        "equivalentInferred": 2,
+        "invisibleAfterFold": 11,
+        "noFollowingRequest": 0,
+        "unknown": 2,
+        "refolded": 11,
+        "repeated": 6,
+        "mislocalized": 0,
+        "nonUtilization": 3
+      }
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "liveStartSeq": 55,
+      "requests": 15,
+      "folds": [
+        {
+          "compactionId": "a4089f4f-eab5-4607-b914-6c46203f8989",
+          "checkpointId": "a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "status": "committed",
+          "phase": "seed",
+          "startSeq": 49,
+          "summarySeq": 50,
+          "replacementSeq": 51,
+          "endSeq": 52,
+          "shadowedSeqs": [
+            4,
+            7,
+            9,
+            12,
+            15,
+            17,
+            20,
+            22,
+            25,
+            27
+          ],
+          "checkpointChars": 1649,
+          "checkpointSha256": "23bc0c3d2ddee93431ed537d4a2090c207ea1a5d0d7e21950df74589e6e1830e",
+          "deliveredAtRequest": 1
+        },
+        {
+          "compactionId": "cf97873f-0e3c-4df1-ae4f-df29a60539de",
+          "checkpointId": "87026a92-ca49-4d08-a0ba-0cbf3f03bec0",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 78,
+          "summarySeq": 79,
+          "replacementSeq": 80,
+          "endSeq": 81,
+          "shadowedSeqs": [
+            30,
+            32,
+            35,
+            37,
+            42,
+            55,
+            57,
+            59,
+            61,
+            64,
+            66,
+            69,
+            71
+          ],
+          "checkpointChars": 2021,
+          "checkpointSha256": "84841d0294387544088b77f77080b3c982d648f05cd713a817af48a581887497",
+          "deliveredAtRequest": 6
+        },
+        {
+          "compactionId": "5e340a72-1f81-4705-897c-fa3f291d8274",
+          "checkpointId": "6a888815-46ab-4f0a-a572-437ff562ec47",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 97,
+          "summarySeq": 98,
+          "replacementSeq": 99,
+          "endSeq": 100,
+          "shadowedSeqs": [
+            74,
+            76,
+            84,
+            86,
+            88
+          ],
+          "checkpointChars": 2055,
+          "checkpointSha256": "ca8893ba3063b7df81ef1f452375f50366611afb01bc142b93230c7b5fb66cd6",
+          "deliveredAtRequest": 9
+        },
+        {
+          "compactionId": "563ccd54-5d63-4cd0-a9ad-913b455b2d46",
+          "checkpointId": "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 144,
+          "summarySeq": 145,
+          "replacementSeq": 146,
+          "endSeq": 147,
+          "shadowedSeqs": [
+            91,
+            93,
+            95,
+            103,
+            105,
+            107,
+            110,
+            112,
+            114,
+            120,
+            123,
+            125
+          ],
+          "checkpointChars": 558,
+          "checkpointSha256": "ce7ac8cb6c5051b10247a4ca1715a70348ea4affdb9032077721974ad278b3e8",
+          "deliveredAtRequest": 12
+        },
+        {
+          "compactionId": "962deee6-07ae-4784-bc29-23a8885908d3",
+          "checkpointId": "04f99441-5d96-4801-96a6-f00ab9b08312",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 176,
+          "summarySeq": 177,
+          "replacementSeq": 178,
+          "endSeq": 179,
+          "shadowedSeqs": [
+            128,
+            130
+          ],
+          "checkpointChars": 2366,
+          "checkpointSha256": "a1961a2fa0b7c27fcea1748b9cf65cb3518997f2ac3801d69f737b5f549a307a",
+          "deliveredAtRequest": 17
+        },
+        {
+          "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+          "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+          "status": "committed",
+          "phase": "live",
+          "startSeq": 193,
+          "summarySeq": 194,
+          "replacementSeq": 195,
+          "endSeq": 196,
+          "shadowedSeqs": [
+            133,
+            135,
+            138,
+            149,
+            151,
+            153,
+            155,
+            158,
+            160,
+            162,
+            165,
+            167,
+            170,
+            172,
+            174,
+            182,
+            184,
+            186
+          ],
+          "checkpointChars": 2897,
+          "checkpointSha256": "7edd43046e17bb272e46bb6bd59b38ab0a464ae269bf454de68497214ab71969",
+          "deliveredAtRequest": 20
+        }
+      ],
+      "evidence": [
+        {
+          "evidenceId": "T16-p1-E1-r1:r76",
+          "key": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d#exact:0#391705c6-5d44-4058-b993-543855e7e2ef:6",
+          "tool": "context_recall",
+          "callSeq": 75,
+          "resultSeq": 76,
+          "callId": "call_00_dpjro8guq3c7jy4pce63yukp",
+          "requestIndex": 6,
+          "argsTruncated": false,
+          "checkpointId": "a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "messageIds": [
+            "391705c6-5d44-4058-b993-543855e7e2ef",
+            "8c937a9c-62d8-4fae-bb84-699841aa7715",
+            "31cafe9e-1ebe-4f33-84c2-e3ac89455c68",
+            "8058d2a8-96c2-491e-9df5-bd15ea927131",
+            "7ec066cf-7d33-43f2-95a6-0fdb05e70558",
+            "60a8b9ae-1967-4212-8c70-7676568c8700"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "5e340a72-1f81-4705-897c-fa3f291d8274",
+            "checkpointId": "6a888815-46ab-4f0a-a572-437ff562ec47",
+            "phase": "live",
+            "startSeq": 97
+          },
+          "deliveredAtRequest": 9,
+          "visibilityRequest": 9,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding",
+            "repeated-recall"
+          ],
+          "repeated": true
+        },
+        {
+          "evidenceId": "T16-p1-E1-r1:r95",
+          "key": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d#exact:6#75486478-6aa4-4a3f-8d41-c0d00a8beb7c:4",
+          "tool": "context_recall",
+          "callSeq": 94,
+          "resultSeq": 95,
+          "callId": "call_c417735004cf4fe6916383b3",
+          "requestIndex": 9,
+          "argsTruncated": false,
+          "checkpointId": "a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "depth": "exact",
+          "offset": 6,
+          "query": null,
+          "ref": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "messageIds": [
+            "75486478-6aa4-4a3f-8d41-c0d00a8beb7c",
+            "dc6840ab-5f89-4b04-a349-6bf49de7b891",
+            "ff310c76-b594-4c79-8281-adf5444c453f",
+            "59d2974a-fe0d-4b67-a775-04742d5f1f74"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "563ccd54-5d63-4cd0-a9ad-913b455b2d46",
+            "checkpointId": "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+            "phase": "live",
+            "startSeq": 144
+          },
+          "deliveredAtRequest": 12,
+          "visibilityRequest": 12,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E1-r1:r172",
+          "key": "search:deploy-stage#2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9:1,87026a92-ca49-4d08-a0ba-0cbf3f03bec0:1",
+          "tool": "context_search",
+          "callSeq": 171,
+          "resultSeq": 172,
+          "callId": "call_9a4cdcba6b6446d7944a194e",
+          "requestIndex": 17,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "deploy-stage",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+            "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+            "phase": "live",
+            "startSeq": 193
+          },
+          "deliveredAtRequest": 20,
+          "visibilityRequest": 20,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E1-r1:r174",
+          "key": "search:list_dir#2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9:3,6a888815-46ab-4f0a-a572-437ff562ec47:2,87026a92-ca49-4d08-a0ba-0cbf3f03bec0:7",
+          "tool": "context_search",
+          "callSeq": 173,
+          "resultSeq": 174,
+          "callId": "call_02b8e070b8764d07978e2107",
+          "requestIndex": 17,
+          "argsTruncated": false,
+          "checkpointId": null,
+          "depth": null,
+          "offset": null,
+          "query": "list_dir",
+          "ref": null,
+          "messageIds": [],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": {
+            "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+            "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+            "phase": "live",
+            "startSeq": 193
+          },
+          "deliveredAtRequest": 20,
+          "visibilityRequest": 20,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown",
+          "progressAfter": "none",
+          "classes": [
+            "recall-refolding"
+          ],
+          "repeated": false
+        },
+        {
+          "evidenceId": "T16-p1-E1-r1:r191",
+          "key": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d#exact:0#391705c6-5d44-4058-b993-543855e7e2ef:6",
+          "tool": "context_recall",
+          "callSeq": 190,
+          "resultSeq": 191,
+          "callId": "call_8134f84f160d48bf8a90d22d",
+          "requestIndex": 20,
+          "argsTruncated": false,
+          "checkpointId": "a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "depth": "exact",
+          "offset": 0,
+          "query": null,
+          "ref": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d",
+          "messageIds": [
+            "391705c6-5d44-4058-b993-543855e7e2ef",
+            "8c937a9c-62d8-4fae-bb84-699841aa7715",
+            "31cafe9e-1ebe-4f33-84c2-e3ac89455c68",
+            "8058d2a8-96c2-491e-9df5-bd15ea927131",
+            "7ec066cf-7d33-43f2-95a6-0fdb05e70558",
+            "60a8b9ae-1967-4212-8c70-7676568c8700"
+          ],
+          "summaryAvailable": null,
+          "unavailable": null,
+          "parseError": null,
+          "foldedBy": null,
+          "deliveredAtRequest": null,
+          "visibilityRequest": 20,
+          "visibility": "visible",
+          "evidenceLevel": "verified",
+          "progressAfter": "none",
+          "classes": [
+            "recall-non-utilization",
+            "repeated-recall"
+          ],
+          "repeated": true
+        }
+      ],
+      "relations": [
+        {
+          "cellId": "T16-p1-E1-r1",
+          "arm": "E1",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E1-r1:r76",
+          "resultSeq": 76,
+          "compactionId": "5e340a72-1f81-4705-897c-fa3f291d8274",
+          "checkpointId": "6a888815-46ab-4f0a-a572-437ff562ec47",
+          "phase": "live",
+          "nextRequest": 9,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E1-r1",
+          "arm": "E1",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E1-r1:r95",
+          "resultSeq": 95,
+          "compactionId": "563ccd54-5d63-4cd0-a9ad-913b455b2d46",
+          "checkpointId": "2e0fd931-1e02-4f4d-b0ba-2de9382e5cb9",
+          "phase": "live",
+          "nextRequest": 12,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E1-r1",
+          "arm": "E1",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E1-r1:r172",
+          "resultSeq": 172,
+          "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+          "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+          "phase": "live",
+          "nextRequest": 20,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        },
+        {
+          "cellId": "T16-p1-E1-r1",
+          "arm": "E1",
+          "task": "T16-p1",
+          "evidenceId": "T16-p1-E1-r1:r174",
+          "resultSeq": 174,
+          "compactionId": "4371aa98-cd24-4a58-aa2b-db38cfc9be8b",
+          "checkpointId": "04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec",
+          "phase": "live",
+          "nextRequest": 20,
+          "visibility": "invisible-after-fold",
+          "evidenceLevel": "unknown"
+        }
+      ],
+      "summary": {
+        "recallCalls": 5,
+        "evidenceInstances": 5,
+        "folded": 4,
+        "visible": 1,
+        "markerOnly": 0,
+        "equivalentInferred": 0,
+        "invisibleAfterFold": 4,
+        "noFollowingRequest": 0,
+        "unknown": 0,
+        "refolded": 4,
+        "repeated": 2,
+        "mislocalized": 0,
+        "nonUtilization": 1
+      }
+    }
+  ],
+  "repeated": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58#exact:0#ac29ab46-c165-4945-b4fb-65c8a0f4fc52:10",
+          "count": 2,
+          "resultSeqs": [
+            63,
+            92
+          ],
+          "visibilities": [
+            "marker-only",
+            "no-following-request"
+          ],
+          "requests": [
+            4,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:72140c72-89a4-49b6-a261-e9f12aad908f#exact:0#14a126bb-8f4d-477e-8d38-da8a065ea592:3",
+          "count": 2,
+          "resultSeqs": [
+            48,
+            70
+          ],
+          "visibilities": [
+            "marker-only",
+            "marker-only"
+          ],
+          "requests": [
+            3,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:0#b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a:2",
+          "count": 2,
+          "resultSeqs": [
+            43,
+            60
+          ],
+          "visibilities": [
+            "marker-only",
+            "marker-only"
+          ],
+          "requests": [
+            3,
+            5
+          ]
+        },
+        {
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:2#ba8dd8c7-092a-4a95-b12a-9dfb106075ed:1",
+          "count": 2,
+          "resultSeqs": [
+            50,
+            75
+          ],
+          "visibilities": [
+            "marker-only",
+            "no-following-request"
+          ],
+          "requests": [
+            5,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#detail:0",
+          "count": 2,
+          "resultSeqs": [
+            75,
+            111
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "invisible-after-fold"
+          ],
+          "requests": [
+            6,
+            8
+          ]
+        },
+        {
+          "key": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8#detail:0",
+          "count": 2,
+          "resultSeqs": [
+            94,
+            113
+          ],
+          "visibilities": [
+            "equivalent-inferred",
+            "equivalent-inferred"
+          ],
+          "requests": [
+            6,
+            8
+          ]
+        },
+        {
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:0#fbf9a251-e080-480d-8081-8824e1ad3269:4",
+          "count": 2,
+          "resultSeqs": [
+            180,
+            204
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "visible"
+          ],
+          "requests": [
+            13,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": [
+        {
+          "key": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d#exact:0#391705c6-5d44-4058-b993-543855e7e2ef:6",
+          "count": 2,
+          "resultSeqs": [
+            76,
+            191
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "visible"
+          ],
+          "requests": [
+            9,
+            20
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "The R3 raw traces are complete for the 18 product-pilot cells; this is one model, one route and one host.",
+    "A checkpoint paraphrase without an exact substring is not counted as equivalent evidence.",
+    "R3 did not record per-step token snapshots; this graph is about visibility and identity, not cost."
+  ]
+}
