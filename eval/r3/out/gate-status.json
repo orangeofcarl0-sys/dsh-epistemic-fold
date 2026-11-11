@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R3",
-  "generatedAt": "2026-11-10T16:52:27.368Z",
+  "generatedAt": "2026-11-11T10:33:06.127Z",
   "gates": [
     {
       "id": "R3-G0",
@@ -16,7 +16,7 @@
     {
       "id": "R3-G2",
       "status": "incomplete",
-      "detail": "2 transport failures, 1 retried, 1 unresolved; contract 13/13; health probe authorized false; live stability not verified"
+      "detail": "2 transport failures, 1 retried, 1 unresolved; contract 13/13; representative probe 16/16 transport/usage, p95 82290 ms; prerequisite proceed-with-latency-deviation"
     },
     {
       "id": "R3-G3",
@@ -30,8 +30,8 @@
     },
     {
       "id": "R3-G5",
-      "status": "incomplete",
-      "detail": "completion design 31 cells, authorized false; confirm 23/54 valid, 31 no valid outcome; no live authorization"
+      "status": "pass",
+      "detail": "confirm terminated-partial: 23 valid, 1 unresolved, 30 never-started; further live calls false; completion design 31 cells, authorized false"
     },
     {
       "id": "R3-G6",
@@ -46,13 +46,13 @@
     {
       "id": "R3-G8",
       "status": "pass",
-      "detail": "decision no-product-candidate; deploymentHold true; reasons 8; product lane authorized false"
+      "detail": "decision no-product-candidate; deploymentHold true; reasons 9; product lane authorized false"
     }
   ],
   "counts": {
-    "pass": 7,
+    "pass": 8,
     "pending": 0,
-    "incomplete": 2,
+    "incomplete": 1,
     "fail": 0
   },
   "sources": {

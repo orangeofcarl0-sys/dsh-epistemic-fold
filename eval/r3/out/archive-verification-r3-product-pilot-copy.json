@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane pilot",
+  "generatedAt": "2026-11-11T10:30:48.436Z",
+  "archive": "E:/EF_R3_PRODUCT_PILOT_ARCHIVE",
+  "pointer": "F:/Codex_Work_Space/DSH plugin/ef-c1-foundation/eval/r3/out/research-archive-r3-product-pilot.json",
+  "listed": 245,
+  "matched": 245,
+  "manifestSha256": "0e317c5022a48ab0a87963cf3fefda67676a60a2c676c7b64c4b502366e028e9",
+  "bundleSha256": "e6512335d590597a68126b0044f82796ae475694634b9fe5bfa91119880806a7",
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 42,
+    "safeToShare": true
+  },
+  "problems": [],
+  "verdict": "archive-verified"
+}

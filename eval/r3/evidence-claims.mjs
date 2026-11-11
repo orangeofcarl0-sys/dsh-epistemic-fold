@@ -200,6 +200,14 @@ const CLAIMS = [
     limitation: 'A single local route and one outlier; latency is not certified and the probe is not a model-quality measurement.',
   },
   {
+    claimId: 'R3-PILOT-ARCHIVE',
+    claim: 'The 18-cell product-lane pilot raw evidence is archived incrementally: 245 files, 37,802,090 bytes, 18 cells, 9 passes, 17 cost-valid cells, 8 step-limited cells; zero credentials, git bundle verified, primary and E: copies verified.',
+    evidenceLevel: 'Deterministic Contract',
+    artifact: 'eval/r3/out/research-archive-r3-product-pilot.json',
+    harness: 'verbatim raw runs + evidence + git bundle + SHA256SUMS + credential scan',
+    limitation: 'The second copy is another local volume, not an off-machine backup.',
+  },
+  {
     claimId: 'R3-ZERO-LIVE',
     claim: 'The R3 offline closure made no provider request: at the time of the audit the only new run was a scripted self-test with 0 requests and no new results file. The later health probe and product pilot are separately authorized live steps.',
     evidenceLevel: 'Constraint',
