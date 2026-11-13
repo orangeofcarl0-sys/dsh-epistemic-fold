@@ -56,9 +56,9 @@
   },
   "preflight": {
     "path": "eval/r4/out/budget-manifest-preflight.json",
-    "sha256": "e6993badbd7e8f376331ea3c7cc3fb40803a8c8731b458018e60952266c8b063",
+    "sha256": "3d1a9d3717ba5391a37a53b685e6a8db943e46e4ff4fe8f8f1f7828980bf2a51",
     "verdict": "ready-for-authorization",
-    "generatedAt": "2026-11-13T17:47:02.466Z"
+    "generatedAt": "2026-11-13T17:47:14.703Z"
   },
   "note": "Ready for a zero-provider preflight. Not ready to execute: the authorization is not granted."
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 budget-sensitivity manifest preflight",
-  "generatedAt": "2026-11-13T17:47:02.466Z",
+  "generatedAt": "2026-11-13T17:47:14.703Z",
   "campaign": "e2e-r4-budget-sensitivity-1",
   "verdict": "ready-for-authorization",
   "executionAuthorized": false,
@@ -16,7 +16,7 @@
     "granted": false
   },
   "code": {
-    "head": "517f27cd0eb16679e9fae4a422651f8d4d5e367a",
+    "head": "789ea17b7f2a9db47a0a484a221b17dbdc4f76be",
     "sourceTreeDigest": "675ae92efb8505cb5e1b4c764d586066a0e3bad023822b8f1cfc104b8e7cae12",
     "worktreeClean": true
   },
