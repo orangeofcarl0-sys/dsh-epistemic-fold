@@ -21,7 +21,7 @@
     "analysis": "eval/r4/out/health-probe-analysis-attempt-5.md"
   },
   "appRouteEvidence": {
-    "log": "C:/Users/66494/.zcode/v2/logs/2026-11-14.log",
+    "log": "<DSH_HOME>/logs/2026-11-14.log",
     "line": 859,
     "time": "2026-11-14 01:42:00.671",
     "message": "provider/model 就绪，允许 ZCode agent 模型执行",
