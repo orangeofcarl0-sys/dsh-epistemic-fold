@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 evidence claims",
-  "generatedAt": "2026-11-11T15:44:22.382Z",
-  "head": "460a5ed231bd81867b36a92eb8856c1cce69c574",
+  "generatedAt": "2026-11-13T17:47:08.679Z",
+  "head": "517f27cd0eb16679e9fae4a422651f8d4d5e367a",
   "claims": [
     {
       "id": "R4-BASELINE",
       "statement": "R4 started from 07540d01 with 70/70 immutable R3 artifacts present and 0 missing.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/baseline-r4.json",
@@ -19,7 +19,7 @@
     {
       "id": "R4-SCORING-SPLIT",
       "statement": "Historical R3 passes are B0 5/6, E0 1/6, E1 3/6. The rescored task outcome is B0 5/6, E0 1/6, E1 3/6; E1 vs B0 has both 3, neither 1, E1-only 0, B0-only 2. Mechanism exposure is reported separately.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/rescored-r3.json",
@@ -31,7 +31,7 @@
     {
       "id": "R4-EVIDENCE-LIFECYCLE",
       "statement": "Across 18 pilot cells there are 67 recall/search calls; 53 results are shadowed by a later fold; 51 do not carry the payload verbatim into the next request (24 marker-only, 20 invisible-after-fold, 12 no-following-request); 9 are visible and 2 are inferred equivalent.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/evidence-lifecycle.json",
@@ -43,7 +43,7 @@
     {
       "id": "R4-TASK-CONTINUITY",
       "statement": "Of the 8 failed EF cells, 7 lose the exact task source; 7 of them make no write. None of the 4 passing EF cells lose it (0 with loss).",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/task-continuity.json",
@@ -55,7 +55,7 @@
     {
       "id": "R4-FAILURE-PROJECTION",
       "statement": "T16 E0 carries 5 open failures (2 duplicate signatures, 91.2% of checkpoint chars); T16 E1 carries 9 (4 duplicate, 32.1%).",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/working-set.json",
@@ -67,7 +67,7 @@
     {
       "id": "R4-WORKING-SET",
       "statement": "Character-level context balance is B0 -89947, E0 826954, E1 35166; repeated recall 16; recall payloads re-folded 51; exact-task requests lost 45.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/working-set.json",
@@ -79,7 +79,7 @@
     {
       "id": "R4-CANDIDATE",
       "statement": "The pre-registered rules select active-task-delivery (contract only, not wired). The offline simulation adds 1238 exact prompt chars across 7 failed cells, bounded to two deliveries per cell.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/candidate-decision.json",
@@ -91,7 +91,7 @@
     {
       "id": "R4-BUDGET-DESIGN",
       "statement": "The budget-sensitivity design has 36 cells (6 tasks x 3 arms x 2 budgets), validated as 36 unique combinations with balanced blocks; executionAuthorized is false.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/budget-sensitivity-design.json",
@@ -101,9 +101,25 @@
       "limitation": "A design is not an authorization. The proposed envelope is an estimate from R3, not a spend approval."
     },
     {
+      "id": "R4-BUDGET-MANIFEST",
+      "statement": "The runnable manifest is frozen at SHA-256 3411c1630edd50505ec549b71938996e1cb555403f8bf9f81dbc66d7feccc827 with 36 cells; authorization granted=false; preflight ready-for-authorization (26/26 checks).",
+      "commit": "517f27cd",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/budget-manifest.json",
+          "sha256": "0047b4feb4c2ea3eaf84d333b25a461870166ed1843aea62462995d69c82f5c4"
+        },
+        {
+          "path": "eval/r4/out/budget-manifest-preflight.json",
+          "sha256": "e6993badbd7e8f376331ea3c7cc3fb40803a8c8731b458018e60952266c8b063"
+        }
+      ],
+      "limitation": "A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false."
+    },
+    {
       "id": "R4-PRODUCT-DECISION",
       "statement": "No product candidate is proposed; Deployment Hold is true; expandTo72 is false; the research candidate remains unwired.",
-      "commit": "460a5ed2",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/product-decision-r4.json",
@@ -114,20 +130,20 @@
     },
     {
       "id": "R4-ZERO-LIVE",
-      "statement": "The zero-live audit scanned 12 R4 scripts, found 0 provider/live entry points and 0 R4 campaign artifacts; providerCalls is 0.",
-      "commit": "460a5ed2",
+      "statement": "The zero-live audit scanned 14 R4 scripts, found 0 provider/live entry points and 0 R4 campaign artifacts; providerCalls is 0.",
+      "commit": "517f27cd",
       "artifacts": [
         {
           "path": "eval/r4/out/zero-live-audit.json",
-          "sha256": "8fa0299c678b51bc38d02c9a0d73d4bad831413e107e00e441cecf181dd76531"
+          "sha256": "5bb7b93da9c46e3ac5549394e0441e491e234b1241b08944af1a4334b76f22a0"
         }
       ],
       "limitation": "The audit checks the R4 scripts and output directories; it is not a network monitor for the whole machine."
     }
   ],
   "counts": {
-    "claims": 10,
-    "artifacts": 9
+    "claims": 11,
+    "artifacts": 11
   },
   "method": "Each claim names its artifact, SHA-256, commit and limitation. A missing artifact stops generation."
 }

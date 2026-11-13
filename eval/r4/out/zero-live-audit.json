@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 zero-live audit",
-  "generatedAt": "2026-11-11T15:44:22.288Z",
+  "generatedAt": "2026-11-13T17:47:08.493Z",
   "scripts": [
     "eval/r4/baseline.mjs",
     "eval/r4/score.mjs",
@@ -10,6 +10,8 @@
     "eval/r4/working-set.mjs",
     "eval/r4/candidate-decision.mjs",
     "eval/r4/freeze-budget-sensitivity.mjs",
+    "eval/r4/freeze-budget-manifest.mjs",
+    "eval/r4/preflight-budget-manifest.mjs",
     "eval/r4/product-decision.mjs",
     "eval/r4/contracts/scoring-contract.mjs",
     "eval/r4/contracts/evidence-graph-contract.mjs",
@@ -30,6 +32,11 @@
   "providerCalls": 0,
   "r4Campaigns": [],
   "budgetExecutionAuthorized": false,
+  "budgetManifest": {
+    "campaign": "e2e-r4-budget-sensitivity-1",
+    "manifestSha256": "3411c1630edd50505ec549b71938996e1cb555403f8bf9f81dbc66d7feccc827",
+    "authorizationGranted": false
+  },
   "immutableMissing": [],
   "verdict": "zero-live-verified"
 }
