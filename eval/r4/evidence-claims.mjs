@@ -39,7 +39,7 @@ const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
 const budgetManifest = load('budget-manifest.json')
 const budgetPreflight = load('budget-manifest-preflight.json')
-const liveAttempt = load('live-attempt-r4-1.json')
+const liveAttempt = load('live-attempts-r4.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 
@@ -106,9 +106,9 @@ claim('R4-BUDGET-MANIFEST',
   'A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false.')
 
 claim('R4-LIVE-ATTEMPT',
-  `The authorized health probe was attempted once and failed before the first model response: ${liveAttempt.json.probe.firstFailure.finish.failure.message} (${liveAttempt.json.probe.firstFailure.finish.failure.code}) after ${liveAttempt.json.probe.firstFailure.durationMs} ms; ${liveAttempt.json.probe.successes}/${liveAttempt.json.probe.planned} requests succeeded and the 36-cell campaign was not started.`,
+  `The authorized probe was attempted ${liveAttempt.json.count} times and produced ${liveAttempt.json.successes}/${liveAttempt.json.planned} successes. Attempt 1 hit the unreachable local proxy (ECONNREFUSED); attempts 2-4 used three different OpenCode accounts at https://opencode.ai/zen/go/v1, and all returned HTTP 401 api_key_expired. The 36-cell campaign was not started.`,
   [artifact(liveAttempt)],
-  'This is an environment/route blocker at the local proxy, not task-quality evidence. No automatic retry; the campaign requires a restored route and a re-frozen manifest.')
+  'These are route/credential qualification attempts, not task-quality evidence. No model response or usage was produced. The campaign stays unauthorized until a probe passes; no automatic retry.')
 
 claim('R4-PRODUCT-DECISION',
   `No product candidate is proposed; Deployment Hold is ${productDecision.json.deploymentHold}; expandTo72 is ${productDecision.json.expandTo72}; the research candidate remains unwired.`,

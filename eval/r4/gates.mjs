@@ -33,7 +33,7 @@ const workingSet = load('working-set.json')
 const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
 const budgetPreflight = load('budget-manifest-preflight.json')
-const liveAttempt = load('live-attempt-r4-1.json')
+const liveAttempt = load('live-attempts-r4.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 const claims = load('evidence-claims.json')
@@ -111,7 +111,7 @@ gate('R4-G5',
 gate('R4-G6',
   budget !== null && budget.executionAuthorized === false && budget.design?.cells === 36
     ? 'incomplete' : 'fail',
-`campaign ${budget?.campaign ?? 'missing'}; cells ${budget?.design?.cells ?? '?'}; executionAuthorized ${budget?.executionAuthorized ?? '?'}; preflight ${budgetPreflight?.verdict ?? 'missing'}; live ${liveAttempt?.decision ?? 'not-attempted'}; campaignStarted ${liveAttempt?.campaign?.started ?? false}`)
+`campaign ${budget?.campaign ?? 'missing'}; cells ${budget?.design?.cells ?? '?'}; executionAuthorized ${budget?.executionAuthorized ?? '?'}; preflight ${budgetPreflight?.verdict ?? 'missing'}; live ${liveAttempt?.decision ?? 'not-attempted'}; attempts ${liveAttempt?.count ?? 0}; campaignStarted ${liveAttempt?.campaign?.started ?? false}`)
 
 gate('R4-G7',
   ciStatus === 'success'
@@ -148,9 +148,9 @@ const output = {
   },
   liveAttempt: liveAttempt === null ? null : {
     decision: liveAttempt.decision,
-    probeVerdict: liveAttempt.probe?.verdict ?? null,
-    successes: liveAttempt.probe?.successes ?? null,
-    planned: liveAttempt.probe?.planned ?? null,
+    attempts: liveAttempt.count,
+    successes: liveAttempt.successes,
+    planned: liveAttempt.planned,
     campaignStarted: liveAttempt.campaign?.started ?? null,
   },
   gates,

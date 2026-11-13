@@ -29,7 +29,7 @@ for (const path of [candidatePath, budgetPath]) {
 }
 const candidate = readJson(candidatePath)
 const budget = readJson(budgetPath)
-const livePath = join(OUT, 'live-attempt-r4-1.json')
+const livePath = join(OUT, 'live-attempts-r4.json')
 const live = existsSync(livePath) ? readJson(livePath) : null
 
 const output = {
@@ -42,11 +42,10 @@ const output = {
   researchCandidate: candidate.selected,
   researchCandidateWired: false,
   liveEvidence: live === null ? null : {
-    attempt: live.attempt,
+    attempts: live.count,
     decision: live.decision,
-    probeVerdict: live.probe?.verdict ?? null,
-    successes: live.probe?.successes ?? null,
-    planned: live.probe?.planned ?? null,
+    successes: live.successes,
+    planned: live.planned,
     campaignStarted: live.campaign?.started ?? null,
   },
   reasons: [

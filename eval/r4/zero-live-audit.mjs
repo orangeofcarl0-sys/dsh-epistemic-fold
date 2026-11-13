@@ -30,6 +30,7 @@ const SCRIPTS = [
   'eval/r4/authorize-health-probe.mjs',
   'eval/r4/authorize-budget-campaign.mjs',
   'eval/r4/record-live-attempt.mjs',
+  'eval/r4/record-live-attempts.mjs',
   'eval/r4/preflight-budget-manifest.mjs',
   'eval/r4/product-decision.mjs',
   'eval/r4/contracts/scoring-contract.mjs',

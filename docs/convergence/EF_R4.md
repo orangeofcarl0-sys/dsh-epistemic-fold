@@ -171,11 +171,20 @@ The runnable manifest is frozen separately at `eval/e2e/out/manifest-e2e-r4-budg
 
 A separate `workspace-readable` task family is recorded as design-only. It is not generated and must not be pooled with the archive-only family: putting the logs in the workspace would turn a history-recovery task into a `read_file` task.
 
-### Live attempt (2026-11-14)
+### Live route qualification (2026-11-14)
 
-The user authorized the health probe and the 36-cell campaign. The probe was attempted once. The resolved route was the local ZCode proxy at `http://127.0.0.1:7866/v1`; the first profile (`t13-summary-failed-shape`, 75,603 chars) failed after **51 ms** with `fetch failed (ECONNREFUSED)` / `LIVE_TRANSPORT` and no usage. The probe stopped immediately: **0/16** successes, 1 failed. The 36-cell campaign was **not started** (`campaign.started:false`).
+The user authorized the health probe and the 36-cell campaign, then changed the provider to `opencode/deepseek-v4.1-flash`. Four route-qualification attempts were made; none produced a model response:
 
-This is an environment/route blocker, not a model or task result. The local proxy was not listening (`curl` to the same base URL also failed). No automatic retry was made, and none should be made while the route is down. The attempt is recorded in `eval/r4/out/live-attempt-r4-1.json`; the corrected analysis is in `eval/r4/out/health-probe-analysis.md`. A retry requires restoring the local proxy and re-freezing the manifest, because the failure record changed the source tree.
+| Attempt | Route | Result | Blocker |
+|---|---|---|---|
+| 1 | local ZCode proxy `http://127.0.0.1:7866/v1` | 0/16, 51 ms | `ECONNREFUSED` |
+| 2 | `https://opencode.ai/zen/go/v1` (provider `b88043d7…`) | 0/16, 1,217 ms | HTTP 401 `api_key_expired` |
+| 3 | `https://opencode.ai/zen/go/v1` (provider `5c7f8d75…`) | 0/16, 1,239 ms | HTTP 401 `api_key_expired` |
+| 4 | `https://opencode.ai/zen/go/v1` (provider `ac2dbaa8…`) | 0/16, 1,200 ms | HTTP 401 `api_key_expired` |
+
+All three configured OpenCode accounts in `~/.zcode/v2/config.json` return `api_key_expired`. The probe stopped on the first response of each attempt; no usage was produced. The 36-cell campaign was **not started** (`campaign.started:false`). This is a credential/route blocker, not a model or task result.
+
+The consolidated record is `eval/r4/out/live-attempts-r4.json`; each attempt's raw result and analysis are preserved as `health-probe-results-attempt-{1..4}.json` and `health-probe-analysis-attempt-{1..4}.md`. No automatic retry was made. Replace at least one OpenCode API key, then retry the same probe; the campaign stays unauthorized until a probe passes.
 
 ## 8. Gates
 
@@ -187,11 +196,11 @@ This is an environment/route blocker, not a model or task result. The local prox
 | R4-G3 | pass | 18 cells; 3 stage-B cells; 7 failed EF with task loss; 0 passing EF with loss |
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
-| R4-G6 | incomplete | 36-cell manifest frozen; preflight 26/26; health probe blocked by `ECONNREFUSED` (0/16); campaign not started |
+| R4-G6 | incomplete | 36-cell manifest frozen; preflight 26/26; 4 route attempts: local proxy `ECONNREFUSED`, three OpenCode accounts HTTP 401 `api_key_expired`; campaign not started |
 | R4-G7 | pass | zero-live verified; claims 12; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
 | R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion |
 
-`incomplete` is not `fail`. R4-G6 remains incomplete because the representative route was unreachable; it can become pass only after a successful live campaign. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
+`incomplete` is not `fail`. R4-G6 remains incomplete because the route credentials were not usable; it can become pass only after a successful live campaign. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
 
 ## 9. What R4 does not prove
 
