@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4",
-  "generatedAt": "2026-11-13T18:28:14.270Z",
+  "generatedAt": "2026-11-13T18:32:12.965Z",
   "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
-  "ci": "pending",
+  "ci": "success",
   "budgetPreflight": {
     "verdict": "ready-for-authorization",
     "manifestSha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
@@ -54,8 +54,8 @@
     },
     {
       "id": "R4-G7",
-      "status": "incomplete",
-      "detail": "ci pending; zero-live zero-live-verified; claims 12"
+      "status": "pass",
+      "detail": "ci success; zero-live zero-live-verified; claims 12"
     },
     {
       "id": "R4-G8",
@@ -64,8 +64,8 @@
     }
   ],
   "counts": {
-    "pass": 7,
-    "incomplete": 2,
+    "pass": 8,
+    "incomplete": 1,
     "fail": 0
   },
   "note": "incomplete is not fail. R4-G6 stays incomplete offline; R4-G7 becomes pass only on a successful supported-lane CI run."
