@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 budget-sensitivity manifest pointer",
-  "generatedAt": "2026-11-13T17:47:02.249Z",
+  "generatedAt": "2026-11-13T18:07:04.096Z",
   "campaign": "e2e-r4-budget-sensitivity-1",
   "design": {
     "path": "eval/r4/out/budget-sensitivity-design.json",
@@ -9,13 +9,13 @@
   },
   "manifest": {
     "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json",
-    "sha256": "3411c1630edd50505ec549b71938996e1cb555403f8bf9f81dbc66d7feccc827",
+    "sha256": "c9e973c2fa9fa1c1960c96f51689febf21713be87ebb1dac525a197a227870f4",
     "cells": 36,
     "executionAuthorized": false
   },
   "authorization": {
     "path": "eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json",
-    "sha256": "a5ebf66ee40b3006cffdf80786b6977fadff1c78c2bfd299efec8995d8b651ba",
+    "sha256": "762c423b20cadf4cc2c2a6e36a45b8c16050a32dde03fa36267170d0c530ecc6",
     "granted": false
   },
   "config": {
@@ -56,9 +56,9 @@
   },
   "preflight": {
     "path": "eval/r4/out/budget-manifest-preflight.json",
-    "sha256": "3d1a9d3717ba5391a37a53b685e6a8db943e46e4ff4fe8f8f1f7828980bf2a51",
+    "sha256": "26cb4f99a3a577f07c33298dbccac68cacd1de511aca50b365600d3979af4086",
     "verdict": "ready-for-authorization",
-    "generatedAt": "2026-11-13T17:47:14.703Z"
+    "generatedAt": "2026-11-13T18:07:04.332Z"
   },
   "note": "Ready for a zero-provider preflight. Not ready to execute: the authorization is not granted."
 }

@@ -1,15 +1,24 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 product decision",
-  "generatedAt": "2026-11-11T15:44:22.222Z",
+  "generatedAt": "2026-11-13T18:06:16.325Z",
   "productCandidate": null,
   "deploymentHold": true,
   "expandTo72": false,
   "researchCandidate": "active-task-delivery",
   "researchCandidateWired": false,
+  "liveEvidence": {
+    "attempt": 1,
+    "decision": "blocked-route-unreachable",
+    "probeVerdict": "fail",
+    "successes": 0,
+    "planned": 16,
+    "campaignStarted": false
+  },
   "reasons": [
     "The R4 candidate is a correlation from 18 R3 cells, not a live-tested mechanism.",
     "There is no 16-step measurement yet; the 8-step EF cells are step-limit censored.",
+    "The live probe was blocked by ECONNREFUSED; the campaign was not started, so no 16-step data exists.",
     "The R3 pilot is one model, one route and one machine; no replication exists.",
     "The candidate adds exact prompt bytes, but whether the model acts on them is unmeasured.",
     "The failure projection is also inflated in T16, so one mechanism cannot explain every failure.",

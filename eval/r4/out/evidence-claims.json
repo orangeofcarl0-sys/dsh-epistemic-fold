@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 evidence claims",
-  "generatedAt": "2026-11-13T17:47:08.679Z",
-  "head": "517f27cd0eb16679e9fae4a422651f8d4d5e367a",
+  "generatedAt": "2026-11-13T18:07:04.721Z",
+  "head": "f7e00355f1ffb7a82dad6e1f8d62b4fe500b6343",
   "claims": [
     {
       "id": "R4-BASELINE",
       "statement": "R4 started from 07540d01 with 70/70 immutable R3 artifacts present and 0 missing.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/baseline-r4.json",
@@ -19,7 +19,7 @@
     {
       "id": "R4-SCORING-SPLIT",
       "statement": "Historical R3 passes are B0 5/6, E0 1/6, E1 3/6. The rescored task outcome is B0 5/6, E0 1/6, E1 3/6; E1 vs B0 has both 3, neither 1, E1-only 0, B0-only 2. Mechanism exposure is reported separately.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/rescored-r3.json",
@@ -31,7 +31,7 @@
     {
       "id": "R4-EVIDENCE-LIFECYCLE",
       "statement": "Across 18 pilot cells there are 67 recall/search calls; 53 results are shadowed by a later fold; 51 do not carry the payload verbatim into the next request (24 marker-only, 20 invisible-after-fold, 12 no-following-request); 9 are visible and 2 are inferred equivalent.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/evidence-lifecycle.json",
@@ -43,7 +43,7 @@
     {
       "id": "R4-TASK-CONTINUITY",
       "statement": "Of the 8 failed EF cells, 7 lose the exact task source; 7 of them make no write. None of the 4 passing EF cells lose it (0 with loss).",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/task-continuity.json",
@@ -55,7 +55,7 @@
     {
       "id": "R4-FAILURE-PROJECTION",
       "statement": "T16 E0 carries 5 open failures (2 duplicate signatures, 91.2% of checkpoint chars); T16 E1 carries 9 (4 duplicate, 32.1%).",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/working-set.json",
@@ -67,7 +67,7 @@
     {
       "id": "R4-WORKING-SET",
       "statement": "Character-level context balance is B0 -89947, E0 826954, E1 35166; repeated recall 16; recall payloads re-folded 51; exact-task requests lost 45.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/working-set.json",
@@ -79,7 +79,7 @@
     {
       "id": "R4-CANDIDATE",
       "statement": "The pre-registered rules select active-task-delivery (contract only, not wired). The offline simulation adds 1238 exact prompt chars across 7 failed cells, bounded to two deliveries per cell.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/candidate-decision.json",
@@ -91,7 +91,7 @@
     {
       "id": "R4-BUDGET-DESIGN",
       "statement": "The budget-sensitivity design has 36 cells (6 tasks x 3 arms x 2 budgets), validated as 36 unique combinations with balanced blocks; executionAuthorized is false.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/budget-sensitivity-design.json",
@@ -102,48 +102,60 @@
     },
     {
       "id": "R4-BUDGET-MANIFEST",
-      "statement": "The runnable manifest is frozen at SHA-256 3411c1630edd50505ec549b71938996e1cb555403f8bf9f81dbc66d7feccc827 with 36 cells; authorization granted=false; preflight ready-for-authorization (26/26 checks).",
-      "commit": "517f27cd",
+      "statement": "The runnable manifest is frozen at SHA-256 c9e973c2fa9fa1c1960c96f51689febf21713be87ebb1dac525a197a227870f4 with 36 cells; authorization granted=false; preflight ready-for-authorization (26/26 checks).",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/budget-manifest.json",
-          "sha256": "0047b4feb4c2ea3eaf84d333b25a461870166ed1843aea62462995d69c82f5c4"
+          "sha256": "8d0b48eaacbdc9bf0803300b47e21b961e20906050b87acd64a7791a49293962"
         },
         {
           "path": "eval/r4/out/budget-manifest-preflight.json",
-          "sha256": "e6993badbd7e8f376331ea3c7cc3fb40803a8c8731b458018e60952266c8b063"
+          "sha256": "26cb4f99a3a577f07c33298dbccac68cacd1de511aca50b365600d3979af4086"
         }
       ],
       "limitation": "A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false."
     },
     {
+      "id": "R4-LIVE-ATTEMPT",
+      "statement": "The authorized health probe was attempted once and failed before the first model response: fetch failed (ECONNREFUSED) (LIVE_TRANSPORT) after 51 ms; 0/16 requests succeeded and the 36-cell campaign was not started.",
+      "commit": "f7e00355",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/live-attempt-r4-1.json",
+          "sha256": "88adb86e182e361c7488b4b42c435e9d769ad70827b33d202454e69a7c425ed1"
+        }
+      ],
+      "limitation": "This is an environment/route blocker at the local proxy, not task-quality evidence. No automatic retry; the campaign requires a restored route and a re-frozen manifest."
+    },
+    {
       "id": "R4-PRODUCT-DECISION",
       "statement": "No product candidate is proposed; Deployment Hold is true; expandTo72 is false; the research candidate remains unwired.",
-      "commit": "517f27cd",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/product-decision-r4.json",
-          "sha256": "af6dea84648b9a55c4b7890f7e231fe929ef41f8d9ee9d7f8476e0263c567a0b"
+          "sha256": "d083e7d75f64a99e0a938709584f677dd2700dc4bbb2d55c0bd4c26e764cbf7c"
         }
       ],
       "limitation": "The decision is bounded by one model, one route, one machine and a step-limit-censored 8-step lane."
     },
     {
       "id": "R4-ZERO-LIVE",
-      "statement": "The zero-live audit scanned 14 R4 scripts, found 0 provider/live entry points and 0 R4 campaign artifacts; providerCalls is 0.",
-      "commit": "517f27cd",
+      "statement": "The zero-live audit scanned 18 R4 scripts, found 0 provider/live entry points and 0 R4 campaign artifacts; providerCalls is 0.",
+      "commit": "f7e00355",
       "artifacts": [
         {
           "path": "eval/r4/out/zero-live-audit.json",
-          "sha256": "5bb7b93da9c46e3ac5549394e0441e491e234b1241b08944af1a4334b76f22a0"
+          "sha256": "dbf7016795aefd93d00fe1e24edc69dbe1f635b2a74b540ffc81a75a6a2d90b3"
         }
       ],
       "limitation": "The audit checks the R4 scripts and output directories; it is not a network monitor for the whole machine."
     }
   ],
   "counts": {
-    "claims": 11,
-    "artifacts": 11
+    "claims": 12,
+    "artifacts": 12
   },
   "method": "Each claim names its artifact, SHA-256, commit and limitation. A missing artifact stops generation."
 }

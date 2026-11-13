@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 zero-live audit",
-  "generatedAt": "2026-11-13T17:47:08.493Z",
+  "scope": "offline analysis scripts only; the authorized live probe and campaign are recorded separately",
+  "generatedAt": "2026-11-13T18:07:04.534Z",
   "scripts": [
     "eval/r4/baseline.mjs",
     "eval/r4/score.mjs",
@@ -11,12 +12,20 @@
     "eval/r4/candidate-decision.mjs",
     "eval/r4/freeze-budget-sensitivity.mjs",
     "eval/r4/freeze-budget-manifest.mjs",
+    "eval/r4/freeze-health-probe.mjs",
+    "eval/r4/authorize-health-probe.mjs",
+    "eval/r4/authorize-budget-campaign.mjs",
+    "eval/r4/record-live-attempt.mjs",
     "eval/r4/preflight-budget-manifest.mjs",
     "eval/r4/product-decision.mjs",
     "eval/r4/contracts/scoring-contract.mjs",
     "eval/r4/contracts/evidence-graph-contract.mjs",
     "eval/r4/candidate/active-task-delivery.mjs",
     "eval/r4/shared/audit.mjs"
+  ],
+  "liveScripts": [
+    "eval/r4/run-health-probe.mjs",
+    "eval/r4/analyze-health-probe.mjs"
   ],
   "forbidden": [
     "/resolveLiveRoute\\s*\\(/u",
@@ -31,10 +40,12 @@
   "violations": [],
   "providerCalls": 0,
   "r4Campaigns": [],
+  "authorizedLiveEvidence": [],
+  "liveAuthorized": false,
   "budgetExecutionAuthorized": false,
   "budgetManifest": {
     "campaign": "e2e-r4-budget-sensitivity-1",
-    "manifestSha256": "3411c1630edd50505ec549b71938996e1cb555403f8bf9f81dbc66d7feccc827",
+    "manifestSha256": "c9e973c2fa9fa1c1960c96f51689febf21713be87ebb1dac525a197a227870f4",
     "authorizationGranted": false
   },
   "immutableMissing": [],
