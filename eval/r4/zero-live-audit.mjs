@@ -26,12 +26,20 @@ const SCRIPTS = [
   'eval/r4/candidate-decision.mjs',
   'eval/r4/freeze-budget-sensitivity.mjs',
   'eval/r4/freeze-budget-manifest.mjs',
+  'eval/r4/freeze-health-probe.mjs',
+  'eval/r4/authorize-health-probe.mjs',
+  'eval/r4/authorize-budget-campaign.mjs',
   'eval/r4/preflight-budget-manifest.mjs',
   'eval/r4/product-decision.mjs',
   'eval/r4/contracts/scoring-contract.mjs',
   'eval/r4/contracts/evidence-graph-contract.mjs',
   'eval/r4/candidate/active-task-delivery.mjs',
   'eval/r4/shared/audit.mjs',
+]
+
+const LIVE_SCRIPTS = [
+  'eval/r4/run-health-probe.mjs',
+  'eval/r4/analyze-health-probe.mjs',
 ]
 
 const FORBIDDEN = [
@@ -74,14 +82,17 @@ const r4RunDirs = existsSync(runsRoot)
   ? readdirSync(runsRoot).filter(name => /^e2e-r4-/u.test(name))
   : []
 const r4Campaigns = [...r4Results, ...r4RunDirs]
-if (r4Campaigns.length > 0) {
-  violations.push({ script: 'eval/e2e', reason: `R4 campaign artifacts exist: ${r4Campaigns.join(', ')}` })
-}
-
 const pointerPath = join(OUT, 'budget-manifest.json')
 const budgetManifest = existsSync(pointerPath) ? readJson(pointerPath) : null
-if (budgetManifest !== null && budgetManifest.authorization?.granted !== false) {
-  violations.push({ script: 'budget-manifest.json', reason: 'manifest authorization is granted' })
+const liveAuthorized = budgetManifest?.authorization?.granted === true
+const authorizedLiveEvidence = liveAuthorized ? r4Campaigns : []
+if (r4Campaigns.length > 0 && !liveAuthorized) {
+  violations.push({ script: 'eval/e2e', reason: `R4 campaign artifacts exist without a grant: ${r4Campaigns.join(', ')}` })
+}
+if (budgetManifest !== null
+  && budgetManifest.authorization?.granted !== true
+  && budgetManifest.authorization?.granted !== false) {
+  violations.push({ script: 'budget-manifest.json', reason: 'manifest authorization has no boolean grant state' })
 }
 
 const baselinePath = join(OUT, 'baseline-r4.json')
@@ -91,12 +102,16 @@ const immutableMissing = baseline?.immutableMissing ?? ['baseline missing']
 const output = {
   schemaVersion: 1,
   work: 'EF-R4 zero-live audit',
+  scope: 'offline analysis scripts only; the authorized live probe and campaign are recorded separately',
   generatedAt: new Date().toISOString(),
   scripts: SCRIPTS,
+  liveScripts: LIVE_SCRIPTS,
   forbidden: FORBIDDEN.map(rule => String(rule.pattern)),
   violations,
   providerCalls: 0,
   r4Campaigns,
+  authorizedLiveEvidence,
+  liveAuthorized,
   budgetExecutionAuthorized: budget?.executionAuthorized ?? null,
   budgetManifest: budgetManifest === null ? null : {
     campaign: budgetManifest.campaign,
