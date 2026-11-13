@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 live route addendum",
+  "generatedAt": "2026-11-14T19:00:00.000Z",
+  "attempt5": {
+    "attempt": 5,
+    "providerId": "b88043d7-f229-452c-b634-4152ca14aae8",
+    "baseUrl": "https://opencode.ai/zen/go/v1",
+    "model": "deepseek-v4.1-flash",
+    "sessionHeader": "zcode-b88043d7-20260913",
+    "usedEfLiveZenFree": false,
+    "verdict": "fail",
+    "planned": 16,
+    "successes": 0,
+    "failures": 1,
+    "durationMs": 1285,
+    "status": 401,
+    "code": "api_key_expired",
+    "usage": null,
+    "raw": "eval/r4/out/health-probe-results-attempt-5.json",
+    "analysis": "eval/r4/out/health-probe-analysis-attempt-5.md"
+  },
+  "appRouteEvidence": {
+    "log": "C:/Users/66494/.zcode/v2/logs/2026-11-14.log",
+    "line": 859,
+    "time": "2026-11-14 01:42:00.671",
+    "message": "provider/model 就绪，允许 ZCode agent 模型执行",
+    "payload": {
+      "modelId": "GLM-5.3-Flash",
+      "providerId": "account:bigmodel-start-plan",
+      "revision": "model-selection:2",
+      "workspaceKey": "F:\\Codex_Work_Space\\DSH plugin\\dsh-epistemic-fold"
+    }
+  },
+  "conclusion": "The working ZCode conversation is served by account:bigmodel-start-plan / GLM-5.3-Flash for this workspace, not by the OpenCode deepseek-v4.1-flash provider. The static OpenCode keys in config.json are rejected with api_key_expired even with the provider's own x-opencode-session header. A working conversation is therefore not evidence that the OpenCode key is usable by the harness.",
+  "campaign": {
+    "campaign": "e2e-r4-budget-sensitivity-1",
+    "started": false,
+    "reason": "opencode-api-key-expired"
+  },
+  "options": [
+    "Replace at least one OpenCode apiKey in ~/.zcode/v2/config.json and rerun the 16-request probe.",
+    "Switch to the working GLM-5.3-Flash route: requires an Anthropic-messages adapter, a new manifest, and is not comparable to the deepseek R3/R4 evidence.",
+    "Start the omnigate2api local proxy at 127.0.0.1:7866 if it is available; it is OpenAI-compatible but currently has no listener."
+  ]
+}
