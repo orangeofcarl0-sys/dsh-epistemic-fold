@@ -275,7 +275,10 @@ async function main() {
   // request still counts against the same ledger, and the results file records
   // which cells were not executed.
   const only = value('only', null)
-  const planned = only === null ? manifest.cells : manifest.cells.filter(cell => `${cell.block}-${cell.task}-${cell.arm}-r${cell.replicate}` === only)
+  const onlyKey = cell => cell.maxSteps === undefined
+    ? `${cell.block}-${cell.task}-${cell.arm}-r${cell.replicate}`
+    : `${cell.block}-${cell.task}-${cell.arm}-b${cell.maxSteps}-r${cell.replicate}`
+  const planned = only === null ? manifest.cells : manifest.cells.filter(cell => onlyKey(cell) === only)
   if (planned.length === 0) {
     process.stderr.write(`e2e: --only ${only} names no cell in the manifest\n`)
     process.exit(2)
@@ -305,6 +308,14 @@ async function main() {
       wallClockMs: Math.max(1, Math.min(manifest.perCell.wallClockMs, remaining.wallClockMs)),
     }
     let report
+    // A per-cell step budget is part of the cell identity. Without it, the
+    // 8-step and 16-step variants of the same task/arm share one directory and
+    // the second one fails with EEXIST. Historical manifests have no per-cell
+    // maxSteps, so their cell ids stay unchanged.
+    const cellBudget = cell.maxSteps ?? manifest.config?.maxSteps ?? 8
+    const cellKey = cell.maxSteps === undefined
+      ? null
+      : `${cell.task}-${cell.arm}-b${cellBudget}-r${cell.replicate}`
     try {
       report = await runCell({
         campaign,
@@ -319,9 +330,10 @@ async function main() {
         model: manifest.model,
         cellLimits,
         efConfig: manifest.config,
-        attemptId: `${campaign}:${cell.task}-${cell.arm}-r${cell.replicate}`,
+        attemptId: `${campaign}:${cellKey ?? `${cell.task}-${cell.arm}-r${cell.replicate}`}`,
         manifestSha: digest,
-        maxSteps: cell.maxSteps ?? manifest.config?.maxSteps ?? 8,
+        maxSteps: cellBudget,
+        cellKey,
         maxStepsSource: cell.maxSteps !== undefined
           ? 'cell'
           : manifest.config?.maxSteps !== undefined ? 'manifest' : 'default',

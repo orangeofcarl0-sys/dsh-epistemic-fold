@@ -445,8 +445,9 @@ export async function runCell({
   manifestSha = null,
   maxSteps = DEFAULT_MAX_STEPS,
   maxStepsSource = 'default',
+  cellKey = null,
 }) {
-  const cellId = `${task.id}-${arm}-r${replicate}`
+  const cellId = cellKey ?? `${task.id}-${arm}-r${replicate}`
   const cellRoot = join(outRoot, cellId)
   await mkdir(cellRoot, { recursive: false })
   const workspace = join(cellRoot, 'workspace')
