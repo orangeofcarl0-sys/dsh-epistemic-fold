@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP4",
+  "generatedAt": "2026-11-10T16:38:10.517Z",
+  "manifest": {
+    "path": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\out\\manifest-e2e-r2-confirm-1.json",
+    "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d"
+  },
+  "mode": "historical-r2-host",
+  "forwarded": false,
+  "arms": [
+    {
+      "arm": "E0",
+      "declared": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "effective": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "mismatches": [],
+      "inert": [
+        "rationaleHintTokens"
+      ],
+      "status": "match"
+    },
+    {
+      "arm": "E1",
+      "declared": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "effective": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "mismatches": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inert": [],
+      "status": "drift"
+    }
+  ],
+  "mismatches": [
+    {
+      "arm": "E1",
+      "key": "rationaleHintTokens",
+      "declared": 800,
+      "effective": 400
+    }
+  ],
+  "status": "drift-detected",
+  "note": "Reproduces the R2 host: it forwarded leafAdmission/rootPolicy/framingMode only and hard-coded retainRatio/headroomTokens. The E1 hint mismatch is the treatment-identity finding."
+}

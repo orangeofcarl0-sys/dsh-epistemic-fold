@@ -26,6 +26,7 @@
 import type { ContextPolicyDecision } from "../policy/policy-compiler.ts"
 import type { EfCompactSpec } from "../config/policy.ts"
 import type { FoldReachability, LeafAdmissionVerdict } from "../policy/fold-economics.ts"
+import type { LeafSpanProbe } from "../policy/leaf-span-probe.ts"
 import type { CapacityRegime, PressureRegime } from "../policy/pressure.ts"
 import type { evaluateRootRebase } from "../policy/root-policy.ts"
 
@@ -122,6 +123,16 @@ export interface FoldTelemetry {
   compactSpec: EfCompactSpec | undefined
   /** Most recent economic leaf-admission verdict (R2-B telemetry). */
   leafAdmission: LeafAdmissionVerdict | undefined
+  /**
+   * Most recent exact-span probe (R3 telemetry), when the observer is enabled.
+   *
+   * Admission prices the widest legal span; execution folds the span left after
+   * `spec.retainTokens`. Those are different spans. This field is the only
+   * record of both, the checkpoint estimate each implies, and the actual
+   * post-fold cost. It is undefined when the observer is off, so a reader can
+   * tell "not observed" from "observed zero".
+   */
+  leafSpanProbe: LeafSpanProbe | undefined
   /** Most recent provider-aware rebase decision (R2-C telemetry). */
   rebaseDecision: ContextPolicyDecision | undefined
   /** Most recent pressure regime `compactIfNeeded` acted on (telemetry). */
@@ -174,6 +185,7 @@ export function createFoldTelemetry(): FoldTelemetry {
     rationaleChars: 0,    thresholdTokens: 0,
     compactSpec: undefined,
     leafAdmission: undefined,
+    leafSpanProbe: undefined,
     rebaseDecision: undefined,
     pressureRegime: undefined,
     postLeafRegime: undefined,

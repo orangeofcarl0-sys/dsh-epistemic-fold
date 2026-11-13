@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r3-product-pilot-1",
+  "frozenAt": "2026-11-11T09:51:34.151Z",
+  "work": "EF-R3 product-lane pilot",
+  "status": "pilot-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "granted-by-user-instruction",
+  "code": {
+    "evaluatedCommit": "bbb9fbb53c18d0b6e4358219071fc4153757ba8d",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "worktreeClean": true,
+    "sourceTreeDigest": "54f5867e225f8db8efeead14be94808b1b22417a779566e18e10d2655bac8fec"
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "resolved-at-run",
+    "note": "Resolve the live route at execution time. The representative health probe must pass first."
+  },
+  "arms": {
+    "B0": "native DSH Basic; native retention, threshold 0.5, maxTokens 1024",
+    "E0": "EF minimal, semanticMode none, shipped economy values (system-dedup, retain 0.16)",
+    "E1": "shipped economy preset: semanticMode rationale, hint 400, system-dedup, retain 0.16"
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    }
+  },
+  "tasks": [
+    {
+      "id": "T11-p1",
+      "template": "T11",
+      "seed": 1,
+      "category": "historical-test",
+      "file": "eval/e2e/tasks-r3/T11-p1.json",
+      "digest": "76e95fcd9f6f580798109990a10430af3c74324462e34ea7f00d24941f6dde4d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T12-p1",
+      "template": "T12",
+      "seed": 1,
+      "category": "revised-constraint",
+      "file": "eval/e2e/tasks-r3/T12-p1.json",
+      "digest": "54e7e3274da9a16bb9111f1c5d2576baa0f3984b79c2c4cc6a83656300d50e5d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T13-p1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "file": "eval/e2e/tasks-r3/T13-p1.json",
+      "digest": "a0ef3b5393f77946965545bbaf3434a060d268c24324ea360405c06fe1bbcb4a",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T14-p1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "file": "eval/e2e/tasks-r3/T14-p1.json",
+      "digest": "9336ebeb4cee7fec46d1011cfa672320f8ca7fa57d45a098b839f37827a44e39",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T15-p1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "file": "eval/e2e/tasks-r3/T15-p1.json",
+      "digest": "fc78eef4680c184ef6238168af34e49189a47a92ea27a6be0dbe33f0d9547f23",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T16-p1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "file": "eval/e2e/tasks-r3/T16-p1.json",
+      "digest": "c6b25944958e2fa491efc6df72cb136d709ba20f449d8834bb6219950ac3fb2b",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    }
+  ],
+  "cells": [
+    {
+      "block": "r3-product-pilot",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1
+    },
+    {
+      "block": "r3-product-pilot",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1
+    }
+  ],
+  "perCell": {
+    "requests": 24,
+    "inputTokens": 300000,
+    "outputTokens": 30000,
+    "wallClockMs": 600000
+  },
+  "limits": {
+    "continuationCells": 18,
+    "httpAttempts": 600,
+    "inputTokens": 6000000,
+    "outputTokens": 500000,
+    "wallClockMs": 10800000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "authorizationEnvelope": "r3-product-pilot",
+  "prerequisites": {
+    "transportHealthProbe": {
+      "path": "eval/r3/out/transport-health-probe.json",
+      "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934"
+    },
+    "exposureAudit": {
+      "path": "eval/r3/out/product-lane-exposure-audit.json",
+      "sha256": "d852437906016298a9205afed7f4593237a92af5d7daab25243a1ce692850155",
+      "suitableTasks": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1",
+        "T16-s1",
+        "T16-s2"
+      ]
+    },
+    "admissionCandidate": {
+      "path": "eval/r3/out/admission-candidate.json",
+      "sha256": "757e362d07efd3000ca2953afb981332803067df6f5df4ef960d5d92de8e53c0",
+      "falseAdmissions": 4,
+      "decision": "No default change is justified by this audit. The shipped preset should be tested as-is; if the pilot shows T16-like retry failures, add the candidate as a separate arm."
+    },
+    "costPreflight": {
+      "path": "eval/r3/out/cost-preflight.json",
+      "note": "Run before the pilot. The manifest sets strictUsage=true; the runner stops on any unknownUsage.",
+      "status": "pass"
+    }
+  },
+  "comparability": "This is the shipped economy preset at 32k, not the R2 16k stress lane. Do not pool it with the R2 pilot or confirm.",
+  "note": "A feasibility/quality/cost pilot, not a confirmatory campaign. The authorization file is bound to this manifest SHA-256."
+}

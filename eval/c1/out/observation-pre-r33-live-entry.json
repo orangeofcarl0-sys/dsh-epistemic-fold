@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/observe.mjs",
+  "id": "pre-r33-live-entry",
+  "command": [
+    "npx",
+    "vitest",
+    "run",
+    "tests/r33-live-entry.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationMs": 4448,
+  "observedAt": "2026-11-08T08:57:31.926Z",
+  "protectedArtifacts": 423,
+  "drifted": 2,
+  "drift": [
+    {
+      "path": "eval/r33/out/live-report.json",
+      "before": "0653c6b02ce77004122d920d5c136ab84f38ca2f8e435033897eca61b81651ee",
+      "after": "460e9cc4021106f17136b29ab72a81ab03025969c46ccaaebfdc526c78284bb2"
+    },
+    {
+      "path": "eval/r33/out/live-check.json",
+      "before": "fe74e8b65fb96d6bdc933a536f51fbec2137c2820ce7b31f4f4d252226aa5c40",
+      "after": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23"
+    }
+  ]
+}

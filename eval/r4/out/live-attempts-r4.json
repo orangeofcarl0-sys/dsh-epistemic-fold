@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 live route qualification",
+  "generatedAt": "2026-11-13T18:26:00.452Z",
+  "attempts": [
+    {
+      "attempt": 1,
+      "result": {
+        "path": "eval/r4/out/health-probe-results-attempt-1.json",
+        "sha256": "42c3b541add9c492d082c19468ff8de1c1965ce45e6d290ec3c56688edf1031e"
+      },
+      "analysis": {
+        "path": "eval/r4/out/health-probe-analysis-attempt-1.md",
+        "sha256": "fd7a8f62d9013a6217611f410b235f59c4f2404bee084c289c0aeea4ea7be5e0"
+      },
+      "route": {
+        "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+        "baseUrl": "http://127.0.0.1:7866/v1",
+        "headerNames": [],
+        "model": "deepseek-v4.1-flash"
+      },
+      "verdict": "fail",
+      "planned": 16,
+      "attempted": 1,
+      "successes": 0,
+      "failures": 1,
+      "firstFailure": {
+        "profile": "t13-summary-failed-shape",
+        "purpose": "summary",
+        "durationMs": 51,
+        "finish": {
+          "kind": "error",
+          "failure": {
+            "message": "fetch failed (ECONNREFUSED)",
+            "code": "LIVE_TRANSPORT"
+          }
+        },
+        "usage": null,
+        "error": null
+      },
+      "blocker": "local-proxy-unreachable"
+    },
+    {
+      "attempt": 2,
+      "result": {
+        "path": "eval/r4/out/health-probe-results-attempt-2.json",
+        "sha256": "28d104b6deb35b2e8434e50fc424a29aa890a5091128db3d07d959f16b5c8a1a"
+      },
+      "analysis": {
+        "path": "eval/r4/out/health-probe-analysis-attempt-2.md",
+        "sha256": "146a2f48570cf7c78ccdaa332bc1e031cad7a1dd3e8b111c305085e0ab85b2bd"
+      },
+      "route": {
+        "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider b88043d7-f229-452c-b634-4152ca14aae8)",
+        "baseUrl": "https://opencode.ai/zen/go/v1",
+        "headerNames": [
+          "authorization",
+          "user-agent",
+          "x-opencode-client",
+          "x-opencode-project",
+          "x-opencode-session",
+          "x-client-request-id",
+          "x-opencode-request"
+        ],
+        "model": "deepseek-v4.1-flash"
+      },
+      "verdict": "fail",
+      "planned": 16,
+      "attempted": 1,
+      "successes": 0,
+      "failures": 1,
+      "firstFailure": {
+        "profile": "t13-summary-failed-shape",
+        "purpose": "summary",
+        "durationMs": 1217,
+        "finish": {
+          "kind": "error",
+          "failure": {
+            "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
+            "code": "LIVE_HTTP"
+          }
+        },
+        "usage": null,
+        "error": null
+      },
+      "blocker": "opencode-api-key-expired"
+    },
+    {
+      "attempt": 3,
+      "result": {
+        "path": "eval/r4/out/health-probe-results-attempt-3.json",
+        "sha256": "1189c4566eceeaca2afa7c9e4e9b6b6b51dd78cc671df8443610ad53da052efd"
+      },
+      "analysis": {
+        "path": "eval/r4/out/health-probe-analysis-attempt-3.md",
+        "sha256": "a0b389d043b1d3c35ee25d4543a5666159ce4eeeed1b73d2dc75e066b9b8059f"
+      },
+      "route": {
+        "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider 5c7f8d75-e85e-4de5-9b27-e2b59eab1c7a)",
+        "baseUrl": "https://opencode.ai/zen/go/v1",
+        "headerNames": [
+          "authorization",
+          "user-agent",
+          "x-opencode-client",
+          "x-opencode-project",
+          "x-opencode-session",
+          "x-client-request-id",
+          "x-opencode-request"
+        ],
+        "model": "deepseek-v4.1-flash"
+      },
+      "verdict": "fail",
+      "planned": 16,
+      "attempted": 1,
+      "successes": 0,
+      "failures": 1,
+      "firstFailure": {
+        "profile": "t13-summary-failed-shape",
+        "purpose": "summary",
+        "durationMs": 1239,
+        "finish": {
+          "kind": "error",
+          "failure": {
+            "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
+            "code": "LIVE_HTTP"
+          }
+        },
+        "usage": null,
+        "error": null
+      },
+      "blocker": "opencode-api-key-expired"
+    },
+    {
+      "attempt": 4,
+      "result": {
+        "path": "eval/r4/out/health-probe-results-attempt-4.json",
+        "sha256": "d153b07d8b9960a1f7b4310d10a40a86a488f370fed8302b894d696e930cf6ae"
+      },
+      "analysis": {
+        "path": "eval/r4/out/health-probe-analysis-attempt-4.md",
+        "sha256": "12bb218b99a05c390e3c0b9848eda2a39bd989864ff0f30b49aa7d8989334215"
+      },
+      "route": {
+        "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider ac2dbaa8-7050-48e2-9d72-b21663fe3cff)",
+        "baseUrl": "https://opencode.ai/zen/go/v1",
+        "headerNames": [
+          "authorization",
+          "user-agent",
+          "x-opencode-client",
+          "x-opencode-project",
+          "x-opencode-session",
+          "x-client-request-id",
+          "x-opencode-request"
+        ],
+        "model": "deepseek-v4.1-flash"
+      },
+      "verdict": "fail",
+      "planned": 16,
+      "attempted": 1,
+      "successes": 0,
+      "failures": 1,
+      "firstFailure": {
+        "profile": "t13-summary-failed-shape",
+        "purpose": "summary",
+        "durationMs": 1200,
+        "finish": {
+          "kind": "error",
+          "failure": {
+            "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
+            "code": "LIVE_HTTP"
+          }
+        },
+        "usage": null,
+        "error": null
+      },
+      "blocker": "opencode-api-key-expired"
+    }
+  ],
+  "count": 4,
+  "decision": "blocked-provider-auth",
+  "successes": 0,
+  "planned": 16,
+  "campaign": {
+    "campaign": "e2e-r4-budget-sensitivity-1",
+    "started": false,
+    "reason": "blocked-provider-auth"
+  },
+  "provider": {
+    "requested": "opencode/deepseek-v4.1-flash",
+    "baseUrl": "https://opencode.ai/zen/go/v1",
+    "accountsTried": [
+      "b88043d7-f229-452c-b634-4152ca14aae8",
+      "5c7f8d75-e85e-4de5-9b27-e2b59eab1c7a",
+      "ac2dbaa8-7050-48e2-9d72-b21663fe3cff"
+    ],
+    "result": "all three configured OpenCode keys returned HTTP 401 api_key_expired"
+  },
+  "next": "Replace at least one OpenCode API key in ~/.zcode/v2/config.json, then retry the same 16-request probe. No automatic retry; the campaign stays unauthorized until a probe passes.",
+  "note": "No model response was produced and no usage was billed. The campaign never started."
+}

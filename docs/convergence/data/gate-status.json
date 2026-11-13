@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T15:19:28.081Z",
+  "round": "EF-C0",
+  "status": "complete",
+  "eligibility": {
+    "evaluated": 6,
+    "passed": 6,
+    "failed": 0,
+    "nonPass": 0,
+    "eligible": true,
+    "failedIds": [],
+    "nonPassIds": []
+  },
+  "productDecision": "deployment-hold",
+  "deploymentEligible": false,
+  "gates": [
+    {
+      "id": "C0-G0",
+      "name": "Repository integrity",
+      "status": "passed",
+      "detail": "R38 baseline 0067020 (live ref); 11 ancestry checks; ahead 96; archive and digests match",
+      "evidence": "docs/convergence/data/git-stage-map.json, change-inventory.json, artifact-manifest.json"
+    },
+    {
+      "id": "C0-G1",
+      "name": "Configuration truth",
+      "status": "passed",
+      "detail": "25 scenarios; rationale tiers economy,balanced,quality; invalid 2; tests 33/33",
+      "evidence": "docs/convergence/data/effective-config-matrix.json, tests/convergence-config.spec.ts"
+    },
+    {
+      "id": "C0-G2",
+      "name": "Architecture boundary",
+      "status": "passed",
+      "detail": "C1-C7 documented; boundary and config suites pass",
+      "evidence": "docs/convergence/BOUNDARY_CONTRACTS.md, tests/convergence-boundaries.spec.ts"
+    },
+    {
+      "id": "C0-G3",
+      "name": "Evidence consistency",
+      "status": "passed",
+      "detail": "18 claims; 0 missing artifacts; 0 product-level claims; B1 marked not-B0",
+      "evidence": "docs/convergence/data/evidence-registry.json, baseline-comparison-manifest.json"
+    },
+    {
+      "id": "C0-G4",
+      "name": "Governance",
+      "status": "passed",
+      "detail": "branch roles and push/PR/merge discipline recorded; PR #4 open-at-C0 and closed-superseded recorded; C0 branch never pushed recorded; M1 hold recorded",
+      "evidence": "docs/convergence/REPOSITORY_GOVERNANCE.md, baseline-comparison-manifest.json"
+    },
+    {
+      "id": "C0-G5",
+      "name": "Roadmap",
+      "status": "passed",
+      "detail": "S1-S4 present; five scope states present; deferred items kept; R38-M1 file unchanged",
+      "evidence": "docs/convergence/RESEARCH_ROADMAP.md, NEXT_MILESTONES.md, FEATURE_AND_SCOPE_MATRIX.md"
+    }
+  ],
+  "notes": [
+    "EF-C0 made no live model call.",
+    "A document existing is not a pass.",
+    "Mechanism evidence is not product evidence.",
+    "No push, merge, rebase, tag or branch deletion was performed."
+  ]
+}

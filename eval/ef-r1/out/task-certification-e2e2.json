@@ -1,0 +1,1282 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T19:37:37.902Z",
+  "work": "EF-E2E",
+  "tasks": [
+    {
+      "id": "T1-s1",
+      "template": "T1",
+      "seed": 1,
+      "category": "implementation",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 16880,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T1.mjs exit 1"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "external_script",
+              "pass": true,
+              "detail": "eval/e2e/checkers/T1.mjs exit 0"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T1.mjs exit 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T1-s2",
+      "template": "T1",
+      "seed": 2,
+      "category": "implementation",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 16771,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T1.mjs exit 1"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "external_script",
+              "pass": true,
+              "detail": "eval/e2e/checkers/T1.mjs exit 0"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T1.mjs exit 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "category": "multi-revision-history",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9586,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "flag-at-10.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "flag-at-10.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "flag-at-10.json = {\"concurrency\":12}, expected {\"concurrency\":8}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "category": "multi-revision-history",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9489,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "flag-at-10.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "flag-at-10.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "flag-at-10.json = {\"concurrency\":9}, expected {\"concurrency\":6}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "category": "exact-recall",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27223,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "answer.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "answer.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "answer.json = {\"build\":\"7f3c9a1e\",\"timeout_ms\":1800}, expected {\"build\":\"7f3c9a1e\",\"timeout_ms\":1847}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "category": "exact-recall",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 27124,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "answer.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "answer.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "answer.json = {\"build\":\"c41d08b7\",\"timeout_ms\":2300}, expected {\"build\":\"c41d08b7\",\"timeout_ms\":2311}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T3-s1",
+      "template": "T3",
+      "seed": 1,
+      "category": "decision-revision",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 17596,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": false,
+              "detail": "src/cache.js contains \"new Map(\""
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T3.mjs exit 1"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": true,
+              "detail": "src/cache.js does not contain the required text"
+            },
+            {
+              "kind": "external_script",
+              "pass": true,
+              "detail": "eval/e2e/checkers/T3.mjs exit 0"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": false,
+              "detail": "src/cache.js contains \"new Map(\""
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T3.mjs exit 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T3-s2",
+      "template": "T3",
+      "seed": 2,
+      "category": "decision-revision",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 17634,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": false,
+              "detail": "src/cache.js contains \"new Map(\""
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T3.mjs exit 1"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": true,
+              "detail": "src/cache.js does not contain the required text"
+            },
+            {
+              "kind": "external_script",
+              "pass": true,
+              "detail": "eval/e2e/checkers/T3.mjs exit 0"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_not_contains",
+              "pass": false,
+              "detail": "src/cache.js contains \"new Map(\""
+            },
+            {
+              "kind": "external_script",
+              "pass": false,
+              "detail": "eval/e2e/checkers/T3.mjs exit 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "category": "tool-dependency",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 17110,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "deploy.plan.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "deploy.plan.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "deploy.plan.json = {\"region\":\"us-east-1\",\"replicas\":5}, expected {\"region\":\"eu-west-3\",\"replicas\":3}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "category": "tool-dependency",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 17318,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "deploy.plan.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "deploy.plan.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "deploy.plan.json = {\"region\":\"us-east-1\",\"replicas\":5}, expected {\"region\":\"ap-south-1\",\"replicas\":4}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5-s1",
+      "template": "T5",
+      "seed": 1,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15305,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21381,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":30}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5-s2",
+      "template": "T5",
+      "seed": 2,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15303,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21420,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":45}, expected {\"max_attempts\":2,\"window_seconds\":45}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5B-s1",
+      "template": "T5B",
+      "seed": 1,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15305,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21381,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":30}, expected {\"max_attempts\":2,\"window_seconds\":30}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T5B-s2",
+      "template": "T5B",
+      "seed": 2,
+      "category": "multi-fold",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 15303,
+      "seedAboveThreshold": true,
+      "stageBTokens": 21420,
+      "stageBAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json is missing"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "state.json matches"
+            },
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "final.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "state.json = {\"max_attempts\":5}, expected {\"max_attempts\":2}"
+            },
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "final.json = {\"max_attempts\":5,\"window_seconds\":45}, expected {\"max_attempts\":2,\"window_seconds\":45}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T6-s1",
+      "template": "T6",
+      "seed": 1,
+      "category": "cache-pressure",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8722,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"MAX_ATTEMPTS = 4\""
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"BASE_MS = 250\""
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/retry.js contains the required text"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/retry.js contains the required text"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"MAX_ATTEMPTS = 4\""
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"BASE_MS = 250\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T6-s2",
+      "template": "T6",
+      "seed": 2,
+      "category": "cache-pressure",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8697,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"MAX_ATTEMPTS = 4\""
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"BASE_MS = 250\""
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": true,
+              "detail": "node --test exit 0"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/retry.js contains the required text"
+            },
+            {
+              "kind": "file_contains",
+              "pass": true,
+              "detail": "src/retry.js contains the required text"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "tests",
+              "pass": false,
+              "detail": "node --test exit 1"
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"MAX_ATTEMPTS = 4\""
+            },
+            {
+              "kind": "file_contains",
+              "pass": false,
+              "detail": "src/retry.js does not contain \"BASE_MS = 250\""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "category": "historical-test-result",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 8971,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "test-history.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "test-history.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "test-history.json = {\"failed\":0,\"suite\":\"retry\"}, expected {\"failed\":3,\"suite\":\"retry\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "category": "historical-test-result",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9311,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "test-history.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "test-history.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "test-history.json = {\"failed\":0,\"suite\":\"billing\"}, expected {\"failed\":5,\"suite\":\"billing\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "category": "expired-configuration",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9289,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-config.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "incident-config.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-config.json = {\"timeout_ms\":900}, expected {\"timeout_ms\":1847}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "category": "expired-configuration",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9310,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-config.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "incident-config.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-config.json = {\"timeout_ms\":1200}, expected {\"timeout_ms\":2311}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "category": "cross-file-recovery",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9253,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-deploy.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "incident-deploy.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-deploy.json = {\"service\":\"checkout\",\"release\":\"rel-a81d\",\"tag\":\"v2.8.0\"}, expected {\"service\":\"checkout\",\"release\":\"rel-9f2c\",\"tag\":\"v2.7.1\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "category": "cross-file-recovery",
+      "budgetTokens": 16384,
+      "thresholdTokens": 8192,
+      "seedTokens": 9240,
+      "seedAboveThreshold": true,
+      "outcomes": {
+        "initial": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-deploy.json is missing"
+            }
+          ]
+        },
+        "reference": {
+          "pass": true,
+          "expected": true,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": true,
+              "detail": "incident-deploy.json matches"
+            }
+          ]
+        },
+        "counterfactual": {
+          "pass": false,
+          "expected": false,
+          "ok": true,
+          "checks": [
+            {
+              "kind": "json_equals",
+              "pass": false,
+              "detail": "incident-deploy.json = {\"service\":\"billing\",\"release\":\"rel-77bb\",\"tag\":\"v1.9.5\"}, expected {\"service\":\"billing\",\"release\":\"rel-4d71\",\"tag\":\"v1.9.4\"}"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "pass": true
+}

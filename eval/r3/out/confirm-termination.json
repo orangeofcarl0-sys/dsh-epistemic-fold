@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 termination",
+  "generatedAt": "2026-11-11T09:23:04.643Z",
+  "campaign": "e2e-r2-confirm-merged",
+  "decision": "terminated-partial",
+  "status": "closed",
+  "furtherLiveCalls": false,
+  "counts": {
+    "planned": 54,
+    "valid": 23,
+    "unresolved": 1,
+    "neverStarted": 30,
+    "noValidOutcome": 31,
+    "attempts": 25,
+    "transportFailedAttempts": 2
+  },
+  "missingByTemplate": {
+    "T11": 0,
+    "T12": 0,
+    "T13": 4,
+    "T14": 9,
+    "T15": 9,
+    "T16": 9
+  },
+  "reasons": [
+    "The treatment is the 16k stress lane: retain 0.04, legacy framing, effective hint 400. It is not the shipped economy preset.",
+    "The missing cells are task-type concentrated: T13=4, T14=9, T15=9, T16=9. Completing them would improve balance but would not make the treatment product-representative.",
+    "The product question is native Basic vs the shipped preset, which this campaign cannot answer.",
+    "The 23 valid cells and the corrected ledger remain the stress-lane evidence; no historical file is rewritten."
+  ],
+  "preservedEvidence": {
+    "reconciliation": {
+      "path": "eval/r3/out/live-confirm-reconciliation.json",
+      "sha256": "63071bbd928db2807166cab4b7da5a8900b31ef45d3972dd74a416bc203c588a"
+    },
+    "productDecision": {
+      "path": "eval/r3/out/product-decision.json",
+      "sha256": "d3438ed2cad37c07fa74354d299b199a630b353446eaa517f275577358fb4dcc"
+    }
+  },
+  "next": "A separate product-lane pilot under a new manifest and authorization, after a representative transport health probe. The old confirm is not reopened.",
+  "note": "Termination is a decision not to spend more live calls on a non-product treatment. It is not a claim that the missing cells would have failed."
+}

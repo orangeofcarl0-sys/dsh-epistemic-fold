@@ -1,0 +1,2068 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3",
+  "generatedAt": "2026-11-10T15:34:23.637Z",
+  "campaign": "e2e-r2-pilot-1",
+  "source": "ledger",
+  "ledger": {
+    "path": "eval/r3/out/cell-ledger.json",
+    "sha256": "071f54616d3d26604e20ea4ca707794b63197d671a899b4f4f4abbc50e62cf1e"
+  },
+  "summary": {
+    "campaign": "e2e-r2-pilot-1",
+    "planned": 18,
+    "valid": 18,
+    "unresolved": 0,
+    "neverStarted": 0,
+    "noValidOutcome": 0,
+    "uniqueCellsStarted": 18,
+    "attempts": 18,
+    "validAttempts": 18,
+    "transportFailedAttempts": 0,
+    "runnerErrorAttempts": 0,
+    "costInvalidCells": [
+      {
+        "cellId": "T15-s1-B0-r1",
+        "usage": {
+          "requests": 14,
+          "unknownUsage": 2,
+          "inputTokens": 178205,
+          "outputTokens": 7996,
+          "cacheReadTokens": 60800,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 8
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T16-s1-E0-r1",
+        "usage": {
+          "requests": 11,
+          "unknownUsage": 1,
+          "inputTokens": 238246,
+          "outputTokens": 2385,
+          "cacheReadTokens": 4352,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 0
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      },
+      {
+        "cellId": "T16-s1-B0-r1",
+        "usage": {
+          "requests": 15,
+          "unknownUsage": 2,
+          "inputTokens": 246291,
+          "outputTokens": 10379,
+          "cacheReadTokens": 384,
+          "cacheWriteTokens": 0,
+          "auxiliaryRequests": 9
+        },
+        "reasons": [
+          "partial-usage"
+        ]
+      }
+    ],
+    "configMismatchCells": [
+      {
+        "cellId": "T11-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T12-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T13-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T14-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T15-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      },
+      {
+        "cellId": "T16-s1-E1-r1",
+        "mismatch": [
+          {
+            "key": "rationaleHintTokens",
+            "declared": 800,
+            "effective": 400
+          }
+        ]
+      }
+    ],
+    "configMismatchByKey": {
+      "rationaleHintTokens": 6
+    },
+    "byArm": {
+      "B0": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 5,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 4,
+        "costInvalid": 2,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 0
+      },
+      "E0": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 2,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 5,
+        "costInvalid": 1,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 0
+      },
+      "E1": {
+        "planned": 6,
+        "valid": 6,
+        "passed": 6,
+        "unresolved": 0,
+        "neverStarted": 0,
+        "costValid": 6,
+        "costInvalid": 0,
+        "cellsWithCommit": 6,
+        "cellsWithDelivery": 6,
+        "configMismatchCells": 6
+      }
+    },
+    "missingByTemplate": {
+      "T11": 0,
+      "T12": 0,
+      "T13": 0,
+      "T14": 0,
+      "T15": 0,
+      "T16": 0
+    },
+    "cells": {
+      "valid": 18,
+      "unresolved": 0,
+      "never-started": 0
+    },
+    "missingCellIds": [],
+    "note": "A transport-failed attempt is not an arm outcome. A cell is valid only when at least one attempt produced a readable checker result; cost validity is a separate axis."
+  },
+  "cells": [
+    {
+      "cellId": "T11-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T11-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T11-s1-B0-r1"
+      },
+      "task": "T11-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T11-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T11-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 12,
+        "unknownUsage": 0,
+        "inputTokens": 106710,
+        "outputTokens": 3921,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 5
+      },
+      "witnessSummary": {
+        "attempts": 5,
+        "committed": 2,
+        "refused": 3,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 5,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2,
+          "shrink-refusal": 3
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 60178,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    },
+    {
+      "cellId": "T11-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T11-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T11-s1-E0-r1"
+      },
+      "task": "T11-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": false,
+      "checker": false,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T11-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T11-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 7,
+        "unknownUsage": 0,
+        "inputTokens": 45959,
+        "outputTokens": 528,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 2,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 22636,
+        "kind": "finish"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T11-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T11-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T11-s1-E1-r1"
+      },
+      "task": "T11-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T11-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T11-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 10,
+        "unknownUsage": 0,
+        "inputTokens": 123056,
+        "outputTokens": 3220,
+        "cacheReadTokens": 16512,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2
+      },
+      "witnessSummary": {
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 2,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": true,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 62044,
+        "kind": "step-limit"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T12-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T12-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T12-s1-E1-r1"
+      },
+      "task": "T12-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T12-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T12-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 6,
+        "unknownUsage": 0,
+        "inputTokens": 113797,
+        "outputTokens": 1447,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1
+      },
+      "witnessSummary": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 22535,
+        "kind": "finish"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T12-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T12-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T12-s1-B0-r1"
+      },
+      "task": "T12-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T12-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T12-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 12,
+        "unknownUsage": 0,
+        "inputTokens": 116408,
+        "outputTokens": 4214,
+        "cacheReadTokens": 1536,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7
+      },
+      "witnessSummary": {
+        "attempts": 7,
+        "committed": 2,
+        "refused": 5,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 7,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2,
+          "shrink-refusal": 5
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 60471,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    },
+    {
+      "cellId": "T12-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T12-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T12-s1-E0-r1"
+      },
+      "task": "T12-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": false,
+      "checker": false,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T12-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T12-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 8,
+        "unknownUsage": 0,
+        "inputTokens": 110738,
+        "outputTokens": 1656,
+        "cacheReadTokens": 2816,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 5,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 1,
+        "verified": 4,
+        "inferred": 0,
+        "unverified": 1,
+        "committedAndDelivered": 4,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 4,
+          "no-summary": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": true,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 73262,
+        "kind": "step-limit"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T13-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T13-s1-E0-r1"
+      },
+      "task": "T13-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T13-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T13-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 8,
+        "unknownUsage": 0,
+        "inputTokens": 197765,
+        "outputTokens": 1340,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 4,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 4,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 4,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 4
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": true,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 33190,
+        "kind": "step-limit"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T13-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T13-s1-E1-r1"
+      },
+      "task": "T13-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T13-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T13-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 6,
+        "unknownUsage": 0,
+        "inputTokens": 68044,
+        "outputTokens": 1228,
+        "cacheReadTokens": 27264,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1
+      },
+      "witnessSummary": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 27488,
+        "kind": "finish"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T13-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T13-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T13-s1-B0-r1"
+      },
+      "task": "T13-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T13-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T13-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 11,
+        "unknownUsage": 0,
+        "inputTokens": 88462,
+        "outputTokens": 5735,
+        "cacheReadTokens": 1920,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7
+      },
+      "witnessSummary": {
+        "attempts": 7,
+        "committed": 4,
+        "refused": 3,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 7,
+        "unverified": 0,
+        "committedAndDelivered": 4,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 4,
+          "shrink-refusal": 3
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": true,
+        "finishSummary": "Created build.json containing channel \"beta\" and build \"7f3c9a1e\" from the pre-rotation manifest read, and verified the file contents.",
+        "error": null,
+        "durationMs": 69128,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    },
+    {
+      "cellId": "T14-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T14-s1-B0-r1"
+      },
+      "task": "T14-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T14-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T14-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 13,
+        "unknownUsage": 0,
+        "inputTokens": 180710,
+        "outputTokens": 7218,
+        "cacheReadTokens": 2176,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 7
+      },
+      "witnessSummary": {
+        "attempts": 7,
+        "committed": 4,
+        "refused": 1,
+        "aborted": 2,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 7,
+        "unverified": 0,
+        "committedAndDelivered": 3,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "other": 2,
+          "committed": 4,
+          "shrink-refusal": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 88431,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    },
+    {
+      "cellId": "T14-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T14-s1-E0-r1"
+      },
+      "task": "T14-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T14-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T14-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 7,
+        "unknownUsage": 0,
+        "inputTokens": 22448,
+        "outputTokens": 755,
+        "cacheReadTokens": 10112,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 2,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": true,
+        "finishSummary": "Set `LIMIT` in src/limit.js to the corrected capacity value of 4 (not the rejected 8; the file previously held 10). Ran the test suite — 1 test, 1 passing, 0 failures.",
+        "error": null,
+        "durationMs": 17446,
+        "kind": "finish"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T14-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T14-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T14-s1-E1-r1"
+      },
+      "task": "T14-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T14-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T14-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 9,
+        "unknownUsage": 0,
+        "inputTokens": 101747,
+        "outputTokens": 2258,
+        "cacheReadTokens": 22400,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2
+      },
+      "witnessSummary": {
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 2,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": true,
+        "finishSummary": "Applied the corrected capacity limit of 4 in `src/limit.js` (was 10), then ran the test suite: 1 test passed, 0 failures.",
+        "error": null,
+        "durationMs": 36216,
+        "kind": "finish"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T15-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T15-s1-E1-r1"
+      },
+      "task": "T15-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T15-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T15-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 8,
+        "unknownUsage": 0,
+        "inputTokens": 128390,
+        "outputTokens": 2726,
+        "cacheReadTokens": 20736,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 1
+      },
+      "witnessSummary": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 43590,
+        "kind": "finish"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T15-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T15-s1-B0-r1"
+      },
+      "task": "T15-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": false,
+      "checker": false,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": false,
+      "reasons": [
+        "partial-usage"
+      ],
+      "attempts": [
+        "e2e-r2-pilot-1:T15-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T15-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 14,
+        "unknownUsage": 2,
+        "inputTokens": 178205,
+        "outputTokens": 7996,
+        "cacheReadTokens": 60800,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 8
+      },
+      "witnessSummary": {
+        "attempts": 8,
+        "committed": 3,
+        "refused": 2,
+        "aborted": 3,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 8,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "other": 3,
+          "committed": 3,
+          "shrink-refusal": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 98763,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    },
+    {
+      "cellId": "T15-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T15-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T15-s1-E0-r1"
+      },
+      "task": "T15-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": false,
+      "checker": false,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T15-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T15-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 8,
+        "unknownUsage": 0,
+        "inputTokens": 121132,
+        "outputTokens": 2211,
+        "cacheReadTokens": 33408,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 6,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 5,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 1,
+        "byReason": {
+          "committed": 6
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": true,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 38857,
+        "kind": "step-limit"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T16-s1-E0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "E0",
+        "replicate": 1,
+        "cellId": "T16-s1-E0-r1"
+      },
+      "task": "T16-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": false,
+      "checker": false,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": false,
+      "reasons": [
+        "partial-usage"
+      ],
+      "attempts": [
+        "e2e-r2-pilot-1:T16-s1-E0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T16-s1-E0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E0-r1\\report.json",
+      "usage": {
+        "requests": 11,
+        "unknownUsage": 1,
+        "inputTokens": 238246,
+        "outputTokens": 2385,
+        "cacheReadTokens": 4352,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 0
+      },
+      "witnessSummary": {
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 6,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 6,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 6
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": true,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 51788,
+        "kind": "step-limit"
+      },
+      "treatmentId": "E0:35f392a9bd64",
+      "configDigest": "35f392a9bd648da608598e0eaf66198ead709af3406358a9bd5e4eb118b2ef6d",
+      "configMismatch": [],
+      "inertKeys": [
+        "rationaleHintTokens"
+      ],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "none",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T16-s1-E1-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "E1",
+        "replicate": 1,
+        "cellId": "T16-s1-E1-r1"
+      },
+      "task": "T16-s1",
+      "arm": "E1",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": true,
+      "reasons": [],
+      "attempts": [
+        "e2e-r2-pilot-1:T16-s1-E1-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T16-s1-E1-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E1-r1\\report.json",
+      "usage": {
+        "requests": 8,
+        "unknownUsage": 0,
+        "inputTokens": 176802,
+        "outputTokens": 3007,
+        "cacheReadTokens": 23808,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 2
+      },
+      "witnessSummary": {
+        "attempts": 2,
+        "committed": 2,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 2,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 2,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 2
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 60120,
+        "kind": "finish"
+      },
+      "treatmentId": "E1:9cb1c9c33b71",
+      "configDigest": "9cb1c9c33b711410cac3a45358268f3b4fc2cbc2ca323ab669d459eba2915302",
+      "configMismatch": [
+        {
+          "key": "rationaleHintTokens",
+          "declared": 800,
+          "effective": 400
+        }
+      ],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 400,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      },
+      "declaredConfigSummary": {
+        "mode": null,
+        "semanticMode": "rationale",
+        "semanticContinuity": "off",
+        "leafAdmission": "economic",
+        "rootPolicy": "economics",
+        "framingMode": "legacy",
+        "rationaleHintTokens": 800,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": null,
+        "minReclaimTokens": 600,
+        "minReclaimRatio": 0.25
+      }
+    },
+    {
+      "cellId": "T16-s1-B0-r1",
+      "cell": {
+        "block": "r2-live",
+        "task": "T16-s1",
+        "arm": "B0",
+        "replicate": 1,
+        "cellId": "T16-s1-B0-r1"
+      },
+      "task": "T16-s1",
+      "arm": "B0",
+      "replicate": 1,
+      "status": "valid",
+      "pass": true,
+      "checker": true,
+      "taskOutcomeValid": true,
+      "treatmentValid": true,
+      "costValid": false,
+      "reasons": [
+        "partial-usage"
+      ],
+      "attempts": [
+        "e2e-r2-pilot-1:T16-s1-B0-r1"
+      ],
+      "validAttempts": [
+        "e2e-r2-pilot-1:T16-s1-B0-r1"
+      ],
+      "sensitivityAttempts": [],
+      "transportFailedAttempts": [],
+      "notExecutedIn": [],
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-B0-r1\\report.json",
+      "usage": {
+        "requests": 15,
+        "unknownUsage": 2,
+        "inputTokens": 246291,
+        "outputTokens": 10379,
+        "cacheReadTokens": 384,
+        "cacheWriteTokens": 0,
+        "auxiliaryRequests": 9
+      },
+      "witnessSummary": {
+        "attempts": 9,
+        "committed": 5,
+        "refused": 1,
+        "aborted": 3,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 9,
+        "unverified": 0,
+        "committedAndDelivered": 3,
+        "committedNotDelivered": 2,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "other": 3,
+          "committed": 5,
+          "shrink-refusal": 1
+        }
+      },
+      "termination": {
+        "idle": "idle",
+        "stepLimit": false,
+        "finished": false,
+        "finishSummary": null,
+        "error": null,
+        "durationMs": 110581,
+        "kind": "finish"
+      },
+      "treatmentId": "B0:0f8b492062f5",
+      "configDigest": "0f8b492062f505c9694c6dacfa6c553a8ef3e77f4a44cb8470f2cf5734d8dbae",
+      "configMismatch": [],
+      "inertKeys": [],
+      "configSource": "executed",
+      "effectiveConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      },
+      "declaredConfigSummary": {
+        "backend": "dsh-basic",
+        "mode": null,
+        "semanticMode": null,
+        "semanticContinuity": null,
+        "leafAdmission": null,
+        "rootPolicy": null,
+        "framingMode": null,
+        "rationaleHintTokens": null,
+        "thresholdRatio": 0.5,
+        "retainRatio": 0.04,
+        "headroomTokens": 512,
+        "maxTokens": 1024,
+        "minReclaimTokens": null,
+        "minReclaimRatio": null
+      }
+    }
+  ],
+  "note": "Corrected denominator view. Transport-failed attempts are not arm outcomes; cost validity is separate from task outcome."
+}

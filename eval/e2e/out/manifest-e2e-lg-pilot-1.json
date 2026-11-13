@@ -1,0 +1,472 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-lg-pilot-1",
+  "frozenAt": "2026-11-09T19:05:21.382Z",
+  "work": "EF-E2E",
+  "code": {
+    "evaluatedCommit": "119d112849c4cfa3b094f5258ed774291f24347b",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "worktreeClean": true,
+    "sourceTreeDigest": "c3db91e99ff74b717a45842b5163340cf54137b162af65a15f65a0da0e427939",
+    "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
+    "dsh": {
+      "dsh-agent-loop": "0.2.1-rc.3",
+      "dsh-agent": "0.2.1-rc.3",
+      "dsh-tools": "0.2.1-rc.3",
+      "dsh-llm": "0.2.1-rc.3",
+      "dsh-session": "0.2.1-rc.3",
+      "dsh-compaction": "0.2.1-rc.3",
+      "dsh-compaction-basic": "0.2.1-rc.3"
+    }
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": [],
+    "note": "API key is resolved at run time and never written to the manifest or a report"
+  },
+  "arms": {
+    "B0": {
+      "backend": "dsh-basic",
+      "ef": false,
+      "semanticMode": "n/a",
+      "semanticContinuity": "off",
+      "mode": "n/a"
+    },
+    "Bv": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "basic"
+    },
+    "E0": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy"
+    },
+    "E1": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "rationale",
+      "semanticContinuity": "off",
+      "mode": "economy"
+    },
+    "E0a": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy",
+      "recallAffordance": true
+    },
+    "E0i": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy",
+      "foldedSpanIndex": true
+    },
+    "E0ai": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy",
+      "foldedSpanIndex": true,
+      "recallAffordance": true
+    },
+    "S": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "rationale",
+      "semanticContinuity": "active",
+      "mode": "economy"
+    },
+    "E0-L": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy",
+      "archiveLocator": true
+    },
+    "E0-G": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy"
+    },
+    "E0-LG": {
+      "backend": "ef",
+      "ef": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off",
+      "mode": "economy",
+      "archiveLocator": true
+    }
+  },
+  "tasks": [
+    {
+      "file": "eval/e2e/tasks/T1-s1.json",
+      "id": "T1-s1",
+      "template": "T1",
+      "seed": 1,
+      "digest": "5df9173d30be7dd7df9c453ffd47bbf23aa3d03b3774247982b3b7bfe257e27b"
+    },
+    {
+      "file": "eval/e2e/tasks/T1-s2.json",
+      "id": "T1-s2",
+      "template": "T1",
+      "seed": 2,
+      "digest": "5ff2305a87ea3e8bfd87c614401387e729c8ac08941bf70ee754120b2023b257"
+    },
+    {
+      "file": "eval/e2e/tasks/T10-s1.json",
+      "id": "T10-s1",
+      "template": "T10",
+      "seed": 1,
+      "digest": "cab7b4b693371679ffc4f7ca5ff7adb799f2c1073c3ad4c68737c7ebab3276fc"
+    },
+    {
+      "file": "eval/e2e/tasks/T10-s2.json",
+      "id": "T10-s2",
+      "template": "T10",
+      "seed": 2,
+      "digest": "7cd05f6e182f131086a7593ae9dcba8e2151ba603a2be0e4bbc7ad5492a40de5"
+    },
+    {
+      "file": "eval/e2e/tasks/T2-s1.json",
+      "id": "T2-s1",
+      "template": "T2",
+      "seed": 1,
+      "digest": "4fad0f021759a4df2cdd425888c5ab345441e2bb894e58758e73638cc4cb90e8"
+    },
+    {
+      "file": "eval/e2e/tasks/T2-s2.json",
+      "id": "T2-s2",
+      "template": "T2",
+      "seed": 2,
+      "digest": "40bc6da374492cff10a0b81cf92b6c9bd9a1a0d9fb00264f05e33517236bbe27"
+    },
+    {
+      "file": "eval/e2e/tasks/T3-s1.json",
+      "id": "T3-s1",
+      "template": "T3",
+      "seed": 1,
+      "digest": "ae3259f4ab9723dfec1b7e865e9d8a60f85baa62bd13e1e29f6f55cc8dfc63cc"
+    },
+    {
+      "file": "eval/e2e/tasks/T3-s2.json",
+      "id": "T3-s2",
+      "template": "T3",
+      "seed": 2,
+      "digest": "9583495eb2498a053adb0bfad097e974921eda2bd273d31ec6d950c89db5aacd"
+    },
+    {
+      "file": "eval/e2e/tasks/T4-s1.json",
+      "id": "T4-s1",
+      "template": "T4",
+      "seed": 1,
+      "digest": "1a3211f3d7487a0e9ef370ef4129d7d4845649a201a753204ec8c16e4f205e8e"
+    },
+    {
+      "file": "eval/e2e/tasks/T4-s2.json",
+      "id": "T4-s2",
+      "template": "T4",
+      "seed": 2,
+      "digest": "a079bf20a6c6116d201bb359abad4e392c141f18407c8805d45770b3bdeeabfb"
+    },
+    {
+      "file": "eval/e2e/tasks/T5-s1.json",
+      "id": "T5-s1",
+      "template": "T5",
+      "seed": 1,
+      "digest": "726f9424d4e31b5619292f5ce718328f411fe6d4bbe88aaddf1405b0025edd0a"
+    },
+    {
+      "file": "eval/e2e/tasks/T5-s2.json",
+      "id": "T5-s2",
+      "template": "T5",
+      "seed": 2,
+      "digest": "39f1f93ccb8ba8c1782ef30d50a021d56338fe4effb32858e0825ac86fac5d86"
+    },
+    {
+      "file": "eval/e2e/tasks/T5B-s1.json",
+      "id": "T5B-s1",
+      "template": "T5B",
+      "seed": 1,
+      "digest": "8f26f8684882cdb9a4884f3a45e6bc2af4f0e18ceb10a866aec34de1b56fba78"
+    },
+    {
+      "file": "eval/e2e/tasks/T5B-s2.json",
+      "id": "T5B-s2",
+      "template": "T5B",
+      "seed": 2,
+      "digest": "4d2933eeb74cc696f6efbbbfa8a125233e3261b4b132fa7850b55017f436d9c5"
+    },
+    {
+      "file": "eval/e2e/tasks/T6-s1.json",
+      "id": "T6-s1",
+      "template": "T6",
+      "seed": 1,
+      "digest": "6d245324b4904dd1f27e5ebebbe7462cf33a5a01f0ec2c482470d6d63d2f858d"
+    },
+    {
+      "file": "eval/e2e/tasks/T6-s2.json",
+      "id": "T6-s2",
+      "template": "T6",
+      "seed": 2,
+      "digest": "4e4ba85debd9fda385f87b9fddc74d83d4cfbc6f7423035482311e7ad50b6366"
+    },
+    {
+      "file": "eval/e2e/tasks/T7-s1.json",
+      "id": "T7-s1",
+      "template": "T7",
+      "seed": 1,
+      "digest": "0107766cd199aabb44f3a5752c2d71931d5f7fd05e5ee5c5ace044ed8f21c344"
+    },
+    {
+      "file": "eval/e2e/tasks/T7-s2.json",
+      "id": "T7-s2",
+      "template": "T7",
+      "seed": 2,
+      "digest": "1104e9497f1b47c2abc012c0989076e8cd00e403be1ae37fab4834b0b0706801"
+    },
+    {
+      "file": "eval/e2e/tasks/T8-s1.json",
+      "id": "T8-s1",
+      "template": "T8",
+      "seed": 1,
+      "digest": "c2f94e0cbe3fed10409ce0d8d04fc4d838199d27d4efbf2d174144c57f527864"
+    },
+    {
+      "file": "eval/e2e/tasks/T8-s2.json",
+      "id": "T8-s2",
+      "template": "T8",
+      "seed": 2,
+      "digest": "2558f343792e24eaa106ba32160f0c18d43d3a208bff1fe544eb19c8bc92c2b8"
+    },
+    {
+      "file": "eval/e2e/tasks/T9-s1.json",
+      "id": "T9-s1",
+      "template": "T9",
+      "seed": 1,
+      "digest": "bc4f23d59e72322c07d5543a00ff791f4a446511aaad04c5813e15cb5feceb7c"
+    },
+    {
+      "file": "eval/e2e/tasks/T9-s2.json",
+      "id": "T9-s2",
+      "template": "T9",
+      "seed": 2,
+      "digest": "1a4261d81938d9d2c7f6598c96b8336c7d25445e6755197cf18bb535e201e69d"
+    }
+  ],
+  "cells": [
+    {
+      "block": "lg-pilot",
+      "task": "T2-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s1",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s1",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s1",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s2",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s2",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s2",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T2-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s1",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s1",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s1",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s2",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s2",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T9-s2",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s1",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s1",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s1",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s1",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s2",
+      "arm": "E0-L",
+      "replicate": 1,
+      "guard": false
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s2",
+      "arm": "E0-G",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s2",
+      "arm": "E0-LG",
+      "replicate": 1,
+      "guard": true
+    },
+    {
+      "block": "lg-pilot",
+      "task": "T10-s2",
+      "arm": "E0",
+      "replicate": 1,
+      "guard": false
+    }
+  ],
+  "design": {
+    "calibration": 0,
+    "core": 0,
+    "index": 0,
+    "lgPilot": 24,
+    "replicates": "r1 = seed 1, r2 = seed 2; arms rotate inside each replicate block",
+    "scorerVersion": 1,
+    "operationalBudgetTokens": "per task (16384); an operational budget, not the model window",
+    "maxSteps": 8,
+    "outputTokensPerRequest": 1024,
+    "cachePolicy": "no arm pre-warms or clears a provider cache; cross-cell prefix reuse is recorded, not controlled"
+  },
+  "perCell": {
+    "requests": 24,
+    "inputTokens": 250000,
+    "outputTokens": 20000,
+    "wallClockMs": 300000
+  },
+  "limits": {
+    "httpAttempts": 800,
+    "inputTokens": 4000000,
+    "outputTokens": 150000,
+    "wallClockMs": 7200000,
+    "monetaryUsd": 10,
+    "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+    "continuationCells": 32,
+    "paidConcurrency": 1
+  },
+  "authorizationEnvelope": {
+    "reference": "Separate EF-R1 32-cell L×G pilot envelope, explicitly authorized by the user",
+    "statement": "both earlier envelopes are closed; the user authorized this 24-cell pilot inside a 32-cell cap (800 requests, 4M input, 150k output, 2h, concurrency 1), and the agent froze the concrete manifest"
+  }
+}

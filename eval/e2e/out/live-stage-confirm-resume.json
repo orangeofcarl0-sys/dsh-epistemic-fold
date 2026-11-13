@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 live",
+  "generatedAt": "2026-11-10T12:10:43.007Z",
+  "stage": "confirm-resume",
+  "campaign": "e2e-r2-confirm-resume-1",
+  "envelopeName": "r2-live",
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r2-confirm-resume-1.json",
+    "sha256": "a7d55f61032e96ce8363752c28c08cb8b15ffc56301615882ca7c2f1c7c1a5f5",
+    "cells": 34
+  },
+  "derivedFrom": {
+    "confirm": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+    "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d",
+    "confirmCells": 54,
+    "reusableCells": 20,
+    "resumeCells": 34,
+    "stopReason": "provider-usage-missing"
+  },
+  "limits": {
+    "continuationCells": 34,
+    "httpAttempts": 1200,
+    "inputTokens": 12000000,
+    "outputTokens": 900000,
+    "wallClockMs": 14400000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "executionAuthorized": false,
+  "authorizationState": "requested",
+  "note": "A resume is a new hash: the old authorization cannot spend these cells."
+}

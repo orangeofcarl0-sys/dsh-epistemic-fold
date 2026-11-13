@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r4-budget-sensitivity-3",
+  "manifest": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-3.json",
+  "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+  "granted": true,
+  "requestedAt": "2026-11-13T19:53:40.009Z",
+  "requestedBy": "EF-R4 offline freeze",
+  "grantedAt": "2026-11-13T20:13:58.955Z",
+  "grantedBy": "user instruction: \"均授权，继续\" (2026-11-14)",
+  "basis": "The user authorized the representative health probe and the 36-cell step-budget sensitivity campaign. The health probe passed; the campaign preflight is ready.",
+  "limits": {
+    "continuationCells": 36,
+    "httpAttempts": 1152,
+    "inputTokens": 14907240,
+    "outputTokens": 9437184,
+    "wallClockMs": 11084760,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "perCell": {
+    "requests": 32,
+    "inputTokens": 414090,
+    "outputTokens": 262144,
+    "wallClockMs": 307910
+  },
+  "stopConditions": [
+    "transport failure or reset",
+    "unknown provider usage (strictUsage)",
+    "budget exhausted",
+    "provider failure that invalidates the route"
+  ],
+  "grantInstruction": "A new explicit user authorization must set granted=true, fill grantedAt/grantedBy/basis, and keep this manifestSha256 and the envelope. The runner refuses a manifest without a granted authorization.",
+  "note": "This grant is bound to the manifest SHA-256 above and the listed envelope. A changed manifest needs a new grant.",
+  "healthProbe": {
+    "path": "eval/r4/out/health-probe-results.json",
+    "sha256": "b37745bb357dff43324c7d328a0071ea639f158c67956bb6972c03b4d0226cb4",
+    "verdict": "pass",
+    "p95DurationMs": 6639
+  },
+  "preflight": {
+    "path": "eval/r4/out/budget-manifest-preflight.json",
+    "sha256": "4872249d189b69a7b68361b69964ccdf34ffa7ac67fdda94118bab8baef716c7",
+    "verdict": "ready-for-authorization"
+  }
+}

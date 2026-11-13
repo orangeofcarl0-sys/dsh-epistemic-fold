@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 prompt protection",
+  "generatedAt": "2026-11-10T08:35:27.846Z",
+  "campaign": "e2e-prompt-confirm-1",
+  "cells": 24,
+  "usage": {
+    "requests": 112,
+    "inputTokens": 817764,
+    "outputTokens": 22570,
+    "wallClockMs": 387632
+  },
+  "byArm": {
+    "E0": {
+      "cells": 8,
+      "passed": 2,
+      "promptLost": 6,
+      "promptVisibleAtEnd": 2,
+      "noFold": 0,
+      "meanRetainedTokens": 18567,
+      "requests": 39,
+      "inputTokens": 350935,
+      "outputTokens": 8120
+    },
+    "E0-R": {
+      "cells": 8,
+      "passed": 4,
+      "promptLost": 0,
+      "promptVisibleAtEnd": 8,
+      "noFold": 0,
+      "meanRetainedTokens": 14150,
+      "requests": 44,
+      "inputTokens": 326813,
+      "outputTokens": 7340
+    }
+  },
+  "pairs": [
+    {
+      "task": "T10-s1",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T10-s2",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T2-s1",
+      "leftPass": false,
+      "rightPass": false,
+      "leftPromptLost": false,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T2-s2",
+      "leftPass": false,
+      "rightPass": false,
+      "leftPromptLost": false,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T4-s1",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T4-s2",
+      "leftPass": false,
+      "rightPass": true,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T9-s1",
+      "leftPass": true,
+      "rightPass": false,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    },
+    {
+      "task": "T9-s2",
+      "leftPass": true,
+      "rightPass": false,
+      "leftPromptLost": true,
+      "rightPromptLost": false,
+      "leftNoFold": false,
+      "rightNoFold": false
+    }
+  ],
+  "paired": {
+    "improved": 4,
+    "worsened": 2,
+    "tied": 2,
+    "promptLostBefore": 6,
+    "promptLostAfter": 0,
+    "noFoldBefore": 0,
+    "noFoldAfter": 0
+  },
+  "sources": {
+    "results": "eval/e2e/out/results-e2e-prompt-confirm-1.json",
+    "resultsSha256": "0a230983bdcb09b278e15aa3391d77b93786b78ffb7ff383397e94ae20d38d8d",
+    "stageAttributionSha256": "08e9e78b4ebad1f39e3ef8c1ee170e9669dea9b62b6c4edd08c81a92fe2fa8b4"
+  },
+  "note": "n=4 pairs; a direction check, not a powered estimate."
+}

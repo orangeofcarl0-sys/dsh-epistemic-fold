@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-09T11:38:28.523Z",
+  "work": "EF-E2E",
+  "command": "EF_DSH_REFERENCE=<pinned presets> npx vitest run",
+  "environment": {
+    "node": "v24.14.1",
+    "vitest": "5.0.5",
+    "dsh": "0.2.1-rc.3",
+    "presetReference": "pinned vendored source presets"
+  },
+  "summary": {
+    "total": 1877,
+    "passed": 1797,
+    "failed": 10,
+    "skipped": 70,
+    "success": false
+  },
+  "failedTests": [
+    "bridge-loads.spec.ts > the LHTB bridge entry point loads runs on the SAME DSH line it typechecks against",
+    "checkpoint-residency.spec.ts > checkpoint retirement writes the retirement, and the report then shows ONE conflict",
+    "checkpoint-residency.spec.ts > checkpoint retirement REFUSES a second retirement of the same checkpoint",
+    "p0-regressions.spec.ts > P0-3: the durable-write marker is on the WRITE, not only the probe keeps the raw ef/anchor event on the explicitly in-memory face",
+    "persistence-compat.spec.ts > persistence read-path contract (portable) refuses ef/anchor exactly when the host cannot mark it ignorable",
+    "persistence-compat.spec.ts > anchor service durability guard still writes on the in-memory face, where nothing persists the log",
+    "plugin-composition.spec.ts > R0-B: native plugin composition the plugin-provided anchor service refuses a write this host cannot persist",
+    "rc3-plugin-packaging.spec.ts > RC16: the manifest uses the fields DSH actually defines declares the DSH range at engines.dsh, not in an invented dsh.compatibility",
+    "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy every module is a byte-identical copy of the reference",
+    "rc7-vendored-basic.spec.ts > RC7-T7: the vendored Basic copy the span-selection algorithm matches the reference exactly"
+  ],
+  "note": "The 10 failures are the known host/environment/upstream set. The 10 semantic-authority, 7 recall-affordance/span-index tests pass; rc7-inplace-drift passes against the pinned reference; B04 is fixed."
+}

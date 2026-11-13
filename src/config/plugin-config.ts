@@ -65,6 +65,11 @@ export const EpistemicFoldPluginConfig: z<EpistemicFoldConfig> = z.object({
   // The tier's HINT budget. `z.any()` for the same reason as the rest of this block: policy.ts
   // validates and ranges it, and a typed declaration would add a second validation layer.
   rationaleHintTokens: z.any(),
+  recallAffordance: z.any(),
+  foldedSpanIndex: z.any(),
+  archiveLocator: z.any(),
+  protectActiveRequest: z.any(),
+  rerenderActiveRequest: z.any(),
   leafAdmission: z.any(),
   minReclaimTokens: z.any(),
   minReclaimRatio: z.any(),

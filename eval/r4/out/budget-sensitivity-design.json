@@ -1,0 +1,582 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP6 step-budget sensitivity design",
+  "generatedAt": "2026-11-11T15:44:22.102Z",
+  "campaign": "e2e-r4-budget-sensitivity-1",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "authorizationSha256": null,
+  "source": {
+    "campaign": "e2e-r3-product-pilot-1",
+    "manifest": {
+      "path": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+      "sha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab"
+    },
+    "results": {
+      "path": "eval/e2e/out/results-e2e-r3-product-pilot-1.json",
+      "sha256": "fde717df6cb64717e43f76f17bff35ca662988558cdc5923ba9241b078d6a2b7"
+    },
+    "note": "The R3 8-step cells are not reused as strict pairs for the 16-step cells. This campaign includes its own 8-step cells."
+  },
+  "code": {
+    "worktree": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation",
+    "head": "460a5ed231bd81867b36a92eb8856c1cce69c574",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "tree": "04606dbc29a3b473a72a587d7f8eec6f731b4c54",
+    "note": "The design is frozen against this tree. Any later code change invalidates the design digest."
+  },
+  "design": {
+    "blocks": 6,
+    "cellsPerBlock": 6,
+    "tasks": [
+      "T11-p1",
+      "T12-p1",
+      "T13-p1",
+      "T14-p1",
+      "T15-p1",
+      "T16-p1"
+    ],
+    "arms": [
+      "B0",
+      "E0",
+      "E1"
+    ],
+    "budgets": [
+      8,
+      16
+    ],
+    "method": "Latin square: block b, position i -> task[i], treatment[(i+b)%6]",
+    "maxStepsSemantics": "per agent loop; stage A and stage B each receive the cell budget, and the report records total steps",
+    "cells": 36,
+    "validation": {
+      "uniqueTaskArmBudget": 36,
+      "blockBalanced": true
+    }
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot; each cell overrides maxSteps. The effective value is written into every report."
+  },
+  "arms": {
+    "B0": "native DSH Basic; native retention, threshold 0.5, maxTokens 1024",
+    "E0": "EF minimal, semanticMode none, shipped economy values (system-dedup, retain 0.16)",
+    "E1": "shipped economy preset: semanticMode rationale, hint 400, system-dedup, retain 0.16"
+  },
+  "tasks": [
+    {
+      "id": "T11-p1",
+      "template": "T11",
+      "seed": 1,
+      "category": "historical-test",
+      "file": "eval/e2e/tasks-r3/T11-p1.json",
+      "digest": "76e95fcd9f6f580798109990a10430af3c74324462e34ea7f00d24941f6dde4d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T12-p1",
+      "template": "T12",
+      "seed": 1,
+      "category": "revised-constraint",
+      "file": "eval/e2e/tasks-r3/T12-p1.json",
+      "digest": "54e7e3274da9a16bb9111f1c5d2576baa0f3984b79c2c4cc6a83656300d50e5d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T13-p1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "file": "eval/e2e/tasks-r3/T13-p1.json",
+      "digest": "a0ef3b5393f77946965545bbaf3434a060d268c24324ea360405c06fe1bbcb4a",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T14-p1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "file": "eval/e2e/tasks-r3/T14-p1.json",
+      "digest": "9336ebeb4cee7fec46d1011cfa672320f8ca7fa57d45a098b839f37827a44e39",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T15-p1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "file": "eval/e2e/tasks-r3/T15-p1.json",
+      "digest": "fc78eef4680c184ef6238168af34e49189a47a92ea27a6be0dbe33f0d9547f23",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T16-p1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "file": "eval/e2e/tasks-r3/T16-p1.json",
+      "digest": "c6b25944958e2fa491efc6df72cb136d709ba20f449d8834bb6219950ac3fb2b",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    }
+  ],
+  "cells": [
+    {
+      "block": "r4-budget-1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    }
+  ],
+  "originalOrder": [
+    "T11-p1-B0-b8",
+    "T12-p1-E0-b16",
+    "T13-p1-E1-b8",
+    "T14-p1-B0-b16",
+    "T15-p1-E0-b8",
+    "T16-p1-E1-b16",
+    "T11-p1-E0-b16",
+    "T12-p1-E1-b8",
+    "T13-p1-B0-b16",
+    "T14-p1-E0-b8",
+    "T15-p1-E1-b16",
+    "T16-p1-B0-b8",
+    "T11-p1-E1-b8",
+    "T12-p1-B0-b16",
+    "T13-p1-E0-b8",
+    "T14-p1-E1-b16",
+    "T15-p1-B0-b8",
+    "T16-p1-E0-b16",
+    "T11-p1-B0-b16",
+    "T12-p1-E0-b8",
+    "T13-p1-E1-b16",
+    "T14-p1-B0-b8",
+    "T15-p1-E0-b16",
+    "T16-p1-E1-b8",
+    "T11-p1-E0-b8",
+    "T12-p1-E1-b16",
+    "T13-p1-B0-b8",
+    "T14-p1-E0-b16",
+    "T15-p1-E1-b8",
+    "T16-p1-B0-b16",
+    "T11-p1-E1-b16",
+    "T12-p1-B0-b8",
+    "T13-p1-E0-b16",
+    "T14-p1-E1-b8",
+    "T15-p1-B0-b16",
+    "T16-p1-E0-b8"
+  ],
+  "executionOrder": [
+    "T11-p1-B0-b8",
+    "T12-p1-E0-b16",
+    "T13-p1-E1-b8",
+    "T14-p1-B0-b16",
+    "T15-p1-E0-b8",
+    "T16-p1-E1-b16",
+    "T11-p1-E0-b16",
+    "T12-p1-E1-b8",
+    "T13-p1-B0-b16",
+    "T14-p1-E0-b8",
+    "T15-p1-E1-b16",
+    "T16-p1-B0-b8",
+    "T11-p1-E1-b8",
+    "T12-p1-B0-b16",
+    "T13-p1-E0-b8",
+    "T14-p1-E1-b16",
+    "T15-p1-B0-b8",
+    "T16-p1-E0-b16",
+    "T11-p1-B0-b16",
+    "T12-p1-E0-b8",
+    "T13-p1-E1-b16",
+    "T14-p1-B0-b8",
+    "T15-p1-E0-b16",
+    "T16-p1-E1-b8",
+    "T11-p1-E0-b8",
+    "T12-p1-E1-b16",
+    "T13-p1-B0-b8",
+    "T14-p1-E0-b16",
+    "T15-p1-E1-b8",
+    "T16-p1-B0-b16",
+    "T11-p1-E1-b16",
+    "T12-p1-B0-b8",
+    "T13-p1-E0-b16",
+    "T14-p1-E1-b8",
+    "T15-p1-B0-b16",
+    "T16-p1-E0-b8"
+  ],
+  "mechanism": {
+    "taskOutcome": "task checks only; correct / incorrect / incomplete",
+    "exposure": "manifested, committed, delivered, requiredFoldCountMet",
+    "requirement": "T16-p1 requires minCompactions:2; it is a mechanism result, not a task pass condition"
+  },
+  "budgetEstimate": {
+    "sourceCells": 18,
+    "median": {
+      "requests": 8,
+      "inputTokens": 153149.5,
+      "outputTokens": 1962.5,
+      "durationMs": 95558.5
+    },
+    "max": {
+      "requests": 21,
+      "inputTokens": 276060,
+      "outputTokens": 9498,
+      "durationMs": 205273
+    },
+    "estimated36": {
+      "requests": 288,
+      "inputTokens": 5513382,
+      "outputTokens": 70650,
+      "wallClockMs": 3440106
+    },
+    "proposedLimits": {
+      "requests": 908,
+      "inputTokens": 11925792,
+      "outputTokens": 410314,
+      "wallClockMs": 8867794,
+      "note": "A proposal only. A live grant must set the real envelope; this file does not authorize spend."
+    },
+    "perCell": {
+      "requests": 32,
+      "inputTokens": 414090,
+      "outputTokens": 14247,
+      "wallClockMs": 307910
+    }
+  },
+  "preconditions": [
+    "R4-G1 scoring separation passes.",
+    "R4-G2 evidence graph is reproducible.",
+    "A representative transport health probe passes under the new route.",
+    "A new, explicit live authorization binds this manifest SHA and the budget envelope.",
+    "The worktree is clean and the source tree digest matches the design."
+  ],
+  "stopConditions": [
+    "transport failure or reset",
+    "unknown provider usage (strictUsage)",
+    "budget exhausted",
+    "provider failure that invalidates the route"
+  ],
+  "workloadFamilies": {
+    "archive-only": {
+      "status": "designed",
+      "note": "The six existing tasks; the fact is recoverable only from history/archive.",
+      "tasks": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1"
+      ]
+    },
+    "workspace-readable": {
+      "status": "design-only",
+      "note": "A separate task family where the fact still exists in the workspace. It is not generated here and must not be pooled with archive-only results.",
+      "tasks": []
+    }
+  },
+  "note": "No provider call was made. This campaign cannot start from this file alone."
+}

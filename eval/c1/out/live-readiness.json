@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/live-readiness.mjs",
+  "sourceCommit": "9e0c93cf236f69f035eee20953dc3436139c4eb5",
+  "generatedAt": "2026-11-08T09:43:58.095Z",
+  "status": "not-authorized",
+  "providerCalls": 0,
+  "arms": [
+    "B0",
+    "E0",
+    "E1"
+  ],
+  "note": "Bv (EF mode:basic) is a compatibility arm, not a product arm; it does not repeat the full live matrix.",
+  "manifest": null,
+  "requirements": [
+    "a frozen manifest at eval/c1/live-manifest.json",
+    "the manifest SHA-256 recorded in the authorization",
+    "an explicit authorization naming that SHA (C1_LIVE_AUTHORIZED_SHA256)",
+    "a provider/model route (names, not secrets)",
+    "positive budget caps (requests, input tokens, output tokens, wall clock)",
+    "a clean preflight over the real fold path"
+  ],
+  "blocking": [
+    "no frozen manifest",
+    "no authorization names a manifest SHA",
+    "no route declared (no manifest)",
+    "no limits declared (no manifest)",
+    "no preflight recorded"
+  ],
+  "executionKind": "not executed in EF-C1; no provider was contacted"
+}

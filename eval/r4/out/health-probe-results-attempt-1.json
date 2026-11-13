@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 health probe",
+  "generatedAt": "2026-11-13T18:02:14.219Z",
+  "design": {
+    "path": "eval/r4/out/transport-health-probe.json",
+    "sha256": "02d00a8d1664f2b2ee1eed6a0fe8bac61a83d6227f474e17421fa2fdcd056abf"
+  },
+  "authorization": {
+    "path": "eval/r4/out/health-probe-authorization.json",
+    "sha256": "e6ad15bb7b37943667a834f9b6acb27e1f8a233fd924ecd452c82fa9154d0c63",
+    "grantedBy": "user instruction: \"均授权，继续\" (2026-11-14)"
+  },
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headerNames": [],
+    "model": "deepseek-v4.1-flash"
+  },
+  "planned": 16,
+  "attempted": 1,
+  "successes": 0,
+  "failures": 1,
+  "verdict": "fail",
+  "resume": {
+    "used": 0,
+    "priorUsage": null
+  },
+  "usage": {
+    "schemaVersion": 2,
+    "limits": {
+      "requests": 16,
+      "inputTokens": 2000000,
+      "outputTokens": 100000,
+      "wallClockMs": 1800000
+    },
+    "used": {
+      "requests": 1,
+      "attempts": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 0,
+      "unknownUsageRequests": 0,
+      "partialUsageRequests": 0,
+      "retries": 0
+    },
+    "observed": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    "reserved": {
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0
+    },
+    "charged": {
+      "inputTokens": 0,
+      "outputTokens": 0
+    },
+    "remaining": {
+      "requests": 15,
+      "inputTokens": 2000000,
+      "outputTokens": 100000,
+      "wallClockMs": 1799946
+    },
+    "unresolvedAttempts": 0,
+    "unknownUsageRequests": 0,
+    "partialUsageRequests": 0,
+    "refusals": 0,
+    "elapsedMs": 54
+  },
+  "totalUsage": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0
+  },
+  "results": [
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 51,
+      "usage": null,
+      "finish": {
+        "kind": "error",
+        "failure": {
+          "message": "fetch failed (ECONNREFUSED)",
+          "code": "LIVE_TRANSPORT"
+        }
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T18:02:14.170Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "error",
+          "attempt": 0,
+          "at": "2026-11-13T18:02:14.170Z",
+          "durationMs": 48,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "error": {
+            "name": "TypeError",
+            "message": "fetch failed (ECONNREFUSED)"
+          }
+        }
+      ]
+    }
+  ],
+  "stop": "stopped-on-failure",
+  "note": "The representative route failed the transport/usage acceptance. Do not run the campaign. No automatic retry.",
+  "latency": {
+    "count": 1,
+    "p50": 51,
+    "p95": 51,
+    "max": 51,
+    "over60s": []
+  },
+  "acceptance": {
+    "httpSuccess": "0/16",
+    "usagePresent": "0/16",
+    "transportErrors": 1,
+    "p95DurationMs": 51,
+    "p95Within60s": true,
+    "verdict": "fail"
+  },
+  "campaignDecision": "do-not-run",
+  "failure": {
+    "profile": "t13-summary-failed-shape",
+    "attempt": 1,
+    "durationMs": 51,
+    "finish": {
+      "kind": "error",
+      "failure": {
+        "message": "fetch failed (ECONNREFUSED)",
+        "code": "LIVE_TRANSPORT"
+      }
+    },
+    "usage": null,
+    "error": null
+  }
+}

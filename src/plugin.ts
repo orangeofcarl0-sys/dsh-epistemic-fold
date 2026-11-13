@@ -32,6 +32,7 @@ import type {} from '@deepseek-ai/dsh-system-prompt'
 import type { AnchorService } from './state/anchor-service.ts'
 import { createAnchorService, hostAdmitsPluginEvents } from './state/anchor-service.ts'
 import { EpistemicFoldEngine } from './fold/engine.ts'
+import type { EpistemicFoldOptions } from './fold/engine.ts'
 import { registerIdleRebaseConsumer } from './fold/idle-rebase.ts'
 import type { IdleRebaseAttempt, IdleRebaseRegistration } from './fold/idle-rebase.ts'
 import { FOLD_FRAMING_SECTION, framingModeFor } from './checkpoint/framing.ts'
@@ -307,7 +308,7 @@ export class EpistemicFoldPlugin {
   /** What the configuration actually resolved to (RC0-A). */
   readonly effectiveConfig: EffectiveConfig
 
-  constructor(ctx: Context, config: EpistemicFoldConfig = {}) {
+  constructor(ctx: Context, config: EpistemicFoldConfig = {}, options: EpistemicFoldOptions = {}) {
     // RC0-A: report what this configuration actually resolves to BEFORE the
     // engine is constructed, so a deployment can see the effective settings and
     // any blocker in the log rather than only in an exception.
@@ -318,7 +319,7 @@ export class EpistemicFoldPlugin {
     // The engine owns ctx.compaction (one compaction backend per context).
     // Constructing it here places it on the plugin's own fiber, so unloading
     // the plugin disposes the engine with it.
-    this.engine = new EpistemicFoldEngine(ctx, config)
+    this.engine = new EpistemicFoldEngine(ctx, config, options)
 
     // `mode: basic` mounts NO EF surface at all (RC7, the C2 requirement).
     //

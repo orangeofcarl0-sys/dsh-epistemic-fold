@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T15:53:44.260Z",
+  "campaign": "e2e-calibration-smoke",
+  "manifestSha256": "69f9b500475f99f84ea202268bd01bf75d10398d323230c54f22fad3a4de2917",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": null,
+  "planned": 39,
+  "executed": 1,
+  "budget": {
+    "used": {
+      "requests": 2,
+      "inputTokens": 162,
+      "outputTokens": 632,
+      "wallClockMs": 5372
+    },
+    "limits": {
+      "httpAttempts": 2200,
+      "inputTokens": 18000000,
+      "outputTokens": 1000000,
+      "wallClockMs": 28800000,
+      "monetaryUsd": 25,
+      "monetaryNote": "no per-token price is verifiable for this local route; token and request caps are the enforced bound",
+      "continuationCells": 72,
+      "paidConcurrency": 2
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "calibration",
+        "task": "T1-s1",
+        "arm": "B0",
+        "replicate": 0
+      },
+      "status": "executed",
+      "cellId": "T1-s1-B0-r0",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "finish",
+      "usage": {
+        "requests": 2,
+        "inputTokens": 162,
+        "outputTokens": 632,
+        "cacheReadTokens": 512,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 1,
+        "primary": {
+          "requests": 1,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 162,
+          "outputTokens": 632,
+          "cacheReadTokens": 512,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "note": "1 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-calibration-smoke\\T1-s1-B0-r0\\report.json"
+    }
+  ]
+}

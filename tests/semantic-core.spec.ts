@@ -244,6 +244,7 @@ describe('resolved commit plan', () => {
     grantedStatus: 'claimed',
     evidence: [{ seq: 1, messageDigest: 'm', quote: 'timeout is 30' }],
     authority: 'normative',
+    sourceAuthority: 'user',
     anchorKind: 'constraint',
     stateKey: { namespace: 'semantic', entity: 'constraint', property: 'timeout' },
     supersedes: [],

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane pilot",
+  "generatedAt": "2026-11-11T11:02:35.560Z",
+  "gates": [
+    {
+      "id": "P-G0",
+      "status": "pass",
+      "detail": "manifest 885bb53eaf5b; authorization true; cost pass; prerequisite proceed-with-latency-deviation"
+    },
+    {
+      "id": "P-G1",
+      "status": "pass",
+      "detail": "18/18 executed; 18 valid"
+    },
+    {
+      "id": "P-G2",
+      "status": "incomplete",
+      "detail": "cost-valid 17/18; invalid [{\"cellId\":\"T16-p1-E1-r1\",\"usage\":{\"requests\":21,\"unknownUsage\":1,\"inputTokens\":257043,\"outputTokens\":7736,\"cacheReadTokens\":11776,\"cacheWriteTokens\":0,\"auxiliaryRequests\":6},\"reasons\":[\"partial-usage\"]}]"
+    },
+    {
+      "id": "P-G3",
+      "status": "pass",
+      "detail": "transport/usage 16/16; failures 0; latency p95 82290 ms"
+    },
+    {
+      "id": "P-G4",
+      "status": "incomplete",
+      "detail": "p95 82290 ms vs 60,000 ms; over-60s requests 1"
+    },
+    {
+      "id": "P-G5",
+      "status": "pass",
+      "detail": "decision no-product-candidate; deploymentHold true; expandTo72 false"
+    }
+  ],
+  "counts": {
+    "pass": 4,
+    "incomplete": 2,
+    "fail": 0
+  },
+  "note": "P-G2 and P-G4 are incomplete by evidence: one E1 cell has partial usage and the health-probe p95 exceeded its pre-registered bound. The transport gate P-G3 passed 16/16."
+}

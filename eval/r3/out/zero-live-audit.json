@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3",
+  "generatedAt": "2026-11-10T16:43:21.131Z",
+  "baseline": {
+    "path": "eval/r3/out/baseline-r3.json",
+    "generatedAt": "2026-11-10T15:33:04.808Z",
+    "commit": "4affdee8a1c272bcbaa43fba4f842bf4ab8f87aa"
+  },
+  "since": "2026-11-10T15:33:04.808Z",
+  "newRunDirs": [
+    {
+      "name": "self-test-1794326871851",
+      "reportPath": "/eval/e2e/runs/self-test-1794326871851/T5-s1-E0-r1/report.json",
+      "mode": "self-test",
+      "route": "scripted",
+      "model": "scripted",
+      "requests": 0,
+      "unknownUsage": 0,
+      "live": false
+    }
+  ],
+  "newScriptedRuns": [
+    {
+      "name": "self-test-1794326871851",
+      "reportPath": "/eval/e2e/runs/self-test-1794326871851/T5-s1-E0-r1/report.json",
+      "mode": "self-test",
+      "route": "scripted",
+      "model": "scripted",
+      "requests": 0,
+      "unknownUsage": 0,
+      "live": false
+    }
+  ],
+  "newLiveRunDirs": [],
+  "newOutFiles": [
+    "manifest-e2e-r3-confirm-completion-1.json"
+  ],
+  "newResultsFiles": [],
+  "providerRequests": 0,
+  "status": "pass",
+  "note": "A scripted self-test records zero provider requests. A new live-mode run or a new results file would fail this audit."
+}

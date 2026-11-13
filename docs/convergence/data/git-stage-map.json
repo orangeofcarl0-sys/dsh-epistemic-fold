@@ -1,0 +1,510 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T05:23:55.600Z",
+  "work": "EF-C0-WP0",
+  "repository": "orangeofcarl0-sys/dsh-epistemic-fold",
+  "head": {
+    "sha": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+    "short": "0067020",
+    "branch": "rc38-mechanism-validation"
+  },
+  "audit": {
+    "worktreeHead": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+    "worktreeHeadShort": "0067020",
+    "branch": "chore/ef-c0-convergence"
+  },
+  "main": {
+    "remote": {
+      "ref": "origin/main",
+      "sha": "93b6666913dab6e00ca67032de9660f1bc75c052",
+      "short": "93b6666"
+    },
+    "local": {
+      "ref": "main",
+      "sha": "bd1131cc039c8addf1590973f7e6e406ed126e64",
+      "short": "bd1131c"
+    },
+    "localDiverged": true
+  },
+  "ancestry": {
+    "mergeBase": "93b6666913dab6e00ca67032de9660f1bc75c052",
+    "mergeBaseShort": "93b6666",
+    "mainToR38": {
+      "ahead": 96,
+      "behind": 0
+    },
+    "checks": [
+      {
+        "from": "main",
+        "to": "rc30",
+        "ancestor": true
+      },
+      {
+        "from": "rc30",
+        "to": "rc31",
+        "ancestor": true
+      },
+      {
+        "from": "rc31",
+        "to": "rc32",
+        "ancestor": true
+      },
+      {
+        "from": "rc32",
+        "to": "rc33",
+        "ancestor": true
+      },
+      {
+        "from": "rc33",
+        "to": "rc34",
+        "ancestor": true
+      },
+      {
+        "from": "rc34",
+        "to": "rc35",
+        "ancestor": true
+      },
+      {
+        "from": "rc35",
+        "to": "rc36",
+        "ancestor": true
+      },
+      {
+        "from": "rc36",
+        "to": "rc37ab",
+        "ancestor": true
+      },
+      {
+        "from": "rc37ab",
+        "to": "rc37c",
+        "ancestor": true
+      },
+      {
+        "from": "rc37c",
+        "to": "rc37d",
+        "ancestor": true
+      },
+      {
+        "from": "rc37d",
+        "to": "rc38",
+        "ancestor": true
+      }
+    ]
+  },
+  "stages": [
+    {
+      "stage": "main",
+      "branch": "origin/main",
+      "baseSha": "93b6666913dab6e00ca67032de9660f1bc75c052",
+      "baseShort": "93b6666",
+      "finalSha": "93b6666913dab6e00ca67032de9660f1bc75c052",
+      "finalShort": "93b6666",
+      "parentSha": "3dd8f63cb40dc7d08a581ba3bf99e44e8215bde7",
+      "parentShort": "3dd8f63",
+      "commits": 1,
+      "remoteRef": null,
+      "localRef": null,
+      "worktree": null,
+      "productionPaths": [],
+      "evidencePaths": [],
+      "kind": "baseline"
+    },
+    {
+      "stage": "rc30",
+      "branch": "rc30-semantic-continuity",
+      "baseSha": "77ab916a791ecd22041d4162566d3bef10a1a0f3",
+      "baseShort": "77ab916",
+      "finalSha": "77ab916a791ecd22041d4162566d3bef10a1a0f3",
+      "finalShort": "77ab916",
+      "parentSha": "93b6666913dab6e00ca67032de9660f1bc75c052",
+      "parentShort": "93b6666",
+      "commits": 1,
+      "remoteRef": "refs/remotes/origin/rc30-semantic-continuity",
+      "localRef": "refs/heads/rc30-semantic-continuity",
+      "worktree": null,
+      "productionPaths": [
+        "src/checkpoint/rationale.ts",
+        "src/checkpoint/renderer.ts",
+        "src/checkpoint/residency.ts",
+        "src/config/ef-keys.ts",
+        "src/config/plugin-config.ts",
+        "src/config/policy.ts",
+        "src/fold/engine.ts",
+        "src/index.ts",
+        "src/plugin.ts",
+        "src/semantic/changes.ts",
+        "src/semantic/commit.ts",
+        "src/semantic/evidence.ts",
+        "src/semantic/journal.ts",
+        "src/semantic/plan.ts",
+        "src/semantic/record.ts",
+        "src/semantic/types.ts",
+        "src/semantic/validate.ts",
+        "src/semantic/working-set-compiler.ts",
+        "src/semantic/writer.ts",
+        "src/state/anchor-service.ts",
+        "src/state/authority.ts",
+        "src/state/plugin-events.ts",
+        "src/state/projection.ts",
+        "src/state/state.ts",
+        "src/status/command.ts",
+        "src/status/status.ts"
+      ],
+      "evidencePaths": []
+    },
+    {
+      "stage": "rc31",
+      "branch": "rc31-persistence-lifecycle",
+      "baseSha": "ef3cdc71ba9c7a2d57fe37430814d9e5ec985d56",
+      "baseShort": "ef3cdc7",
+      "finalSha": "6607149c087a99a9392c7171263dc05624488b58",
+      "finalShort": "6607149",
+      "parentSha": "f5142d6771ded215a826265dbd28a1f5f484abab",
+      "parentShort": "f5142d6",
+      "commits": 4,
+      "remoteRef": "refs/remotes/origin/rc31-persistence-lifecycle",
+      "localRef": "refs/heads/rc31-persistence-lifecycle",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-main-integration",
+      "productionPaths": [
+        "src/checkpoint/residency.ts",
+        "src/fold/engine.ts",
+        "src/index.ts",
+        "src/semantic/changes.ts",
+        "src/semantic/commit.ts",
+        "src/semantic/journal.ts",
+        "src/semantic/proof.ts",
+        "src/semantic/record.ts",
+        "src/semantic/replay.ts",
+        "src/semantic/types.ts",
+        "src/state/projection.ts",
+        "src/state/state.ts"
+      ],
+      "evidencePaths": []
+    },
+    {
+      "stage": "rc32",
+      "branch": "rc32-semantic-integrity",
+      "baseSha": "9d4c84db6441159348db7cb11c290d4cba549557",
+      "baseShort": "9d4c84d",
+      "finalSha": "bef473dc77f18a07980031cf110b253fe0288cb1",
+      "finalShort": "bef473d",
+      "parentSha": "d0eb7eed24f6d09517695998898d17d6a5ec5dfe",
+      "parentShort": "d0eb7ee",
+      "commits": 8,
+      "remoteRef": "refs/remotes/origin/rc32-semantic-integrity",
+      "localRef": "refs/heads/rc32-semantic-integrity",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r32-integrity",
+      "productionPaths": [
+        "src/checkpoint/renderer.ts",
+        "src/config/ef-keys.ts",
+        "src/config/plugin-config.ts",
+        "src/config/policy.ts",
+        "src/fold/engine.ts",
+        "src/index.ts",
+        "src/semantic/admission.ts",
+        "src/semantic/commit.ts",
+        "src/semantic/integrity.ts",
+        "src/semantic/journal.ts",
+        "src/semantic/ops.ts",
+        "src/semantic/plan.ts",
+        "src/semantic/proof.ts",
+        "src/semantic/record.ts",
+        "src/semantic/replay.ts",
+        "src/semantic/types.ts",
+        "src/semantic/validate.ts",
+        "src/semantic/working-set-compiler.ts",
+        "src/state/state.ts"
+      ],
+      "evidencePaths": []
+    },
+    {
+      "stage": "rc33",
+      "branch": "rc33-semantic-behavior",
+      "baseSha": "56182eb65b9c676743952c042a1ca075ec39dec5",
+      "baseShort": "56182eb",
+      "finalSha": "ad3020df0e22587f78490c19550fe6986f55af3f",
+      "finalShort": "ad3020d",
+      "parentSha": "85a5b6a5371d0e24588921d38a32d03da2c19ebf",
+      "parentShort": "85a5b6a",
+      "commits": 9,
+      "remoteRef": "refs/remotes/origin/rc33-semantic-behavior",
+      "localRef": "refs/heads/rc33-semantic-behavior",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r33-behavior",
+      "productionPaths": [
+        "src/fold/engine.ts",
+        "src/index.ts",
+        "src/semantic/integrity.ts",
+        "src/semantic/observation.ts",
+        "src/semantic/plan.ts",
+        "src/semantic/replay.ts",
+        "src/semantic/types.ts",
+        "src/status/status.ts"
+      ],
+      "evidencePaths": [
+        "eval/r33/out/live-check.json",
+        "eval/r33/out/live-report.json",
+        "eval/r33/out/offline-report.json",
+        "eval/r33/out/offline-report.md",
+        "eval/r33/out/self-test-report.json"
+      ]
+    },
+    {
+      "stage": "rc34",
+      "branch": "rc34-live-causal-pilot",
+      "baseSha": "76c4414026286cd13580f167e16c294bd731080b",
+      "baseShort": "76c4414",
+      "finalSha": "8db92f425a35e41bb77158a830de31d5c4874736",
+      "finalShort": "8db92f4",
+      "parentSha": "32041d8f610d45637ab658419d17ca1dd50ef427",
+      "parentShort": "32041d8",
+      "commits": 7,
+      "remoteRef": "refs/remotes/origin/rc34-live-causal-pilot",
+      "localRef": "refs/heads/rc34-live-causal-pilot",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r34-pilot",
+      "productionPaths": [
+        "src/fold/engine.ts",
+        "src/semantic/integrity.ts"
+      ],
+      "evidencePaths": [
+        "eval/r33/out/live-check.json",
+        "eval/r33/out/live-report.json",
+        "eval/r33/out/offline-report.json",
+        "eval/r33/out/offline-report.md",
+        "eval/r33/out/scorer-comparison.json",
+        "eval/r33/out/self-test-report.json"
+      ]
+    },
+    {
+      "stage": "rc35",
+      "branch": "rc35-real-semantic-evaluation",
+      "baseSha": "823a3db824ff6c45b6fb1f03b7b617db13a06b13",
+      "baseShort": "823a3db",
+      "finalSha": "914ed317ae022ac9c5fe39f098d406b7ce03c8da",
+      "finalShort": "914ed31",
+      "parentSha": "612cf0000e430d388067bf4b49196c9bc5adaf45",
+      "parentShort": "612cf00",
+      "commits": 12,
+      "remoteRef": "refs/remotes/origin/rc35-real-semantic-evaluation",
+      "localRef": "refs/heads/rc35-real-semantic-evaluation",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r35-live",
+      "productionPaths": [],
+      "evidencePaths": [
+        "eval/r33/out/live-check.json",
+        "eval/r33/out/live-report.json"
+      ]
+    },
+    {
+      "stage": "rc36",
+      "branch": "rc36-semantic-interface",
+      "baseSha": "af6e533ea4031badfff789df08a52eb483455bf3",
+      "baseShort": "af6e533",
+      "finalSha": "b8274bba8b2a974e9c75af283e415e61a650295e",
+      "finalShort": "b8274bb",
+      "parentSha": "fe6f304736f9711a9574d1197fff081bbeb5e443",
+      "parentShort": "fe6f304",
+      "commits": 14,
+      "remoteRef": null,
+      "localRef": "refs/heads/rc36-semantic-interface",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r36-interface",
+      "productionPaths": [
+        "src/index.ts",
+        "src/semantic/writer.ts"
+      ],
+      "evidencePaths": [
+        "eval/r36/evidence/r35/continuation-writers.json",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/A1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/B2.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/C1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/D1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/F1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-complete/H1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/A1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/B2.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/C1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/D1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/F1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102-r2/H1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/A1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/B2.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/C1.raw.txt",
+        "eval/r36/evidence/r35/raw-writer/r35-writer-only-opencode-20261102/D1.raw.txt",
+        "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102-r2.json",
+        "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102-r3.json",
+        "eval/r36/evidence/r35/reports/r35-continuation-opencode-20261102.json",
+        "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102-complete.json",
+        "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102-r2.json",
+        "eval/r36/evidence/r35/reports/r35-writer-only-opencode-20261102.json",
+        "eval/r36/evidence/r35/writer-audit.json",
+        "eval/r36/out/case-certification.json",
+        "eval/r36/out/causal-comparison.json",
+        "eval/r36/out/conditions.json",
+        "eval/r36/out/gate-status.json",
+        "eval/r36/out/harness-calibration.json",
+        "eval/r36/out/live-results.json",
+        "eval/r36/out/live-writer-analysis.json",
+        "eval/r36/out/parser-ablation.json"
+      ]
+    },
+    {
+      "stage": "rc37ab",
+      "branch": "rc37-semantic-action",
+      "baseSha": "7d519f273efda46a9f11e4afd90aa55f2244a7b8",
+      "baseShort": "7d519f2",
+      "finalSha": "5ef67814a4ec8fd8bcca362b89ad338acd0a8ae0",
+      "finalShort": "5ef6781",
+      "parentSha": "3ed0fa43e72759297cb7caf1658d756dba5db179",
+      "parentShort": "3ed0fa4",
+      "commits": 11,
+      "remoteRef": "refs/remotes/origin/rc37-semantic-action",
+      "localRef": "refs/heads/rc37-semantic-action",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r37-action",
+      "productionPaths": [],
+      "evidencePaths": [
+        "eval/r37/out/baseline-manifest.json",
+        "eval/r37/out/benchmark-validity.json",
+        "eval/r37/out/forensics.json",
+        "eval/r37/out/gate-status-r37b-stage2.json",
+        "eval/r37/out/gate-status-r37b.json",
+        "eval/r37/out/gate-status.json",
+        "eval/r37/out/protocol-ablation.json",
+        "eval/r37/out/r36-evidence-discrepancies.json",
+        "eval/r37/out/r36-evidence-reconstruction.json",
+        "eval/r37/out/r37b-results.json",
+        "eval/r37/out/r37b-stage2-results.json",
+        "eval/r37/out/r37b-stage2-statistics.json",
+        "eval/r37/out/representation-fixtures.json"
+      ]
+    },
+    {
+      "stage": "rc37c",
+      "branch": "rc37c-measurement-closure",
+      "baseSha": "fc777ef3f326dc7d84161cbe5088533954c934e2",
+      "baseShort": "fc777ef",
+      "finalSha": "045cccf275132ffda8c76a9fbdc8620338af6164",
+      "finalShort": "045cccf",
+      "parentSha": "f45048326bdb4019680ae7ecdbd2392b6d21ad44",
+      "parentShort": "f450483",
+      "commits": 10,
+      "remoteRef": null,
+      "localRef": "refs/heads/rc37c-measurement-closure",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r37c-closure",
+      "productionPaths": [],
+      "evidencePaths": [
+        "eval/r37c/out/baseline.json",
+        "eval/r37c/out/evidence-archive.json",
+        "eval/r37c/out/evidence-integrity.json",
+        "eval/r37c/out/evidence-inventory.json",
+        "eval/r37c/out/gate-status-r37c.json",
+        "eval/r37c/out/h1-v2-validity.json",
+        "eval/r37c/out/measurement-vs-pipeline.json",
+        "eval/r37c/out/native-smoke.json",
+        "eval/r37c/out/protocol-admission.json",
+        "eval/r37c/out/r37c-c2-analysis.json",
+        "eval/r37c/out/r37c-c2-results.json",
+        "eval/r37c/out/r37c-c2-trajectories.json",
+        "eval/r37c/out/r37c-tests.json",
+        "eval/r37c/out/semantic-funnel-audit.json",
+        "eval/r37c/out/statistics-audit.json"
+      ]
+    },
+    {
+      "stage": "rc37d",
+      "branch": "rc37d-operational-completion",
+      "baseSha": "0fa78709ae56d147a00872c83e67e087db540c00",
+      "baseShort": "0fa7870",
+      "finalSha": "7a2c974c479bc1286f172e9f7b203af92e22e629",
+      "finalShort": "7a2c974",
+      "parentSha": "d94446f382912ca798b95f489479f319b7e040dc",
+      "parentShort": "d94446f",
+      "commits": 12,
+      "remoteRef": null,
+      "localRef": "refs/heads/rc37d-operational-completion",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r37d-operational",
+      "productionPaths": [],
+      "evidencePaths": [
+        "eval/r37d/out/action-accounting.json",
+        "eval/r37d/out/b2-d1-action-forensics.json",
+        "eval/r37d/out/baseline.json",
+        "eval/r37d/out/fixed-context-manifest.json",
+        "eval/r37d/out/gate-status-r37d.json",
+        "eval/r37d/out/h1-v2-audit.json",
+        "eval/r37d/out/held-out-plan.json",
+        "eval/r37d/out/native-extended.json",
+        "eval/r37d/out/operational-completion.json",
+        "eval/r37d/out/process-pilot-analysis.json",
+        "eval/r37d/out/process-pilot-manifest.json",
+        "eval/r37d/out/process-pilot-preflight.json",
+        "eval/r37d/out/process-pilot-results.json",
+        "eval/r37d/out/process-pilot-trajectories.json",
+        "eval/r37d/out/protocol-efficiency.json",
+        "eval/r37d/out/r37c-audit.json",
+        "eval/r37d/out/r37d-tests.json",
+        "eval/r37d/out/s1-v1-validity.json"
+      ]
+    },
+    {
+      "stage": "rc38",
+      "branch": "rc38-mechanism-validation",
+      "baseSha": "5e464ef4e5f985bd9091c998d21d80632efae2ce",
+      "baseShort": "5e464ef",
+      "finalSha": "006702023e8cf2fcdfd4a814e7be5f2ddf3534ec",
+      "finalShort": "0067020",
+      "parentSha": "94ea25e827cb4a71f1600af7b4a00c67d4e49e1e",
+      "parentShort": "94ea25e",
+      "commits": 8,
+      "remoteRef": "refs/remotes/origin/rc38-mechanism-validation",
+      "localRef": "refs/heads/rc38-mechanism-validation",
+      "worktree": "F:/Codex_Work_Space/DSH plugin/ef-r38-mechanism",
+      "productionPaths": [
+        "src/fold/engine.ts",
+        "src/semantic/plan.ts",
+        "src/semantic/retirement.ts",
+        "src/semantic/types.ts",
+        "src/semantic/validate.ts"
+      ],
+      "evidencePaths": [
+        "eval/r38/out/archive-recovery-ablation.json",
+        "eval/r38/out/baseline-manifest.json",
+        "eval/r38/out/baseline-tests.json",
+        "eval/r38/out/gate-status.json",
+        "eval/r38/out/integrity-audit.json",
+        "eval/r38/out/mechanism-evaluation.json",
+        "eval/r38/out/native-context-smoke.json",
+        "eval/r38/out/r38-tests.json",
+        "eval/r38/out/recent-tail-consistency.json",
+        "eval/r38/out/relation-security-audit.json",
+        "eval/r38/out/revision-idempotency.json",
+        "eval/r38/out/working-set-ablation.json"
+      ]
+    }
+  ],
+  "sideLines": [
+    {
+      "stage": "rc29",
+      "branch": "rc29-working-set-observer",
+      "baseSha": "bd1131cc039c8addf1590973f7e6e406ed126e64",
+      "baseShort": "bd1131c",
+      "finalSha": "7a42ec67b22cd1677820ab2d9718a107db79607b",
+      "finalShort": "7a42ec6",
+      "parentSha": "bd1131cc039c8addf1590973f7e6e406ed126e64",
+      "commits": 1,
+      "remoteRef": "refs/remotes/origin/rc29-working-set-observer",
+      "localRef": "refs/heads/rc29-working-set-observer",
+      "ancestorOfR38": false,
+      "note": "Side line branched from bd1131c (the LOCAL main), not from the released origin/main line. Its work is not an ancestor of R38 and must not be described as a predecessor stage of it."
+    }
+  ],
+  "tags": [
+    {
+      "ref": "refs/tags/v0.1.0",
+      "object": "b167ce003a95d221580089f79c7e956aa3f4f70e",
+      "commit": "f7fa86c76cd5cc63b260d7e58585b85d10951239",
+      "inMain": true
+    }
+  ],
+  "refsWithoutRemote": [
+    "rc36-semantic-interface",
+    "rc37c-measurement-closure",
+    "rc37d-operational-completion"
+  ]
+}

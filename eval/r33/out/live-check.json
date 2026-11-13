@@ -4,7 +4,7 @@
     "id": "r33-semantic-continuity-v2",
     "digest": "407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f",
     "cases": 17,
-    "scorerVersion": 2
+    "scorerVersion": 3
   },
   "holdout": {
     "id": "r33-semantic-continuity-holdout-v1",
@@ -49,7 +49,11 @@
     "O2",
     "F",
     "N",
-    "OR"
+    "OR",
+    "FP",
+    "FS",
+    "FN",
+    "FH"
   ],
   "stages": [
     "writer-only",

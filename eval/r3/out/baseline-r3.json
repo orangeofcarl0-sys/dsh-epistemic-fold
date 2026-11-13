@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP0",
+  "generatedAt": "2026-11-10T15:33:04.808Z",
+  "git": {
+    "worktree": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation",
+    "head": "4affdee8a1c272bcbaa43fba4f842bf4ab8f87aa",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "headSubject": "docs(research): record the final supported-lane CI run",
+    "dirtyPaths": [],
+    "worktreeClean": true
+  },
+  "pullRequest": {
+    "baseRefName": "rc38-mechanism-validation",
+    "headRefName": "chore/ef-c1-evaluation-foundation",
+    "headRefOid": "4affdee8a1c272bcbaa43fba4f842bf4ab8f87aa",
+    "mergeable": "MERGEABLE",
+    "number": 5,
+    "state": "OPEN",
+    "url": "https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/pull/5"
+  },
+  "ci": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T12:19:20Z",
+      "databaseId": 42814745851,
+      "headSha": "4affdee8a1c272bcbaa43fba4f842bf4ab8f87aa",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T12:15:58Z",
+      "databaseId": 42814270276,
+      "headSha": "9699d01981ea4f704ddf68b2aea568eb877b712c",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T11:08:02Z",
+      "databaseId": 42804939899,
+      "headSha": "8d69141efc6a97abb366a914a12e2e0af7788ef4",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T11:04:54Z",
+      "databaseId": 42804489967,
+      "headSha": "4af0eeaf5c999e55b4ef8ff92044be9fb301e598",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T08:36:59Z",
+      "databaseId": 42784029270,
+      "headSha": "34af2950de0e186c997f22d6bdd8f6581cbf3392",
+      "status": "completed",
+      "workflowName": "CI"
+    }
+  ],
+  "r2": {
+    "counts": {
+      "pass": 10,
+      "pending": 0,
+      "incomplete": 1,
+      "fail": 0
+    },
+    "gates": [
+      {
+        "id": "R2-G0",
+        "status": "pass",
+        "detail": "baseline 34af2950; R1 pointer present; R2 archive archive-verified"
+      },
+      {
+        "id": "R2-G1",
+        "status": "pass",
+        "detail": "witness contract 30/30; history 290 cells, 753 attempts, 673 committed; 12 discrepancy cells"
+      },
+      {
+        "id": "R2-G2",
+        "status": "pass",
+        "detail": "31 failed; 31 shrink; finishes {\"stop\":31}"
+      },
+      {
+        "id": "R2-G2.5",
+        "status": "pass",
+        "detail": "production fix none; pre-call guard false; retry suppression false"
+      },
+      {
+        "id": "R2-G3",
+        "status": "pass",
+        "detail": "legacy 44/120 reproduced true; full messages 194; exact lost 45; values unavailable 2"
+      },
+      {
+        "id": "R2-G4",
+        "status": "pass",
+        "detail": "reconciliation true; rationale calls 42; failed cost 7083 in / 7890 out"
+      },
+      {
+        "id": "R2-G5",
+        "status": "pass",
+        "detail": "old allowed -> new refused; tests 12; retire refs 0"
+      },
+      {
+        "id": "R2-G6",
+        "status": "pass",
+        "detail": "supported CI success; the master probe remains non-blocking by design"
+      },
+      {
+        "id": "R2-G7",
+        "status": "pass",
+        "detail": "EF_R2.md present; claims missing 0; live authorized false"
+      },
+      {
+        "id": "R2-G8",
+        "status": "pass",
+        "detail": "pilot 18/18; E1 commit 6/6, delivered 6/6, refused 0, aborted 0"
+      },
+      {
+        "id": "R2-G9",
+        "status": "incomplete",
+        "detail": "confirm 23/54 valid; 2 transport-failed, 29 unexecuted; no further live calls until the route is stable"
+      }
+    ],
+    "generatedAt": "2026-11-10T12:18:59.523Z",
+    "note": "R2-G9 is incomplete by design; the confirm stopped on local route transport failures."
+  },
+  "immutable": [
+    {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+      "present": true,
+      "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-1.json",
+      "present": true,
+      "sha256": "596103a0ff342b173e60f4abdfda965bf1f784ad8a6ec452e8f80b27bef55a1a",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-resume-1.json",
+      "present": true,
+      "sha256": "a7d55f61032e96ce8363752c28c08cb8b15ffc56301615882ca7c2f1c7c1a5f5",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-resume-1.json",
+      "present": true,
+      "sha256": "7e3a94873ee814ff1ff066a98bcb8543fc14929ad6f9cb0608fe54cfeae3ca42",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-confirm-merged.json",
+      "present": true,
+      "sha256": "52b5275cd00e0c53db6c5ad00ca9f3d1202cafb065f71b1c7b3060c0955c3a98",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/manifest-e2e-r2-pilot-1.json",
+      "present": true,
+      "sha256": "559ab7c4d69ec72c34a4e99cbbd588e3ac4bc232289e8b81552b2cd62a6a52a5",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/results-e2e-r2-pilot-1.json",
+      "present": true,
+      "sha256": "2f98a017310b9c0eec4e4f229ef214cdcb1c3c92d8dd670bd5617285406ec10c",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/analysis-e2e-r2-pilot-1.json",
+      "present": true,
+      "sha256": "ec7df9f158027eb4ee02c908dcb8f6b012d376367a66ae221707f12303aec20c",
+      "immutable": true
+    },
+    {
+      "path": "eval/e2e/out/evidence-index-e2e-r2-pilot-1.json",
+      "present": true,
+      "sha256": "d9d412436aeb1c7e1ab854f670cd0099904d69c509d29e7512984cf37dc1ab99",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/live-route-incident.json",
+      "present": true,
+      "sha256": "50cf319edbd215e54c48dc6bb38700801c83571832292f387c9902481509dd0d",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/live-pilot-analysis.json",
+      "present": true,
+      "sha256": "701e22065dafaefbec09081493c281ee12c79acebc97bfead7b7dbab8fff504d",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/live-confirm-analysis.json",
+      "present": true,
+      "sha256": "310b3e29a36c9256dc2f128174aeb4c6e42600aed7d482831fa1d23ab27f8d9d",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/live-design-r2.json",
+      "present": true,
+      "sha256": "2084b239cad7c2fb794942f5eee4915faedcd5a5c357c4734f38a4aeb4598f8b",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/gate-status.json",
+      "present": true,
+      "sha256": "315578fe49836b2b67b2eb1e29dce79462901ea2306f25d8b21e96067e450939",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/compaction-witnesses.json",
+      "present": true,
+      "sha256": "281d14707c2cae69b8b2af1b2b3d9e8839b459d55237a289e2d42a04971178ab",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/rationale-failure-attribution.json",
+      "present": true,
+      "sha256": "f9b7051577b094ad3cc35a6993d3cec2cefca69889a555f8186391d68682c973",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/active-task-delivery.json",
+      "present": true,
+      "sha256": "aa4f80986ec8b0fc5f3e4d11ccf1f69dd091600accdd2ff078caeff7af77822a",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/causal-reanalysis.json",
+      "present": true,
+      "sha256": "9330f43fffc405f5bb6c8d39e1df87a36a5291e9d45544416abe9dc100333be5",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/cost-ledger.json",
+      "present": true,
+      "sha256": "a2e70387e73317489b42d7a644a06cd6d70c198ed4b04680be05d2f8bec8376d",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/authority-closure.json",
+      "present": true,
+      "sha256": "83977b3d66658c1c550bc908a39808d7bde42c8560ee9d50b5564e6532aa9f47",
+      "immutable": true
+    },
+    {
+      "path": "eval/r2/out/research-archive-r2.json",
+      "present": true,
+      "sha256": "462e340fce5d73eb5beacb47933c4084bc275b330a9e060bbd9a5f51e36fb5d7",
+      "immutable": true
+    },
+    {
+      "path": "docs/convergence/EF_R2.md",
+      "present": true,
+      "sha256": "2a109605e0874ecb9e4b84d7616f36f25efe9a661bb0bc02b3fa4124c761ccd8",
+      "immutable": true
+    }
+  ],
+  "immutableMissing": [],
+  "note": "The R2 artifacts below are read-only inputs for R3. A missing file is reported, never inferred. The worktree check excludes ignored run output and the in-progress eval/r3 directory."
+}

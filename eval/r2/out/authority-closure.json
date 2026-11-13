@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP5",
+  "generatedAt": "2026-11-10T10:35:52.494Z",
+  "mixedOrigin": {
+    "fixture": {
+      "targetAnchor": "user-queue at seq 1",
+      "evidence": [
+        {
+          "kind": "user/message",
+          "seq": 1,
+          "quote": "Use the in-memory queue for now."
+        },
+        {
+          "kind": "assistant/message",
+          "seq": 2,
+          "quote": "I decided the durable outbox is better."
+        }
+      ],
+      "proposal": "Use the durable outbox."
+    },
+    "oldLogic": {
+      "sourceAuthority": "user",
+      "latestDecisionSeq": 2,
+      "mayRetire": {
+        "allowed": true
+      },
+      "verdict": "allowed",
+      "note": "This is the SAME mayRetire with the inputs the old seq-blind origin produced. The bypass was in the inputs, not in the retirement rule."
+    },
+    "newLogic": {
+      "sourceAuthority": "assistant",
+      "latestDecisionSeq": 2,
+      "mayRetire": {
+        "allowed": false,
+        "reason": "insufficient-source-authority",
+        "detail": "an assistant-origin decision may not retire a decision whose source is user; the user must revise it, or the assistant must propose it as a new claim in another coordinate"
+      },
+      "planner": {
+        "withheld": [
+          {
+            "deltaId": "ce9adfa5a741a05ecd1f7e7cb345b32ae03bc5fc2fb955c80f8a6cb8f908a2d9",
+            "reason": "unauthorized-replacement",
+            "targets": [
+              "previous"
+            ]
+          }
+        ],
+        "refusedRetirements": [
+          {
+            "deltaId": "ce9adfa5a741a05ecd1f7e7cb345b32ae03bc5fc2fb955c80f8a6cb8f908a2d9",
+            "target": "previous",
+            "anchorId": "user-queue",
+            "reason": "insufficient-source-authority"
+          }
+        ]
+      },
+      "verdict": "refused"
+    },
+    "decisionOriginCases": [
+      {
+        "entries": [
+          {
+            "kind": "user/message",
+            "seq": 1
+          },
+          {
+            "kind": "assistant/message",
+            "seq": 2
+          }
+        ],
+        "origin": "assistant"
+      },
+      {
+        "entries": [
+          {
+            "kind": "assistant/message",
+            "seq": 1
+          },
+          {
+            "kind": "user/message",
+            "seq": 2
+          }
+        ],
+        "origin": "user"
+      },
+      {
+        "entries": [
+          {
+            "kind": "user/message",
+            "seq": 1
+          },
+          {
+            "kind": "tool/result",
+            "seq": 9
+          }
+        ],
+        "origin": "user"
+      }
+    ],
+    "regressionGate": {
+      "test": "tests/ef-r2-mixed-origin.spec.ts",
+      "tests": 12,
+      "sha256": "5c99ab91b6895959c11dcb55e331f1c66e219b4aef5812ef3138a3076a5a10ff"
+    }
+  },
+  "anchorService": {
+    "sessionId": "ef-r2-authority-5116",
+    "seqs": {
+      "userSeq": 0,
+      "assistantSeq": 1
+    },
+    "suppliedUserLabelWithAssistantEvidence": "epistemic-fold: anchor sourceAuthority \"user\" disagrees with the raw evidence [assistant/message], whose newest decision-capable producer is \"assistant\"; the producer is derived from the cited events, not supplied by the caller",
+    "omittedLabelDerived": "assistant",
+    "assistantAtOccupiedUserCoordinate": "epistemic-fold: refusing to replace anchor anchor-a2da0672-74b1-4590-a0e0-40f7f220d124 at scope/queue/mode: stale-source — the newest decision evidence (seq 0) is not newer than the decision it would revise (seq 1); a revision needs a newer statement"
+  },
+  "retireAudit": {
+    "modelCallableFilesChecked": [
+      "src/recall/tools.ts",
+      "src/status/command.ts",
+      "src/plugin.ts"
+    ],
+    "retireReferences": [],
+    "note": "AnchorService.retire remains a privileged programmatic API; no registered tool or command calls it. The state-write audit classifies it; this round does not change it."
+  },
+  "sources": {
+    "authority": {
+      "path": "src/state/authority.ts",
+      "sha256": "fc75f7e4dd29339d05f0faceb5f23456864f30d5846c34ea85f59ac924f1f242"
+    },
+    "validate": {
+      "path": "src/semantic/validate.ts",
+      "sha256": "96391dfd3ed27e4c642aab141912a53b964b4f85818cb3b3e2827f3a9040800b"
+    },
+    "anchorService": {
+      "path": "src/state/anchor-service.ts",
+      "sha256": "26364536af9a1d62278297632db0d811efda5eec2f62defa00f56e44c5b42414"
+    }
+  },
+  "note": "The old verdict is reproduced by calling the same mayRetire with the old inputs; the new verdict is the real validator + planner. Historical replay is unchanged: applyOps applies recorded ops as recorded."
+}

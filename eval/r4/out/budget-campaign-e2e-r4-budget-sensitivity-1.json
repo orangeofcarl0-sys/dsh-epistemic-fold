@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 budget-sensitivity campaign",
+  "generatedAt": "2026-11-13T19:45:03.180Z",
+  "campaign": "e2e-r4-budget-sensitivity-1",
+  "status": "partial",
+  "stopReason": "provider-usage-incomplete",
+  "planned": 36,
+  "executed": 3,
+  "partial": true,
+  "budgetAborts": 2,
+  "cellsWithBudgetAborts": [
+    "T13-p1-E1-r1"
+  ],
+  "byArmBudget": {
+    "B0-8": {
+      "cells": 1,
+      "taskCorrect": 1,
+      "taskIncorrect": 0,
+      "taskIncomplete": 0,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 1,
+      "requests": 14,
+      "inputTokens": 80810,
+      "outputTokens": 4457,
+      "budgetAborts": 0
+    },
+    "B0-16": {
+      "cells": 0,
+      "taskCorrect": 0,
+      "taskIncorrect": 0,
+      "taskIncomplete": 0,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 0,
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "budgetAborts": 0
+    },
+    "E0-8": {
+      "cells": 0,
+      "taskCorrect": 0,
+      "taskIncorrect": 0,
+      "taskIncomplete": 0,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 0,
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "budgetAborts": 0
+    },
+    "E0-16": {
+      "cells": 1,
+      "taskCorrect": 0,
+      "taskIncorrect": 0,
+      "taskIncomplete": 1,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 1,
+      "requests": 3,
+      "inputTokens": 15757,
+      "outputTokens": 275,
+      "budgetAborts": 0
+    },
+    "E1-8": {
+      "cells": 1,
+      "taskCorrect": 0,
+      "taskIncorrect": 0,
+      "taskIncomplete": 1,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 0,
+      "requests": 5,
+      "inputTokens": 42538,
+      "outputTokens": 821,
+      "budgetAborts": 2
+    },
+    "E1-16": {
+      "cells": 0,
+      "taskCorrect": 0,
+      "taskIncorrect": 0,
+      "taskIncomplete": 0,
+      "stepLimited": 0,
+      "mechanismMet": 0,
+      "costValid": 0,
+      "requests": 0,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "budgetAborts": 0
+    }
+  },
+  "comparisons": [
+    {
+      "id": "B0-16-vs-8",
+      "left": "B0@16",
+      "right": "B0@8",
+      "pairs": 0,
+      "both": 0,
+      "neither": 0,
+      "leftOnly": 0,
+      "rightOnly": 0,
+      "mcnemarP": 1
+    },
+    {
+      "id": "E0-16-vs-8",
+      "left": "E0@16",
+      "right": "E0@8",
+      "pairs": 0,
+      "both": 0,
+      "neither": 0,
+      "leftOnly": 0,
+      "rightOnly": 0,
+      "mcnemarP": 1
+    },
+    {
+      "id": "E1-16-vs-8",
+      "left": "E1@16",
+      "right": "E1@8",
+      "pairs": 0,
+      "both": 0,
+      "neither": 0,
+      "leftOnly": 0,
+      "rightOnly": 0,
+      "mcnemarP": 1
+    },
+    {
+      "id": "E1-vs-B0@8",
+      "left": "E1@8",
+      "right": "B0@8",
+      "pairs": 0,
+      "both": 0,
+      "neither": 0,
+      "leftOnly": 0,
+      "rightOnly": 0,
+      "mcnemarP": 1
+    },
+    {
+      "id": "E1-vs-B0@16",
+      "left": "E1@16",
+      "right": "B0@16",
+      "pairs": 0,
+      "both": 0,
+      "neither": 0,
+      "leftOnly": 0,
+      "rightOnly": 0,
+      "mcnemarP": 1
+    }
+  ],
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "budget": 8,
+      "taskOutcome": "correct",
+      "historicalPass": true,
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "costValid": true,
+      "requests": 14,
+      "inputTokens": 80810,
+      "outputTokens": 4457,
+      "budgetAborts": 0
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "budget": 16,
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "costValid": true,
+      "requests": 3,
+      "inputTokens": 15757,
+      "outputTokens": 275,
+      "budgetAborts": 0
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "budget": 8,
+      "taskOutcome": "incomplete",
+      "historicalPass": false,
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "costValid": false,
+      "requests": 5,
+      "inputTokens": 42538,
+      "outputTokens": 821,
+      "budgetAborts": 2
+    }
+  ],
+  "notExecuted": [
+    {
+      "task": "T14-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T11-p1",
+      "arm": "E0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T12-p1",
+      "arm": "E1",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T13-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T14-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "B0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T11-p1",
+      "arm": "E1",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T12-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T13-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T14-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "B0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "E0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T11-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T12-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T13-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T14-p1",
+      "arm": "B0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "E0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "E1",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T11-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T12-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T13-p1",
+      "arm": "B0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T14-p1",
+      "arm": "E0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "E1",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T11-p1",
+      "arm": "E1",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T12-p1",
+      "arm": "B0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T13-p1",
+      "arm": "E0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T14-p1",
+      "arm": "E1",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T15-p1",
+      "arm": "B0",
+      "budget": 16,
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "task": "T16-p1",
+      "arm": "E0",
+      "budget": 8,
+      "reason": "provider-usage-incomplete"
+    }
+  ],
+  "limits": [
+    "A local BUDGET_EXHAUSTED auxiliary call is an envelope defect, not a model outcome; it is counted separately.",
+    "A partial campaign does not support a budget-effect claim.",
+    "The campaign is one model, one route and one host."
+  ]
+}

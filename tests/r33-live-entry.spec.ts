@@ -19,7 +19,10 @@
 
 import { describe, expect, it } from 'vitest'
 import { execFile } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { mkdtemp, readFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
 import {
@@ -48,21 +51,56 @@ async function runScript(args: string[], env: Record<string, string | undefined>
   }
 }
 
+/** The report path a run printed on its last stdout line. */
+function printedPath(stdout: string): string {
+  const lines = stdout.trimEnd().split('\n')
+  return lines[lines.length - 1]!.trim()
+}
+
 describe('R33 live gate and budget', () => {
   it('validates the interface without resolving credentials', async () => {
-    const result = await runScript(['--check'], { R33_LIVE: undefined })
+    // EF-C1: `--out` keeps this probe from rewriting the TRACKED
+    // eval/r33/out/live-check.json. The interface check is not evidence.
+    const out = await mkdtemp(join(tmpdir(), 'r33-check-'))
+    const result = await runScript(['--check', '--out', out], { R33_LIVE: undefined })
     expect(result.code).toBe(0)
     const parsed = JSON.parse(result.stdout.slice(0, result.stdout.lastIndexOf('}') + 1))
     expect(parsed.status).toBe('interface-ok')
     expect(parsed.dataset.cases).toBe(17)
     expect(parsed.arms).toEqual(['B1', 'S', 'O1', 'O2'])
     expect(parsed.note).toContain('resolves no credentials')
+
+    // The committed snapshot is historical: verify its identity and require a
+    // declared drift when the interface has moved on.
+    const committedRaw = readFileSync(join(ROOT, 'eval', 'r33', 'out', 'live-check.json'), 'utf8')
+    const committed = JSON.parse(committedRaw) as unknown
+    const generated = `${JSON.stringify(parsed, null, 2)}\n`
+    const sha256 = (text: string): string =>
+      createHash('sha256').update(text.replace(/\r\n/gu, '\n')).digest('hex')
+    const registry = JSON.parse(
+      readFileSync(join(ROOT, 'docs', 'convergence', 'data', 'report-baselines.json'), 'utf8'),
+    ) as { reports: Array<{ id: string; status: string; frozenSha256: string; observedSha256: string; cause: string }> }
+    const entry = registry.reports.find(row => row.id === 'r33-live-check')
+    expect(entry, 'the R33 live check must be declared in report-baselines.json').toBeDefined()
+    expect(sha256(committedRaw), 'the committed live check changed without a baseline update')
+      .toBe(entry!.frozenSha256)
+    if (JSON.stringify(committed) === JSON.stringify(parsed)) {
+      expect(entry!.status, 'the check reproduces; the registry must say current').toBe('current')
+    } else {
+      expect(entry!.status, 'the check does not reproduce; the drift must be declared').toBe('stale')
+      expect(entry!.observedSha256, 'the declared drift digest must match the check').toBe(sha256(generated))
+      expect(entry!.cause.length, 'a declared drift needs a cause').toBeGreaterThan(0)
+    }
   }, 120_000)
 
   it('refuses a live run and records not-executed when R33_LIVE is not 1', async () => {
-    const result = await runScript(['--run'], { R33_LIVE: undefined })
+    // EF-C1: a refusal gets its own run-scoped record. It must NOT replace the
+    // tracked latest report — that was the defect: running this test erased the
+    // record of the last real run.
+    const runRoot = await mkdtemp(join(tmpdir(), 'r33-refusal-'))
+    const result = await runScript(['--run'], { R33_LIVE: undefined, R33_RUN_ROOT: runRoot })
     expect(result.code).toBe(3)
-    const report = JSON.parse(await readFile(join(ROOT, 'eval', 'r33', 'out', 'live-report.json'), 'utf8'))
+    const report = JSON.parse(await readFile(printedPath(result.stdout), 'utf8'))
     expect(report.status).toBe('not-executed')
     expect(report.reason).toContain('R33_LIVE')
     expect(report.note).toContain('No provider request was attempted')

@@ -1,0 +1,586 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP0",
+  "generatedAt": "2026-11-10T10:16:58.977Z",
+  "git": {
+    "worktree": "F:/Codex_Work_Space/DSH plugin/ef-c1-foundation",
+    "head": "34af2950de0e186c997f22d6bdd8f6581cbf3392",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "headSubject": "eval(ef-r1): the 24-cell confirmation — E1 8/8, re-render 4/8",
+    "status": "M ef-phase7-logs/watchdog.heartbeat\n?? eval/r2/"
+  },
+  "pullRequest": {
+    "baseRefName": "rc38-mechanism-validation",
+    "headRefName": "chore/ef-c1-evaluation-foundation",
+    "headRefOid": "34af2950de0e186c997f22d6bdd8f6581cbf3392",
+    "mergeable": "MERGEABLE",
+    "number": 5,
+    "state": "OPEN",
+    "url": "https://github.com/orangeofcarl0-sys/dsh-epistemic-fold/pull/5"
+  },
+  "ci": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T08:36:59Z",
+      "databaseId": 42784029270,
+      "headSha": "34af2950de0e186c997f22d6bdd8f6581cbf3392",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T08:22:19Z",
+      "databaseId": 42782108881,
+      "headSha": "9ec84dbbce9f39bf8d8886a778019549b2ea8bbc",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T07:44:25Z",
+      "databaseId": 42777391510,
+      "headSha": "e472b462622201813239919617a9c178c3d1ae6e",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-10T07:16:02Z",
+      "databaseId": 42774086229,
+      "headSha": "f23ad7110bb086d698cfb8bf9da4f381499a8f04",
+      "status": "completed",
+      "workflowName": "CI"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-09T19:51:38Z",
+      "databaseId": 42687369701,
+      "headSha": "254445c6c7807bcc72b9f9bc19b354e31fb6a9a9",
+      "status": "completed",
+      "workflowName": "CI"
+    }
+  ],
+  "campaign": "e2e-lg-confirm-1",
+  "e1": {
+    "cells": 24,
+    "checkerPasses": 18,
+    "folds": 11,
+    "foldFailures": 31,
+    "attempts": 42,
+    "auxiliaryRequests": 42,
+    "noFold": 13,
+    "requests": 96,
+    "inputTokens": 295420,
+    "outputTokens": 16727,
+    "consistent": true
+  },
+  "e1Errors": {
+    "unique": 31,
+    "shrinkRefusals": 31,
+    "otherKinds": 0,
+    "framedTokens": {
+      "min": 189,
+      "max": 504
+    },
+    "shadowedTokens": {
+      "min": 58,
+      "max": 207
+    },
+    "rows": [
+      {
+        "text": "summary is not smaller than the shadowed content (257 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 257,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (304 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 304,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (333 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 333,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (504 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 504,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (189 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 189,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (269 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 269,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (383 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 383,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (319 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 319,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (281 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 281,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (288 estimated framed tokens >= 62)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 288,
+        "shadowedTokens": 62
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (248 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 248,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (381 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 381,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (225 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 225,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (228 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 228,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (371 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 371,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (330 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 330,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (289 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 289,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (280 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 280,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (311 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 311,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (336 estimated framed tokens >= 58)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 336,
+        "shadowedTokens": 58
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (269 estimated framed tokens >= 207)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 269,
+        "shadowedTokens": 207
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (316 estimated framed tokens >= 207)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 316,
+        "shadowedTokens": 207
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (298 estimated framed tokens >= 205)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 298,
+        "shadowedTokens": 205
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (330 estimated framed tokens >= 205)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 330,
+        "shadowedTokens": 205
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (313 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 313,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (325 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 325,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (385 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 385,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (253 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 253,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (415 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 415,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (419 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 419,
+        "shadowedTokens": 200
+      },
+      {
+        "text": "summary is not smaller than the shadowed content (351 estimated framed tokens >= 200)",
+        "count": 1,
+        "kind": "shrink-refusal",
+        "framedTokens": 351,
+        "shadowedTokens": 200
+      }
+    ]
+  },
+  "e1Bundles": {
+    "cellsWithOrphanBundles": 15,
+    "totalBundleFiles": 42,
+    "totalCommitRecords": 11,
+    "rows": [
+      {
+        "cellId": "T2-s1-E1-r1",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 17892
+      },
+      {
+        "cellId": "T2-s1-E1-r2",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 18211
+      },
+      {
+        "cellId": "T2-s2-E1-r1",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 18036
+      },
+      {
+        "cellId": "T2-s2-E1-r2",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 17988
+      },
+      {
+        "cellId": "T4-s1-E1-r1",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 15034
+      },
+      {
+        "cellId": "T4-s1-E1-r2",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 15090
+      },
+      {
+        "cellId": "T4-s2-E1-r1",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 15433
+      },
+      {
+        "cellId": "T4-s2-E1-r2",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 15453
+      },
+      {
+        "cellId": "T7-s1-E1-r1",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18829
+      },
+      {
+        "cellId": "T7-s1-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18839
+      },
+      {
+        "cellId": "T7-s2-E1-r1",
+        "attempts": 4,
+        "folds": 0,
+        "failed": 4,
+        "checkpoint": false,
+        "bundleFiles": 4,
+        "commitRecords": 0,
+        "retainedTokens": 19161
+      },
+      {
+        "cellId": "T7-s2-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18961
+      },
+      {
+        "cellId": "T8-s1-E1-r1",
+        "attempts": 3,
+        "folds": 0,
+        "failed": 3,
+        "checkpoint": false,
+        "bundleFiles": 3,
+        "commitRecords": 0,
+        "retainedTokens": 18421
+      },
+      {
+        "cellId": "T8-s1-E1-r2",
+        "attempts": 3,
+        "folds": 0,
+        "failed": 3,
+        "checkpoint": false,
+        "bundleFiles": 3,
+        "commitRecords": 0,
+        "retainedTokens": 18437
+      },
+      {
+        "cellId": "T8-s2-E1-r1",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18385
+      },
+      {
+        "cellId": "T8-s2-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18495
+      },
+      {
+        "cellId": "T9-s1-E1-r1",
+        "attempts": 1,
+        "folds": 0,
+        "failed": 1,
+        "checkpoint": false,
+        "bundleFiles": 1,
+        "commitRecords": 0,
+        "retainedTokens": 19285
+      },
+      {
+        "cellId": "T9-s1-E1-r2",
+        "attempts": 2,
+        "folds": 1,
+        "failed": 1,
+        "checkpoint": true,
+        "bundleFiles": 2,
+        "commitRecords": 1,
+        "retainedTokens": 3007
+      },
+      {
+        "cellId": "T9-s2-E1-r1",
+        "attempts": 1,
+        "folds": 1,
+        "failed": 0,
+        "checkpoint": true,
+        "bundleFiles": 1,
+        "commitRecords": 1,
+        "retainedTokens": 18848
+      },
+      {
+        "cellId": "T9-s2-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18813
+      },
+      {
+        "cellId": "T10-s1-E1-r1",
+        "attempts": 2,
+        "folds": 1,
+        "failed": 1,
+        "checkpoint": true,
+        "bundleFiles": 2,
+        "commitRecords": 1,
+        "retainedTokens": 3811
+      },
+      {
+        "cellId": "T10-s1-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18359
+      },
+      {
+        "cellId": "T10-s2-E1-r1",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18272
+      },
+      {
+        "cellId": "T10-s2-E1-r2",
+        "attempts": 2,
+        "folds": 0,
+        "failed": 2,
+        "checkpoint": false,
+        "bundleFiles": 2,
+        "commitRecords": 0,
+        "retainedTokens": 18373
+      }
+    ]
+  },
+  "configurationAudit": {
+    "leafAdmissionDefault": "legacy",
+    "minReclaimTokens": "600",
+    "framingFallbackTokens": "530",
+    "e2eHostPassesLeafAdmission": false,
+    "tiersSetEconomic": 3,
+    "rationaleOutputFloor": "16_384",
+    "rationaleOutputCeiling": "32_768",
+    "perCellOutputTokens": "20_000",
+    "note": "The E2E host passes mode/semanticMode/flags but not leafAdmission, so the plugin default (legacy) applies. Every shipped tier sets leafAdmission: economic. The 120-cell E1 arm is therefore E1-legacy-admission, not the shipped economy tier."
+  },
+  "pointers": {
+    "r1Archive": {
+      "path": "eval/ef-r1/out/research-archive-r1.json",
+      "sha256": "91f22c62fca31ce76db9e0ecbcc89f0493510265b81078cc8567506bd437182b"
+    },
+    "stageAttribution": {
+      "path": "eval/e2e/out/stage-attribution.json",
+      "sha256": "08e9e78b4ebad1f39e3ef8c1ee170e9669dea9b62b6c4edd08c81a92fe2fa8b4"
+    },
+    "confirmResults": {
+      "path": "eval/e2e/out/results-e2e-lg-confirm-1.json",
+      "sha256": "8d7ff73ecdbf064ab33327b889cc42cd80fec14f037eef051c27976d7903ce2f"
+    },
+    "confirmAnalysis": {
+      "path": "eval/e2e/out/analysis-e2e-lg-confirm-1.json",
+      "sha256": "690986413142ae65aa0cce065ef43bc11814211b52ff5051c1dca673fb963dda"
+    }
+  },
+  "note": "Baseline only. No provider call, no historical file modified."
+}

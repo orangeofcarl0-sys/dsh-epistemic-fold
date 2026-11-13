@@ -130,6 +130,53 @@ export interface ResolvedEpistemicFoldConfig {
    */
   readonly referentialArchive: boolean
   /**
+   * EXPERIMENTAL: append a short recall affordance to the checkpoint body.
+   *
+   * Default `false`. The E2E campaign measured the failure it addresses: E0
+   * checkpoints were a bare marker, the recall tools existed, and several
+   * cells never invoked them. The affordance names the tools in the body. It
+   * costs a few tokens per checkpoint and is OFF until an experiment shows it
+   * pays for them.
+   */
+  readonly recallAffordance: boolean
+  /**
+   * EXPERIMENTAL: list the folded span's tool calls (name + path/query) in the
+   * checkpoint body, so the model knows WHICH evidence is archived, not merely
+   * that an archive exists. Default `false`.
+   */
+  readonly foldedSpanIndex: boolean
+  /**
+   * EXPERIMENTAL: render an EXECUTABLE address for the folded tool results.
+   *
+   * Default `false`. A locator names the archived message index and the
+   * `context_recall` call that opens it, so the model cannot mistake a
+   * historical observation for the current contents of a workspace path. The
+   * E2E index campaign measured the failure this addresses: the prose form of
+   * `Archived calls` led the model to re-issue `read_file` on a rotated path.
+   *
+   * Off until an experiment shows the address pays for its tokens. It adds no
+   * tool and intercepts nothing: `context_recall` is the existing reader.
+   */
+  readonly archiveLocator: boolean
+  /**
+   * EXPERIMENTAL: never fold the ACTIVE user request.
+   *
+   * Default `false`. The 120-cell confirm measured the request itself being
+   * archived in 44/120 cells. When enabled, a leaf span starts AFTER the last
+   * real user message, so the request stays on the surface verbatim. The
+   * emergency rebase may still fold it when the provider window cannot be met.
+   */
+  readonly protectActiveRequest: boolean
+  /**
+   * EXPERIMENTAL: when a fold replaces the ACTIVE user request, copy it
+   * verbatim into the checkpoint body. Default `false`.
+   *
+   * The span-start prototype (`protectActiveRequest`) turned out to disable
+   * folding: the post-request span was too small and admission refused it.
+   * This flag keeps the fold normal and preserves the instruction instead.
+   */
+  readonly rerenderActiveRequest: boolean
+  /**
    * EXPERIMENTAL: let `context_recall` resolve a checkpoint belonging to
    * ANOTHER session by opening its stored log for reading.
    *
@@ -321,6 +368,25 @@ export interface EpistemicFoldConfig extends BasicCompactionConfig {
    */
   referentialArchive?: boolean
   /**
+   * EXPERIMENTAL: append a recall affordance to the checkpoint body. Default
+   * `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  recallAffordance?: boolean
+  /**
+   * EXPERIMENTAL: list the folded span's tool calls in the checkpoint body.
+   * Default `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  foldedSpanIndex?: boolean
+  /**
+   * EXPERIMENTAL: render an executable archive address for folded tool
+   * results. Default `false`; see `ResolvedEpistemicFoldConfig`.
+   */
+  archiveLocator?: boolean
+  /** EXPERIMENTAL: never fold the active user request. Default `false`. */
+  protectActiveRequest?: boolean
+  /** EXPERIMENTAL: copy the active request into the checkpoint body. Default `false`. */
+  rerenderActiveRequest?: boolean
+  /**
    * EXPERIMENTAL: allow recall of another session's checkpoints. Default
    * `false`; see `ResolvedEpistemicFoldConfig`.
    */
@@ -452,6 +518,30 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
   if (typeof referentialArchive !== 'boolean') {
     throw new Error('epistemic-fold: referentialArchive must be a boolean')
   }
+  // EXPERIMENTAL, off by default. Appends one recall-affordance section to the
+  // checkpoint body; see `recallAffordance` in the resolved config.
+  const recallAffordance = expanded.recallAffordance ?? false
+  if (typeof recallAffordance !== 'boolean') {
+    throw new Error('epistemic-fold: recallAffordance must be a boolean')
+  }
+  const foldedSpanIndex = expanded.foldedSpanIndex ?? false
+  if (typeof foldedSpanIndex !== 'boolean') {
+    throw new Error('epistemic-fold: foldedSpanIndex must be a boolean')
+  }
+  // EXPERIMENTAL, off by default. Renders executable archive addresses into
+  // the checkpoint body; see `archiveLocator` in the resolved config.
+  const archiveLocator = expanded.archiveLocator ?? false
+  if (typeof archiveLocator !== 'boolean') {
+    throw new Error('epistemic-fold: archiveLocator must be a boolean')
+  }
+  const protectActiveRequest = expanded.protectActiveRequest ?? false
+  if (typeof protectActiveRequest !== 'boolean') {
+    throw new Error('epistemic-fold: protectActiveRequest must be a boolean')
+  }
+  const rerenderActiveRequest = expanded.rerenderActiveRequest ?? false
+  if (typeof rerenderActiveRequest !== 'boolean') {
+    throw new Error('epistemic-fold: rerenderActiveRequest must be a boolean')
+  }
   const allowCrossSessionRecall = expanded.allowCrossSessionRecall ?? false
   if (typeof allowCrossSessionRecall !== 'boolean') {
     throw new Error('epistemic-fold: allowCrossSessionRecall must be a boolean')
@@ -493,6 +583,11 @@ export function resolveEfConfig(config: EpistemicFoldConfig = {}): ResolvedEpist
     minReclaimRatio,
     framingMode,
     referentialArchive,
+    recallAffordance,
+    foldedSpanIndex,
+    archiveLocator,
+    protectActiveRequest,
+    rerenderActiveRequest,
     allowCrossSessionRecall,
     subagentRecall,
     subagentRecallThresholdChars,

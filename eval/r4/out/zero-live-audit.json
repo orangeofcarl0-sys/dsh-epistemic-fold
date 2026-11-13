@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 zero-live audit",
+  "scope": "offline analysis scripts only; the authorized live probe and campaign are recorded separately",
+  "generatedAt": "2026-11-13T20:13:59.227Z",
+  "scripts": [
+    "eval/r4/baseline.mjs",
+    "eval/r4/score.mjs",
+    "eval/r4/evidence-graph.mjs",
+    "eval/r4/task-continuity.mjs",
+    "eval/r4/working-set.mjs",
+    "eval/r4/candidate-decision.mjs",
+    "eval/r4/freeze-budget-sensitivity.mjs",
+    "eval/r4/freeze-budget-manifest.mjs",
+    "eval/r4/freeze-health-probe.mjs",
+    "eval/r4/authorize-health-probe.mjs",
+    "eval/r4/authorize-budget-campaign.mjs",
+    "eval/r4/record-live-attempt.mjs",
+    "eval/r4/record-live-attempts.mjs",
+    "eval/r4/preflight-budget-manifest.mjs",
+    "eval/r4/analyze-budget-campaign.mjs",
+    "eval/r4/product-decision.mjs",
+    "eval/r4/contracts/scoring-contract.mjs",
+    "eval/r4/contracts/evidence-graph-contract.mjs",
+    "eval/r4/candidate/active-task-delivery.mjs",
+    "eval/r4/shared/audit.mjs"
+  ],
+  "liveScripts": [
+    "eval/r4/run-health-probe.mjs",
+    "eval/r4/analyze-health-probe.mjs"
+  ],
+  "forbidden": [
+    "/resolveLiveRoute\\s*\\(/u",
+    "/makeLiveAdapter\\s*\\(/u",
+    "/new\\s+LlmAdapter\\b/u",
+    "/registerAdapter\\s*\\(/u",
+    "/\\bfetch\\s*\\(/u",
+    "/\\bLIVE_[A-Z_]+/u",
+    "/from\\s+['\"][^'\"]*eval\\/live[^'\"]*['\"]/u",
+    "/from\\s+['\"][^'\"]*openai[^'\"]*['\"]/u"
+  ],
+  "violations": [],
+  "providerCalls": 0,
+  "r4Campaigns": [
+    "results-e2e-r4-budget-sensitivity-1.json",
+    "results-e2e-r4-budget-sensitivity-2.json",
+    "results-e2e-r4-budget-sensitivity-3.json",
+    "e2e-r4-budget-sensitivity-1",
+    "e2e-r4-budget-sensitivity-2",
+    "e2e-r4-budget-sensitivity-3"
+  ],
+  "authorizedLiveEvidence": [
+    "results-e2e-r4-budget-sensitivity-1.json",
+    "results-e2e-r4-budget-sensitivity-2.json",
+    "results-e2e-r4-budget-sensitivity-3.json",
+    "e2e-r4-budget-sensitivity-1",
+    "e2e-r4-budget-sensitivity-2",
+    "e2e-r4-budget-sensitivity-3"
+  ],
+  "liveAuthorized": true,
+  "budgetExecutionAuthorized": false,
+  "budgetManifest": {
+    "campaign": "e2e-r4-budget-sensitivity-3",
+    "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+    "authorizationGranted": true
+  },
+  "immutableMissing": [],
+  "verdict": "zero-live-verified"
+}

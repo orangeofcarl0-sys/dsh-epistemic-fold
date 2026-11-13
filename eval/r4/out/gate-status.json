@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4",
+  "generatedAt": "2026-11-13T20:19:52.252Z",
+  "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
+  "ci": "success",
+  "budgetPreflight": {
+    "verdict": "ready-for-authorization",
+    "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+    "providerCalls": 0
+  },
+  "liveAttempt": {
+    "decision": "blocked-provider-auth",
+    "attempts": 4,
+    "successes": 0,
+    "planned": 16,
+    "campaignStarted": false
+  },
+  "budgetCampaign": {
+    "campaign": "e2e-r4-budget-sensitivity-3",
+    "status": "complete",
+    "executed": 36,
+    "planned": 36,
+    "taskCorrect": {
+      "B0@8": 4,
+      "E1@8": 6,
+      "E1@16": 4
+    }
+  },
+  "gates": [
+    {
+      "id": "R4-G0",
+      "status": "pass",
+      "detail": "handoff 07540d01; immutable 70 (0 missing); R4 delta dirty at baseline generation yes"
+    },
+    {
+      "id": "R4-G1",
+      "status": "pass",
+      "detail": "contract 8/8; historical {\"B0\":5,\"E0\":1,\"E1\":3}; rescored {\"B0\":5,\"E0\":1,\"E1\":3}"
+    },
+    {
+      "id": "R4-G2",
+      "status": "pass",
+      "detail": "contract 11/11; calls 67; folded 53; refolded 51; unknown 4 (6.0%)"
+    },
+    {
+      "id": "R4-G3",
+      "status": "pass",
+      "detail": "cells 18; stageB 3 (taskB present 3); failed-with-loss 7; passed-with-loss 0"
+    },
+    {
+      "id": "R4-G4",
+      "status": "pass",
+      "detail": "cells 18; repeated 16; re-fold 51; task-lost 45; open failures 15; duplicate 6"
+    },
+    {
+      "id": "R4-G5",
+      "status": "pass",
+      "detail": "selected active-task-delivery; contractOnly true; notWired true; contract present"
+    },
+    {
+      "id": "R4-G6",
+      "status": "pass",
+      "detail": "campaign e2e-r4-budget-sensitivity-3; status complete; executed 36/36; stop none; tasks E1@8 6/6, B0@8 4/6"
+    },
+    {
+      "id": "R4-G7",
+      "status": "pass",
+      "detail": "ci success; zero-live zero-live-verified; claims 13"
+    },
+    {
+      "id": "R4-G8",
+      "status": "pass",
+      "detail": "productCandidate null; hold true; expand72 false; research active-task-delivery (wired false)"
+    }
+  ],
+  "counts": {
+    "pass": 9,
+    "incomplete": 0,
+    "fail": 0
+  },
+  "note": "incomplete is not fail. R4-G6 is pass only when the clean 36-cell campaign is complete; R4-G7 becomes pass only on a successful supported-lane CI run."
+}

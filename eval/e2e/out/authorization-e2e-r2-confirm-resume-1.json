@@ -1,0 +1,16 @@
+{
+  "granted": true,
+  "grantedAt": "2026-11-10T12:10:43.146Z",
+  "manifestSha256": "a7d55f61032e96ce8363752c28c08cb8b15ffc56301615882ca7c2f1c7c1a5f5",
+  "campaign": "e2e-r2-confirm-resume-1",
+  "cells": 34,
+  "statement": "Delegated authorization under the EF-E2E work package: the user authorized this envelope, the manifest is inside it, and the run may not exceed the manifest limits.",
+  "envelopeName": "r2-live",
+  "envelope": {
+    "continuationCells": 72,
+    "httpAttempts": 2000,
+    "inputTokens": 20000000,
+    "outputTokens": 1500000,
+    "wallClockMs": 21600000
+  }
+}

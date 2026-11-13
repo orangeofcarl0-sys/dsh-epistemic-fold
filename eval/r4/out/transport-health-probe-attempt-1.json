@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 transport health probe",
+  "probeId": "r4-transport-health-1",
+  "campaign": "e2e-r4-budget-sensitivity-1",
+  "generatedAt": "2026-11-13T18:02:06.472Z",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "source": "resolved-at-run",
+    "baseUrlFrom": "resolved-at-run",
+    "note": "Resolve the live route at execution time; do not hard-code a proxy port into a committed artifact."
+  },
+  "why": "The R3 route failure was on long summary/primary payloads. This probe replays that shape and the successful upper range before the 36-cell campaign.",
+  "payloadProfiles": [
+    {
+      "id": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "taskInstance": "T13-s1",
+      "messageChars": 75603,
+      "maxMessageChars": 73468,
+      "why": "The exact summary shape of the first transport-failed T13 cell. It is not a short prompt."
+    },
+    {
+      "id": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "taskInstance": "T13-s2",
+      "messageChars": 75608,
+      "maxMessageChars": 73473,
+      "why": "The second failed T13 cell used the same 73k-character tool result and a 1.8k-character summary instruction."
+    },
+    {
+      "id": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "taskInstance": "T13-s1",
+      "messageChars": 100963,
+      "maxMessageChars": 73468,
+      "why": "The primary request carries the same long history; the failure was not confined to the auxiliary call."
+    },
+    {
+      "id": "summary-successful-upper-range",
+      "purpose": "summary",
+      "taskInstance": "T13-s1",
+      "messageChars": 149073,
+      "maxMessageChars": 149073,
+      "why": "The largest successful B0 summary in the archive. It covers the payload range above the failed requests."
+    }
+  ],
+  "attemptsPerProfile": 4,
+  "totalRequests": 16,
+  "acceptance": {
+    "httpSuccess": "16/16",
+    "usagePresent": "16/16",
+    "transportErrors": 0,
+    "nullUsage": 0,
+    "p95DurationMsMax": 60000,
+    "modelMustMatch": "deepseek-v4.1-flash"
+  },
+  "stopConditions": [
+    "Any LIVE_TRANSPORT or ECONNRESET/UND_ERR_SOCKET stops the probe immediately.",
+    "Any response without usage stops the probe immediately.",
+    "Any HTTP status outside 200 stops the probe immediately.",
+    "No automatic retry after a transport failure.",
+    "A failed probe does not authorize the 36-cell campaign."
+  ],
+  "envelope": {
+    "requests": 16,
+    "inputTokens": 2000000,
+    "outputTokens": 100000,
+    "wallClockMs": 1800000,
+    "paidConcurrency": 1,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "inputs": {
+    "campaignManifest": {
+      "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json",
+      "sha256": "2260b740e0410389f8e32ec7683533052e42a693a1b94163e96def99d97ba5c7"
+    },
+    "r3Design": {
+      "path": "eval/r3/out/transport-health-probe.json",
+      "sha256": "90c44e0c43dd2e18a992422181f03701857cf7054c5e51a8fb849d41d7db1934"
+    },
+    "task": {
+      "path": "eval/e2e/tasks-r2/T13-s1.json",
+      "sha256": "040961b331ddd08e70b3d1fe2a3411fddc751e9d01a1212b885bb958f0a429d1"
+    }
+  },
+  "decision": "The 36-cell campaign may start only after this probe passes (transport/usage) under a separate grant. A latency caveat is recorded, not hidden.",
+  "limits": [
+    "The probe is model calls and requires the explicit grant in health-probe-authorization.json.",
+    "It measures route stability for these payload shapes, not task quality.",
+    "It does not pool with R3 and does not change the R3 ledger."
+  ]
+}

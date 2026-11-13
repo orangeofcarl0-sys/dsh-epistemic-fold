@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane pilot",
+  "archiveRoot": "F:/Codex_Work_Space/DSH plugin/EF_R3_PRODUCT_PILOT_ARCHIVE",
+  "archiveManifestSha256": "0e317c5022a48ab0a87963cf3fefda67676a60a2c676c7b64c4b502366e028e9",
+  "archiveSumsSha256": "227a0ade39e7a5244da1f3daf852cecc8c4a834154b2b22452f384ddc170a752",
+  "archiveBundleSha256": "e6512335d590597a68126b0044f82796ae475694634b9fe5bfa91119880806a7",
+  "commit": "831e72307dd48fcc15cccf700c12798faf10bdbc",
+  "counts": {
+    "files": 245,
+    "bytes": 37802090,
+    "cells": 18,
+    "passed": 9,
+    "costValid": 17,
+    "stepLimited": 8
+  },
+  "scan": {
+    "credentialsFound": 0,
+    "absolutePathFiles": 42,
+    "safeToShare": true
+  },
+  "secondCopy": {
+    "path": "E:/EF_R3_PRODUCT_PILOT_ARCHIVE",
+    "verification": "archive-verified",
+    "verificationArtifact": "eval/r3/out/archive-verification-r3-product-pilot-copy.json"
+  },
+  "note": "18-cell product-lane pilot raw evidence. Verified locally; an off-machine copy is not claimed."
+}

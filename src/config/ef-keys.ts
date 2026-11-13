@@ -65,6 +65,31 @@ export const EF_KEYS: readonly EfKeySpec[] = [
   { name: 'framingMode', presetOwned: true, efOwned: true, default: 'legacy' },
   { name: 'mode', presetOwned: false, efOwned: true },
   { name: 'referentialArchive', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: append a recall affordance to the checkpoint
+  // body. The E2E campaign measured a model that did not invoke recall from a
+  // bare marker even though the tools existed; this flag tests whether naming
+  // them closes that gap.
+  { name: 'recallAffordance', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: list the folded span's tool calls in the
+  // checkpoint. The measured failure is a model that keeps the recent
+  // distractor log, folds the useful observation, and then concludes the value
+  // is unknown. The generic affordance did not help; WHAT was folded might.
+  { name: 'foldedSpanIndex', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: render an EXECUTABLE archive address for the
+  // folded tool results. The measured failure is a model that re-issues
+  // `read_file` against a path the fold archived; this names the archive
+  // message and the `context_recall` call that opens it.
+  { name: 'archiveLocator', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: never fold the ACTIVE user request. The
+  // confirm measured the request itself being archived in 44/120 cells; the
+  // leaf span starts after the last real user message instead. The emergency
+  // rebase may still fold it when the provider window cannot be met otherwise.
+  { name: 'protectActiveRequest', presetOwned: false, efOwned: true },
+  // EXPERIMENTAL, off by default: when a fold replaces the ACTIVE user request,
+  // copy it verbatim into the checkpoint body. This is the follow-up to the
+  // span-start prototype, which disabled folding instead of protecting the
+  // request.
+  { name: 'rerenderActiveRequest', presetOwned: false, efOwned: true },
   { name: 'allowCrossSessionRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecall', presetOwned: false, efOwned: true },
   { name: 'subagentRecallThresholdChars', presetOwned: false, efOwned: true },

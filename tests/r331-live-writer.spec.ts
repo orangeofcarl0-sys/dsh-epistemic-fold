@@ -26,7 +26,12 @@ import { promisify } from 'node:util'
 
 const run = promisify(execFile)
 const ROOT = process.cwd()
-const OUT = join(ROOT, 'eval', 'r33', 'out')
+
+/** The report path a run printed on its last stdout line. */
+function printedPath(stdout: string): string {
+  const lines = stdout.trimEnd().split('\n')
+  return lines[lines.length - 1]!.trim()
+}
 
 async function live(args: string[], env: Record<string, string | undefined> = {}) {
   try {
@@ -44,9 +49,12 @@ async function live(args: string[], env: Record<string, string | undefined> = {}
 
 describe('R33.1/R34 four-arm self-test', () => {
   it('runs B1/S/O1/O2 through the real host and captures writer diagnostics', async () => {
-    const result = await live(['--self-test', '--cases', 'A1,C1', '--arms', 'B1,S,O1,O2'])
+    // EF-C1: the self-test is not evidence. Write it to a temp directory so the
+    // tracked eval/r33/out/self-test-report.json is never rewritten.
+    const out = await mkdtemp(join(tmpdir(), 'r331-self-test-'))
+    const result = await live(['--self-test', '--cases', 'A1,C1', '--arms', 'B1,S,O1,O2', '--out', out])
     expect(result.code, result.stderr).toBe(0)
-    const report = JSON.parse(await readFile(join(OUT, 'self-test-report.json'), 'utf8'))
+    const report = JSON.parse(await readFile(join(out, 'self-test-report.json'), 'utf8'))
     expect(report.status).toBe('executed-success')
     expect(report.quality.measurementValid).toBe(true)
     expect(report.rows).toHaveLength(8)
@@ -106,6 +114,7 @@ describe('R33.1/R34 four-arm self-test', () => {
 
   it('refuses a valid manifest when the route environment is absent', async () => {
     const directory = await mkdtemp(join(tmpdir(), 'r331-live-route-'))
+    const runRoot = await mkdtemp(join(tmpdir(), 'r331-live-runs-'))
     const manifest = join(directory, 'manifest.json')
     await writeFile(manifest, JSON.stringify({
       model: 'unconfigured-model',
@@ -115,11 +124,12 @@ describe('R33.1/R34 four-arm self-test', () => {
     }), 'utf8')
     const result = await live(['--run', '--manifest', manifest], {
       R33_LIVE: '1',
+      R33_RUN_ROOT: runRoot,
       R331_UNSET_BASE_URL: undefined,
       R331_UNSET_API_KEY: undefined,
     })
     expect(result.code).toBe(5)
-    const report = JSON.parse(await readFile(join(OUT, 'live-report.json'), 'utf8'))
+    const report = JSON.parse(await readFile(printedPath(result.stdout), 'utf8'))
     expect(report.status).toBe('provider-unavailable')
     expect(report.reason).toContain('route environment variables')
     expect(report.note).toContain('No provider request')

@@ -1,0 +1,16 @@
+{
+  "granted": true,
+  "grantedAt": "2026-11-10T08:17:48.207Z",
+  "manifestSha256": "9b2a45ea8155f3a80f280dcc68194333e108693e51bb729895c541810cea71eb",
+  "campaign": "e2e-prompt-rerender-1",
+  "cells": 8,
+  "statement": "Delegated authorization under the EF-E2E work package: the user authorized this envelope, the manifest is inside it, and the run may not exceed the manifest limits.",
+  "envelopeName": "prompt-rerender",
+  "envelope": {
+    "continuationCells": 8,
+    "httpAttempts": 200,
+    "inputTokens": 1000000,
+    "outputTokens": 40000,
+    "wallClockMs": 1800000
+  }
+}

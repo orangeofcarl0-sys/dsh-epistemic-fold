@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/dsh-compatibility.mjs",
+  "sourceCommit": "9e0c93cf236f69f035eee20953dc3436139c4eb5",
+  "generatedAt": "2026-11-08T09:43:57.895Z",
+  "declared": {
+    "engines": {
+      "node": "^22.19.0 || >=24.0.0",
+      "dsh": ">=0.2.0-rc.2"
+    },
+    "dshLine": [
+      "0.2.0-rc.2"
+    ]
+  },
+  "measured": {
+    "node": "v24.14.1",
+    "platform": "win32 x64",
+    "vendorPresent": false,
+    "vendoredDshVersion": null,
+    "vendoredBasicProvenance": "dsh-v0.1.7-rc.2",
+    "installedDshVersions": [
+      "0.2.1-rc.3"
+    ],
+    "lockSha256": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d",
+    "libModules": 80
+  },
+  "identities": {
+    "historicalBasic": "dsh-v0.1.7-rc.2",
+    "efVendoredBasic": "src/basic/*.ts (regenerate with node scripts/vendor-basic.mjs)",
+    "currentHostBasic": "0.2.1-rc.3"
+  },
+  "checks": [
+    {
+      "id": "node",
+      "status": "available",
+      "detail": "v24.14.1"
+    },
+    {
+      "id": "package-manager",
+      "status": "not-verifiable",
+      "detail": "not-verifiable"
+    },
+    {
+      "id": "dependency-lock",
+      "status": "available",
+      "detail": "516d1cd64050c04102aad0539a1c83b325ced61d98c9cfe3230c3a5e4009095d"
+    },
+    {
+      "id": "dsh-source-sha",
+      "status": "unavailable",
+      "detail": "no vendor/deepseek-harness checkout in this worktree"
+    },
+    {
+      "id": "vendored-dsh-version",
+      "status": "unavailable",
+      "detail": "no vendor checkout"
+    },
+    {
+      "id": "declared-dsh-line",
+      "status": "available",
+      "detail": "0.2.0-rc.2"
+    },
+    {
+      "id": "installed-dsh-versions",
+      "status": "available",
+      "detail": "0.2.1-rc.3"
+    },
+    {
+      "id": "vendored-basic-provenance",
+      "status": "available",
+      "detail": "dsh-v0.1.7-rc.2"
+    },
+    {
+      "id": "typescript-path-aliases",
+      "status": "incompatible",
+      "detail": "500 aliases, 0/500 targets present"
+    },
+    {
+      "id": "build-output",
+      "status": "available",
+      "detail": "80 built module(s) under lib/"
+    },
+    {
+      "id": "compaction-api",
+      "status": "available",
+      "detail": "CompactionEngine, isCompactCheckpointSource exported"
+    },
+    {
+      "id": "basic-frame-checkpoint",
+      "status": "available",
+      "detail": "installed Basic has no frameCheckpoint; EF src/basic supplies the seam"
+    },
+    {
+      "id": "agent-api",
+      "status": "available",
+      "detail": "AgentRegistry exported"
+    },
+    {
+      "id": "session-api",
+      "status": "available",
+      "detail": "Session, SessionStore exported"
+    },
+    {
+      "id": "tool-runtime-api",
+      "status": "available",
+      "detail": "ToolRuntime exported"
+    },
+    {
+      "id": "llm-api",
+      "status": "available",
+      "detail": "LlmAdapter, LlmRuntime exported"
+    },
+    {
+      "id": "session-projection-api",
+      "status": "available",
+      "detail": " exported"
+    },
+    {
+      "id": "system-prompt-api",
+      "status": "available",
+      "detail": "SystemPrompt exported"
+    }
+  ],
+  "packages": [
+    {
+      "name": "@deepseek-ai/dsh-agent",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-atomic-write",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-compaction",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-compaction-tool-result-pruner",
+      "declaredRange": "^0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-llm",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-session",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-session-projection",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-system-prompt",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-token-meter",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-tools",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    },
+    {
+      "name": "@deepseek-ai/dsh-util-values",
+      "declaredRange": ">=0.2.0-rc.2",
+      "installed": "0.2.1-rc.3"
+    }
+  ],
+  "limitations": [
+    "The vendored tree has no git metadata in a worktree, so its commit SHA cannot be measured locally.",
+    "Vendored TypeScript is not importable by plain Node; its API surface is covered by typecheck, not by this probe.",
+    "The installed version is what plain-Node scripts (the live runner) execute; vitest may resolve the vendored source instead.",
+    "CI pins vendor 639ed01 (documented 0.2.0-rc.2) while package-lock installs 0.2.1-rc.3: a mixed lane this script cannot reproduce locally."
+  ]
+}

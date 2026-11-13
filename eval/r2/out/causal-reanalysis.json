@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP4",
+  "generatedAt": "2026-11-10T10:42:04.824Z",
+  "campaign": "e2e-lg-confirm-1",
+  "r1Reproduction": {
+    "byArm": {
+      "E0": {
+        "cells": 24,
+        "passed": 9,
+        "rate": 0.375,
+        "attempts": 54,
+        "committedFolds": 54,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 54,
+        "requests": 83,
+        "inputTokens": 678175,
+        "outputTokens": 10569
+      },
+      "E0-L": {
+        "cells": 24,
+        "passed": 15,
+        "rate": 0.625,
+        "attempts": 51,
+        "committedFolds": 48,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 15,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 48,
+        "requests": 77,
+        "inputTokens": 842370,
+        "outputTokens": 9963
+      },
+      "E0-G": {
+        "cells": 24,
+        "passed": 15,
+        "rate": 0.625,
+        "attempts": 72,
+        "committedFolds": 71,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 15,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 71,
+        "requests": 145,
+        "inputTokens": 919738,
+        "outputTokens": 19764
+      },
+      "E0-LG": {
+        "cells": 24,
+        "passed": 16,
+        "rate": 0.667,
+        "attempts": 62,
+        "committedFolds": 62,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 16,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 62,
+        "requests": 113,
+        "inputTokens": 967562,
+        "outputTokens": 15937
+      },
+      "E1": {
+        "cells": 24,
+        "passed": 18,
+        "rate": 0.75,
+        "attempts": 42,
+        "committedFolds": 11,
+        "committedCells": 11,
+        "refusedAttempts": 31,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 9,
+        "deliveredCommits": 11,
+        "requests": 96,
+        "inputTokens": 295420,
+        "outputTokens": 16727
+      }
+    },
+    "excludingT10": {
+      "E0": {
+        "cells": 20,
+        "passed": 9,
+        "rate": 0.45,
+        "attempts": 34,
+        "committedFolds": 34,
+        "committedCells": 20,
+        "refusedAttempts": 0,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 34,
+        "requests": 56,
+        "inputTokens": 454136,
+        "outputTokens": 6687
+      },
+      "E0-L": {
+        "cells": 20,
+        "passed": 14,
+        "rate": 0.7,
+        "attempts": 34,
+        "committedFolds": 33,
+        "committedCells": 20,
+        "refusedAttempts": 0,
+        "passedWithCommit": 14,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 33,
+        "requests": 56,
+        "inputTokens": 637929,
+        "outputTokens": 7199
+      },
+      "E0-G": {
+        "cells": 20,
+        "passed": 13,
+        "rate": 0.65,
+        "attempts": 38,
+        "committedFolds": 38,
+        "committedCells": 20,
+        "refusedAttempts": 0,
+        "passedWithCommit": 13,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 38,
+        "requests": 86,
+        "inputTokens": 494477,
+        "outputTokens": 11648
+      },
+      "E0-LG": {
+        "cells": 20,
+        "passed": 15,
+        "rate": 0.75,
+        "attempts": 35,
+        "committedFolds": 35,
+        "committedCells": 20,
+        "refusedAttempts": 0,
+        "passedWithCommit": 15,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 35,
+        "requests": 69,
+        "inputTokens": 679448,
+        "outputTokens": 8960
+      },
+      "E1": {
+        "cells": 20,
+        "passed": 17,
+        "rate": 0.85,
+        "attempts": 34,
+        "committedFolds": 10,
+        "committedCells": 10,
+        "refusedAttempts": 24,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 8,
+        "deliveredCommits": 10,
+        "requests": 77,
+        "inputTokens": 256343,
+        "outputTokens": 12645
+      }
+    },
+    "comparisonsFull": [
+      {
+        "left": "E1",
+        "right": "E0",
+        "pairs": 24,
+        "both": 6,
+        "neither": 3,
+        "leftOnly": 12,
+        "rightOnly": 3,
+        "riskDifference": 0.375,
+        "mcnemarP": 0.0352
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0",
+        "pairs": 24,
+        "both": 8,
+        "neither": 7,
+        "leftOnly": 8,
+        "rightOnly": 1,
+        "riskDifference": 0.292,
+        "mcnemarP": 0.0391
+      }
+    ],
+    "comparisonsExcludingT10": [
+      {
+        "left": "E1",
+        "right": "E0",
+        "pairs": 20,
+        "both": 6,
+        "neither": 0,
+        "leftOnly": 11,
+        "rightOnly": 3,
+        "riskDifference": 0.4,
+        "mcnemarP": 0.0574
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0",
+        "pairs": 20,
+        "both": 8,
+        "neither": 4,
+        "leftOnly": 7,
+        "rightOnly": 1,
+        "riskDifference": 0.3,
+        "mcnemarP": 0.0703
+      },
+      {
+        "left": "E0-L",
+        "right": "E0",
+        "pairs": 20,
+        "both": 7,
+        "neither": 4,
+        "leftOnly": 7,
+        "rightOnly": 2,
+        "riskDifference": 0.25,
+        "mcnemarP": 0.1797
+      },
+      {
+        "left": "E0-G",
+        "right": "E0",
+        "pairs": 20,
+        "both": 6,
+        "neither": 4,
+        "leftOnly": 7,
+        "rightOnly": 3,
+        "riskDifference": 0.2,
+        "mcnemarP": 0.3438
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0-L",
+        "pairs": 20,
+        "both": 12,
+        "neither": 3,
+        "leftOnly": 3,
+        "rightOnly": 2,
+        "riskDifference": 0.05,
+        "mcnemarP": 1
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0-G",
+        "pairs": 20,
+        "both": 10,
+        "neither": 2,
+        "leftOnly": 5,
+        "rightOnly": 3,
+        "riskDifference": 0.1,
+        "mcnemarP": 0.7266
+      }
+    ],
+    "r1Reported": [
+      {
+        "left": "E0-L",
+        "right": "E0",
+        "pairs": 20,
+        "leftOnly": 7,
+        "rightOnly": 2,
+        "mcnemarP": 0.1797
+      },
+      {
+        "left": "E0-G",
+        "right": "E0",
+        "pairs": 20,
+        "leftOnly": 7,
+        "rightOnly": 3,
+        "mcnemarP": 0.3438
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0",
+        "pairs": 20,
+        "leftOnly": 7,
+        "rightOnly": 1,
+        "mcnemarP": 0.0703
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0-L",
+        "pairs": 20,
+        "leftOnly": 3,
+        "rightOnly": 2,
+        "mcnemarP": 1
+      },
+      {
+        "left": "E0-LG",
+        "right": "E0-G",
+        "pairs": 20,
+        "leftOnly": 5,
+        "rightOnly": 3,
+        "mcnemarP": 0.7266
+      },
+      {
+        "left": "E1",
+        "right": "E0",
+        "pairs": 20,
+        "leftOnly": 11,
+        "rightOnly": 3,
+        "mcnemarP": 0.0574
+      }
+    ],
+    "matchesR1": true
+  },
+  "r2Reading": {
+    "reliability": {
+      "E0": {
+        "cells": 24,
+        "passed": 9,
+        "rate": 0.375,
+        "attempts": 54,
+        "committedFolds": 54,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 54,
+        "requests": 83,
+        "inputTokens": 678175,
+        "outputTokens": 10569
+      },
+      "E0-L": {
+        "cells": 24,
+        "passed": 15,
+        "rate": 0.625,
+        "attempts": 51,
+        "committedFolds": 48,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 15,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 48,
+        "requests": 77,
+        "inputTokens": 842370,
+        "outputTokens": 9963
+      },
+      "E0-G": {
+        "cells": 24,
+        "passed": 15,
+        "rate": 0.625,
+        "attempts": 72,
+        "committedFolds": 71,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 15,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 71,
+        "requests": 145,
+        "inputTokens": 919738,
+        "outputTokens": 19764
+      },
+      "E0-LG": {
+        "cells": 24,
+        "passed": 16,
+        "rate": 0.667,
+        "attempts": 62,
+        "committedFolds": 62,
+        "committedCells": 24,
+        "refusedAttempts": 0,
+        "passedWithCommit": 16,
+        "passedWithoutCommit": 0,
+        "deliveredCommits": 62,
+        "requests": 113,
+        "inputTokens": 967562,
+        "outputTokens": 15937
+      },
+      "E1": {
+        "cells": 24,
+        "passed": 18,
+        "rate": 0.75,
+        "attempts": 42,
+        "committedFolds": 11,
+        "committedCells": 11,
+        "refusedAttempts": 31,
+        "passedWithCommit": 9,
+        "passedWithoutCommit": 9,
+        "deliveredCommits": 11,
+        "requests": 96,
+        "inputTokens": 295420,
+        "outputTokens": 16727
+      }
+    },
+    "continuity": {
+      "e1": {
+        "committedCells": 11,
+        "committedPassed": 9,
+        "committedDelivered": 11,
+        "noFoldCells": 13,
+        "noFoldPassed": 9,
+        "note": "Descriptive split. The cells were not randomized to commit/refuse; the refusal is a property of the span and the rationale body."
+      },
+      "e0": {
+        "cells": 24,
+        "committedFolds": 54,
+        "passed": 9
+      },
+      "t2t4": {
+        "e1": {
+          "cells": 8,
+          "committedFolds": 8,
+          "passed": 8,
+          "probesTwoOfTwo": 8,
+          "delivered": 8
+        },
+        "e0": {
+          "cells": 8,
+          "passed": 1,
+          "probesTwoOfTwo": 0
+        },
+        "note": "All eight E1 cells folded once, committed, and delivered the checkpoint to a later primary request; the checkpoint carried both probes in all eight. The pass rate is a post-fold result, not an ITT estimate."
+      }
+    },
+    "e1Itt": {
+      "cells": 24,
+      "passed": 18,
+      "committedCells": 11,
+      "refusedAttempts": 31,
+      "attempts": 42,
+      "note": "The 18/24 ITT pass rate includes 13 no-fold cells (9 passed) and 11 committed cells (9 passed). The 31 refused attempts are paid calls that did not compress the history."
+    },
+    "promptCorrection": {
+      "legacyLost": 44,
+      "exactOriginalLost": 45,
+      "valuesUnavailable": 2,
+      "checkpointCopy": 5,
+      "valuesOnly": 38,
+      "note": "The 44/120 preview metric overstates information loss: 43 of the 45 exact-loss cells still carry the task facts in a checkpoint (5 copies, 38 values-only); only 2 have neither. The two E1 exact-loss cells still carried the task values, so their 0/2 pass is not explained by absent facts. n=2."
+    }
+  },
+  "sources": {
+    "results": {
+      "path": "eval/e2e/out/results-e2e-lg-confirm-1.json",
+      "sha256": "8d7ff73ecdbf064ab33327b889cc42cd80fec14f037eef051c27976d7903ce2f"
+    },
+    "analysis": {
+      "path": "eval/e2e/out/analysis-e2e-lg-confirm-1.json",
+      "sha256": "690986413142ae65aa0cce065ef43bc11814211b52ff5051c1dca673fb963dda"
+    },
+    "witnesses": {
+      "path": "eval/r2/out/compaction-witnesses.json",
+      "sha256": "281d14707c2cae69b8b2af1b2b3d9e8839b459d55237a289e2d42a04971178ab"
+    },
+    "delivery": {
+      "path": "eval/r2/out/active-task-delivery.json",
+      "sha256": "aa4f80986ec8b0fc5f3e4d11ccf1f69dd091600accdd2ff078caeff7af77822a"
+    }
+  },
+  "note": "ITT is unchanged and no cell is excluded. The committed/refused split is descriptive. The E1 T2/T4 result is a genuine post-fold result because all eight checkpoints were delivered; it is not a product-level causal claim."
+}

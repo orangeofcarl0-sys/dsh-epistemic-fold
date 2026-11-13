@@ -49,6 +49,7 @@ function accepted(overrides: Partial<AcceptedDelta> & { readonly seq: number }):
     grantedStatus: 'claimed',
     evidence: [{ seq: overrides.seq, messageDigest: `m-${deltaCounter}`, quote: `quote-${deltaCounter}` }],
     authority: 'decision',
+    sourceAuthority: 'assistant',
     anchorKind: 'decision',
     stateKey: { namespace: 'semantic', entity: 'decision', property: `subject-${deltaCounter}` },
     supersedes: [],

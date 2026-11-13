@@ -1,0 +1,4 @@
+PROBE {"name":"no-supersedes","withheld":["unauthorized-replacement"],"refused":["insufficient-source-authority"],"declares":0,"superseded":[],"active":[{"value":"Use the in-memory queue.","source":"user"}]}
+PROBE {"name":"unrelated-supersedes","withheld":["unauthorized-replacement"],"refused":["insufficient-source-authority","insufficient-source-authority"],"declares":0,"superseded":[],"active":[{"value":"Use the in-memory queue.","source":"user"},{"value":"Use the file cache.","source":"user"}]}
+PROBE {"name":"mixed-assistant-tool","withheld":["unauthorized-replacement"],"refused":["insufficient-source-authority"],"declares":0,"superseded":[],"active":[{"value":"Use the in-memory queue.","source":"user"}]}
+PROBE {"name":"old-user-quote","withheld":["unauthorized-replacement"],"refused":["stale-source"],"declares":0,"superseded":[],"active":[{"value":"Use the in-memory queue.","source":"user"}]}

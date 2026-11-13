@@ -80,9 +80,9 @@ describe('R4-F: a preset is a named set of values, not a branch', () => {
     expect(presetOverrides('economy', { rationaleHintTokens: 400 })).toEqual([])
   })
 
-  it('economy resolves to the configuration R3 actually measured', () => {
-    // The preset must be exactly the tested policy, not a plausible-looking
-    // approximation of it. These four values ARE the R3-B/C economy arm.
+  it('economy resolves to the shipped policy values', () => {
+    // These are the current product values. They are NOT the RC1.3 zero-LLM
+    // profile: R3 corrected the evidence claim, not the values.
     const resolved = resolveEfConfig({ mode: 'economy' })
     expect(resolved.leafAdmission).toBe('economic')
     expect(resolved.rootPolicy.mode).toBe('economics')

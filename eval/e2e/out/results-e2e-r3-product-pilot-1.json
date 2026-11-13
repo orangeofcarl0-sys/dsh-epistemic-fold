@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-11T10:23:06.521Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "manifestSha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": "provider-usage-incomplete",
+  "planned": 18,
+  "executed": 18,
+  "budget": {
+    "used": {
+      "requests": 177,
+      "inputTokens": 2806082,
+      "outputTokens": 62982,
+      "wallClockMs": 1879750
+    },
+    "limits": {
+      "continuationCells": 18,
+      "httpAttempts": 600,
+      "inputTokens": 6000000,
+      "outputTokens": 500000,
+      "wallClockMs": 10800000,
+      "paidConcurrency": 2,
+      "monetaryUsd": null,
+      "monetaryNote": "No verifiable per-token price is recorded."
+    }
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T11-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 136766,
+        "outputTokens": 5534,
+        "cacheReadTokens": 16128,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 99525,
+          "outputTokens": 1282,
+          "cacheReadTokens": 16128,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 37241,
+          "outputTokens": 4252,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T11-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 181931,
+        "outputTokens": 1842,
+        "cacheReadTokens": 1536,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 181931,
+          "outputTokens": 1842,
+          "cacheReadTokens": 1536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T11-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 9,
+        "inputTokens": 134493,
+        "outputTokens": 2823,
+        "cacheReadTokens": 34432,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 104533,
+          "outputTokens": 2124,
+          "cacheReadTokens": 34432,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29960,
+          "outputTokens": 699,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T11-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T12-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 94553,
+        "outputTokens": 1322,
+        "cacheReadTokens": 15872,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 64387,
+          "outputTokens": 632,
+          "cacheReadTokens": 15872,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 30166,
+          "outputTokens": 690,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T12-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 188558,
+        "outputTokens": 1879,
+        "cacheReadTokens": 1408,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 188558,
+          "outputTokens": 1879,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T12-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 80020,
+        "outputTokens": 1422,
+        "cacheReadTokens": 34816,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 50097,
+          "outputTokens": 761,
+          "cacheReadTokens": 34816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29923,
+          "outputTokens": 661,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T12-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T13-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 55029,
+        "outputTokens": 1204,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 24844,
+          "outputTokens": 255,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 30185,
+          "outputTokens": 949,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T13-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 276060,
+        "outputTokens": 2046,
+        "cacheReadTokens": 1408,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 276060,
+          "outputTokens": 2046,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T13-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 94756,
+        "outputTokens": 1261,
+        "cacheReadTokens": 1408,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 64814,
+          "outputTokens": 696,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29942,
+          "outputTokens": 565,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T13-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T14-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 117325,
+        "outputTokens": 4846,
+        "cacheReadTokens": 19072,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 80390,
+          "outputTokens": 636,
+          "cacheReadTokens": 17792,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 6,
+          "inputTokens": 36935,
+          "outputTokens": 4210,
+          "cacheReadTokens": 1280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 6,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T14-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 98492,
+        "outputTokens": 529,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 98492,
+          "outputTokens": 529,
+          "cacheReadTokens": 4224,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T14-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 129744,
+        "outputTokens": 1329,
+        "cacheReadTokens": 21632,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 99852,
+          "outputTokens": 529,
+          "cacheReadTokens": 21632,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29892,
+          "outputTokens": 800,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T14-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T15-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": true,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 13,
+        "inputTokens": 179813,
+        "outputTokens": 8690,
+        "cacheReadTokens": 18688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 110680,
+          "outputTokens": 2012,
+          "cacheReadTokens": 17536,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 7,
+          "inputTokens": 69133,
+          "outputTokens": 6678,
+          "cacheReadTokens": 1152,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 7,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T15-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 194035,
+        "outputTokens": 1449,
+        "cacheReadTokens": 4224,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 194035,
+          "outputTokens": 1449,
+          "cacheReadTokens": 4224,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T15-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 232354,
+        "outputTokens": 5016,
+        "cacheReadTokens": 22400,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 153522,
+          "outputTokens": 2500,
+          "cacheReadTokens": 20992,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 3,
+          "inputTokens": 78832,
+          "outputTokens": 2516,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 3,
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T15-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T16-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "termination": "finish",
+      "guard": false,
+      "usage": {
+        "requests": 16,
+        "inputTokens": 185577,
+        "outputTokens": 9498,
+        "cacheReadTokens": 100608,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 11,
+          "inputTokens": 139478,
+          "outputTokens": 4379,
+          "cacheReadTokens": 54272,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 46099,
+          "outputTokens": 5119,
+          "cacheReadTokens": 46336,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 11
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 16,
+        "inputTokens": 169533,
+        "outputTokens": 4556,
+        "cacheReadTokens": 36608,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 16,
+          "inputTokens": 169533,
+          "outputTokens": 4556,
+          "cacheReadTokens": 36608,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 16
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r3-product-pilot",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "termination": "step-limit",
+      "guard": false,
+      "usage": {
+        "requests": 21,
+        "inputTokens": 257043,
+        "outputTokens": 7736,
+        "cacheReadTokens": 11776,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 1,
+        "primary": {
+          "requests": 15,
+          "inputTokens": 176206,
+          "outputTokens": 3385,
+          "cacheReadTokens": 10368,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 1
+        },
+        "auxiliary": {
+          "requests": 6,
+          "inputTokens": 80837,
+          "outputTokens": 4351,
+          "cacheReadTokens": 1408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 6,
+          "primary": 15
+        },
+        "note": "1 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-E1-r1\\report.json"
+    }
+  ]
+}

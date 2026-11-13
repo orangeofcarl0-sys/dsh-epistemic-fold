@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "purpose": "Declare, for every historical report, its frozen bytes and whether the current generator still reproduces it. A drift that is not declared here fails the verification test that reads this file.",
+  "hashRules": {
+    "frozenSha256": "SHA-256 of the committed bytes, LF-normalized. Identity only: it says the file was not edited.",
+    "observedSha256": "SHA-256 of the generator's current output, excluding run metadata (generatedAt, environment). For a report with no run metadata this is its raw hash.",
+    "status": "current | stale | superseded"
+  },
+  "reports": [
+    {
+      "id": "r1-report",
+      "path": "docs/12_R1_EVALUATION_REPORT.md",
+      "frozenSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
+      "status": "current",
+      "observedSha256": "f18dcfa8269135150414d0c7f82c2e47ec4f1fd5e733f19bc8273dae1e8b6036",
+      "cause": "",
+      "firstObserved": "EF-C1",
+      "promotion": "not performed: the committed bytes are the R1 record",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
+    },
+    {
+      "id": "r33-offline-report",
+      "path": "eval/r33/out/offline-report.json",
+      "frozenSha256": "5f73fe328054bb8bbe796b6b1ab3545ef044645efdcd0aca7cd7d4459031b7a0",
+      "status": "current",
+      "observedSha256": "08897b5dc1e5d5175d14fa9142fd02d6653d8bc7cfeae04b9164df80539709b3",
+      "cause": "",
+      "firstObserved": "EF-C1",
+      "promotion": "not performed: the committed bytes are the R33 offline record",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
+    },
+    {
+      "id": "r33-live-check",
+      "path": "eval/r33/out/live-check.json",
+      "frozenSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
+      "status": "current",
+      "observedSha256": "64cb047bd01fde9ccafd6164cbaecde8b0eb8c0ae41e100a9b86dafbd7388f23",
+      "cause": "",
+      "firstObserved": "EF-C1",
+      "promotion": "not performed: the interface check is a convenience copy, not evidence",
+      "promoted": "EF-C1 follow-up 2026-11-08T09:59:52.157Z"
+    },
+    {
+      "id": "r33-live-report",
+      "path": "eval/r33/out/live-report.json",
+      "frozenSha256": "0653c6b02ce77004122d920d5c136ab84f38ca2f8e435033897eca61b81651ee",
+      "status": "superseded",
+      "observedSha256": "",
+      "cause": "The committed file is a 2026-11-01 gate-refusal record (stage writer-only). Refusals are now written run-scoped under R33_RUN_ROOT and never replace a latest report, so no current command reproduces this path.",
+      "firstObserved": "EF-C1",
+      "promotion": "not applicable: kept as the historical refusal record"
+    }
+  ]
+}

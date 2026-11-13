@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "eval/c1/observe.mjs",
+  "id": "pre-npm-ci",
+  "command": [
+    "npm",
+    "ci"
+  ],
+  "exitCode": 0,
+  "durationMs": 15704,
+  "observedAt": "2026-11-08T08:57:23.189Z",
+  "protectedArtifacts": 423,
+  "drifted": 1,
+  "drift": [
+    {
+      "path": "cordis.patch.yml",
+      "before": "de0643e3fb7b93c4938730c9295685742b960812304f8312d8b012e7a18ee047",
+      "after": "d64c737692baf0e3c9f45342e06fa26ef6a5eb9a5b19fffed7b2adfc6ea1a0ab"
+    }
+  ]
+}

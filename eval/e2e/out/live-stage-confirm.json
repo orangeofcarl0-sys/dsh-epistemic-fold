@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2 WP6",
+  "generatedAt": "2026-11-10T11:52:16.767Z",
+  "stage": "confirm",
+  "campaign": "e2e-r2-confirm-1",
+  "envelopeName": "r2-live",
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+    "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d",
+    "cells": 54,
+    "tasks": 12
+  },
+  "derivedFrom": {
+    "design": "eval/e2e/out/manifest-e2e-r2-live-1.json",
+    "sha256": "77e054216f1ecd01ffb3cd9faca9e01c5de69ea26199467013d18beb9ace5176",
+    "designCells": 72,
+    "stage": "confirm"
+  },
+  "limits": {
+    "continuationCells": 54,
+    "httpAttempts": 2000,
+    "inputTokens": 20000000,
+    "outputTokens": 1500000,
+    "wallClockMs": 21600000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "legacy",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 800,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 16384,
+    "maxSteps": 8,
+    "retainRatio": 0.04,
+    "headroomTokens": 512
+  },
+  "executionAuthorized": false,
+  "authorizationState": "requested",
+  "note": "A stage manifest is a subset of the frozen design. The authorization is a separate grant bound to this hash."
+}

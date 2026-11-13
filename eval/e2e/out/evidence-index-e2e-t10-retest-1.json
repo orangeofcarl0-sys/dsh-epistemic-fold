@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-t10-retest-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T10-s1-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s1-E0-L-r1\\report.json",
+      "sha256": "009f8b3fd258504d5b095ceaa114486530fe4a868dac2c4871462709a20a0e3e"
+    },
+    {
+      "cellId": "T10-s1-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s1-E0-G-r1\\report.json",
+      "sha256": "12161145be772b8e56e593e11dcddee9e3c7ad0bd7c9c9f25280d0eb5f8a4380"
+    },
+    {
+      "cellId": "T10-s1-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s1-E0-LG-r1\\report.json",
+      "sha256": "06a390124cfeeac2971bb5be8cf57421d23d5d0232ded6e1338289395b8d0e89"
+    },
+    {
+      "cellId": "T10-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s1-E1-r1\\report.json",
+      "sha256": "5be36f4a8f27330478a13e87577256abb69ef79ea0dd0760866e8df39c5aacdc"
+    },
+    {
+      "cellId": "T10-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s1-E0-r1\\report.json",
+      "sha256": "5291e33c9a9c8c00b9a0a4af5840e9034fe81e26f0583241c5781e2415a5603d"
+    },
+    {
+      "cellId": "T10-s2-E0-G-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s2-E0-G-r1\\report.json",
+      "sha256": "95c2f5cf9f2d5f6949185ab3dd9c4f7de26cee1001fdcd481033ae00f47c652f"
+    },
+    {
+      "cellId": "T10-s2-E0-LG-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s2-E0-LG-r1\\report.json",
+      "sha256": "c956da522de7b123540806417063e1ac4090da668849522bb98784157eaf3116"
+    },
+    {
+      "cellId": "T10-s2-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s2-E1-r1\\report.json",
+      "sha256": "f9c72db8d0d684ed17633263030756d59ce4b5316f45c51266c1cb7561bfa011"
+    },
+    {
+      "cellId": "T10-s2-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s2-E0-r1\\report.json",
+      "sha256": "ffd4ec573408dd7de98bc3bfce0300bb0426f04c1e872f463a9ebdead09b2ce7"
+    },
+    {
+      "cellId": "T10-s2-E0-L-r1",
+      "path": "eval\\e2e\\runs\\e2e-t10-retest-1\\T10-s2-E0-L-r1\\report.json",
+      "sha256": "1d525286d9d1920e7e63a34b0afd1dc9a5718dccae059a98b9b7885ed8fac9e5"
+    }
+  ]
+}

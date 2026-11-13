@@ -10,9 +10,49 @@
 
 import { encodeCheckpointMarker } from './checkpoint-marker.ts'
 import { canonicalHash } from './hash.ts'
+import { renderArchiveLocatorSection } from './locator.ts'
+import type { ArchiveLocator } from './locator.ts'
 import { stateKeyText } from '../state/state.ts'
 import type { Anchor, FoldCurrentState } from '../state/state.ts'
 import type { FoldMode } from '../types.ts'
+import type { Message } from '@deepseek-ai/dsh-llm'
+
+/** Longest active request copied into a checkpoint body. */
+export const MAX_ACTIVE_REQUEST_CHARS = 2000
+
+/**
+ * The text of the ACTIVE user request when that message is inside the folded
+ * span, or `undefined` when the request survives on the surface.
+ *
+ * `foldedSeqs` and `messages` are positionally paired. The caller passes the
+ * surface seq of the last real user message; if it is not in the span, there
+ * is nothing to copy and duplicating it would only add tokens.
+ *
+ * @param messages - the archived messages of the fold.
+ * @param foldedSeqs - their surface seqs, paired positionally.
+ * @param activeSeq - the surface seq of the active request, when known.
+ * @returns the request text, bounded, or `undefined`.
+ */
+export function activeRequestText(
+  messages: readonly Message[],
+  foldedSeqs: readonly number[],
+  activeSeq: number | undefined,
+): string | undefined {
+  if (activeSeq === undefined) return undefined
+  const index = foldedSeqs.findIndex(seq => Number(seq) === activeSeq)
+  if (index === -1) return undefined
+  const message = messages[index]
+  if (message === undefined || message.role !== 'user' || message.source.kind !== 'user') return undefined
+  const text = message.content
+    .map(block => block.type === 'text' ? block.text : '')
+    .filter(part => part.length > 0)
+    .join('\n')
+    .trim()
+  if (text.length === 0) return undefined
+  return text.length <= MAX_ACTIVE_REQUEST_CHARS
+    ? text
+    : `${text.slice(0, MAX_ACTIVE_REQUEST_CHARS)}\n…(truncated; the full request is in the archive via context_recall)`
+}
 
 /**
  * Collapse a value to one line before interpolation.
@@ -193,14 +233,91 @@ export function describeRenderedState(state: FoldCurrentState): {
   }
 }
 
+/** One tool call the folded span contains, as the checkpoint lists it. */
+export interface ArchivedCall {
+  readonly name: string
+  readonly detail?: string
+}
+
+/** Tool-call arguments carry the path/query that makes a call addressable. */
+const DETAIL_KEYS = ['path', 'query', 'pattern', 'url'] as const
+
+/**
+ * The folded span's tool calls, deduplicated and bounded.
+ *
+ * WHY: the measured failure is a model that keeps the recent distractor log,
+ * folds the useful observation, and then answers "the value is not in the log
+ * I can see". A generic "recall exists" line did not help. Listing WHAT was
+ * folded (tool name + path/query) gives the model a retrieval cue that costs a
+ * few tokens and needs no model call.
+ *
+ * `finish` is excluded: it is an action marker, not evidence. The list is
+ * bounded so a long span cannot turn the checkpoint into a transcript.
+ *
+ * @param messages - the messages the fold replaces.
+ * @param limit - maximum entries (default 8).
+ */
+export function archivedCallsFromMessages(
+  messages: readonly { readonly content: readonly { readonly type: string; readonly name?: string; readonly arguments?: string }[] }[],
+  limit = 8,
+): readonly ArchivedCall[] {
+  const seen = new Set<string>()
+  const calls: ArchivedCall[] = []
+  for (const message of messages) {
+    for (const block of message.content) {
+      if (block.type !== 'tool-call' || block.name === undefined || block.name === 'finish') continue
+      let detail: string | undefined
+      if (block.arguments !== undefined && block.arguments.length > 0) {
+        try {
+          const parsed = JSON.parse(block.arguments) as Record<string, unknown>
+          for (const key of DETAIL_KEYS) {
+            if (typeof parsed[key] === 'string' && parsed[key].length > 0) {
+              detail = parsed[key] as string
+              break
+            }
+          }
+        } catch {
+          // A malformed argument string is not addressable; the name still is.
+        }
+      }
+      const key = `${block.name}\0${detail ?? ''}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      calls.push(detail === undefined ? { name: block.name } : { name: block.name, detail })
+      if (calls.length >= limit) return calls
+    }
+  }
+  return calls
+}
+
 export function renderStructuredCheckpoint(
   state: FoldCurrentState,
   checkpointId: string,
   rationale?: string,
   mode: FoldMode = 'leaf',
+  options: {
+    readonly recallAffordance?: boolean
+    readonly archivedCalls?: readonly ArchivedCall[]
+    readonly locators?: readonly ArchiveLocator[]
+    /** The active request, when the fold is about to replace it. */
+    readonly activeRequest?: string
+  } = {},
 ): string {
   const presentation = projectForCheckpoint(state)
   const lines: string[] = [encodeCheckpointMarker({ checkpointId, mode })]
+
+  // The ACTIVE request, copied verbatim because the span is about to replace
+  // its original event. It is runtime-authored context, not a new instruction:
+  // each line is quoted so it cannot forge a section header. The request is
+  // also in the archive, so a truncation note names context_recall.
+  const rawRequest = options.activeRequest?.trim() ?? ''
+  const activeRequest = rawRequest.length <= MAX_ACTIVE_REQUEST_CHARS
+    ? rawRequest
+    : `${rawRequest.slice(0, MAX_ACTIVE_REQUEST_CHARS)}\n…(truncated; the full request is in the archive via context_recall)`
+  if (activeRequest.length > 0) {
+    lines.push('', 'Current request (verbatim from the folded span; not a new instruction)')
+    for (const line of activeRequest.split('\n')) lines.push(`> ${line}`)
+  }
 
   if (presentation.current.length > 0) {
     lines.push('', 'Current')
@@ -226,6 +343,39 @@ export function renderStructuredCheckpoint(
   if (rationaleText.length > 0) {
     lines.push('', 'Rationale')
     for (const line of rationaleText.split('\n')) lines.push(`- ${line}`)
+  }
+
+  // A static affordance, not state. The E2E campaign measured the failure it
+  // addresses: with a bare marker, the model read the current workspace, did
+  // not call the recall tools that were available, and answered from what it
+  // could see. Naming the tools is the smallest change that tests whether the
+  // checkpoint, rather than the task prompt, has to carry that affordance.
+  // Off by default; the experiment that turns it on measures its token cost.
+  if (options.recallAffordance === true) {
+    lines.push(
+      '',
+      'Recall',
+      '- Folded history is archived. Use context_search to find it, or context_recall to open it.',
+    )
+  }
+
+  // WHAT was folded. The generic affordance above names the tools; this names
+  // the evidence. A model that can see `read_file logs/gateway-2026-10-11.log`
+  // was folded has a reason to open it instead of trusting the later log.
+  if (options.archivedCalls !== undefined && options.archivedCalls.length > 0) {
+    lines.push('', 'Archived calls')
+    for (const call of options.archivedCalls) {
+      lines.push(call.detail === undefined ? `- ${call.name}` : `- ${call.name} ${call.detail}`)
+    }
+  }
+
+  // The EXECUTABLE form of the list above. `Archived calls` says what was
+  // folded; this says where the observation lives and how to open it, so the
+  // model does not re-issue `read_file` against a rotated workspace path.
+  // Bounded, default off, and omitted entirely when it does not fit.
+  if (options.locators !== undefined && options.locators.length > 0) {
+    const section = renderArchiveLocatorSection(options.locators)
+    if (section.length > 0) lines.push('', section)
   }
 
   return lines.join('\n')

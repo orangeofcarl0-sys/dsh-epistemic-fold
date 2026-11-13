@@ -2,7 +2,7 @@
 
 - dataset: `407148f0c3280ada831b72150640ac6cdf14dceae600c3dcdbf2a61bd8e0c87f` (17 frozen cases)
 - execution: `scripted-writer + scripted-follow-up (pipeline measurement, not a model result)`
-- generated: 2026-11-01T15:05:14.004Z
+- generated: 2026-11-08T09:59:35.678Z
 
 This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It is not a model result.
 
@@ -12,11 +12,11 @@ This is a scripted-writer / scripted-follow-up measurement of the PIPELINE. It i
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | B0 | 17/17 | 7 | 10 | 0.412 | n/a | n/a | n/a | n/a | n/a |
 | B1 | 17/17 | 7 | 10 | 0.412 | n/a | n/a | n/a | n/a | n/a |
-| S | 17/17 | 15 | 2 | 0.882 | 0.926 | 1.000 | 0.000 | 0.928 | 0.928 |
-| O1 | 17/17 | 16 | 1 | 0.941 | 0.993 | 1.000 | 0.000 | 0.995 | 0.995 |
-| O2 | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
-| OR | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
-| F | 17/17 | 17 | 0 | 1.000 | n/a | n/a | n/a | n/a | n/a |
+| S | 17/17 | 15 | 3 | 0.882 | 0.926 | 1.000 | 0.000 | 0.928 | 0.928 |
+| O1 | 17/17 | 16 | 2 | 0.941 | 0.993 | 1.000 | 0.000 | 0.995 | 0.995 |
+| O2 | 17/17 | 17 | 1 | 1.000 | n/a | n/a | n/a | n/a | n/a |
+| OR | 17/17 | 17 | 1 | 1.000 | n/a | n/a | n/a | n/a | n/a |
+| F | 17/17 | 17 | 1 | 1.000 | n/a | n/a | n/a | n/a | n/a |
 | N | 17/17 | 3 | 14 | 0.176 | n/a | n/a | n/a | n/a | n/a |
 | FM | 8/8 | 0 | 8 | 0.000 | 0.875 | 1.000 | 0.000 | 0.875 | 0.875 |
 

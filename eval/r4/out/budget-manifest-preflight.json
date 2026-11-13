@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 budget-sensitivity manifest preflight",
+  "generatedAt": "2026-11-13T19:53:46.451Z",
+  "campaign": "e2e-r4-budget-sensitivity-3",
+  "verdict": "ready-for-authorization",
+  "executionAuthorized": false,
+  "providerCalls": 0,
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-3.json",
+    "sha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
+  },
+  "authorization": {
+    "path": "eval/e2e/out/authorization-e2e-r4-budget-sensitivity-3.json",
+    "sha256": "fad38b6259c88c4ad1b9d0a9f79c38642bd5d6cb43a59b378ca360cbfda3b47b",
+    "granted": false
+  },
+  "code": {
+    "head": "2ef6c5d74d89d662f0523110abcfe84a9e2d6338",
+    "sourceTreeDigest": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01",
+    "worktreeClean": true
+  },
+  "checks": [
+    {
+      "id": "campaign",
+      "pass": true,
+      "detail": "e2e-r4-budget-sensitivity-3"
+    },
+    {
+      "id": "cell-count",
+      "pass": true,
+      "detail": 36
+    },
+    {
+      "id": "unique-task-arm-budget",
+      "pass": true,
+      "detail": 36
+    },
+    {
+      "id": "balanced-blocks",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "id": "each-task-six",
+      "pass": true,
+      "detail": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    {
+      "id": "each-arm-twelve",
+      "pass": true,
+      "detail": [
+        12,
+        12,
+        12
+      ]
+    },
+    {
+      "id": "each-budget-eighteen",
+      "pass": true,
+      "detail": [
+        18,
+        18
+      ]
+    },
+    {
+      "id": "budgets-only-8-16",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "execution-not-authorized",
+      "pass": true,
+      "detail": false
+    },
+    {
+      "id": "authorization-not-granted",
+      "pass": true,
+      "detail": false
+    },
+    {
+      "id": "authorization-binds-manifest",
+      "pass": true,
+      "detail": {
+        "authorization": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+        "manifest": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
+      }
+    },
+    {
+      "id": "pointer-binds-manifest",
+      "pass": true,
+      "detail": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
+    },
+    {
+      "id": "pointer-binds-authorization",
+      "pass": true,
+      "detail": "fad38b6259c88c4ad1b9d0a9f79c38642bd5d6cb43a59b378ca360cbfda3b47b"
+    },
+    {
+      "id": "source-tree-digest",
+      "pass": true,
+      "detail": {
+        "manifest": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01",
+        "current": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01"
+      }
+    },
+    {
+      "id": "worktree-clean",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "id": "task-digests",
+      "pass": true,
+      "detail": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1"
+      ]
+    },
+    {
+      "id": "task-set",
+      "pass": true,
+      "detail": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1"
+      ]
+    },
+    {
+      "id": "config-context-window",
+      "pass": true,
+      "detail": 32768
+    },
+    {
+      "id": "config-retain",
+      "pass": true,
+      "detail": 0.16
+    },
+    {
+      "id": "config-hint",
+      "pass": true,
+      "detail": 400
+    },
+    {
+      "id": "config-framing",
+      "pass": true,
+      "detail": "system-dedup"
+    },
+    {
+      "id": "config-strict-usage",
+      "pass": true,
+      "detail": true
+    },
+    {
+      "id": "config-default-max-steps",
+      "pass": true,
+      "detail": 8
+    },
+    {
+      "id": "envelope-positive",
+      "pass": true,
+      "detail": {
+        "continuationCells": 36,
+        "httpAttempts": 1152,
+        "inputTokens": 14907240,
+        "outputTokens": 9437184,
+        "wallClockMs": 11084760,
+        "paidConcurrency": 2,
+        "monetaryUsd": null,
+        "monetaryNote": "No verifiable per-token price is recorded."
+      }
+    },
+    {
+      "id": "envelope-covers-per-cell",
+      "pass": true,
+      "detail": {
+        "perCell": {
+          "requests": 32,
+          "inputTokens": 414090,
+          "outputTokens": 262144,
+          "wallClockMs": 307910
+        },
+        "limits": {
+          "continuationCells": 36,
+          "httpAttempts": 1152,
+          "inputTokens": 14907240,
+          "outputTokens": 9437184,
+          "wallClockMs": 11084760,
+          "paidConcurrency": 2,
+          "monetaryUsd": null,
+          "monetaryNote": "No verifiable per-token price is recorded."
+        }
+      }
+    },
+    {
+      "id": "design-matches-cells",
+      "pass": true,
+      "detail": {
+        "uniqueTaskArmBudget": 36,
+        "blockBalanced": true
+      }
+    }
+  ],
+  "failed": [],
+  "nextStep": "A new explicit live authorization must set granted=true in the authorization and keep the manifest SHA. A representative transport health probe must pass first.",
+  "note": "No live route was resolved and no credential was read. This preflight is not an authorization."
+}

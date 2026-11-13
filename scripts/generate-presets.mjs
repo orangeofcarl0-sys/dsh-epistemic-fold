@@ -43,15 +43,46 @@
  *
  * ## Usage
  *
- *   node scripts/generate-presets.mjs [--dsh <path>] [--mode <tier>]
+ *   node scripts/generate-presets.mjs [--dsh <path>] [--mode <tier>] [--check]
+ *   node scripts/generate-presets.mjs --reference <presets-dir> --check
+ *   node scripts/generate-presets.mjs --output <path>
+ *   node scripts/generate-presets.mjs --write
  *
  * The DSH path defaults to `$DSH_HOME` or `~/.dsh`. The mode defaults to
  * `economy`, the one tier with measured end-to-end evidence.
  *
+ * `--reference` names a directory that holds `standard.patch.yml`,
+ * `ptc.patch.yml` and `cordis.patch.yml` directly: either an installed
+ * `dsh-web-app/presets` directory or the DSH source tree's
+ * `packages/bundle/web-app/presets`. CI uses it to verify the block against the
+ * PINNED DSH checkout instead of a `~/.dsh` that does not exist on a runner.
+ * A reference is a fixed version by construction and is never fetched.
+ *
+ * ## Verify / generate / promote (EF-C1)
+ *
+ * Before EF-C1 the bare command WROTE `cordis.patch.yml`, and `prepare` ran it
+ * on every `npm ci` / `npm install`. That made dependency installation a
+ * repository mutation: measured on a clean checkout, `npm ci` rewrote the
+ * checked-in block with the installed DSH's rows.
+ *
+ * The command now separates the three operations:
+ *
+ *   --check     compare the generated block with the checked-in file; write
+ *               nothing. Exits 2 on a mismatch so CI can gate on it.
+ *   --output    write the candidate file to an explicit path; write nothing in
+ *               the repository.
+ *   --write     replace `cordis.patch.yml` in place (the old behavior).
+ *   (none)      check, but warn instead of failing — the safe default, because
+ *               `prepare` runs on machines with no DSH and must not fail an
+ *               install.
+ *
+ * `prepare` uses `--check --warn-only`; the boot-time doctor remains the
+ * authoritative check against the DSH that actually runs the plugin.
+ *
  * @module scripts/generate-presets
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -94,6 +125,22 @@ function presetDirCandidates(dshHome) {
     join(base, 'dsh', 'node_modules', '@deepseek-ai', 'dsh-web-app', 'presets'),
     join(base, 'dsh-web-app', 'presets'),
   ]
+}
+
+/**
+ * Resolve the preset directory: an explicit `--reference` wins, otherwise the
+ * installed-DSH candidates.
+ *
+ * An explicit reference is not a fallback for a missing install; it is the
+ * caller naming the exact version to compare against. CI has no `~/.dsh`, so
+ * without this the strict check can only say "not-verifiable" forever.
+ */
+function resolvePresetDir(dshHome, reference) {
+  if (reference !== undefined) {
+    const complete = TARGETS.every(name => existsSync(join(reference, `${name}.patch.yml`)))
+    return complete ? reference : undefined
+  }
+  return presetDirCandidates(dshHome).find(candidate => existsSync(candidate))
 }
 
 /**
@@ -274,25 +321,14 @@ function spliceBlock(existing, block) {
   return existing.slice(0, start) + block + (tail === -1 ? '' : existing.slice(tail + 1))
 }
 
-function main() {
-  const dshHome = arg('dsh', process.env['DSH_HOME'] ?? join(homedir(), '.dsh'))
-  const mode = arg('mode', 'economy')
-  const dir = presetDirCandidates(dshHome).find(candidate => existsSync(candidate))
-  if (dir === undefined) {
-    // NO DSH FOUND. This runs from `prepare` on every install, including on a
-    // machine that has no DSH yet, so it must NOT throw: a failing `prepare`
-    // fails the install, and the user would be unable to install EF in order to
-    // get the DSH it needs. The checked-in block stays as generated (it is
-    // pinned to the release it was built against) and the boot-time doctor
-    // reports if it does not match the DSH that eventually runs it.
-    console.log(
-      `generate-presets: no installed dsh-web-app presets under ${dshHome}; keeping the `
-      + 'checked-in block. Re-run this after installing a DSH web profile, or pass --dsh <path>.',
-    )
-    return
-  }
-  console.log(`reference: ${dir}`)
-  console.log(`mode: ${mode}`)
+/**
+ * Build the generated block from one preset directory.
+ *
+ * Returns `{ found: false }` when no reference resolves: that is not an error,
+ * because `prepare` runs on machines that do not have DSH yet.
+ */
+function buildBlock(dir, mode) {
+  if (dir === undefined) return { found: false }
 
   const rows = []
   for (const name of TARGETS) {
@@ -300,7 +336,6 @@ function main() {
     const { block, rowIndent } = extractConfig(readFileSync(file, 'utf8'), `preset-${name}`)
     const rewritten = substituteBackend(block, mode)
     rows.push(renderRow(`preset-${name}`, rewritten, rowIndent))
-    console.log(`  ${name}: ${block.length} config rows -> ${rewritten.length}`)
   }
 
   const block = [
@@ -319,9 +354,101 @@ function main() {
     '',
   ].join('\n')
 
+  return { found: true, dir, block }
+}
+
+/**
+ * Which target presets differ between the checked-in block and a candidate.
+ *
+ * The whole-file comparison is enough for a pass/fail, but a version upgrade
+ * changes rows across several presets, and "cordis.patch.yml is out of date"
+ * does not say which DSH change caused it. This names them.
+ */
+function differingPresets(existing, candidate) {
+  const ids = TARGETS.map(name => `preset-${name}`)
+  return ids.filter(id => {
+    const at = (text) => {
+      const start = text.indexOf(`- id: ${id}`)
+      if (start === -1) return undefined
+      const next = text.indexOf('- id: preset-', start + 1)
+      return text.slice(start, next === -1 ? undefined : next)
+    }
+    return at(existing) !== at(candidate)
+  })
+}
+
+function main() {
+  const dshHome = arg('dsh', process.env['DSH_HOME'] ?? join(homedir(), '.dsh'))
+  const reference = arg('reference')
+  const mode = arg('mode', 'economy')
+  const check = process.argv.includes('--check')
+  const write = process.argv.includes('--write')
+  const warnOnly = process.argv.includes('--warn-only')
+  const output = arg('output')
+
+  if (write && output !== undefined) {
+    console.error('generate-presets: --write and --output are mutually exclusive')
+    process.exit(1)
+  }
+  if (reference !== undefined && !existsSync(reference)) {
+    // A caller that names a reference expects that exact tree to be checked.
+    // Falling back to an installed DSH here would silently verify a different
+    // version, which is the failure this option exists to prevent.
+    console.error(`generate-presets: --reference ${reference} does not exist`)
+    process.exit(2)
+  }
+
+  const dir = resolvePresetDir(dshHome, reference)
+  const built = buildBlock(dir, mode)
+  if (!built.found) {
+    // NO DSH FOUND. This runs from `prepare` on every install, including on a
+    // machine that has no DSH yet, so it must NOT throw: a failing `prepare`
+    // fails the install, and the user would be unable to install EF in order to
+    // get the DSH it needs. The checked-in block stays as generated (it is
+    // pinned to the release it was built against) and the boot-time doctor
+    // reports if it does not match the DSH that eventually runs it.
+    const message = reference === undefined
+      ? `generate-presets: no installed dsh-web-app presets under ${dshHome}; keeping the `
+        + 'checked-in block. Re-run this after installing a DSH web profile, or pass --dsh <path>.'
+      : `generate-presets: ${reference} holds no preset patch files; keeping the checked-in block.`
+    if (check && !warnOnly) {
+      console.error(message)
+      process.exit(2) // not-verifiable, not a silent pass
+    }
+    console.log(message)
+    return
+  }
+
+  console.log(`reference: ${built.dir}`)
+  console.log(`mode: ${mode}`)
+
   const existing = existsSync(OUT_FILE) ? readFileSync(OUT_FILE, 'utf8') : ''
-  writeFileSync(OUT_FILE, spliceBlock(existing, block), 'utf8')
-  console.log(`wrote ${OUT_FILE.replace(`${ROOT}\\`, '').replace(`${ROOT}/`, '')}`)
+  const next = spliceBlock(existing, built.block)
+
+  if (output !== undefined) {
+    writeFileSync(output, next, 'utf8')
+    console.log(`wrote candidate ${output}`)
+    return
+  }
+
+  if (write) {
+    writeFileSync(OUT_FILE, next, 'utf8')
+    console.log(`wrote ${OUT_FILE.replace(`${ROOT}\\`, '').replace(`${ROOT}/`, '')}`)
+    return
+  }
+
+  // Default: compare, never write.
+  if (next === existing) {
+    console.log(`cordis.patch.yml is current for the ${reference === undefined ? 'installed DSH' : 'named reference'}`)
+    return
+  }
+  const changed = differingPresets(existing, next)
+  console.error(
+    `cordis.patch.yml is OUT OF DATE for the installed DSH. `
+    + `Differing preset(s): ${changed.length === 0 ? 'generated block boundaries' : changed.join(', ')}. `
+    + 'Run with --write to promote a candidate, or --output <path> to inspect it first.',
+  )
+  if (check && !warnOnly) process.exit(2)
 }
 
 main()

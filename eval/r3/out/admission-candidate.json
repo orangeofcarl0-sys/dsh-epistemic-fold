@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane",
+  "generatedAt": "2026-11-11T09:33:11.316Z",
+  "input": {
+    "path": "eval/r3/out/product-lane-exposure-audit.json",
+    "sha256": "d852437906016298a9205afed7f4593237a92af5d7daab25243a1ce692850155"
+  },
+  "rule": "Candidate admission uses the executed span (the span left after spec.retainTokens) rather than the widest legal span (retain 0).",
+  "counts": {
+    "auditedFoldCases": 16,
+    "falseAdmissions": 4,
+    "candidateRefusals": 4,
+    "falseRefusals": 0,
+    "observedFutileRetries": 4
+  },
+  "falseAdmissions": [
+    {
+      "taskId": "T16-s1",
+      "arm": "E0",
+      "seedTokens": 36901,
+      "leafFolds": 1,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18460 estimated tokens >= threshold 16384; widest legal span 18390 tokens (retain 5079), checkpoint 20, retained after folding it 90; frozen prefix 20 across 1 checkpoint(s)))",
+      "widestTokens": 18390,
+      "executedTokens": null,
+      "estimatedCheckpointTokens": 20,
+      "admissionWouldAdmit": true,
+      "executionWouldAdmit": false
+    },
+    {
+      "taskId": "T16-s1",
+      "arm": "E1",
+      "seedTokens": 36901,
+      "leafFolds": 1,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18885 estimated tokens >= threshold 16384; widest legal span 18390 tokens (retain 5079), checkpoint 445, retained after folding it 940; frozen prefix 445 across 1 checkpoint(s)))",
+      "widestTokens": 18390,
+      "executedTokens": null,
+      "estimatedCheckpointTokens": 445,
+      "admissionWouldAdmit": true,
+      "executionWouldAdmit": false
+    },
+    {
+      "taskId": "T16-s2",
+      "arm": "E0",
+      "seedTokens": 36904,
+      "leafFolds": 1,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18461 estimated tokens >= threshold 16384; widest legal span 18391 tokens (retain 5079), checkpoint 20, retained after folding it 90; frozen prefix 20 across 1 checkpoint(s)))",
+      "widestTokens": 18391,
+      "executedTokens": null,
+      "estimatedCheckpointTokens": 20,
+      "admissionWouldAdmit": true,
+      "executionWouldAdmit": false
+    },
+    {
+      "taskId": "T16-s2",
+      "arm": "E1",
+      "seedTokens": 36904,
+      "leafFolds": 1,
+      "outcome": "threw",
+      "error": "epistemic-fold: still above threshold after 1 committed leaf fold(s) (a fold can reach the threshold (18886 estimated tokens >= threshold 16384; widest legal span 18391 tokens (retain 5079), checkpoint 445, retained after folding it 940; frozen prefix 445 across 1 checkpoint(s)))",
+      "widestTokens": 18391,
+      "executedTokens": null,
+      "estimatedCheckpointTokens": 445,
+      "admissionWouldAdmit": true,
+      "executionWouldAdmit": false
+    }
+  ],
+  "interpretation": {
+    "observed": "The candidate would refuse 4 attempt(s) that economic admission admitted on the widest span but execution could not fold. In the audit, all of them are the T16 retry after one committed fold; the current engine then throws instead of a successful reach.",
+    "falseRefusals": "No audited case where the candidate would refuse a fold that actually reached the threshold.",
+    "decision": "No default change is justified by this audit. The shipped preset should be tested as-is; if the pilot shows T16-like retry failures, add the candidate as a separate arm."
+  },
+  "limitations": [
+    "The audit calls compactIfNeeded once per seeded surface with compactionRetries=1; it is not a full task run.",
+    "The scripted summarizer returns a fixed checkpoint; checkpoint size is not the live model distribution.",
+    "A candidate refusal changes the engine path to a rebase handoff; the final pressure after that handoff is not simulated here."
+  ],
+  "note": "Analysis only. No engine behavior changed; the product lane tests the shipped preset."
+}

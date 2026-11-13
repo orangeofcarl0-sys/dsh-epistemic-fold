@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R2",
+  "generatedAt": "2026-11-10T12:18:59.523Z",
+  "gates": [
+    {
+      "id": "R2-G0",
+      "status": "pass",
+      "detail": "baseline 34af2950; R1 pointer present; R2 archive archive-verified"
+    },
+    {
+      "id": "R2-G1",
+      "status": "pass",
+      "detail": "witness contract 30/30; history 290 cells, 753 attempts, 673 committed; 12 discrepancy cells"
+    },
+    {
+      "id": "R2-G2",
+      "status": "pass",
+      "detail": "31 failed; 31 shrink; finishes {\"stop\":31}"
+    },
+    {
+      "id": "R2-G2.5",
+      "status": "pass",
+      "detail": "production fix none; pre-call guard false; retry suppression false"
+    },
+    {
+      "id": "R2-G3",
+      "status": "pass",
+      "detail": "legacy 44/120 reproduced true; full messages 194; exact lost 45; values unavailable 2"
+    },
+    {
+      "id": "R2-G4",
+      "status": "pass",
+      "detail": "reconciliation true; rationale calls 42; failed cost 7083 in / 7890 out"
+    },
+    {
+      "id": "R2-G5",
+      "status": "pass",
+      "detail": "old allowed -> new refused; tests 12; retire refs 0"
+    },
+    {
+      "id": "R2-G6",
+      "status": "pass",
+      "detail": "supported CI success; the master probe remains non-blocking by design"
+    },
+    {
+      "id": "R2-G7",
+      "status": "pass",
+      "detail": "EF_R2.md present; claims missing 0; live authorized false"
+    },
+    {
+      "id": "R2-G8",
+      "status": "pass",
+      "detail": "pilot 18/18; E1 commit 6/6, delivered 6/6, refused 0, aborted 0"
+    },
+    {
+      "id": "R2-G9",
+      "status": "incomplete",
+      "detail": "confirm 23/54 valid; 2 transport-failed, 29 unexecuted; no further live calls until the route is stable"
+    }
+  ],
+  "counts": {
+    "pass": 10,
+    "pending": 0,
+    "incomplete": 1,
+    "fail": 0
+  },
+  "sources": {
+    "baseline": "eval/r2/out/baseline.json",
+    "contract": "eval/r2/out/witness-contract.json",
+    "witnesses": "eval/r2/out/compaction-witnesses.json",
+    "attribution": "eval/r2/out/rationale-failure-attribution.json",
+    "delivery": "eval/r2/out/active-task-delivery.json",
+    "causal": "eval/r2/out/causal-reanalysis.json",
+    "cost": "eval/r2/out/cost-ledger.json",
+    "authority": "eval/r2/out/authority-closure.json",
+    "design": "eval/r2/out/live-design-r2.json",
+    "claims": "eval/r2/out/evidence-claims.json"
+  },
+  "ci": {
+    "status": "success",
+    "note": "Set EF_R2_CI_STATUS after the supported-lane run. The master probe is non-blocking and is not a gate."
+  },
+  "note": "A gate is evaluated from the artifact it names. No unknown is promoted to a pass."
+}

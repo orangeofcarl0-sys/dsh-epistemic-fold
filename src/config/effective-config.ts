@@ -69,6 +69,8 @@ export interface EffectiveConfig {
     readonly steadinessMechanism: string
     readonly evidence: string
     readonly evidenceDetail: string
+    /** The effective-config profile the evidence measured, when one exists. */
+    readonly evidenceProfile?: string
   }
 }
 
@@ -181,6 +183,7 @@ function tierSummaryFor(mode: TierModeName): NonNullable<EffectiveConfig['tier']
     steadinessMechanism: tier.steadinessMechanism,
     evidence: tier.evidence,
     evidenceDetail: tier.evidenceDetail,
+    ...(tier.evidenceProfile === undefined ? {} : { evidenceProfile: tier.evidenceProfile }),
   }
 }
 
@@ -200,6 +203,9 @@ export function effectiveConfigToText(effective: EffectiveConfig): string {
     lines.push(`    for: ${effective.tier.intent}`)
     lines.push(`    steadiness: ${effective.tier.steadinessMechanism}`)
     lines.push(`    evidence: ${effective.tier.evidence.toUpperCase()} — ${effective.tier.evidenceDetail}`)
+    if (effective.tier.evidenceProfile !== undefined) {
+      lines.push(`    measured profile: ${effective.tier.evidenceProfile}`)
+    }
   }
   for (const setting of effective.settings) {
     lines.push(`  ${setting.key} = ${JSON.stringify(setting.value)}  [${setting.origin}]`)

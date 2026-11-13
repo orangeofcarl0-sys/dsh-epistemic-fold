@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r2-pilot-1",
+  "note": "Raw cell directories are gitignored; these hashes pin the reports that were analysed.",
+  "files": [
+    {
+      "cellId": "T11-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-B0-r1\\report.json",
+      "sha256": "7e7755be90feb5a82954510b1370e1d2f4c4e1ef9fbf80f8e87179f99f0cec8e"
+    },
+    {
+      "cellId": "T11-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E0-r1\\report.json",
+      "sha256": "3cc6cdfa31de410bd759e00583ea565dd7a47e71fad3a54c482a3c6bd859b403"
+    },
+    {
+      "cellId": "T11-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T11-s1-E1-r1\\report.json",
+      "sha256": "04ace358b8c4a05d7d80a39f3b38b74edce1be45bb84903b68516609b404e6d0"
+    },
+    {
+      "cellId": "T12-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E1-r1\\report.json",
+      "sha256": "1e642299cf43078fd0a96fba4ca3b6eac04461309440145d7bb85543aec6169e"
+    },
+    {
+      "cellId": "T12-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-B0-r1\\report.json",
+      "sha256": "402451e04b24bfc5bb346d445c2600126c9c1f13220d6b7ad9a4639c0bbe04b5"
+    },
+    {
+      "cellId": "T12-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T12-s1-E0-r1\\report.json",
+      "sha256": "1e3adb91c01188e9f454b0194a4d299235638d7b4d52bedf44e510e9fc26e3b9"
+    },
+    {
+      "cellId": "T13-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E0-r1\\report.json",
+      "sha256": "770d6fa00cddee8ecaa56d5734c069cbbc0d59b350ac075b1ff63413809a655e"
+    },
+    {
+      "cellId": "T13-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-E1-r1\\report.json",
+      "sha256": "e8f0eaba2c15c6e470aa26043238d88cbc594e7ec444081326e8f6e066da1d49"
+    },
+    {
+      "cellId": "T13-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T13-s1-B0-r1\\report.json",
+      "sha256": "8d1c2bb6e1903fbc77924b6350262c71e58d2f6987998d7c3da1fe6512dcdf71"
+    },
+    {
+      "cellId": "T14-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-B0-r1\\report.json",
+      "sha256": "31efd3c2e2d3ab09638147f60ad19576539726717b33d4c527ae8bf5611622cc"
+    },
+    {
+      "cellId": "T14-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E0-r1\\report.json",
+      "sha256": "51fad80afe9cf1a8d8f7b6a92fb2336bb45b5326ef1eb98b2cbf361fb9841b82"
+    },
+    {
+      "cellId": "T14-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T14-s1-E1-r1\\report.json",
+      "sha256": "013d2c2612672cb3a9829210c900daf98fc43569070d94ec1570ce5a00f13185"
+    },
+    {
+      "cellId": "T15-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E1-r1\\report.json",
+      "sha256": "5c2a897107e459ebad5544d2bcd2cca168126fe39574bddfa2943b81df3a74ff"
+    },
+    {
+      "cellId": "T15-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-B0-r1\\report.json",
+      "sha256": "2c9a1dffeb41804689a2eb337b2aac3c58060d89ddb794d4b2ccf20f121ea1f2"
+    },
+    {
+      "cellId": "T15-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T15-s1-E0-r1\\report.json",
+      "sha256": "85f90f31a0bdc9fabe8976b6b7d7da338144ebaf35695af785ff438dfe4bb8fb"
+    },
+    {
+      "cellId": "T16-s1-E0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E0-r1\\report.json",
+      "sha256": "b3a860dba00e334bdebd2b1dd1174528a691c46f23522eb33850606782b6557f"
+    },
+    {
+      "cellId": "T16-s1-E1-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-E1-r1\\report.json",
+      "sha256": "0ebb912bf035fb1ab375a10b48173201399403d031f4d25a7194b6a6305f61a5"
+    },
+    {
+      "cellId": "T16-s1-B0-r1",
+      "path": "eval\\e2e\\runs\\e2e-r2-pilot-1\\T16-s1-B0-r1\\report.json",
+      "sha256": "a00f6f3d07e35f866c2a4051cf064a53d19ef9e98108bf03a59df27a3131aa93"
+    }
+  ]
+}

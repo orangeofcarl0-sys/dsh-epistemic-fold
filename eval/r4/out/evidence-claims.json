@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 evidence claims",
+  "generatedAt": "2026-11-13T20:13:59.421Z",
+  "head": "2ef6c5d74d89d662f0523110abcfe84a9e2d6338",
+  "claims": [
+    {
+      "id": "R4-BASELINE",
+      "statement": "R4 started from 07540d01 with 70/70 immutable R3 artifacts present and 0 missing.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/baseline-r4.json",
+          "sha256": "03c4bec6ea45d2114d422c9f51c2d510e910cc7ec0155437a7888140d84c5915"
+        }
+      ],
+      "limitation": "A commit is a hand-off point, not proof that every future run used this tree."
+    },
+    {
+      "id": "R4-SCORING-SPLIT",
+      "statement": "Historical R3 passes are B0 5/6, E0 1/6, E1 3/6. The rescored task outcome is B0 5/6, E0 1/6, E1 3/6; E1 vs B0 has both 3, neither 1, E1-only 0, B0-only 2. Mechanism exposure is reported separately.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/rescored-r3.json",
+          "sha256": "fca87b09a5dc00e2d6dcdea77245b6583e5e7777455af032a63e766d39686130"
+        }
+      ],
+      "limitation": "The rescore is a re-reading of the same 18 cells, not a new benchmark. It does not change the historical score."
+    },
+    {
+      "id": "R4-EVIDENCE-LIFECYCLE",
+      "statement": "Across 18 pilot cells there are 67 recall/search calls; 53 results are shadowed by a later fold; 51 do not carry the payload verbatim into the next request (24 marker-only, 20 invisible-after-fold, 12 no-following-request); 9 are visible and 2 are inferred equivalent.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/evidence-lifecycle.json",
+          "sha256": "19c51039660b609f6d1c022251a8142372823e2f30769e88731c95ff390bd96b"
+        }
+      ],
+      "limitation": "Visibility is the exact toolCallId/content at the next primary request. A checkpoint paraphrase without an exact substring is not counted as equivalent."
+    },
+    {
+      "id": "R4-TASK-CONTINUITY",
+      "statement": "Of the 8 failed EF cells, 7 lose the exact task source; 7 of them make no write. None of the 4 passing EF cells lose it (0 with loss).",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/task-continuity.json",
+          "sha256": "c9d2790685ce4c09bd1a54336d34ad7cea0324d8b572cd47cf8c8ea1dbd0f9a7"
+        }
+      ],
+      "limitation": "Exact prompt absence is not proof that no paraphrase existed; the artifact path and checkpoint text are reported separately."
+    },
+    {
+      "id": "R4-FAILURE-PROJECTION",
+      "statement": "T16 E0 carries 5 open failures (2 duplicate signatures, 91.2% of checkpoint chars); T16 E1 carries 9 (4 duplicate, 32.1%).",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/working-set.json",
+          "sha256": "6996b3127e359ab9b18fe39222dd1a7182114cdbad79966334ee461bc6805629"
+        }
+      ],
+      "limitation": "The final checkpoint is the only checkpoint stored verbatim; the join from anchor to tool/path is inferred and can be unknown."
+    },
+    {
+      "id": "R4-WORKING-SET",
+      "statement": "Character-level context balance is B0 -89947, E0 826954, E1 35166; repeated recall 16; recall payloads re-folded 51; exact-task requests lost 45.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/working-set.json",
+          "sha256": "6996b3127e359ab9b18fe39222dd1a7182114cdbad79966334ee461bc6805629"
+        }
+      ],
+      "limitation": "These are characters, not provider tokens. R3 has no per-step TokenMeter snapshot; the E0 positive balance is a research signal, not a billing result."
+    },
+    {
+      "id": "R4-CANDIDATE",
+      "statement": "The pre-registered rules select active-task-delivery (contract only, not wired). The offline simulation adds 1238 exact prompt chars across 7 failed cells, bounded to two deliveries per cell.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/candidate-decision.json",
+          "sha256": "a6eec2215aa7b906648258205e7195a0b80c579578ab1b87fd20cb5a28d6b732"
+        }
+      ],
+      "limitation": "A correlation in 18 cells is not a causal effect. The simulation does not prove the model would act on the replayed source."
+    },
+    {
+      "id": "R4-BUDGET-DESIGN",
+      "statement": "The budget-sensitivity design has 36 cells (6 tasks x 3 arms x 2 budgets), validated as 36 unique combinations with balanced blocks; executionAuthorized is false.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/budget-sensitivity-design.json",
+          "sha256": "bc4912bc2aa138a2cc42106ca20ab81243aa65bcb01369f0f65402a13a489ab2"
+        }
+      ],
+      "limitation": "A design is not an authorization. The proposed envelope is an estimate from R3, not a spend approval."
+    },
+    {
+      "id": "R4-BUDGET-MANIFEST",
+      "statement": "The runnable manifest is frozen at SHA-256 7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66 with 36 cells; authorization granted=true; preflight ready-for-authorization (26/26 checks).",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/budget-manifest.json",
+          "sha256": "ebebfc028e9ee30aa2670718eb747330082ea4c1edc913c3a4d14d4a6256b69a"
+        },
+        {
+          "path": "eval/r4/out/budget-manifest-preflight.json",
+          "sha256": "4872249d189b69a7b68361b69964ccdf34ffa7ac67fdda94118bab8baef716c7"
+        }
+      ],
+      "limitation": "A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false."
+    },
+    {
+      "id": "R4-LIVE-ATTEMPT",
+      "statement": "The route qualification was attempted 4 times before Omnigate was available: attempt 1 hit the unreachable local proxy (ECONNREFUSED); attempts 2-5 used three OpenCode accounts and returned HTTP 401 api_key_expired. These attempts produced no model response or usage.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/live-attempts-r4.json",
+          "sha256": "9801f3cfa53757c2d2261a56b25b361e06ff95da4141fc6357ab55bd7de07d40"
+        }
+      ],
+      "limitation": "These are route/credential qualification attempts, not task-quality evidence. They are superseded for the campaign outcome by R4-BUDGET-CAMPAIGN after Omnigate started."
+    },
+    {
+      "id": "R4-BUDGET-CAMPAIGN",
+      "statement": "The clean 36-cell campaign completed 36/36 with no stop. Task-correct: B0@8 4/6, E0@8 1/6, E1@8 6/6; B0@16 5/6, E0@16 2/6, E1@16 4/6. E1 vs B0 at 8: E1-only 2, B0-only 0, p=0.5. E1@16 vs E1@8: 16-only 0, 8-only 2, p=0.5.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/budget-campaign-e2e-r4-budget-sensitivity-3.json",
+          "sha256": "ae06f092f620c57631ab134ae62af1fe16616eb8aec3744fa10200f3a50e64cc"
+        }
+      ],
+      "limitation": "One replicate per cell, six tasks, one route (Omnigate/opencode) and one model. E1@8 is a signal, not a product claim; E1@16 did not improve."
+    },
+    {
+      "id": "R4-PRODUCT-DECISION",
+      "statement": "No product candidate is proposed; Deployment Hold is true; expandTo72 is false; the research candidate remains unwired. The measured best arm is E1@8.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/product-decision-r4.json",
+          "sha256": "af8ed46f9a1fc85de3998bfbb2d2e80d52759dc5efd242c8233bb2dc7e0eb99e"
+        }
+      ],
+      "limitation": "The decision is bounded by one model, one route, one machine and one replicate; the next step is a confirmatory E1@8 vs B0@8 campaign."
+    },
+    {
+      "id": "R4-ZERO-LIVE",
+      "statement": "The zero-live audit scanned 20 offline R4 scripts and found 0 violations. It records 6 R4 campaign artifacts, of which 6 are authorized live evidence (campaign 3); providerCalls in the offline scripts is 0.",
+      "commit": "2ef6c5d7",
+      "artifacts": [
+        {
+          "path": "eval/r4/out/zero-live-audit.json",
+          "sha256": "4e685ee25522ba6e808107c908257168d272d95ce42afc469d45c80c1d4240e1"
+        }
+      ],
+      "limitation": "The audit covers the offline analysis scripts; the authorized probe and campaign are recorded separately. It is not a network monitor for the whole machine."
+    }
+  ],
+  "counts": {
+    "claims": 13,
+    "artifacts": 13
+  },
+  "method": "Each claim names its artifact, SHA-256, commit and limitation. A missing artifact stops generation."
+}

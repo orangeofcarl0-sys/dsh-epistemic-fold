@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 WP2 repeated evidence access",
+  "generatedAt": "2026-11-11T15:44:21.713Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:3e2ef829-a2fb-4731-b45e-723404c66d58#exact:0#ac29ab46-c165-4945-b4fb-65c8a0f4fc52:10",
+          "count": 2,
+          "resultSeqs": [
+            63,
+            92
+          ],
+          "visibilities": [
+            "marker-only",
+            "no-following-request"
+          ],
+          "requests": [
+            4,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:72140c72-89a4-49b6-a261-e9f12aad908f#exact:0#14a126bb-8f4d-477e-8d38-da8a065ea592:3",
+          "count": 2,
+          "resultSeqs": [
+            48,
+            70
+          ],
+          "visibilities": [
+            "marker-only",
+            "marker-only"
+          ],
+          "requests": [
+            3,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:0#b6f86f1d-0546-4d7e-90d9-6b5046d6cd8a:2",
+          "count": 2,
+          "resultSeqs": [
+            43,
+            60
+          ],
+          "visibilities": [
+            "marker-only",
+            "marker-only"
+          ],
+          "requests": [
+            3,
+            5
+          ]
+        },
+        {
+          "key": "cp:4fa39d7a-253f-4538-a4ce-784fb44ad850#exact:2#ba8dd8c7-092a-4a95-b12a-9dfb106075ed:1",
+          "count": 2,
+          "resultSeqs": [
+            50,
+            75
+          ],
+          "visibilities": [
+            "marker-only",
+            "no-following-request"
+          ],
+          "requests": [
+            5,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "arm": "B0",
+      "repeatedKeys": []
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "arm": "E0",
+      "repeatedKeys": [
+        {
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#detail:0",
+          "count": 2,
+          "resultSeqs": [
+            75,
+            111
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "invisible-after-fold"
+          ],
+          "requests": [
+            6,
+            8
+          ]
+        },
+        {
+          "key": "cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8#detail:0",
+          "count": 2,
+          "resultSeqs": [
+            94,
+            113
+          ],
+          "visibilities": [
+            "equivalent-inferred",
+            "equivalent-inferred"
+          ],
+          "requests": [
+            6,
+            8
+          ]
+        },
+        {
+          "key": "cp:71e39776-8dec-4af3-99bd-873fc641ef54#exact:0#fbf9a251-e080-480d-8081-8824e1ad3269:4",
+          "count": 2,
+          "resultSeqs": [
+            180,
+            204
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "visible"
+          ],
+          "requests": [
+            13,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "arm": "E1",
+      "repeatedKeys": [
+        {
+          "key": "cp:a19ebf0d-4418-47b6-b10c-0b283684207d#exact:0#391705c6-5d44-4058-b993-543855e7e2ef:6",
+          "count": 2,
+          "resultSeqs": [
+            76,
+            191
+          ],
+          "visibilities": [
+            "invisible-after-fold",
+            "visible"
+          ],
+          "requests": [
+            9,
+            20
+          ]
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "cellsWithRepetition": 5,
+    "repeatedKeys": 8
+  }
+}

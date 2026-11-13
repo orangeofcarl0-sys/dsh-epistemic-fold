@@ -12,6 +12,7 @@ import {
 } from '@deepseek-ai/dsh-compaction'
 import type { Session, SessionSeq } from '@deepseek-ai/dsh-session'
 import { parseCheckpointMarker } from '../../src/checkpoint/checkpoint-marker.ts'
+import { efPluginRecordOf } from '../../src/state/plugin-events.ts'
 
 /** Seq of the LAST event matching `type` (and optional predicate), else 0. */
 export function findLastEventSeq(
@@ -56,8 +57,14 @@ export function verifiedFailureIds(session: Session): Set<string> {
   const ids = new Set<string>()
   for (let seq = session.seq - 1; seq >= 0; seq -= 1) {
     const event = session.eventAt(seq as never)!
-    if (event.type !== 'ef/anchor') continue
-    const data = event.data as { failureState?: string; anchorId?: string }
+    // Read through the transport-neutral reader. On a host with
+    // `appendPluginRecord` the record type is `plugin:epistemic-fold/anchor`,
+    // not the raw `ef/anchor`; a query that hardcoded the raw type reported
+    // every verified failure as still open on 0.2.x. The production reducer
+    // already reads both; this query must too.
+    const record = efPluginRecordOf(event)
+    if (record === undefined || record.kind !== 'anchor') continue
+    const data = record.data as { failureState?: string; anchorId?: string };
     if (data.failureState === 'verified' && data.anchorId !== undefined) {
       ids.add(data.anchorId)
     }

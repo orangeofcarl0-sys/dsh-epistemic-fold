@@ -1,0 +1,4 @@
+PROBE {"name":"no-supersedes","withheld":[],"refused":[],"declares":1,"superseded":["semantic/decision/queue"],"active":[{"value":"Use the durable outbox.","source":"assistant"}]}
+PROBE {"name":"unrelated-supersedes","withheld":[],"refused":["insufficient-source-authority"],"declares":1,"superseded":["semantic/decision/queue"],"active":[{"value":"Use the file cache.","source":"user"},{"value":"Use the durable outbox.","source":"assistant"}]}
+PROBE {"name":"mixed-assistant-tool","withheld":[],"refused":[],"declares":1,"superseded":["semantic/decision/queue"],"active":[{"value":"Use the durable outbox.","source":"tool"}]}
+PROBE {"name":"old-user-quote","withheld":[],"refused":[],"declares":1,"superseded":["semantic/decision/queue"],"active":[{"value":"Use the durable outbox.","source":"user"}]}

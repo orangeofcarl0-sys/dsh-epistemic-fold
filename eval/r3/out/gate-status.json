@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3",
+  "generatedAt": "2026-11-11T11:02:35.398Z",
+  "gates": [
+    {
+      "id": "R3-G0",
+      "status": "pass",
+      "detail": "baseline 4affdee8; immutable 22 (0 missing); archive archive-verified; copy archive-verified"
+    },
+    {
+      "id": "R3-G1",
+      "status": "pass",
+      "detail": "23 valid, 1 unresolved, 30 never-started, 31 no-valid-outcome; attempts 25 (2 transport); missing {\"T11\":0,\"T12\":0,\"T13\":4,\"T14\":9,\"T15\":9,\"T16\":9}; contract 19/19"
+    },
+    {
+      "id": "R3-G2",
+      "status": "incomplete",
+      "detail": "2 transport failures, 1 retried, 1 unresolved; contract 13/13; representative probe 16/16 transport/usage, p95 82290 ms; prerequisite proceed-with-latency-deviation"
+    },
+    {
+      "id": "R3-G3",
+      "status": "pass",
+      "detail": "60 cases; median gap 2064; by retain {\"0.04\":{\"cases\":20,\"falseAdmissions\":0,\"executionNulls\":0,\"medianGap\":516},\"0.16\":{\"cases\":20,\"falseAdmissions\":0,\"executionNulls\":0,\"medianGap\":2064},\"0.24\":{\"cases\":20,\"falseAdmissions\":0,\"executionNulls\":0,\"medianGap\":3096}}; floor-sensitivity false admissions 3; probe present"
+    },
+    {
+      "id": "R3-G4",
+      "status": "pass",
+      "detail": "user numbers pilot {\"pass\":true,\"requests\":true,\"inputTokens\":true,\"cacheReadTokens\":true,\"outputTokens\":true} confirm {\"pass\":true,\"requests\":true,\"inputTokens\":true,\"cacheReadTokens\":true,\"outputTokens\":true}; cost-invalid cells confirm 3, pilot 3; cost-valid pairs confirm 5, pilot 4"
+    },
+    {
+      "id": "R3-G5",
+      "status": "pass",
+      "detail": "confirm terminated-partial: 23 valid, 1 unresolved, 30 never-started; further live calls false; completion design 31 cells, authorized false"
+    },
+    {
+      "id": "R3-G6",
+      "status": "pass",
+      "detail": "historical preflight drift-detected ([{\"arm\":\"E1\",\"key\":\"rationaleHintTokens\",\"declared\":800,\"effective\":400}]); forwarded pass; stress hint 400; preset 3 hypothesis"
+    },
+    {
+      "id": "R3-G7",
+      "status": "pass",
+      "detail": "CI success; zero-live pass; claims missing 0; EF_R3.md present"
+    },
+    {
+      "id": "R3-G8",
+      "status": "pass",
+      "detail": "decision no-product-candidate; deploymentHold true; reasons 9; product lane authorized false"
+    }
+  ],
+  "counts": {
+    "pass": 8,
+    "pending": 0,
+    "incomplete": 1,
+    "fail": 0
+  },
+  "sources": {
+    "baseline": "eval/r3/out/baseline-r3.json",
+    "reconciliation": "eval/r3/out/live-confirm-reconciliation.json",
+    "ledgerContract": "eval/r3/out/ledger-contract.json",
+    "transport": "eval/r3/out/transport-diagnosis.json",
+    "transportContract": "eval/r3/out/transport-contract.json",
+    "healthProbe": "eval/r3/out/transport-health-probe.json",
+    "span": "eval/r3/out/span-economics.json",
+    "frontier": "eval/r3/out/product-frontier.json",
+    "decision": "eval/r3/out/product-decision.json",
+    "configHistorical": "eval/r3/out/config-preflight.json",
+    "configForwarded": "eval/r3/out/config-preflight-forwarded.json",
+    "presetEvidence": "eval/r3/out/preset-evidence.json",
+    "completion": "eval/r3/out/completion-design-r3.json",
+    "productLane": "eval/r3/out/product-lane-design-r3.json",
+    "archivePointer": "eval/r3/out/research-archive-r2-live.json",
+    "zeroLive": "eval/r3/out/zero-live-audit.json",
+    "claims": "eval/r3/out/evidence-claims.json"
+  },
+  "ci": {
+    "status": "success",
+    "note": "Set EF_R3_CI_STATUS after the supported-lane run. The master probe remains non-blocking."
+  },
+  "note": "A gate is evaluated from the artifact it names. incomplete is not fail, and no unknown is promoted to pass."
+}

@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r4-budget-sensitivity-2",
+  "frozenAt": "2026-11-13T19:46:01.470Z",
+  "work": "EF-R4 step-budget sensitivity",
+  "status": "manifest-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "code": {
+    "evaluatedCommit": "9e27bc797ca61da0099355c9d430cf4d7d7326f8",
+    "branch": "chore/ef-c1-evaluation-foundation",
+    "worktreeClean": true,
+    "sourceTreeDigest": "7bea5bf929664a052d7577858a6e42a1cca02d4003a9b557a3d1449c95a5b92a",
+    "note": "The manifest and its authorization are generated artifacts under eval/e2e/out and eval/r4/out; they are excluded from the source digest."
+  },
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "resolved-at-run",
+    "note": "A representative transport health probe must pass before execution. No route is resolved by the freeze."
+  },
+  "arms": {
+    "B0": "native DSH Basic; native retention, threshold 0.5, maxTokens 1024",
+    "E0": "EF minimal, semanticMode none, shipped economy values (system-dedup, retain 0.16)",
+    "E1": "shipped economy preset: semanticMode rationale, hint 400, system-dedup, retain 0.16"
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot. Each cell overrides maxSteps; the effective value is written into every report."
+  },
+  "tasks": [
+    {
+      "id": "T11-p1",
+      "template": "T11",
+      "seed": 1,
+      "category": "historical-test",
+      "file": "eval/e2e/tasks-r3/T11-p1.json",
+      "digest": "76e95fcd9f6f580798109990a10430af3c74324462e34ea7f00d24941f6dde4d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T12-p1",
+      "template": "T12",
+      "seed": 1,
+      "category": "revised-constraint",
+      "file": "eval/e2e/tasks-r3/T12-p1.json",
+      "digest": "54e7e3274da9a16bb9111f1c5d2576baa0f3984b79c2c4cc6a83656300d50e5d",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T13-p1",
+      "template": "T13",
+      "seed": 1,
+      "category": "historical-tool-evidence",
+      "file": "eval/e2e/tasks-r3/T13-p1.json",
+      "digest": "a0ef3b5393f77946965545bbaf3434a060d268c24324ea360405c06fe1bbcb4a",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T14-p1",
+      "template": "T14",
+      "seed": 1,
+      "category": "long-multi-step",
+      "file": "eval/e2e/tasks-r3/T14-p1.json",
+      "digest": "9336ebeb4cee7fec46d1011cfa672320f8ca7fa57d45a098b839f37827a44e39",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T15-p1",
+      "template": "T15",
+      "seed": 1,
+      "category": "time-version",
+      "file": "eval/e2e/tasks-r3/T15-p1.json",
+      "digest": "fc78eef4680c184ef6238168af34e49189a47a92ea27a6be0dbe33f0d9547f23",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    },
+    {
+      "id": "T16-p1",
+      "template": "T16",
+      "seed": 1,
+      "category": "multi-compaction",
+      "file": "eval/e2e/tasks-r3/T16-p1.json",
+      "digest": "c6b25944958e2fa491efc6df72cb136d709ba20f449d8834bb6219950ac3fb2b",
+      "operationalBudgetTokens": 32768,
+      "thresholdRatio": 0.5
+    }
+  ],
+  "cells": [
+    {
+      "block": "r4-budget-1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-2",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-3",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T11-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T12-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T13-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T14-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T15-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-4",
+      "task": "T16-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T11-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T12-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T13-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T14-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T15-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-5",
+      "task": "T16-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T11-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T12-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T13-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T14-p1",
+      "arm": "E1",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T15-p1",
+      "arm": "B0",
+      "replicate": 1,
+      "maxSteps": 16,
+      "maxStepsSource": "cell"
+    },
+    {
+      "block": "r4-budget-6",
+      "task": "T16-p1",
+      "arm": "E0",
+      "replicate": 1,
+      "maxSteps": 8,
+      "maxStepsSource": "cell"
+    }
+  ],
+  "perCell": {
+    "requests": 32,
+    "inputTokens": 414090,
+    "outputTokens": 262144,
+    "wallClockMs": 307910
+  },
+  "limits": {
+    "continuationCells": 36,
+    "httpAttempts": 1152,
+    "inputTokens": 14907240,
+    "outputTokens": 9437184,
+    "wallClockMs": 11084760,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "limitsAreProposed": true,
+  "limitsCorrection": {
+    "reason": "campaign 1 stopped on local BUDGET_EXHAUSTED rationale auxiliary calls; the per-cell output reservation was below two rationale maxima",
+    "previousPerCellOutputTokens": 14247,
+    "perCellOutputTokens": 262144
+  },
+  "authorizationEnvelope": "r4-budget-sensitivity",
+  "prerequisites": {
+    "scoringSeparation": {
+      "gate": "R4-G1",
+      "status": "pass"
+    },
+    "evidenceLifecycle": {
+      "gate": "R4-G2",
+      "status": "pass"
+    },
+    "taskContinuity": {
+      "gate": "R4-G3",
+      "status": "pass"
+    },
+    "workingSet": {
+      "gate": "R4-G4",
+      "status": "pass"
+    },
+    "candidateContract": {
+      "gate": "R4-G5",
+      "status": "pass"
+    },
+    "transportHealthProbe": {
+      "status": "required-before-execution",
+      "note": "A new probe must pass on the live route. The R3 probe p95 exceeded its bound and is not a grant for R4."
+    },
+    "liveAuthorization": {
+      "status": "not-granted",
+      "note": "A new explicit user authorization must bind this manifest SHA and the envelope."
+    }
+  },
+  "stopConditions": [
+    "transport failure or reset",
+    "unknown provider usage (strictUsage)",
+    "budget exhausted",
+    "provider failure that invalidates the route"
+  ],
+  "mechanism": {
+    "taskOutcome": "task checks only; correct / incorrect / incomplete",
+    "exposure": "manifested, committed, delivered, requiredFoldCountMet",
+    "requirement": "T16-p1 requires minCompactions:2; it is a mechanism result, not a task pass condition"
+  },
+  "comparability": "The R3 8-step cells are not reused as strict pairs. This campaign has its own 8-step cells and interleaves 8 and 16.",
+  "workloadFamilies": {
+    "archive-only": {
+      "status": "designed",
+      "note": "The six existing tasks; the fact is recoverable only from history/archive.",
+      "tasks": [
+        "T11-p1",
+        "T12-p1",
+        "T13-p1",
+        "T14-p1",
+        "T15-p1",
+        "T16-p1"
+      ]
+    },
+    "workspace-readable": {
+      "status": "design-only",
+      "note": "A separate task family where the fact still exists in the workspace. It is not generated here and must not be pooled with archive-only results.",
+      "tasks": []
+    }
+  },
+  "note": "No provider call was made. executionAuthorized=false. The authorization file below is a template with granted=false."
+}

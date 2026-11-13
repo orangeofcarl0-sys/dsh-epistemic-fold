@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 WP3",
+  "generatedAt": "2026-11-09T17:00:11.776Z",
+  "evaluatedCommit": "f03e6eefc77fe33fa6f142f567a11b4a961f3aff",
+  "suite": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0,
+    "required": 11,
+    "missing": [],
+    "failedRequired": []
+  },
+  "address": {
+    "locators": 3,
+    "maxLocators": 3,
+    "indexes": [
+      1,
+      3,
+      5
+    ],
+    "digestsUnique": true,
+    "sectionChars": 675,
+    "sectionTokensEstimate": 169,
+    "proseChars": 119,
+    "proseTokensEstimate": 30,
+    "note": "Token counts are chars/4 estimates, not meter readings. The section is bounded independently of the fold length."
+  },
+  "contract": {
+    "identityIsArchiveMessage": true,
+    "retrievalIsContextRecall": true,
+    "historicalNotCurrent": true,
+    "labelsAreUntrustedHints": true,
+    "noSecondArchive": true,
+    "noReadFileInterception": true
+  },
+  "flags": {
+    "defaultOff": true,
+    "rejectsString": true
+  },
+  "sources": {
+    "src/checkpoint/locator.ts": "82b65a0bcb8d820badf891cd5aa002fb7c964581ed1108ed4aeafd21dd1ab09b",
+    "src/checkpoint/renderer.ts": "161378d35da8b34cd71ea94be4d8416bdf04252c4e35c23b8ca457aa218b5cd0",
+    "tests/archive-locator.spec.ts": "f85c2ea25c0a73ae380dce358736ecaf66bfb1bb3473f080803434aabaa00ae7"
+  },
+  "verdict": "locator-contract-closed"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP1",
+  "generatedAt": "2026-11-10T16:38:09.131Z",
+  "checks": [
+    {
+      "name": "failed-then-valid.status",
+      "pass": true,
+      "detail": "status=valid"
+    },
+    {
+      "name": "failed-then-valid.attempts",
+      "pass": true,
+      "detail": "attempts=2"
+    },
+    {
+      "name": "failed-then-valid.valid",
+      "pass": true,
+      "detail": "valid=1"
+    },
+    {
+      "name": "failed-then-valid.transport",
+      "pass": true,
+      "detail": "transport=1"
+    },
+    {
+      "name": "failed-then-valid.counts",
+      "pass": true,
+      "detail": "{\"valid\":1,\"unresolved\":0,\"neverStarted\":0}"
+    },
+    {
+      "name": "failed-unresolved.status",
+      "pass": true,
+      "detail": "status=unresolved"
+    },
+    {
+      "name": "failed-unresolved.pass",
+      "pass": true,
+      "detail": "pass=null"
+    },
+    {
+      "name": "failed-unresolved.counts",
+      "pass": true,
+      "detail": "{\"valid\":0,\"unresolved\":1}"
+    },
+    {
+      "name": "duplicate-valid.chosen",
+      "pass": true,
+      "detail": "pass=true"
+    },
+    {
+      "name": "duplicate-valid.sensitivity",
+      "pass": true,
+      "detail": "sensitivity=1"
+    },
+    {
+      "name": "partial-usage.status",
+      "pass": true,
+      "detail": "status=valid"
+    },
+    {
+      "name": "partial-usage.taskOutcome",
+      "pass": true,
+      "detail": "taskOutcomeValid=true"
+    },
+    {
+      "name": "partial-usage.cost",
+      "pass": true,
+      "detail": "costValid=false"
+    },
+    {
+      "name": "never-started.status",
+      "pass": true,
+      "detail": "status=never-started"
+    },
+    {
+      "name": "never-started.observations",
+      "pass": true,
+      "detail": "notExecutedIn=[\"campaign-g\"]"
+    },
+    {
+      "name": "never-started.counts",
+      "pass": true,
+      "detail": "{\"unresolved\":0,\"neverStarted\":1}"
+    },
+    {
+      "name": "manifest-mismatch.planned",
+      "pass": true,
+      "detail": "planned cell status=never-started"
+    },
+    {
+      "name": "manifest-mismatch.unplanned",
+      "pass": true,
+      "detail": "unplanned=[\"campaign-h:T2-s1-B0-r1\"]"
+    },
+    {
+      "name": "manifest-mismatch.denominator",
+      "pass": true,
+      "detail": "{\"planned\":1,\"valid\":0}"
+    }
+  ],
+  "passed": 19,
+  "failed": 0,
+  "verdict": "contract-pass"
+}

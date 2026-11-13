@@ -1,0 +1,5239 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 product-lane trajectory analysis",
+  "generatedAt": "2026-11-11T10:58:40.227Z",
+  "campaign": "e2e-r3-product-pilot-1",
+  "method": {
+    "liveBoundary": "first user message carrying the task prompt; stage B is included after it",
+    "counts": "tool calls in the live portion only; seed history is excluded",
+    "checkpoint": "the final checkpoint on the surface at report time"
+  },
+  "byClass": {
+    "pass-direct-write": 8,
+    "step-limit-empty-checkpoint-recall": 5,
+    "wrong-source-value": 1,
+    "pass-retained-tail": 1,
+    "step-limit-rationale-without-answer": 2,
+    "finish-wrong-schema-and-compactions": 1
+  },
+  "cells": [
+    {
+      "cellId": "T11-p1-B0-r1",
+      "task": "T11-p1",
+      "arm": "B0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 129020,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 32,
+      "assistantMessages": 7,
+      "toolCounts": {
+        "list_dir": 3,
+        "read_file": 2,
+        "edit_file": 1,
+        "run_tests": 1,
+        "write_file": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 5,
+      "writeCalls": 2,
+      "foldsStarted": 4,
+      "witness": {
+        "attempts": 5,
+        "committed": 1,
+        "refused": 4,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 5,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1,
+          "shrink-refusal": 4
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 127,
+          "taskPromptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 7,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 9,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 11,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 3024,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- User instruction (verbatim): \"Run the retry suite BEFORE changing anything and report the failure count from that run for the incident review.\"\n- Intent: obtain a pre-change baseline failure count for the retry suite; no code modifications before or during the run.\n- Assistant committed to: \"Running the pre-change suite now; the count must come from this baseline run.\"\n\n## Key Technical Concepts\n- Test runner invoked via `run_tests` tool; suite named `retry-suite-a`, run labeled `baseline`.\n- Retry-path behavior under test: \"batch path caps attempts\" (expected 2) and \"general path stays at 5\" (expected 5).\n- Log output is dominated by `[gateway]` request lines (status 200/503, latency_ms, bytes) interleaved with `[retry-suite]` and `[retry]` entries.\n\n## Files and Code\n- (none) — no files read, created, or modified; only the `run_tests` tool was executed.\n\n## Errors and Fixes\n- Baseline suite failures observed (unfixed, by design — no changes allowed before baseline):\n  - `[retry] test \"batch path caps attempts\" expected 2 received 5`\n  - `[retry] test \"general path stays at 5\" expected 5 received 5` — logged at ERROR despite matching values; likely a harness/reporting inconsistency worth noting in the review.\n- No fixes applied; no user corrections received.\n\n## Pending Jobs\n- Report the baseline failure count to the user for the incident review (not yet stated in a reply).\n- Optionally note the discrepancy between the 3 reported failures and the 2 (or 1 genuine) failing test messages.\n\n## Current Work\n- Pre-change baseline run of the retry suite completed.\n- Baseline results extracted from output:\n  - `2026-10-14T09:12:04.318Z INFO [retry-suite] suite=retry-suite-a run=baseline total=9 failed=3`\n  - `2026-10-14T09:12:04.321Z INFO [retry-suite] summary: # fail 3`\n- Failure count from the baseline run: **3** (out of 9 tests).\n\n## Next Step\n- Reply to the user: baseline retry-suite failure count is 3 of 9 (suite=retry-suite-a, run=baseline), citing the two logged test errors and the \"expected 5 received 5\" anomaly.\n\n## Critical Context\n- No code was changed before this run; the reported count is a valid pre-change baseline.\n- Authoritative count is the suite summary line `# fail 3`, matching `total=9 failed=3`.\n- Ambiguity to flag: only two `[retry]` test-level ERROR lines appear, and one of them (`general path stays at 5`, expected 5 received 5) does not describe an actual mismatch — so the third failure's identity is unconfirmed from the logs.\n- Retry suite timestamps (09:12:04) are out of order relative to surrounding gateway logs (which span ~09:00–11:52), suggesting buffered/interleaved log output.\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "result.json matches"
+          }
+        ]
+      },
+      "finalText": "Fixed the batch retry cap and verified it with a test run.\n\n**Change** — `src/retry.js`:\n```js\nexport function attemptsFor(path) {\n  if (path === 'batch') return 2\n  return 5\n}\n```\nBatch now caps at 2 attempts; the general path is untouched at 5.\n\n**Post-change suite** (`node --test`): 2 tests, 2 pass, 0 fail — `batch path caps at 2` and `general path stays at 5` both green.\n\n**`result.json`**: `{\"failed\": 3}` — this is the failure count from the pre-change baseline run of `retry-suite-a` (run=baseline, `total=9 failed=3`, summary line `# fail 3`). Note for the incident review: that baseline log only showed two `[retry]` test-level ERROR lines, one of which (`general path stays at 5`, expected 5 received 5) reports matching values, so the third failure's identity isn't confirmed from the logs — the recorded count is the suite summary's.",
+      "writtenFiles": [
+        {
+          "name": "result.json",
+          "bytes": 14,
+          "content": "{\"failed\": 3}\n"
+        }
+      ],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 74,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 75,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summary is not smaller than the shadowed content (783 estimated framed tokens >= 773)"
+        },
+        {
+          "seq": 77,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 78,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\":\"result.json\",\"content\":\"{\\\"failed\\\": 3}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 79,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"result.json\",\"bytes\":14}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 81,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 82,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summary is not smaller than the shadowed content (775 estimated framed tokens >= 773)"
+        },
+        {
+          "seq": 84,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Fixed the batch retry cap and verified it with a test run.\n\n**Change** — `src/retry.js`:\n```js\nexport function attemptsFor(path) {\n  if (path === 'batch') return 2\n  return 5\n}\n```\nBatch now caps at 2 attempts; the general path is untouched…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"src\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"test\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"src/retry.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"test/retry.test.js\"}"
+        },
+        {
+          "name": "edit_file",
+          "args": "{\"path\":\"src/retry.js\",\"old_string\":\"export function attemptsFor(path) {\\n  return 5\\n}\",\"new_string\":\"export function attemptsFor(path) {\\n  if (path === 'batch') return 2\\n  retu…"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\":\"result.json\",\"content\":\"{\\\"failed\\\": 3}\\n\"}"
+        }
+      ],
+      "assistantTexts": [
+        "Fixed the batch retry cap and verified it with a test run.\n\n**Change** — `src/retry.js`:\n```js\nexport function attemptsFor(path) {\n  if (path === 'batch') return 2\n  return 5\n}\n```\nBatch now caps at 2 attempts; the general path is untouched at 5.\n\n**Post-change suite** (`node --test`): 2 tests, 2 pa…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T11-p1-E0-r1",
+      "task": "T11-p1",
+      "arm": "E0",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 128373,
+      "stepLimit": true,
+      "liveStart": 13,
+      "liveEvents": 48,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "list_dir": 3,
+        "read_file": 4,
+        "context_recall": 8
+      },
+      "recallCalls": 8,
+      "readCalls": 7,
+      "writeCalls": 0,
+      "foldsStarted": 3,
+      "witness": {
+        "attempts": 4,
+        "committed": 4,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 4,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 4,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 4
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 127,
+          "taskPromptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 100,
+        "chars": 47,
+        "text": "[EF1 L cp:0563e1ed-11c8-49fd-96df-d787cfde55d6]"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": false,
+            "detail": "node --test exit 1"
+          },
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "result.json is missing"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 5,
+          "endIdx": 7,
+          "start": 92,
+          "end": 96,
+          "tokens": 19486
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 19466,
+        "expectedReclaimRatio": 0.9989736220876527,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 98,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 100,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:0563e1ed-11c8-49fd-96df-d787cfde55d6]",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 101,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 104,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 105,
+          "type": "tool/call",
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 106,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"checkpointId\": \"f152d0de-28ce-46ee-b3f7-8ee6887b9cd9\",\n  \"mode\": \"leaf\",\n  \"depth\": \"detail\",\n  \"summaryAvailable\": false,\n  \"descriptor\": {\n    \"handle\": \"f152d0de-28ce-46ee-b3f7-8ee6887b9cd9\",\n    \"mode\": \"leaf\",\n    \"messageCount\": …",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 107,
+          "type": "tool/call",
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:0563e1ed-11c8-49fd-96df-d787cfde55d6\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 108,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"checkpointId\": \"0563e1ed-11c8-49fd-96df-d787cfde55d6\",\n  \"mode\": \"leaf\",\n  \"depth\": \"detail\",\n  \"summaryAvailable\": false,\n  \"descriptor\": {\n    \"handle\": \"0563e1ed-11c8-49fd-96df-d787cfde55d6\",\n    \"mode\": \"leaf\",\n    \"messageCount\": …",
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"package.json\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"src\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"test\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"src/retry.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"test/retry.test.js\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95\",\"depth\":\"detail\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95\",\"depth\":\"exact\",\"offset\":2,\"limit\":2}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 2, \"offset\": 0, \"ref\": \"cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":20,\"offset\":0,\"ref\":\"cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:8c7abebb-d309-4c02-8d26-5dac6d9bbd95\",\"depth\":\"exact\",\"offset\":0,\"limit\":10}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:8c461032-3032-4c10-be26-d83eae9737cc\",\"depth\":\"detail\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:f152d0de-28ce-46ee-b3f7-8ee6887b9cd9\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:0563e1ed-11c8-49fd-96df-d787cfde55d6\"}"
+        }
+      ],
+      "assistantTexts": [],
+      "class": "step-limit-empty-checkpoint-recall"
+    },
+    {
+      "cellId": "T11-p1-E1-r1",
+      "task": "T11-p1",
+      "arm": "E1",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 111381,
+      "stepLimit": true,
+      "liveStart": 13,
+      "liveEvents": 33,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "list_dir": 4,
+        "read_file": 3,
+        "run_tests": 2,
+        "write_file": 2,
+        "finish": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 7,
+      "writeCalls": 2,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 127,
+          "taskPromptSha256": "3121199be4a9c6368f5b90db3c13161462fd3827cddae79d158aa19a10ce14c3",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 7,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 8,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 1486,
+        "text": "[EF1 L cp:0de751f9-f054-46f2-bbff-1b9e5ec043b7]\n\nRationale\n- Baseline executed before any edits: single `run_tests` call, no source changes made. Authoritative line: `2026-10-14T09:12:04.318Z [retry-suite] suite=retry-suite-a run=baseline total=9 failed=3`, followed by `summary: # fail 3`. Report **3 failures** for the incident review — that is the number to quote, not the count of visible ERROR lines.\n- \n- Evidence/errata worth flagging: only two test-level ERROR lines accompany the failed=3 total, so the per-test accounting is incomplete or one failure is unlogged. Lines:\n- - `test \"batch path caps attempts\" expected 2 received 5` — genuine defect; batch path is not honoring its 2-attempt cap and falls back to the general 5.\n- - `test \"general path stays at 5\" expected 5 received 5` — values match yet it is logged as ERROR; treat as mislabeled assertion/false failure until confirmed, since expected==received.\n- \n- Decision: do not reconcile the 3-vs-2 discrepancy by re-running or by adjusting the count; the suite's own summary is the reported figure. If a cleaner attribution is needed later, rerun `retry-suite-a` and capture per-test results, but that rerun must be labeled post-baseline, not baseline.\n- \n- Context: tool output was dominated by unrelated `[gateway]` request logs (upstream api-1..api-9, assorted 200s and intermittent 503s on api-5/api-2/api-6/api-9). Those 503s are noise for this task and were not the retry-suite result; no action taken on them."
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "result.json = {\"failed\":1}, expected {\"failed\":3}"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [
+        {
+          "name": "result.json",
+          "bytes": 14,
+          "content": "{\"failed\": 1}\n"
+        }
+      ],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 25,
+          "start": 15,
+          "end": 82,
+          "tokens": 10228
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 380,
+        "expectedReclaimTokens": 9848,
+        "expectedReclaimRatio": 0.9628470864294094,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 78,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 79,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"content\":\"{\\\"failed\\\": 1}\\n\",\"path\":\"result.json\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 80,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"result.json\",\"bytes\":14}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 81,
+          "type": "tool/call",
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 82,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\".\",\"entries\":[{\"name\":\"package.json\",\"kind\":\"file\"},{\"name\":\"README.md\",\"kind\":\"file\"},{\"name\":\"result.json\",\"kind\":\"file\"},{\"name\":\"src\",\"kind\":\"dir\"},{\"name\":\"test\",\"kind\":\"dir\"}]}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 85,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 86,
+          "type": "tool/call",
+          "name": "finish",
+          "args": "{\"summary\": \"Fixed the batch retry cap and recorded the pre-change failure count.\\n\\n**Fix** (`src/retry.js`): `attemptsFor` previously returned a flat `5` for every path. It now r…",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 87,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"done\":true}",
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"package.json\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \"src\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \"test\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"src/retry.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"test/retry.test.js\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\":\"src/retry.js\",\"content\":\"export function attemptsFor(path) {\\n  return path === 'batch' ? 2 : 5\\n}\\n\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"content\":\"{\\\"failed\\\": 1}\\n\",\"path\":\"result.json\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "finish",
+          "args": "{\"summary\": \"Fixed the batch retry cap and recorded the pre-change failure count.\\n\\n**Fix** (`src/retry.js`): `attemptsFor` previously returned a flat `5` for every path. It now r…"
+        }
+      ],
+      "assistantTexts": [
+        "No edits made yet — running the suite now to capture the true pre-change result.",
+        "Pre-change run: **1 failure** (`batch path caps at 2` — actual 5, expected 2). Now the fix:"
+      ],
+      "class": "wrong-source-value"
+    },
+    {
+      "cellId": "T12-p1-B0-r1",
+      "task": "T12-p1",
+      "arm": "B0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 71683,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 16,
+      "assistantMessages": 5,
+      "toolCounts": {
+        "list_dir": 2,
+        "read_file": 1,
+        "write_file": 1,
+        "run_tests": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 3,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 1,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 87,
+          "taskPromptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 2090,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- User established the baseline: \"The platform spec says a batch job may attempt five times. That is the baseline.\"\n- Intent appears to be confirming/verifying that retry limit against available platform evidence rather than changing it.\n\n## Key Technical Concepts\n- Batch job retry policy / max attempts.\n- Platform spec entries embedded in application logs.\n- Log parsing and timestamp ordering.\n- Gateway request logs showing upstream statuses including intermittent `503` responses.\n\n## Files and Code\n- `logs/policy.log`: consulted as the source of platform policy data. Contains gateway request logs plus spec entries:\n  - `2026-10-10T08:00:00.000Z INFO  [spec] retry.max_attempts=5 scope=all-jobs`\n  - `2026-10-10T08:00:01.000Z INFO  [spec] revision=1 status=active`\n- No files were modified.\n\n## Errors and Fixes\n- (none)\n\n## Pending Jobs\n- (none)\n\n## Current Work\n- Read `logs/policy.log` to verify the stated five-attempt baseline.\n- Confirmed the log contains `retry.max_attempts=5` with `scope=all-jobs`, and `revision=1 status=active`.\n- No conclusion had yet been communicated back to the user.\n\n## Next Step\n- Report that `logs/policy.log` corroborates the baseline: `retry.max_attempts=5 scope=all-jobs`, `revision=1 status=active`.\n\n## Critical Context\n- Baseline is explicitly five attempts per batch job.\n- The spec entry is scoped to `all-jobs`, so the limit applies platform-wide, not to a specific job class.\n- Spec revision is `1` and status is `active`.\n- The log contains many `[gateway] ... status=503` entries, but these are request-level gateway failures and do not by themselves contradict or change the retry policy.\n- No user correction or request to modify configuration has been made.\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "config.json matches"
+          }
+        ]
+      },
+      "finalText": "`config.json` is written with the latest effective values:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- **batch: 2** — from your revision, which supersedes the spec for the batch path only (five attempts caused the retry storm).\n- **general: 5** — the spec baseline `retry.max_attempts=5` (`scope=all-jobs`, revision 1, active) still applies to everything off the batch path.\n\nTest command runs clean (no test files present).",
+      "writtenFiles": [
+        {
+          "name": "config.json",
+          "bytes": 33,
+          "content": "{\n  \"batch\": 2,\n  \"general\": 5\n}\n"
+        }
+      ],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 51,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"README.md\",\"content\":\"# Retry policy\\n\\nThe baseline spec is in the folded history. A later user revision applies to the batch path only. Write `config.json` with `{\\\"batch\\\": <latest>, \\\"general\\\": <baseline>}`.\\n\",\"chars\":185,\"tr…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 54,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 55,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\":\"config.json\",\"content\":\"{\\n  \\\"batch\\\": 2,\\n  \\\"general\\\": 5\\n}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 56,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"config.json\",\"bytes\":33}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 59,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 60,
+          "type": "tool/call",
+          "name": "run_tests",
+          "args": "{}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 61,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"ℹ tests 0\\nℹ suites 0\\nℹ pass 0\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 30.0855\\n\",\"stderr\":\"\"}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 64,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "`config.json` is written with the latest effective values:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- **batch: 2** — from your revision, which supersedes the spec for the batch path only (five attempts caused the retry storm).\n- **gen…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\":\"config.json\",\"content\":\"{\\n  \\\"batch\\\": 2,\\n  \\\"general\\\": 5\\n}\\n\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        }
+      ],
+      "assistantTexts": [
+        "`config.json` is written with the latest effective values:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- **batch: 2** — from your revision, which supersedes the spec for the batch path only (five attempts caused the retry storm).\n- **general: 5** — the spec baseline `retry.max_attempts=5` (`scope…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T12-p1-E0-r1",
+      "task": "T12-p1",
+      "arm": "E0",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 79736,
+      "stepLimit": true,
+      "liveStart": 13,
+      "liveEvents": 56,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "list_dir": 2,
+        "context_search": 2,
+        "read_file": 3,
+        "context_recall": 9
+      },
+      "recallCalls": 11,
+      "readCalls": 5,
+      "writeCalls": 0,
+      "foldsStarted": 5,
+      "witness": {
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 6,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 5,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 1,
+        "byReason": {
+          "committed": 6
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 87,
+          "taskPromptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 119,
+        "chars": 47,
+        "text": "[EF1 L cp:c3545693-e00b-4b30-8d10-45c36d0abee9]"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "config.json is missing"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 6,
+          "endIdx": 12,
+          "start": 90,
+          "end": 108,
+          "tokens": 11812
+        },
+        "executed": {
+          "startIdx": 6,
+          "endIdx": 12,
+          "start": 90,
+          "end": 108,
+          "tokens": 11812
+        },
+        "gapTokens": 0,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 11792,
+        "expectedReclaimRatio": 0.998306806637318,
+        "executedExpectedReclaimTokens": 11792,
+        "executedExpectedReclaimRatio": 0.998306806637318,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 11792,
+          "surfaceDeltaTokens": 11792,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 11812
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 111,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 112,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 113,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"README.md\",\"content\":\"# Retry policy\\n\\nThe baseline spec is in the folded history. A later user revision applies to the batch path only. Write `config.json` with `{\\\"batch\\\": <latest>, \\\"general\\\": <baseline>}`.\\n\",\"chars\":185,\"tr…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 114,
+          "type": "tool/call",
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":1,\"ref\":\"cp:71033377-6a82-4ac1-a2de-bd837af390ad\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 115,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"checkpointId\": \"71033377-6a82-4ac1-a2de-bd837af390ad\",\n  \"mode\": \"leaf\",\n  \"depth\": \"exact\",\n  \"page\": {\n    \"checkpointId\": \"71033377-6a82-4ac1-a2de-bd837af390ad\",\n    \"totalMessages\": 3,\n    \"offset\": 1,\n    \"messages\": [\n      {\n   …",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 117,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 119,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:c3545693-e00b-4b30-8d10-45c36d0abee9]",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 120,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"max_attempts batch general config\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:7761ef44-17b1-4b23-ba67-ad9a7ebb6e9a\",\"depth\":\"exact\",\"offset\":0,\"limit\":6}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 20, \"offset\": 0, \"ref\": \"cp:3e2ef829-a2fb-4731-b45e-723404c66d58\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 20, \"offset\": 0, \"ref\": \"cp:71033377-6a82-4ac1-a2de-bd837af390ad\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"batch retry attempts revision\",\"limit\":10}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"summary\",\"ref\":\"cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 20, \"offset\": 0, \"ref\": \"cp:3e2ef829-a2fb-4731-b45e-723404c66d58\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:71033377-6a82-4ac1-a2de-bd837af390ad\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:0ea76e65-1a0b-49bc-9eb1-8c4e4a51e426\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:9d7d34d4-c79e-4a39-aec5-bb8ec31d6e5a\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":1,\"ref\":\"cp:71033377-6a82-4ac1-a2de-bd837af390ad\"}"
+        }
+      ],
+      "assistantTexts": [],
+      "class": "step-limit-empty-checkpoint-recall"
+    },
+    {
+      "cellId": "T12-p1-E1-r1",
+      "task": "T12-p1",
+      "arm": "E1",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 42080,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 16,
+      "assistantMessages": 5,
+      "toolCounts": {
+        "list_dir": 2,
+        "read_file": 1,
+        "write_file": 1,
+        "run_tests": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 3,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 87,
+          "taskPromptSha256": "54e6a3cffa56f0af511f71db88a5fda86459ec13987a986d550ad47282ac138a",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 1630,
+        "text": "[EF1 L cp:5d257eff-4203-40a5-bee5-7f7165cfca3d]\n\nRationale\n- Read `logs/policy.log` to confirm the retry baseline. The user's premise is that the platform spec allows five batch-job attempts; this is the baseline for any later comparison.\n- \n- Operative findings in the log:\n- - The governing spec is recorded inside the gateway log, not as a separate file: `2026-10-10T08:00:00.000Z INFO [spec] retry.max_attempts=5 scope=all-jobs` and `2026-10-10T08:00:01.000Z INFO [spec] revision=1 status=active`.\n- - So the confirmed value is max_attempts=5, scope=all-jobs, revision=1, active. No override or later revision appears.\n- - The file is otherwise ~11 hours of `[gateway]` request records on 2026-10-14, roughly 09:00–11:52Z, with fields: request id, upstream=api-1..api-9, status, latency_ms, bytes. Most entries are status=200; intermittent status=503 errors occur (e.g. ids 0fe72bbb, 3720bfa7, 736b64d7, a94b5dc9, d8ee9a77, 3f626029, c968c98f, cf968534, 3ed47dbf, 8fa54078, f037d96f, 49a7ba15, 85fae5e1, 25c695fe, 59176f7a, 4e5c7425, 2098f8d3, af0017b6, c025cc78, b9af23ed, 7e1a1060, af6130cb, 7f78393f).\n- - Caveat: timestamps are not strictly ordered — the two `[spec]` lines dated 2026-10-10 are embedded near the middle (after the ~09:53:46 entries), so this is an appended policy record, not a chronological start-of-file stanza. Treat the spec dates as authoritative for revision age, not position.\n- \n- No decisions, corrections, or rejected alternatives were stated beyond accepting max_attempts=5 as the baseline. Nothing in the log contradicts it; there is no evidence of attempts exceeding five, only isolated 503s."
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "config.json matches"
+          }
+        ]
+      },
+      "finalText": "`config.json` written:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- `batch: 2` — from your revision; it supersedes the baseline spec for the batch path only (five attempts caused the retry storm).\n- `general: 5` — the confirmed baseline `retry.max_attempts=5, scope=all-jobs, revision=1, active`, still in force for the non-batch path since the revision was scoped to batch jobs.\n\nNo other revisions or overrides appeared in the log, so these are the latest effective values.",
+      "writtenFiles": [
+        {
+          "name": "config.json",
+          "bytes": 33,
+          "content": "{\n  \"batch\": 2,\n  \"general\": 5\n}\n"
+        }
+      ],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 15,
+          "start": 12,
+          "end": 56,
+          "tokens": 9542
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 416,
+        "expectedReclaimTokens": 9126,
+        "expectedReclaimRatio": 0.9564032697547684,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 51,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, scandir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T12-p1-E1-r1\\workspace\\logs'",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 54,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 55,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\": \"config.json\", \"content\": \"{\\n  \\\"batch\\\": 2,\\n  \\\"general\\\": 5\\n}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 56,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"config.json\",\"bytes\":33}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 59,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 60,
+          "type": "tool/call",
+          "name": "run_tests",
+          "args": "{}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 61,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"ℹ tests 0\\nℹ suites 0\\nℹ pass 0\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 27.3604\\n\",\"stderr\":\"\"}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 64,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "`config.json` written:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- `batch: 2` — from your revision; it supersedes the baseline spec for the batch path only (five attempts caused the retry storm).\n- `general: 5` — the confirmed baseline…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"README.md\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \"logs\"}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\": \"config.json\", \"content\": \"{\\n  \\\"batch\\\": 2,\\n  \\\"general\\\": 5\\n}\\n\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        }
+      ],
+      "assistantTexts": [
+        "`config.json` written:\n\n```json\n{\n  \"batch\": 2,\n  \"general\": 5\n}\n```\n\n- `batch: 2` — from your revision; it supersedes the baseline spec for the batch path only (five attempts caused the retry storm).\n- `general: 5` — the confirmed baseline `retry.max_attempts=5, scope=all-jobs, revision=1, active`,…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T13-p1-B0-r1",
+      "task": "T13-p1",
+      "arm": "B0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 13694,
+      "stepLimit": false,
+      "liveStart": 12,
+      "liveEvents": 5,
+      "assistantMessages": 2,
+      "toolCounts": {
+        "write_file": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 0,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 1,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 93,
+          "taskPromptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 31,
+        "chars": 2944,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- Original: \"Read the build manifest and tell me the published channel and build id.\"\n- Follow-up/correction: \"The file is rotated now. I still need the channel and build from the version you read before the rotation.\"\n- Intent: report the channel and build id captured from the pre-rotation read of `logs/build-manifest.log`; the values must come from the earlier read, not a re-read.\n\n## Key Technical Concepts\n- Log-file inspection via `read_file`; manifest entries embedded inside a high-volume `[gateway]` request log.\n- Log rotation: the previously read file contents are no longer on disk, so the answer must be recalled from the earlier read rather than re-derived.\n- Manifest record fields observed: `channel`, `build`, `signer`, `schema`, `status`.\n\n## Files and Code\n- `logs/build-manifest.log`: single `read_file` call returned ~700 lines of `[gateway] request id=... upstream=api-N status=...` entries interleaved with the manifest lines. Relevant lines (verbatim):\n  - `2026-10-12T04:00:00.000Z INFO  [manifest] channel=beta build=7f3c9a1e signer=ops-key-a`\n  - `2026-10-12T04:00:01.000Z INFO  [manifest] schema=2 status=published`\n- No files were created or modified.\n\n## Errors and Fixes\n- Minor process error: after the read, the assistant replied only \"The manifest was published; I have the channel and build id from that read\" without stating the values.\n- User correction: file has since rotated; user still needs the channel/build from the pre-rotation version.\n- Resolution: values are retained in context — `channel=beta`, `build=7f3c9a1e`.\n\n## Pending Jobs\n- State the published channel and build id explicitly to the user.\n\n## Current Work\n- Answer was implicitly known but never surfaced; the checkpoint is to deliver `channel=beta` and `build=7f3c9a1e` from the pre-rotation manifest.\n\n## Next Step\n- Reply: published channel is `beta`, build id is `7f3c9a1e` (from the `2026-10-12T04:00:00.000Z` manifest line, `status=published`, `schema=2`, `signer=ops-key-a`).\n\n## Critical Context\n- Manifest line timestamps (2026-10-12T04:00) predate the surrounding gateway log entries (2026-10-14T09:00–11:46), consistent with an appended/rotated manifest record rather than a live request.\n- Only one manifest record set existed in the file read; no ambiguity about which channel/build was published.\n- Do not attempt to re-read `logs/build-manifest.log` for these values — the rotated version will not contain them; rely on the recorded values above.\n- Preferred answer format: concise, name both fields with exact casing/values (`beta`, `7f3c9a1e`).\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "build.json matches"
+          }
+        ]
+      },
+      "finalText": "`build.json` created with the pre-rotation manifest values:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nThese came from the earlier read of `logs/build-manifest.log` (`2026-10-12T04:00:00.000Z INFO [manifest] channel=beta build=7f3c9a1e signer=ops-key-a`, with the companion line `schema=2 status=published`), not from the rotated file — the current `build-manifest-late.log` contains only `[gateway]` request entries and no manifest record.",
+      "writtenFiles": [
+        {
+          "name": "build.json",
+          "bytes": 47,
+          "content": "{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n"
+        }
+      ],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 35,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "Write `build.json` with the `channel` and `build` from the manifest read before the rotation.",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 39,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 40,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\": \"build.json\", \"content\": \"{\\n  \\\"channel\\\": \\\"beta\\\",\\n  \\\"build\\\": \\\"7f3c9a1e\\\"\\n}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 41,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"build.json\",\"bytes\":47}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 44,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "`build.json` created with the pre-rotation manifest values:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nThese came from the earlier read of `logs/build-manifest.log` (`2026-10-12T04:00:00.000Z INFO [manifest] channel=beta b…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "write_file",
+          "args": "{\"path\": \"build.json\", \"content\": \"{\\n  \\\"channel\\\": \\\"beta\\\",\\n  \\\"build\\\": \\\"7f3c9a1e\\\"\\n}\\n\"}"
+        }
+      ],
+      "assistantTexts": [
+        "`build.json` created with the pre-rotation manifest values:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nThese came from the earlier read of `logs/build-manifest.log` (`2026-10-12T04:00:00.000Z INFO [manifest] channel=beta build=7f3c9a1e signer=ops-key-a`, with the companion line `sc…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T13-p1-E0-r1",
+      "task": "T13-p1",
+      "arm": "E0",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 72281,
+      "stepLimit": true,
+      "liveStart": 12,
+      "liveEvents": 49,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "context_search": 3,
+        "context_recall": 8,
+        "list_dir": 2,
+        "read_file": 1
+      },
+      "recallCalls": 11,
+      "readCalls": 3,
+      "writeCalls": 0,
+      "foldsStarted": 4,
+      "witness": {
+        "attempts": 5,
+        "committed": 5,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 5,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 5,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 5
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 93,
+          "taskPromptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 100,
+        "chars": 47,
+        "text": "[EF1 L cp:c5fb7e13-99ed-4ff4-870e-69134fed2ba0]"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "build.json is missing"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 5,
+          "endIdx": 13,
+          "start": 66,
+          "end": 89,
+          "tokens": 39844
+        },
+        "executed": {
+          "startIdx": 5,
+          "endIdx": 13,
+          "start": 66,
+          "end": 89,
+          "tokens": 39844
+        },
+        "gapTokens": 0,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 39824,
+        "expectedReclaimRatio": 0.9994980423652243,
+        "executedExpectedReclaimTokens": 39824,
+        "executedExpectedReclaimRatio": 0.9994980423652243,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 39824,
+          "surfaceDeltaTokens": 39824,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 39844
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 98,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 100,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:c5fb7e13-99ed-4ff4-870e-69134fed2ba0]",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 101,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 104,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 105,
+          "type": "tool/call",
+          "name": "context_search",
+          "args": "{\"query\":\"channel build published manifest\",\"limit\":10}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 106,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"outcome\": \"partial\",\n  \"hits\": [\n    {\n      \"checkpointId\": \"c5fb7e13-99ed-4ff4-870e-69134fed2ba0\",\n      \"mode\": \"leaf\",\n      \"createdAt\": 1794391344755,\n      \"text\": \"[EF1 L cp:c5fb7e13-99ed-4ff4-870e-69134fed2ba0]\",\n      \"matchK…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 107,
+          "type": "tool/call",
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 108,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\".\",\"entries\":[{\"name\":\"README.md\",\"kind\":\"file\"}]}",
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "context_search",
+          "args": "{\"query\": \"manifest channel build\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\": \"build-manifest\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:72140c72-89a4-49b6-a261-e9f12aad908f\",\"depth\":\"exact\",\"offset\":0,\"limit\":3}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 3, \"offset\": 0, \"ref\": \"cp:69ccde7b-3714-4a65-8771-f956e390fa61\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 3, \"offset\": 0, \"ref\": \"cp:1e8f46b1-52f1-449b-9c46-077b3c4f5b7c\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 3, \"offset\": 0, \"ref\": \"cp:72140c72-89a4-49b6-a261-e9f12aad908f\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:69ccde7b-3714-4a65-8771-f956e390fa61\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:6517784b-fe66-4596-92a0-c077fbb08f1c\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":3,\"offset\":2,\"ref\":\"cp:69ccde7b-3714-4a65-8771-f956e390fa61\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":0,\"ref\":\"cp:69ccde7b-3714-4a65-8771-f956e390fa61\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"channel build published manifest\",\"limit\":10}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        }
+      ],
+      "assistantTexts": [],
+      "class": "step-limit-empty-checkpoint-recall"
+    },
+    {
+      "cellId": "T13-p1-E1-r1",
+      "task": "T13-p1",
+      "arm": "E1",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 62735,
+      "stepLimit": false,
+      "liveStart": 12,
+      "liveEvents": 16,
+      "assistantMessages": 5,
+      "toolCounts": {
+        "list_dir": 1,
+        "run_tests": 1,
+        "read_file": 2,
+        "write_file": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 3,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 93,
+          "taskPromptSha256": "8dc3d1e0331929d90b5f38e322ba9cdd59538d5bd09c15d7406a6778ce4a06fe",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 31,
+        "chars": 1641,
+        "text": "[EF1 L cp:45432c14-fdf8-4c79-9606-adf1c2db7cc7]\n\nRationale\n- Read logs/build-manifest.log (pre-rotation snapshot of the build manifest) to extract the published channel and build id. The operative manifest lines were:\n- \n- - `2026-10-12T04:00:00.000Z INFO [manifest] channel=beta build=7f3c9a1e signer=ops-key-a`\n- - `2026-10-12T04:00:01.000Z INFO [manifest] schema=2 status=published`\n- \n- Answer to give: published channel = `beta`; build id = `7f3c9a1e` (signer `ops-key-a`, schema `2`, status `published`).\n- \n- The file has since rotated, so the current on-disk log no longer carries these lines; the values above come only from that earlier read. Do not re-read the rotated file expecting to recover them, and do not substitute any timestamps, request ids, upstream names (api-1..api-9), or the 503 error entries from the surrounding gateway noise — none of that is manifest data. The only manifest records were the two `[manifest]` lines above, which appeared mid-file, sandwiched between gateway request entries at 09:54:32 and 09:54:49 on 2026-10-14.\n- \n- Caveat worth flagging: the manifest timestamp (2026-10-12T04:00) predates the surrounding gateway log entries (2026-10-14), indicating the manifest block is older than the log span or was spliced in. If a newer publication exists, it was not in the version read; only `beta` / `7f3c9a1e` is supported.\n- \n- No alternatives were considered and rejected; only the single read was performed. My earlier reply confirmed the manifest was published and that I had the channel and build id, but did not restate the literal values — hence this restatement is the authoritative record."
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "build.json matches"
+          }
+        ]
+      },
+      "finalText": "Wrote `build.json`:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nBoth values come from the folded pre-rotation manifest read (the two `[manifest]` lines: `channel=beta build=7f3c9a1e signer=ops-key-a`, `schema=2 status=published`). The current on-disk log I checked (`logs/build-manifest-late.log`) is entirely `[gateway]` traffic for 2026-10-16 — upstreams `api-1`..`api-9`, mixed 200/503 — with no `[manifest]` records at all, so it contributed nothing here and none of its request ids or timestamps were used.\n\nOne caveat worth keeping in mind: the archived manifest timestamp (2026-10-12T04:00) predates even the earlier log's gateway entries (2026-10-14), so that block looked older than its surroundings — possibly spliced in. If a later publication exists, it was not in the version read; `beta` / `7f3c9a1e` is what that read supports.",
+      "writtenFiles": [
+        {
+          "name": "build.json",
+          "bytes": 47,
+          "content": "{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n"
+        }
+      ],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18492
+        },
+        "executed": {
+          "startIdx": 1,
+          "endIdx": 5,
+          "start": 4,
+          "end": 17,
+          "tokens": 18492
+        },
+        "gapTokens": 0,
+        "estimatedCheckpointTokens": 530,
+        "expectedReclaimTokens": 17962,
+        "expectedReclaimRatio": 0.9713389573869782,
+        "executedExpectedReclaimTokens": 17962,
+        "executedExpectedReclaimRatio": 0.9713389573869782,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 419,
+          "reclaimTokens": 18073,
+          "surfaceDeltaTokens": 18073,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 18492
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 48,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"README.md\",\"content\":\"# Build record\\n\\nThe manifest was rotated away. The published `channel` and `build` are in the earlier folded tool result. Write `build.json`.\\n\",\"chars\":142,\"truncated\":false}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 51,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 52,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\":\"build.json\",\"content\":\"{\\n  \\\"channel\\\": \\\"beta\\\",\\n  \\\"build\\\": \\\"7f3c9a1e\\\"\\n}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 53,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"build.json\",\"bytes\":47}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 56,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 57,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\":\"build.json\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 58,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"build.json\",\"content\":\"{\\n  \\\"channel\\\": \\\"beta\\\",\\n  \\\"build\\\": \\\"7f3c9a1e\\\"\\n}\\n\",\"chars\":47,\"truncated\":false}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 61,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Wrote `build.json`:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nBoth values come from the folded pre-rotation manifest read (the two `[manifest]` lines: `channel=beta build=7f3c9a1e signer=ops-key-a`, `schema=2 status=publi…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\":\"build.json\",\"content\":\"{\\n  \\\"channel\\\": \\\"beta\\\",\\n  \\\"build\\\": \\\"7f3c9a1e\\\"\\n}\\n\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"build.json\"}"
+        }
+      ],
+      "assistantTexts": [
+        "Wrote `build.json`:\n\n```json\n{\n  \"channel\": \"beta\",\n  \"build\": \"7f3c9a1e\"\n}\n```\n\nBoth values come from the folded pre-rotation manifest read (the two `[manifest]` lines: `channel=beta build=7f3c9a1e signer=ops-key-a`, `schema=2 status=published`). The current on-disk log I checked (`logs/build-manif…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T14-p1-B0-r1",
+      "task": "T14-p1",
+      "arm": "B0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 121168,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 38,
+      "assistantMessages": 6,
+      "toolCounts": {
+        "list_dir": 3,
+        "read_file": 4,
+        "edit_file": 1,
+        "run_tests": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 7,
+      "writeCalls": 1,
+      "foldsStarted": 5,
+      "witness": {
+        "attempts": 6,
+        "committed": 4,
+        "refused": 2,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 6,
+        "unverified": 0,
+        "committedAndDelivered": 3,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 4,
+          "shrink-refusal": 2
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 53,
+          "taskPromptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 9,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 11,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 82,
+        "chars": 2278,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- Original: \"First set the limit to 8.\"\n- Correction (verbatim): \"Correction: use 4, not 8. 8 was rejected by the capacity review.\"\n- Net intent: set the capacity limit to **4**; do not use 8.\n\n## Key Technical Concepts\n- Gateway/capacity configuration driven by an integer `limit` value gated by a review process (`review=baseline`, `review=rejected`).\n- Capacity headroom gating: a change is rejected when `capacity_headroom=0`.\n- Structured log line format: `<ISO8601> <LEVEL> [<component>] key=value ...`.\n\n## Files and Code\n- `logs/capacity.log`: inspected; contains gateway request lines plus two entries of interest:\n  - `2026-10-13T11:00:00.000Z INFO  [capacity] limit=10 review=baseline`\n  - `2026-10-13T15:00:00.000Z WARN  [capacity] limit=8 review=rejected capacity_headroom=0`\n- Config source holding the actual `limit` value: not yet located.\n\n## Errors and Fixes\n- `limit=8` rejected by capacity review with `capacity_headroom=0`; user overrode with \"use 4, not 8\". Value 8 was never written to any config.\n- Recurring `status=503` gateway errors against upstreams `api-1`–`api-9` (e.g. `id=c3a4ea15 upstream=api-8 status=503`, `id=fa35fb24 upstream=api-8 status=503`, `id=d215ee06 upstream=api-7 status=503`); unresolved, not acted on, outside the explicit request.\n\n## Pending Jobs\n- Apply the capacity limit change to `4` in the real configuration source.\n\n## Current Work\n- Inspection of `logs/capacity.log` complete; no edits made for either 8 or 4.\n\n## Next Step\n- Locate the configuration file that defines the capacity `limit` (search repo/config for `limit=` or capacity settings) and set it to `4`.\n\n## Critical Context\n- Working value is `4`; do not use `8`.\n- Baseline limit is `10`; `4` is a reduction of 6 from baseline and 4 below the rejected value.\n- Open questions: whether the capacity review must be re-run for `4`, and whether non-zero headroom is required for approval.\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "finalText": "Applied the corrected value and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the rejected `8` was never written).\n- `node --test`: 1 test passed, 0 failed — `test/limit.test.js` asserts `LIMIT === 4`.\n\nTwo things worth flagging, since they were outside the explicit request and I did not act on them:\n1. The capacity log shows `limit=8 review=rejected capacity_headroom=0`, so the review process gated on headroom rather than on the numeric value. I don't know whether `4` needs its own re-review or non-zero headroom before it can ship — that's an open question for whoever owns the capacity review.\n2. `logs/capacity.log` and `logs/capacity-late.log` contain recurring `status=503` errors across upstreams `api-1`–`api-9`. They appear unrelated to the limit setting and are still unresolved.",
+      "writtenFiles": [],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 82,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the …",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 83,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 86,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 87,
+          "type": "tool/call",
+          "name": "run_tests",
+          "args": "{}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 88,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the capacity limit is the corrected value (1.5798ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 227.8086\\n\",\"stderr\":\"\"}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 90,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 91,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summary is not smaller than the shadowed content (587 estimated framed tokens >= 586)"
+        },
+        {
+          "seq": 93,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Applied the corrected value and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the rejected `8` was never written).\n- `node --test`: 1 test passed, 0 failed — `test/limit.test.js` asserts `LIMIT === 4`.\n\nTwo things worth f…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"src\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"test\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"package.json\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"src/limit.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"test/limit.test.js\"}"
+        },
+        {
+          "name": "edit_file",
+          "args": "{\"path\":\"src/limit.js\",\"old_string\":\"export const LIMIT = 10\",\"new_string\":\"export const LIMIT = 4\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        }
+      ],
+      "assistantTexts": [
+        "Applied the corrected value and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the rejected `8` was never written).\n- `node --test`: 1 test passed, 0 failed — `test/limit.test.js` asserts `LIMIT === 4`.\n\nTwo things worth flagging, since they were outside the explicit request and I …"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T14-p1-E0-r1",
+      "task": "T14-p1",
+      "arm": "E0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 52900,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 23,
+      "assistantMessages": 6,
+      "toolCounts": {
+        "list_dir": 3,
+        "context_search": 1,
+        "read_file": 2,
+        "edit_file": 1,
+        "run_tests": 1
+      },
+      "recallCalls": 1,
+      "readCalls": 5,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 53,
+          "taskPromptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 47,
+        "text": "[EF1 L cp:b3bc7806-9c17-4b75-8c8e-78c2e4c6617f]"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "finalText": "Applied the corrected limit and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the value 8 was rejected by the capacity review, so it was never used).\n- Tests: `node --test` passes — 1 test, 1 pass, 0 fail.\n\nFor context, the capacity log shows the rejection trail: `limit=10` was the baseline, and `limit=8` is marked `WARN ... review=rejected capacity_headroom=0`, so 4 is the correct figure to encode.",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 17,
+          "start": 20,
+          "end": 65,
+          "tokens": 10024
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 10004,
+        "expectedReclaimRatio": 0.9980047885075818,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 60,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"test/limit.test.js\",\"content\":\"import assert from 'node:assert/strict'\\nimport test from 'node:test'\\nimport { LIMIT } from '../src/limit.js'\\n\\ntest('the capacity limit is the corrected value', () => {\\n  assert.equal(LIMIT, 4)\\n}…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 63,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 64,
+          "type": "tool/call",
+          "name": "edit_file",
+          "args": "{\"path\":\"src/limit.js\",\"old_string\":\"export const LIMIT = 10\",\"new_string\":\"export const LIMIT = 4\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 65,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"src/limit.js\",\"bytes\":23}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 68,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 69,
+          "type": "tool/call",
+          "name": "run_tests",
+          "args": "{}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 70,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the capacity limit is the corrected value (1.5962ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 180.0441\\n\",\"stderr\":\"\"}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 73,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Applied the corrected limit and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the value 8 was rejected by the capacity review, so it was never used).\n- Tests: `node --test` passes — 1 test, 1 pass, 0 fail.\n\nFor context, t…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"capacity limit 4 8\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"src\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"test\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"src/limit.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"test/limit.test.js\"}"
+        },
+        {
+          "name": "edit_file",
+          "args": "{\"path\":\"src/limit.js\",\"old_string\":\"export const LIMIT = 10\",\"new_string\":\"export const LIMIT = 4\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        }
+      ],
+      "assistantTexts": [
+        "Applied the corrected limit and verified it.\n\n- `src/limit.js`: `LIMIT` changed from `10` → `4` (the value 8 was rejected by the capacity review, so it was never used).\n- Tests: `node --test` passes — 1 test, 1 pass, 0 fail.\n\nFor context, the capacity log shows the rejection trail: `limit=10` was th…"
+      ],
+      "class": "pass-retained-tail"
+    },
+    {
+      "cellId": "T14-p1-E1-r1",
+      "task": "T14-p1",
+      "arm": "E1",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 78519,
+      "stepLimit": false,
+      "liveStart": 13,
+      "liveEvents": 24,
+      "assistantMessages": 7,
+      "toolCounts": {
+        "list_dir": 2,
+        "run_tests": 2,
+        "read_file": 2,
+        "edit_file": 1,
+        "finish": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 4,
+      "writeCalls": 1,
+      "foldsStarted": 0,
+      "witness": {
+        "attempts": 1,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 1,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 53,
+          "taskPromptSha256": "e601fe15ed6ffc1a137456887f8ffa69518f3671de68abb29131142ece7bedec",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 7,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 34,
+        "chars": 1335,
+        "text": "[EF1 L cp:b59974aa-96d4-42ba-98d0-8682a0e2d0d2]\n\nRationale\n- User first instructed \"set the limit to 8\"; I read `logs/capacity.log` and replied \"Setting the limit to 8.\" No write executed — only the read occurred, so treat 8 as never applied.\n- \n- Correction supersedes that: set the limit to **4**, not 8. Reason given by user: 8 was rejected by the capacity review.\n- \n- Log evidence in `logs/capacity.log` confirms:\n- - `2026-10-13T11:00:00.000Z INFO [capacity] limit=10 review=baseline`\n- - `2026-10-13T15:00:00.000Z WARN [capacity] limit=8 review=rejected capacity_headroom=0`\n- \n- So 10 is the baseline, 8 is explicitly rejected with zero headroom; 4 is the operative target. Do not re-propose 8 or 10.\n- \n- Remaining file content is gateway request logs for 2026-10-14, roughly 09:00–11:48 UTC, upstreams api-1..api-9, mostly status=200 with latency_ms and bytes; intermittent `status=503` errors start at `2026-10-14T09:10:21.959Z` (api-8) and recur across upstreams through the end of the log (e.g. api-6 at 09:17:38Z, api-7 at 09:22:30Z, api-9 at 09:23:44Z, api-3 at 09:52:01Z, api-4 at 11:09:47Z, api-5 at 11:28:01Z). These 503s corroborate headroom pressure but were not separately analyzed.\n- \n- No machine sections/anchors were produced for this span; this rationale is the sole record. Outstanding action: apply limit=4."
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "tests",
+            "pass": true,
+            "detail": "node --test exit 0"
+          },
+          {
+            "kind": "file_contains",
+            "pass": true,
+            "detail": "src/limit.js contains the required text"
+          }
+        ]
+      },
+      "finalText": "Done.\n\n- **Edit**: `src/limit.js` — `export const LIMIT = 10` → `export const LIMIT = 4`, using the corrected target of 4 (8 was rejected by the capacity review, so it was not applied).\n- **Tests**: `node --test` first failed (`10 !== 4`) against `test/limit.test.js`, then passed after the fix — 1 pass, 0 fail.",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 2,
+          "endIdx": 18,
+          "start": 20,
+          "end": 68,
+          "tokens": 9882
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 342,
+        "expectedReclaimTokens": 9540,
+        "expectedReclaimRatio": 0.9653916211293261,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 63,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"src/limit.js\",\"bytes\":23}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 66,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 67,
+          "type": "tool/call",
+          "name": "run_tests",
+          "args": "{}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 68,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"command\":\"node --test\",\"exitCode\":0,\"timedOut\":false,\"stdout\":\"✔ the capacity limit is the corrected value (1.0438ms)\\nℹ tests 1\\nℹ suites 0\\nℹ pass 1\\nℹ fail 0\\nℹ cancelled 0\\nℹ skipped 0\\nℹ todo 0\\nℹ duration_ms 154.0255\\n\",\"stderr\":\"\"}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 71,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 72,
+          "type": "tool/call",
+          "name": "finish",
+          "args": "{\"summary\":\"Applied the corrected capacity limit of 4 (not 8, not the baseline 10) in `src/limit.js`, changing `LIMIT` from 10 to 4. Ran `node --test`: the suite initially failed w…",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 73,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"done\":true}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 76,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Done.\n\n- **Edit**: `src/limit.js` — `export const LIMIT = 10` → `export const LIMIT = 4`, using the corrected target of 4 (8 was rejected by the capacity review, so it was not applied).\n- **Tests**: `node --test` first failed (`10 !== 4`) a…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"src\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"test/limit.test.js\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"src/limit.js\"}"
+        },
+        {
+          "name": "edit_file",
+          "args": "{\"path\": \"src/limit.js\", \"old_string\": \"export const LIMIT = 10\", \"new_string\": \"export const LIMIT = 4\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "finish",
+          "args": "{\"summary\":\"Applied the corrected capacity limit of 4 (not 8, not the baseline 10) in `src/limit.js`, changing `LIMIT` from 10 to 4. Ran `node --test`: the suite initially failed w…"
+        }
+      ],
+      "assistantTexts": [
+        "Done.\n\n- **Edit**: `src/limit.js` — `export const LIMIT = 10` → `export const LIMIT = 4`, using the corrected target of 4 (8 was rejected by the capacity review, so it was not applied).\n- **Tests**: `node --test` first failed (`10 !== 4`) against `test/limit.test.js`, then passed after the fix — 1 p…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T15-p1-B0-r1",
+      "task": "T15-p1",
+      "arm": "B0",
+      "pass": true,
+      "termination": "finish",
+      "durationMs": 192426,
+      "stepLimit": false,
+      "liveStart": 10,
+      "liveEvents": 35,
+      "assistantMessages": 6,
+      "toolCounts": {
+        "list_dir": 2,
+        "read_file": 3,
+        "run_tests": 1,
+        "write_file": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 5,
+      "writeCalls": 1,
+      "foldsStarted": 6,
+      "witness": {
+        "attempts": 7,
+        "committed": 2,
+        "refused": 2,
+        "aborted": 3,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 7,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "other": 3,
+          "committed": 2,
+          "shrink-refusal": 2
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 81,
+          "taskPromptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 8,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 10,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 12,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 44,
+        "chars": 3304,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- User statement: \"The platform had several concurrency revisions this month. Do not guess; use the timestamps.\"\n- Intent: determine the concurrency configuration revisions for the current month from the config-history log, basing conclusions strictly on logged timestamps rather than assumptions.\n- Implied deliverable: a timestamp-ordered list of `[config] concurrency=N status=active` revisions, stating which value was in effect when.\n\n## Key Technical Concepts\n- Line-oriented log parsing: `TIMESTAMP LEVEL [component] key=value ...`\n- ISO-8601 UTC timestamps with milliseconds (`2026-10-10T00:00:00.000Z`) — lexicographic order equals chronological order.\n- Sorting must be by timestamp field, not file position: `[config]` lines are embedded mid-file, out of order relative to surrounding `[gateway]` lines.\n- Config changes land on midnight UTC boundaries (all `[config]` entries at `T00:00:00.000Z`).\n\n## Files and Code\n- `logs/config-history.log`: read in full. Contains hundreds of `INFO/ERROR [gateway] request id=... upstream=api-N status=200|503 latency_ms=... bytes=...` lines spanning `2026-10-09T00:00:03.690Z` through `2026-10-09T02:53:48.320Z`, plus three embedded `[config]` lines clustered near the `2026-10-09T00:55:34.395Z` gateway line.\n\n## Errors and Fixes\n- (none)\n\n## Pending Jobs\n- Report the concurrency revisions to the user with exact timestamps, emphasizing that ordering derives from timestamps, not line position in the file.\n\n## Current Work\n- Extracted the three `[config]` records, already in ascending timestamp order:\n  - `2026-10-10T00:00:00.000Z INFO  [config] concurrency=4 status=active`\n  - `2026-10-14T00:00:00.000Z INFO  [config] concurrency=6 status=active`\n  - `2026-10-18T00:00:00.000Z INFO  [config] concurrency=9 status=active`\n- Identified the trap: these lines sit physically between gateway entries timestamped `2026-10-09T00:55:34.395Z` and `2026-10-09T00:55:58.105Z`; naive file-order reading would falsely place them inside Oct 9 traffic, whereas they are later-dated config events appended at that position.\n\n## Next Step\n- Answer the user: three revisions this month in timestamp order — Oct 10 → `concurrency=4`, Oct 14 → `concurrency=6`, Oct 18 → `concurrency=9` — with the note that all Oct 9 gateway traffic predates every one of them.\n\n## Critical Context\n- Revision count: 3 (`concurrency=4`, `concurrency=6`, `concurrency=9`).\n- All three carry `status=active`; each supersedes the previous, so the latest logged state is `concurrency=9` as of `2026-10-18T00:00:00.000Z`.\n- Boundary reasoning: Oct 9 gateway lines (00:00–02:53 UTC) precede the first config change on Oct 10, so no logged per-request behavior on Oct 9 can reflect these values.\n- No `[config]` lines exist with non-midnight timestamps, and none dated outside Oct 10/14/18 — do not infer unlogged revisions.\n- User explicitly forbade guessing; every conclusion must cite the timestamp field verbatim.\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": true,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": true,
+            "detail": "effective.json matches"
+          }
+        ]
+      },
+      "finalText": "Wrote `effective.json`:\n\n```json\n{ \"concurrency\": 6 }\n```\n\nBasis (from the config revisions established earlier, by their logged timestamps):\n\n| Timestamp | Value |\n|---|---|\n| `2026-10-10T00:00:00.000Z` | `concurrency=4` |\n| `2026-10-14T00:00:00.000Z` | `concurrency=6` |\n| `2026-10-18T00:00:00.000Z` | `concurrency=9` |\n\n`2026-10-15T00:00:00Z` falls after the Oct 14 change and before the Oct 18 change, so the value in force is **6**.\n\nOne caveat worth flagging: in the current workspace the `logs/` directory is no longer present — only `README.md` remains. I could not re-read `config-history.log` to reconfirm the raw lines, so this answer rests on the three revisions extracted and verified earlier in this session. All three were `status=active` and none were dated outside Oct 10/14/18, so no unlogged revision should be inferred.",
+      "writtenFiles": [
+        {
+          "name": "effective.json",
+          "bytes": 23,
+          "content": "{\n  \"concurrency\": 6\n}\n"
+        }
+      ],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 68,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 69,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summary is not smaller than the shadowed content (843 estimated framed tokens >= 843)"
+        },
+        {
+          "seq": 71,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 72,
+          "type": "tool/call",
+          "name": "write_file",
+          "args": "{\"path\": \"effective.json\", \"content\": \"{\\n  \\\"concurrency\\\": 6\\n}\\n\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 73,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"effective.json\",\"bytes\":23}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 75,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 76,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summarization truncated at the token cap (incomplete checkpoint)"
+        },
+        {
+          "seq": 78,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": "Wrote `effective.json`:\n\n```json\n{ \"concurrency\": 6 }\n```\n\nBasis (from the config revisions established earlier, by their logged timestamps):\n\n| Timestamp | Value |\n|---|---|\n| `2026-10-10T00:00:00.000Z` | `concurrency=4` |\n| `2026-10-14T00…",
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/config-history.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/config-late.log\"}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\": \"effective.json\", \"content\": \"{\\n  \\\"concurrency\\\": 6\\n}\\n\"}"
+        }
+      ],
+      "assistantTexts": [
+        "Wrote `effective.json`:\n\n```json\n{ \"concurrency\": 6 }\n```\n\nBasis (from the config revisions established earlier, by their logged timestamps):\n\n| Timestamp | Value |\n|---|---|\n| `2026-10-10T00:00:00.000Z` | `concurrency=4` |\n| `2026-10-14T00:00:00.000Z` | `concurrency=6` |\n| `2026-10-18T00:00:00.000Z…"
+      ],
+      "class": "pass-direct-write"
+    },
+    {
+      "cellId": "T15-p1-E0-r1",
+      "task": "T15-p1",
+      "arm": "E0",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 39148,
+      "stepLimit": true,
+      "liveStart": 11,
+      "liveEvents": 47,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "context_recall": 8,
+        "list_dir": 2,
+        "read_file": 2,
+        "context_search": 1
+      },
+      "recallCalls": 9,
+      "readCalls": 4,
+      "writeCalls": 0,
+      "foldsStarted": 4,
+      "witness": {
+        "attempts": 5,
+        "committed": 5,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 5,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 4,
+        "committedNotDelivered": 1,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 1,
+        "byReason": {
+          "committed": 5
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 81,
+          "taskPromptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 100,
+        "chars": 47,
+        "text": "[EF1 L cp:5a211cb9-409e-482e-a028-858a3f9f1c97]"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "effective.json is missing"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 5,
+          "endIdx": 10,
+          "start": 73,
+          "end": 89,
+          "tokens": 19702
+        },
+        "executed": {
+          "startIdx": 5,
+          "endIdx": 10,
+          "start": 73,
+          "end": 89,
+          "tokens": 19702
+        },
+        "gapTokens": 0,
+        "estimatedCheckpointTokens": 20,
+        "expectedReclaimTokens": 19682,
+        "expectedReclaimRatio": 0.998984874632017,
+        "executedExpectedReclaimTokens": 19682,
+        "executedExpectedReclaimRatio": 0.998984874632017,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 20,
+          "reclaimTokens": 19682,
+          "surfaceDeltaTokens": 19682,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 19702
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 92,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 93,
+          "type": "tool/call",
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"ref\":\"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\",\"offset\":0,\"limit\":3}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 94,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"checkpointId\": \"4fa39d7a-253f-4538-a4ce-784fb44ad850\",\n  \"mode\": \"leaf\",\n  \"depth\": \"exact\",\n  \"page\": {\n    \"checkpointId\": \"4fa39d7a-253f-4538-a4ce-784fb44ad850\",\n    \"totalMessages\": 3,\n    \"offset\": 0,\n    \"messages\": [\n      {\n   …",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 95,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 96,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\"README.md\",\"content\":\"# Effective configuration\\n\\nThe concurrency changed three times. Write `effective.json` with the value in force at `2026-10-15T00:00:00Z`.\\n\",\"chars\":138,\"truncated\":false}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 98,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 100,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:5a211cb9-409e-482e-a028-858a3f9f1c97]",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 101,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\",\"depth\":\"detail\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\": \"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\", \"depth\": \"exact\", \"offset\": 0, \"limit\": 2}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":1,\"offset\":2,\"ref\":\"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":0,\"ref\":\"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 20, \"offset\": 0, \"ref\": \"cp:0b8d91ae-a4e5-43f1-99ff-795ddcd0a642\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 5, \"offset\": 2, \"ref\": \"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"detail\", \"ref\": \"cp:aa9c0232-a780-4c7a-922b-8cce96d07e46\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\": \"task\", \"limit\": 10}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"ref\":\"cp:4fa39d7a-253f-4538-a4ce-784fb44ad850\",\"offset\":0,\"limit\":3}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        }
+      ],
+      "assistantTexts": [],
+      "class": "step-limit-empty-checkpoint-recall"
+    },
+    {
+      "cellId": "T15-p1-E1-r1",
+      "task": "T15-p1",
+      "arm": "E1",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 118165,
+      "stepLimit": true,
+      "liveStart": 11,
+      "liveEvents": 39,
+      "assistantMessages": 8,
+      "toolCounts": {
+        "list_dir": 4,
+        "run_tests": 1,
+        "read_file": 1,
+        "context_search": 2,
+        "context_recall": 4
+      },
+      "recallCalls": 6,
+      "readCalls": 5,
+      "writeCalls": 0,
+      "foldsStarted": 2,
+      "witness": {
+        "attempts": 3,
+        "committed": 3,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 3,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 3,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 3
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 81,
+          "taskPromptSha256": "a2a00306e80557f274a6f58cc2cb97afc200872cf893ccfb9d0f3a66f6a8da52",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 8,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 10,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 81,
+        "chars": 2023,
+        "text": "[EF1 L cp:4a3ce02f-b8e4-4f37-994a-39076ec01cac]\n\nOpen\n- [failure] failure:call_da6431f762fb49dfa9553d8d (open): {\"callId\":\"call_da6431f762fb49dfa9553d8d\"}\n\nRationale\n- The user's directive to derive concurrency revisions from timestamps rather than inference set the whole approach: the only trustworthy source is the config-history log itself, so the file was read in full instead of estimating load from request patterns or taking a single line at face value. The underlying hazard is that this log is not chronologically sorted — the config lines carry calendar dates days ahead of the surrounding gateway stream and are physically interleaved partway through it. File position therefore carries no temporal meaning; only the embedded ISO-8601 prefix orders the entries, and the two orderings disagree [cp:2089546a].\n- \n- Conceptual context an engineer should keep: each config line is a point-in-time sample stamped at midnight, recording the value that became active at that instant, not a closed interval. An entry's effective span runs until the next revision's timestamp, so a revision must never be attributed to the surrounding gateway traffic by adjacency. The monotonic date sequence among the config entries is the sole basis for sequencing, and the interleaved position is an artifact of how the log was assembled (likely concatenation of per-source captures), not evidence about when the change took effect.\n- \n- Alternatives rejected: assuming file order equals chronological order, which would have attributed revisions to the wrong date window and inverted the progression; inferring load levels from gateway throughput or latency, rejected both because the stream does not expose in-flight counts and because it would substitute guesswork for recorded fact, directly contrary to the instruction; and reporting only the last-read config line as \"the\" value, which discards the revision history the question is actually about. Anchors for the specific decisions and constraints are in the machine sections."
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "effective.json is missing"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 4,
+          "endIdx": 5,
+          "start": 75,
+          "end": 77,
+          "tokens": 12288
+        },
+        "executed": null,
+        "gapTokens": null,
+        "estimatedCheckpointTokens": 527,
+        "expectedReclaimTokens": 11761,
+        "expectedReclaimRatio": 0.9571126302083334,
+        "executedExpectedReclaimTokens": null,
+        "executedExpectedReclaimRatio": null,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": false,
+        "executionReason": "no_span",
+        "falseAdmission": true,
+        "committed": false
+      },
+      "lastEvents": [
+        {
+          "seq": 79,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 81,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:4a3ce02f-b8e4-4f37-994a-39076ec01cac]\n\nOpen\n- [failure] failure:call_da6431f762fb49dfa9553d8d (open): {\"callId\":\"call_da6431f762fb49dfa9553d8d\"}\n\nRationale\n- The user's directive to derive concurrency revisions from timestamps rat…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 82,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 85,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 2,
+          "error": null
+        },
+        {
+          "seq": 86,
+          "type": "tool/call",
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 87,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\".\",\"entries\":[{\"name\":\"README.md\",\"kind\":\"file\"}]}",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 88,
+          "type": "tool/call",
+          "name": "list_dir",
+          "args": "{\"path\": \"logs\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 89,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, scandir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T15-p1-E1-r1\\workspace\\logs'",
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"effective.json concurrency\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"logs/\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:2089546a-1b0f-4714-8c83-8c00d1929510\",\"depth\":\"exact\",\"offset\":6,\"limit\":2}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"offset\":2,\"limit\":1,\"ref\":\"cp:2089546a-1b0f-4714-8c83-8c00d1929510\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":0,\"ref\":\"cp:2089546a-1b0f-4714-8c83-8c00d1929510\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\": \"exact\", \"limit\": 20, \"offset\": 0, \"ref\": \"cp:b61f2724-e077-4af0-81dc-6205f039f0bd\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \"logs\"}"
+        }
+      ],
+      "assistantTexts": [],
+      "class": "step-limit-rationale-without-answer"
+    },
+    {
+      "cellId": "T16-p1-B0-r1",
+      "task": "T16-p1",
+      "arm": "B0",
+      "pass": false,
+      "termination": "finish",
+      "durationMs": 187149,
+      "stepLimit": false,
+      "liveStart": 24,
+      "liveEvents": 54,
+      "assistantMessages": 14,
+      "toolCounts": {
+        "list_dir": 3,
+        "read_file": 9,
+        "run_tests": 1,
+        "write_file": 1
+      },
+      "recallCalls": 0,
+      "readCalls": 12,
+      "writeCalls": 1,
+      "foldsStarted": 4,
+      "witness": {
+        "attempts": 5,
+        "committed": 1,
+        "refused": 0,
+        "aborted": 4,
+        "unverifiable": 0,
+        "verified": 0,
+        "inferred": 5,
+        "unverified": 0,
+        "committedAndDelivered": 1,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 1,
+          "other": 4
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 96,
+          "taskPromptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 7,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 9,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 11,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 13,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 15,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "taskPromptChars": 100,
+          "taskPromptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 2,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 9,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 11,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 13,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 15,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 51,
+        "chars": 2341,
+        "text": "This is an automatically generated checkpoint condensing an earlier span of the conversation to free up context. Treat the captured context as established background and build on it without restating it. Continue the task directly from the messages that follow, without acknowledging this checkpoint.\n\n<compacted-summary>\n## Primary Request and Intent\n- “Read the deployment logs over the release window. I need the earliest published release id and checksum for the postmortem.”\n- Identify the earliest `[release]` record with `status=published`, including its release `id` and `checksum`.\n\n## Key Technical Concepts\n- Deployment log inspection using ISO-8601 UTC timestamps.\n- Release log entries formatted as: `INFO [release] id=<id> checksum=<checksum> status=published`.\n- Log entries may not be strictly ordered by timestamp within a file.\n- Release records are interspersed with high-volume `[deploy]` request logs.\n\n## Files and Code\n- `logs/deploy-1.log`: Contains the only published release record found so far:\n  - `2026-10-20T02:00:00.000Z INFO [release] id=rel-p1 checksum=9f2a7c14 status=published`\n  - Followed by `2026-10-20T02:00:01.000Z INFO [release] channel=production`\n- `logs/deploy-2.log`: Read; no `[release]` records found.\n- `logs/deploy-3.log`: Read; no `[release]` records found.\n- `logs/deploy-4.log`: Read; no `[release]` records found.\n\n## Errors and Fixes\n- (none)\n\n## Pending Jobs\n- Confirm whether additional deployment logs exist beyond `deploy-1.log` through `deploy-4.log` that could contain an earlier published release.\n- Provide the postmortem answer with release id and checksum.\n\n## Current Work\n- Scanned `logs/deploy-1.log` through `logs/deploy-4.log`.\n- Earliest and only published release record found: `id=rel-p1`, `checksum=9f2a7c14`, timestamp `2026-10-20T02:00:00.000Z`.\n\n## Next Step\n- Verify the remaining log set if any, then answer: earliest published release is `rel-p1` with checksum `9f2a7c14`.\n\n## Critical Context\n- `deploy-1.log` contains later deploy request lines around `09:00Z` before the `02:00:00Z` release line, so lexicographic file order must not be used; compare timestamps.\n- No other published release entries have been observed in the four files read.\n- User needs the result specifically for a postmortem, so exact release id and checksum matter.\n</compacted-summary>"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json = {\"id\":\"rel-p1\",\"checksum\":\"9f2a7c14\"}, expected {\"release\":\"rel-p1\",\"checksum\":\"9f2a7c14\"}"
+          },
+          {
+            "kind": "compactions",
+            "pass": false,
+            "detail": "1 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [
+        {
+          "name": "release.json",
+          "bytes": 47,
+          "content": "{\n  \"id\": \"rel-p1\",\n  \"checksum\": \"9f2a7c14\"\n}\n"
+        }
+      ],
+      "probe": null,
+      "lastEvents": [
+        {
+          "seq": 140,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-B0-r1\\workspace\\logs\\deploy-stage-0.log'",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 141,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-0.log\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 142,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-B0-r1\\workspace\\logs\\deploy-0.log'",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 143,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-7.log\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 144,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-B0-r1\\workspace\\logs\\deploy-7.log'",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 146,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 147,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": "summarization truncated at the token cap (incomplete checkpoint)"
+        },
+        {
+          "seq": 149,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 0,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"README.md\"}"
+        },
+        {
+          "name": "run_tests",
+          "args": "{}"
+        },
+        {
+          "name": "write_file",
+          "args": "{\"path\":\"release.json\",\"content\":\"{\\n  \\\"id\\\": \\\"rel-p1\\\",\\n  \\\"checksum\\\": \\\"9f2a7c14\\\"\\n}\\n\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"release.json\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-2.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-3.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"release.json\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-0.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-0.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-7.log\"}"
+        }
+      ],
+      "assistantTexts": [
+        "已扫描完所有日志文件（`deploy-1.log` 到 `deploy-6.log`），并写入了 `release.json`。\n\n**结果**\n- 最早的 published 版本记录：`2026-10-20T02:00:00.000Z`\n- Release id：`rel-p1`\n- Checksum：`9f2a7c14`\n\n**关于如何确认它是“最早”的说明**\n- 在 `deploy-1.log` 中，发布时间戳为 `02:00:00Z` 的 `[release]` 行位于同文件中约 `09:00Z` 的 `[deploy]` 请求行之后，因此必须按时间戳而非文件顺序取值。\n- `de…",
+        "Reading read_file.",
+        "Reading read_file.",
+        "Reading read_file."
+      ],
+      "class": "finish-wrong-schema-and-compactions"
+    },
+    {
+      "cellId": "T16-p1-E0-r1",
+      "task": "T16-p1",
+      "arm": "E0",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 173363,
+      "stepLimit": true,
+      "liveStart": 24,
+      "liveEvents": 105,
+      "assistantMessages": 19,
+      "toolCounts": {
+        "list_dir": 7,
+        "context_recall": 12,
+        "read_file": 9,
+        "context_search": 4
+      },
+      "recallCalls": 16,
+      "readCalls": 16,
+      "writeCalls": 0,
+      "foldsStarted": 6,
+      "witness": {
+        "attempts": 7,
+        "committed": 7,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 7,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 7,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 7
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 96,
+          "taskPromptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 5,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 8,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 9,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 10,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 11,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 12,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 13,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 14,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 15,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "taskPromptChars": 100,
+          "taskPromptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "requests": [
+            {
+              "index": 0,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 1,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 2,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 5,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 8,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 9,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 10,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 11,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 12,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 13,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 14,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 15,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 215,
+        "chars": 558,
+        "text": "[EF1 L cp:34f32f52-84e4-40be-ab72-c89cfc163e57]\n\nOpen\n- [failure] failure:call_7e0fb81eb0c141f7ae27342b (open): {\"callId\":\"call_7e0fb81eb0c141f7ae27342b\"}\n- [failure] failure:call_cadb9f8141344f3caead7037 (open): {\"callId\":\"call_cadb9f8141344f3caead7037\"}\n- [failure] failure:call_3eebc83515e141f784b973af (open): {\"callId\":\"call_3eebc83515e141f784b973af\"}\n- [failure] failure:call_5fde39933ede4ab2a3faa69d (open): {\"callId\":\"call_5fde39933ede4ab2a3faa69d\"}\n- [failure] failure:call_993d6a68537847a2a4291f25 (open): {\"callId\":\"call_993d6a68537847a2a4291f25\"}"
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json is missing"
+          },
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "7 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 7,
+          "endIdx": 12,
+          "start": 188,
+          "end": 204,
+          "tokens": 10563
+        },
+        "executed": {
+          "startIdx": 7,
+          "endIdx": 9,
+          "start": 188,
+          "end": 192,
+          "tokens": 6791
+        },
+        "gapTokens": 3772,
+        "estimatedCheckpointTokens": 88.66666666666667,
+        "expectedReclaimTokens": 10474.333333333334,
+        "expectedReclaimRatio": 0.9916059200353435,
+        "executedExpectedReclaimTokens": 6702.333333333333,
+        "executedExpectedReclaimRatio": 0.9869435036568006,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 148,
+          "reclaimTokens": 6643,
+          "surfaceDeltaTokens": 6643,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 6791
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 210,
+          "type": "tool/call",
+          "name": "context_search",
+          "args": "{\"query\": \"release.json\", \"limit\": 10}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 211,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"outcome\": \"hits\",\n  \"hits\": [\n    {\n      \"checkpointId\": \"afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7\",\n      \"mode\": \"leaf\",\n      \"createdAt\": 1794392322418,\n      \"text\": \"[EF1 L cp:afc5f8d4-cca4-4e50-ac1d-bf3ee201a3d7]\\n\\nOpen\\n- [failur…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 213,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 215,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:34f32f52-84e4-40be-ab72-c89cfc163e57]\n\nOpen\n- [failure] failure:call_7e0fb81eb0c141f7ae27342b (open): {\"callId\":\"call_7e0fb81eb0c141f7ae27342b\"}\n- [failure] failure:call_cadb9f8141344f3caead7037 (open): {\"callId\":\"call_cadb9f81413…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 216,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 219,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 220,
+          "type": "tool/call",
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 221,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\"path\":\".\",\"entries\":[{\"name\":\"README.md\",\"kind\":\"file\"}]}",
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\",\"depth\":\"summary\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"deploy-1.log release id checksum\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\",\"offset\":2,\"limit\":1}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-1.log\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"detail\",\"ref\":\"cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":1,\"offset\":5,\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":1,\"offset\":7,\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\",\"depth\":\"detail\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8\",\"depth\":\"detail\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":2,\"offset\":0,\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-2.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-3.log\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"checksum release\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-2.log\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\",\"depth\":\"exact\",\"offset\":0,\"limit\":4}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":6,\"offset\":0,\"ref\":\"cp:3e6d3b48-36ba-4731-a483-e05bbbae94d8\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":4,\"offset\":0,\"ref\":\"cp:71e39776-8dec-4af3-99bd-873fc641ef54\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\": \"[release] id= checksum=published\", \"limit\": 10}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\": \"release.json\", \"limit\": 10}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        }
+      ],
+      "assistantTexts": [
+        "Reading read_file.",
+        "Reading read_file.",
+        "Reading read_file."
+      ],
+      "class": "step-limit-empty-checkpoint-recall"
+    },
+    {
+      "cellId": "T16-p1-E1-r1",
+      "task": "T16-p1",
+      "arm": "E1",
+      "pass": false,
+      "termination": "step-limit",
+      "durationMs": 205273,
+      "stepLimit": true,
+      "liveStart": 24,
+      "liveEvents": 86,
+      "assistantMessages": 17,
+      "toolCounts": {
+        "list_dir": 9,
+        "read_file": 11,
+        "context_recall": 3,
+        "context_search": 2
+      },
+      "recallCalls": 5,
+      "readCalls": 20,
+      "writeCalls": 0,
+      "foldsStarted": 5,
+      "witness": {
+        "attempts": 6,
+        "committed": 6,
+        "refused": 0,
+        "aborted": 0,
+        "unverifiable": 0,
+        "verified": 6,
+        "inferred": 0,
+        "unverified": 0,
+        "committedAndDelivered": 6,
+        "committedNotDelivered": 0,
+        "committedDeliveryUnverifiable": 0,
+        "noFollowingRequest": 0,
+        "byReason": {
+          "committed": 6
+        }
+      },
+      "activeDelivery": [
+        {
+          "label": "task",
+          "taskPromptChars": 96,
+          "taskPromptSha256": "6c6ca0f033a27829e81284b900f9904333eb1cd8eb5bd25c9b30ce64605e591e",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 2,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 3,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 4,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 9,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 10,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 12,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 13,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 14,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 15,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 17,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 18,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 20,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        },
+        {
+          "label": "taskB",
+          "taskPromptChars": 100,
+          "taskPromptSha256": "3999c19b87257a24cffb2787a5979946fc90255b770408d83da71c634d7195e2",
+          "requests": [
+            {
+              "index": 1,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 2,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 3,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 4,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 6,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 7,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 9,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 10,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            },
+            {
+              "index": 12,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 13,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 14,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 15,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 17,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 18,
+              "originalExact": true,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": false
+            },
+            {
+              "index": 20,
+              "originalExact": false,
+              "originalPrefix": false,
+              "checkpointMarker": false,
+              "absent": true
+            }
+          ]
+        }
+      ],
+      "checkpoint": {
+        "seq": 195,
+        "chars": 2897,
+        "text": "[EF1 L cp:04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec]\n\nOpen\n- [failure] failure:call_15fee139ea004d94ae051dae (open): {\"callId\":\"call_15fee139ea004d94ae051dae\"}\n- [failure] failure:call_f9d9b36196c847dc82608c76 (open): {\"callId\":\"call_f9d9b36196c847dc82608c76\"}\n- [failure] failure:call_f604309623854e8db350efdb (open): {\"callId\":\"call_f604309623854e8db350efdb\"}\n- [failure] failure:call_291435d5acad4865a6659fa4 (open): {\"callId\":\"call_291435d5acad4865a6659fa4\"}\n- [failure] failure:call_1955b1f4b9594718bbb7d615 (open): {\"callId\":\"call_1955b1f4b9594718bbb7d615\"}\n- [failure] failure:call_4ac3afdb6c774659bc7fa332 (open): {\"callId\":\"call_4ac3afdb6c774659bc7fa332\"}\n- [failure] failure:call_00_ly0bpxl7ta2duao7enfso6iz (open): {\"callId\":\"call_00_ly0bpxl7ta2duao7enfso6iz\"}\n- [failure] failure:call_00_m137cdnqobnhqg9ky8ahmxdr (open): {\"callId\":\"call_00_m137cdnqobnhqg9ky8ahmxdr\"}\n- [failure] failure:call_01_po60kn1ewaf4cpi8p4tmym3u (open): {\"callId\":\"call_01_po60kn1ewaf4cpi8p4tmym3u\"}\n\nRationale\n- The extraction rule is chronological, not positional: each release block carries its own publish timestamp that is hours earlier than the surrounding traffic records, so physical line order inside a shard and the numeric suffix of a shard name are both unreliable proxies for time. Enumerating shards and comparing embedded timestamps is the only reading of \"earliest\" that survives a shuffled or regrouped log set; short-circuiting on the first match found would return whatever the filesystem or filename ordering surfaced first, which is nondeterministic across hosts. That nondeterminism is why the shard set was reasoned about from naming patterns rather than confirmed by a directory listing — an assumption carried forward as [A1] — and why a failed probe is treated as an unresolved enumeration question rather than as evidence that a shard is absent.\n- \n- First-write-wins is applied per field, independently. A release record is an attestation of what was *first* published, so a later re-emission of an id or checksum is a second observation of the same publication; letting it overwrite would silently rewrite the historical fact the record exists to preserve. Conflating the fields into a single \"current release\" tuple was rejected for the same reason, as was treating the paired channel record as part of the identity tuple — it is context, not identity, and pairing must stay inside one release block rather than drifting across neighbouring records.\n- \n- Request telemetry and the error/503 lines were classified as triage material for postmortem work, not as release identity; pursuing them would have spent effort on noise. Re-reading a shard already summarized by folded history was judged redundant rather than corroborating, and the redundancy was accepted deliberately: repeating a read is cheap and auditable, whereas reconstructing a value from memory of a prior extract is not."
+      },
+      "checker": {
+        "pass": false,
+        "checks": [
+          {
+            "kind": "json_equals",
+            "pass": false,
+            "detail": "release.json is missing"
+          },
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "6 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "finalText": "",
+      "writtenFiles": [],
+      "probe": {
+        "schemaVersion": 1,
+        "retainTokens": 5079,
+        "widest": {
+          "startIdx": 6,
+          "endIdx": 23,
+          "start": 133,
+          "end": 186,
+          "tokens": 7111
+        },
+        "executed": {
+          "startIdx": 6,
+          "endIdx": 23,
+          "start": 133,
+          "end": 186,
+          "tokens": 7111
+        },
+        "gapTokens": 0,
+        "estimatedCheckpointTokens": 441,
+        "expectedReclaimTokens": 6670,
+        "expectedReclaimRatio": 0.9379834059907186,
+        "executedExpectedReclaimTokens": 6670,
+        "executedExpectedReclaimRatio": 0.9379834059907186,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "committed": true,
+        "actual": {
+          "checkpointTokens": 733,
+          "reclaimTokens": 6378,
+          "surfaceDeltaTokens": 6378,
+          "reconciled": true,
+          "shadowedHeuristicTokens": 7111
+        }
+      },
+      "lastEvents": [
+        {
+          "seq": 185,
+          "type": "tool/call",
+          "name": "read_file",
+          "args": "{\"path\": \"logs/deploy-stage-2.log\"}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 186,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "Error: ENOENT: no such file or directory, open 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r3-product-pilot-1\\T16-p1-E1-r1\\workspace\\logs\\deploy-stage-2.log'",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 189,
+          "type": "assistant",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": 1,
+          "error": null
+        },
+        {
+          "seq": 190,
+          "type": "tool/call",
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:a19ebf0d-4418-47b6-b10c-0b283684207d\",\"depth\":\"exact\",\"offset\":0,\"limit\":6}",
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 191,
+          "type": "tool/result",
+          "name": null,
+          "args": null,
+          "text": "{\n  \"checkpointId\": \"a19ebf0d-4418-47b6-b10c-0b283684207d\",\n  \"mode\": \"leaf\",\n  \"depth\": \"exact\",\n  \"page\": {\n    \"checkpointId\": \"a19ebf0d-4418-47b6-b10c-0b283684207d\",\n    \"totalMessages\": 10,\n    \"offset\": 0,\n    \"messages\": [\n      {\n  …",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 193,
+          "type": "compaction/start",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 195,
+          "type": "user",
+          "name": null,
+          "args": null,
+          "text": "[EF1 L cp:04c0e4ee-40b2-4cad-ab98-e2cdaf0814ec]\n\nOpen\n- [failure] failure:call_15fee139ea004d94ae051dae (open): {\"callId\":\"call_15fee139ea004d94ae051dae\"}\n- [failure] failure:call_f9d9b36196c847dc82608c76 (open): {\"callId\":\"call_f9d9b36196c…",
+          "toolCalls": null,
+          "error": null
+        },
+        {
+          "seq": 196,
+          "type": "compaction/end",
+          "name": null,
+          "args": null,
+          "text": null,
+          "toolCalls": null,
+          "error": null
+        }
+      ],
+      "toolSequence": [
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\": \".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\": \"cp:a19ebf0d-4418-47b6-b10c-0b283684207d\", \"depth\": \"exact\", \"offset\": 0, \"limit\": 6}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"depth\":\"exact\",\"limit\":10,\"offset\":6,\"ref\":\"cp:a19ebf0d-4418-47b6-b10c-0b283684207d\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-2.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-2.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"logs/deploy-stage-3.log\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\"logs\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\":\"README.md\"}"
+        },
+        {
+          "name": "list_dir",
+          "args": "{\"path\":\".\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"logs/deploy-1.log\"}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"deploy-stage\",\"limit\":10}"
+        },
+        {
+          "name": "context_search",
+          "args": "{\"query\":\"list_dir\",\"limit\":10}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"logs/deploy-stage-1.log\"}"
+        },
+        {
+          "name": "read_file",
+          "args": "{\"path\": \"logs/deploy-stage-2.log\"}"
+        },
+        {
+          "name": "context_recall",
+          "args": "{\"ref\":\"cp:a19ebf0d-4418-47b6-b10c-0b283684207d\",\"depth\":\"exact\",\"offset\":0,\"limit\":6}"
+        }
+      ],
+      "assistantTexts": [
+        "Reading read_file.",
+        "Reading read_file.",
+        "Reading read_file."
+      ],
+      "class": "step-limit-rationale-without-answer"
+    }
+  ],
+  "patterns": {
+    "stepLimitCells": 8,
+    "stepLimitWithNoWrite": 7,
+    "stepLimitByArm": {
+      "B0": 0,
+      "E0": 5,
+      "E1": 3
+    },
+    "recallByClass": {
+      "pass-direct-write": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "step-limit-empty-checkpoint-recall": [
+        8,
+        11,
+        11,
+        9,
+        16
+      ],
+      "wrong-source-value": [
+        0
+      ],
+      "pass-retained-tail": [
+        1
+      ],
+      "step-limit-rationale-without-answer": [
+        6,
+        5
+      ],
+      "finish-wrong-schema-and-compactions": [
+        0
+      ]
+    },
+    "note": "Step-limit failures spend live steps on read_file/list_dir and context_recall/search; most never reach write_file."
+  }
+}

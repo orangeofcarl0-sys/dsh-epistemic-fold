@@ -1,0 +1,4398 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP4",
+  "generatedAt": "2026-11-10T16:39:04.497Z",
+  "matrix": {
+    "contextWindow": 16384,
+    "maxTokens": 3000,
+    "messageBudget": 13384,
+    "thresholdTokens": 8192,
+    "minReclaimTokens": 600,
+    "minReclaimRatio": 0.25,
+    "admissions": [
+      "economic",
+      "legacy"
+    ],
+    "retainRatios": [
+      0.04,
+      0.16,
+      0.24
+    ],
+    "framings": [
+      "legacy",
+      "system-dedup"
+    ],
+    "checkpointTokens": [
+      180,
+      300,
+      500,
+      1000,
+      2000
+    ],
+    "note": "A keyless controlled adapter returns a checkpoint body of the requested size. No provider request was made."
+  },
+  "summary": {
+    "cases": 60,
+    "admissions": 2,
+    "framings": 2,
+    "retainRatios": [
+      0.04,
+      0.16,
+      0.24
+    ],
+    "checkpointTokens": [
+      180,
+      300,
+      500,
+      1000,
+      2000
+    ],
+    "widestObserved": {
+      "count": 60,
+      "min": 12384,
+      "median": 12384,
+      "max": 12384
+    },
+    "executedObserved": {
+      "count": 60,
+      "min": 9288,
+      "median": 10320,
+      "max": 11868
+    },
+    "gaps": {
+      "count": 60,
+      "min": 516,
+      "median": 2064,
+      "max": 3096
+    },
+    "falseAdmissions": 0,
+    "floorSensitivityFalseAdmissions": 3,
+    "admissionRefusals": 0,
+    "executionNulls": 0,
+    "engineCommitted": 60,
+    "engineRefused": 0,
+    "engineReturned": 60,
+    "engineProbeMissing": 0,
+    "byAdmission": {
+      "economic": {
+        "cases": 30,
+        "falseAdmissions": 0,
+        "executionNulls": 0,
+        "committed": 30,
+        "refused": 0
+      },
+      "legacy": {
+        "cases": 30,
+        "falseAdmissions": 0,
+        "executionNulls": 0,
+        "committed": 30,
+        "refused": 0
+      }
+    },
+    "byRetainRatio": {
+      "0.04": {
+        "cases": 20,
+        "falseAdmissions": 0,
+        "executionNulls": 0,
+        "medianGap": 516
+      },
+      "0.16": {
+        "cases": 20,
+        "falseAdmissions": 0,
+        "executionNulls": 0,
+        "medianGap": 2064
+      },
+      "0.24": {
+        "cases": 20,
+        "falseAdmissions": 0,
+        "executionNulls": 0,
+        "medianGap": 3096
+      }
+    }
+  },
+  "floorSensitivity": {
+    "cases": [
+      {
+        "retainRatio": 0.04,
+        "retainTokens": 535,
+        "widestReclaim": 11854,
+        "executedReclaim": 11338,
+        "floor": 11339,
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "admissionWouldAdmit": true,
+        "executionWouldAdmit": false,
+        "falseAdmission": true
+      },
+      {
+        "retainRatio": 0.16,
+        "retainTokens": 2141,
+        "widestReclaim": 11854,
+        "executedReclaim": 9790,
+        "floor": 9791,
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "admissionWouldAdmit": true,
+        "executionWouldAdmit": false,
+        "falseAdmission": true
+      },
+      {
+        "retainRatio": 0.24,
+        "retainTokens": 3212,
+        "widestReclaim": 11854,
+        "executedReclaim": 8758,
+        "floor": 8759,
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "admissionWouldAdmit": true,
+        "executionWouldAdmit": false,
+        "falseAdmission": true
+      }
+    ],
+    "falseAdmissions": 3,
+    "note": "Each floor is set one token above the executed-span reclaim, so the widest span is still admitted while the span execution would fold is not. At the DEFAULT floors the large-span matrix clears both sides; this sensitivity shows the same gap flips the verdict when the span is near the floor."
+  },
+  "findings": {
+    "gapIsSystematic": true,
+    "falseAdmissionObservedAtDefaultFloors": false,
+    "falseAdmissionObservedWithFloorSensitivity": true,
+    "executionNullObserved": false,
+    "note": "A false admission is admission=true on the widest span and execution=false on the span the engine would fold. It is a deterministic span mismatch, not a model failure. The default-floor matrix measures the gap; the floor-sensitivity cases pin the verdict flip."
+  },
+  "cases": [
+    {
+      "caseId": "economic-r0.04-legacy-c180",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 11573,
+            "surfaceDeltaTokens": 11573,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-legacy-c300",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 11453,
+            "surfaceDeltaTokens": 11453,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-legacy-c500",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 11253,
+            "surfaceDeltaTokens": 11253,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-legacy-c1000",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 10753,
+            "surfaceDeltaTokens": 10753,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-legacy-c2000",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 9753,
+            "surfaceDeltaTokens": 9753,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-system-dedup-c180",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 11667,
+            "surfaceDeltaTokens": 11667,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-system-dedup-c300",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 11547,
+            "surfaceDeltaTokens": 11547,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-system-dedup-c500",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 11347,
+            "surfaceDeltaTokens": 11347,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-system-dedup-c1000",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 10847,
+            "surfaceDeltaTokens": 10847,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.04-system-dedup-c2000",
+      "admission": "economic",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 9847,
+            "surfaceDeltaTokens": 9847,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-legacy-c180",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 9509,
+            "surfaceDeltaTokens": 9509,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-legacy-c300",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 9389,
+            "surfaceDeltaTokens": 9389,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-legacy-c500",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 9189,
+            "surfaceDeltaTokens": 9189,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-legacy-c1000",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 8689,
+            "surfaceDeltaTokens": 8689,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-legacy-c2000",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 7689,
+            "surfaceDeltaTokens": 7689,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-system-dedup-c180",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 9603,
+            "surfaceDeltaTokens": 9603,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-system-dedup-c300",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 9483,
+            "surfaceDeltaTokens": 9483,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-system-dedup-c500",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 9283,
+            "surfaceDeltaTokens": 9283,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-system-dedup-c1000",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 8783,
+            "surfaceDeltaTokens": 8783,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.16-system-dedup-c2000",
+      "admission": "economic",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 7783,
+            "surfaceDeltaTokens": 7783,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-legacy-c180",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 8219,
+            "surfaceDeltaTokens": 8219,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-legacy-c300",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 8099,
+            "surfaceDeltaTokens": 8099,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-legacy-c500",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 7899,
+            "surfaceDeltaTokens": 7899,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-legacy-c1000",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 7399,
+            "surfaceDeltaTokens": 7399,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-legacy-c2000",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 6399,
+            "surfaceDeltaTokens": 6399,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-system-dedup-c180",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 8313,
+            "surfaceDeltaTokens": 8313,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-system-dedup-c300",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 8193,
+            "surfaceDeltaTokens": 8193,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-system-dedup-c500",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 7993,
+            "surfaceDeltaTokens": 7993,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-system-dedup-c1000",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 7493,
+            "surfaceDeltaTokens": 7493,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "economic-r0.24-system-dedup-c2000",
+      "admission": "economic",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": {
+          "admitted": true,
+          "reason": "admitted",
+          "reclaim": {
+            "spanTokens": 12384,
+            "checkpointTokens": 530,
+            "reclaimTokens": 11854,
+            "reclaimRatio": 0.9572028423772609
+          }
+        },
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 6493,
+            "surfaceDeltaTokens": 6493,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-legacy-c180",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 11573,
+            "surfaceDeltaTokens": 11573,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-legacy-c300",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 11453,
+            "surfaceDeltaTokens": 11453,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-legacy-c500",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 11253,
+            "surfaceDeltaTokens": 11253,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-legacy-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 10753,
+            "surfaceDeltaTokens": 10753,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-legacy-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 9753,
+            "surfaceDeltaTokens": 9753,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-system-dedup-c180",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 11667,
+            "surfaceDeltaTokens": 11667,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-system-dedup-c300",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 11547,
+            "surfaceDeltaTokens": 11547,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-system-dedup-c500",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 11347,
+            "surfaceDeltaTokens": 11347,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-system-dedup-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 10847,
+            "surfaceDeltaTokens": 10847,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.04-system-dedup-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.04,
+      "retainTokens": 535,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 11868,
+        "gapTokens": 516,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 11338,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 655,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 45,
+            "start": 2,
+            "end": 136,
+            "tokens": 11868
+          },
+          "gapTokens": 516,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 11338,
+          "executedExpectedReclaimRatio": 0.9553420963936636,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 9847,
+            "surfaceDeltaTokens": 9847,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 11868
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-legacy-c180",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 9509,
+            "surfaceDeltaTokens": 9509,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-legacy-c300",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 9389,
+            "surfaceDeltaTokens": 9389,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-legacy-c500",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 9189,
+            "surfaceDeltaTokens": 9189,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-legacy-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 8689,
+            "surfaceDeltaTokens": 8689,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-legacy-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 7689,
+            "surfaceDeltaTokens": 7689,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-system-dedup-c180",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 9603,
+            "surfaceDeltaTokens": 9603,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-system-dedup-c300",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 9483,
+            "surfaceDeltaTokens": 9483,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-system-dedup-c500",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 9283,
+            "surfaceDeltaTokens": 9283,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-system-dedup-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 8783,
+            "surfaceDeltaTokens": 8783,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.16-system-dedup-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.16,
+      "retainTokens": 2141,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 10320,
+        "gapTokens": 2064,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 9790,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 2621,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 37,
+            "start": 2,
+            "end": 112,
+            "tokens": 9804
+          },
+          "gapTokens": 2580,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 9274,
+          "executedExpectedReclaimRatio": 0.9459404324765401,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 7783,
+            "surfaceDeltaTokens": 7783,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 9804
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-legacy-c180",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 295,
+            "reclaimTokens": 8219,
+            "surfaceDeltaTokens": 8219,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-legacy-c300",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 415,
+            "reclaimTokens": 8099,
+            "surfaceDeltaTokens": 8099,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-legacy-c500",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 615,
+            "reclaimTokens": 7899,
+            "surfaceDeltaTokens": 7899,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-legacy-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1115,
+            "reclaimTokens": 7399,
+            "surfaceDeltaTokens": 7399,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-legacy-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "legacy",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2115,
+            "reclaimTokens": 6399,
+            "surfaceDeltaTokens": 6399,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-system-dedup-c180",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 180,
+      "checkpointChars": 720,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 201,
+            "reclaimTokens": 8313,
+            "surfaceDeltaTokens": 8313,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-system-dedup-c300",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 300,
+      "checkpointChars": 1200,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 321,
+            "reclaimTokens": 8193,
+            "surfaceDeltaTokens": 8193,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-system-dedup-c500",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 500,
+      "checkpointChars": 2000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 521,
+            "reclaimTokens": 7993,
+            "surfaceDeltaTokens": 7993,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-system-dedup-c1000",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 1000,
+      "checkpointChars": 4000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 1021,
+            "reclaimTokens": 7493,
+            "surfaceDeltaTokens": 7493,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    },
+    {
+      "caseId": "legacy-r0.24-system-dedup-c2000",
+      "admission": "legacy",
+      "retainRatio": 0.24,
+      "retainTokens": 3212,
+      "framing": "system-dedup",
+      "checkpointTokensRequested": 2000,
+      "checkpointChars": 8000,
+      "measurementTotalTokens": 12642,
+      "directProbe": {
+        "widestTokens": 12384,
+        "executedTokens": 9288,
+        "gapTokens": 3096,
+        "estimatedCheckpointTokens": 530,
+        "admissionWouldAdmit": true,
+        "admissionReason": "admitted",
+        "executionWouldAdmit": true,
+        "executionReason": "admitted",
+        "falseAdmission": false,
+        "expectedReclaimTokens": 11854,
+        "executedExpectedReclaimTokens": 8758,
+        "probeError": null
+      },
+      "engine": {
+        "outcome": "returned-result",
+        "error": null,
+        "admission": null,
+        "probe": {
+          "schemaVersion": 1,
+          "retainTokens": 3932,
+          "widest": {
+            "startIdx": 0,
+            "endIdx": 47,
+            "start": 2,
+            "end": 142,
+            "tokens": 12384
+          },
+          "executed": {
+            "startIdx": 0,
+            "endIdx": 32,
+            "start": 2,
+            "end": 98,
+            "tokens": 8514
+          },
+          "gapTokens": 3870,
+          "estimatedCheckpointTokens": 530,
+          "expectedReclaimTokens": 11854,
+          "expectedReclaimRatio": 0.9572028423772609,
+          "executedExpectedReclaimTokens": 7984,
+          "executedExpectedReclaimRatio": 0.9377495889123796,
+          "admissionWouldAdmit": true,
+          "admissionReason": "admitted",
+          "executionWouldAdmit": true,
+          "executionReason": "admitted",
+          "falseAdmission": false,
+          "committed": true,
+          "actual": {
+            "checkpointTokens": 2021,
+            "reclaimTokens": 6493,
+            "surfaceDeltaTokens": 6493,
+            "reconciled": true,
+            "shadowedHeuristicTokens": 8514
+          }
+        }
+      }
+    }
+  ],
+  "note": "The direct probe is computed on the same measurement the engine used. The engine probe is the post-control-flow observation and may be absent when economic admission refused before the loop."
+}

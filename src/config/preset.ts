@@ -7,9 +7,9 @@
  * replaced that with one mode name. RC2 extends the vocabulary to the THREE
  * TIERS the product actually exposes:
  *
- *   economy    lowest cost; quality measured at parity with Basic
- *   balanced   a small premium for checkpoints that carry narrative
- *   quality    a larger premium for maximum steadiness
+ *   economy    lowest cost; the current rationale-bearing tier is unmeasured
+ *   balanced   a larger verbatim tail and a larger digest hint
+ *   quality    the largest digest hint, at the same retention as balanced
  *
  * `legacy` remains the engine's own default and is deliberately NOT a tier: it
  * is what the engine does when no mode is named, and it is the frozen research
@@ -24,41 +24,42 @@
  *    the difference — so a tier can only choose among settings the engine
  *    already supports, and never becomes a second source of truth for policy.
  *
- * 2. **A tier declares what is MEASURED and what is a HYPOTHESIS.** Only
- *    `economy` has measured end-to-end evidence (RC1.3: parity with Basic at
- *    roughly a seventeenth of the cost, reproduced over two independent n=9
- *    runs). `balanced` and `quality` are composed from capabilities the engine
- *    already has, and their steadiness benefit is a DECLARED HYPOTHESIS with no
- *    live measurement behind it yet. Every tier carries that status, so no
- *    report can present an unmeasured rung as a measured one — the same rule
- *    that keeps OPEN distinct from PASS everywhere else in this project.
+ * 2. **A tier declares what is MEASURED and what is a HYPOTHESIS, for THIS
+ *    effective configuration.** RC1.3 measured the explicit zero-LLM economy
+ *    profile (`semanticMode: none`) at parity with Basic. Today's economy tier
+ *    adds a rationale call and system-dedup framing, so that historical result
+ *    does NOT transfer to it. The current economy, balanced and quality tiers
+ *    are therefore all `hypothesis`: their mechanisms are supported and their
+ *    values are shipped, but no end-to-end measurement of these exact configs
+ *    exists. The evidence detail names the profile that was measured, rather
+ *    than a tier name that can drift after the measurement.
  *
  * The ladder varies only the levers that plausibly buy STEADINESS, and holds
  * everything else identical, so a difference between two tiers is attributable
  * to the one lever that changed:
  *
- *   economy   marker checkpoints, default retention
- *   balanced  + a larger verbatim recent tail   (RETENTION FIRST)
- *   quality   + a rationale checkpoint as well
+ *   economy   economic admission + rationale digest (400) + default retention
+ *   balanced  + a larger verbatim recent tail and a larger digest (800)
+ *   quality   + the largest digest (1600), same retention as balanced
  *
- * ## Why retention comes before rationale (RC2.1)
+ * ## Why retention comes before a larger digest (RC2.1)
  *
- * RC2 ordered the ladder the other way: `balanced` bought the semantic face
- * (`semanticMode: rationale`, one auxiliary call per fold) and `quality` added
- * retention. That order is wrong for two reasons:
+ * RC2 ordered the ladder the other way: `balanced` bought a larger rationale
+ * hint and `quality` added retention. That order is wrong for two reasons:
  *
  *  1. **Retention is the stronger mechanism.** A fact inside the retained tail
  *     never leaves the surface at all, so it depends on neither the checkpoint
  *     nor the model choosing to retrieve. A rationale checkpoint still has to be
- *     READ by the model, and RC1.3 measured that the marker-only economy preset
- *     already reaches parity without it.
+ *     READ by the model. The historical zero-LLM profile reached parity without
+ *     a digest, but that profile is not today's economy tier; every current tier
+ *     carries one.
  *  2. **Retention is the cheaper first step to justify.** It costs context on
  *     every request but no auxiliary call, and it does not add a provider round
  *     trip to every fold.
  *
- * So the cheap rung buys the stronger mechanism, and the expensive rung adds the
- * one whose measured case is weaker. That ordering is a DESIGN decision, not a
- * measurement — see each tier's `evidence` field.
+ * So the cheap rung buys the stronger mechanism, and the expensive rung adds
+ * the larger digest whose end-to-end case is weaker. That ordering is a DESIGN
+ * decision, not a measurement — see each tier's `evidence` field.
  *
  * @module dsh-epistemic-fold/preset
  */
@@ -200,14 +201,22 @@ export interface TierDefinition {
   readonly evidence: TierEvidenceStatus
   /** The measurement behind the claim, or the statement that none exists. */
   readonly evidenceDetail: string
+  /**
+   * The effective-config profile the evidence actually measured, when one
+   * exists. This is what keeps a claim bound to a CONFIG rather than to a tier
+   * name that can change after the measurement.
+   */
+  readonly evidenceProfile?: string
 }
 
 /**
  * The three tiers.
  *
- * `economy`'s values are EXACTLY the configuration R3-B/C measured and RC1.3
- * re-verified — the ladder's first rung must not drift from the tested policy,
- * or every cost figure attributed to it becomes wrong.
+ * The ladder's first rung carries the current product policy. It is NOT the
+ * configuration RC1.3 measured: RC1.3 used the explicit zero-LLM profile
+ * (`semanticMode: none`), while this rung adds a rationale call and system-dedup
+ * framing. The values are shipped; the quality and cost claim for these exact
+ * values is unmeasured. Do not attach RC1.3's parity result to this rung.
  */
 export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
   economy: {
@@ -238,13 +247,17 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
        */
       framingMode: 'system-dedup',
     },
-    summary: 'Lowest cost; quality measured at parity with Basic',
+    summary: 'Lowest cost; the current rationale-bearing tier is not yet measured',
     intent: 'Long sessions where cost matters and retrieval is acceptable',
     steadinessMechanism: 'none — this tier makes no steadiness claim',
-    evidence: 'measured',
+    evidence: 'hypothesis',
     evidenceDetail:
-      'RC1.3: un-hinted 3.00/3 n=9, matching Basic, searching 9/9; reproduced over '
-      + 'two independent runs. RC1.3.1 re-ran it after the chronology change.',
+      'No live measurement of this effective configuration. RC1.3 measured the '
+      + 'explicit zero-LLM profile (semanticMode: none) at parity with Basic; the '
+      + 'current tier adds a rationale call and system-dedup framing, so that result '
+      + 'does not transfer. The mechanism is supported; the end-to-end quality and '
+      + 'cost of this tier are not measured.',
+    evidenceProfile: 'rc1.3-zero-llm-economy (semanticMode: none)',
   },
   balanced: {
     name: 'balanced',
@@ -291,9 +304,9 @@ export const TIERS: Readonly<Record<TierModeName, TierDefinition>> = {
        * A rationale checkpoint carries the conversation's own words, so a fact
        * does not depend on the model choosing to retrieve it. RC1.2-C priced the
        * call from its real size; RC1.2-B proved both semantic modes can recover
-       * folded facts. What is NOT measured is whether paying for it improves
-       * end-to-end steadiness — and RC1.3 found economy already reaches parity
-       * without it, which weakens rather than supports the case.
+       * folded facts. What is NOT measured is whether paying for the larger digest
+       * improves end-to-end steadiness. The zero-LLM economy profile's RC1.3
+       * parity result does not apply to this rationale-bearing tier.
        */
       semanticMode: 'rationale',
       rationaleHintTokens: QUALITY_RATIONALE_HINT_TOKENS,

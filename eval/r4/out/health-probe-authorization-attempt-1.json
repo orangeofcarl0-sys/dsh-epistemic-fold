@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 transport health probe authorization",
+  "probeId": "r4-transport-health-1",
+  "design": "eval/r4/out/transport-health-probe.json",
+  "designSha256": "02d00a8d1664f2b2ee1eed6a0fe8bac61a83d6227f474e17421fa2fdcd056abf",
+  "granted": true,
+  "grantedAt": "2026-11-13T18:02:06.580Z",
+  "grantedBy": "user instruction: \"均授权，继续\" (2026-11-14)",
+  "basis": "The user authorized the representative transport health probe and the 36-cell budget-sensitivity campaign after the offline preflight.",
+  "limits": {
+    "requests": 16,
+    "inputTokens": 2000000,
+    "outputTokens": 100000,
+    "wallClockMs": 1800000,
+    "paidConcurrency": 1,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "stopConditions": [
+    "Any LIVE_TRANSPORT or ECONNRESET/UND_ERR_SOCKET stops the probe immediately.",
+    "Any response without usage stops the probe immediately.",
+    "Any HTTP status outside 200 stops the probe immediately.",
+    "No automatic retry after a transport failure.",
+    "A failed probe does not authorize the 36-cell campaign."
+  ],
+  "note": "This grant is bound to the design SHA-256 above. A changed design needs a new grant. It does not authorize the campaign by itself."
+}

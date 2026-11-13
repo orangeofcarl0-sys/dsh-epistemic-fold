@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R1 ablation",
+  "generatedAt": "2026-11-09T19:45:47.198Z",
+  "campaign": "e2e-lg-confirm-1",
+  "design": "16c1d5e9ecd5a14d3f7a6a92805fbea9c28570a4175fb2aad54e94fb9db7c72f",
+  "excludedTemplates": [],
+  "cells": 120,
+  "usage": {
+    "requests": 514,
+    "inputTokens": 3703265,
+    "outputTokens": 72960,
+    "wallClockMs": 1262874
+  },
+  "byArm": {
+    "E0": {
+      "cells": 24,
+      "passed": 9,
+      "rate": 0.375,
+      "requests": 83,
+      "inputTokens": 678175,
+      "outputTokens": 10569
+    },
+    "E0-L": {
+      "cells": 24,
+      "passed": 15,
+      "rate": 0.625,
+      "requests": 77,
+      "inputTokens": 842370,
+      "outputTokens": 9963
+    },
+    "E0-G": {
+      "cells": 24,
+      "passed": 15,
+      "rate": 0.625,
+      "requests": 145,
+      "inputTokens": 919738,
+      "outputTokens": 19764
+    },
+    "E0-LG": {
+      "cells": 24,
+      "passed": 16,
+      "rate": 0.667,
+      "requests": 113,
+      "inputTokens": 967562,
+      "outputTokens": 15937
+    },
+    "E1": {
+      "cells": 24,
+      "passed": 18,
+      "rate": 0.75,
+      "requests": 96,
+      "inputTokens": 295420,
+      "outputTokens": 16727
+    }
+  },
+  "byTemplate": {
+    "T10": {
+      "E0": {
+        "cells": 4,
+        "passed": 0,
+        "rate": 0,
+        "requests": 27,
+        "inputTokens": 224039,
+        "outputTokens": 3882
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 21,
+        "inputTokens": 204441,
+        "outputTokens": 2764
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 59,
+        "inputTokens": 425261,
+        "outputTokens": 8116
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 44,
+        "inputTokens": 288114,
+        "outputTokens": 6977
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 19,
+        "inputTokens": 39077,
+        "outputTokens": 4082
+      }
+    },
+    "T2": {
+      "E0": {
+        "cells": 4,
+        "passed": 0,
+        "rate": 0,
+        "requests": 8,
+        "inputTokens": 137109,
+        "outputTokens": 1878
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 14,
+        "inputTokens": 331414,
+        "outputTokens": 2934
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 24,
+        "inputTokens": 141223,
+        "outputTokens": 4632
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 0,
+        "rate": 0,
+        "requests": 19,
+        "inputTokens": 349107,
+        "outputTokens": 3868
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 12,
+        "inputTokens": 67422,
+        "outputTokens": 2815
+      }
+    },
+    "T4": {
+      "E0": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 14,
+        "inputTokens": 60511,
+        "outputTokens": 1852
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 12,
+        "inputTokens": 56858,
+        "outputTokens": 1031
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 1,
+        "rate": 0.25,
+        "requests": 19,
+        "inputTokens": 79556,
+        "outputTokens": 2595
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 12,
+        "inputTokens": 56706,
+        "outputTokens": 1083
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 12,
+        "inputTokens": 56713,
+        "outputTokens": 1750
+      }
+    },
+    "T7": {
+      "E0": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 8,
+        "inputTokens": 70776,
+        "outputTokens": 428
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 3,
+        "rate": 0.75,
+        "requests": 7,
+        "inputTokens": 70566,
+        "outputTokens": 593
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 8,
+        "inputTokens": 70772,
+        "outputTokens": 430
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 9,
+        "inputTokens": 70868,
+        "outputTokens": 561
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 3,
+        "rate": 0.75,
+        "requests": 20,
+        "inputTokens": 38616,
+        "outputTokens": 2853
+      }
+    },
+    "T8": {
+      "E0": {
+        "cells": 4,
+        "passed": 3,
+        "rate": 0.75,
+        "requests": 8,
+        "inputTokens": 68668,
+        "outputTokens": 441
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 10,
+        "inputTokens": 69042,
+        "outputTokens": 510
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 8,
+        "inputTokens": 68614,
+        "outputTokens": 407
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 3,
+        "rate": 0.75,
+        "requests": 9,
+        "inputTokens": 68654,
+        "outputTokens": 548
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 20,
+        "inputTokens": 37210,
+        "outputTokens": 2666
+      }
+    },
+    "T9": {
+      "E0": {
+        "cells": 4,
+        "passed": 3,
+        "rate": 0.75,
+        "requests": 18,
+        "inputTokens": 117072,
+        "outputTokens": 2088
+      },
+      "E0-L": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 13,
+        "inputTokens": 110049,
+        "outputTokens": 2131
+      },
+      "E0-G": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 27,
+        "inputTokens": 134312,
+        "outputTokens": 3584
+      },
+      "E0-LG": {
+        "cells": 4,
+        "passed": 4,
+        "rate": 1,
+        "requests": 20,
+        "inputTokens": 134113,
+        "outputTokens": 2900
+      },
+      "E1": {
+        "cells": 4,
+        "passed": 2,
+        "rate": 0.5,
+        "requests": 13,
+        "inputTokens": 56382,
+        "outputTokens": 2561
+      }
+    }
+  },
+  "comparisons": [
+    {
+      "left": "E0-L",
+      "right": "E0",
+      "pairs": 24,
+      "both": 7,
+      "neither": 7,
+      "leftOnly": 8,
+      "rightOnly": 2,
+      "riskDifference": 0.25,
+      "mcnemarP": 0.1094,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T2-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s1",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T4-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s1",
+          "left": 1,
+          "right": 1,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T8-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s1",
+          "left": 1,
+          "right": 2,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T9-s2",
+          "left": 1,
+          "right": 1,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T10-s1",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        }
+      ],
+      "instancesFavoringLeft": 6,
+      "instancesFavoringRight": 1,
+      "instancesTied": 5
+    },
+    {
+      "left": "E0-G",
+      "right": "E0",
+      "pairs": 24,
+      "both": 6,
+      "neither": 6,
+      "leftOnly": 9,
+      "rightOnly": 3,
+      "riskDifference": 0.25,
+      "mcnemarP": 0.146,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T2-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s1",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T4-s2",
+          "left": 0,
+          "right": 1,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T7-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T8-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s1",
+          "left": 1,
+          "right": 2,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T9-s2",
+          "left": 1,
+          "right": 1,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T10-s1",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s2",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        }
+      ],
+      "instancesFavoringLeft": 7,
+      "instancesFavoringRight": 2,
+      "instancesTied": 3
+    },
+    {
+      "left": "E0-LG",
+      "right": "E0",
+      "pairs": 24,
+      "both": 8,
+      "neither": 7,
+      "leftOnly": 8,
+      "rightOnly": 1,
+      "riskDifference": 0.292,
+      "mcnemarP": 0.0391,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T2-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s1",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T4-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T8-s1",
+          "left": 1,
+          "right": 2,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T9-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s1",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T10-s2",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        }
+      ],
+      "instancesFavoringLeft": 7,
+      "instancesFavoringRight": 1,
+      "instancesTied": 4
+    },
+    {
+      "left": "E0-LG",
+      "right": "E0-L",
+      "pairs": 24,
+      "both": 12,
+      "neither": 5,
+      "leftOnly": 4,
+      "rightOnly": 3,
+      "riskDifference": 0.042,
+      "mcnemarP": 1,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 0,
+          "right": 1,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T2-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s2",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T7-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T8-s1",
+          "left": 1,
+          "right": 2,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T9-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s1",
+          "left": 0,
+          "right": 1,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T10-s2",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        }
+      ],
+      "instancesFavoringLeft": 4,
+      "instancesFavoringRight": 3,
+      "instancesTied": 5
+    },
+    {
+      "left": "E0-LG",
+      "right": "E0-G",
+      "pairs": 24,
+      "both": 11,
+      "neither": 4,
+      "leftOnly": 5,
+      "rightOnly": 4,
+      "riskDifference": 0.042,
+      "mcnemarP": 1,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 0,
+          "right": 2,
+          "n": 2,
+          "difference": -1
+        },
+        {
+          "task": "T2-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T4-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T4-s2",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T7-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T8-s1",
+          "left": 1,
+          "right": 2,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T9-s1",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s1",
+          "left": 0,
+          "right": 1,
+          "n": 2,
+          "difference": -0.5
+        },
+        {
+          "task": "T10-s2",
+          "left": 1,
+          "right": 1,
+          "n": 2,
+          "difference": 0
+        }
+      ],
+      "instancesFavoringLeft": 4,
+      "instancesFavoringRight": 3,
+      "instancesTied": 5
+    },
+    {
+      "left": "E1",
+      "right": "E0",
+      "pairs": 24,
+      "both": 6,
+      "neither": 3,
+      "leftOnly": 12,
+      "rightOnly": 3,
+      "riskDifference": 0.375,
+      "mcnemarP": 0.0352,
+      "instances": [
+        {
+          "task": "T2-s1",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T2-s2",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T4-s1",
+          "left": 2,
+          "right": 0,
+          "n": 2,
+          "difference": 1
+        },
+        {
+          "task": "T4-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T7-s1",
+          "left": 1,
+          "right": 1,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T7-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T8-s1",
+          "left": 2,
+          "right": 2,
+          "n": 2,
+          "difference": 0
+        },
+        {
+          "task": "T8-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T9-s1",
+          "left": 0,
+          "right": 2,
+          "n": 2,
+          "difference": -1
+        },
+        {
+          "task": "T9-s2",
+          "left": 2,
+          "right": 1,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s1",
+          "left": 1,
+          "right": 0,
+          "n": 2,
+          "difference": 0.5
+        },
+        {
+          "task": "T10-s2",
+          "left": 0,
+          "right": 0,
+          "n": 2,
+          "difference": 0
+        }
+      ],
+      "instancesFavoringLeft": 8,
+      "instancesFavoringRight": 1,
+      "instancesTied": 3
+    }
+  ],
+  "taskPrompt": {
+    "lostCells": 44,
+    "visibleCells": 76,
+    "byArmLost": {
+      "E0": {
+        "cells": 12,
+        "passed": 2,
+        "rate": 0.167,
+        "requests": 56,
+        "inputTokens": 471512,
+        "outputTokens": 8511
+      },
+      "E0-L": {
+        "cells": 9,
+        "passed": 2,
+        "rate": 0.222,
+        "requests": 41,
+        "inputTokens": 592273,
+        "outputTokens": 6826
+      },
+      "E0-G": {
+        "cells": 11,
+        "passed": 4,
+        "rate": 0.364,
+        "requests": 105,
+        "inputTokens": 652546,
+        "outputTokens": 15369
+      },
+      "E0-LG": {
+        "cells": 10,
+        "passed": 3,
+        "rate": 0.3,
+        "requests": 77,
+        "inputTokens": 733907,
+        "outputTokens": 13049
+      },
+      "E1": {
+        "cells": 2,
+        "passed": 0,
+        "rate": 0,
+        "requests": 11,
+        "inputTokens": 22071,
+        "outputTokens": 2362
+      }
+    },
+    "byArmVisible": {
+      "E0": {
+        "cells": 12,
+        "passed": 7,
+        "rate": 0.583,
+        "requests": 27,
+        "inputTokens": 206663,
+        "outputTokens": 2058
+      },
+      "E0-L": {
+        "cells": 15,
+        "passed": 13,
+        "rate": 0.867,
+        "requests": 36,
+        "inputTokens": 250097,
+        "outputTokens": 3137
+      },
+      "E0-G": {
+        "cells": 13,
+        "passed": 11,
+        "rate": 0.846,
+        "requests": 40,
+        "inputTokens": 267192,
+        "outputTokens": 4395
+      },
+      "E0-LG": {
+        "cells": 14,
+        "passed": 13,
+        "rate": 0.929,
+        "requests": 36,
+        "inputTokens": 233655,
+        "outputTokens": 2888
+      },
+      "E1": {
+        "cells": 22,
+        "passed": 18,
+        "rate": 0.818,
+        "requests": 85,
+        "inputTokens": 273349,
+        "outputTokens": 14365
+      }
+    }
+  },
+  "failureStages": {
+    "E0": {
+      "produce": 8,
+      "write": 4,
+      "verify": 3
+    },
+    "E0-L": {
+      "write": 4,
+      "produce": 4,
+      "verify": 1
+    },
+    "E0-G": {
+      "verify": 6,
+      "schema": 3
+    },
+    "E0-LG": {
+      "schema": 2,
+      "produce": 2,
+      "verify": 4
+    },
+    "E1": {
+      "verify": 3,
+      "write": 2,
+      "produce": 1
+    }
+  },
+  "sources": {
+    "results": "eval/e2e/out/results-e2e-lg-confirm-1.json",
+    "resultsSha256": "8d7ff73ecdbf064ab33327b889cc42cd80fec14f037eef051c27976d7903ce2f",
+    "stageAttribution": "eval/e2e/out/stage-attribution.json",
+    "stageAttributionSha256": "4807d3aa26d53b77848f42021f7ce724c2bb73bef4a7d9dcdc0b30339b5e3ebe"
+  },
+  "note": "Cell-level McNemar is descriptive; the 12 task-instance differences are the primary grouping. The task-prompt split is a covariate, not a post-hoc exclusion."
+}

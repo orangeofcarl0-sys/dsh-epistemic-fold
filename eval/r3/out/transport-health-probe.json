@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP3",
+  "probeId": "r3-transport-health-1",
+  "generatedAt": "2026-11-10T16:38:10.244Z",
+  "status": "design-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "source": "zcode config local proxy",
+    "baseUrlFrom": "resolved-at-run",
+    "note": "Resolve the route at execution time; do not hard-code the proxy port into a committed manifest."
+  },
+  "why": "A short health check cannot exercise the long summary/primary payload that failed. These profiles replay the T13 shape and the successful upper range.",
+  "payloadProfiles": [
+    {
+      "id": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "taskInstance": "T13-s1",
+      "messageChars": 75603,
+      "maxMessageChars": 73468,
+      "why": "The exact summary shape of the first transport-failed T13 cell. It is not a short prompt."
+    },
+    {
+      "id": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "taskInstance": "T13-s2",
+      "messageChars": 75608,
+      "maxMessageChars": 73473,
+      "why": "The second failed T13 cell used the same 73k-character tool result and a 1.8k-character summary instruction."
+    },
+    {
+      "id": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "taskInstance": "T13-s1",
+      "messageChars": 100963,
+      "maxMessageChars": 73468,
+      "why": "The primary request carries the same long history; the failure was not confined to the auxiliary call."
+    },
+    {
+      "id": "summary-successful-upper-range",
+      "purpose": "summary",
+      "taskInstance": "T13-s1",
+      "messageChars": 149073,
+      "maxMessageChars": 149073,
+      "why": "The largest successful B0 summary in the archive. It covers the payload range above the failed requests."
+    }
+  ],
+  "attemptsPerProfile": 4,
+  "totalRequests": 16,
+  "acceptance": {
+    "httpSuccess": "16/16",
+    "usagePresent": "16/16",
+    "transportErrors": 0,
+    "nullUsage": 0,
+    "p95DurationMsMax": 60000,
+    "modelMustMatch": "deepseek-v4.1-flash"
+  },
+  "stopConditions": [
+    "Any LIVE_TRANSPORT or ECONNRESET/UND_ERR_SOCKET stops the probe immediately.",
+    "Any response without usage stops the probe immediately.",
+    "Any HTTP status outside 200 stops the probe immediately.",
+    "No automatic retry after a transport failure.",
+    "A failed probe does not authorize the confirm completion."
+  ],
+  "envelope": {
+    "requests": 16,
+    "inputTokens": 2000000,
+    "outputTokens": 100000,
+    "wallClockMs": 1800000,
+    "paidConcurrency": 1,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "inputs": {
+    "diagnosis": {
+      "path": "eval/r3/out/transport-diagnosis.json",
+      "sha256": "2c8e842a22a1d2a86188fd2bfa0dc77b5796f293b75b1b6be65f2cb26d3304dc"
+    },
+    "task": {
+      "path": "eval/e2e/tasks-r2/T13-s1.json",
+      "sha256": "040961b331ddd08e70b3d1fe2a3411fddc751e9d01a1212b885bb958f0a429d1"
+    },
+    "r2ConfirmManifest": {
+      "path": "eval/e2e/out/manifest-e2e-r2-confirm-1.json",
+      "sha256": "bc87d248b0c66fde45e01040934fa006a37bb8f832cac8aac1ffa17163773d7d"
+    }
+  },
+  "decision": "Do not run the confirm completion until this probe passes under a new authorization. If it fails, keep the confirm partial and stop consuming; do not retry indefinitely.",
+  "limits": [
+    "The probe is model calls, so it requires a new explicit grant and budget.",
+    "It measures route stability for these payload shapes, not task quality.",
+    "The probe does not pool with the pilot or confirm and does not change either ledger."
+  ],
+  "taskAvailable": true
+}

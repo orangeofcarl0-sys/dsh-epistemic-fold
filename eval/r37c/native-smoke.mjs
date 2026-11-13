@@ -45,7 +45,7 @@ import { apply as applyJsonlPersistence } from '@deepseek-ai/dsh-session-persist
 import { writeJson } from '../r37/src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'native-smoke.json')
+const OUT = process.env['R37C_NATIVE_OUT'] ?? join(HERE, 'out', 'native-smoke.json')
 const MODEL = 'r37c-scripted-native'
 const PROVIDER = 'r37c-scripted'
 

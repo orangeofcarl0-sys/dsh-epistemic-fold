@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP5",
+  "generatedAt": "2026-11-11T09:24:27.960Z",
+  "decision": "no-product-candidate",
+  "deploymentHold": true,
+  "candidate": null,
+  "confirmStatus": "terminated-partial",
+  "furtherConfirmCalls": false,
+  "reasons": [
+    "The old confirm is explicitly terminated as a stress-lane result (23 valid, 1 unresolved, 30 never-started); it is not a product-representative treatment.",
+    "The confirm is partial (23/54 valid; 1 unresolved; 30 never-started) and is not a confirmatory result.",
+    "The valid confirm cells cover T11-T13 only; T14-T16 have no valid cells, so the subset is task-type biased.",
+    "E1 vs B0 paired checker difference is 0 in the confirm and +1 in the pilot; neither is a powered quality estimate.",
+    "Recorded economics direction is unstable: the pilot shows lower uncached input, the confirm shows higher uncached input; cache-read direction is opposite.",
+    "Cost validity is incomplete: 3 confirm cells and 3 pilot cells have null usage; only 5/7 and 4/6 B0/E1 pairs are cost-valid.",
+    "The R2 E1 treatment is not the shipped economy preset: legacy framing, retain 0.04, 16k window, and hint 400 effective vs 800 declared.",
+    "No product-representative lane has run; the stress lane cannot support a product candidate claim.",
+    "No verifiable USD price is recorded; token-resource deltas are not a monetary comparison."
+  ],
+  "nextEvidence": [
+    "A new explicit authorization is required to complete the 31 missing confirm cells or to terminate the confirm and preserve the partial conclusion.",
+    "A product-representative lane with shipped presets is required before any product candidate claim.",
+    "A representative B0 summary/primary health probe must pass before any completion run."
+  ],
+  "limits": [
+    "The confirm is partial: 23 valid, 1 unresolved, 30 never-started. It is not a confirmatory result.",
+    "T14, T15 and T16 have no valid confirm cells; the valid subset is not a random sample of the 54-cell design.",
+    "Only 5 of 7 confirm B0/E1 pairs and 4 of 6 pilot pairs have complete usage on both sides.",
+    "The stress lane uses a 16k window, retain 0.04 and legacy framing; it is not the shipped economy/balanced/quality preset.",
+    "One model, one local route, one machine. No USD price is recorded or claimed.",
+    "R2 live reports predate the R3 leaf-span probe; exact-span economics for those cells is unavailable, not zero."
+  ],
+  "note": "This is a decision not to promote a candidate on the current evidence, not a claim that E1 is ineffective. The stress-lane mechanism and the pilot direction remain research evidence."
+}

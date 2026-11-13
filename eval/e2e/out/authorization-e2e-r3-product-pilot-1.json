@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "campaign": "e2e-r3-product-pilot-1",
+  "manifest": "eval/e2e/out/manifest-e2e-r3-product-pilot-1.json",
+  "manifestSha256": "885bb53eaf5bc4bd0b76633dde18dccb66550eb5008302c82425046d6febfeab",
+  "granted": true,
+  "grantedAt": "2026-11-11T09:51:34.276Z",
+  "grantedBy": "user instruction: \"按推荐执行，均授权\" (2026-11-11)",
+  "basis": "The user authorized the recommended 16-request health probe and the 18-cell product-lane pilot after the offline audit.",
+  "limits": {
+    "continuationCells": 18,
+    "httpAttempts": 600,
+    "inputTokens": 6000000,
+    "outputTokens": 500000,
+    "wallClockMs": 10800000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "stopConditions": [
+    "Any transport failure stops the run; the cell is recorded as transport-failed, not an arm outcome.",
+    "Any unknownUsage > 0 stops the run with provider-usage-incomplete.",
+    "No automatic retry after a transport failure.",
+    "A failed health probe cancels the pilot."
+  ],
+  "note": "This authorization is bound to the manifest SHA-256 above. A changed manifest needs a new grant."
+}

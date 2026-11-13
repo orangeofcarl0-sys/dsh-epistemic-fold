@@ -43,7 +43,7 @@ import {
 import { FileBundleStore } from '../checkpoint/bundle-store.ts'
 import { compactSurfaceRegion, selectCompactableRange } from '../basic/region.ts'
 import { hasActiveCompaction, locateFoldFrontier } from './frontier.ts'
-import { selectLeafSpan } from './leaf-policy.ts'
+import { activeRequestPosition, selectLeafSpan } from './leaf-policy.ts'
 import { ActiveTaskRootRegistry, protectedTaskRootPosition, taskRootDigest } from './task-root.ts'
 import type { ActiveTaskRootRef, TaskRootRegistration } from './task-root.ts'
 import { assertDshCompatibility } from '../compat.ts'
@@ -60,6 +60,8 @@ import {
   rootRebaseAdvice,
 } from '../policy/fold-economics.ts'
 import type { FoldReachability, LeafAdmissionVerdict } from '../policy/fold-economics.ts'
+import { finalizeLeafSpanProbe, probeLeafSpans } from '../policy/leaf-span-probe.ts'
+import type { LeafSpanProbe } from '../policy/leaf-span-probe.ts'
 import { classifyRegime, resolveProfile, rhoOf } from '../policy/economics-profile.ts'
 import type { ContextPolicyDecision } from '../policy/policy-compiler.ts'
 import { createRebaseIntentRegistry } from './rebase-intent.ts'
@@ -68,7 +70,10 @@ import { classifyCapacityRegime, classifyPressureRegime, pressureBreakdown } fro
 import type { CapacityRegime, PressureRegime } from '../policy/pressure.ts'
 import { evaluateRootRebase } from '../policy/root-policy.ts'
 import { currentFoldState, EF_CURRENT_STATE_KEY } from '../state/projection.ts'
-import { describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import { activeRequestText, archivedCallsFromMessages, describeRenderedState, renderStructuredCheckpoint, machineAnchorCount } from '../checkpoint/renderer.ts'
+import type { ArchivedCall } from '../checkpoint/renderer.ts'
+import { selectArchiveLocators } from '../checkpoint/locator.ts'
+import type { ArchiveLocator } from '../checkpoint/locator.ts'
 import { rationaleOnly, rationaleOutputFor } from '../checkpoint/rationale.ts'
 import {
   conversationTarget,
@@ -182,6 +187,13 @@ export interface EpistemicFoldOptions {
    * continuity is configured, and to the null journal otherwise.
    */
   readonly semanticJournal?: SemanticJournal
+  /**
+   * Opt-in, observational exact-span probe. It records the widest legal span
+   * admission priced and the span execution selected, plus the checkpoint
+   * estimate and (after a fold) the actual cost. It never changes a verdict,
+   * a span or an exception path. Off by default; benchmarks enable it.
+   */
+  readonly leafSpanProbe?: boolean
 }
 
 /**
@@ -309,6 +321,8 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * this field existed.
    */
   private readonly taskRoots = new ActiveTaskRootRegistry()
+  /** Opt-in exact-span probe; observational only. */
+  private readonly leafSpanProbeEnabled: boolean
   private readonly bundles: FoldBundleStore
   /**
    * Outstanding rebase requests, keyed per agent (R3-0b). R2-C only
@@ -392,6 +406,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     super(ctx, stripEfConfigKeys(config))
     this.resolvedConfig = resolveEfConfig(config)
     this.currentModeValue = config.mode ?? 'legacy'
+    this.leafSpanProbeEnabled = options.leafSpanProbe === true
     // R4 §4: the framing seam is an EXTERNAL dependency, so its presence is
     // verified once, here, against the requested mode — never sniffed per fold
     // and never silently downgraded. `legacy` needs no seam, so the default
@@ -586,6 +601,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
   /** Most recent economic leaf-admission verdict; `undefined` under `legacy`. */
   get lastLeafAdmission(): LeafAdmissionVerdict | undefined {
     return this.telemetry.leafAdmission
+  }
+
+  /** Most recent exact-span probe; `undefined` unless the observer is enabled. */
+  get lastLeafSpanProbe(): LeafSpanProbe | undefined {
+    return this.telemetry.leafSpanProbe
   }
 
   /** Most recent provider-aware rebase decision (R2-C); `undefined` under `legacy`. */
@@ -935,6 +955,27 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
    * this method throwing.
    */
   private protectedPositions(session: Session): readonly number[] {
+    const positions = [...this.taskRootPositions(session)]
+    // EXPERIMENTAL, off by default: keep the ACTIVE user request on the
+    // surface. The confirm measured the request itself being folded in
+    // 44/120 cells; a leaf now starts after it instead of swallowing it.
+    if (this.efConfig.protectActiveRequest) {
+      const active = activeRequestPosition(session)
+      if (active !== undefined && !positions.includes(active)) positions.push(active)
+    }
+    return positions
+  }
+
+  /**
+   * The resident task root only.
+   *
+   * Emergency rebase uses this list, not {@link protectedPositions}: an
+   * overflow that cannot meet the provider window may have to fold the active
+   * request, and pretending otherwise would turn a recoverable overflow into
+   * a non-convergence. The task root remains protected because it is the
+   * session's identity, not a message.
+   */
+  private taskRootPositions(session: Session): readonly number[] {
     const position = protectedTaskRootPosition(session, this.taskRoots.get(session.id))
     return position === undefined ? [] : [position]
   }
@@ -955,7 +996,7 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     range: { start: SessionSeq; end: SessionSeq } | null,
   ): { start: SessionSeq; end: SessionSeq } | null {
     if (range === null) return null
-    const protectedPositions = this.protectedPositions(session)
+    const protectedPositions = this.taskRootPositions(session)
     if (protectedPositions.length === 0) return range
     const nodes = session.surface.nodes
     const startIdx = nodes.indexOf(range.start)
@@ -1469,7 +1510,26 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         this.lastLeafDecision = 'span-threw: ' + (error instanceof Error ? error.message : String(error)).slice(0, 200)
         throw error
       }
+      // R3 exact-span probe: observational only. Admission priced the widest
+      // legal span; execution is about to fold the span left after retention.
+      // Recording both on the SAME measurement is the only way to see the gap.
+      let spanProbe: LeafSpanProbe | null = null
+      if (this.leafSpanProbeEnabled) {
+        spanProbe = probeLeafSpans({
+          session: agent.session,
+          measurement,
+          retainTokens: spec.retainTokens,
+          thresholdTokens: spec.thresholdTokens,
+          minReclaimTokens: this.efConfig.minReclaimTokens,
+          minReclaimRatio: this.efConfig.minReclaimRatio,
+          protectedPositions: this.protectedPositions(agent.session),
+        })
+        this.telemetry.leafSpanProbe = spanProbe
+      }
       if (span === null) {
+        if (spanProbe !== null) {
+          this.telemetry.leafSpanProbe = { ...spanProbe, committed: false }
+        }
         this.lastLeafDecision = 'no-span pricedNodes=' + measurement.nodes.length
           + ' surfaceNodes=' + agent.session.surface.nodes.length
           + ' firstOpen=' + locateFoldFrontier(agent.session).firstOpenPosition
@@ -1497,8 +1557,38 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         if (result === null) return null
         break
       }
-      result = await this.compactRegion(span.start, span.end, agent, signal)
+      const beforeSurfaceTokens = measurement.totalTokens
+      try {
+        result = await this.compactRegion(span.start, span.end, agent, signal)
+      } catch (error: unknown) {
+        if (spanProbe !== null) {
+          let afterMeasurement = measurement
+          try {
+            afterMeasurement = meter.measure(agent.session)
+          } catch {
+            // Keep the pre-fold measurement; the probe is not allowed to
+            // replace the fold error with its own.
+          }
+          this.telemetry.leafSpanProbe = finalizeLeafSpanProbe(spanProbe, {
+            session: agent.session,
+            measurement: afterMeasurement,
+            beforeSurfaceTokens,
+            committed: false,
+            foldError: error instanceof Error ? error.message : String(error),
+          })
+        }
+        throw error
+      }
       const _after = meter.measure(agent.session)
+      if (spanProbe !== null) {
+        this.telemetry.leafSpanProbe = finalizeLeafSpanProbe(spanProbe, {
+          session: agent.session,
+          measurement: _after,
+          beforeSurfaceTokens,
+          committed: result !== null,
+          shadowedTokenCount: result?.shadowedTokenCount ?? null,
+        })
+      }
       this.lastLeafDecision = 'fold-attempted span=' + span.start + '..' + span.end
         + ' resultNull=' + (result === null)
         + ' tokensBefore=' + measurement.totalTokens + ' tokensAfter=' + _after.totalTokens
@@ -2031,6 +2121,11 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
         // a structured handoff — machine state first, narrative in Rationale.
         const stateText = this.structuredStateText(
           mountedState, candidate.checkpointId, semanticText, candidate.mode,
+          this.efConfig.foldedSpanIndex ? archivedCallsFromMessages(shadowedMessages) : undefined,
+          this.efConfig.archiveLocator
+            ? selectArchiveLocators(shadowedMessages, candidate.checkpointId)
+            : undefined,
+          this.activeRequestForFold(session, orderedSurfaceSeqs, shadowedMessages),
         )
         renderedText = stateText ?? (semanticText === undefined
           ? fallbackText
@@ -3626,9 +3721,38 @@ export class EpistemicFoldEngine extends BasicCompactionEngine {
     checkpointId: string,
     semanticText: string | undefined,
     mode: FoldMode,
+    archivedCalls?: readonly ArchivedCall[],
+    locators?: readonly ArchiveLocator[],
+    activeRequest?: string,
   ): string | undefined {
     if (state === undefined) return undefined
-    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode)
+    return renderStructuredCheckpoint(state, checkpointId, semanticText, mode, {
+      recallAffordance: this.efConfig.recallAffordance,
+      ...(archivedCalls === undefined ? {} : { archivedCalls }),
+      ...(locators === undefined ? {} : { locators }),
+      ...(activeRequest === undefined ? {} : { activeRequest }),
+    })
+  }
+
+  /**
+   * The ACTIVE request text, but only when THIS fold is about to replace it.
+   *
+   * If the request is in the retained tail, it survives on the surface and
+   * copying it would only add tokens. `orderedSurfaceSeqs` and the archived
+   * messages are positionally paired, so the request is found by seq and read
+   * from the exact message being folded.
+   */
+  private activeRequestForFold(
+    session: Session,
+    foldedSeqs: readonly number[],
+    messages: readonly Message[],
+  ): string | undefined {
+    if (!this.efConfig.rerenderActiveRequest) return undefined
+    const position = activeRequestPosition(session)
+    if (position === undefined) return undefined
+    const seq = session.surface.nodes[position]
+    if (seq === undefined) return undefined
+    return activeRequestText(messages, foldedSeqs, Number(seq))
   }
 
   /**

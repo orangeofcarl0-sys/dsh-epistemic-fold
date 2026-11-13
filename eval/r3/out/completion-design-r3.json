@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R3 WP7",
+  "generatedAt": "2026-11-10T16:43:20.678Z",
+  "stage": "confirm-completion",
+  "campaign": "e2e-r3-confirm-completion-1",
+  "status": "completion-frozen",
+  "executionAuthorized": false,
+  "authorizationState": "not-requested",
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r3-confirm-completion-1.json",
+    "sha256": "e0627f0c979d04d9a97c203f54eeaecf6d1387396cf09351320fedc545053477",
+    "cells": 31
+  },
+  "counts": {
+    "original": 54,
+    "valid": 23,
+    "unresolved": 1,
+    "neverStarted": 30,
+    "completionCells": 31,
+    "missingByTemplate": {
+      "T13": 4,
+      "T14": 9,
+      "T15": 9,
+      "T16": 9
+    }
+  },
+  "pinnedConfig": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "legacy",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 16384,
+    "maxSteps": 8,
+    "retainRatio": 0.04,
+    "headroomTokens": 512,
+    "maxTokens": 1024
+  },
+  "declaredRationaleHintTokens": 800,
+  "comparability": "The effective config matches the 23 valid R2 cells. A 800-hint or shipped-preset run is a different campaign; it cannot be merged with the 23 valid cells.",
+  "routeQualification": "The transport health probe must pass under a new grant before this manifest can run.",
+  "envelope": {
+    "continuationCells": 31,
+    "httpAttempts": 900,
+    "inputTokens": 10000000,
+    "outputTokens": 800000,
+    "wallClockMs": 14400000,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "note": "No live call was made. A new explicit authorization is required; unused R2 envelope capacity is not permission."
+}

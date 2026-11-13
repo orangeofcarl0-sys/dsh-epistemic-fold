@@ -45,7 +45,7 @@ import { runCases as runTailCases } from './recent-tail.mjs'
 import { writeJson } from '../r37/src/io.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, 'out', 'mechanism-evaluation.json')
+const OUT = process.env['R38_MECHANISM_OUT'] ?? join(HERE, 'out', 'mechanism-evaluation.json')
 
 const user = text => createUserMessage({ content: [{ type: 'text', text }], source: { kind: 'user' } })
 const model = text => createMessage({

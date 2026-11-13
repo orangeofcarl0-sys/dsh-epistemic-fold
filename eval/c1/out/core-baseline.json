@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-C1",
+  "generator": "tests/c1-core-baseline.spec.ts",
+  "generatedAt": "2026-11-08T15:20:55.221Z",
+  "executionKind": "scripted adapter; deterministic mechanism measurement, not a model result",
+  "sharedPolicy": {
+    "thresholdRatio": 0.15,
+    "headroomTokens": 0,
+    "retainTokens": 300,
+    "maxTokens": 3000
+  },
+  "arms": [
+    {
+      "arm": "B0",
+      "calls": 1,
+      "writerCalls": 0,
+      "rationaleCalls": 0,
+      "summaryCalls": 1,
+      "legalSpan": {
+        "start": 1,
+        "end": 10
+      },
+      "checkpoints": 1,
+      "checkpointChars": 347,
+      "retainedTokens": 104,
+      "surfaceNodes": 1,
+      "checkpointBodyDigest": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
+      "archiveFiles": 0,
+      "bundled": false,
+      "semanticMode": "n/a",
+      "semanticContinuity": "off"
+    },
+    {
+      "arm": "Bv",
+      "calls": 1,
+      "writerCalls": 0,
+      "rationaleCalls": 0,
+      "summaryCalls": 1,
+      "legalSpan": {
+        "start": 1,
+        "end": 10
+      },
+      "checkpoints": 1,
+      "checkpointChars": 347,
+      "retainedTokens": 104,
+      "surfaceNodes": 1,
+      "checkpointBodyDigest": "ee90380c566784229804ae1ac72b2cfc3395683c59b560cd3771e7bee9a19743",
+      "archiveFiles": 0,
+      "bundled": false,
+      "semanticMode": "n/a",
+      "semanticContinuity": "off"
+    },
+    {
+      "arm": "E0",
+      "calls": 0,
+      "writerCalls": 0,
+      "rationaleCalls": 0,
+      "summaryCalls": 0,
+      "legalSpan": {
+        "start": 1,
+        "end": 10
+      },
+      "checkpoints": 1,
+      "checkpointChars": 47,
+      "retainedTokens": 20,
+      "surfaceNodes": 1,
+      "checkpointBodyDigest": "e50eec68e31eeb20a316088bc7bd3d513633fbce2d72f315fe7c042e3cbeb874",
+      "archiveFiles": 2,
+      "bundled": true,
+      "semanticMode": "none",
+      "semanticContinuity": "off"
+    },
+    {
+      "arm": "E1",
+      "calls": 1,
+      "writerCalls": 0,
+      "rationaleCalls": 1,
+      "summaryCalls": 0,
+      "legalSpan": {
+        "start": 1,
+        "end": 10
+      },
+      "checkpoints": 1,
+      "checkpointChars": 67,
+      "retainedTokens": 25,
+      "surfaceNodes": 1,
+      "checkpointBodyDigest": "4f7a773fbb0b3a415f3fb9f901e529e562d3480b95a2578437b37005fdff265b",
+      "archiveFiles": 2,
+      "bundled": true,
+      "semanticMode": "rationale",
+      "semanticContinuity": "off"
+    }
+  ],
+  "note": "No provider was called. Token counts are prompt-side estimates, not billing."
+}

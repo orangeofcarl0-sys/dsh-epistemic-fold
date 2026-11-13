@@ -12,6 +12,14 @@
  * R33_LIVE=1 AND an explicit manifest supplies positive limits, a per-request
  * output bound, and environment-variable NAMES for the route.
  *
+ * ## Where reports go (EF-C1)
+ *
+ * `--out <dir>` (or `R33_OUT_DIR`) redirects every convenience report. A caller
+ * that is not producing evidence — a test, a probe — uses it so the tracked
+ * `eval/r33/out/` directory is left alone. A `--run` that the gate refuses is
+ * recorded under `R33_RUN_ROOT` and never replaces the latest live report; the
+ * convenience copy is written only when `R35_WRITE_LATEST=1` asks for it.
+ *
  * ## The arms
  *
  *   B1  real EF off: the model's own compaction summary is the memory
@@ -119,6 +127,21 @@ const WRITER_PROMPT_VERSIONS = ['W0', 'W1']
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = join(HERE, 'out')
+
+/**
+ * Where convenience reports go.
+ *
+ * `eval/r33/out` is a TRACKED directory. Through EF-C0 the tests that spawn
+ * this script wrote `live-check.json` and `live-report.json` there, so an
+ * ordinary test run rewrote historical evidence. The default is unchanged for
+ * the documented commands (they are explicit generators), but a caller that is
+ * not producing evidence — a test, a probe — passes `--out <dir>` or sets
+ * `R33_OUT_DIR` and leaves the repository alone.
+ */
+function outputDir() {
+  const explicit = argValue('--out') ?? process.env.R33_OUT_DIR
+  return explicit === undefined ? OUT : resolve(explicit)
+}
 const SIGNAL = new AbortController().signal
 const ARMS = ['B1', 'S', 'O1', 'O2']
 const FIXTURE_ARMS = { FP: 'F-P', FS: 'F-S', FN: 'F-N', FH: 'F-H' }
@@ -1583,27 +1606,41 @@ async function runOne({
   return row
 }
 
-async function writeReport(name, report) {
-  await mkdir(OUT, { recursive: true })
-  const path = join(OUT, name)
+async function writeReport(name, report, directory = outputDir()) {
+  await mkdir(directory, { recursive: true })
+  const path = join(directory, name)
   await writeFile(path, json(report), 'utf8')
   return path
 }
 
 /**
- * Persist the AUTHORITATIVE report under the run, and refresh the convenience
- * copy at `out/live-report.json`.
+ * Persist the AUTHORITATIVE report under the run.
  *
  * R34 wrote only the convenience copy, so a later run silently replaced the
- * record of an earlier one. The run-scoped report is the experiment record; the
- * convenience copy may be overwritten.
+ * record of an earlier one. The run-scoped report is the experiment record.
+ *
+ * Two EF-C1 changes:
+ *
+ *  - A run-scoped report is never overwritten. Re-using a runId used to replace
+ *    the previous experiment's record with no trace; it now refuses unless
+ *    `R33_ALLOW_RERUN=1` is set explicitly.
+ *  - The convenience copy is OPT-IN. It used to be written unless
+ *    `R35_WRITE_LATEST=0`, which meant a refused or unavailable run replaced
+ *    the latest real result by default. A convenience copy is only written
+ *    when `R35_WRITE_LATEST=1` asks for it.
  */
 async function writeRunReport({ runRoot, runId, report, latestName }) {
   const directory = join(runRoot, runId)
-  await mkdir(directory, { recursive: true })
   const reportPath = join(directory, 'report.json')
+  if (await pathExists(reportPath) && process.env.R33_ALLOW_RERUN !== '1') {
+    throw new Error(
+      `run ${runId} already has a report at ${reportPath}; refusing to overwrite it. `
+      + 'Set R33_ALLOW_RERUN=1 only when replacing it is intended.',
+    )
+  }
+  await mkdir(directory, { recursive: true })
   await writeFile(reportPath, json(report), 'utf8')
-  const latestPath = latestName === undefined || process.env.R35_WRITE_LATEST === '0'
+  const latestPath = latestName === undefined || process.env.R35_WRITE_LATEST !== '1'
     ? undefined
     : await writeReport(latestName, report)
   return { reportPath, latestPath }
@@ -2271,8 +2308,13 @@ async function main() {
       providerRequests: 0,
       note: 'No provider request was attempted.',
     }
-    const path = await writeReport('live-report.json', report)
-    process.stdout.write(`${report.status}: ${report.reason}\n${path}\n`)
+    // A refusal is not an experiment. It gets its own run-scoped record and
+    // NEVER replaces the latest live report: before EF-C1 this path wrote
+    // `out/live-report.json` unconditionally, so running the gate test erased
+    // the record of the last real run.
+    const refusalId = newRunId('refused')
+    const paths = await writeRunReport({ runRoot, runId: refusalId, report })
+    process.stdout.write(`${report.status}: ${report.reason}\n${paths.reportPath}\n`)
     process.exit(STATUS_EXIT_CODE['not-executed'])
   }
   const manifest = gate.manifest
@@ -2505,4 +2547,13 @@ async function main() {
 
 const invokedDirectly = process.argv[1] !== undefined
   && pathToFileURL(resolve(process.argv[1])).href === import.meta.url
-if (invokedDirectly) await main()
+if (invokedDirectly) {
+  try {
+    await main()
+  } catch (error) {
+    // A refused overwrite is an operator error, not a crash. Say what happened
+    // and exit non-zero without a stack trace.
+    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`)
+    process.exit(1)
+  }
+}

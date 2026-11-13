@@ -16,7 +16,8 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import {
@@ -58,6 +59,24 @@ import {
 type Arm = 'B0' | 'B1' | 'S' | 'O1' | 'O2' | 'OR' | 'F' | 'N' | 'FM'
 
 const ARMS: readonly Arm[] = ['B0', 'B1', 'S', 'O1', 'O2', 'OR', 'F', 'N', 'FM']
+
+/**
+ * The report's SEMANTIC content, without run metadata.
+ *
+ * Three fields are wall-clock measurements and change on every run:
+ * `generatedAt`, `cost.caseDurationMs` and the per-arm
+ * `totalCaseDurationMs` / `caseMsPerSuccessfulTask`. `environment` names the
+ * machine. A digest that included them could never be pinned; everything else
+ * — the dataset digest, the arm counts, the per-case rows — is content.
+ */
+const RUN_METADATA = new Set([
+  'generatedAt', 'environment', 'caseDurationMs', 'totalCaseDurationMs', 'caseMsPerSuccessfulTask',
+])
+
+function stableDigest(report: Record<string, unknown>): string {
+  const stable = JSON.stringify(report, (key, value) => (RUN_METADATA.has(key) ? undefined : value))
+  return createHash('sha256').update(stable).digest('hex')
+}
 
 function isWriterCall(options: GenerateOptions): boolean {
   const last = options.messages[options.messages.length - 1]
@@ -544,12 +563,47 @@ describe('R33 frozen semantic-continuity arms', () => {
       rows,
     }
 
-    const outDir = join(process.cwd(), 'eval', 'r33', 'out')
+    // EF-C1: this test used to rewrite the TRACKED eval/r33/out/offline-report.*
+    // on every run. The candidate now goes to an explicit directory: the test's
+    // own temp root by default, or EF_R33_OFFLINE_REPORT_OUT for a generator run.
+    // EF_R33_OFFLINE_REPORT_PROMOTE=1 is the explicit promote operation: it
+    // writes the authority path and skips the drift comparison, because the
+    // caller has already accepted the drift.
+    const promote = process.env['EF_R33_OFFLINE_REPORT_PROMOTE'] === '1'
+    const outDir = promote
+      ? join(process.cwd(), 'eval', 'r33', 'out')
+      : (process.env['EF_R33_OFFLINE_REPORT_OUT'] ?? root)
     await mkdir(outDir, { recursive: true })
     await writeFile(join(outDir, 'offline-report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
     await writeFile(join(outDir, 'offline-report.md'), markdown(report), 'utf8')
-    // A sibling of the temp root, so the report is self-contained for review.
-    await writeFile(join(root, 'report.json'), `${JSON.stringify(report, null, 2)}\n`, 'utf8')
+
+    // The committed report is historical: it is never rewritten by an ordinary
+    // run, and a difference from the current pipeline must be declared with a
+    // cause. `generatedAt`, `environment` and wall-clock fields are excluded
+    // from the digest: they are run metadata, not semantic content.
+    if (!promote) {
+      const committedRaw = readFileSync(join(process.cwd(), 'eval', 'r33', 'out', 'offline-report.json'), 'utf8')
+    const committed = JSON.parse(committedRaw) as Record<string, unknown>
+    const status = stableDigest(committed) === stableDigest(report) ? 'current' : 'stale'
+    const registry = JSON.parse(
+      readFileSync(join(process.cwd(), 'docs', 'convergence', 'data', 'report-baselines.json'), 'utf8'),
+    ) as { reports: Array<{ id: string; status: string; frozenSha256: string; observedSha256: string; cause: string }> }
+    const entry = registry.reports.find(row => row.id === 'r33-offline-report')
+    expect(entry, 'the R33 offline report must be declared in report-baselines.json').toBeDefined()
+    // Identity: the committed bytes are frozen.
+    expect(
+      createHash('sha256').update(committedRaw.replace(/\r\n/gu, '\n')).digest('hex'),
+      'the committed offline report changed without a baseline update',
+    ).toBe(entry!.frozenSha256)
+    if (status === 'current') {
+      expect(entry!.status, 'the report reproduces; the registry must say current').toBe('current')
+    } else {
+      expect(entry!.status, 'the report does not reproduce; the drift must be declared').toBe('stale')
+      expect(entry!.observedSha256, 'the declared drift digest must match the measurement')
+        .toBe(stableDigest(report))
+      expect(entry!.cause.length, 'a declared drift needs a cause').toBeGreaterThan(0)
+    }
+    }
 
     // Validity invariants: a fold happened for every non-FM row, and every
     // checker executed. A `no-fold` is a benchmark defect, not a result.
