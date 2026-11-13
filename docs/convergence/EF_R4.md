@@ -167,6 +167,8 @@ The design is frozen at `eval/r4/out/budget-sensitivity-design.json`:
 
 The budget estimate from R3 is a proposal only. A live grant must bind the final manifest SHA and set the real envelope.
 
+The runnable manifest is frozen separately at `eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json` (SHA-256 `be1be253d3e8…`). The matching authorization at `eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json` has `granted:false` and a null grantor/basis; it is a request envelope, not a grant. A zero-provider preflight at `eval/r4/out/budget-manifest-preflight.json` passes **26/26** checks (`ready-for-authorization`): 36 cells, 36 unique task×arm×budget combinations, balanced blocks, task digests, source-tree digest, and a coherent `perCell × 36` envelope (`1,152` requests, `14,907,240` input tokens, `512,892` output tokens, `11,084,760` ms wall clock). The manifest and authorization are generated artifacts under `eval/e2e/out/` and `eval/r4/out/` and are excluded from the source-tree digest.
+
 A separate `workspace-readable` task family is recorded as design-only. It is not generated and must not be pooled with the archive-only family: putting the logs in the workspace would turn a history-recovery task into a `read_file` task.
 
 ## 8. Gates
@@ -179,7 +181,7 @@ A separate `workspace-readable` task family is recorded as design-only. It is no
 | R4-G3 | pass | 18 cells; 3 stage-B cells; 7 failed EF with task loss; 0 passing EF with loss |
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
-| R4-G6 | incomplete | 36-cell campaign frozen; `executionAuthorized:false`; live-not-authorized |
+| R4-G6 | incomplete | 36-cell manifest frozen; preflight `ready-for-authorization` (26/26); `executionAuthorized:false`; live-not-authorized |
 | R4-G7 | pass | zero-live verified; claims 10; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
 | R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion |
 

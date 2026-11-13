@@ -32,6 +32,7 @@ const continuity = load('task-continuity.json')
 const workingSet = load('working-set.json')
 const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
+const budgetPreflight = load('budget-manifest-preflight.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 const claims = load('evidence-claims.json')
@@ -109,7 +110,7 @@ gate('R4-G5',
 gate('R4-G6',
   budget !== null && budget.executionAuthorized === false && budget.design?.cells === 36
     ? 'incomplete' : 'fail',
-`campaign ${budget?.campaign ?? 'missing'}; cells ${budget?.design?.cells ?? '?'}; executionAuthorized ${budget?.executionAuthorized ?? '?'}; live-not-authorized`)
+`campaign ${budget?.campaign ?? 'missing'}; cells ${budget?.design?.cells ?? '?'}; executionAuthorized ${budget?.executionAuthorized ?? '?'}; preflight ${budgetPreflight?.verdict ?? 'missing'}; live-not-authorized`)
 
 gate('R4-G7',
   ciStatus === 'success'
@@ -139,6 +140,11 @@ const output = {
   generatedAt: new Date().toISOString(),
   head: baseline?.git?.head ?? null,
   ci: ciStatus,
+  budgetPreflight: budgetPreflight === null ? null : {
+    verdict: budgetPreflight.verdict,
+    manifestSha256: budgetPreflight.manifest?.sha256 ?? null,
+    providerCalls: budgetPreflight.providerCalls,
+  },
   gates,
   counts,
   note: 'incomplete is not fail. R4-G6 stays incomplete offline; R4-G7 becomes pass only on a successful supported-lane CI run.',

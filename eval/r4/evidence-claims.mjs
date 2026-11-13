@@ -37,6 +37,8 @@ const continuity = load('task-continuity.json')
 const workingSet = load('working-set.json')
 const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
+const budgetManifest = load('budget-manifest.json')
+const budgetPreflight = load('budget-manifest-preflight.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 
@@ -96,6 +98,11 @@ claim('R4-BUDGET-DESIGN',
   `The budget-sensitivity design has ${budget.json.design.cells} cells (6 tasks x 3 arms x 2 budgets), validated as ${budget.json.design.validation.uniqueTaskArmBudget} unique combinations with balanced blocks; executionAuthorized is ${budget.json.executionAuthorized}.`,
   [artifact(budget)],
   'A design is not an authorization. The proposed envelope is an estimate from R3, not a spend approval.')
+
+claim('R4-BUDGET-MANIFEST',
+  `The runnable manifest is frozen at SHA-256 ${budgetManifest.json.manifest.sha256} with ${budgetManifest.json.manifest.cells} cells; authorization granted=${budgetManifest.json.authorization.granted}; preflight ${budgetPreflight.json.verdict} (${budgetPreflight.json.checks.filter(check => check.pass).length}/${budgetPreflight.json.checks.length} checks).`,
+  [artifact(budgetManifest), artifact(budgetPreflight)],
+  'A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false.')
 
 claim('R4-PRODUCT-DECISION',
   `No product candidate is proposed; Deployment Hold is ${productDecision.json.deploymentHold}; expandTo72 is ${productDecision.json.expandTo72}; the research candidate remains unwired.`,
