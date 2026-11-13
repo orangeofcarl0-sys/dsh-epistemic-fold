@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "campaign": "e2e-r4-budget-sensitivity-1",
-  "frozenAt": "2026-11-13T18:07:03.976Z",
+  "frozenAt": "2026-11-13T18:28:12.936Z",
   "work": "EF-R4 step-budget sensitivity",
   "status": "manifest-frozen",
   "executionAuthorized": false,
   "authorizationState": "not-requested",
   "code": {
-    "evaluatedCommit": "f7e00355f1ffb7a82dad6e1f8d62b4fe500b6343",
+    "evaluatedCommit": "419497b7dbfb37af614addbaad7bb4a8935b8682",
     "branch": "chore/ef-c1-evaluation-foundation",
     "worktreeClean": true,
-    "sourceTreeDigest": "13727759120e31a81c8a5719ddd9b56eb7d11710e19942450b0f6595085bc03f",
+    "sourceTreeDigest": "6be6756ffc6aa0057ec031d484b207763bbfe1fa79c6dda059d4b7d4e39849ec",
     "note": "The manifest and its authorization are generated artifacts under eval/e2e/out and eval/r4/out; they are excluded from the source digest."
   },
   "model": "deepseek-v4.1-flash",

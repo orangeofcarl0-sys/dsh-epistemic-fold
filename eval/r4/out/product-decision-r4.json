@@ -1,16 +1,15 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 product decision",
-  "generatedAt": "2026-11-13T18:06:16.325Z",
+  "generatedAt": "2026-11-13T18:28:13.729Z",
   "productCandidate": null,
   "deploymentHold": true,
   "expandTo72": false,
   "researchCandidate": "active-task-delivery",
   "researchCandidateWired": false,
   "liveEvidence": {
-    "attempt": 1,
-    "decision": "blocked-route-unreachable",
-    "probeVerdict": "fail",
+    "attempts": 4,
+    "decision": "blocked-provider-auth",
     "successes": 0,
     "planned": 16,
     "campaignStarted": false

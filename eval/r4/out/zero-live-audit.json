@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "work": "EF-R4 zero-live audit",
   "scope": "offline analysis scripts only; the authorized live probe and campaign are recorded separately",
-  "generatedAt": "2026-11-13T18:07:04.534Z",
+  "generatedAt": "2026-11-13T18:28:13.876Z",
   "scripts": [
     "eval/r4/baseline.mjs",
     "eval/r4/score.mjs",
@@ -16,6 +16,7 @@
     "eval/r4/authorize-health-probe.mjs",
     "eval/r4/authorize-budget-campaign.mjs",
     "eval/r4/record-live-attempt.mjs",
+    "eval/r4/record-live-attempts.mjs",
     "eval/r4/preflight-budget-manifest.mjs",
     "eval/r4/product-decision.mjs",
     "eval/r4/contracts/scoring-contract.mjs",
@@ -45,7 +46,7 @@
   "budgetExecutionAuthorized": false,
   "budgetManifest": {
     "campaign": "e2e-r4-budget-sensitivity-1",
-    "manifestSha256": "c9e973c2fa9fa1c1960c96f51689febf21713be87ebb1dac525a197a227870f4",
+    "manifestSha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
     "authorizationGranted": false
   },
   "immutableMissing": [],

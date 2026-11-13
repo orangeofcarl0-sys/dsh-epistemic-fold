@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 health probe",
+  "generatedAt": "2026-11-13T18:22:28.997Z",
+  "design": {
+    "path": "eval/r4/out/transport-health-probe.json",
+    "sha256": "02d00a8d1664f2b2ee1eed6a0fe8bac61a83d6227f474e17421fa2fdcd056abf"
+  },
+  "authorization": {
+    "path": "eval/r4/out/health-probe-authorization.json",
+    "sha256": "e6ad15bb7b37943667a834f9b6acb27e1f8a233fd924ecd452c82fa9154d0c63",
+    "grantedBy": "user instruction: \"均授权，继续\" (2026-11-14)"
+  },
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider b88043d7-f229-452c-b634-4152ca14aae8)",
+    "baseUrl": "https://opencode.ai/zen/go/v1",
+    "headerNames": [
+      "authorization",
+      "user-agent",
+      "x-opencode-client",
+      "x-opencode-project",
+      "x-opencode-session",
+      "x-client-request-id",
+      "x-opencode-request"
+    ],
+    "model": "deepseek-v4.1-flash"
+  },
+  "planned": 16,
+  "attempted": 1,
+  "successes": 0,
+  "failures": 1,
+  "verdict": "fail",
+  "resume": {
+    "used": 0,
+    "priorUsage": null
+  },
+  "usage": {
+    "schemaVersion": 2,
+    "limits": {
+      "requests": 16,
+      "inputTokens": 2000000,
+      "outputTokens": 100000,
+      "wallClockMs": 1800000
+    },
+    "used": {
+      "requests": 1,
+      "attempts": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0,
+      "unknownUsage": 1,
+      "unknownUsageRequests": 1,
+      "partialUsageRequests": 0,
+      "retries": 0
+    },
+    "observed": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheReadTokens": 0,
+      "cacheWriteTokens": 0
+    },
+    "reserved": {
+      "requests": 0,
+      "inputTokens": 131072,
+      "outputTokens": 1024
+    },
+    "charged": {
+      "inputTokens": 131072,
+      "outputTokens": 1024
+    },
+    "remaining": {
+      "requests": 15,
+      "inputTokens": 1868928,
+      "outputTokens": 98976,
+      "wallClockMs": 1798777
+    },
+    "unresolvedAttempts": 0,
+    "unknownUsageRequests": 1,
+    "partialUsageRequests": 0,
+    "refusals": 0,
+    "elapsedMs": 1223
+  },
+  "totalUsage": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0
+  },
+  "results": [
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 1217,
+      "usage": null,
+      "finish": {
+        "kind": "error",
+        "failure": {
+          "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
+          "code": "LIVE_HTTP"
+        }
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 77320,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T18:22:27.781Z",
+          "bodyBytes": 77320,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T18:22:27.781Z",
+          "durationMs": 1213,
+          "bodyBytes": 77320,
+          "streamed": false,
+          "status": 401
+        }
+      ]
+    }
+  ],
+  "stop": "stopped-on-failure",
+  "note": "The representative route failed the transport/usage acceptance. Do not run the campaign. No automatic retry.",
+  "latency": {
+    "count": 1,
+    "p50": 1217,
+    "p95": 1217,
+    "max": 1217,
+    "over60s": []
+  },
+  "acceptance": {
+    "httpSuccess": "0/16",
+    "usagePresent": "0/16",
+    "transportErrors": 1,
+    "p95DurationMs": 1217,
+    "p95Within60s": true,
+    "verdict": "fail"
+  },
+  "campaignDecision": "do-not-run",
+  "failure": {
+    "profile": "t13-summary-failed-shape",
+    "attempt": 1,
+    "durationMs": 1217,
+    "finish": {
+      "kind": "error",
+      "failure": {
+        "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
+        "code": "LIVE_HTTP"
+      }
+    },
+    "usage": null,
+    "error": null
+  }
+}
