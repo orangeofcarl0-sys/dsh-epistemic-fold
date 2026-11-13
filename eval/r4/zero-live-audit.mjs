@@ -25,6 +25,8 @@ const SCRIPTS = [
   'eval/r4/working-set.mjs',
   'eval/r4/candidate-decision.mjs',
   'eval/r4/freeze-budget-sensitivity.mjs',
+  'eval/r4/freeze-budget-manifest.mjs',
+  'eval/r4/preflight-budget-manifest.mjs',
   'eval/r4/product-decision.mjs',
   'eval/r4/contracts/scoring-contract.mjs',
   'eval/r4/contracts/evidence-graph-contract.mjs',
@@ -64,11 +66,22 @@ else if (budget.executionAuthorized !== false) {
 }
 
 const e2eOut = join(ROOT, 'eval', 'e2e', 'out')
-const r4Campaigns = existsSync(e2eOut)
-  ? readdirSync(e2eOut).filter(name => name.includes('e2e-r4-'))
+const r4Results = existsSync(e2eOut)
+  ? readdirSync(e2eOut).filter(name => /^results-e2e-r4-/u.test(name))
   : []
+const runsRoot = join(ROOT, 'eval', 'e2e', 'runs')
+const r4RunDirs = existsSync(runsRoot)
+  ? readdirSync(runsRoot).filter(name => /^e2e-r4-/u.test(name))
+  : []
+const r4Campaigns = [...r4Results, ...r4RunDirs]
 if (r4Campaigns.length > 0) {
-  violations.push({ script: 'eval/e2e/out', reason: `R4 campaign artifacts exist: ${r4Campaigns.join(', ')}` })
+  violations.push({ script: 'eval/e2e', reason: `R4 campaign artifacts exist: ${r4Campaigns.join(', ')}` })
+}
+
+const pointerPath = join(OUT, 'budget-manifest.json')
+const budgetManifest = existsSync(pointerPath) ? readJson(pointerPath) : null
+if (budgetManifest !== null && budgetManifest.authorization?.granted !== false) {
+  violations.push({ script: 'budget-manifest.json', reason: 'manifest authorization is granted' })
 }
 
 const baselinePath = join(OUT, 'baseline-r4.json')
@@ -85,6 +98,11 @@ const output = {
   providerCalls: 0,
   r4Campaigns,
   budgetExecutionAuthorized: budget?.executionAuthorized ?? null,
+  budgetManifest: budgetManifest === null ? null : {
+    campaign: budgetManifest.campaign,
+    manifestSha256: budgetManifest.manifest?.sha256 ?? null,
+    authorizationGranted: budgetManifest.authorization?.granted ?? null,
+  },
   immutableMissing,
   verdict: violations.length === 0 && immutableMissing.length === 0 ? 'zero-live-verified' : 'zero-live-violated',
 }
