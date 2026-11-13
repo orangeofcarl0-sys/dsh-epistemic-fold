@@ -39,6 +39,7 @@ const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
 const budgetManifest = load('budget-manifest.json')
 const budgetPreflight = load('budget-manifest-preflight.json')
+const liveAttempt = load('live-attempt-r4-1.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 
@@ -103,6 +104,11 @@ claim('R4-BUDGET-MANIFEST',
   `The runnable manifest is frozen at SHA-256 ${budgetManifest.json.manifest.sha256} with ${budgetManifest.json.manifest.cells} cells; authorization granted=${budgetManifest.json.authorization.granted}; preflight ${budgetPreflight.json.verdict} (${budgetPreflight.json.checks.filter(check => check.pass).length}/${budgetPreflight.json.checks.length} checks).`,
   [artifact(budgetManifest), artifact(budgetPreflight)],
   'A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false.')
+
+claim('R4-LIVE-ATTEMPT',
+  `The authorized health probe was attempted once and failed before the first model response: ${liveAttempt.json.probe.firstFailure.finish.failure.message} (${liveAttempt.json.probe.firstFailure.finish.failure.code}) after ${liveAttempt.json.probe.firstFailure.durationMs} ms; ${liveAttempt.json.probe.successes}/${liveAttempt.json.probe.planned} requests succeeded and the 36-cell campaign was not started.`,
+  [artifact(liveAttempt)],
+  'This is an environment/route blocker at the local proxy, not task-quality evidence. No automatic retry; the campaign requires a restored route and a re-frozen manifest.')
 
 claim('R4-PRODUCT-DECISION',
   `No product candidate is proposed; Deployment Hold is ${productDecision.json.deploymentHold}; expandTo72 is ${productDecision.json.expandTo72}; the research candidate remains unwired.`,

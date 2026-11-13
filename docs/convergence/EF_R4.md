@@ -171,6 +171,12 @@ The runnable manifest is frozen separately at `eval/e2e/out/manifest-e2e-r4-budg
 
 A separate `workspace-readable` task family is recorded as design-only. It is not generated and must not be pooled with the archive-only family: putting the logs in the workspace would turn a history-recovery task into a `read_file` task.
 
+### Live attempt (2026-11-14)
+
+The user authorized the health probe and the 36-cell campaign. The probe was attempted once. The resolved route was the local ZCode proxy at `http://127.0.0.1:7866/v1`; the first profile (`t13-summary-failed-shape`, 75,603 chars) failed after **51 ms** with `fetch failed (ECONNREFUSED)` / `LIVE_TRANSPORT` and no usage. The probe stopped immediately: **0/16** successes, 1 failed. The 36-cell campaign was **not started** (`campaign.started:false`).
+
+This is an environment/route blocker, not a model or task result. The local proxy was not listening (`curl` to the same base URL also failed). No automatic retry was made, and none should be made while the route is down. The attempt is recorded in `eval/r4/out/live-attempt-r4-1.json`; the corrected analysis is in `eval/r4/out/health-probe-analysis.md`. A retry requires restoring the local proxy and re-freezing the manifest, because the failure record changed the source tree.
+
 ## 8. Gates
 
 | Gate | Status | Detail |
@@ -181,11 +187,11 @@ A separate `workspace-readable` task family is recorded as design-only. It is no
 | R4-G3 | pass | 18 cells; 3 stage-B cells; 7 failed EF with task loss; 0 passing EF with loss |
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
-| R4-G6 | incomplete | 36-cell manifest frozen; preflight `ready-for-authorization` (26/26); `executionAuthorized:false`; live-not-authorized |
-| R4-G7 | pass | zero-live verified; claims 10; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
+| R4-G6 | incomplete | 36-cell manifest frozen; preflight 26/26; health probe blocked by `ECONNREFUSED` (0/16); campaign not started |
+| R4-G7 | pass | zero-live verified; claims 12; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
 | R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion |
 
-`incomplete` is not `fail`. R4-G6 can only become pass under a new explicit live authorization. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
+`incomplete` is not `fail`. R4-G6 remains incomplete because the representative route was unreachable; it can become pass only after a successful live campaign. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
 
 ## 9. What R4 does not prove
 

@@ -72,6 +72,7 @@
     "eval:ef-r4-probe-freeze": "node eval/r4/freeze-health-probe.mjs && node eval/r4/authorize-health-probe.mjs",
     "eval:ef-r4-probe": "node eval/r4/run-health-probe.mjs && node eval/r4/analyze-health-probe.mjs",
     "eval:ef-r4-authorize": "node eval/r4/authorize-budget-campaign.mjs",
+    "eval:ef-r4-record-attempt": "node eval/r4/record-live-attempt.mjs",
     "eval:ef-r4-check": "node eval/e2e/src/run.mjs --check --manifest eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json --authorization eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json",
     "eval:ef-r4-live": "node eval/e2e/src/run.mjs --run --manifest eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json --authorization eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json",
     "eval:r3": "vitest run tests/r3a-pricing.spec.ts tests/r3b-idle-rebase.spec.ts tests/r3c-framing-seam.spec.ts tests/r3d-economy-gate.spec.ts",

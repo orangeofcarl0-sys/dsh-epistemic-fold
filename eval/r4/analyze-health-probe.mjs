@@ -54,22 +54,36 @@ const verdict = !allTransportAndUsage
   ? 'fail'
   : p95Within ? 'pass' : 'pass-with-latency-caveat'
 
+const firstFailure = result.results.find(entry => entry.usage === null
+  || entry.error !== null
+  || (entry.finish?.kind !== 'stop' && entry.finish?.kind !== 'max-tokens'))
 result.latency = latency
 result.acceptance = {
   httpSuccess: `${result.successes}/${result.planned}`,
   usagePresent: `${result.successes}/${result.planned}`,
-  transportErrors: 0,
+  transportErrors: result.failures,
   p95DurationMs: latency.p95,
   p95Within60s: p95Within,
   verdict,
 }
 result.verdict = verdict
-result.stop = 'completed'
+result.stop = verdict === 'fail' ? 'stopped-on-failure' : 'completed'
+result.campaignDecision = verdict === 'fail' ? 'do-not-run' : 'may-run-under-separate-authorization'
+result.failure = firstFailure === undefined
+  ? null
+  : {
+      profile: firstFailure.profile,
+      attempt: firstFailure.attempt,
+      durationMs: firstFailure.durationMs,
+      finish: firstFailure.finish,
+      usage: firstFailure.usage,
+      error: firstFailure.error,
+    }
 result.note = verdict === 'pass'
-  ? 'All representative requests succeeded with usage and the p95 latency bound was met. The pilot may proceed.'
+  ? 'All representative requests succeeded with usage and the p95 latency bound was met. The campaign may proceed under its separate authorization.'
   : verdict === 'pass-with-latency-caveat'
-    ? 'All 16 representative requests succeeded with usage and zero transport errors, but one 82s request exceeds the pre-registered 60s p95 bound. The route is stable enough for the pilot; the latency outlier is a recorded protocol deviation, not a transport failure.'
-    : 'The representative route failed the transport/usage acceptance. Do not run the pilot.'
+    ? 'All representative requests succeeded with usage and zero transport errors, but the pre-registered 60s p95 bound was exceeded. The route is stable enough for the campaign; the latency outlier is a recorded protocol deviation, not a transport failure.'
+    : 'The representative route failed the transport/usage acceptance. Do not run the campaign. No automatic retry.'
 writeFileSync(path, `${JSON.stringify(result, null, 2)}\n`, 'utf8')
 
 const md = [
@@ -89,7 +103,14 @@ if (latency.over60s.length > 0) {
   }
   md.push('')
 }
-md.push('The transport/usage acceptance is separate from the latency bound. No transport error occurred in 16/16 requests.')
+if (result.failure !== null) {
+  md.push('First failure:')
+  md.push(`- ${result.failure.profile} #${result.failure.attempt}: ${result.failure.durationMs} ms, finish ${result.failure.finish?.kind ?? 'none'}, usage ${result.failure.usage ? 'present' : 'missing'}, error ${result.failure.error ?? result.failure.finish?.failure?.code ?? 'unknown'}`)
+  md.push('')
+}
+md.push(verdict === 'fail'
+  ? 'The transport/usage acceptance failed before the first success. The 36-cell campaign must not start; no automatic retry.'
+  : 'The transport/usage acceptance is separate from the latency bound.')
 md.push('')
 writeFileSync(join(OUT, 'health-probe-analysis.md'), `${md.join('\n')}\n`, 'utf8')
 

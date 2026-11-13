@@ -29,6 +29,8 @@ for (const path of [candidatePath, budgetPath]) {
 }
 const candidate = readJson(candidatePath)
 const budget = readJson(budgetPath)
+const livePath = join(OUT, 'live-attempt-r4-1.json')
+const live = existsSync(livePath) ? readJson(livePath) : null
 
 const output = {
   schemaVersion: 1,
@@ -39,9 +41,18 @@ const output = {
   expandTo72: false,
   researchCandidate: candidate.selected,
   researchCandidateWired: false,
+  liveEvidence: live === null ? null : {
+    attempt: live.attempt,
+    decision: live.decision,
+    probeVerdict: live.probe?.verdict ?? null,
+    successes: live.probe?.successes ?? null,
+    planned: live.probe?.planned ?? null,
+    campaignStarted: live.campaign?.started ?? null,
+  },
   reasons: [
     'The R4 candidate is a correlation from 18 R3 cells, not a live-tested mechanism.',
     'There is no 16-step measurement yet; the 8-step EF cells are step-limit censored.',
+    'The live probe was blocked by ECONNREFUSED; the campaign was not started, so no 16-step data exists.',
     'The R3 pilot is one model, one route and one machine; no replication exists.',
     'The candidate adds exact prompt bytes, but whether the model acts on them is unmeasured.',
     'The failure projection is also inflated in T16, so one mechanism cannot explain every failure.',

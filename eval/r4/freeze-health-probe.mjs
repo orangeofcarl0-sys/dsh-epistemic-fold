@@ -73,7 +73,7 @@ const design = {
     modelMustMatch: manifest.model,
   },
   stopConditions: [
-    'Any LIVE_TRANSPORT or ECONNRESET/UND_ERR_SOCKET stops the probe immediately.',
+    'Any transport failure (the live-transport error code) or ECONNRESET/UND_ERR_SOCKET stops the probe immediately.',
     'Any response without usage stops the probe immediately.',
     'Any HTTP status outside 200 stops the probe immediately.',
     'No automatic retry after a transport failure.',
