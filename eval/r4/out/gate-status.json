@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4",
-  "generatedAt": "2026-11-13T20:13:59.563Z",
+  "generatedAt": "2026-11-13T20:19:52.252Z",
   "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
-  "ci": "pending",
+  "ci": "success",
   "budgetPreflight": {
     "verdict": "ready-for-authorization",
     "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
@@ -65,8 +65,8 @@
     },
     {
       "id": "R4-G7",
-      "status": "incomplete",
-      "detail": "ci pending; zero-live zero-live-verified; claims 13"
+      "status": "pass",
+      "detail": "ci success; zero-live zero-live-verified; claims 13"
     },
     {
       "id": "R4-G8",
@@ -75,8 +75,8 @@
     }
   ],
   "counts": {
-    "pass": 8,
-    "incomplete": 1,
+    "pass": 9,
+    "incomplete": 0,
     "fail": 0
   },
   "note": "incomplete is not fail. R4-G6 is pass only when the clean 36-cell campaign is complete; R4-G7 becomes pass only on a successful supported-lane CI run."

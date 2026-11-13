@@ -229,10 +229,10 @@ A separate `workspace-readable` task family is recorded as design-only. It is no
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
 | R4-G6 | pass | clean 36-cell campaign `e2e-r4-budget-sensitivity-3` complete 36/36, no stop; E1@8 6/6, B0@8 4/6; E1@16 4/6 |
-| R4-G7 | pass | zero-live verified; claims 13; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
+| R4-G7 | pass | zero-live verified; claims 13; supported-lane CI `43500011231` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
 | R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion; measured best arm E1@8, next is a confirmatory E1@8 vs B0@8 |
 
-`incomplete` is not `fail`. R4-G6 is now pass because the clean campaign completed; campaigns 1 and 2 are preserved as partial runs (local budget abort, duplicate cell identity) and are not used for the result. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
+`incomplete` is not `fail`. R4-G6 is now pass because the clean campaign completed; campaigns 1 and 2 are preserved as partial runs (local budget abort, duplicate cell identity) and are not used for the result. The supported-lane CI run `43500011231` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
 
 ## 9. What R4 does not prove
 
