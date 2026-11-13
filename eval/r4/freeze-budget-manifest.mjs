@@ -25,7 +25,10 @@ const DESIGN_PATH = join(ROOT, 'eval', 'r4', 'out', 'budget-sensitivity-design.j
 const E2E_OUT = join(ROOT, 'eval', 'e2e', 'out')
 const OUT = join(ROOT, 'eval', 'r4', 'out')
 const SOURCE_CAMPAIGN = 'e2e-r3-product-pilot-1'
-const CAMPAIGN = 'e2e-r4-budget-sensitivity-1'
+const CAMPAIGN = process.env.EF_R4_CAMPAIGN ?? 'e2e-r4-budget-sensitivity-1'
+const PER_CELL_OUTPUT_OVERRIDE = process.env.EF_R4_PER_CELL_OUTPUT === undefined
+  ? null
+  : Number(process.env.EF_R4_PER_CELL_OUTPUT)
 const ARMS = ['B0', 'E0', 'E1']
 const TASKS = ['T11-p1', 'T12-p1', 'T13-p1', 'T14-p1', 'T15-p1', 'T16-p1']
 
@@ -112,7 +115,7 @@ function main() {
   const perCell = {
     requests: design.budgetEstimate.perCell.requests,
     inputTokens: design.budgetEstimate.perCell.inputTokens,
-    outputTokens: design.budgetEstimate.perCell.outputTokens,
+    outputTokens: PER_CELL_OUTPUT_OVERRIDE ?? design.budgetEstimate.perCell.outputTokens,
     wallClockMs: design.budgetEstimate.perCell.wallClockMs,
   }
   const limits = {
@@ -157,6 +160,13 @@ function main() {
     perCell,
     limits,
     limitsAreProposed: true,
+    ...(PER_CELL_OUTPUT_OVERRIDE === null ? {} : {
+      limitsCorrection: {
+        reason: 'campaign 1 stopped on local BUDGET_EXHAUSTED rationale auxiliary calls; the per-cell output reservation was below two rationale maxima',
+        previousPerCellOutputTokens: design.budgetEstimate.perCell.outputTokens,
+        perCellOutputTokens: PER_CELL_OUTPUT_OVERRIDE,
+      },
+    }),
     authorizationEnvelope: 'r4-budget-sensitivity',
     prerequisites: {
       scoringSeparation: { gate: 'R4-G1', status: 'pass' },

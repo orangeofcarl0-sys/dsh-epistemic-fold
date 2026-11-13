@@ -19,7 +19,7 @@ import { ROOT } from './shared/audit.mjs'
 
 const E2E_OUT = join(ROOT, 'eval', 'e2e', 'out')
 const OUT = join(ROOT, 'eval', 'r4', 'out')
-const CAMPAIGN = 'e2e-r4-budget-sensitivity-1'
+const CAMPAIGN = process.env.EF_R4_CAMPAIGN ?? 'e2e-r4-budget-sensitivity-1'
 const ARMS = ['B0', 'E0', 'E1']
 const TASKS = ['T11-p1', 'T12-p1', 'T13-p1', 'T14-p1', 'T15-p1', 'T16-p1']
 

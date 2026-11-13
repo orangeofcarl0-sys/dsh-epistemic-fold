@@ -18,7 +18,7 @@ import { ROOT } from './shared/audit.mjs'
 
 const E2E_OUT = join(ROOT, 'eval', 'e2e', 'out')
 const OUT = join(ROOT, 'eval', 'r4', 'out')
-const CAMPAIGN = 'e2e-r4-budget-sensitivity-1'
+const CAMPAIGN = process.env.EF_R4_CAMPAIGN ?? 'e2e-r4-budget-sensitivity-1'
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
 const sha256 = path => createHash('sha256').update(readFileSync(path)).digest('hex')
 
