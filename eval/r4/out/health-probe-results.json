@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 health probe",
-  "generatedAt": "2026-11-13T18:24:49.751Z",
+  "generatedAt": "2026-11-13T19:40:52.184Z",
   "design": {
     "path": "eval/r4/out/transport-health-probe.json",
     "sha256": "02d00a8d1664f2b2ee1eed6a0fe8bac61a83d6227f474e17421fa2fdcd056abf"
@@ -12,24 +12,16 @@
     "grantedBy": "user instruction: \"均授权，继续\" (2026-11-14)"
   },
   "route": {
-    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider ac2dbaa8-7050-48e2-9d72-b21663fe3cff)",
-    "baseUrl": "https://opencode.ai/zen/go/v1",
-    "headerNames": [
-      "authorization",
-      "user-agent",
-      "x-opencode-client",
-      "x-opencode-project",
-      "x-opencode-session",
-      "x-client-request-id",
-      "x-opencode-request"
-    ],
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headerNames": [],
     "model": "deepseek-v4.1-flash"
   },
   "planned": 16,
-  "attempted": 1,
-  "successes": 0,
-  "failures": 1,
-  "verdict": "fail",
+  "attempted": 16,
+  "successes": 16,
+  "failures": 0,
+  "verdict": "pass",
   "resume": {
     "used": 0,
     "priorUsage": null
@@ -43,48 +35,48 @@
       "wallClockMs": 1800000
     },
     "used": {
-      "requests": 1,
-      "attempts": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheReadTokens": 0,
+      "requests": 16,
+      "attempts": 16,
+      "inputTokens": 529996,
+      "outputTokens": 7686,
+      "cacheReadTokens": 484480,
       "cacheWriteTokens": 0,
-      "unknownUsage": 1,
-      "unknownUsageRequests": 1,
+      "unknownUsage": 0,
+      "unknownUsageRequests": 0,
       "partialUsageRequests": 0,
       "retries": 0
     },
     "observed": {
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheReadTokens": 0,
+      "inputTokens": 529996,
+      "outputTokens": 7686,
+      "cacheReadTokens": 484480,
       "cacheWriteTokens": 0
     },
     "reserved": {
       "requests": 0,
-      "inputTokens": 131072,
-      "outputTokens": 1024
+      "inputTokens": 0,
+      "outputTokens": 0
     },
     "charged": {
-      "inputTokens": 131072,
-      "outputTokens": 1024
+      "inputTokens": 529996,
+      "outputTokens": 7686
     },
     "remaining": {
-      "requests": 15,
-      "inputTokens": 1868928,
-      "outputTokens": 98976,
-      "wallClockMs": 1798796
+      "requests": 0,
+      "inputTokens": 1470004,
+      "outputTokens": 92314,
+      "wallClockMs": 1733349
     },
     "unresolvedAttempts": 0,
-    "unknownUsageRequests": 1,
+    "unknownUsageRequests": 0,
     "partialUsageRequests": 0,
     "refusals": 0,
-    "elapsedMs": 1204
+    "elapsedMs": 66651
   },
   "totalUsage": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0
+    "requests": 16,
+    "inputTokens": 529996,
+    "outputTokens": 7686
   },
   "results": [
     {
@@ -93,68 +85,642 @@
       "attempt": 1,
       "targetChars": 75603,
       "actualChars": 75603,
-      "durationMs": 1200,
-      "usage": null,
+      "durationMs": 3997,
+      "usage": {
+        "inputTokens": 30047,
+        "outputTokens": 477,
+        "totalTokens": 30524,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0
+      },
       "finish": {
-        "kind": "error",
-        "failure": {
-          "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
-          "code": "LIVE_HTTP"
-        }
+        "kind": "stop"
       },
       "error": null,
       "httpAttempts": 1,
-      "bodyBytes": 77320,
+      "bodyBytes": 76724,
       "diagnostics": [
         {
           "phase": "start",
           "attempt": 0,
-          "at": "2026-11-13T18:24:48.552Z",
-          "bodyBytes": 77320,
+          "at": "2026-11-13T19:39:45.540Z",
+          "bodyBytes": 76724,
           "streamed": false
         },
         {
           "phase": "response",
           "attempt": 0,
-          "at": "2026-11-13T18:24:48.552Z",
-          "durationMs": 1196,
-          "bodyBytes": 77320,
+          "at": "2026-11-13T19:39:45.540Z",
+          "durationMs": 3994,
+          "bodyBytes": 76724,
           "streamed": false,
-          "status": 401
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 3742,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 541,
+        "totalTokens": 30588,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:49.537Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:49.537Z",
+          "durationMs": 3742,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 4606,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 651,
+        "totalTokens": 30698,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:53.280Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:53.280Z",
+          "durationMs": 4606,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 75603,
+      "actualChars": 75603,
+      "durationMs": 4007,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 473,
+        "totalTokens": 30520,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76724,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:57.888Z",
+          "bodyBytes": 76724,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:39:57.888Z",
+          "durationMs": 4005,
+          "bodyBytes": 76724,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 4618,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 627,
+        "totalTokens": 30674,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:01.895Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:01.895Z",
+          "durationMs": 4617,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 3956,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 549,
+        "totalTokens": 30596,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:06.514Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:06.514Z",
+          "durationMs": 3954,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 5238,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 652,
+        "totalTokens": 30699,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:10.470Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:10.470Z",
+          "durationMs": 5237,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-summary-failed-shape-s2",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 75608,
+      "actualChars": 75608,
+      "durationMs": 4663,
+      "usage": {
+        "inputTokens": 223,
+        "outputTokens": 470,
+        "totalTokens": 30517,
+        "cacheReadTokens": 29824,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 76735,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:15.710Z",
+          "bodyBytes": 76735,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:15.710Z",
+          "durationMs": 4662,
+          "bodyBytes": 76735,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 1,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 2286,
+      "usage": {
+        "inputTokens": 3607,
+        "outputTokens": 32,
+        "totalTokens": 33207,
+        "cacheReadTokens": 29568,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:20.373Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:20.373Z",
+          "durationMs": 2286,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 2,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 1946,
+      "usage": {
+        "inputTokens": 151,
+        "outputTokens": 82,
+        "totalTokens": 33257,
+        "cacheReadTokens": 33024,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:22.660Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:22.660Z",
+          "durationMs": 1945,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 3,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 2291,
+      "usage": {
+        "inputTokens": 151,
+        "outputTokens": 90,
+        "totalTokens": 33265,
+        "cacheReadTokens": 33024,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:24.607Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:24.607Z",
+          "durationMs": 2290,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "t13-primary-failed-shape",
+      "purpose": "primary",
+      "attempt": 4,
+      "targetChars": 100963,
+      "actualChars": 100963,
+      "durationMs": 4605,
+      "usage": {
+        "inputTokens": 151,
+        "outputTokens": 251,
+        "totalTokens": 33426,
+        "cacheReadTokens": 33024,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 102124,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:26.898Z",
+          "bodyBytes": 102124,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:26.898Z",
+          "durationMs": 4605,
+          "bodyBytes": 102124,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 1,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 5232,
+      "usage": {
+        "inputTokens": 9278,
+        "outputTokens": 611,
+        "totalTokens": 39841,
+        "cacheReadTokens": 29952,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:31.505Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:31.505Z",
+          "durationMs": 5230,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 2,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 4216,
+      "usage": {
+        "inputTokens": 190,
+        "outputTokens": 499,
+        "totalTokens": 39729,
+        "cacheReadTokens": 39040,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:36.738Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:36.738Z",
+          "durationMs": 4214,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 3,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 4590,
+      "usage": {
+        "inputTokens": 190,
+        "outputTokens": 686,
+        "totalTokens": 39916,
+        "cacheReadTokens": 39040,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:40.954Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:40.954Z",
+          "durationMs": 4589,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
+        }
+      ]
+    },
+    {
+      "profile": "summary-successful-upper-range",
+      "purpose": "summary",
+      "attempt": 4,
+      "targetChars": 149073,
+      "actualChars": 149073,
+      "durationMs": 6639,
+      "usage": {
+        "inputTokens": 190,
+        "outputTokens": 995,
+        "totalTokens": 40225,
+        "cacheReadTokens": 39040,
+        "cacheWriteTokens": 0
+      },
+      "finish": {
+        "kind": "stop"
+      },
+      "error": null,
+      "httpAttempts": 1,
+      "bodyBytes": 150206,
+      "diagnostics": [
+        {
+          "phase": "start",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:45.546Z",
+          "bodyBytes": 150206,
+          "streamed": false
+        },
+        {
+          "phase": "response",
+          "attempt": 0,
+          "at": "2026-11-13T19:40:45.546Z",
+          "durationMs": 6637,
+          "bodyBytes": 150206,
+          "streamed": false,
+          "status": 200
         }
       ]
     }
   ],
-  "stop": "stopped-on-failure",
-  "note": "The representative route failed the transport/usage acceptance. Do not run the campaign. No automatic retry.",
+  "stop": "completed",
+  "note": "All representative requests succeeded with usage and the p95 latency bound was met. The campaign may proceed under its separate authorization.",
   "latency": {
-    "count": 1,
-    "p50": 1200,
-    "p95": 1200,
-    "max": 1200,
+    "count": 16,
+    "p50": 4216,
+    "p95": 6639,
+    "max": 6639,
     "over60s": []
   },
   "acceptance": {
-    "httpSuccess": "0/16",
-    "usagePresent": "0/16",
-    "transportErrors": 1,
-    "p95DurationMs": 1200,
+    "httpSuccess": "16/16",
+    "usagePresent": "16/16",
+    "transportErrors": 0,
+    "p95DurationMs": 6639,
     "p95Within60s": true,
-    "verdict": "fail"
+    "verdict": "pass"
   },
-  "campaignDecision": "do-not-run",
-  "failure": {
-    "profile": "t13-summary-failed-shape",
-    "attempt": 1,
-    "durationMs": 1200,
-    "finish": {
-      "kind": "error",
-      "failure": {
-        "message": "live provider HTTP 401: {\"error\":{\"type\":\"authentication_error\",\"code\":\"api_key_expired\",\"message\":\"This API key has expired. Create a new API key in OpenCode Console and replace it in your client or secret store. Signing in again will not renew this key. Manage your API keys at https://opencode.ai/console/account#api-keys",
-        "code": "LIVE_HTTP"
-      }
-    },
-    "usage": null,
-    "error": null
-  }
+  "campaignDecision": "may-run-under-separate-authorization",
+  "failure": null
 }

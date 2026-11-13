@@ -39,6 +39,7 @@ const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
 const budgetManifest = load('budget-manifest.json')
 const budgetPreflight = load('budget-manifest-preflight.json')
+const campaign3 = load('budget-campaign-e2e-r4-budget-sensitivity-3.json')
 const liveAttempt = load('live-attempts-r4.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
@@ -106,19 +107,24 @@ claim('R4-BUDGET-MANIFEST',
   'A frozen manifest and a passing preflight are not a live authorization; providerCalls is 0 and executionAuthorized is false.')
 
 claim('R4-LIVE-ATTEMPT',
-  `The authorized probe was attempted ${liveAttempt.json.count} times and produced ${liveAttempt.json.successes}/${liveAttempt.json.planned} successes. Attempt 1 hit the unreachable local proxy (ECONNREFUSED); attempts 2-4 used three different OpenCode accounts at https://opencode.ai/zen/go/v1, and all returned HTTP 401 api_key_expired. The 36-cell campaign was not started.`,
+  `The route qualification was attempted ${liveAttempt.json.count} times before Omnigate was available: attempt 1 hit the unreachable local proxy (ECONNREFUSED); attempts 2-5 used three OpenCode accounts and returned HTTP 401 api_key_expired. These attempts produced no model response or usage.`,
   [artifact(liveAttempt)],
-  'These are route/credential qualification attempts, not task-quality evidence. No model response or usage was produced. The campaign stays unauthorized until a probe passes; no automatic retry.')
+  'These are route/credential qualification attempts, not task-quality evidence. They are superseded for the campaign outcome by R4-BUDGET-CAMPAIGN after Omnigate started.')
+
+claim('R4-BUDGET-CAMPAIGN',
+  `The clean 36-cell campaign completed ${campaign3.json.executed}/${campaign3.json.planned} with no stop. Task-correct: B0@8 ${campaign3.json.byArmBudget['B0-8'].taskCorrect}/6, E0@8 ${campaign3.json.byArmBudget['E0-8'].taskCorrect}/6, E1@8 ${campaign3.json.byArmBudget['E1-8'].taskCorrect}/6; B0@16 ${campaign3.json.byArmBudget['B0-16'].taskCorrect}/6, E0@16 ${campaign3.json.byArmBudget['E0-16'].taskCorrect}/6, E1@16 ${campaign3.json.byArmBudget['E1-16'].taskCorrect}/6. E1 vs B0 at 8: E1-only ${campaign3.json.comparisons.find(row => row.id === 'E1-vs-B0@8').leftOnly}, B0-only ${campaign3.json.comparisons.find(row => row.id === 'E1-vs-B0@8').rightOnly}, p=${campaign3.json.comparisons.find(row => row.id === 'E1-vs-B0@8').mcnemarP}. E1@16 vs E1@8: 16-only ${campaign3.json.comparisons.find(row => row.id === 'E1-16-vs-8').leftOnly}, 8-only ${campaign3.json.comparisons.find(row => row.id === 'E1-16-vs-8').rightOnly}, p=${campaign3.json.comparisons.find(row => row.id === 'E1-16-vs-8').mcnemarP}.`,
+  [artifact(campaign3)],
+  'One replicate per cell, six tasks, one route (Omnigate/opencode) and one model. E1@8 is a signal, not a product claim; E1@16 did not improve.')
 
 claim('R4-PRODUCT-DECISION',
-  `No product candidate is proposed; Deployment Hold is ${productDecision.json.deploymentHold}; expandTo72 is ${productDecision.json.expandTo72}; the research candidate remains unwired.`,
+  `No product candidate is proposed; Deployment Hold is ${productDecision.json.deploymentHold}; expandTo72 is ${productDecision.json.expandTo72}; the research candidate remains unwired. The measured best arm is ${productDecision.json.measuredBestArm}.`,
   [artifact(productDecision)],
-  'The decision is bounded by one model, one route, one machine and a step-limit-censored 8-step lane.')
+  'The decision is bounded by one model, one route, one machine and one replicate; the next step is a confirmatory E1@8 vs B0@8 campaign.')
 
 claim('R4-ZERO-LIVE',
-  `The zero-live audit scanned ${zeroLive.json.scripts.length} R4 scripts, found ${zeroLive.json.violations.length} provider/live entry points and ${zeroLive.json.r4Campaigns.length} R4 campaign artifacts; providerCalls is ${zeroLive.json.providerCalls}.`,
+  `The zero-live audit scanned ${zeroLive.json.scripts.length} offline R4 scripts and found ${zeroLive.json.violations.length} violations. It records ${zeroLive.json.r4Campaigns.length} R4 campaign artifacts, of which ${zeroLive.json.authorizedLiveEvidence?.length ?? 0} are authorized live evidence (campaign 3); providerCalls in the offline scripts is ${zeroLive.json.providerCalls}.`,
   [artifact(zeroLive)],
-  'The audit checks the R4 scripts and output directories; it is not a network monitor for the whole machine.')
+  'The audit covers the offline analysis scripts; the authorized probe and campaign are recorded separately. It is not a network monitor for the whole machine.')
 
 const output = {
   schemaVersion: 1,

@@ -1,30 +1,30 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4 budget-sensitivity manifest preflight",
-  "generatedAt": "2026-11-13T18:28:13.497Z",
-  "campaign": "e2e-r4-budget-sensitivity-1",
+  "generatedAt": "2026-11-13T19:53:46.451Z",
+  "campaign": "e2e-r4-budget-sensitivity-3",
   "verdict": "ready-for-authorization",
   "executionAuthorized": false,
   "providerCalls": 0,
   "manifest": {
-    "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json",
-    "sha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044"
+    "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-3.json",
+    "sha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
   },
   "authorization": {
-    "path": "eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json",
-    "sha256": "09197818249b3b0eb649812b8f2f6d64d25ddb6245cde50adead4e8b2a4a7ba4",
+    "path": "eval/e2e/out/authorization-e2e-r4-budget-sensitivity-3.json",
+    "sha256": "fad38b6259c88c4ad1b9d0a9f79c38642bd5d6cb43a59b378ca360cbfda3b47b",
     "granted": false
   },
   "code": {
-    "head": "419497b7dbfb37af614addbaad7bb4a8935b8682",
-    "sourceTreeDigest": "6be6756ffc6aa0057ec031d484b207763bbfe1fa79c6dda059d4b7d4e39849ec",
+    "head": "2ef6c5d74d89d662f0523110abcfe84a9e2d6338",
+    "sourceTreeDigest": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01",
     "worktreeClean": true
   },
   "checks": [
     {
       "id": "campaign",
       "pass": true,
-      "detail": "e2e-r4-budget-sensitivity-1"
+      "detail": "e2e-r4-budget-sensitivity-3"
     },
     {
       "id": "cell-count",
@@ -89,26 +89,26 @@
       "id": "authorization-binds-manifest",
       "pass": true,
       "detail": {
-        "authorization": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
-        "manifest": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044"
+        "authorization": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+        "manifest": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
       }
     },
     {
       "id": "pointer-binds-manifest",
       "pass": true,
-      "detail": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044"
+      "detail": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66"
     },
     {
       "id": "pointer-binds-authorization",
       "pass": true,
-      "detail": "09197818249b3b0eb649812b8f2f6d64d25ddb6245cde50adead4e8b2a4a7ba4"
+      "detail": "fad38b6259c88c4ad1b9d0a9f79c38642bd5d6cb43a59b378ca360cbfda3b47b"
     },
     {
       "id": "source-tree-digest",
       "pass": true,
       "detail": {
-        "manifest": "6be6756ffc6aa0057ec031d484b207763bbfe1fa79c6dda059d4b7d4e39849ec",
-        "current": "6be6756ffc6aa0057ec031d484b207763bbfe1fa79c6dda059d4b7d4e39849ec"
+        "manifest": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01",
+        "current": "870ad17f8029adda96bd1f88676dfa1281c2c68a9450266489e673fd5ab0ca01"
       }
     },
     {
@@ -177,7 +177,7 @@
         "continuationCells": 36,
         "httpAttempts": 1152,
         "inputTokens": 14907240,
-        "outputTokens": 512892,
+        "outputTokens": 9437184,
         "wallClockMs": 11084760,
         "paidConcurrency": 2,
         "monetaryUsd": null,
@@ -191,14 +191,14 @@
         "perCell": {
           "requests": 32,
           "inputTokens": 414090,
-          "outputTokens": 14247,
+          "outputTokens": 262144,
           "wallClockMs": 307910
         },
         "limits": {
           "continuationCells": 36,
           "httpAttempts": 1152,
           "inputTokens": 14907240,
-          "outputTokens": 512892,
+          "outputTokens": 9437184,
           "wallClockMs": 11084760,
           "paidConcurrency": 2,
           "monetaryUsd": null,

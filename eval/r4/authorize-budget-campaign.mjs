@@ -37,13 +37,14 @@ const authorization = readJson(authorizationPath)
 const preflight = readJson(preflightPath)
 const probe = readJson(probePath)
 const manifestSha256 = sha256(manifestPath)
+const refreshPointer = process.argv.includes('--refresh-pointer')
 
 if (manifest.executionAuthorized !== false) {
   process.stderr.write('authorize-budget-campaign: manifest is already marked authorized\n')
   process.exit(2)
 }
-if (authorization.granted !== false) {
-  process.stderr.write('authorize-budget-campaign: authorization is already granted\n')
+if (authorization.granted !== false && !refreshPointer) {
+  process.stderr.write('authorize-budget-campaign: authorization is already granted (use --refresh-pointer to refresh the pointer)\n')
   process.exit(2)
 }
 if (authorization.manifestSha256 !== manifestSha256) {
@@ -73,5 +74,24 @@ authorization.preflight = { path: 'eval/r4/out/budget-manifest-preflight.json', 
 authorization.note = 'This grant is bound to the manifest SHA-256 above and the listed envelope. A changed manifest needs a new grant.'
 
 writeFileSync(authorizationPath, `${JSON.stringify(authorization, null, 2)}\n`, 'utf8')
+
+// The pointer is a summary, not the grant. Refresh it after a grant so the
+// zero-live audit and the report do not read a stale `granted:false`.
+const pointerPath = join(OUT, 'budget-manifest.json')
+if (existsSync(pointerPath)) {
+  const pointer = readJson(pointerPath)
+  if (pointer.campaign === CAMPAIGN) {
+    pointer.authorization = {
+      ...pointer.authorization,
+      path: `eval/e2e/out/authorization-${CAMPAIGN}.json`,
+      sha256: sha256(authorizationPath),
+      granted: true,
+      grantedAt: authorization.grantedAt,
+    }
+    pointer.preflight = { path: 'eval/r4/out/budget-manifest-preflight.json', sha256: sha256(preflightPath), verdict: preflight.verdict }
+    writeFileSync(pointerPath, `${JSON.stringify(pointer, null, 2)}\n`, 'utf8')
+  }
+}
+
 process.stdout.write(`campaign authorization: granted; manifest ${manifestSha256.slice(0, 12)}…; probe ${probe.verdict}; 36 cells\n`)
 process.stdout.write(`wrote ${authorizationPath}\n`)

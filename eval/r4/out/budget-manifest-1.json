@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "work": "EF-R4 budget-sensitivity manifest pointer",
+  "generatedAt": "2026-11-13T18:28:13.237Z",
+  "campaign": "e2e-r4-budget-sensitivity-1",
+  "design": {
+    "path": "eval/r4/out/budget-sensitivity-design.json",
+    "sha256": "bc4912bc2aa138a2cc42106ca20ab81243aa65bcb01369f0f65402a13a489ab2"
+  },
+  "manifest": {
+    "path": "eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json",
+    "sha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
+    "cells": 36,
+    "executionAuthorized": false
+  },
+  "authorization": {
+    "path": "eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json",
+    "sha256": "09197818249b3b0eb649812b8f2f6d64d25ddb6245cde50adead4e8b2a4a7ba4",
+    "granted": false
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot. Each cell overrides maxSteps; the effective value is written into every report."
+  },
+  "perCell": {
+    "requests": 32,
+    "inputTokens": 414090,
+    "outputTokens": 14247,
+    "wallClockMs": 307910
+  },
+  "limits": {
+    "continuationCells": 36,
+    "httpAttempts": 1152,
+    "inputTokens": 14907240,
+    "outputTokens": 512892,
+    "wallClockMs": 11084760,
+    "paidConcurrency": 2,
+    "monetaryUsd": null,
+    "monetaryNote": "No verifiable per-token price is recorded."
+  },
+  "preflight": {
+    "path": "eval/r4/out/budget-manifest-preflight.json",
+    "sha256": "80b8d6858d90b370dbf0154572178955f6c27c26f39a1c89674a8d0cebe6417a",
+    "verdict": "ready-for-authorization",
+    "generatedAt": "2026-11-13T18:28:13.497Z"
+  },
+  "note": "Ready for a zero-provider preflight. Not ready to execute: the authorization is not granted."
+}

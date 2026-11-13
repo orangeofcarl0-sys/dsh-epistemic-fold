@@ -154,7 +154,9 @@ The offline simulation over the seven affected cells adds **1,238 prompt chars**
 
 The candidate is deliberately **not** a product candidate. It is selected because it is the first precondition for using any recovered evidence; the re-folding and failure-projection findings remain secondary and are not additional candidates.
 
-## 7. Budget-sensitivity design (WP6)
+The live campaign did **not** test this candidate. E1@8 passed 6/6 without it, so the measured best arm is the shipped E1 preset at 8 steps, not the replay mechanism. The candidate remains contract-only and is not promoted by the campaign result.
+
+## 7. Budget-sensitivity campaign (WP6)
 
 The design is frozen at `eval/r4/out/budget-sensitivity-design.json`:
 
@@ -162,29 +164,59 @@ The design is frozen at `eval/r4/out/budget-sensitivity-design.json`:
 - six blocks of six; each block has every task once, every arm twice, every budget three times;
 - over six blocks, each task × arm × budget combination appears exactly once (validated: 36 unique combinations, balanced blocks);
 - `maxSteps` is per agent loop; stage A and stage B each receive it and the report records total steps;
-- the R3 8-step cells are **not** reused as strict pairs; this campaign has its own 8-step cells;
-- `executionAuthorized: false`; no authorization SHA; no provider call.
+- the R3 8-step cells are **not** reused as strict pairs; this campaign has its own 8-step cells.
 
-The budget estimate from R3 is a proposal only. A live grant must bind the final manifest SHA and set the real envelope.
+### Live route
 
-The runnable manifest is frozen separately at `eval/e2e/out/manifest-e2e-r4-budget-sensitivity-1.json`; its SHA-256 is recorded in `eval/r4/out/budget-manifest.json` and `eval/r4/out/budget-manifest-preflight.json`. The matching authorization at `eval/e2e/out/authorization-e2e-r4-budget-sensitivity-1.json` has `granted:false` and a null grantor/basis; it is a request envelope, not a grant. A zero-provider preflight passes **26/26** checks (`ready-for-authorization`): 36 cells, 36 unique task×arm×budget combinations, balanced blocks, task digests, source-tree digest, and a coherent `perCell × 36` envelope (`1,152` requests, `14,907,240` input tokens, `512,892` output tokens, `11,084,760` ms wall clock). The manifest and authorization are generated artifacts under `eval/e2e/out/` and `eval/r4/out/` and are excluded from the source-tree digest.
-
-A separate `workspace-readable` task family is recorded as design-only. It is not generated and must not be pooled with the archive-only family: putting the logs in the workspace would turn a history-recovery task into a `read_file` task.
-
-### Live route qualification (2026-11-14)
-
-The user authorized the health probe and the 36-cell campaign, then changed the provider to `opencode/deepseek-v4.1-flash`. Four route-qualification attempts were made; none produced a model response:
+The user authorized the health probe and the campaign, then switched the provider to `opencode/deepseek-v4.1-flash`, then started the local Omnigate proxy. Route qualification took five failed attempts before the successful one:
 
 | Attempt | Route | Result | Blocker |
 |---|---|---|---|
-| 1 | local ZCode proxy `http://127.0.0.1:7866/v1` | 0/16, 51 ms | `ECONNREFUSED` |
-| 2 | `https://opencode.ai/zen/go/v1` (provider `b88043d7…`) | 0/16, 1,217 ms | HTTP 401 `api_key_expired` |
-| 3 | `https://opencode.ai/zen/go/v1` (provider `5c7f8d75…`) | 0/16, 1,239 ms | HTTP 401 `api_key_expired` |
-| 4 | `https://opencode.ai/zen/go/v1` (provider `ac2dbaa8…`) | 0/16, 1,200 ms | HTTP 401 `api_key_expired` |
+| 1 | local proxy `127.0.0.1:7866` (not running) | 0/16, 51 ms | `ECONNREFUSED` |
+| 2 | `opencode.ai/zen/go/v1`, provider `b88043d7…` | 0/16, 1,217 ms | HTTP 401 `api_key_expired` |
+| 3 | `opencode.ai/zen/go/v1`, provider `5c7f8d75…` | 0/16, 1,239 ms | HTTP 401 `api_key_expired` |
+| 4 | `opencode.ai/zen/go/v1`, provider `ac2dbaa8…` | 0/16, 1,200 ms | HTTP 401 `api_key_expired` |
+| 5 | `opencode.ai/zen/go/v1`, configured `x-opencode-session` | 0/16, 1,285 ms | HTTP 401 `api_key_expired` |
+| 6 | Omnigate `127.0.0.1:7866/v1`, upstream opencode | **16/16**, p95 6,639 ms | pass |
 
-All three configured OpenCode accounts in `~/.zcode/v2/config.json` return `api_key_expired`. The probe stopped on the first response of each attempt; no usage was produced. The 36-cell campaign was **not started** (`campaign.started:false`). This is a credential/route blocker, not a model or task result.
+The working ZCode conversation is served by `account:bigmodel-start-plan` / GLM-5.3-Flash for this workspace (app log), not by the OpenCode key; that is why it worked while direct OpenCode calls returned 401. The successful probe used Omnigate's OpenAI-compatible endpoint with the configured provider key.
 
-The consolidated record is `eval/r4/out/live-attempts-r4.json`; each attempt's raw result and analysis are preserved as `health-probe-results-attempt-{1..4}.json` and `health-probe-analysis-attempt-{1..4}.md`. No automatic retry was made. Replace at least one OpenCode API key, then retry the same probe; the campaign stays unauthorized until a probe passes.
+### Campaign attempts
+
+- **Campaign 1** (`e2e-r4-budget-sensitivity-1`): 3/36, stopped by `provider-usage-incomplete`. Two rationale auxiliary calls were locally refused with `BUDGET_EXHAUSTED`: the per-cell output cap (14,247) was below two rationale reservations.
+- **Campaign 2** (`e2e-r4-budget-sensitivity-2`): 18/36, stopped by `runner-error: EEXIST`. The runner's `cellId` did not include the step budget, so the 8-step and 16-step variants of the same task/arm shared one directory.
+- **Campaign 3** (`e2e-r4-budget-sensitivity-3`): **36/36 complete**, no stop, no budget abort. Per-cell output cap raised to 262,144; cell identity now includes the budget (`T11-p1-B0-b8-r1`). This is the clean result.
+
+The manifest for campaign 3 is `eval/e2e/out/manifest-e2e-r4-budget-sensitivity-3.json` (SHA-256 `7b5d1465fdfd…`), authorization granted under the user instruction, preflight 26/26. Total usage: **278 requests, 1,294,111 input tokens, 54,987 output tokens, 748,913 ms**. All 36 cells are cost-valid.
+
+### Campaign 3 result
+
+| Arm | Budget | Correct | Incorrect | Incomplete | Step-limited | Mechanism met | Requests | Input | Output |
+|---|---|---|---|---|---|---|---|---|---|
+| B0 | 8 | 4/6 | 0 | 2 | 0 | 0 | 51 | 174,266 | 16,557 |
+| B0 | 16 | 5/6 | 0 | 1 | 0 | 0 | 56 | 143,058 | 15,916 |
+| E0 | 8 | 1/6 | 1 | 4 | 1 | 1 | 43 | 326,223 | 4,616 |
+| E0 | 16 | 2/6 | 0 | 4 | 0 | 1 | 41 | 308,969 | 4,310 |
+| E1 | 8 | **6/6** | 0 | 0 | 1 | 1 | 39 | 154,311 | 5,811 |
+| E1 | 16 | 4/6 | 0 | 2 | 0 | 1 | 48 | 187,284 | 7,777 |
+
+Paired exact McNemar:
+
+- **E1@8 vs B0@8:** both 4, neither 0, E1-only 2, B0-only 0, p=0.5.
+- **E1@16 vs E1@8:** both 4, neither 0, 16-only 0, 8-only 2, p=0.5.
+- B0@16 vs B0@8: 16-only 1, 8-only 0, p=1.
+- E0@16 vs E0@8: 16-only 1, 8-only 0, p=1.
+- E1@16 vs B0@16: E1-only 1, B0-only 2, p=1.
+
+### Reading
+
+- **E1@8 is the best arm in this campaign:** 6/6 correct, 39 requests, 154k input, 5.8k output. It beats B0@8 6/6 vs 4/6 in the paired cells, but with n=6, one replicate and p=0.5.
+- **Doubling the step budget did not help E1:** E1@16 is 4/6 and loses T15/T16 relative to E1@8. The R3 "step-limit censoring" hypothesis does not reproduce on this route; 8 steps were sufficient for E1 on these tasks.
+- **E0 remains weak at both budgets** (1/6 at 8, 2/6 at 16). Marker-only checkpoints are still the limiting arm.
+- **T16 is a mechanism case:** E1@8 passes the task and meets `minCompactions:2`; E1@16 meets the mechanism but fails the task; B0 fails the mechanism at both budgets. Task correctness and mechanism exposure stay separate.
+- **This is a new route and a new experiment**, not a replication of R3. The R3 local proxy produced E1 3/6; Omnigate/opencode produced E1 6/6 at 8 steps. The route/model behavior differs; the two results cannot be pooled.
+
+A separate `workspace-readable` task family is recorded as design-only. It is not generated and must not be pooled with the archive-only family: putting the logs in the workspace would turn a history-recovery task into a `read_file` task.
 
 ## 8. Gates
 
@@ -196,19 +228,19 @@ The consolidated record is `eval/r4/out/live-attempts-r4.json`; each attempt's r
 | R4-G3 | pass | 18 cells; 3 stage-B cells; 7 failed EF with task loss; 0 passing EF with loss |
 | R4-G4 | pass | 18 cells; repeated 16; re-fold 51; task-lost 45 requests; 15 open failures; 6 duplicates |
 | R4-G5 | pass | `active-task-delivery`, contract present, not wired |
-| R4-G6 | incomplete | 36-cell manifest frozen; preflight 26/26; 4 route attempts: local proxy `ECONNREFUSED`, three OpenCode accounts HTTP 401 `api_key_expired`; campaign not started |
-| R4-G7 | pass | zero-live verified; claims 12; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
-| R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion |
+| R4-G6 | pass | clean 36-cell campaign `e2e-r4-budget-sensitivity-3` complete 36/36, no stop; E1@8 6/6, B0@8 4/6; E1@16 4/6 |
+| R4-G7 | pass | zero-live verified; claims 13; supported-lane CI `43051706660` passed (pinned DSH 0.2.0-rc.2). The master compatibility probe remains non-blocking and fails on the known vendored-tree drift. |
+| R4-G8 | pass | no product candidate; Deployment Hold; no 72-cell expansion; measured best arm E1@8, next is a confirmatory E1@8 vs B0@8 |
 
-`incomplete` is not `fail`. R4-G6 remains incomplete because the route credentials were not usable; it can become pass only after a successful live campaign. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
+`incomplete` is not `fail`. R4-G6 is now pass because the clean campaign completed; campaigns 1 and 2 are preserved as partial runs (local budget abort, duplicate cell identity) and are not used for the result. The supported-lane CI run `43051706660` completed with the pinned job green; the master probe's type errors are the pre-existing `eval/real-task` / `src/state` drift, not R4 code.
 
 ## 9. What R4 does not prove
 
-- **No causal effect.** The task-source loss correlates with failure in 18 cells from one model, one route and one machine. The candidate has no live test.
+- **No causal effect.** The task-source loss correlates with failure in 18 cells from one model, one route and one machine. The candidate (`active-task-delivery`) was not tested live; E1@8 passed without it.
 - **No complete evidence graph of every message.** The graph covers recall/search results, not every tool result or every checkpoint message.
-- **No token accounting.** The context balance is in characters; R3 did not record per-step TokenMeter snapshots. A future run uses `report.contextTrace`.
-- **No 16-step result.** The 8-step EF failures remain censored. The budget-sensitivity campaign is designed but not authorized.
-- **No product claim.** The candidate adds exact prompt bytes; whether the model acts on them, and at what cost, is unmeasured.
+- **No token accounting from R3.** The context balance is in characters; R3 did not record per-step TokenMeter snapshots. Campaign 3 reports include `contextTrace`, but the aggregate analysis here uses requests/tokens from usage.
+- **The 16-step result is not an improvement.** E1@16 is 4/6 and loses T15/T16 relative to E1@8; this is one replicate and one route, so it is a signal against raising the budget, not a proof.
+- **No product claim.** E1@8 6/6 vs B0@8 4/6 has p=0.5 with n=6 and one replicate; there is no held-out set and no second route. The result is a research signal, not a default change.
 - **Not every failure is explained.** T11-E1 is an evidence-scope error; T16-B0 is an output-schema and fold-count failure; the task-delivery candidate does not address either.
 
 ## 10. Reproduction
@@ -236,6 +268,6 @@ Artifacts are under `eval/r4/out/`. The R3 artifacts under `eval/r3/out/` and ev
 
 ## 11. Next step
 
-The only defensible next experiment is the frozen **36-cell step-budget sensitivity** campaign: the same six archive-only tasks, all three arms, 8 and 16 steps, interleaved. It requires a new, explicit live authorization binding the final manifest SHA and budget. The 72-cell lane remains unauthorized; the old 54-cell stress confirm is not reopened.
+The 36-cell campaign is complete. The measured signal is **E1@8 vs B0@8** (6/6 vs 4/6, p=0.5, one replicate), and **E1@16 did not improve** (4/6). The next experiment is therefore a **confirmatory E1@8 vs B0@8 campaign** with more tasks and replicates, a second route/model, and a held-out task set. It requires a new, explicit live authorization binding the new manifest SHA and budget.
 
-If the 16-step cells still lose the task source and make no write, the next question is the candidate's live behavior, not a larger sample. If they complete, the cost and latency of the extra steps must be reported before any product claim.
+The 72-cell lane remains unauthorized; the old 54-cell stress confirm is not reopened. The `active-task-delivery` candidate remains a contract-only research mechanism; E1@8 passed without it, so it is not the next default.

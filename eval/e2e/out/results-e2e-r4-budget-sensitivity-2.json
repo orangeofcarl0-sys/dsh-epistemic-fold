@@ -1,0 +1,1205 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-13T19:52:03.819Z",
+  "campaign": "e2e-r4-budget-sensitivity-2",
+  "manifestSha256": "21b0e1a283f47548706b81bd5a99be1df598a324b91110e72185e20b8130def7",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1",
+  "planned": 36,
+  "executed": 18,
+  "budget": {
+    "used": {
+      "requests": 128,
+      "inputTokens": 764527,
+      "outputTokens": 25296,
+      "wallClockMs": 348602
+    },
+    "limits": {
+      "continuationCells": 36,
+      "httpAttempts": 1152,
+      "inputTokens": 14907240,
+      "outputTokens": 9437184,
+      "wallClockMs": 11084760,
+      "paidConcurrency": 2,
+      "monetaryUsd": null,
+      "monetaryNote": "No verifiable per-token price is recorded."
+    }
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot. Each cell overrides maxSteps; the effective value is written into every report."
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 34794,
+        "outputTokens": 3160,
+        "cacheReadTokens": 115712,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 32724,
+          "outputTokens": 676,
+          "cacheReadTokens": 81408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 2070,
+          "outputTokens": 2484,
+          "cacheReadTokens": 34304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 15803,
+        "outputTokens": 316,
+        "cacheReadTokens": 34304,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15803,
+          "outputTokens": 316,
+          "cacheReadTokens": 34304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T12-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 41801,
+        "outputTokens": 567,
+        "cacheReadTokens": 14080,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 11871,
+          "outputTokens": 208,
+          "cacheReadTokens": 14080,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29930,
+          "outputTokens": 359,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T13-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 9,
+        "inputTokens": 47151,
+        "outputTokens": 1652,
+        "cacheReadTokens": 82944,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 16336,
+          "outputTokens": 443,
+          "cacheReadTokens": 80768,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 3,
+          "inputTokens": 30815,
+          "outputTokens": 1209,
+          "cacheReadTokens": 2176,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 3,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T14-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "step-limit",
+      "stepLimitStage": "A",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 158457,
+        "outputTokens": 1028,
+        "cacheReadTokens": 86784,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 158457,
+          "outputTokens": 1028,
+          "cacheReadTokens": 86784,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T15-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 2,
+        "deliveredCompactions": 2,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "2 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 58796,
+        "outputTokens": 1553,
+        "cacheReadTokens": 29056,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 22173,
+          "outputTokens": 768,
+          "cacheReadTokens": 27904,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 36623,
+          "outputTokens": 785,
+          "cacheReadTokens": 1152,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T16-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 10,
+        "inputTokens": 101662,
+        "outputTokens": 1387,
+        "cacheReadTokens": 137600,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 10,
+          "inputTokens": 101662,
+          "outputTokens": 1387,
+          "cacheReadTokens": 137600,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 10
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 45706,
+        "outputTokens": 782,
+        "cacheReadTokens": 34688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15795,
+          "outputTokens": 247,
+          "cacheReadTokens": 34688,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29911,
+          "outputTokens": 535,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T12-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 12557,
+        "outputTokens": 669,
+        "cacheReadTokens": 54272,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 11952,
+          "outputTokens": 237,
+          "cacheReadTokens": 24704,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 605,
+          "outputTokens": 432,
+          "cacheReadTokens": 29568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T13-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 15903,
+        "outputTokens": 403,
+        "cacheReadTokens": 83712,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 15903,
+          "outputTokens": 403,
+          "cacheReadTokens": 83712,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T14-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 45599,
+        "outputTokens": 590,
+        "cacheReadTokens": 34304,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15715,
+          "outputTokens": 211,
+          "cacheReadTokens": 34304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 29884,
+          "outputTokens": 379,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T15-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 1,
+        "deliveredCompactions": 1,
+        "pass": false,
+        "requiredFoldCountMet": false,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": false,
+            "detail": "1 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 16,
+        "inputTokens": 29902,
+        "outputTokens": 6329,
+        "cacheReadTokens": 260352,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 11,
+          "inputTokens": 23199,
+          "outputTokens": 1470,
+          "cacheReadTokens": 173312,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 6703,
+          "outputTokens": 4859,
+          "cacheReadTokens": 87040,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 11
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T16-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 16874,
+        "outputTokens": 865,
+        "cacheReadTokens": 131840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 16492,
+          "outputTokens": 575,
+          "cacheReadTokens": 102272,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 382,
+          "outputTokens": 290,
+          "cacheReadTokens": 29568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 16372,
+        "outputTokens": 912,
+        "cacheReadTokens": 61952,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15786,
+          "outputTokens": 292,
+          "cacheReadTokens": 32384,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 586,
+          "outputTokens": 620,
+          "cacheReadTokens": 29568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T12-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 42572,
+        "outputTokens": 571,
+        "cacheReadTokens": 15232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 42572,
+          "outputTokens": 571,
+          "cacheReadTokens": 15232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T13-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 16689,
+        "outputTokens": 826,
+        "cacheReadTokens": 131840,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 16377,
+          "outputTokens": 498,
+          "cacheReadTokens": 102272,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 312,
+          "outputTokens": 328,
+          "cacheReadTokens": 29568,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T14-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 17469,
+        "outputTokens": 1798,
+        "cacheReadTokens": 95488,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 16315,
+          "outputTokens": 394,
+          "cacheReadTokens": 64768,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 1154,
+          "outputTokens": 1404,
+          "cacheReadTokens": 30720,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 2,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T15-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 4,
+        "deliveredCompactions": 4,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "4 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 13,
+        "inputTokens": 46420,
+        "outputTokens": 1888,
+        "cacheReadTokens": 113152,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 13,
+          "inputTokens": 46420,
+          "outputTokens": 1888,
+          "cacheReadTokens": 113152,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 13
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T16-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "error",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "runner-error: Error: EEXIST: file already exists, mkdir 'F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-2\\T11-p1-B0-r1'\n    at async mkdir (node:internal/fs/promises:859:10)\n    at async runCell (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/cell.mjs:451:3)\n    at async main (file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:309:16)\n    at async file:///F:/Codex_Work_Space/DSH%20plugin/ef-c1-foundation/eval/e2e/src/run.mjs:401:1"
+    }
+  ]
+}

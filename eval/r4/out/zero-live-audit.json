@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "work": "EF-R4 zero-live audit",
   "scope": "offline analysis scripts only; the authorized live probe and campaign are recorded separately",
-  "generatedAt": "2026-11-13T18:28:13.876Z",
+  "generatedAt": "2026-11-13T20:13:59.227Z",
   "scripts": [
     "eval/r4/baseline.mjs",
     "eval/r4/score.mjs",
@@ -18,6 +18,7 @@
     "eval/r4/record-live-attempt.mjs",
     "eval/r4/record-live-attempts.mjs",
     "eval/r4/preflight-budget-manifest.mjs",
+    "eval/r4/analyze-budget-campaign.mjs",
     "eval/r4/product-decision.mjs",
     "eval/r4/contracts/scoring-contract.mjs",
     "eval/r4/contracts/evidence-graph-contract.mjs",
@@ -40,14 +41,28 @@
   ],
   "violations": [],
   "providerCalls": 0,
-  "r4Campaigns": [],
-  "authorizedLiveEvidence": [],
-  "liveAuthorized": false,
+  "r4Campaigns": [
+    "results-e2e-r4-budget-sensitivity-1.json",
+    "results-e2e-r4-budget-sensitivity-2.json",
+    "results-e2e-r4-budget-sensitivity-3.json",
+    "e2e-r4-budget-sensitivity-1",
+    "e2e-r4-budget-sensitivity-2",
+    "e2e-r4-budget-sensitivity-3"
+  ],
+  "authorizedLiveEvidence": [
+    "results-e2e-r4-budget-sensitivity-1.json",
+    "results-e2e-r4-budget-sensitivity-2.json",
+    "results-e2e-r4-budget-sensitivity-3.json",
+    "e2e-r4-budget-sensitivity-1",
+    "e2e-r4-budget-sensitivity-2",
+    "e2e-r4-budget-sensitivity-3"
+  ],
+  "liveAuthorized": true,
   "budgetExecutionAuthorized": false,
   "budgetManifest": {
-    "campaign": "e2e-r4-budget-sensitivity-1",
-    "manifestSha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
-    "authorizationGranted": false
+    "campaign": "e2e-r4-budget-sensitivity-3",
+    "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+    "authorizationGranted": true
   },
   "immutableMissing": [],
   "verdict": "zero-live-verified"

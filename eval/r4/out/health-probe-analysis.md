@@ -1,13 +1,10 @@
 # EF-R4 health probe
 
-Verdict: **fail**
+Verdict: **pass**
 
-Requests: 0/16 succeeded, 1 failed.
-Latency: p50 1200 ms, p95 1200 ms, max 1200 ms.
+Requests: 16/16 succeeded, 0 failed.
+Latency: p50 4216 ms, p95 6639 ms, max 6639 ms.
 Pre-registered p95 bound: 60,000 ms; met: true.
 
-First failure:
-- t13-summary-failed-shape #1: 1200 ms, finish error, usage missing, error LIVE_HTTP
-
-The transport/usage acceptance failed before the first success. The 36-cell campaign must not start; no automatic retry.
+The transport/usage acceptance is separate from the latency bound.
 

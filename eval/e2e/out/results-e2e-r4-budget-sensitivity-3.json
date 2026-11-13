@@ -1,0 +1,1922 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-13T20:06:21.938Z",
+  "campaign": "e2e-r4-budget-sensitivity-3",
+  "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "complete",
+  "stopReason": null,
+  "planned": 36,
+  "executed": 36,
+  "budget": {
+    "used": {
+      "requests": 278,
+      "inputTokens": 1294111,
+      "outputTokens": 54987,
+      "wallClockMs": 748913
+    },
+    "limits": {
+      "continuationCells": 36,
+      "httpAttempts": 1152,
+      "inputTokens": 14907240,
+      "outputTokens": 9437184,
+      "wallClockMs": 11084760,
+      "paidConcurrency": 2,
+      "monetaryUsd": null,
+      "monetaryNote": "No verifiable per-token price is recorded."
+    }
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot. Each cell overrides maxSteps; the effective value is written into every report."
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 17720,
+        "outputTokens": 2516,
+        "cacheReadTokens": 130816,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 16447,
+          "outputTokens": 666,
+          "cacheReadTokens": 97408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 1273,
+          "outputTokens": 1850,
+          "cacheReadTokens": 33408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 4,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 15746,
+        "outputTokens": 259,
+        "cacheReadTokens": 66176,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 15746,
+          "outputTokens": 259,
+          "cacheReadTokens": 66176,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 11991,
+        "outputTokens": 482,
+        "cacheReadTokens": 43776,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 11757,
+          "outputTokens": 165,
+          "cacheReadTokens": 14080,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 234,
+          "outputTokens": 317,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 17862,
+        "outputTokens": 2157,
+        "cacheReadTokens": 146688,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 16818,
+          "outputTokens": 526,
+          "cacheReadTokens": 113280,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 1044,
+          "outputTokens": 1631,
+          "cacheReadTokens": 33408,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 4,
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "step-limit",
+      "stepLimitStage": "A",
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 189843,
+        "outputTokens": 1106,
+        "cacheReadTokens": 56320,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 189843,
+          "outputTokens": 1106,
+          "cacheReadTokens": 56320,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-E0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 3,
+        "deliveredCompactions": 3,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "3 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 18,
+        "inputTokens": 77460,
+        "outputTokens": 3390,
+        "cacheReadTokens": 248064,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 15,
+          "inputTokens": 47102,
+          "outputTokens": 2314,
+          "cacheReadTokens": 215040,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 3,
+          "inputTokens": 30358,
+          "outputTokens": 1076,
+          "cacheReadTokens": 33024,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 3,
+          "primary": 15
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 16693,
+        "outputTokens": 535,
+        "cacheReadTokens": 118912,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 16693,
+          "outputTokens": 535,
+          "cacheReadTokens": 118912,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 16089,
+        "outputTokens": 565,
+        "cacheReadTokens": 80512,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 15874,
+          "outputTokens": 237,
+          "cacheReadTokens": 50816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 215,
+          "outputTokens": 328,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 11934,
+        "outputTokens": 625,
+        "cacheReadTokens": 42496,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 11713,
+          "outputTokens": 225,
+          "cacheReadTokens": 12544,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 221,
+          "outputTokens": 400,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 16900,
+        "outputTokens": 632,
+        "cacheReadTokens": 120448,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 16900,
+          "outputTokens": 632,
+          "cacheReadTokens": 120448,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-E0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 15551,
+        "outputTokens": 547,
+        "cacheReadTokens": 47488,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 15363,
+          "outputTokens": 258,
+          "cacheReadTokens": 17792,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 188,
+          "outputTokens": 289,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 1,
+        "deliveredCompactions": 1,
+        "pass": false,
+        "requiredFoldCountMet": false,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": false,
+            "detail": "1 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 13,
+        "inputTokens": 28919,
+        "outputTokens": 5330,
+        "cacheReadTokens": 202112,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 9,
+          "inputTokens": 22803,
+          "outputTokens": 1538,
+          "cacheReadTokens": 132992,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 6116,
+          "outputTokens": 3792,
+          "cacheReadTokens": 69120,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 4,
+          "primary": 9
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "step-limit",
+      "stepLimitStage": "A",
+      "guard": false,
+      "usage": {
+        "requests": 10,
+        "inputTokens": 64407,
+        "outputTokens": 1785,
+        "cacheReadTokens": 214400,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 48124,
+          "outputTokens": 1054,
+          "cacheReadTokens": 183424,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 16283,
+          "outputTokens": 731,
+          "cacheReadTokens": 30976,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 15894,
+        "outputTokens": 728,
+        "cacheReadTokens": 61952,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15692,
+          "outputTokens": 247,
+          "cacheReadTokens": 32000,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 202,
+          "outputTokens": 481,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 42411,
+        "outputTokens": 295,
+        "cacheReadTokens": 14976,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 42411,
+          "outputTokens": 295,
+          "cacheReadTokens": 14976,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-E0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 16400,
+        "outputTokens": 734,
+        "cacheReadTokens": 114816,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 16216,
+          "outputTokens": 410,
+          "cacheReadTokens": 85120,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 184,
+          "outputTokens": 324,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 9,
+        "inputTokens": 49523,
+        "outputTokens": 3256,
+        "cacheReadTokens": 67200,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 47012,
+          "outputTokens": 421,
+          "cacheReadTokens": 34304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 4,
+          "inputTokens": 2511,
+          "outputTokens": 2835,
+          "cacheReadTokens": 32896,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 4,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 3,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 3,
+        "deliveredCompactions": 3,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "3 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 43221,
+        "outputTokens": 1532,
+        "cacheReadTokens": 104576,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 11,
+          "inputTokens": 43221,
+          "outputTokens": 1532,
+          "cacheReadTokens": 104576,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 11
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 8,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 16,
+        "inputTokens": 51774,
+        "outputTokens": 5532,
+        "cacheReadTokens": 122112,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 48082,
+          "outputTokens": 839,
+          "cacheReadTokens": 84224,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 8,
+          "inputTokens": 3692,
+          "outputTokens": 4693,
+          "cacheReadTokens": 37888,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 8,
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incorrect",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 4,
+        "inputTokens": 15515,
+        "outputTokens": 266,
+        "cacheReadTokens": 49920,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 15515,
+          "outputTokens": 266,
+          "cacheReadTokens": 49920,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-E0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 12007,
+        "outputTokens": 503,
+        "cacheReadTokens": 43776,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 11773,
+          "outputTokens": 182,
+          "cacheReadTokens": 14080,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 234,
+          "outputTokens": 321,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 50026,
+        "outputTokens": 3509,
+        "cacheReadTokens": 85760,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 47038,
+          "outputTokens": 410,
+          "cacheReadTokens": 50816,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 6,
+          "inputTokens": 2988,
+          "outputTokens": 3099,
+          "cacheReadTokens": 34944,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 6,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 6,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 174500,
+        "outputTokens": 1234,
+        "cacheReadTokens": 56704,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 174500,
+          "outputTokens": 1234,
+          "cacheReadTokens": 56704,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 2,
+        "deliveredCompactions": 2,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "2 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 29267,
+        "outputTokens": 1615,
+        "cacheReadTokens": 122880,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 9,
+          "inputTokens": 23182,
+          "outputTokens": 848,
+          "cacheReadTokens": 91008,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 6085,
+          "outputTokens": 767,
+          "cacheReadTokens": 31872,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 9
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 8,
+        "inputTokens": 16712,
+        "outputTokens": 553,
+        "cacheReadTokens": 119552,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 8,
+          "inputTokens": 16712,
+          "outputTokens": 553,
+          "cacheReadTokens": 119552,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 8
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-E0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 16292,
+        "outputTokens": 666,
+        "cacheReadTokens": 97536,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 5,
+          "inputTokens": 16077,
+          "outputTokens": 280,
+          "cacheReadTokens": 67840,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 215,
+          "outputTokens": 386,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 5
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 12052,
+        "outputTokens": 668,
+        "cacheReadTokens": 42496,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 11831,
+          "outputTokens": 208,
+          "cacheReadTokens": 12544,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 221,
+          "outputTokens": 460,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 6,
+        "inputTokens": 16153,
+        "outputTokens": 352,
+        "cacheReadTokens": 84992,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 16153,
+          "outputTokens": 352,
+          "cacheReadTokens": 84992,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 15730,
+        "outputTokens": 507,
+        "cacheReadTokens": 47360,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 15542,
+          "outputTokens": 163,
+          "cacheReadTokens": 17664,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 188,
+          "outputTokens": 344,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 5,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 1,
+        "deliveredCompactions": 1,
+        "pass": false,
+        "requiredFoldCountMet": false,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": false,
+            "detail": "1 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 16,
+        "inputTokens": 29394,
+        "outputTokens": 6057,
+        "cacheReadTokens": 258432,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 11,
+          "inputTokens": 22995,
+          "outputTokens": 1288,
+          "cacheReadTokens": 171904,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 5,
+          "inputTokens": 6399,
+          "outputTokens": 4769,
+          "cacheReadTokens": 86528,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 5,
+          "primary": 11
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-E1-b16-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 11,
+        "inputTokens": 49574,
+        "outputTokens": 1937,
+        "cacheReadTokens": 199680,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 9,
+          "inputTokens": 47992,
+          "outputTokens": 1102,
+          "cacheReadTokens": 153984,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 1582,
+          "outputTokens": 835,
+          "cacheReadTokens": 45696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 9
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T11-p1-E1-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-B0-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 16026,
+        "outputTokens": 1278,
+        "cacheReadTokens": 46592,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 2,
+          "inputTokens": 15824,
+          "outputTokens": 463,
+          "cacheReadTokens": 16640,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 202,
+          "outputTokens": 815,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 2
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T12-p1-B0-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E0-b16-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 42656,
+        "outputTokens": 398,
+        "cacheReadTokens": 15104,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 42656,
+          "outputTokens": 398,
+          "cacheReadTokens": 15104,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T13-p1-E0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T14-p1-E1-b8-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 7,
+        "inputTokens": 16827,
+        "outputTokens": 857,
+        "cacheReadTokens": 116736,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 6,
+          "inputTokens": 16643,
+          "outputTokens": 464,
+          "cacheReadTokens": 87040,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 184,
+          "outputTokens": 393,
+          "cacheReadTokens": 29696,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "rationale": 1,
+          "primary": 6
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T14-p1-E1-b8-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T15-p1-B0-b16-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 16200,
+        "outputTokens": 817,
+        "cacheReadTokens": 78080,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 4,
+          "inputTokens": 16025,
+          "outputTokens": 234,
+          "cacheReadTokens": 48128,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 1,
+          "inputTokens": 175,
+          "outputTokens": 583,
+          "cacheReadTokens": 29952,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 1,
+          "primary": 4
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T15-p1-B0-b16-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T16-p1-E0-b8-r1",
+      "exposure": "fold",
+      "compactions": 4,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": {
+        "requiredCompactions": 2,
+        "committedCompactions": 4,
+        "deliveredCompactions": 4,
+        "pass": true,
+        "requiredFoldCountMet": true,
+        "checks": [
+          {
+            "kind": "compactions",
+            "pass": true,
+            "detail": "4 committed compaction transaction(s), required 2"
+          }
+        ]
+      },
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 12,
+        "inputTokens": 44842,
+        "outputTokens": 1764,
+        "cacheReadTokens": 97024,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 12,
+          "inputTokens": 44842,
+          "outputTokens": 1764,
+          "cacheReadTokens": 97024,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 12
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-3\\T16-p1-E0-b8-r1\\report.json"
+    }
+  ]
+}

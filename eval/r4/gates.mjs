@@ -34,6 +34,7 @@ const candidate = load('candidate-decision.json')
 const budget = load('budget-sensitivity-design.json')
 const budgetPreflight = load('budget-manifest-preflight.json')
 const liveAttempt = load('live-attempts-r4.json')
+const budgetCampaign = load('budget-campaign-e2e-r4-budget-sensitivity-3.json')
 const productDecision = load('product-decision-r4.json')
 const zeroLive = load('zero-live-audit.json')
 const claims = load('evidence-claims.json')
@@ -109,9 +110,10 @@ gate('R4-G5',
 `selected ${candidateSelected ?? 'missing'}; contractOnly ${candidate?.contractOnly ?? '?'}; notWired ${candidate?.notWired ?? '?'}; contract ${selectedContractExists ? 'present' : 'missing'}`)
 
 gate('R4-G6',
-  budget !== null && budget.executionAuthorized === false && budget.design?.cells === 36
-    ? 'incomplete' : 'fail',
-`campaign ${budget?.campaign ?? 'missing'}; cells ${budget?.design?.cells ?? '?'}; executionAuthorized ${budget?.executionAuthorized ?? '?'}; preflight ${budgetPreflight?.verdict ?? 'missing'}; live ${liveAttempt?.decision ?? 'not-attempted'}; attempts ${liveAttempt?.count ?? 0}; campaignStarted ${liveAttempt?.campaign?.started ?? false}`)
+  budgetCampaign?.status === 'complete' && budgetCampaign?.executed === 36
+    ? 'pass'
+    : budget !== null && budget.executionAuthorized === false && budget.design?.cells === 36 ? 'incomplete' : 'fail',
+`campaign ${budgetCampaign?.campaign ?? 'missing'}; status ${budgetCampaign?.status ?? 'missing'}; executed ${budgetCampaign?.executed ?? '?'}/${budgetCampaign?.planned ?? '?'}; stop ${budgetCampaign?.stopReason ?? 'none'}; tasks E1@8 ${budgetCampaign?.byArmBudget?.['E1-8']?.taskCorrect ?? '?'}/6, B0@8 ${budgetCampaign?.byArmBudget?.['B0-8']?.taskCorrect ?? '?'}/6`)
 
 gate('R4-G7',
   ciStatus === 'success'
@@ -153,9 +155,20 @@ const output = {
     planned: liveAttempt.planned,
     campaignStarted: liveAttempt.campaign?.started ?? null,
   },
+  budgetCampaign: budgetCampaign === null ? null : {
+    campaign: budgetCampaign.campaign,
+    status: budgetCampaign.status,
+    executed: budgetCampaign.executed,
+    planned: budgetCampaign.planned,
+    taskCorrect: {
+      'B0@8': budgetCampaign.byArmBudget?.['B0-8']?.taskCorrect ?? null,
+      'E1@8': budgetCampaign.byArmBudget?.['E1-8']?.taskCorrect ?? null,
+      'E1@16': budgetCampaign.byArmBudget?.['E1-16']?.taskCorrect ?? null,
+    },
+  },
   gates,
   counts,
-  note: 'incomplete is not fail. R4-G6 stays incomplete offline; R4-G7 becomes pass only on a successful supported-lane CI run.',
+  note: 'incomplete is not fail. R4-G6 is pass only when the clean 36-cell campaign is complete; R4-G7 becomes pass only on a successful supported-lane CI run.',
 }
 
 mkdirSync(OUT, { recursive: true })

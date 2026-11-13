@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "work": "EF-R4",
-  "generatedAt": "2026-11-13T18:32:12.965Z",
+  "generatedAt": "2026-11-13T20:13:59.563Z",
   "head": "07540d01554e6ea75cf08d9c7ab38c3d480a0c87",
-  "ci": "success",
+  "ci": "pending",
   "budgetPreflight": {
     "verdict": "ready-for-authorization",
-    "manifestSha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
+    "manifestSha256": "7b5d1465fdfd9c8d414bc9fe69fd2b182d85a2990ee6804866b877ca8652fc66",
     "providerCalls": 0
   },
   "liveAttempt": {
@@ -15,6 +15,17 @@
     "successes": 0,
     "planned": 16,
     "campaignStarted": false
+  },
+  "budgetCampaign": {
+    "campaign": "e2e-r4-budget-sensitivity-3",
+    "status": "complete",
+    "executed": 36,
+    "planned": 36,
+    "taskCorrect": {
+      "B0@8": 4,
+      "E1@8": 6,
+      "E1@16": 4
+    }
   },
   "gates": [
     {
@@ -49,13 +60,13 @@
     },
     {
       "id": "R4-G6",
-      "status": "incomplete",
-      "detail": "campaign e2e-r4-budget-sensitivity-1; cells 36; executionAuthorized false; preflight ready-for-authorization; live blocked-provider-auth; attempts 4; campaignStarted false"
+      "status": "pass",
+      "detail": "campaign e2e-r4-budget-sensitivity-3; status complete; executed 36/36; stop none; tasks E1@8 6/6, B0@8 4/6"
     },
     {
       "id": "R4-G7",
-      "status": "pass",
-      "detail": "ci success; zero-live zero-live-verified; claims 12"
+      "status": "incomplete",
+      "detail": "ci pending; zero-live zero-live-verified; claims 13"
     },
     {
       "id": "R4-G8",
@@ -68,5 +79,5 @@
     "incomplete": 1,
     "fail": 0
   },
-  "note": "incomplete is not fail. R4-G6 stays incomplete offline; R4-G7 becomes pass only on a successful supported-lane CI run."
+  "note": "incomplete is not fail. R4-G6 is pass only when the clean 36-cell campaign is complete; R4-G7 becomes pass only on a successful supported-lane CI run."
 }

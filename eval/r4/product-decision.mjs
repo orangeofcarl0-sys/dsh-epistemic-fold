@@ -31,6 +31,12 @@ const candidate = readJson(candidatePath)
 const budget = readJson(budgetPath)
 const livePath = join(OUT, 'live-attempts-r4.json')
 const live = existsSync(livePath) ? readJson(livePath) : null
+const campaignPath = join(OUT, 'budget-campaign-e2e-r4-budget-sensitivity-3.json')
+const campaign = existsSync(campaignPath) ? readJson(campaignPath) : null
+const measured = campaign?.byArmBudget ?? null
+const e1b8 = measured?.['E1-8'] ?? null
+const b0b8 = measured?.['B0-8'] ?? null
+const e1b16 = measured?.['E1-16'] ?? null
 
 const output = {
   schemaVersion: 1,
@@ -41,33 +47,50 @@ const output = {
   expandTo72: false,
   researchCandidate: candidate.selected,
   researchCandidateWired: false,
-  liveEvidence: live === null ? null : {
+  measuredBestArm: e1b8 === null ? null : 'E1@8',
+  routeQualification: live === null ? null : {
     attempts: live.count,
     decision: live.decision,
     successes: live.successes,
     planned: live.planned,
-    campaignStarted: live.campaign?.started ?? null,
+  },
+  liveEvidence: campaign === null ? null : {
+    campaign: campaign.campaign,
+    status: campaign.status,
+    executed: campaign.executed,
+    planned: campaign.planned,
+    taskCorrect: e1b8 === null ? null : {
+      'B0@8': b0b8?.taskCorrect ?? null,
+      'E1@8': e1b8?.taskCorrect ?? null,
+      'E1@16': e1b16?.taskCorrect ?? null,
+    },
+    requests: { 'B0@8': b0b8?.requests ?? null, 'E1@8': e1b8?.requests ?? null },
+    inputTokens: { 'B0@8': b0b8?.inputTokens ?? null, 'E1@8': e1b8?.inputTokens ?? null },
+    outputTokens: { 'B0@8': b0b8?.outputTokens ?? null, 'E1@8': e1b8?.outputTokens ?? null },
+    e1VsB0At8: campaign.comparisons?.find(row => row.id === 'E1-vs-B0@8') ?? null,
+    e1SixteenVsEight: campaign.comparisons?.find(row => row.id === 'E1-16-vs-8') ?? null,
   },
   reasons: [
-    'The R4 candidate is a correlation from 18 R3 cells, not a live-tested mechanism.',
-    'There is no 16-step measurement yet; the 8-step EF cells are step-limit censored.',
-    'The live probe was blocked by ECONNREFUSED; the campaign was not started, so no 16-step data exists.',
-    'The R3 pilot is one model, one route and one machine; no replication exists.',
-    'The candidate adds exact prompt bytes, but whether the model acts on them is unmeasured.',
-    'The failure projection is also inflated in T16, so one mechanism cannot explain every failure.',
-    'No USD price is claimed; R3 usage is incomplete on one E1 cell and has no per-step token snapshots.',
+    'The clean 36-cell campaign completed, but there is one replicate per cell and only six tasks.',
+    'E1@8 is 6/6 versus B0@8 4/6, but the paired exact McNemar p is 0.5; the interval is wide.',
+    'E1@16 is 4/6: doubling the step budget did not improve E1, and it lost T15/T16 relative to E1@8.',
+    'E0 remains weak at both budgets (1/6 at 8, 2/6 at 16), so EF Minimal is not the product candidate.',
+    'The route changed from the R3 local proxy to Omnigate/opencode; R3 and R4 results are not directly comparable.',
+    'The active-task-delivery candidate was not tested in this campaign; E1@8 passed without it.',
+    'No held-out task set, second route or second model exists; no USD price is claimed.',
   ],
   nextStep: {
-    campaign: budget.campaign,
-    executionAuthorized: budget.executionAuthorized,
-    description: 'A step-budget sensitivity campaign (36 cells) under a new, explicit live authorization.',
+    campaign: 'e4-confirm-e1-8-vs-b0-8',
+    executionAuthorized: false,
+    description: 'A confirmatory E1@8 vs B0@8 campaign with more tasks/replicates and a second route; 16-step expansion only if the confirmatory result justifies it.',
   },
   decisionRules: {
     productCandidateRequires: [
-      'a live budget-sensitivity result with complete usage',
+      'a confirmatory live result with complete usage',
       'the task outcome separated from mechanism exposure',
       'a paired comparison against B0 on the same tasks',
       'a cost and latency bound with complete usage',
+      'a second route or model, and a held-out task set',
     ],
     holdUntil: 'those conditions are met; the 72-cell lane is not authorized.',
   },

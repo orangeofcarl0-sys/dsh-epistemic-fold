@@ -1,0 +1,601 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-13T19:42:40.975Z",
+  "campaign": "e2e-r4-budget-sensitivity-1",
+  "manifestSha256": "5344e2e370405d703b6ad862ca60ffa670f9082d9da8212a94c32342c9fd5044",
+  "model": "deepseek-v4.1-flash",
+  "route": {
+    "origin": "zcode config C:\\Users\\66494\\.zcode\\v2\\config.json (provider c15ab109-97b8-4de1-a647-9857a635be38)",
+    "baseUrl": "http://127.0.0.1:7866/v1",
+    "headers": []
+  },
+  "status": "partial",
+  "stopReason": "provider-usage-incomplete",
+  "planned": 36,
+  "executed": 3,
+  "budget": {
+    "used": {
+      "requests": 22,
+      "inputTokens": 139105,
+      "outputTokens": 5553,
+      "wallClockMs": 60642
+    },
+    "limits": {
+      "continuationCells": 36,
+      "httpAttempts": 1152,
+      "inputTokens": 14907240,
+      "outputTokens": 512892,
+      "wallClockMs": 11084760,
+      "paidConcurrency": 2,
+      "monetaryUsd": null,
+      "monetaryNote": "No verifiable per-token price is recorded."
+    }
+  },
+  "config": {
+    "leafAdmission": "economic",
+    "rootPolicy": "economics",
+    "framingMode": "system-dedup",
+    "semanticContinuity": "off",
+    "rationaleHintTokens": 400,
+    "thresholdRatio": 0.5,
+    "operationalBudgetTokens": 32768,
+    "maxSteps": 8,
+    "retainRatio": 0.16,
+    "headroomTokens": 512,
+    "maxTokens": 1024,
+    "strictUsage": true,
+    "basic": {
+      "retainRatio": null,
+      "headroomTokens": 512,
+      "maxTokens": 1024
+    },
+    "note": "Copied from the R3 product pilot. Each cell overrides maxSteps; the effective value is written into every report."
+  },
+  "results": [
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T11-p1-B0-r1",
+      "exposure": "fold",
+      "compactions": 7,
+      "checker": true,
+      "taskOutcome": "correct",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 14,
+        "inputTokens": 80810,
+        "outputTokens": 4457,
+        "cacheReadTokens": 73728,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 7,
+          "inputTokens": 47370,
+          "outputTokens": 642,
+          "cacheReadTokens": 67456,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 7,
+          "inputTokens": 33440,
+          "outputTokens": 3815,
+          "cacheReadTokens": 6272,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "summary": 7,
+          "primary": 7
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-1\\T11-p1-B0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T12-p1-E0-r1",
+      "exposure": "fold",
+      "compactions": 1,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 3,
+        "inputTokens": 15757,
+        "outputTokens": 275,
+        "cacheReadTokens": 34304,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 0,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 15757,
+          "outputTokens": 275,
+          "cacheReadTokens": 34304,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 0,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "byPurpose": {
+          "primary": 3
+        },
+        "note": "every request reported usage"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-1\\T12-p1-E0-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "executed",
+      "cellId": "T13-p1-E1-r1",
+      "exposure": "fold",
+      "compactions": 2,
+      "checker": false,
+      "taskOutcome": "incomplete",
+      "mechanism": null,
+      "termination": "finish",
+      "stepLimitStage": null,
+      "guard": false,
+      "usage": {
+        "requests": 5,
+        "inputTokens": 42538,
+        "outputTokens": 821,
+        "cacheReadTokens": 15232,
+        "cacheWriteTokens": 0,
+        "unknownUsage": 2,
+        "primary": {
+          "requests": 3,
+          "inputTokens": 42538,
+          "outputTokens": 821,
+          "cacheReadTokens": 15232,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 0
+        },
+        "auxiliary": {
+          "requests": 2,
+          "inputTokens": 0,
+          "outputTokens": 0,
+          "cacheReadTokens": 0,
+          "cacheWriteTokens": 0,
+          "unknownUsage": 2
+        },
+        "byPurpose": {
+          "rationale": 2,
+          "primary": 3
+        },
+        "note": "2 request(s) reported no usage; they are counted as unknown, not zero"
+      },
+      "reportPath": "F:\\Codex_Work_Space\\DSH plugin\\ef-c1-foundation\\eval\\e2e\\runs\\e2e-r4-budget-sensitivity-1\\T13-p1-E1-r1\\report.json"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-1",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-2",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-3",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T11-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T12-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T13-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T14-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T15-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-4",
+        "task": "T16-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T11-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T12-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T13-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T14-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T15-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-5",
+        "task": "T16-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T11-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T12-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T13-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T14-p1",
+        "arm": "E1",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T15-p1",
+        "arm": "B0",
+        "replicate": 1,
+        "maxSteps": 16,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    },
+    {
+      "cell": {
+        "block": "r4-budget-6",
+        "task": "T16-p1",
+        "arm": "E0",
+        "replicate": 1,
+        "maxSteps": 8,
+        "maxStepsSource": "cell"
+      },
+      "status": "not-executed",
+      "reason": "provider-usage-incomplete"
+    }
+  ]
+}
